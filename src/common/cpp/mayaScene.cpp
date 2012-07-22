@@ -434,7 +434,7 @@ bool MayaScene::updateScene()
 		{
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 			this->transformUpdateCallback(*obj);
-			continue;
+			//continue;
 		}
 
 		// if we are here at the very first motionBlur step, then remove export filesNames, export filenames will be automatically filled by the exporter
