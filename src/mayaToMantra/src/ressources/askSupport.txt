@@ -1,0 +1,12 @@
+
+Shader:
+- how can I compile multiple shaders at once
+- pack into library without .vex file?
+
+ifd:
+- add geo attribute like Cd for color override of instances
+
+- seems I have to start rendering from shader directory because the vex files are not found otherwise...
+
+general:
+- do I really have to compile my standalone for every houdini update?

@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HoudiniObjectTools", "HoudiniObjectSaver.vcproj", "{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestProject", "..\TestProject\TestProject.vcproj", "{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+		ReleaseH|Win32 = ReleaseH|Win32
+		ReleaseH|x64 = ReleaseH|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Debug|Win32.Build.0 = Debug|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Debug|x64.ActiveCfg = Debug|x64
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Debug|x64.Build.0 = Debug|x64
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Release|Win32.ActiveCfg = Release|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Release|Win32.Build.0 = Release|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Release|x64.ActiveCfg = Release|x64
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.Release|x64.Build.0 = Release|x64
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.ReleaseH|Win32.ActiveCfg = ReleaseH|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.ReleaseH|Win32.Build.0 = ReleaseH|Win32
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.ReleaseH|x64.ActiveCfg = ReleaseH|x64
+		{B6F4BEAA-5C09-4168-B25F-FAA8B5BEDEB2}.ReleaseH|x64.Build.0 = ReleaseH|x64
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Debug|Win32.ActiveCfg = Debug|Win32
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Debug|Win32.Build.0 = Debug|Win32
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Debug|x64.ActiveCfg = Debug|x64
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Release|Win32.ActiveCfg = Release|Win32
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Release|Win32.Build.0 = Release|Win32
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.Release|x64.ActiveCfg = Release|Win32
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.ReleaseH|Win32.ActiveCfg = Release|x64
+		{709DA38E-CEAC-4163-9D02-6EC65ACF4D38}.ReleaseH|x64.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

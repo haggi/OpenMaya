@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c9af7777-061c-4081-859d-577445d816a9}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{888aa430-ca2d-4e8b-b24f-98f219a50c8c}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Ressources">
+      <UniqueIdentifier>{a01d4f98-a3f5-4e17-9338-a2e46e750998}</UniqueIdentifier>
+      <Extensions>txt</Extensions>
+    </Filter>
+    <Filter Include="Ressources\ShaderIncludes">
+      <UniqueIdentifier>{5f4274dc-3bf7-4866-b95c-48c1029dfbca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShadingTools">
+      <UniqueIdentifier>{32339df0-60a2-4adf-91da-f7726ae50af5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="exporter">
+      <UniqueIdentifier>{213fa358-860d-43de-8ec3-e36f6c84e519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="houdini">
+      <UniqueIdentifier>{7549b5cd-3da1-4907-8787-ef79e63788ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{288889dd-174e-4764-aed2-17c423bc5791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\shadingtools">
+      <UniqueIdentifier>{3819b2f2-99d7-4aad-be1e-257fc7ab8229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\utilities">
+      <UniqueIdentifier>{a211b3e7-8553-432f-92af-9919a52687a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\Ressources">
+      <UniqueIdentifier>{6c562f82-2875-46d4-b83e-da5c46d8e2cc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\mayatomantra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mayaToMantraGlobals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_envlight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_mayaObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_mayaScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_renderGlobals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_standin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pluginMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shadingTools\mtm_material.cpp">
+      <Filter>ShadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\hsff.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_fluidExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_meshExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_nurbsCurveExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_nurbsExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_particleExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\exporter\mtm_standinExporter.cpp">
+      <Filter>exporter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaScene.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobals.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp">
+      <Filter>common\shadingtools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp">
+      <Filter>common\shadingtools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp">
+      <Filter>common\shadingtools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp">
+      <Filter>common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\logging.cpp">
+      <Filter>common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp">
+      <Filter>common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
+      <Filter>common\utilities</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\mayatomantra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mayaToMantraGlobals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_envlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_mayaObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_mayaScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_renderGlobals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_renderOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_standin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shadingTools\mtm_material.h">
+      <Filter>ShadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\hsff.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_fluidExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_meshExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_nurbsCurveExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_nurbsExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_particleExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\exporter\mtm_standinExporter.h">
+      <Filter>exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObject.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaScene.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobals.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\material.h">
+      <Filter>common\shadingtools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h">
+      <Filter>common\shadingtools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h">
+      <Filter>common\shadingtools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\attrTools.h">
+      <Filter>common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\logging.h">
+      <Filter>common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\pystring.h">
+      <Filter>common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\tools.h">
+      <Filter>common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\addDoubleLinear.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\anisotropic.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\areaLight.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\blendcolors.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\blinn.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\brownian.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\bulge.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\bump.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\bump3d.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\checker.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\clamp.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\cloth.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\cloud.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\condition.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\contrast.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\directionalLight.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\displacementShader.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\distanceBetween.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\filetexture.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\fractal.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\gammaCorrect.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\grid.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\hsvToRgb.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\lambert.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\lightProjection.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\luminance.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\Marble.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\mia_material_x.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\mountain.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\multiplyDivide.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\noise.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\noise_utils.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\ocean.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\oceanShader.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\particleSampler.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\particleSamplerInfo.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\phong.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\place2dtexture.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\place3dTexture.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\plusMinusAverage.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\pointLight.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\projection.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\ramp.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\rampShader.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\reverse.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\rman.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\samplerInfo.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\Snow.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\solidFractal.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\spotLight.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\testinc.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\texture3dutils.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\utils.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\volumeLight.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\volumeNoise.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mtm_devmodule\shaderIncludes\Wood.h">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ressources\askSupport.txt">
+      <Filter>Ressources</Filter>
+    </None>
+    <None Include="ressources\pluginIds.txt">
+      <Filter>Ressources</Filter>
+    </None>
+    <None Include="todo.txt">
+      <Filter>Ressources</Filter>
+    </None>
+    <None Include="..\mtm_devmodule\shaderIncludes\readMe.txt">
+      <Filter>Ressources\ShaderIncludes</Filter>
+    </None>
+    <None Include="..\mtm_devmodule\ressources\shaderDefinitions.txt">
+      <Filter>Ressources</Filter>
+    </None>
+    <None Include="..\mtm_devmodule\ressources\mantraRenderer.xml">
+      <Filter>Ressources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>

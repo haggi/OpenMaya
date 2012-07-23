@@ -1,0 +1,41 @@
+
+CFLAGS = 
+-TP 
+-Zc:forScope 
+-Ox 
+-MD 
+-EHsc 
+-GR 
+-DVERSION="11.0.446.7" 
+-DI386 
+-DWIN32 
+-DSWAP_BITFIELDS 
+-DDLLEXPORT=__declspec(dllexport) 
+-D_WIN32_WINNT=0x0501 
+-DWINVER=0x0501  
+-DSESI_LITTLE_ENDIAN 
+
+-I . 
+-I "c:/Program Files (x86)/Microsoft Visual Studio 8/VC/include" 
+-I "c:/Program Files (x86)/Microsoft Visual Studio 8/VC/PlatformSDK/include" 
+-I "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7/toolkit/include/htools" 
+-I "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7/toolkit/include" 
+
+
+-Fo"HoudiniObjectSaver.o" 
+-link /libpath:"c:/Program Files (x86)/Microsoft Visual Studio 8/VC/lib/amd64" 
+/libpath:"c:/Program Files (x86)/Microsoft Visual Studio 8/VC/PlatformSDK/lib/amd64"  
+"C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7/custom/houdini/dsolib/*.a" "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7/custom/houdini/dsolib/*.lib" -out:"./HoudiniObjectSaver.exe"
+
+
+/TP /Zc:forScope  /Ox /MD /EHsc /GR
+
+-DVERSION="11.0.446.7" -DI386 -DWIN32 -DSWAP_BITFIELDS -DDLLEXPORT=__declspec(dllexport) -D_WIN32_WINNT=0x0501 -DWINVER=0x0501  
+-I . 
+-I "c:\Program Files (x86)\Microsoft Visual Studio 8\VC\include" -I "c:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\include" 
+-I "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7\toolkit\include\htools" -I "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7\toolkit\include"
+
+-link 
+/libpath:"c:\Program Files (x86)\Microsoft Visual Studio 8\VC\lib\amd64" 
+/libpath:"c:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\lib\amd64"  "C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7\custom\houdini\dsolib\*.a" 
+"C:/PROGRA~1/SIDEEF~1/HOUDIN~1.7\custom\houdini\dsolib\*.lib"

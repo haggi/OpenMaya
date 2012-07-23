@@ -1,0 +1,18 @@
+
+TESTING:
+
+mayaToMantraGlobals:	0x00106EF0
+mtm_envlight:			0x00106EF1
+mtm_standin:			0x00106EF2
+
+MayaToKrakatoaGlobals: 0x00106EF3
+mtk_surfaceShader: 0x00106EF4
+
+mayaToLuxGlobals: 0x00106EF6
+
+mayaToMitusbaGlobals: 0x00106EF9
+
+krakatoa:
+mtk_renderGlobals: 0x00106EFA
+
+0x00106EF0 - 0x00106EFF

@@ -1,0 +1,55 @@
+ Datentr„ger in Laufwerk C: ist root
+ Volumeseriennummer: A021-73AA
+
+ Verzeichnis von c:\Users\haggi\coding\mayaTo\mtm_VS\mayaToMantra\shaderIncludes
+
+26.12.2011  23:51    <DIR>          .
+26.12.2011  23:51    <DIR>          ..
+16.11.2011  23:35               149 addDoubleLinear.h
+26.12.2011  00:19             2.563 anisotropic.h
+16.11.2011  23:36               191 blendcolors.h
+26.12.2011  00:19             2.515 blinn.h
+26.12.2011  00:19             1.177 brownian.h
+20.12.2011  23:39               763 bulge.h
+27.11.2011  15:54               776 bump.h
+26.12.2011  00:20               522 bump3d.h
+18.12.2011  19:09             1.286 checker.h
+17.11.2011  19:42               166 clamp.h
+21.12.2011  21:56             2.596 cloth.h
+24.12.2011  17:54             4.275 cloud.h
+17.11.2011  00:03               757 condition.h
+27.11.2011  13:54               633 contrast.h
+27.11.2011  13:55               723 displacementShader.h
+17.11.2011  00:16               165 distanceBetween.h
+19.11.2011  16:56               779 filetexture.h
+27.11.2011  15:24             2.699 fractal.h
+17.11.2011  00:20               253 gammaCorrect.h
+26.12.2011  00:23             1.148 grid.h
+17.11.2011  00:22               210 hsvToRgb.h
+26.12.2011  00:23             2.109 lambert.h
+18.12.2011  19:03               165 luminance.h
+26.12.2011  23:51             1.338 Marble.h
+26.12.2011  00:23            13.235 mia_material_x.h
+23.12.2011  14:57             3.964 mountain.h
+18.12.2011  15:57               579 multiplyDivide.h
+23.12.2011  18:52             2.450 noise.h
+26.12.2011  23:49            11.980 noise_utils.h
+21.12.2011  21:43    <DIR>          notYetSupported
+26.12.2011  18:10               140 ocean.h
+26.12.2011  18:09               204 oceanShader.h
+26.12.2011  00:23             2.495 phong.h
+20.12.2011  23:31             2.723 place2dtexture.h
+04.12.2011  15:20               259 place3dTexture.h
+21.12.2011  21:40             3.571 plusMinusAverage.h
+26.12.2011  00:23             3.296 projection.h
+21.12.2011  21:56             2.892 ramp.h
+25.10.2011  21:02               159 reverse.h
+23.12.2011  18:52             1.137 rman.h
+26.12.2011  18:12               211 Snow.h
+04.12.2011  15:02             1.519 solidFractal.h
+23.12.2011  19:17             1.366 texture3dutils.h
+26.12.2011  00:22            11.305 utils.h
+26.12.2011  18:13               233 volumeNoise.h
+26.12.2011  18:13               211 Wood.h
+              45 Datei(en),         91.887 Bytes
+               3 Verzeichnis(se), 218.524.717.056 Bytes frei

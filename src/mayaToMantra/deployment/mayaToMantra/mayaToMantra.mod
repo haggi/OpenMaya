@@ -1,0 +1,1 @@
++ mtm 0.1 C:\Users\haggi\coding\mayaTo\mayaToMantra\deployment\mayaToMantra

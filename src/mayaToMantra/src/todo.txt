@@ -1,0 +1,44 @@
+todo:	- mayacmd verbosity einbauen für logger
+		- shadow casting for envlight???
+		- evaluation frequency in shadow maps creation implementieren
+		- motionblur für shadowMaps implementieren (notwendig?)
+		- catch the case of vanishing particles (instancer) during mb
+		- geometry light connection evaluation during scene light parsing
+		- get instancer shading groups?? 
+		- WICHTIG: shader variables, die nicht gefunden werden markieren kein fehler machen
+
+Todo:	- ReadExternal Shaders from otl
+		- LightShader
+		- Archive export
+		- Shaders
+		- Light Attenuation
+		- AOV's
+		- AOV's interface
+		- Photon map rendering
+		- Alembic Export
+		- portal light geometry
+		- PaintFx
+		
+		
+						
+Done:	- ParticleInstancer
+		- Curve Rendering (basic)
+		- Env Light		
+		- Shader Phong
+		- AttributeUI
+		- Displacement Shader
+		- Translucency
+		- Shadow map rendering
+		- GI_Light
+		- FluidRendering
+		- ParticleRendering
+		- Export own format - write with houdini geowriter
+		- Speedup GeoExport
+		- Archive rendering
+		- commandline xml
+		- shaderExtensions
+		- GeoLight
+		- ActiveLightRadius
+		- LightLinking, ShadowLinking
+		- Meta Framework für Translator
+		
