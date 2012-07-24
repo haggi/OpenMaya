@@ -14,7 +14,7 @@
 
 #include "mayatomantra.h"
 //#include "shadingTools/mtm_readShaderDefs.h"
-#include "mayaToMantraGlobals.h"
+#include "mtm_globalsNode.h"
 #include "mtm_envlight.h"
 #include "mtm_standin.h"
 
@@ -36,7 +36,7 @@ MStatus initializePlugin( MObject obj )
 	}
 	status = plugin.registerNode(mayaToMantraGlobalsName, mayaToMantraGlobals::id, mayaToMantraGlobals::creator, mayaToMantraGlobals::initialize );
 	if (!status) {
-		status.perror("cannot register node: mayatomantra");
+		status.perror("cannot register node: mayatomantra globals");
 		return status;
 	}
 

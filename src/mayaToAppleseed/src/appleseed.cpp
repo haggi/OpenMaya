@@ -11,6 +11,9 @@
 #include "renderer/api/environmentshader.h"
 #include "renderer/api/edf.h"
 
+// only temporary until api is updated
+#include "renderer/modeling/light/spotlight.h" 
+
 #include "utilities/logging.h"
 #include "maya/MFnDependencyNode.h"
 #include "maya/MFnMesh.h"
@@ -330,8 +333,6 @@ void AppleseedRenderer::defineLights()
 		}
 		getColor(MString("color"), lightFn, color);
 		getFloat(MString("intensity"), lightFn, intensity);
-
-		//asf::FloatArray lightColor(1.0f, 1.0f, 1.0f);
 		
 		float apColor[3];
 		apColor[0] = color.r;
@@ -339,6 +340,8 @@ void AppleseedRenderer::defineLights()
 		apColor[2] = color.b;
 		asr::ColorValueArray aLightColor(3, apColor);
 		MString lightColorName = mlight->shortName + "_exitance";
+		//this->defineColor(lightColorName, color, NULL);
+
 		intensity *= 30.0f; // 30 is the default value in the example
 		this->masterAssembly->colors().insert(
 			asr::ColorEntityFactory::create(
@@ -348,15 +351,50 @@ void AppleseedRenderer::defineLights()
 					.insert("multiplier", (MString("")+intensity).asChar()),
 					aLightColor));
 
-
+		
 		// Create a point light called "light" and insert it into the assembly.
-		asf::auto_release_ptr<asr::Light> light(
-			asr::PointLightFactory().create(
-				mlight->shortName.asChar(),
-				asr::ParamArray()
-					.insert("exitance", lightColorName.asChar())));
-		light->set_transform(asf::Transformd(appMatrix));
-		this->masterAssembly->lights().insert(light);
+		if( mlight->mobject.hasFn(MFn::kSpotLight))
+		{
+			//inner_angle
+			//outer_angle
+			logger.debug(MString("Creating spotLight: ") + lightFn.name());
+			float coneAngle = 45.0f;
+			float penumbraAngle = 3.0f;
+			getFloat(MString("coneAngle"), lightFn, coneAngle);
+			getFloat(MString("penumbraAngle"), lightFn, penumbraAngle);
+			coneAngle = RadToDeg(coneAngle);
+			penumbraAngle = RadToDeg(penumbraAngle);
+
+			logger.debug(MString("ConeAngle: ") + coneAngle);
+			logger.debug(MString("penumbraAngle: ") + penumbraAngle);
+			float inner_angle = coneAngle;
+			float outer_angle = coneAngle + penumbraAngle;
+			
+			// spot light is pointing in -z, appleseeds spot light is pointing in y, at least until next update...
+			// I create a rotation matrix for this case.
+			asf::Matrix4d rotMatrix = asf::Matrix4d::rotation(asf::Vector3d(1.0, 0.0, 0.0), asf::deg_to_rad(-90.0));
+			asf::Matrix4d finalMatrix = appMatrix * rotMatrix;
+
+			asf::auto_release_ptr<asr::Light> light(
+				asr::SpotLightFactory().create(
+					mlight->shortName.asChar(),
+					asr::ParamArray()
+						.insert("exitance", lightColorName.asChar())
+						.insert("inner_angle", (MString("") + inner_angle).asChar())
+						.insert("outer_angle", (MString("") + outer_angle).asChar())
+						));
+			light->set_transform(asf::Transformd(finalMatrix));
+			this->masterAssembly->lights().insert(light);
+			
+		}else{
+			asf::auto_release_ptr<asr::Light> light(
+				asr::PointLightFactory().create(
+					mlight->shortName.asChar(),
+					asr::ParamArray()
+						.insert("exitance", lightColorName.asChar())));
+			light->set_transform(asf::Transformd(appMatrix));
+			this->masterAssembly->lights().insert(light);
+		}
 	}
 }
 

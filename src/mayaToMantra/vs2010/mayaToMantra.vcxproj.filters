@@ -37,12 +37,15 @@
     <Filter Include="common\Ressources">
       <UniqueIdentifier>{6c562f82-2875-46d4-b83e-da5c46d8e2cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\mayarendernodes">
+      <UniqueIdentifier>{3cfb334e-584b-4709-9139-187bc6d4f8c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\memory">
+      <UniqueIdentifier>{43393b47-58bb-43c6-9a4e-5a66f83ff062}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\mayatomantra.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mayaToMantraGlobals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mtm_envlight.cpp">
@@ -120,12 +123,21 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtm_globalsNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp">
+      <Filter>common\memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\mayatomantra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mayaToMantraGlobals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mtm_envlight.h">
@@ -371,17 +383,20 @@
     <ClInclude Include="..\mtm_devmodule\shaderIncludes\Wood.h">
       <Filter>Ressources\ShaderIncludes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtm_globalsNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h">
+      <Filter>common\memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ressources\askSupport.txt">
-      <Filter>Ressources</Filter>
-    </None>
-    <None Include="ressources\pluginIds.txt">
-      <Filter>Ressources</Filter>
-    </None>
-    <None Include="todo.txt">
-      <Filter>Ressources</Filter>
-    </None>
     <None Include="..\mtm_devmodule\shaderIncludes\readMe.txt">
       <Filter>Ressources\ShaderIncludes</Filter>
     </None>

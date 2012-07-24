@@ -5,12 +5,12 @@
 #include <fstream>
 
 #include "mayaScene.h"
-#include "mtm_renderGlobals.h"
+class mtm_RenderGlobals;
 
 class mtm_MayaScene : public MayaScene
 {
 public:
-	mtm_RenderGlobals renderGlobals;
+	mtm_RenderGlobals *renderGlobals;
 	std::ofstream *outFile;
 	MString ifdFileName;
 	MayaObject *defaultCamera; // needed for motionblur calculation
@@ -39,6 +39,14 @@ public:
 	bool writeImagePlanes();
 	bool writeOutputData();
 	bool writeRendererData();
+
+	virtual void transformUpdateCallback(MayaObject&);
+	virtual void deformUpdateCallback(MayaObject&);
+	virtual bool renderImage(); // the actual render job, overwrite
+	virtual MayaObject* mayaObjectCreator(MObject&);
+	virtual void mayaObjectDeleter(MayaObject *);
+	virtual void getRenderGlobals();
+
 
 	mtm_MayaScene();
 	~mtm_MayaScene();

@@ -21,6 +21,13 @@
 
 static Logging logger;
 
+mtm_MayaObject::mtm_MayaObject(MObject& mobject) : MayaObject(mobject)
+{
+}
+
+mtm_MayaObject::~mtm_MayaObject()
+{}
+
 bool mtm_MayaObject::geometryShapeSupported()
 {
 	MFn::Type type = this->mobject.apiType();

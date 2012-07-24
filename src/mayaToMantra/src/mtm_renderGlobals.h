@@ -10,6 +10,7 @@ class mtm_RenderGlobals : public RenderGlobals
 public:
 	mtm_RenderGlobals();
 	bool getMtmGlobals();
+	virtual MString getImageExt();
 
 	MStringArray renderEngines;
 	int outputType; // 0 = outputToMPlay 1 = outputToFile
@@ -43,6 +44,7 @@ public:
 	int numThreads;
 	int tilesize;
 	float kdmemfac;
+	MString imageFormatString;
 };
 
 #endif

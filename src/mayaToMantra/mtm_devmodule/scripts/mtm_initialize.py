@@ -1,6 +1,8 @@
 import pymel.core as pm
 import logging
 import Renderer as Renderer
+import traceback
+import sys
 import mtm_mantraAttributes as mantraAttributes
 
 reload(Renderer)
@@ -10,9 +12,9 @@ log = logging.getLogger("mtmLogger")
 class MantraRenderer(Renderer.MayaToRenderer):
     theRendererInstance = None
     @staticmethod
-    def theRenderer(arg = None):
+    def theRenderer(arg=None):
         if not MantraRenderer.theRendererInstance:
-            MantraRenderer.theRendererInstance = MantraRenderer( "Mantra", "mtm_initialize")
+            MantraRenderer.theRendererInstance = MantraRenderer("Mantra", "mtm_initialize")
         return MantraRenderer.theRendererInstance
     
     def __init__(self, rendererName, moduleName):
@@ -23,25 +25,25 @@ class MantraRenderer(Renderer.MayaToRenderer):
 
     
     def getEnumList(self, attr):
-        return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
+        return [(i, v) for i, v in enumerate(attr.getEnums().keys())]
 
-    def updateTest(self, dummy = None):
+    def updateTest(self, dummy=None):
         print "UpdateTest", dummy             
         
     def MantraRendererCreateTab(self):
         log.debug("MantraRendererCreateTab()")
         self.createGlobalsNode()
-        parentForm = pm.setParent(query = True)
-        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ScrollLayout"
-        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True):
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True):
                 mantraAttributes.mantraGlobalsATList.createUi(self.renderGlobalsNodeName)
-        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
-        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         self.MantraRendererUpdateTab()
 
-    def MantraRendererUpdateTab(self, dummy = None):
+    def MantraRendererUpdateTab(self, dummy=None):
         log.debug("MantraRendererUpdateTab()")
         if self.renderGlobalsNode.adaptiveSampling.get():
             self.rendererTabUiDict['minSamples'].setEnable(True)
@@ -54,15 +56,15 @@ class MantraRenderer(Renderer.MayaToRenderer):
     def MantraTranslatorCreateTab(self):
         log.debug("MantraTranslatorCreateTab()")
         self.createGlobalsNode()
-        parentForm = pm.setParent(query = True)
-        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "TrScrollLayout"
         
-        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn = True):
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn=True):
                 mantraAttributes.mantraTranslatorATList.createUi(self.renderGlobalsNodeName)
-        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
-        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
 
     def MantraTranslatorUpdateTab(self):
         log.debug("MantraTranslatorUpdateTab()")
@@ -86,7 +88,7 @@ class MantraRenderer(Renderer.MayaToRenderer):
         # area light
         pm.addExtension(nodeType="areaLight", longName="mtm_samplingQuality", attributeType="double", defaultValue=1.0)
         pm.addExtension(nodeType="areaLight", longName="mtm_areaType", attributeType="enum", enumName="line:grid:disk:sphere")
-        pm.addExtension(nodeType="areaLight", longName="mtm_normalizeArea",  attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="mtm_normalizeArea", attributeType="bool", defaultValue=True)
         pm.addExtension(nodeType="areaLight", longName="mtm_useLightGeometry", attributeType="bool", defaultValue=False)
         pm.addExtension(nodeType="areaLight", longName="mtm_lightGeometry", attributeType="message")
         pm.addExtension(nodeType="areaLight", longName="mtm_renderLightGeometry", attributeType="bool", defaultValue=False)
@@ -117,22 +119,22 @@ class MantraRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="displacementShader", longName="mtm_displacebound", attributeType="double", defaultValue=1.0)
         
         # phong, blinn, phongE, lambert ...
-        pm.addExtension(nodeType="phong", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="phongE", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="blinn", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="lambert", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="lambert", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min = 0.0, max = 1.0)
-        pm.addExtension(nodeType="phong", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min = 0.0, max = 1.0)
-        pm.addExtension(nodeType="blinn", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min = 0.0, max = 1.0)
+        pm.addExtension(nodeType="phong", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="phongE", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="blinn", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="lambert", longName="mtm_refrBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="lambert", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min=0.0, max=1.0)
+        pm.addExtension(nodeType="phong", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min=0.0, max=1.0)
+        pm.addExtension(nodeType="blinn", longName="mtm_fresnel", attributeType="double", defaultValue=0.0, min=0.0, max=1.0)
         
         pm.addExtension(nodeType="phong", longName="mtm_refrSamples", attributeType="long", defaultValue=1)
         pm.addExtension(nodeType="phongE", longName="mtm_refrSamples", attributeType="long", defaultValue=1)
         pm.addExtension(nodeType="blinn", longName="mtm_refrSamples", attributeType="long", defaultValue=1)
         pm.addExtension(nodeType="lambert", longName="mtm_refrSamples", attributeType="long", defaultValue=1)
     
-        pm.addExtension(nodeType="phong", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="phongE", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
-        pm.addExtension(nodeType="blinn", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min = 0.0, softMaxValue = 1.0)
+        pm.addExtension(nodeType="phong", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="phongE", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
+        pm.addExtension(nodeType="blinn", longName="mtm_reflBlur", attributeType="double", defaultValue=0.0, min=0.0, softMaxValue=1.0)
     
         pm.addExtension(nodeType="phong", longName="mtm_reflSamples", attributeType="long", defaultValue=1)
         pm.addExtension(nodeType="phongE", longName="mtm_reflSamples", attributeType="long", defaultValue=1)
@@ -143,7 +145,7 @@ class MantraRenderer(Renderer.MayaToRenderer):
     
     def renderProcedure(self):
         log.debug("mtmRenderProcedure")
-        
+    
         pm.mel.trace("================ Start MayaToMantra Rendering ======================")
         # TODO: get directorys and filenames
         self.createGlobalsNode()    
@@ -187,7 +189,9 @@ def initRenderer():
     try:
         log.debug("Init renderer Mantra")
         theRenderer().registerRenderer()
-    except:
+    except Exception:
+        traceback.print_exc(file=sys.__stdout__)
+        sys.__stdout__.write("\nInit renderer Mantra FAILED\n")
         log.error("Init renderer Mantra FAILED")
         
 def unregister():
@@ -219,14 +223,14 @@ class StandinGUI(pm.ui.Window):
         print "Select file"
         startDir = r"C:\daten\3dprojects\mantra\data\fluidGeo"
         # fileFilter="*.geo;;*.bgeo" seems not to work correctly...
-        self.fileName = pm.fileDialog2(cap="Select Geo File",dir=startDir, fm=1)
+        self.fileName = pm.fileDialog2(cap="Select Geo File", dir=startDir, fm=1)
         if len(self.fileName) > 0:
             self.fileName = self.fileName[0]
-            pm.textFieldButtonGrp("stdingfilename", edit=True,  text=self.fileName)
+            pm.textFieldButtonGrp("stdingfilename", edit=True, text=self.fileName)
                 
     def setValue(self, value):
         if value == "stdingfilename":
-            self.fileName = pm.textFieldButtonGrp("stdingfilename", query=True,  text=True)
+            self.fileName = pm.textFieldButtonGrp("stdingfilename", query=True, text=True)
         if value == "stdinshowpoints":
             self.showPoints = pm.checkBoxGrp("stdinshowpoints", query=True, value1=True)
         if value == "stdinptdensity":
@@ -244,23 +248,23 @@ class StandinGUI(pm.ui.Window):
         
         pm.setUITemplate("DefaultTemplate", pushTemplate=True)
         self.height = 500
-        with pm.frameLayout(collapsable = False, labelVisible = False) as frame:
-            pm.textFieldButtonGrp("stdingfilename", label="GeoFileName", text = "", buttonLabel="Select", bc=pm.Callback(self.selectGeoFile),cc=pm.Callback(self.setValue, "stdingfilename"))
+        with pm.frameLayout(collapsable=False, labelVisible=False) as frame:
+            pm.textFieldButtonGrp("stdingfilename", label="GeoFileName", text="", buttonLabel="Select", bc=pm.Callback(self.selectGeoFile), cc=pm.Callback(self.setValue, "stdingfilename"))
             #string $b = `symbolButton -image "navButtonBrowse.xpm" browser`;
-            with pm.frameLayout(collapsable = False, label="Points"):
-                pm.checkBoxGrp("stdinshowpoints", label="Show Points", value1 = False, cc=pm.Callback(self.setValue, "stdinshowpoints"))
+            with pm.frameLayout(collapsable=False, label="Points"):
+                pm.checkBoxGrp("stdinshowpoints", label="Show Points", value1=False, cc=pm.Callback(self.setValue, "stdinshowpoints"))
                 pm.floatFieldGrp("stdinptdensity", label="PointDensity", value1=0.3, cc=pm.Callback(self.setValue, "stdinptdensity"))
                 pm.intFieldGrp("stdinptsize", label="PointSize", value1=1, cc=pm.Callback(self.setValue, "stdinptsize"))
-            with pm.rowLayout(nc = 2):
-                pm.button(label = "Create Standin", c = pm.Callback(self.createStandin))            
-                pm.button(label = "Cancel", c = pm.Callback(self.delete))        
+            with pm.rowLayout(nc=2):
+                pm.button(label="Create Standin", c=pm.Callback(self.createStandin))            
+                pm.button(label="Cancel", c=pm.Callback(self.delete))        
         self.show()
 
 RENDERERNAME = "Mantra"
 GLOBALSNAME = "mayaToMantraGlobals"
 
 
-def realSceneName(doDot = False):
+def realSceneName(doDot=False):
     snel = pm.sceneName().basename().split(".")
     sn = snel[0]
     if len(sn.split("__")) > 1:
@@ -302,9 +306,9 @@ def prepareEnv():
             # TODO: correct tmpdir
             pass
         else:
-            tmpdir =  os.environ['tmp']
+            tmpdir = os.environ['tmp']
     else:
-        tmpdir =  os.environ['TMP']
+        tmpdir = os.environ['TMP']
     basePath = os.environ['H']
 
     os.environ['HTB'] = basePath + "/toolkit/bin"     
@@ -340,7 +344,7 @@ def startRenderProc(ifdFile):
     IDLE_PRIORITY_CLASS = 64
     verbosity = 4
     try:
-        renderGlobals = ls(type = "mayaToMantraGlobals")
+        renderGlobals = ls(type="mayaToMantraGlobals")
         verbosity = renderGlobals.verbosity.get()
     except:
         pass
@@ -350,7 +354,7 @@ def startRenderProc(ifdFile):
     
     cmd = "mantra -V " + str(verbosity) + " -f " + ifdFile
     log.info("Starting cmd %s" % cmd)
-    process = subprocess.Popen( cmd, bufsize = 1, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
+    process = subprocess.Popen(cmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
 
     while 1:
         line = process.stdout.readline()
@@ -364,7 +368,7 @@ def startRenderProc(ifdFile):
     os.chdir(cwd)    
     log.info("Rendering done.")
 
-def startHoudiniObjectTools(geoFile = "", ptc=False, density=0.1, ptcBBox = True):
+def startHoudiniObjectTools(geoFile="", ptc=False, density=0.1, ptcBBox=True):
     #HoudiniObjectTools.exe C:\daten\3dprojects\mantra\mantra\mayaToMantra_fluid\geo
     if geoFile == "":
         log.error("startHoudiniObjectTools: no file to operate on")
@@ -396,7 +400,7 @@ def startHoudiniObjectTools(geoFile = "", ptc=False, density=0.1, ptcBBox = True
         
     log.info("Starting HoudiniObjectTools cmd: %s" % cmd)
     IDLE_PRIORITY_CLASS = 64
-    process = subprocess.Popen( cmd, bufsize = 1, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
+    process = subprocess.Popen(cmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
     
     output = []
     bbox = []
@@ -429,7 +433,7 @@ def startGeoConverter():
     cmd = converterPath + " -cd " + geoPath + " " + geoType
     log.info("Starting HoudiniObjectSaver cmd: %s" % cmd)
     IDLE_PRIORITY_CLASS = 64
-    process = subprocess.Popen( cmd, bufsize = 1, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
+    process = subprocess.Popen(cmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
     
     while 1:
         line = process.stdout.readline()
@@ -439,7 +443,7 @@ def startGeoConverter():
     
     log.info("GeoConversion done.")
     
-def startShaderCompiler( shaderLib, shaderFile):
+def startShaderCompiler(shaderLib, shaderFile):
     log.info("Starting vcc compiler procedure")
     prepareEnv()
     IDLE_PRIORITY_CLASS = 64
@@ -461,7 +465,7 @@ def startShaderCompiler( shaderLib, shaderFile):
     cmd = "vcc " + includePathString + " -x " + shaderFile
     #cmd = "vcc " + includePathString + " -x -m " + shaderLib + " " + shaderFile #--- h11
     log.info("Starting vcc cmd: %s" % cmd)
-    process = subprocess.Popen( cmd, bufsize = 1, shell = True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
+    process = subprocess.Popen(cmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
     
     while 1:
         line = process.stdout.readline()
@@ -471,7 +475,7 @@ def startShaderCompiler( shaderLib, shaderFile):
     log.info("Compiling done.")
     os.chdir(cwd)
 
-def menuCallback( arg = None):
+def menuCallback(arg=None):
     if arg == "GeoStandin":
         StandinGUI()
         
@@ -481,9 +485,9 @@ def mantraMainMenu():
     if pm.menu(menuName, query=True, exists=True):
         pm.deleteUI(menuName)
     gMainWindow = pm.mel.eval('$tmpVar=$gMainWindow')
-    mantraMenu = pm.menu(menuName, label = menuName, parent = gMainWindow, tearOff = True )
-    pm.menuItem( label = 'Create Geo Standin', command = Callback(menuCallback, "GeoStandin") )
-    pm.setParent("..", menu = True)
+    mantraMenu = pm.menu(menuName, label=menuName, parent=gMainWindow, tearOff=True)
+    pm.menuItem(label='Create Geo Standin', command=pm.Callback(menuCallback, "GeoStandin"))
+    pm.setParent("..", menu=True)
 
 #import pymel.core as pm 
 #import pymel.core.uitypes as pui

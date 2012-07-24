@@ -7,6 +7,8 @@
 class mtm_MayaObject : public MayaObject
 {
 public:
+	mtm_MayaObject(MObject& mobject);
+	~mtm_MayaObject();
 	bool exportShape( int timeStep, bool binary, MString& basePath, bool useShortName);
 	bool exportGeoDefinition(std::ofstream *outFile); // header of ifd 
 	bool exportInstanceDefinition(std::ofstream *outFile); // for every geo instance

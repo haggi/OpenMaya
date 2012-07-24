@@ -87,9 +87,6 @@
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp">
       <Filter>common\threads</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mayatoappleseed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,11 +108,14 @@
     <ClCompile Include="..\src\mtap_surfaceShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtap_tileCallback.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\pluginMain.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_tileCallback.cpp">
+      <Filter>Source Files\appleseed</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +164,6 @@
     <ClInclude Include="..\..\common\cpp\threads\threads.h">
       <Filter>common\threads</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\appleseed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mayatoappleseed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -188,8 +185,11 @@
     <ClInclude Include="..\src\mtap_surfaceShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\appleseed.h">
+      <Filter>Header Files\appleseed</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\mtap_tileCallback.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\appleseed</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
