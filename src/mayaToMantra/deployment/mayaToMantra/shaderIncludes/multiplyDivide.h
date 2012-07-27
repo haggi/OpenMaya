@@ -1,60 +1,41 @@
-/*
-	Copyright (c) 2006 soho vfx inc.
-	Copyright (c) 2006 The 3Delight Team.
-*/
+#ifndef MULTIPLY_DIVIDE_H
+#define MULTIPLY_DIVIDE_H
 
-#ifndef __multiplyDivide_h
-#define __multiplyDivide_h
 
-/*
-begin inputs
-	float operation
-	float3 input1
-	float3 input2
-end inputs
+void MultiplyDivide(
+		int operation;
+		vector input1;
+		vector input2;
+		vector output;
+					)
 
-begin outputs
-	float3 output
-end outputs
-*/
-
-void
-maya_multiplyDivide(
-	// Inputs
-	//
-	float i_operation;
-	float i_input1[3];
-	float i_input2[3];
-
-	// Outputs
-	//
-	output float o_output[3];)
 {
-	if(i_operation == 0.0)
+	// noop
+	if( operation == 0)
 	{
-		o_output[0] = i_input1[0];
-		o_output[1] = i_input1[1];
-		o_output[2] = i_input1[2];
+		output = input1;
+		return;
 	}
-	else if(i_operation == 1.0)
+	// multiply
+	if( operation == 1)
 	{
-		o_output[0] = i_input1[0] * i_input2[0];
-		o_output[1] = i_input1[1] * i_input2[1];
-		o_output[2] = i_input1[2] * i_input2[2];
+		output = input1 * input2;
+		return;
 	}
-	else if(i_operation == 2.0)
+	// divide
+	if( operation == 2)
 	{
-		o_output[0] = i_input1[0] / i_input2[0];
-		o_output[1] = i_input1[1] / i_input2[1];
-		o_output[2] = i_input1[2] / i_input2[2];
+		output = input1 / input2;
+		return;
 	}
-	else
+	// power
+	if( operation == 3)
 	{
-		o_output[0] = pow(i_input1[0], i_input2[0]);
-		o_output[1] = pow(i_input1[1], i_input2[1]);
-		o_output[2] = pow(i_input1[2], i_input2[2]);
+		output.x = pow(input1.x,input2.x);
+		output.y = pow(input1.y,input2.y);
+		output.z = pow(input1.z,input2.z);
+		return;
 	}
 }
 
-#endif /* __multiplyDivide_h */
-
+#endif

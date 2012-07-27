@@ -243,7 +243,7 @@ class AEmayaToMantraGlobalsTemplate(pm.ui.AETemplate):
 #        pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
 
 
-class AEdependNodeTemplate(pm.ui.AETemplate):
+class AEmantraNodeTemplate(pm.ui.AETemplate):
     def __init__(self, nodeName):
         node = pm.PyNode(nodeName)
         if node.type() == 'lambert':

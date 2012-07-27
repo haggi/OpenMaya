@@ -1,119 +1,758 @@
 # supported maya shaders
 
-shader_start
-	name:kTextureBase
-	inatt:defaultColor:color:0.5,0.5,0.5
-	inatt:colorGain:color:1,1,1
-	inatt:colorOffset:color:0,0,0
-	inatt:alphaGain:float:1
-	inatt:alphaOffset:float:1
-	inatt:alphaIsLuminance:bool:0
-	inatt:invert:bool:0
-	inatt:uvCoord:float2:0,0,0
+shader_start:kTextureBase
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:bool
+	inatt:invert:bool
+	inatt:uvCoord:float2
+	inatt:filter:float
+	inatt:filterOffset:float
 shader_end
 
-shader_start
-name:kPhong
-	inatt:color:color:.5,.5,.5
-    inatt:transparency:color:0,0,0
-	inatt:ambientColor:color:0,0,0
-	inatt:incandescence:color:0,0,0
-	inatt:diffuse:float:0.8
-	inatt:translucence:float:0.0
-	inatt:cosinePower:float:0.5
-	inatt:specularColor:color:1,1,1
-	inatt:reflectivity:float:0.5
-	inatt:reflectedColor:color:0,0,0
-	inatt:refractions:bool:0
-	inatt:refractiveIndex:float:1.0
-	inatt:mtm_refrBlur:float:0.0
-	inatt:mtm_reflBlur:float:0.0
-	inatt:mtm_refrSamples:float:1
-	inatt:mtm_reflSamples:float:1
+shader_start:kTextureBase3d
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:bool
+	inatt:invert:bool
+	inatt:filter:float
+	inatt:filterOffset:float
+	inatt:filterSize:vector
+	inatt:placementMatrix:matrix
+shader_end
+
+shader_start:kSurfaceBase
+	inattgeo:Cd:vector
+	inatt:color:color
+	inatt:transparency:color
+	inatt:ambientColor:color
+	inatt:incandescence:color
+	inatt:normalCamera:vector
+	inatt:diffuse:float
+	inatt:translucence:float
+	inatt:translucenceDepth:float
+	inatt:translucenceFocus:float
+	inatt:matteOpacityMode:int
+	inatt:matteOpacity:float
+	inatt:refractions:bool
+	inatt:refractiveIndex:float
+	inatt:refractionLimit:int
+	inatt:lightAbsorbance:float
+	inatt:surfaceThickness:float
+	inatt:shadowAttenuation:float
+	inatt:chromaticAberration:int
+	inatt:mtm_refrBlur:float
+	inatt:mtm_refrSamples:int
+	inatt:mtm_fresnel:float
+shader_end
+
+shader_start:kPhong:kSurfaceBase
+	inatt:cosinePower:float
+	inatt:specularColor:color
+	inatt:reflectivity:float
+	inatt:reflectedColor:color
+	inatt:mtm_reflBlur:float
+	inatt:mtm_reflSamples:int
+	
+	outatt:outColor:color
+	outatt:outTransparency:color
+	outatt:outMatteOpacity:color
+shader_end
+	
+shader_start:kBlinn:kSurfaceBase
+	inatt:eccentricity:float
+	inatt:specularRollOff:float
+	inatt:specularColor:color
+	inatt:reflectivity:float
+	inatt:reflectedColor:color
+	inatt:mtm_reflBlur:float
+	inatt:mtm_reflSamples:int
 	
 	outatt:outColor:color
 	outatt:outTransparency:color
 	outatt:outMatteOpacity:color
 shader_end
 
-shader_start
-name:kLambert
-inatt:color:color:.5,.5,.5
-   inatt:transparency:color:0,0,0
-inatt:ambientColor:color:0,0,0
-inatt:  incandescence:  color:0,0,0
-inatt:diffuse:  float:0.8
-inatt:translucence:float:0.0
-outatt:outColor:color
-outatt:outTransparency:color
-outatt:outMatteOpacity:color
+shader_start:kLambert:kSurfaceBase
+	inatt:mtm_orenNayar:int
+	outatt:outColor:color
+	outatt:outTransparency:color
+	outatt:outMatteOpacity:color
 shader_end
 
-shader_start
-  name:kBlendColors
-  inatt:color1:color:1,0,0
-  inatt:color2:color:0,0,1
-  inatt:blender:float:0.5
+shader_start:kBlendColors
+  inatt:color1:color
+  inatt:color2:color
+  inatt:blender:float
   outatt:output:color
 shader_end
 
-shader_start:kTextureBase
-  name:kFileTexture
-  inatt:fileTextureName:string:""
+shader_start:kFileTexture:kTextureBase
+  inatt:fileTextureName:string
   outatt:outColor:color
   outatt:outAlpha:float
 shader_end
 
-shader_start:kTextureBase
-  name:kRamp
-  inatt:type:int:0
-  inatt:interpolation:int:1
-  inatt:uWave:float:0.0
-  inatt:vWave:float:0.0
-  inatt:noise:float:0.0
-  inatt:noiseFreq:float:0.0
-  inatt:colorEntryList:colorArray:0,0,0
-  inatt:colorPosList:floatArray:0    
+shader_start:kRamp:kTextureBase
+  inatt:type:int
+  inatt:interpolation:int
+  inatt:uWave:float
+  inatt:vWave:float
+  inatt:noise:float
+  inatt:noiseFreq:float
+  inatt:colorEntryList:colorArray
   
   outatt:outColor:color
   outatt:outAlpha:float
 shader_end
 
-shader_start:kTextureBase
-  name:kChecker
-  inatt:color1:color:1,0,0
-  inatt:color2:color:0,0,1
-  inatt:contrast:float:1.0
+shader_start:kChecker:kTextureBase
+  inatt:color1:color
+  inatt:color2:color
+  inatt:contrast:float
   outatt:outColor:color
   outatt:outAlpha:float
 shader_end
 
-shader_start
-	name:kPlace2dTexture
-	inatt:repeatUV:float2:2,2
+shader_start:kBulge:kTextureBase
+  inatt:uvFilterSize:vector
+  inatt:uWidth:float
+  inatt:vWidth:float
+  outatt:outAlpha:float
+  outatt:outColor:color
+shader_end
+	
+shader_start:kFractal:kTextureBase
+  inatt:amplitude:float
+  inatt:threshold:float
+  inatt:ratio:float
+  inatt:frequencyRatio:float
+  inatt:levelMin:float
+  inatt:levelMax:float
+  inatt:bias:float
+  inatt:inflection:float
+  inatt:animated:float
+  inatt:time:float
+  inatt:timeRatio:float
+  
+  outatt:outColor:color
+  outatt:outAlpha:float
+shader_end
+
+shader_start:kPlace2dTexture
+	inattgeo:uv:float2
+	inatt:uvCoord:float2
+	inatt:noiseU:float
+	inatt:noiseV:float
+	inatt:rotateFrame:float
+	inatt:coverageU:float
+	inatt:coverageV:float
+	inatt:repeatU:float
+	inatt:repeatV:float
+	inatt:translateFrameU:float
+	inatt:translateFrameV:float
+	inatt:wrapU:int
+	inatt:wrapV:int
+	inatt:offsetU:float
+	inatt:offsetV:float
+	inatt:stagger:int
+	inatt:mirrorU:int
+	inatt:mirrorV:int
+	inatt:rotateUV:float
+	inatt:repeatUV:float2
 	outatt:outUV:float2
 shader_end
 
-shader_start
-  name:kReverse
-  inatt:input:color:0,0,0
+shader_start:kPlace3dTexture
+	inatt:worldMatrix:matrix
+	outatt:worldInverseMatrix:matrix
+shader_end
+
+shader_start:kProjection
+	inatt:placementMatrix:matrix
+	inatt:projType:int
+	inatt:image:color
+	inatt:transparency:color
+	inatt:uAngle:float
+	inatt:vAngle:float
+	inatt:linkedCamera:string
+	inatt:fitType:int
+	inatt:fitFill:int
+	inatt:amplitudeX:float
+	inatt:amplitudeY:float
+	inatt:ratio:float
+	inatt:ripples:vector
+	inatt:depthMin:float
+	inatt:depthMax:float
+	inatt:defaultTransparency:color
+	inatt:transparencyGain:color
+	inatt:transparencyOffset:color
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:filter:float
+	inatt:filterOffset:float
+	inatt:invert:bool	
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float	
+	outatt:uvCoord:float2
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kReverse
+  inatt:input:color
   outatt:output:color
 shader_end
 
-shader_start
-  name:kDisplacementShader
-  inatt:displacement:float:0.0
-  inatt:scale:float:0.0
-  inatt:vectorDisplacement:vector:0,0,0
-  inatt:vectorSpace:int:1
-  inatt:tangent:vector:0,0,0
+shader_start:kDisplacementShader
+  inatt:displacement:float
+  inatt:scale:float
+  inatt:vectorDisplacement:vector
+  inatt:vectorSpace:int
+  inatt:tangent:vector
   inoutatt:displacement:float
   outatt:outPoint:vector
   outatt:outNormal:vector
 shader_end
 
-#shader_start
-#	name:mia_material_x
-#	inatt:diffuse:color:0.5,0.5,0.5
-#	outatt:message
-#shader_end
+shader_start:mia_material_x
+	inatt:diffuse:color
+	inatt:diffuse_weight:float
+	inatt:diffuse_roughness:float
+
+	inatt:reflectivity:float
+	inatt:refl_gloss:float
+	inatt:refl_gloss_samples:int
+	inatt:refl_hl_only:int
+	inatt:refl_is_metal:int
+	
+	inatt:brdf_fresnel:int
+	inatt:brdf_0_degree_refl:float
+	inatt:brdf_90_degree_refl:float
+	inatt:brdf_curve:float
+
+	inatt:refr_ior:float
+	inatt:refr_color:color
+	inatt:transparency:float
+	inatt:refr_gloss:float
+	inatt:refr_gloss_samples:int
+	
+	inatt:refl_falloff_on:int
+	inatt:refl_falloff_dist:float
+	inatt:refl_falloff_color_on:int
+	inatt:refl_falloff_color:color
+
+	inatt:refr_falloff_on:int
+	inatt:refr_falloff_dist:float
+	inatt:refr_falloff_color_on:int
+	inatt:refr_falloff_color:color
+
+	inatt:refl_depth:int
+	inatt:refr_depth:int
+				
+	outatt:result:color
+	outatt:tran_result:color
+	outatt:opacity_result:color
+	outatt:message:int
+shader_end
+
+shader_start:kAddDoubleLinear
+	inatt:input1:float
+	inatt:input2:float
+	outatt:output:float
+shader_end
+
+shader_start:kClamp
+	inatt:min:color
+	inatt:max:color
+	inatt:input:color
+	outatt:output:color
+shader_end
+
+shader_start:kCondition
+	inatt:operation:int
+	inatt:firstTerm:float
+	inatt:secondTerm:float
+	inatt:colorIfTrue:color
+	inatt:colorIfFalse:color
+	outatt:outColor:color
+shader_end
+
+shader_start:kContrast
+	inatt:value:color
+	inatt:contrast:color
+	inatt:bias:color
+	outatt:outputValue:color
+shader_end
+
+shader_start:kDistanceBetween
+	inatt:point1:color
+	inatt:point2:color
+	outatt:distance:float
+shader_end
+
+shader_start:kBump
+	inatt:bumpValue:float
+	inatt:bumpDepth:float
+	inatt:bumpInterp:float
+	inatt:bumpFilter:float
+	inatt:bumpFilterOffset:float
+	inatt:normalCamera:vector
+	outatt:outNormal:vector	
+shader_end
+
+shader_start:kBump3d
+	inatt:bumpValue:float
+	inatt:bumpDepth:float
+	inatt:bumpFilter:float
+	inatt:bumpFilterOffset:float
+	inatt:normalCamera:vector
+	outatt:outNormal:vector	
+shader_end
+
+shader_start:kSolidFractal:kTextureBase3d
+	inatt:threshold:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:frequencyRatio:float
+	inatt:ripples:vector
+	inatt:depth:vector
+	inatt:bias:float
+	inatt:inflection:int
+	inatt:animated:int
+	inatt:time:float
+	inatt:timeRatio:float
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kAnisotropic:kSurfaceBase
+	inatt:angle:float
+	inatt:spreadX:float
+	inatt:spreadY:float
+	inatt:roughness:float
+	inatt:fresnelIndex:float
+	inatt:specularColor:color
+	inatt:reflectivity:float
+	inatt:reflectedColor:color
+    inatt:mtm_reflBlur:float
+	inatt:mtm_reflSamples:int
+	inatt:anisotropicReflectivity:float
+	
+	outatt:outColor:color
+	outatt:outTransparency:color
+	outatt:outMatteOpacity:color
+shader_end
+
+shader_start:kMultiplyDivide
+	inatt:operation:int
+	inatt:input1:vector
+	inatt:input2:vector
+	outatt:output:vector
+shader_end
+
+shader_start:kLuminance
+	inatt:value:color
+	outatt:outValue:float
+shader_end
+
+shader_start:kGrid:kTextureBase
+	inatt:lineColor:color
+	inatt:fillerColor:color
+	inatt:uWidth:float
+	inatt:vWidth:float
+	inatt:contrast:float
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kCloth:kTextureBase
+	inatt:brightSpread:float
+	inatt:gapColor:color
+	inatt:randomness:float
+	inatt:uColor:color
+	inatt:uWave:float
+	inatt:uWidth:float
+	inatt:vColor:color
+	inatt:vWave:float
+	inatt:vWidth:float
+	inatt:widthSpread:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kPlusMinusAverage
+	inatt:operation:int
+	inatt:input1D:floatArray
+	inatt:input2D:vectorArray
+	inatt:input3D:vectorArray
+	outatt:output1D:float
+	outatt:output2D:vector
+	outatt:output3D:vector
+shader_end
+
+shader_start:kMountain:kTextureBase
+	inatt:snowColor:color
+	inatt:rockColor:color
+	inatt:amplitude:float
+	inatt:snowRoughness:float
+	inatt:rockRoughness:float
+	inatt:boundary:float
+	inatt:snowAltitude:float
+	inatt:snowDropoff:float
+	inatt:snowSlope:float
+	inatt:depthMax:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kNoise:kTextureBase
+	inatt:threshold:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:frequencyRatio:float
+	inatt:depthMax:float
+	inatt:inflection:float
+	inatt:time:float
+	inatt:frequency:float
+	inatt:implode:float
+	inatt:implodeCenter:vector
+	inatt:noiseType:float
+	inatt:density:float
+	inatt:spottyness:float
+	inatt:sizeRand:float
+	inatt:randomness:float
+	inatt:falloff:float
+	inatt:numWaves:float
+	
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kBrownian:kTextureBase3d
+	inatt:increment:float
+	inatt:lacunarity:float
+	inatt:octaves:int
+	inatt:weight3d:vector
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kCloud:kTextureBase3d
+	inatt:color1:color
+	inatt:color2:color
+	inatt:contrast:float
+	inatt:amplitude:float
+	inatt:depthMin:float
+	inatt:depthMax:float
+	inatt:ripples:vector
+	inatt:softEdges:int
+	inatt:edgeThresh:float
+	inatt:centerThresh:float
+	inatt:transpRange:float
+	inatt:ratio:float
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+	
+shader_start:kWood:kTextureBase3d
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kSnow:kTextureBase3d
+	inatt:snowColor:color
+	inatt:surfaceColor:color
+	inatt:threshold:float
+	inatt:depthDecay:float
+	inatt:thickness:float
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kMarble:kTextureBase3d
+	inatt:fillerColor:color
+	inatt:veinColor:color
+	inatt:veinWidth:float
+	inatt:diffusion:float
+	inatt:contrast:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:ripples:vector
+	inatt:depthMin:float
+	inatt:depthMax:float
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kVolumeNoise:kTextureBase3d
+	inatt:threshold:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:frequencyRatio:float
+	inatt:depthMax:float
+	inatt:inflection:float
+	inatt:time:float
+	inatt:frequency:float
+	inatt:scale:vector
+	inatt:origin:vector
+	inatt:implode:float
+	inatt:implodeCenter:vector
+	inatt:noiseType:float
+	inatt:density:float
+	inatt:spottyness:float
+	inatt:sizeRand:float
+	inatt:randomness:float
+	inatt:falloff:float
+	inatt:numWaves:float
+	inatt:wrap:int
+	inatt:local:int
+	inatt:blend:float
+
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kOcean:kTextureBase
+	inatt:scale:float
+	inatt:time:float
+	inatt:windUV:vector
+	inatt:observerSpeed:float
+	inatt:numFrequencies:float
+	inatt:waveDirSpread:float
+	inatt:waveLengthMin:float
+	inatt:waveLengthMax:float
+	inatt:waveHeight:floatRamp
+	inatt:waveTurbulence:floatRamp
+	inatt:wavePeaking:floatRamp
+	inatt:foamEmission:float
+	inatt:foamThreshold:float
+	inatt:colorMode:int
+	
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:kOceanShader
+	inatt:time:float
+	outatt:outColor:color
+	outatt:outTransparency:color
+	outatt:outMatteOpacity:color
+	outatt:displacement:float
+shader_end
+
+shader_start:kRampShader
+	inatt:color:colorRamp
+	inatt:colorInput:int
+	inatt:transparency:colorRamp
+	inatt:incandescence:colorRamp
+	inatt:diffuse:float
+	inatt:normalCamera:vector
+	inatt:forwardScatter:float
+	inatt:translucence:float
+	inatt:translucenceFocus:float
+	inatt:translucenceDepth:float
+	inatt:specularity:float
+	inatt:eccentricity:float
+	inatt:specularColor:colorRamp
+	inatt:specularRollOff:floatRamp
+	inatt:reflectivity:floatRamp
+	inatt:environment:colorRamp
+	inatt:reflectedColor:vector
+	inatt:refractions:int
+	inatt:refractiveIndex:float
+	inatt:refractionLimit:int
+	inatt:lightAbsorbance:float
+	inatt:surfaceThickness:float
+	inatt:shadowAttenuation:float
+	inatt:chromaticAberration:float
+	inatt:reflectionLimit:int
+	inatt:reflectionSpecularity:float
+	inatt:matteOpacityMode:int
+	inatt:matteOpacity:float
+	
+	outatt:outColor:color
+	outatt:outTransparency:color
+	outatt:outMatteOpacity:color
+shader_end
+
+shader_start:kSamplerInfo
+	inattgeo:uv:float2
+	outatt:pointWorld:vector
+	outatt:pointObj:vector
+	outatt:pointCamera:vector
+	outatt:normalCamera:vector
+	outatt:uvCoord:vector
+	outatt:rayDirection:vector
+	outatt:tangentUCamera:vector
+	outatt:tangentVCamera:vector
+	outatt:pixelCenter:vector
+	outatt:facingRatio:float
+	outatt:flippedNormal:int
+shader_end
+
+shader_start:kParticleSamplerInfo
+   inattgeo:p_ageNormalized:float
+   inattgeo:p_vectorRed:float
+   inattgeo:p_vectorGreen:float
+   inattgeo:p_vectorBlue:float
+   inattgeo:p_opacityPP:float
+   inattgeo:p_opacity:float
+   inattgeo:p_particleId:float
+   inattgeo:p_finalLifespanPP:float
+   inattgeo:p_lifespanPP:float
+   inattgeo:p_lifespan:float
+   inattgeo:p_age:float
+   inattgeo:p_birthTime:float
+   inattgeo:p_parentU:float
+   inattgeo:p_parentV:float
+   inattgeo:p_collisionU:float
+   inattgeo:p_collisionV:float
+   inattgeo:p_radiusPP:float
+   inattgeo:p_radius:float
+   inattgeo:p_userScalar1PP:float
+   inattgeo:p_userScalar2PP:float
+   inattgeo:p_userScalar3PP:float
+   inattgeo:p_userScalar4PP:float
+   inattgeo:p_userScalar5PP:float
+   
+   inattgeo:p_rgbPP:vector
+   inattgeo:p_incandescencePP:vector
+   inattgeo:p_incandescence:vector
+   inattgeo:p_acceleration:vector
+   inattgeo:p_force:vector
+   inattgeo:p_position:vector
+   inattgeo:p_worldPosition:vector
+   inattgeo:p_birthPosition:vector
+   inattgeo:p_birthWorldPosition:vector
+   inattgeo:p_velocity:vector
+   inattgeo:p_worldVelocity:vector
+   inattgeo:p_userVector1PP:vector
+   inattgeo:p_userVector2PP:vector
+   inattgeo:p_userVector3PP:vector
+   inattgeo:p_userVector4PP:vector
+   inattgeo:p_userVector5PP:vector 
+
+   inatt:outUvType:float
+   inatt:normalizationMethod:float
+   inatt:normalizationValue:float
+   inatt:inverseOutUv:float
+
+   outatt:outColor:vector
+   outatt:outTransparency:vector
+   outatt:outIncandescence:vector
+   outatt:ageNormalized:float
+   outatt:colorRed:float
+   outatt:colorGreen:float
+   outatt:colorBlue:float
+   outatt:opacityPP:float
+   outatt:opacity:float
+   outatt:particleId:float
+   outatt:finalLifespanPP:float
+   outatt:lifespanPP:float
+   outatt:lifespan:float
+   outatt:age:float
+   outatt:birthTime:float
+   outatt:parentU:float
+   outatt:parentV:float
+   outatt:collisionU:float
+   outatt:collisionV:float
+   outatt:radiusPP:float
+   outatt:radius:float
+   outatt:userScalar1PP:float
+   outatt:userScalar2PP:float
+   outatt:userScalar3PP:float
+   outatt:userScalar4PP:float
+   outatt:userScalar5PP:float
+   outatt:rgbPP:vector
+   outatt:incandescencePP:vector
+   outatt:incandescence:vector
+   outatt:acceleration:vector
+   outatt:force:vector
+   outatt:position:vector
+   outatt:worldPosition:vector
+   outatt:birthPosition:vector
+   outatt:birthWorldPosition:vector
+   outatt:velocity:vector
+   outatt:worldVelocity:vector
+   outatt:userVector1PP:vector
+   outatt:userVector2PP:vector
+   outatt:userVector3PP:vector
+   outatt:userVector4PP:vector
+   outatt:userVector5PP:vector 
+
+shader_end
+
+
+shader_start:kLight
+	inatt:color:color
+	inatt:intensity:float
+	inatt:emitDiffuse:int
+	inatt:emitSpecular:int
+	inatt:decayRate:int
+	inatt:shadowColor:color
+	inatt:useRayTraceShadows:int
+	inatt:lightRadius:float
+	inatt:shadowRays:int
+	inatt:useDepthMapShadows:int
+	inatt:dmapResolution:float
+	inatt:mtm_samplingQuality:float
+	inatt:mtm_activeRadius:float
+	inatt:mtm_fastShadows:int
+	outatt:outLightColor:color
+	outatt:__nondiffuse:int
+	outatt:__nonspecular:int
+shader_end
+
+shader_start:kPointLight:kLight
+shader_end
+
+shader_start:kDirectionalLight:kLight
+shader_end
+
+shader_start:kSpotLight:kLight
+	inatt:coneAngle:float
+	inatt:penumbraAngle:float
+	inatt:dropoff:float
+shader_end
+
+shader_start:kAreaLight:kLight
+shader_end
+
+shader_start:kVolumeLight:kLight
+shader_end

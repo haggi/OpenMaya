@@ -3,15 +3,7 @@
 
 #include "utils.h"
 
-void FileTexture(vector uv; 
-				 vector defaultColor; 
-				 vector colorGain; 
-				 vector colorOffset; 
-				 float alphaGain; 
-				 float alphaOffset; 
-				 int alphaIsLuminance; 
-				 int invert; 
-				 vector uvCoord;
+void FileTexture(T_DEFAULTATTR;
 				 string textureFileName;
 				 vector outColor; 
 				 float outAlpha)

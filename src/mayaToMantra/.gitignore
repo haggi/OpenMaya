@@ -11,6 +11,8 @@
 *.la
 *.a
 
+*.opensdf
+
 # Compiled Python scripts
 *.pyc
 

@@ -11,5 +11,10 @@
 *.la
 *.a
 
+*.ilk
+
+
 # Compiled Python scripts
 *.pyc
+
+*pydevproject

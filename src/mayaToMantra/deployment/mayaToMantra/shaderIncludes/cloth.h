@@ -1,109 +1,77 @@
 /*
 	Copyright (c) 2006 soho vfx inc.
 	Copyright (c) 2006 The 3Delight Team.
+
+	Some modifications to adapt to mayaToMantray by Haggi Krey	
 */
 
-#ifndef __cloth_h
-#define __cloth_h
-
-/*
-begin inputs
-	float alphaGain
-	float alphaOffset
-	float brightSpread
-	color colorGain
-	color colorOffset
-	color defaultColor
-	color gapColor
-	float invert
-	float randomness
-	color uColor
-	init={ss,tt} float2 uvCoord
-	float uWave
-	float uWidth
-	color vColor
-	float vWave
-	float vWidth
-	float widthSpread
-end inputs
-
-begin outputs
-	float outAlpha
-	color outColor
-end outputs
-*/
-
-#define SQR(i) ( (i) * (i) )
+#ifndef CLOTH_H
+#define CLOTH_H
 
 #include "utils.h"
+#include "rman.h"
 
-void
-maya_cloth(
-	// Inputs
-	//
-	float i_alphaGain;
-	float i_alphaOffset;
-	float i_brightSpread;
-	color i_colorGain;
-	color i_colorOffset;
-	color i_defaultColor;
-	color i_gapColor;
-	uniform float i_invert;
-	float i_randomness;
-	color i_uColor;
-	float i_uvCoord[2];
-	float i_uWave;
-	float i_uWidth;
-	color i_vColor;
-	float i_vWave;
-	float i_vWidth;
-	float i_widthSpread;
+void Cloth(
+    T_DEFAULTATTR;
+	float brightSpread;
+	vector gapColor;
+	float randomness;
+	vector uColor;
+	float uWave;
+	float uWidth;
+	vector vColor;
+	float vWave;
+	float vWidth;
+	float widthSpread;
 	
-	// Outputs
-	//
-	output float o_outAlpha;
-	output color o_outColor;
+	vector outColor;
+	float outAlpha;
 	)
 {
-	float ss = i_uvCoord[0];
-	float tt = i_uvCoord[1];
+	float ss = uvCoord.x;
+	float tt = uvCoord.y;
 
 	if(ISUVDEFINED(ss, tt))
 	{
 		ss = mod(ss, WRAPMAX);
 		tt = mod(tt, WRAPMAX);
 
-		if(i_randomness > 0)
+		if(randomness > 0)
 		{
-			point nn = noise(point(i_uvCoord[0], i_uvCoord[1], 0));
+			vector nvec = set(uvCoord.x, uvCoord.y, 0);
+			point nn = noise(nvec);
 
-			ss += xcomp(nn) * i_randomness * 2;
-			tt += ycomp(nn) * i_randomness * 2;
+			ss += xcomp(nn) * randomness * 2;
+			tt += ycomp(nn) * randomness * 2;
 		}
 
 		float prewaved_ss = ss;
 		
-		if(i_uWave > 0.0)
+		if(uWave > 0.0)
 		{
-			ss -= i_uWave * sin(tt * 2 * PI);
+			ss -= uWave * sin(tt * 2 * PI);
 		}
 
-		if(i_vWave > 0.0)
+		if(vWave > 0.0)
 		{
-			tt += i_vWave * sin(prewaved_ss * 2 * PI);
+			tt += vWave * sin(prewaved_ss * 2 * PI);
 		}
 
 
-		float uWidth = i_uWidth;
-		float vWidth = i_vWidth;
-
-		if(i_widthSpread > 0)
+		float uuWidth = uWidth;
+		float vvWidth = vWidth;
+		float spread;
+		if(widthSpread > 0)
 		{
-			float spread = noise(0.5 * point(i_uvCoord[0], 0.5 * i_uvCoord[1], 1));
-			uWidth -= i_widthSpread * spread;
-
-			spread = noise(0.5 * point(0.5 * i_uvCoord[0], i_uvCoord[1], 2));
-			vWidth -= i_widthSpread * spread;
+			vector np = set(uvCoord.x, 0.5 * uvCoord.y, 1);
+			np *= 0.5;
+			spread = noise(np);
+			uuWidth -= widthSpread * spread;
+			
+			np = set(uvCoord.x, 0.5 * uvCoord.y, 2);
+			np *= 0.5;
+			spread = noise(np);
+			vvWidth -= widthSpread * spread;
 		}
 		
 		ss = mod(ss, 1);
@@ -118,9 +86,9 @@ maya_cloth(
 			ss = tt;
 			tt = tmp;
 			
-			tmp = uWidth;
-			uWidth = vWidth;
-			vWidth = tmp;
+			tmp = uuWidth;
+			uuWidth = vvWidth;
+			vvWidth = tmp;
 			
 			thread_color = 1.0;
 		}
@@ -131,16 +99,17 @@ maya_cloth(
 		float cloth = 0.0;  // 0 = gap color, 1 = thread color
 		float in_gap = 0;   
 		
-		if (tt < vWidth)
+		float cs, ct;
+		if (tt < vvWidth)
 		{
-			float cs = ss - 0.5 * uWidth;
-			float ct = 2.0 * tt / vWidth - 1.0;
+			cs = ss - 0.5 * uuWidth;
+			ct = 2.0 * tt / vvWidth - 1.0;
 			cloth = 0.75 * (SQR(cs) + SQR(ct));
 		}
-		else if (ss < uWidth)
+		else if (ss < uuWidth)
 		{
-			float cs = 2.0 * ss / uWidth - 1.0;
-			float ct = tt - 0.5 * vWidth - 1.0;
+			cs = 2.0 * ss / uuWidth - 1.0;
+			ct = tt - 0.5 * vvWidth - 1.0;
 			cloth = 0.75 * (SQR(cs) + SQR(ct));
 			thread_color = 1 - thread_color;
 		}
@@ -153,33 +122,30 @@ maya_cloth(
 		{
 			cloth = 1.0 - cloth;
 			
-			if (i_brightSpread > 0)
+			if (brightSpread > 0)
 			{
-				float spread = noise(2 * (thread_color ? i_uvCoord[0] : i_uvCoord[1]));
-				cloth = mix(cloth, cloth * spread, i_brightSpread);
+				float tc = thread_color;
+				if( tc > 0)
+					tc = uvCoord.x;
+				else
+					tc = uvCoord.y;
+				spread = noise(2.0 * tc);
+				cloth = mix(cloth, cloth * spread, brightSpread);
 			}
 		}
 		
 		cloth = clamp(cloth, 0.0, 1.0);
-		
-		o_outColor = (1 - cloth) * i_gapColor + 
-			cloth * (thread_color ? i_uColor : i_vColor);
-		
-		colorBalance(o_outColor, 
-			o_outAlpha,
-			1.0,
-			i_alphaGain,
-			i_alphaOffset,
-			i_colorGain,
-			i_colorOffset,
-			i_invert);
-	}
-	else
-	{
-		o_outColor = i_defaultColor;
-		o_outAlpha = 1.0;
+		float ttc = thread_color;
+		vector tcol = uColor;
+		if( ttc == 0)
+			tcol = vColor;
+
+		outColor = (1 - cloth) * gapColor + cloth * tcol;
+		colorBalance( alphaIsLuminance, alphaGain, alphaOffset, colorGain, colorOffset, invert, outColor, outAlpha);
+	}else{
+		outColor = defaultColor;
+		outAlpha = 1.0;
 	}
 }
 
-#endif /* __cloth_h */
-
+#endif

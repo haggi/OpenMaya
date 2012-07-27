@@ -51,6 +51,7 @@ void mtm_MayaScene::getRenderGlobals()
 
 mtm_MayaScene::mtm_MayaScene()
 {
+	getRenderGlobals();
 	this->good = true;
 	this->outFile = NULL;
 	this->defaultCamera = NULL;

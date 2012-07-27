@@ -32,7 +32,7 @@ MObject mayaToMantraGlobals::volumestepsize;
 MObject mayaToMantraGlobals::decoupleshadowstep;
 MObject mayaToMantraGlobals::shadowstepsize;
 MObject mayaToMantraGlobals::filtertype;
-MObject mayaToMantraGlobals::filtersize;
+MObject mayaToMantraGlobals::filtersizeuv;
 MObject mayaToMantraGlobals::bitdepth;
 MObject mayaToMantraGlobals::renderengine;
 MObject mayaToMantraGlobals::tilesize;
@@ -82,6 +82,8 @@ void *mayaToMantraGlobals::creator()
 
 MStatus	mayaToMantraGlobals::initialize()
 {
+	MayaRenderGlobalsNode::initialize();
+	
 	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 	MFnGenericAttribute gAttr;
@@ -133,7 +135,7 @@ MStatus	mayaToMantraGlobals::initialize()
 	stat = eAttr.addField( "Disable edge Antialiasing", 9 );
 	stat = eAttr.addField( "Object with most coverage", 10 );
 	stat = eAttr.addField( "Object with most-nofilter", 11 );
-	filtersize = nAttr.create("filtersize", "filtersize", MFnNumericData::k2Int);
+	filtersizeuv = nAttr.create("filtersizeuv", "filtersizeuv", MFnNumericData::k2Int);
 	nAttr.setDefault(3,3);
 	bitdepth = eAttr.create( "bitdepth", "bitdepth", 0, &stat);
 	stat = eAttr.addField( "8 bit", 0 );
@@ -226,7 +228,7 @@ MStatus	mayaToMantraGlobals::initialize()
 	stat = addAttribute( decoupleshadowstep );
 	stat = addAttribute( shadowstepsize );
 	stat = addAttribute( filtertype );
-	stat = addAttribute( filtersize );
+	stat = addAttribute( filtersizeuv );
 	stat = addAttribute( bitdepth );
 	stat = addAttribute( renderengine );
 	stat = addAttribute( tilesize );

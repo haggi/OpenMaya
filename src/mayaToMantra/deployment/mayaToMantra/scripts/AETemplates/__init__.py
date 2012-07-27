@@ -243,7 +243,7 @@ class AEmayaToMantraGlobalsTemplate(pm.ui.AETemplate):
 #        pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
 
 
-class AEdependNodeTemplate(pm.ui.AETemplate):
+class AEmantraNodeTemplate(pm.ui.AETemplate):
     def __init__(self, nodeName):
         node = pm.PyNode(nodeName)
         if node.type() == 'lambert':
@@ -257,6 +257,8 @@ class AEdependNodeTemplate(pm.ui.AETemplate):
             self.addControl("mtm_refrSamples", "Refraction Samples")
             self.addControl("mtm_reflBlur", "Reflection Blur")
             self.addControl("mtm_reflSamples", "Reflection Samples")
+            self.addControl("mtm_oren", "Use OrenNayar diffuse")
+            self.addControl("mtm_fresnel", "Fresnel Value")
             pm.editorTemplate(endLayout=True)
         if node.type() in ['spotLight']:
             pm.editorTemplate(beginLayout="Mantra SpotLight Options")
@@ -267,11 +269,16 @@ class AEdependNodeTemplate(pm.ui.AETemplate):
             self.addControl("mtm_shadowQuality", "Shadow Quality")
             self.addControl("mtm_samplingQuality", "Sampling Quality")
             self.addControl("mtm_activeRadius", "Active Radius")
+            self.addControl("mtm_surfaceShaders", "Use SurfaceShaders")
+            self.addControl("mtm_fastShadows", "Use SimpleShadows")
             pm.editorTemplate(endLayout=True)
+            
         if node.type() in ['pointLight', 'directionalLight']:
             pm.editorTemplate(beginLayout="Mantra Light Options")
             self.addControl("mtm_samplingQuality", "Sampling Quality")
             self.addControl("mtm_activeRadius", "Active Radius")
+            self.addControl("mtm_surfaceShaders", "Use SurfaceShaders")
+            self.addControl("mtm_fastShadows", "Use SimpleShadows")
             pm.editorTemplate(endLayout=True)
 
         if node.type() in ['areaLight']:
@@ -283,6 +290,8 @@ class AEdependNodeTemplate(pm.ui.AETemplate):
             self.addControl("mtm_useLightGeometry", "Use Geometry")
             self.addControl("mtm_lightGeometry", "Light Geometry")
             self.addControl("mtm_renderLightGeometry", "Render Light Geometry")
+            self.addControl("mtm_surfaceShaders", "Use SurfaceShaders")
+            self.addControl("mtm_fastShadows", "Use SimpleShadows")
             pm.editorTemplate(endLayout=True)
             
         if node.type() == 'mesh':

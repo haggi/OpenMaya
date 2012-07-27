@@ -53,6 +53,7 @@ void *MayaRenderGlobalsNode::creator()
 
 MStatus	MayaRenderGlobalsNode::initialize()
 {
+	
 	MFnNumericAttribute nAttr;
 	MFnTypedAttribute tAttr;
 	MFnGenericAttribute gAttr;

@@ -43,7 +43,7 @@ private:
 	static    MObject decoupleshadowstep;
 	static    MObject shadowstepsize;
 	static    MObject filtertype;
-	static    MObject filtersize;
+	static    MObject filtersizeuv;
 	static    MObject bitdepth;
 	static    MObject renderengine;
 	static    MObject tilesize;

@@ -1,173 +1,92 @@
 #ifndef PHONG_H
 #define PHONG_H
 
+#define VOP_SHADING
+#define VOP_SURFACE
+
 #include <voptype.h>
 #include <voplib.h>
+#include "utils.h"
 
+void Phong(
+	S_DEFAULTATTR;
+	float cosinePower;
+	vector specularColor;
+	float reflectivity;
+	vector reflectedColor;
+    float mtm_reflBlur;
+	int mtm_reflSamples;
 
-// the parameter is called inColor because color seems to be a reserved word
-void Phong(vector uv; 
-		   vector inColor; 
-		   vector transparency; 
-		   vector ambientColor; 
-		   vector incandescence;
-		   float diffuseValue;
-		   float translucence;
-		   float cosinePower;
-		   vector specularColor;
-		   float reflectivity;
-		   vector reflectedColor;
-		   int refractions;
-		   //int reflections;
-		   float refractiveIndex;
-		   float mtm_refrBlur;
-		   float mtm_reflBlur;
-		   float mtm_refrSamples;
-		   float mtm_reflSamples;
-		   //float refractionLimit;
-		   //float lightAbsorbance;
-		   //float surfaceThickness;
-		   //float shadowAttenuation;
-		   //int chromaticAberration;
-		   //int reflectionLimit;
-		   //float reflectionSpecularity;
-		   vector outColor;
-		   vector outTransparency;
-		   vector outMatteOpacity)
+	vector outColor; 
+	vector outTransparency; 
+	vector outMatteOpacity
+)
 {
-
     VOPvector ii = normalize(I);
-    VOPnormal nn = normalize(N);
-	vector	translucIllum = {0,0,0};
-    
-	if( translucence > 0.0)
-	{
-		VOPnormal neg = -nn;
-		translucIllum = diffuse(neg) * translucence * Cf * inColor;
-	}	
-	// face forward
-    VOPnormal nf = vop_frontface(nn, ii);
-	// calculate normal lambert diffuse
-	vector lambDiff = diffuse(nf);
-	// in this version I use the classic phong
-	vector phongColor = phong( nf, -ii, cosinePower);
-	// phong lighting model, lighting node includes diffuse as well
-    // vector clr = vop_lighting("phong", nf, ii, {0.0, 0.0, 0.0}, { 0.5, 0.5, 0.5 }, { 0.5, 0.5, 0.5 }, { 1, 1, 1 }, 0.0890000015, 0, 0);
+	VOPnormal nn = normalize(normalCamera);
+	vector one = {1,1,1};
 	
-	vector reflColor = {0,0,0};
-	vector refrColor = {0,0,0};
-
-	string rmap = "";
-
-	VOPfloat  Kf = 1.0;
-
-	vector bgColor = {0,0,0};
-	float rayBias = 0.005;
-
-	// for blurry reflections implement blurDegree 
-	float blurDegree = 0.0;
-	float angle_rad = radians(blurDegree);
-	float jitter = 1.0;
-	float nhit = 1.0;
-	int areaSamples = 1;
-	// from vex source 
-	VOPint scount;
-	vector tint = {1,1,1};
-	VOPfloat thresh;
-	int samples = 1;
-
-	// lets do reflections
+    vector nf = vop_frontface(nn, ii);	
+	vector reflColor = {1,1,1};
+	
 	if( reflectivity > 0.0)
 	{
-		rmap = "";
-		VOPvector reflRay = reflect(ii,nn);
+		getReflection( ii, nn, mtm_reflBlur, mtm_reflSamples, reflectivity, reflectedColor);
+		// the more reflective a material is the less transparent it is, so if it is 100% reflective,
+		// it is not transparent any more.
+		transparency = transparency * (1.0 - reflectivity);
+	}else{
+		reflectedColor *= 0.0;
+	}	
 
-		// fresnel attenuation - to do if I can add mantra attributes to shader nodes
-		//VOPfloat  Kf = 1.0 - vop_dot(nf,-ii);
-		Kf = 1.0;
-
-		bgColor = {0,0,0};
-		rayBias = 0.005;
-
-		// for blurry reflections implement blurDegree 
-		blurDegree = mtm_reflBlur;
-		angle_rad = radians(blurDegree);
-		jitter = 1.0;
-		nhit = 1.0; // ?
-		areaSamples = mtm_reflSamples + 1;
-		// from vex source 
-		scount = clamp( areaSamples * vop_getrayweight(), 1.0, VOP_CAST_FLOAT(areaSamples));
-		tint = {1,1,1};
-		thresh = Kf * vop_maxcomp(tint) / VOP_CAST_FLOAT(scount);
-		samples = scount;
-		
-		//float thresh = 1.0;
-		reflColor = vop_trace(nf, nn, P, reflRay, { 0, 0, 0 }, bgColor, rmap, rayBias, angle_rad, thresh, jitter, 0.0, "reflect", scount, nhit, "space:world");
-		
-		reflColor *= (Kf * tint)/max(1,nhit);
-		reflColor *= reflectivity;
-	}
-	if( (refractions > 0) && (refractiveIndex != 1.0))
+	vector refractedColor = {0,0,0};
+	vector refractedOpacity = {1,1,1};
+	if( (refractions > 0) && (refractiveIndex != 1.0) && (luminance(transparency) > 0.0))
 	{
-		rmap = "";
-		VOPvector refrRay = refract(ii, nn, refractiveIndex);
-
-		// fresnel attenuation - to do if I can add mantra attributes to shader nodes
-		//VOPfloat  Kf = 1.0 - vop_dot(nf,-ii);
-		Kf = 1.0;
-
-		bgColor = {0,0,0};
-		rayBias = 0.005;
-
-		// for blurry reflections implement blurDegree 
-		blurDegree = mtm_refrBlur;
-		angle_rad = radians(blurDegree);
-		jitter = 1.0;
-		nhit = 1.0; // ?
-		areaSamples = mtm_refrSamples + 1;
-		// from vex source 
-		scount = clamp( areaSamples * vop_getrayweight(), 1.0, VOP_CAST_FLOAT(areaSamples));
-		tint = {1,1,1};
-		thresh = Kf * vop_maxcomp(tint) / VOP_CAST_FLOAT(scount);
-		samples = scount;
-		
-		//float thresh = 1.0;
-		refrColor = vop_trace(nf, nn, P, refrRay, { 0, 0, 0 }, bgColor, rmap, rayBias, angle_rad, thresh, jitter, 0.0, "refract", samples, nhit, "space:world");
-		
-		refrColor *= (Kf * tint)/max(1,nhit);
+		getRefraction(ii, nn, mtm_refrBlur, mtm_refrSamples, refractiveIndex, refractedColor, refractedOpacity);
+		refractedColor = refractedColor * transparency; // attenuate refracted color by transparency
 	}
 
+	vector translucenceColor = {0,0,0};
+	if( translucence > 0.0)
+	{
+		vector outTranslucency = {0,0,0};
+		getTranslucence(ii, translucence, translucenceDepth, translucenceFocus, outTranslucency);
+		translucenceColor = inColor * outTranslucency;
+	}	
+	
 	// Cf = geo surface color
-	vector diffuseColorResult =  inColor * Cf * lambDiff * diffuseValue;
-	if( luminance(transparency) > 0.0)
-		diffuseColorResult *= ({1,1,1} - transparency);
+	inColor *=  Cf;
 
-	outColor = diffuseColorResult + phongColor * specularColor + incandescence + reflColor + refrColor * transparency + translucIllum;
+	vector uvw = {0,0,0};
+	float urough = 0.0, vrough = 0.0;	
+	int tstyle = 0;
+	vector clr = {0,0,0};
+	urough = 1.0/cosinePower;
+	vector phongSpec = vop_lighting("phong", nf, ii, uvw, ambientColor, clr, specularColor, urough, vrough, tstyle);
+	
+	vector diffuseLighting = diffuse(nf);
+
+	transparency *= (one - refractedOpacity); 
+	
+	// okay, so we sum up our colors.
+	// first, the inColor will be attenuated by transparency
+	inColor *= (one - transparency);
+	// then, the inColor will be attenuated by diffuse lighing (lambert style)
+	inColor *= diffuseLighting;
+	// and last the more reflective a material is, the less surfacecolor it shows
+	inColor *= (1.0 - reflectivity);
+
+	VOPfloat  Kf = 1.0 - vop_dot(nf,-ii);
+	Kf =  (1.0 - mtm_fresnel) + Kf * mtm_fresnel;
+	reflectedColor *= Kf;
+	refractedColor *= Kf;
+	
+	outColor = inColor + phongSpec + reflectedColor + refractedColor + translucenceColor;
+	outMatteOpacity = one - transparency;
 	outTransparency = transparency;
-	outMatteOpacity = transparency;
 }
 
-//setAttr "phong1.color" -type double3 0.450004 0.450004 0.450004 ;
-//setAttr "phong1.transparency" -type double3 0.0666667 0.0666667 0.0666667 ;
-//setAttr "phong1.ambientColor" -type double3 0.072221 0.072221 0.072221 ;
-//setAttr "phong1.incandescence" -type double3 0.0666667 0.0666667 0.0666667 ;
-//setAttr "phong1.diffuse" 0.75;
-//setAttr "phong1.translucence" 0.05;
-//setAttr "phong1.translucenceDepth" 0.694444;
-//setAttr "phong1.translucenceFocus" 0.561111;
-//setAttr "phong1.cosinePower" 24.322222;
-//setAttr "phong1.specularColor" -type double3 0.438895 0.438895 0.438895 ;
-//setAttr "phong1.reflectivity" 0.561111;
-//setAttr "phong1.reflectedColor" -type double3 0.0611124 0.0611124 0.0611124 ;
-//setAttr "phong1.refractions" 1;
-//setAttr "phong1.refractiveIndex" 1.089722;
-//setAttr "phong1.refractionLimit" 6.222222;
-//setAttr "phong1.refractionLimit" 7;
-//setAttr "phong1.lightAbsorbance" 0.833333;
-//setAttr "phong1.surfaceThickness" 0.0333333;
-//setAttr "phong1.shadowAttenuation" 0.538889;
-//setAttr "phong1.chromaticAberration" 1;
-//setAttr "phong1.reflectionLimit" 2;
-//setAttr "phong1.reflectionSpecularity" 0.227778;
+
 
 #endif

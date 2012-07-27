@@ -65,7 +65,7 @@ mantraGlobalsATList.addAttr(an='shadowstepsize', dn='Shadow Step Size', tp=om.MF
 
 # Filter
 mantraGlobalsATList.addAttr(an='filtertype', dn='Pixel Filter Type', tp=kEnum, values=filterNames, default=0, kat="Filter")
-mantraGlobalsATList.addAttr(an='filtersize', dn='FilterSize', tp=om.MFnNumericData.k2Int, default=[3,3], kat="Filter")
+mantraGlobalsATList.addAttr(an='filtersizeuv', dn='FilterSize', tp=om.MFnNumericData.k2Int, default=[3,3], kat="Filter")
 
 # Frame Buffer
 mantraGlobalsATList.addAttr(an='bitdepth', dn='BitDepth', tp=kEnum, values=bitDepthNames, default=0, kat="FrameBuffer")

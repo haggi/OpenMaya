@@ -4,6 +4,10 @@ import Renderer as Renderer
 import traceback
 import sys
 import mtm_mantraAttributes as mantraAttributes
+import os
+import getpass
+import subprocess
+import shutil
 
 reload(Renderer)
 
@@ -32,6 +36,7 @@ class MantraRenderer(Renderer.MayaToRenderer):
         
     def MantraRendererCreateTab(self):
         log.debug("MantraRendererCreateTab()")
+ 
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
@@ -45,13 +50,6 @@ class MantraRenderer(Renderer.MayaToRenderer):
 
     def MantraRendererUpdateTab(self, dummy=None):
         log.debug("MantraRendererUpdateTab()")
-        if self.renderGlobalsNode.adaptiveSampling.get():
-            self.rendererTabUiDict['minSamples'].setEnable(True)
-            self.rendererTabUiDict['maxError'].setEnable(True)
-        else:
-            self.rendererTabUiDict['minSamples'].setEnable(False)
-            self.rendererTabUiDict['maxError'].setEnable(False)
-
 
     def MantraTranslatorCreateTab(self):
         log.debug("MantraTranslatorCreateTab()")
@@ -148,10 +146,19 @@ class MantraRenderer(Renderer.MayaToRenderer):
     
         pm.mel.trace("================ Start MayaToMantra Rendering ======================")
         # TODO: get directorys and filenames
-        self.createGlobalsNode()    
-        self.preRenderProcedure()
-        self.renderGlobalsNode.basePath.set(pm.workspace.path)
-        self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
+#    outputPath = pm.workspace.path + "/mantra/" + realSceneName()
+#    imagePath = pm.workspace.path + "/images"
+#    imageName = realSceneName()
+#    try:
+#        mantraGlobals = pm.ls(type="mayaToMantraGlobals")[0]
+#    except:
+#        log.error("mayaToMantraGlobals not found")
+#        return 
+#    
+#    mantraGlobals.basePath.set(outputPath)
+#    mantraGlobals.imagePath.set(imagePath)
+#    mantraGlobals.imageName.set(imageName)
+
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
         # check for mayabatch name like sceneName_number 
         numberPart = imageName.split("__")[-1]
@@ -161,8 +168,13 @@ class MantraRenderer(Renderer.MayaToRenderer):
                 imageName = imageName.replace("__" + numberPart, "")
         except:
             pass
+        
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
+        self.renderGlobalsNode.basePath.set(pm.workspace.path +"/mantra/" + imageName)
+        self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
         self.renderGlobalsNode.imageName.set(imageName)        
-
+        
         outputPath = pm.workspace.path + "/mantra/" + realSceneName()
         imagePath = pm.workspace.path + "/images"
         
@@ -261,7 +273,7 @@ class StandinGUI(pm.ui.Window):
         self.show()
 
 RENDERERNAME = "Mantra"
-GLOBALSNAME = "mayaToMantraGlobals"
+GLOBALSNAME = "mantraGlobals"
 
 
 def realSceneName(doDot=False):
@@ -344,7 +356,7 @@ def startRenderProc(ifdFile):
     IDLE_PRIORITY_CLASS = 64
     verbosity = 4
     try:
-        renderGlobals = ls(type="mayaToMantraGlobals")
+        renderGlobals = ls(type="mantraGlobals")
         verbosity = renderGlobals.verbosity.get()
     except:
         pass
@@ -422,8 +434,8 @@ def startGeoConverter():
     #HoudiniObjectSaver.exe C:\daten\3dprojects\mantra\mantra\mayaToMantra_fluid\geo
     prepareEnv()
     converterPath = os.environ["MTM_HOME"] + "/bin/HoudiniObjectTools.exe "
-    geoType = pm.SCENE.mayaToMantraGlobals.geoFileType.get()
-    geoPath = pm.SCENE.mayaToMantraGlobals.basePath.get() + "/geo"
+    geoType = pm.SCENE.mantraGlobals.geoFileType.get()
+    geoPath = pm.SCENE.mantraGlobals.basePath.get() + "/geo"
     
     # 0 == binary, 1 == ascii
     if geoType == 0:

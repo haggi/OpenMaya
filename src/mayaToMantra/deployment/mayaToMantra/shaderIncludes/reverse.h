@@ -1,8 +1,7 @@
 #ifndef REVERSE_H
 #define REVERSE_H
 
-void Reverse(vector uv; 
-		     vector input; 
+void Reverse(vector input; 
 			 vector output)
 {
 	vector one = {1.0, 1.0, 1.0};

@@ -63,10 +63,7 @@ float mtm_fresnel
 		float dmapResolution;\
 		float mtm_samplingQuality;\
 		float mtm_activeRadius; \
-		int mtm_fastShadows; \
-		vector outLightColor; \
-		export int __nondiffuse; \
-		export int __nonspecular
+		int mtm_fastShadows
 
 
 #include "voplib.h"
