@@ -33,7 +33,8 @@ bool mtap_RenderGlobals::getMtapGlobals()
 	MObject node;
 	appleseedGlobalsList.getDependNode(0, node);
 	MFnDependencyNode appleseedGlobals(node);
-	
+	renderGlobalsMobject = node;
+
 	try{
 
 		if(!getInt(MString("translatorVerbosity"), appleseedGlobals, this->translatorVerbosity))
@@ -161,6 +162,9 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getColor(MString("environmentColor"), appleseedGlobals, this->environmentColor))
 			throw("problem reading appleseedGlobals.environmentColor");
+
+		if(!getColor(MString("environmentMap"), appleseedGlobals, this->environmentMap))
+			throw("problem reading appleseedGlobals.environmentMap");
 
 		if(!getFloat(MString("environmentIntensity"), appleseedGlobals, this->environmentIntensity))
 			throw("problem reading appleseedGlobals.environmentIntensity");

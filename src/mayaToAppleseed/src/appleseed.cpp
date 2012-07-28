@@ -815,12 +815,14 @@ asr::MeshObject *AppleseedRenderer::createMeshPtr(MObject& meshObject)
 //	start, all existing colors and textures in an existing scene will be removed, and then new defined.
 //	For this function here, it means I can reuse an existing color because its up to date.
 //
-void AppleseedRenderer::defineColor(MString& name, MColor& color, asr::Assembly *assembly)
+void AppleseedRenderer::defineColor(MString& name, MColor& color, asr::Assembly *assembly, float intensity)
 {
 	float colorDef[3];
 	colorDef[0] = color.r;
 	colorDef[1] = color.g;
 	colorDef[2] = color.b;
+	float alpha = color.a;
+
 	asf::auto_release_ptr<asr::ColorEntity> colorEntity;
 	
 	asr::Entity *entity;
@@ -834,11 +836,15 @@ void AppleseedRenderer::defineColor(MString& name, MColor& color, asr::Assembly 
 		//assembly->colors().remove(entity);
 		return;
 	}
+
+	MString intensityString = MString("") + intensity;
 	colorEntity = asr::ColorEntityFactory::create(
 				name.asChar(),
 				asr::ParamArray()
-					.insert("color_space", "srgb"),
-				asr::ColorValueArray(3, colorDef));
+					.insert("color_space", "srgb")
+					.insert("multiplier", intensityString.asChar()),
+				asr::ColorValueArray(3, colorDef),
+				asr::ColorValueArray(1, &alpha));
 	if( assembly != NULL)
 	{
 		if( assembly->colors().get_by_name(name.asChar()) == NULL)
@@ -1487,116 +1493,63 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
     // Environment
     //------------------------------------------------------------------------
 
-    // Create a color called "sky_exitance" and insert it into the scene.
-    float SkyExitance[3];
-	SkyExitance[0] = renderGlobals->environmentColor.r;
-	SkyExitance[1] = renderGlobals->environmentColor.g;
-	SkyExitance[2] = renderGlobals->environmentColor.b;
-	MString environmentIntensity = MString("") + renderGlobals->environmentIntensity;
-
-    float gradientHorizon[3];
-	gradientHorizon[0] = renderGlobals->gradientHorizon.r;
-	gradientHorizon[1] = renderGlobals->gradientHorizon.g;
-	gradientHorizon[2] = renderGlobals->gradientHorizon.b;
-
-    float gradientZenit[3];
-	gradientZenit[0] = renderGlobals->gradientZenit.r;
-	gradientZenit[1] = renderGlobals->gradientZenit.g;
-	gradientZenit[2] = renderGlobals->gradientZenit.b;
-
-	int environmentType = renderGlobals->environmentType;
-
 	//stat = eAttr.addField( "Constant", 0 );
 	//stat = eAttr.addField( "Gradient", 1 );
 	//stat = eAttr.addField( "Latitude Longitude", 2 );
 	//stat = eAttr.addField( "Mirror Ball", 3 );
 
-	//size_t textureId = this->defineTexture();
-
 	MString textInstName = "bg_texture_inst";
-	//if( textureId >= 0)
-	//{
-	//	asf::auto_release_ptr<asr::TextureInstance> tinst = asr::TextureInstanceFactory().create(
-	//		   textInstName.asChar(),
-	//		   asr::ParamArray()
-	//			   .insert("addressing_mode", "clamp")
-	//			   .insert("filtering_mode", "bilinear"),
-	//			   textureId);
-
-	//	this->scene->texture_instances().insert(tinst);
-	//}else{
-	//	environmentType = 0;
-	//}
-	float alpha = 0.0f;
-
-	this->scene->colors().insert(
-        asr::ColorEntityFactory::create(
-            "sky_exitance",
-            asr::ParamArray()
-                .insert("color_space", "srgb")
-				.insert("multiplier", environmentIntensity.asChar()),
-            asr::ColorValueArray(3, SkyExitance),
-			asr::ColorValueArray(1, &alpha)));
-
-	this->scene->colors().insert(
-        asr::ColorEntityFactory::create(
-            "sky_exitance_gradient_horizon",
-            asr::ParamArray()
-                .insert("color_space", "srgb")
-				.insert("multiplier", environmentIntensity.asChar()),
-            asr::ColorValueArray(3, gradientHorizon),
-			asr::ColorValueArray(1, &alpha)));
-
-	this->scene->colors().insert(
-        asr::ColorEntityFactory::create(
-            "sky_exitance_gradient_zenit",
-            asr::ParamArray()
-                .insert("color_space", "srgb")
-				.insert("multiplier", environmentIntensity.asChar()),
-            asr::ColorValueArray(3, gradientZenit),
-			asr::ColorValueArray(1, &alpha)));
-
-    // Create an environment EDF called "sky_edf" and insert it into the scene.
-    //this->scene->environment_edfs().insert(
-    //    asr::ConstantEnvironmentEDFFactory().create(
-    //        "sky_edf",
-    //        asr::ParamArray()
-    //            .insert("exitance", "sky_exitance")));
+	renderGlobals->environmentColor.a = 0.0f;
+	renderGlobals->gradientHorizon.a = 0.0f;
+	renderGlobals->gradientZenit.a = 0.0f;
+	MString envName = "environmentColor";
+	MString envMapName = "environmentMap";
+	MString gradHorizName = "gradientHorizon";
+	MString gradZenitName = "gradientZenit";
+	this->defineColor(envName, renderGlobals->environmentColor, NULL, renderGlobals->environmentIntensity);
+	this->defineColor(gradHorizName, renderGlobals->gradientHorizon, NULL, renderGlobals->environmentIntensity);
+	this->defineColor(gradZenitName, renderGlobals->gradientZenit, NULL, renderGlobals->environmentIntensity);
+	this->defineColor(envMapName, renderGlobals->environmentMap, NULL, renderGlobals->environmentIntensity);
+	MFnDependencyNode globalsFn(renderGlobals->renderGlobalsMobject);
+	MString envMapAttrName = envMapName;
+	this->defineTexture(globalsFn, envMapAttrName, envMapName);
 
 	asf::auto_release_ptr<asr::EnvironmentEDF> environmentEDF;
 
-	switch(environmentType){
+	switch(renderGlobals->environmentType){
 	case 0:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", "sky_exitance"));
+				.insert("exitance", envName));
 		break;
 	case 1:
 		environmentEDF = asr::GradientEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("horizon_exitance", "sky_exitance_gradient_horizon")
-				.insert("zenith_exitance", "sky_exitance_gradient_zenit")
+				.insert("horizon_exitance", gradHorizName)
+				.insert("zenith_exitance", gradZenitName)
 				);
 		break;
 	case 2:
 	    environmentEDF = asr::LatLongMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", textInstName.asChar()));
+				.insert("exitance", envMapName.asChar())
+				.insert("exitance_multiplier", (MString("")+renderGlobals->environmentIntensity).asChar()));
 		break;
 	case 3:
 		environmentEDF = asr::MirrorBallMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", textInstName.asChar()));
+				.insert("exitance", envMapName.asChar())
+				.insert("exitance_multiplier", (MString("")+renderGlobals->environmentIntensity).asChar()));
 		break;
 	default:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", "sky_exitance"));
+				.insert("exitance", envName));
 	}
 	this->scene->environment_edfs().insert(environmentEDF);
 

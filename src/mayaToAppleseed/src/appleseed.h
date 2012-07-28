@@ -37,11 +37,12 @@
 #include <maya/MFnDependencyNode.h>
 
 #include "mtap_tileCallback.h"
-#include "mtap_renderGlobals.h"
+//#include "mtap_renderGlobals.h"
 #include "mtap_mayaObject.h"
 //#include "mtap_mayaScene.h"
 
 class mtap_MayaScene;
+class mtap_RenderGlobals;
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -63,7 +64,7 @@ public:
 	//void checkBSDF(asr::BSDFContainer& container, MString name);
 	//void checkEDF(asr::BSDFContainer& container, MString name);
 	//void checkColor(asr::BSDFContainer& container, MString name);
-	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL);
+	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL, float intensity = 1.0f);
 	void addDefaultMaterial();
 	void defineDefaultMaterial();
 	void addDefaultMaterial(asr::Assembly *assembly, asf::StringArray& materialNames);

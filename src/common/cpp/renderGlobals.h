@@ -78,6 +78,7 @@ class RenderGlobals
 {
 public:
 	
+	MObject renderGlobalsMobject;
 	bool good;
 	
 	bool doAnimation;

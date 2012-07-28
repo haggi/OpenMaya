@@ -37,6 +37,7 @@ private:
 	static	  MObject environmentColor;
 	static	  MObject gradientHorizon;
 	static	  MObject gradientZenit;
+	static	  MObject environmentMap;
 	static	  MObject environmentType;
 	static	  MObject environmentIntensity;
 

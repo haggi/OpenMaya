@@ -26,6 +26,7 @@ MObject MayaToAppleseedGlobals::gradientHorizon;
 MObject MayaToAppleseedGlobals::gradientZenit;
 MObject MayaToAppleseedGlobals::directLightSamples;
 MObject MayaToAppleseedGlobals::imageFormat;
+MObject MayaToAppleseedGlobals::environmentMap;
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {}
@@ -114,17 +115,25 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
 	nAttr.setDefault(0.6f, 0.7f, 0.9f);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( environmentColor ));
 
 	gradientHorizon = nAttr.createColor("gradientHorizon", "gradientHorizon");
 	nAttr.setDefault(0.8f, 0.8f, 0.9f);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( gradientHorizon ));
 
 	gradientZenit = nAttr.createColor("gradientZenit", "gradientZenit");
 	nAttr.setDefault(0.2f, 0.3f, 0.6f);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( gradientZenit ));
 
+	environmentMap = nAttr.createColor("environmentMap", "environmentMap");
+	nAttr.setDefault(0.6f, 0.7f, 0.9f);
+	CHECK_MSTATUS(addAttribute( environmentMap ));
+
 	environmentIntensity = nAttr.create("environmentIntensity", "environmentIntensity",  MFnNumericData::kFloat, 1.0f);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( environmentIntensity ));
 
 	directLightSamples = nAttr.create("directLightSamples", "directLightSamples",  MFnNumericData::kInt, 0);

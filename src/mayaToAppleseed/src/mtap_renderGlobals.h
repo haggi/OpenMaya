@@ -37,6 +37,7 @@ public:
 	float environmentIntensity;
 	MColor gradientHorizon;
 	MColor gradientZenit;
+	MColor environmentMap;
 
 	virtual MString getImageExt();
 
