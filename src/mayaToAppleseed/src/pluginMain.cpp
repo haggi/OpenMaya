@@ -3,10 +3,16 @@
 
 #include "mayatoappleseed.h"
 #include "mtap_renderGlobalsNode.h"
-#include "mtap_surfaceShader.h"
+#include "mtap_physicalSurfaceShader.h"
+#include "mtap_aoShader.h"
+#include "mtap_aoVoxelShader.h"
+#include "mtap_constantShader.h"
+#include "mtap_diagnosticShader.h"
+#include "mtap_fastSSSShader.h"
+#include "mtap_smokeShader.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.001"
+#define VERSION "0.2"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -27,6 +33,54 @@ MStatus initializePlugin( MObject obj )
 			&UserClassify);
 	if (!status) {
 		status.perror("cannot register node: appleseedSurfaceShader");
+		return status;
+	}
+
+	status = plugin.registerNode( mtap_aoShaderName, mtap_aoShader::id, 
+			mtap_aoShader::creator, mtap_aoShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: mtap_aoShader");
+		return status;
+	}
+
+	status = plugin.registerNode( mtap_aoVoxelShaderName, mtap_aoVoxelShader::id, 
+			mtap_aoVoxelShader::creator, mtap_aoVoxelShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: mtap_aoVoxelShader");
+		return status;
+	}
+
+	status = plugin.registerNode( mtap_constantShaderName, mtap_constantShader::id, 
+			mtap_constantShader::creator, mtap_constantShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: mtap_constantShader");
+		return status;
+	}
+
+	status = plugin.registerNode( mtap_diagnosticShaderName, mtap_diagnosticShader::id, 
+			mtap_diagnosticShader::creator, mtap_diagnosticShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: mtap_diagnosticShader");
+		return status;
+	}
+
+		status = plugin.registerNode( mtap_fastSSSShaderName, mtap_fastSSSShader::id, 
+			mtap_fastSSSShader::creator, mtap_fastSSSShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: mtap_fastSSSShader");
+		return status;
+	}
+
+	status = plugin.registerNode( mtap_smokeShaderName,  mtap_smokeShader::id, 
+			 mtap_smokeShader::creator,  mtap_smokeShader::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node:  mtap_smokeShader");
 		return status;
 	}
 

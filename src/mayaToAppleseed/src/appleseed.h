@@ -37,9 +37,18 @@
 #include <maya/MFnDependencyNode.h>
 
 #include "mtap_tileCallback.h"
-//#include "mtap_renderGlobals.h"
 #include "mtap_mayaObject.h"
-//#include "mtap_mayaScene.h"
+
+// shaderdefs
+
+#define PHYSICAL_SURFACE_SHADER 0x00106EF4
+#define AO_SHADER				0x00106EF5
+#define WIREFRAME_SHADER		0x00106EF6
+#define AOVOXEL_SHADER			0x00106EF7
+#define FASTSSS_SHADER			0x00106EF8
+#define CONST_SHADER			0x00106EF9
+#define DIAGNOSTIC_SHADER		0x00106EFB
+#define SMOKE_SHADER			0x00106EFC
 
 class mtap_MayaScene;
 class mtap_RenderGlobals;

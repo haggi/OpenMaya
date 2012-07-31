@@ -1,66 +1,26 @@
-#ifndef MTAP_SURFACE_SHADER_H
-#define MTAP_SURFACE_SHADER_H
+#ifndef MTAP_DIAGNOSTIC_SHADER_H
+#define MTAP_DIAGNOSTIC_SHADER_H
 
 #include <maya/MPxNode.h>
 
-const MString mtap_surfaceShaderName = "appleseedSurfaceShader";
+const MString mtap_diagnosticShaderName = "mtap_diagnosticShader";
 
-class mtap_surfaceShader : public MPxNode
+class mtap_diagnosticShader : public MPxNode
 {
 public:
-					mtap_surfaceShader();
-	virtual			~mtap_surfaceShader();
+					mtap_diagnosticShader();
+	virtual			~mtap_diagnosticShader();
 
 	static  void *	creator();
 	virtual MStatus	compute( const MPlug&, MDataBlock& );
 	static  MStatus	initialize();
-
-
-	// postConstructor:
-	// The postConstructor method allows us to call MPxNode member
-	// functions during initialization. Internally maya creates two
-	// objects when a user defined node is created, the internal MObject
-	// and the user derived object. The association between the these
-	// two objects is not made until after the MPxNode constructor is
-	// called. This implies that no MPxNode member function can be called
-	// from the MPxNode constructor. The postConstructor will get called
-	// immediately after the constructor when it is safe to call any
-	// MPxNode member function.
-	//
 
 	virtual void	postConstructor(); 
 
 	static  MTypeId   id;  // The IFF type id
 
 protected:
-   static MObject  shaderType;
-	//BSDF
-   static MObject  matteReflectance;
-   static MObject  matteReflectanceMultiplier;
-   static MObject  specularReflectance;
-   static MObject  specularReflectanceMultiplier;
-   static MObject  roughness;
-   // BTDF
-   static MObject  transmittance;
-   static MObject  transmittanceMultiplier;
-   static MObject  fromIor;
-   static MObject  toIor;
-   static MObject  shininess_u;
-   static MObject  shininess_v;
-   // EDF
-   static MObject  emitLight;
-   static MObject  exitance;
-   // SSS
-   static MObject  useSSS;
-   static MObject  albedo;
-   static MObject  ambient_sss;
-   static MObject  diffuse;
-   static MObject  distortion;
-   static MObject  light_samples;
-   static MObject  occlusion_samples;
-   static MObject  power;
-   static MObject  scale;
-   static MObject  view_dep_sss;
+   static MObject  mode;
 
    // Diffuse Reflectivity
    static MObject  aDiffuseReflectivity;

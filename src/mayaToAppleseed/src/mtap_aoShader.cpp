@@ -1,4 +1,4 @@
-#include "mtap_surfaceShader.h"
+#include "mtap_aoShader.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MPxNode.h>
@@ -16,20 +16,10 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_surfaceShader::id( 0x00106EF4 );
+MTypeId mtap_aoShader::id( 0x00106EF5 );
 
-
-// the postConstructor() function is called immediately after the objects
-// constructor. It is not safe to call MPxNode member functions from the
-// constructor, instead they should be called here.
-//
-void mtap_surfaceShader::postConstructor( )
+void mtap_aoShader::postConstructor( )
 {
-	// setMPSafe indicates that this shader can be used for multiprocessor
-	// rendering. For a shading node to be MP safe, it cannot access any
-	// shared global data and should only use attributes in the datablock
-	// to get input data and store output data.
-	//
 	setMPSafe( true );
 }
 
@@ -38,92 +28,62 @@ void mtap_surfaceShader::postConstructor( )
 // DESCRIPTION: attribute information
 ///////////////////////////////////////////////////////
 //
-MObject  mtap_surfaceShader::aDiffuseReflectivity;
-MObject  mtap_surfaceShader::aInTransparency;
-MObject  mtap_surfaceShader::aInTransR;
-MObject  mtap_surfaceShader::aInTransG;
-MObject  mtap_surfaceShader::aInTransB;
-MObject  mtap_surfaceShader::aColor;
-MObject  mtap_surfaceShader::aColorR;
-MObject  mtap_surfaceShader::aColorG;
-MObject  mtap_surfaceShader::aColorB;
-MObject  mtap_surfaceShader::aIncandescence;
-MObject  mtap_surfaceShader::aIncandescenceR;
-MObject  mtap_surfaceShader::aIncandescenceG;
-MObject  mtap_surfaceShader::aIncandescenceB;
-MObject  mtap_surfaceShader::aOutColor;
-MObject  mtap_surfaceShader::aOutColorR;
-MObject  mtap_surfaceShader::aOutColorG;
-MObject  mtap_surfaceShader::aOutColorB;
-MObject  mtap_surfaceShader::aOutTransparency;
-MObject  mtap_surfaceShader::aOutTransR;
-MObject  mtap_surfaceShader::aOutTransG;
-MObject  mtap_surfaceShader::aOutTransB;
-MObject  mtap_surfaceShader::aNormalCamera;
-MObject  mtap_surfaceShader::aNormalCameraX;
-MObject  mtap_surfaceShader::aNormalCameraY;
-MObject  mtap_surfaceShader::aNormalCameraZ;
-MObject  mtap_surfaceShader::aLightData;
-MObject  mtap_surfaceShader::aLightDirection;
-MObject  mtap_surfaceShader::aLightDirectionX;
-MObject  mtap_surfaceShader::aLightDirectionY;
-MObject  mtap_surfaceShader::aLightDirectionZ;
-MObject  mtap_surfaceShader::aLightIntensity; 
-MObject  mtap_surfaceShader::aLightIntensityR;
-MObject  mtap_surfaceShader::aLightIntensityG;
-MObject  mtap_surfaceShader::aLightIntensityB;
-MObject  mtap_surfaceShader::aLightAmbient;
-MObject  mtap_surfaceShader::aLightDiffuse;
-MObject  mtap_surfaceShader::aLightSpecular;
-MObject  mtap_surfaceShader::aLightShadowFraction;
-MObject  mtap_surfaceShader::aPreShadowIntensity;
-MObject  mtap_surfaceShader::aLightBlindData;
+MObject  mtap_aoShader::aDiffuseReflectivity;
+MObject  mtap_aoShader::aInTransparency;
+MObject  mtap_aoShader::aInTransR;
+MObject  mtap_aoShader::aInTransG;
+MObject  mtap_aoShader::aInTransB;
+MObject  mtap_aoShader::aColor;
+MObject  mtap_aoShader::aColorR;
+MObject  mtap_aoShader::aColorG;
+MObject  mtap_aoShader::aColorB;
+MObject  mtap_aoShader::aIncandescence;
+MObject  mtap_aoShader::aIncandescenceR;
+MObject  mtap_aoShader::aIncandescenceG;
+MObject  mtap_aoShader::aIncandescenceB;
+MObject  mtap_aoShader::aOutColor;
+MObject  mtap_aoShader::aOutColorR;
+MObject  mtap_aoShader::aOutColorG;
+MObject  mtap_aoShader::aOutColorB;
+MObject  mtap_aoShader::aOutTransparency;
+MObject  mtap_aoShader::aOutTransR;
+MObject  mtap_aoShader::aOutTransG;
+MObject  mtap_aoShader::aOutTransB;
+MObject  mtap_aoShader::aNormalCamera;
+MObject  mtap_aoShader::aNormalCameraX;
+MObject  mtap_aoShader::aNormalCameraY;
+MObject  mtap_aoShader::aNormalCameraZ;
+MObject  mtap_aoShader::aLightData;
+MObject  mtap_aoShader::aLightDirection;
+MObject  mtap_aoShader::aLightDirectionX;
+MObject  mtap_aoShader::aLightDirectionY;
+MObject  mtap_aoShader::aLightDirectionZ;
+MObject  mtap_aoShader::aLightIntensity; 
+MObject  mtap_aoShader::aLightIntensityR;
+MObject  mtap_aoShader::aLightIntensityG;
+MObject  mtap_aoShader::aLightIntensityB;
+MObject  mtap_aoShader::aLightAmbient;
+MObject  mtap_aoShader::aLightDiffuse;
+MObject  mtap_aoShader::aLightSpecular;
+MObject  mtap_aoShader::aLightShadowFraction;
+MObject  mtap_aoShader::aPreShadowIntensity;
+MObject  mtap_aoShader::aLightBlindData;
 
-MObject  mtap_surfaceShader::shaderType;
-MObject  mtap_surfaceShader::matteReflectance;
-MObject  mtap_surfaceShader::matteReflectanceMultiplier;
-MObject  mtap_surfaceShader::specularReflectance;
-MObject  mtap_surfaceShader::specularReflectanceMultiplier;
-MObject  mtap_surfaceShader::roughness;
-MObject  mtap_surfaceShader::transmittance;
-MObject  mtap_surfaceShader::transmittanceMultiplier;
-MObject  mtap_surfaceShader::fromIor;
-MObject  mtap_surfaceShader::toIor;
-MObject  mtap_surfaceShader::shininess_u;
-MObject  mtap_surfaceShader::shininess_v;
-
-MObject  mtap_surfaceShader::exitance;
-MObject  mtap_surfaceShader::emitLight;
-
-MObject  mtap_surfaceShader::useSSS;
-MObject  mtap_surfaceShader::albedo;
-MObject  mtap_surfaceShader::ambient_sss;
-MObject  mtap_surfaceShader::diffuse;
-MObject  mtap_surfaceShader::distortion;
-MObject  mtap_surfaceShader::light_samples;
-MObject  mtap_surfaceShader::occlusion_samples;
-MObject  mtap_surfaceShader::power;
-MObject  mtap_surfaceShader::scale;
-MObject  mtap_surfaceShader::view_dep_sss;
+MObject  mtap_aoShader::samplingMethod;
+MObject  mtap_aoShader::samples;
+MObject  mtap_aoShader::maxDistance;
 
 
-mtap_surfaceShader::mtap_surfaceShader() { }
-mtap_surfaceShader::~mtap_surfaceShader() { }
+mtap_aoShader::mtap_aoShader() { }
+mtap_aoShader::~mtap_aoShader() { }
 
 
-void* mtap_surfaceShader::creator()
+void* mtap_aoShader::creator()
 {
-	return new mtap_surfaceShader();
+	return new mtap_aoShader();
 }
 
-
-// The initialize method is called only once when the node is first
-// registered with Maya. In this method you define the attributes of the
-// node, what data comes in and goes out of the node that other nodes may
-// want to connect to. 
-//
-
-MStatus mtap_surfaceShader::initialize()
+MStatus mtap_aoShader::initialize()
 {
 	MFnNumericAttribute nAttr; 
 	MFnLightDataAttribute lAttr;
@@ -132,90 +92,28 @@ MStatus mtap_surfaceShader::initialize()
 	MStatus status; 
 	MStatus stat; 
 
-	// Input Attributes
-	//
-	shaderType = eAttr.create( "shaderType", "shaderType", 1, &stat);
-	stat = eAttr.addField( "Lambert", 0 );
-	stat = eAttr.addField( "Ashikhmin", 1 );
-	stat = eAttr.addField( "Kelemen", 2 );
-	stat = eAttr.addField( "Specular", 3 );
-	stat = eAttr.addField( "Phong", 4 );
-	CHECK_MSTATUS(addAttribute( shaderType ));
+	aOutColor = nAttr.createColor( "outColor", "oc", &status );
+	CHECK_MSTATUS( status );	
+	CHECK_MSTATUS( nAttr.setHidden( false ) );
+	CHECK_MSTATUS( nAttr.setReadable( true ) );
+	CHECK_MSTATUS( nAttr.setWritable( false ) );
+	CHECK_MSTATUS(addAttribute( aOutColor ));
 
-	matteReflectance = nAttr.createColor("matte_reflectance", "matte_reflectance");
-	nAttr.setDefault(0.8, 0.8, 0.8);
-	CHECK_MSTATUS(addAttribute( matteReflectance ));
+	samplingMethod = eAttr.create( "samplingMethod", "samplingMethod", 1, &stat);
+	stat = eAttr.addField( "Cosine Weighted", 0 );
+	stat = eAttr.addField( "Uniform", 1 );
+	CHECK_MSTATUS(addAttribute( samplingMethod ));
+	CHECK_MSTATUS( attributeAffects( samplingMethod, aOutColor ) );
 	
-	specularReflectance = nAttr.createColor("specular_reflectance", "specular_reflectance");
-	nAttr.setDefault(1.0, 1.0, 1.0);
-	CHECK_MSTATUS(addAttribute( specularReflectance ));	
+	samples = nAttr.create("samples", "samples", MFnNumericData::kInt, 16);
+	CHECK_MSTATUS(addAttribute( samples ));	
+	CHECK_MSTATUS( attributeAffects( samples, aOutColor ) );
 	
-	matteReflectanceMultiplier = nAttr.create("matte_reflectance_multiplier", "matte_reflectance_multiplier", MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( matteReflectanceMultiplier ));	
-	
-	specularReflectanceMultiplier = nAttr.create("specular_reflectance_multiplier", "specular_reflectance_multiplier", MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( specularReflectanceMultiplier ));	
-	
-	roughness = nAttr.create("roughness", "roughness", MFnNumericData::kFloat, 0.3f);
-	CHECK_MSTATUS(addAttribute( roughness ));	
-	
-	transmittance = nAttr.createColor("transmittance", "transmittance");
-	CHECK_MSTATUS(addAttribute( transmittance ));	
-	
-	transmittanceMultiplier = nAttr.create("transmittance_multiplier", "transmittance_multiplier", MFnNumericData::kFloat, 0.0f);
-	CHECK_MSTATUS(addAttribute( transmittanceMultiplier ));	
-	
-	fromIor = nAttr.create("from_ior", "from_ior", MFnNumericData::kFloat, 1.1f);
-	CHECK_MSTATUS(addAttribute( fromIor ));	
-	
-	toIor = nAttr.create("to_ior", "to_ior", MFnNumericData::kFloat, 1.1f);
-	CHECK_MSTATUS(addAttribute( toIor ));	
-	
-	shininess_u = nAttr.create("shininess_u", "shininess_u", MFnNumericData::kFloat, 1000.0f);
-	CHECK_MSTATUS(addAttribute( shininess_u ));	
-	
-	shininess_v = nAttr.create("shininess_v", "shininess_v", MFnNumericData::kFloat, 1000.0f);
-	CHECK_MSTATUS(addAttribute( shininess_v ));	
+	maxDistance = nAttr.create("maxDistance", "maxDistance", MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( maxDistance ));		
+	CHECK_MSTATUS( attributeAffects( maxDistance, aOutColor ) );
 
-	emitLight = nAttr.create("emitLight", "emitLight", MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( emitLight ));	
-
-	exitance = nAttr.createColor("exitance", "exitance");
-	nAttr.setDefault(1.0, 1.0, 1.0);
-	CHECK_MSTATUS(addAttribute( exitance ));	
-
-	albedo = nAttr.createColor("albedo", "albedo");
-	nAttr.setDefault(0.5, 0.3, 0.1);
-	CHECK_MSTATUS(addAttribute( albedo ));	
-
-	ambient_sss = nAttr.create("ambient_sss", "ambient_sss", MFnNumericData::kFloat, 0.02f);
-	CHECK_MSTATUS(addAttribute( ambient_sss ));	
-
-	diffuse = nAttr.create("diffuse", "diffuse", MFnNumericData::kFloat, 0.1f);
-	CHECK_MSTATUS(addAttribute( diffuse ));	
-
-	distortion = nAttr.create("distortion", "distortion", MFnNumericData::kFloat, 0.0f);
-	CHECK_MSTATUS(addAttribute( distortion ));	
-
-	light_samples = nAttr.create("light_samples", "light_samples", MFnNumericData::kInt, 1);
-	CHECK_MSTATUS(addAttribute( light_samples ));	
-
-	occlusion_samples = nAttr.create("occlusion_samples", "occlusion_samples", MFnNumericData::kInt, 1);
-	CHECK_MSTATUS(addAttribute( occlusion_samples ));	
-
-	power = nAttr.create("power", "power", MFnNumericData::kInt, 1);
-	CHECK_MSTATUS(addAttribute( power ));	
-
-	scale = nAttr.create("scale", "scale", MFnNumericData::kFloat, 5.0f);
-	CHECK_MSTATUS(addAttribute( scale ));	
-
-	view_dep_sss = nAttr.create("view_dep_sss", "view_dep_sss", MFnNumericData::kFloat, 1.5f);
-	CHECK_MSTATUS(addAttribute( view_dep_sss ));	
-
-	useSSS = nAttr.create("useSSS", "useSSS", MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( useSSS ));	
-
-
+	// -------------- maya ---------------
 
 	aDiffuseReflectivity = nAttr.create( "diffuseReflectivity", "drfl",
 			MFnNumericData::kFloat, 0, &status );
@@ -311,28 +209,6 @@ MStatus mtap_surfaceShader::initialize()
 	
 	// Output Attributes
 	//
-
-	// Color Output
-	//
-	aOutColorR = nAttr.create( "outColorR", "ocr", MFnNumericData::kFloat,
-			0, &status );
-	CHECK_MSTATUS( status );
-	
-	aOutColorG = nAttr.create( "outColorG", "ocg", MFnNumericData::kFloat,
-			0, &status );
-	CHECK_MSTATUS( status );
-	
-	aOutColorB = nAttr.create( "outColorB", "ocb", MFnNumericData::kFloat,
-			0, &status );
-	CHECK_MSTATUS( status );
-	
-	aOutColor = nAttr.create( "outColor", "oc", aOutColorR, aOutColorG,
-			aOutColorB, &status );
-	CHECK_MSTATUS( status );
-	
-	CHECK_MSTATUS( nAttr.setHidden( false ) );
-	CHECK_MSTATUS( nAttr.setReadable( true ) );
-	CHECK_MSTATUS( nAttr.setWritable( false ) );
 
 	
 	// Transparency Output
@@ -539,7 +415,6 @@ MStatus mtap_surfaceShader::initialize()
 	CHECK_MSTATUS( addAttribute( aColor ) );
 	CHECK_MSTATUS( addAttribute( aIncandescence ) );
 	CHECK_MSTATUS( addAttribute( aInTransparency ) );
-	CHECK_MSTATUS( addAttribute( aOutColor ) );
 	CHECK_MSTATUS( addAttribute( aOutTransparency ) );
 	CHECK_MSTATUS( addAttribute( aNormalCamera ) );
 
@@ -552,18 +427,6 @@ MStatus mtap_surfaceShader::initialize()
 	// there may be several inputs and outputs, but not all the inputs
 	// affect all the outputs.
 	//
-
-	CHECK_MSTATUS( attributeAffects( matteReflectance, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( specularReflectance, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( matteReflectanceMultiplier, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( specularReflectanceMultiplier, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( roughness, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( transmittance, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( transmittanceMultiplier, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( fromIor, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( toIor, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( shininess_u, aOutColor ) );
-	CHECK_MSTATUS( attributeAffects( shininess_v, aOutColor ) );
 
 	CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
 	CHECK_MSTATUS( attributeAffects( aColorR, aOutColor ) );
@@ -611,7 +474,7 @@ MStatus mtap_surfaceShader::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus mtap_surfaceShader::compute( const MPlug& plug, MDataBlock& block ) 
+MStatus mtap_aoShader::compute( const MPlug& plug, MDataBlock& block ) 
 { 
 	// The plug parameter will allow us to determine which output attribute
 	// needs to be calculated.
@@ -628,16 +491,6 @@ MStatus mtap_surfaceShader::compute( const MPlug& plug, MDataBlock& block )
 		MStatus status;
 		MFloatVector resultColor( 0.0, 0.0, 0.0 ); 
 
-
-		MFloatVector& matte_reflectance = block.inputValue( matteReflectance, &status ).asFloatVector();
-		CHECK_MSTATUS( status );
-		float& matte_reflectance_multiplier = block.inputValue( matteReflectanceMultiplier, &status ).asFloat();
-		CHECK_MSTATUS( status );
-		MFloatVector& specular_reflectance = block.inputValue( specularReflectance, &status ).asFloatVector();
-		CHECK_MSTATUS( status );
-		float& specular_reflectance_multiplier = block.inputValue( specularReflectanceMultiplier, &status ).asFloat();
-		CHECK_MSTATUS( status );
-
 		// Get surface shading parameters from input block
 		//
 		MFloatVector& surfaceNormal = block.inputValue( aNormalCamera,
@@ -647,7 +500,7 @@ MStatus mtap_surfaceShader::compute( const MPlug& plug, MDataBlock& block )
 		MFloatVector& surfaceColor = block.inputValue( aColor,
 				&status ).asFloatVector();
 		CHECK_MSTATUS( status );
-		surfaceColor = matte_reflectance;
+		surfaceColor.x = surfaceColor.y = surfaceColor.z = 1.0f;
 
 		MFloatVector& incandescence = block.inputValue( aIncandescence,
 				&status ).asFloatVector();
@@ -771,47 +624,3 @@ MStatus mtap_surfaceShader::compute( const MPlug& plug, MDataBlock& block )
 
 	return( MS::kSuccess );
 }
-
-
-// These methods load and unload the plugin, registerNode registers the
-// new node type with maya
-//
-
-//MStatus initializePlugin( MObject obj )
-//{ 
-//	const MString	UserClassify( "shader/surface" );
-//
-//	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
-//
-//	MFnPlugin plugin( obj, PLUGIN_COMPANY, "4.5", "Any" );
-//
-//	CHECK_MSTATUS( plugin.registerNode( "mtap_surfaceShaderShader", mtap_surfaceShader::id, 
-//			mtap_surfaceShader::creator, mtap_surfaceShader::initialize, MPxNode::kDependNode,
-//			&UserClassify ) );
-//
-//   command += UserClassify;
-//   
-//   command += "\");}\n";
-//
-//   CHECK_MSTATUS( MGlobal::executeCommand( command ) );
-//
-//   return( MS::kSuccess );
-//}
-
-//MStatus uninitializePlugin( MObject obj )
-//{
-//	const MString UserClassify( "shader/surface" );
-//
-//	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
-//
-//	MFnPlugin plugin( obj );
-//   
-//	CHECK_MSTATUS( plugin.deregisterNode( mtap_surfaceShader::id ) );
-//
-//	command += UserClassify;
-//	command += "\");}\n";
-//
-//	CHECK_MSTATUS( MGlobal::executeCommand( command ) );
-//
-//	return MS::kSuccess;
-//}

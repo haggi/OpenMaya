@@ -163,13 +163,20 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\appleseed.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
+    <ClCompile Include="..\src\mtap_aoShader.cpp" />
+    <ClCompile Include="..\src\mtap_aoVoxelShader.cpp" />
+    <ClCompile Include="..\src\mtap_constantShader.cpp" />
+    <ClCompile Include="..\src\mtap_diagnosticShader.cpp" />
+    <ClCompile Include="..\src\mtap_fastSSSShader.cpp" />
     <ClCompile Include="..\src\mtap_mayaObject.cpp" />
     <ClCompile Include="..\src\mtap_mayaScene.cpp" />
+    <ClCompile Include="..\src\mtap_pysicalSurfaceShader.cpp" />
     <ClCompile Include="..\src\mtap_rendererController.cpp" />
     <ClCompile Include="..\src\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_renderGlobalsNode.cpp" />
-    <ClCompile Include="..\src\mtap_surfaceShader.cpp" />
+    <ClCompile Include="..\src\mtap_smokeShader.cpp" />
     <ClCompile Include="..\src\mtap_tileCallback.cpp" />
+    <ClCompile Include="..\src\mtap_wireframeShader.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -190,13 +197,20 @@
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\appleseed.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
+    <ClInclude Include="..\src\mtap_aoShader.h" />
+    <ClInclude Include="..\src\mtap_aoVoxelShader.h" />
+    <ClInclude Include="..\src\mtap_constantShader.h" />
+    <ClInclude Include="..\src\mtap_diagnosticShader.h" />
+    <ClInclude Include="..\src\mtap_fastSSSShader.h" />
     <ClInclude Include="..\src\mtap_MayaObject.h" />
     <ClInclude Include="..\src\mtap_mayaScene.h" />
     <ClInclude Include="..\src\mtap_rendererController.h" />
     <ClInclude Include="..\src\mtap_renderGlobals.h" />
     <ClInclude Include="..\src\mtap_renderGlobalsNode.h" />
-    <ClInclude Include="..\src\mtap_surfaceShader.h" />
+    <ClInclude Include="..\src\mtap_smokeShader.h" />
+    <ClInclude Include="..\src\mtap_physicalSurfaceShader.h" />
     <ClInclude Include="..\src\mtap_tileCallback.h" />
+    <ClInclude Include="..\src\mtap_wireframeShader.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

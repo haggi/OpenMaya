@@ -40,6 +40,12 @@
     <Filter Include="common\threads">
       <UniqueIdentifier>{f814a9c7-8669-4b94-b6fa-29ef951dc23d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\shaders">
+      <UniqueIdentifier>{507dda9e-5c33-43d6-8f01-8963ad39a575}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{983a5ccb-92c0-4f40-8e3f-28a9cab13b2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -105,9 +111,6 @@
     <ClCompile Include="..\src\mtap_renderGlobalsNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtap_surfaceShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\pluginMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,6 +119,30 @@
     </ClCompile>
     <ClCompile Include="..\src\mtap_tileCallback.cpp">
       <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_aoShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_aoVoxelShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_constantShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_diagnosticShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_fastSSSShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_smokeShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_wireframeShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_pysicalSurfaceShader.cpp">
+      <Filter>Source Files\shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,14 +209,35 @@
     <ClInclude Include="..\src\mtap_renderGlobalsNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtap_surfaceShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\appleseed.h">
       <Filter>Header Files\appleseed</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mtap_tileCallback.h">
       <Filter>Header Files\appleseed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_constantShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_aoShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_diagnosticShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_fastSSSShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_smokeShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_wireframeShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_aoVoxelShader.h">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_physicalSurfaceShader.h">
+      <Filter>Header Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
