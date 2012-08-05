@@ -815,7 +815,7 @@ bool MayaScene::doFrameJobs()
 					MGlobal::viewFrame(this->renderGlobals->currentFrameNumber);
 				}
 
-				// TODO: runup necessary?
+				// TODO: dynamic runup necessary?
 
 				this->updateScene();
 				logger.info(MString("update scene done"));
