@@ -21,23 +21,53 @@ log = logging.getLogger("mtapLogger")
 #                                                        ])
 
 
+RENDERER_NAME="Appleseed"
+
 class AppleseedRenderer(Renderer.MayaToRenderer):
     theRendererInstance = None
     @staticmethod
     def theRenderer(arg = None):
         if not AppleseedRenderer.theRendererInstance:
-            AppleseedRenderer.theRendererInstance = AppleseedRenderer( "Appleseed", "mtap_initialize")
+            AppleseedRenderer.theRendererInstance = AppleseedRenderer(RENDERER_NAME , __name__)
+            #AppleseedRenderer.theRendererInstance = AppleseedRenderer(RENDERER_NAME , "mtap_initialize")
         return AppleseedRenderer.theRendererInstance
     
     def __init__(self, rendererName, moduleName):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
+        
     
     def getEnumList(self, attr):
         return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
 
     def updateTest(self, dummy = None):
         print "UpdateTest", dummy             
+
+    def updateEnvironment(self, dummy=None):
+        envDict = self.rendererTabUiDict['environment']
+        envType = self.renderGlobalsNode.environmentType.get()
+        #Constant
+        if envType == 0:
+            envDict['environmentColor'].setEnable(True)
+            envDict['gradientHorizon'].setEnable(False)
+            envDict['gradientZenit'].setEnable(False)
+            envDict['environmentMap'].setEnable(False)
+        if envType == 1:
+            envDict['environmentColor'].setEnable(False)
+            envDict['gradientHorizon'].setEnable(True)
+            envDict['gradientZenit'].setEnable(True)
+            envDict['environmentMap'].setEnable(False)
+        if envType == 2:
+            envDict['environmentColor'].setEnable(False)
+            envDict['gradientHorizon'].setEnable(False)
+            envDict['gradientZenit'].setEnable(False)
+            envDict['environmentMap'].setEnable(True)
+        if envType == 3:
+            envDict['environmentColor'].setEnable(False)
+            envDict['gradientHorizon'].setEnable(False)
+            envDict['gradientZenit'].setEnable(False)
+            envDict['environmentMap'].setEnable(True)
+            
     def AppleseedRendererCreateTab(self):
         log.debug("AppleseedRendererCreateTab()")
         self.createGlobalsNode()
@@ -92,17 +122,21 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         ui = pm.intFieldGrp(label="Direct Light Samples:", value1 = 4, numberOfFields = 1)
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".directLightSamples", index = 2 )
                     with pm.frameLayout(label="Environment Lighting", collapsable = True, collapse=True):
+                        envDict = {}
+                        self.rendererTabUiDict['environment'] = envDict
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
-                        ui = pm.attrEnumOptionMenuGrp(label = "Environemnt Type", at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
+                        ui = pm.attrEnumOptionMenu(label = "Environemnt Type", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
                         ui = pm.floatFieldGrp(label="Environemnt Intensity:", value1 = 1.0, numberOfFields = 1)
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".environmentIntensity", index = 2 )
                         
-                        ui = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentColor")
-                        ui = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientHorizon")
-                        ui = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
+                        envDict['environmentColor'] = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentColor")
+                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientHorizon")
+                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
+                        envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
@@ -116,9 +150,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        self.updateEnvironment()
         self.AppleseedRendererUpdateTab()
 
     def AppleseedRendererUpdateTab(self, dummy = None):
+        self.createGlobalsNode()
+        self.updateEnvironment()
         log.debug("AppleseedRendererUpdateTab()")
         if self.renderGlobalsNode.adaptiveSampling.get():
             self.rendererTabUiDict['minSamples'].setEnable(True)
@@ -127,7 +164,13 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             self.rendererTabUiDict['minSamples'].setEnable(False)
             self.rendererTabUiDict['maxError'].setEnable(False)
 
-
+    def xmlFileBrowse(self, args=None):
+        print "xmlfile", args
+        filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")
+        if len(filename) > 0:
+            print "Got filename", filename
+            self.rendererTabUiDict['xml']['xmlFile'].setText(filename[0])
+        
     def AppleseedTranslatorCreateTab(self):
         log.debug("AppleseedTranslatorCreateTab()")
         self.createGlobalsNode()
@@ -145,9 +188,15 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Appleseed XML export", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
-                    ui = pm.textFieldGrp(label="XMLFileName:", text = "")
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
-                    
+                    xmlDict = {}
+                    self.rendererTabUiDict['xml'] = xmlDict
+                    with pm.rowColumnLayout(nc=3, width = 120):
+                        pm.text(label="XMLFileName:", width = 60, align="right")
+                        defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".appleseed"
+                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
+                        pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
+                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
+                         
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
 

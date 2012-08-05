@@ -11,6 +11,8 @@
 #include "mtap_fastSSSShader.h"
 #include "mtap_smokeShader.h"
 
+#include "iprcmd.h"
+
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
 
@@ -25,6 +27,12 @@ MStatus initializePlugin( MObject obj )
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator );
 	if (!status) {
 		status.perror("cannot register command: mayatoappleseed");
+		return status;
+	}
+
+	status = plugin.registerCommand(MAYATOCMDIPRNAME, IprTestCmd::creator );
+	if (!status) {
+		status.perror("cannot register command: IprTestCmd");
 		return status;
 	}
 
@@ -118,6 +126,12 @@ MStatus uninitializePlugin( MObject obj)
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
 		status.perror("cannot deregister command: MayaToAppleseedCmd");
+		return status;
+	}
+
+	status = plugin.deregisterCommand( MAYATOCMDIPRNAME );
+	if (!status) {
+		status.perror("cannot deregister command: MAYATOCMDIPRNAME");
 		return status;
 	}
 

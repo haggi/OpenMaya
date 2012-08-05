@@ -10,7 +10,7 @@ class BaseTemplate(pm.ui.AETemplate):
         
     def beginLayout(self, name, collapse=True):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
-
+        
 
 class AEappleseedSurfaceShaderTemplate(BaseTemplate):
     def __init__(self, nodeName):
@@ -23,11 +23,26 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.buildBody(nodeName)
         self.addExtraControls("ExtraControls")
         self.endScrollLayout()
+    
+    
+    def updateUi(self, args=None):
+        #shader = self.thisNode.shaderType.get()
+        # ambient occusion
+        #if shader == 0:
+        #    self.dimControl(self.thisNode, "matte_reflectance", True)
+        #    self.dimControl(self.thisNode, "matte_reflectance_multiplier", True)
+        #    self.dimControl(self.thisNode, "specular_reflectance", True)
+        #    self.dimControl(self.thisNode, "specular_reflectance_multiplier", True)
+            
+        return
+        
         
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
-        self.beginLayout("BRDF" ,collapse=0)
-        self.addControl("shaderType", label="Shader Type")
+        self.beginLayout("Surface" ,collapse=0)
+        #self.addControl("shaderType", label="Surface Shader Type", changeCommand=self.updateUi)
+        #self.addControl("shaderType", label="Surface Shader Type")
+        self.addControl("bsdf", label="BSDF Type")
         self.addSeparator()
         self.addControl("matte_reflectance", label="Matte Reflectance")
         self.addControl("matte_reflectance_multiplier", label="Matte Refl Multiplier")
@@ -38,6 +53,7 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.addControl("shininess_v", label="Shininess V")        
         self.addControl("roughness", label="Roughness")
         self.endLayout()
+        
         self.beginLayout("BTDF" ,collapse=0)
         self.addControl("transmittance", label="Transmittance")        
         self.addControl("transmittance_multiplier", label="Transmittance Multiplier")        
@@ -48,15 +64,5 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.addControl("emitLight", label="emitLight")        
         self.addControl("exitance", label="Exitance")        
         self.endLayout()
-        self.beginLayout("Subsurface Controls" ,collapse=0)
-        self.addControl("useSSS", label="Use SSS")        
-        self.addControl("albedo", label="Albedo")        
-        self.addControl("ambient_sss", label="Ambient SSS")        
-        self.addControl("diffuse", label="Diffuse")        
-        self.addControl("distortion", label="Distortion")        
-        self.addControl("light_samples", label="Light Samples")        
-        self.addControl("occlusion_samples", label="Occlusion Samples")        
-        self.addControl("power", label="Power")        
-        self.addControl("scale", label="Scale")        
-        self.addControl("view_dep_sss", label="View Depedent sss")       
-        self.endLayout()
+
+        self.updateUi()

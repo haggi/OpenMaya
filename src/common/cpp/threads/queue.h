@@ -15,7 +15,13 @@ struct Event
 		TILEDONE = 1,
 		RENDERDONE = 2,
 		PRETILE = 3,
-		FRAMEUPDATE = 4
+		FRAMEUPDATE = 4,
+		IPRSTART = 5,
+		IPRSTOP = 6,
+		IPRPAUSE = 7,
+		IPRREMOVE = 8,
+		IPRUPDATE = 9,
+		USER = 10
 	};
 	Types type;
 	void *data;

@@ -40,5 +40,6 @@ mtap_IRendererController::Status mtap_IRendererController::on_progress()
 		 logger.debug(MString("mtap_IRendererController interrupt requested"));
 		 return IRendererController::AbortRendering;
 	 }
+	 
 	 return IRendererController::ContinueRendering;
 }

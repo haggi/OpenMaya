@@ -16,6 +16,7 @@ class MayaToRenderer(object):
         #self.baseRenderMelCommand = "import {0} as rcall; reload(rcall); rcall.theRenderer().".format(self.moduleName)
         self.baseRenderMelCommand = "import {0} as rcall; rcall.theRenderer().".format(self.moduleName)
         self.imageFormats = []
+        self.ipr_isrunning = False
     
     # the render callback is called with arguments like this
     # renderCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
@@ -137,7 +138,7 @@ class MayaToRenderer(object):
             else:
                 self.renderGlobalsNode = pm.createNode(self.renderGlobalsNodeName)
                 self.renderGlobalsNode.rename(self.renderGlobalsNodeName)
-                log.debug("Created node "+ str(self.renderGlobalsNode))
+                log.debug("Created node " + str(self.renderGlobalsNode))
         else:
             log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
 
@@ -149,7 +150,7 @@ class MayaToRenderer(object):
         # callback is defined as mel script, didn't work as pymel command.. 
         aeCallbackName = "AE{0}NodeCallback".format(self.rendererName)
         #aeCallbackName = "AEappleSeedNodeCallback"
-        aeCallbackString="callbacks -addCallback %s -hook AETemplateCustomContent -owner %s;" % (aeCallbackName, self.pluginName)
+        aeCallbackString = "callbacks -addCallback %s -hook AETemplateCustomContent -owner %s;" % (aeCallbackName, self.pluginName)
         pm.mel.eval(aeCallbackString)
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
@@ -167,26 +168,122 @@ class MayaToRenderer(object):
         self.unRegisterRenderer()
         self.registerNodeExtensions()
         self.registerAETemplateCallbacks()
-        pm.renderer(self.rendererName, rendererUIName = self.rendererName)
-        pm.renderer(self.rendererName, edit = True, renderProcedure = self.renderCallback("renderProcedure"))
-        pm.renderer(self.rendererName, edit = True, batchRenderProcedure =  self.renderCallback("batchRenderProcedure"))
-        pm.renderer(self.rendererName, edit = True, commandRenderProcedure =  self.renderCallback("commandRenderProcedure"))
-        pm.renderer(self.rendererName, edit = True, batchRenderOptionsProcedure =  self.renderCallback("batchRenderOptionsProcedure"))
-        pm.renderer(self.rendererName, edit = True, batchRenderOptionsStringProcedure =  self.renderCallback("batchRenderOptionsStringProcedure"))
-        pm.renderer(self.rendererName, edit = True, addGlobalsNode = "defaultRenderGlobals")
-        pm.renderer(self.rendererName, edit = True, addGlobalsNode = "defaultResolution")
-        pm.renderer(self.rendererName, edit = True, addGlobalsNode = self.renderGlobalsNodeName)
+        pm.renderer(self.rendererName, rendererUIName=self.rendererName)
+        pm.renderer(self.rendererName, edit=True, renderProcedure=self.renderCallback("renderProcedure"))
+        pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, batchRenderOptionsProcedure=self.renderCallback("batchRenderOptionsProcedure"))
+        pm.renderer(self.rendererName, edit=True, batchRenderOptionsStringProcedure=self.renderCallback("batchRenderOptionsStringProcedure"))
+        pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultRenderGlobals")
+        pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultResolution")
+        pm.renderer(self.rendererName, edit=True, addGlobalsNode=self.renderGlobalsNodeName)
+        
+        pm.renderer(self.rendererName, edit=True, changeIprRegionProcedure=self.renderCallback("changeIprRegionProcedure"))
+        pm.renderer(self.rendererName, edit=True, iprOptionsProcedure=self.renderCallback("iprOptionsProcedure"))
+        pm.renderer(self.rendererName, edit=True, iprOptionsMenuLabel=self.renderCallback("iprOptionsMenuLabel"))
+        pm.renderer(self.rendererName, edit=True, iprRenderProcedure=self.renderCallback("iprRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, iprRenderSubMenuProcedure=self.renderCallback("iprRenderSubMenuProcedure"))
+        pm.renderer(self.rendererName, edit=True, isRunningIprProcedure=self.renderCallback("isRunningIprProcedure"))
+        pm.renderer(self.rendererName, edit=True, pauseIprRenderProcedure=self.renderCallback("pauseIprRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, refreshIprRenderProcedure=self.renderCallback("refreshIprRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, stopIprRenderProcedure=self.renderCallback("stopIprRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.renderCallback("startIprRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
+        pm.renderer(self.rendererName, edit=True, logoImageName=self.renderCallback("logoImageName"))
+        pm.renderer(self.rendererName, edit=True, renderDiagnosticsProcedure=self.renderCallback("renderDiagnosticsProcedure"))
+        
+        pm.renderer(self.rendererName, edit=True, renderOptionsProcedure=self.renderCallback("renderOptionsProcedure"))
+        pm.renderer(self.rendererName, edit=True, cancelBatchRenderProcedure=self.renderCallback("cancelBatchRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, showBatchRenderProcedure=self.renderCallback("showBatchRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, showRenderLogProcedure=self.renderCallback("showRenderLogProcedure"))
+        pm.renderer(self.rendererName, edit=True, showBatchRenderLogProcedure=self.renderCallback("showBatchRenderLogProcedure"))
+        pm.renderer(self.rendererName, edit=True, renderRegionProcedure=self.renderCallback("renderRegionProcedure"))
+        pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))
+        pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
+        pm.renderer(self.rendererName, edit=True, renderMenuProcedure=self.renderCallback("renderMenuProcedure"))
+            
         
         # because mentalray is still hardcoded in the maya scritps, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults
-        pm.renderer(self.rendererName, edit = True, addGlobalsTab = ('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
 
         # my own tabs
-        pm.renderer(self.rendererName, edit = True, addGlobalsTab = self.renderTabMelProcedure("Renderer"))    
-        pm.renderer(self.rendererName, edit = True, addGlobalsTab = self.renderTabMelProcedure("Translator"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))    
+        self.addUserTabs()
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
+        
         
         log.debug("RegisterRenderer done")
-        
+
+    def addUserTabs(self):
+        pass
+            
     def unRegisterRenderer(self):
-        if pm.renderer(self.rendererName, q = True, exists = True):
-            pm.renderer(self.rendererName, unregisterRenderer = True)
+        if pm.renderer(self.rendererName, q=True, exists=True):
+            pm.renderer(self.rendererName, unregisterRenderer=True)
+    
+    def globalsTabCreateProcNames(self):
+        pass
+    
+    def globalsTabLabels(self):
+        pass
+
+    def globalsTabUpdateProcNames(self):
+        pass
+        
+    def changeIprRegionProcedure(self):
+        log.debug("changeIprRegionProcedure")
+        pass
+
+    def iprOptionsProcedure(self):
+        log.debug("iprOptionsProcedure")
+        pass
+            
+    def iprOptionsMenuLabel(self):
+        log.debug("iprOptionsMenuLabel")
+        pass
+
+    def iprRenderProcedure(self):
+        log.debug("iprRenderProcedure")
+        pass
+
+    def iprRenderSubMenuProcedure(self):
+        log.debug("iprRenderSubMenuProcedure")
+        pass
+            
+    def isRunningIprProcedure(self):
+        
+        return self.ipr_isrunning
+        log.debug("isRunningIprProcedure")
+        pass
+            
+    def pauseIprRenderProcedure(self):
+        log.debug("pauseIprRenderProcedure")
+        pass
+            
+    def refreshIprRenderProcedure(self):
+        log.debug("refreshIprRenderProcedure")
+        pass
+            
+    def stopIprRenderProcedure(self):
+        self.ipr_isrunning = False
+        log.debug("stopIprRenderProcedure")
+        pass
+            
+    def startIprRenderProcedure(self):
+        self.ipr_isrunning = True
+        log.debug("startIprRenderProcedure")
+        pass
+            
+    def logoCallbackProcedure(self):
+        pass
+            
+    def logoImageName(self):
+        pass
+    
+    def renderDiagnosticsProcedure(self):
+        pass
+    
+    def renderGlobalsProcedure(self):
+        pass
+    
