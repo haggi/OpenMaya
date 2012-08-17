@@ -5,6 +5,7 @@
 #include <maya/MStringArray.h>
 #include <maya/MString.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MSelectionList.h>
 
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -381,3 +382,23 @@ float shadowColorIntensity(MFnDependencyNode& depFn)
 	return shadowI;
 }
 
+MObject objectFromName(MString& name)
+{
+    MObject obj;
+    MStatus stat;
+    MSelectionList list;
+    
+    // Attempt to add the given name to the selection list,
+    // then get the corresponding dependency node handle.
+    if (!list.add(name) ||
+        !list.getDependNode(0, obj))
+    {
+        // Failed.
+        stat = MStatus::kInvalidParameter;
+        return obj;
+    }
+
+    // Successful.
+    stat = MStatus::kSuccess;
+    return obj;
+}

@@ -39,6 +39,7 @@ RenderGlobals::RenderGlobals()
 	this->xftimesamples = 2;
 	this->geotimesamples = 2;
 	this->createDefaultLight = false;
+	this->renderType = RenderType::FINAL;
 }
 
 RenderGlobals::~RenderGlobals()

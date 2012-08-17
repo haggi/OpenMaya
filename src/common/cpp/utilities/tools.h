@@ -70,5 +70,7 @@ MString lightColorAsString(MFnDependencyNode& depFn);
 float shadowColorIntensity(MFnDependencyNode& depFn);
 
 void rowToColumn(MMatrix& from, MMatrix& to);
+
+MObject objectFromName(MString& name);
 #endif
 

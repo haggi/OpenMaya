@@ -24,13 +24,13 @@ MStatus initializePlugin( MObject obj )
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 
-	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator );
+	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator, MayaToAppleseed::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: mayatoappleseed");
 		return status;
 	}
 
-	status = plugin.registerCommand(MAYATOCMDIPRNAME, IprTestCmd::creator );
+	status = plugin.registerCommand(MAYATOCMDIPRNAME, IprTestCmd::creator, IprTestCmd::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: IprTestCmd");
 		return status;

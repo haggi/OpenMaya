@@ -97,7 +97,7 @@ MStatus mtap_constantShader::initialize()
 	CHECK_MSTATUS( nAttr.setWritable( false ) );
 	CHECK_MSTATUS(addAttribute( aOutColor ));
 
-	color = nAttr.createColor( "color", "color", &status );
+	color = nAttr.createColor( "ccolor", "ccolor", &status );
 	CHECK_MSTATUS(addAttribute( color ));
 	CHECK_MSTATUS( attributeAffects( color, aOutColor ) );
 

@@ -13,15 +13,19 @@ struct Event
 	enum Types{
 		INTERRUPT = 0,
 		TILEDONE = 1,
-		RENDERDONE = 2,
-		PRETILE = 3,
-		FRAMEUPDATE = 4,
-		IPRSTART = 5,
-		IPRSTOP = 6,
-		IPRPAUSE = 7,
-		IPRREMOVE = 8,
-		IPRUPDATE = 9,
-		USER = 10
+		FRAMEDONE = 2,
+		RENDERDONE = 3,
+		PRETILE = 4,
+		FRAMEUPDATE = 5,
+		IPRSTART = 6,
+		IPRSTOP = 7,
+		IPRPAUSE = 8,
+		IPRREMOVE = 9,
+		IPRUPDATE = 10,
+		IPRFRAMEDONE = 11,
+		STARTRENDER = 12,
+		FINISH = 13,
+		USER = 14
 	};
 	Types type;
 	void *data;

@@ -901,3 +901,4 @@ MayaObject *MayaScene::getObject(MDagPath dp)
 	}
 	return mo;
 }
+

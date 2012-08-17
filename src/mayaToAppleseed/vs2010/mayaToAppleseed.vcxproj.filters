@@ -46,6 +46,9 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{983a5ccb-92c0-4f40-8e3f-28a9cab13b2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\dummyRenderer">
+      <UniqueIdentifier>{22efe55d-4c09-4cb3-89fe-aa87930770de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -150,6 +153,18 @@
     <ClCompile Include="..\src\iprcmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaSceneRendering.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp">
+      <Filter>common\dummyRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp">
+      <Filter>common\dummyRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -250,6 +265,15 @@
     </ClInclude>
     <ClInclude Include="..\src\iprcmd.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h">
+      <Filter>common\dummyRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h">
+      <Filter>common\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h">
+      <Filter>common\dummyRenderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

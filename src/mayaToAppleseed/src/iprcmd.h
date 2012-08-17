@@ -11,15 +11,12 @@
 class  IprTestCmd: public MPxCommand
 {
 public:
-					IprTestCmd() {};
+					IprTestCmd();
 	virtual			~IprTestCmd(); 
 	static MSyntax	newSyntax();
 
 	MStatus     	doIt( const MArgList& args );
 	static void*	creator();
-	static void		startIPR(int dummy);
-	static void		addCallbacks();
-	static void		removeCallbacks();
 
 private:
 };
