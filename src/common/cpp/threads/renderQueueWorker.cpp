@@ -9,6 +9,7 @@
 #include <maya/MItDependencyNodes.h>
 
 #include "../dummyRenderer/dummyScene.h"
+#include "../mayaScene.h"
 
 #include <maya/MGlobal.h>
 
@@ -17,6 +18,8 @@
 static Logging logger;
 
 static MScene *mScenePtr = NULL;
+static MayaScene *mayaScenePtr = NULL;
+
 static bool isRendering = false;
 static bool isIpr = false;
 
@@ -189,7 +192,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 			if(theRenderEventQueue()->empty() )
 				break;
 		}
-
 		theRenderEventQueue()->wait_and_pop(e);
 
 		switch(e.type)
@@ -260,7 +262,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
 			MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
 			break;
-
 		}
 
 		if(isIpr)

@@ -6,6 +6,7 @@
 #include "threads/queue.h"
 #include <maya/MRenderView.h>
 #include "utilities/logging.h"
+#include "threads/renderQueueWorker.h"
 
 static Logging logger;
 
@@ -34,8 +35,6 @@ void mtap_ITileCallback::pre_render(
 				pixels[pid].r = pixels[pid].g = pixels[pid].b = pixels[pid].a = 180.0f; 						
 				pixels[pid].b = 255.0f; 
 			}
-			//pixels[pid].r = pixels[pid].g = pixels[pid].b = pixels[pid].a = 40.0f; 						
-			//pixels[pid].b = 65.0f; 
 
 		}
 	}
@@ -50,7 +49,8 @@ void mtap_ITileCallback::pre_render(
 	e.tile_xmax = x1;
 	e.tile_ymin = y;
 	e.tile_ymax = y1;
-	EventQueue::theQueue()->push(e);
+	theRenderEventQueue()->push(e);
+	//EventQueue::theQueue()->push(e);
 }
 
 // this will be called for interactive renderings if a frame is complete
@@ -60,7 +60,8 @@ void mtap_ITileCallback::post_render(
 	logger.debug(MString("Post render frame:"));
 	EventQueue::Event e;
 	e.type = EventQueue::Event::RENDERDONE;
-	EventQueue::theQueue()->push(e);
+	theRenderEventQueue()->push(e);
+	//EventQueue::theQueue()->push(e);
 }
 
 void mtap_ITileCallback::post_render(
@@ -136,7 +137,8 @@ void mtap_ITileCallback::post_render(
 	e.tile_xmax = x1;
 	e.tile_ymin = miny;
 	e.tile_ymax = maxy;
-	EventQueue::theQueue()->push(e);
+	theRenderEventQueue()->push(e);
+	//EventQueue::theQueue()->push(e);
 }
 
 

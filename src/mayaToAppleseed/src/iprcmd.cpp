@@ -49,21 +49,15 @@ MSyntax IprTestCmd::newSyntax()
 	return syntax;
 }
 
-
-void timerCallback( float time, float lastTime, void *userPtr)
-{
-	//logger.debug("TimerCallback.");
-	RenderQueueWorker::startRenderQueueWorker();
-}
-
 MStatus IprTestCmd::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
 	MGlobal::displayInfo("Executing IprTestCmd ...");
 	logger.setLogLevel(Logging::Debug);
 
-
 	MArgDatabase argData(syntax(), args);
+	logger.debug(MString("NumFlagsUsed: ") + argData.numberOfFlagsUsed());
+
 	EventQueue::Event e;
 	e.data = NULL;
 	if ( argData.isFlagSet("-startRender", 	&stat))

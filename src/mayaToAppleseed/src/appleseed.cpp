@@ -37,6 +37,7 @@
 #include "threads/queue.h"
 #include "utilities/pystring.h"
 #include "mtap_mayaScene.h"
+#include "threads/renderQueueWorker.h"
 
 static Logging logger;
 
@@ -2019,10 +2020,7 @@ void AppleseedRenderer::render(mtap_RenderGlobals *renderGlobals)
 
 	uint width = renderGlobals->imgWidth;
 	uint height = renderGlobals->imgHeight;
-	MStatus status = MRenderView::startRender(width,
-											  height,
-											  false,
-											  true);
+	MStatus status = MRenderView::startRender(width, height, false, true);
 
 	mtap_IRendererController mtap_controller;	
 	asr::DefaultRendererController renderer_controller;
@@ -2119,5 +2117,30 @@ void AppleseedRenderer::render(mtap_RenderGlobals *renderGlobals)
 	logger.debug(MString("Current Image name: ") + renderGlobals->imageOutputFile);
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 
+	project->get_frame()->write(imageOutputFile.asChar());
+}
+
+void AppleseedRenderer::render()
+{
+	logger.debug("AppleseedRenderer::render");
+
+	mtap_IRendererController mtap_controller;	
+	asr::DefaultRendererController renderer_controller;
+	this->tileCallbackFac.reset(new mtap_ITileCallbackFactory());
+
+	asr::MasterRenderer *renderer = NULL;
+
+	renderer = new asr::MasterRenderer(
+		this->project.ref(),
+		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+		&mtap_controller,
+		this->tileCallbackFac.get());
+
+	boost::thread rendererThread(renderStarter, renderer); 	
+	rendererThread.join();
+	
+	this->renderGlobals->getImageName();
+	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);
+	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write(imageOutputFile.asChar());
 }

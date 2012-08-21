@@ -154,7 +154,6 @@
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
-    <ClCompile Include="..\..\common\cpp\rendering\mayaSceneRendering.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />

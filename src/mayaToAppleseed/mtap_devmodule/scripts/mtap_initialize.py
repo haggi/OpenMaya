@@ -1,6 +1,8 @@
 import pymel.core as pm
 import logging
 import Renderer as Renderer
+import traceback
+import sys
 
 reload(Renderer)
 
@@ -214,8 +216,9 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
     
-    def renderProcedure(self):
+    def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
+        print "renderProcedure", width, height, doShadows, doGlow, camera, options
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
@@ -230,7 +233,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         except:
             pass
         self.renderGlobalsNode.imageName.set(imageName)        
-        pm.mayatoappleseed()
+        pm.mayatoappleseed(width=width, height=height, camera=camera)
         
 
 def theRenderer():
@@ -241,6 +244,7 @@ def initRenderer():
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
     except:
+        traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")
         
 def unregister():

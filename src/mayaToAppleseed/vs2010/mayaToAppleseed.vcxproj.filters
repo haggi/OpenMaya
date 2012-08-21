@@ -153,9 +153,6 @@
     <ClCompile Include="..\src\iprcmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\rendering\mayaSceneRendering.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp">
       <Filter>common\dummyRenderer</Filter>
     </ClCompile>

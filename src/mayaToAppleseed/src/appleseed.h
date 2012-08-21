@@ -100,7 +100,7 @@ public:
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
 	asr::MeshObject *createMeshPtr(MObject& meshObject);
 	void render(mtap_RenderGlobals *renderGlobals);
-
+	void render();
 private:
 	asf::auto_release_ptr<asr::Project> project;
 	asf::auto_release_ptr<asr::Assembly> masterAssembly;

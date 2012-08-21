@@ -23,6 +23,7 @@ static Logging logger;
 MayaScene::MayaScene()
 {
 	this->good = true;
+	this->renderType = NORMAL;
 }
 
 MayaScene::~MayaScene()
@@ -370,27 +371,39 @@ bool MayaScene::parseScene()
 
 	this->getLightLinking();
 
-	if( MGlobal::mayaState() != MGlobal::kBatch )
-	{
-		// clear cameras and use only the active one
-		this->clearObjList(this->camList);
-		// if we are in UI rendering state, try to get the current camera
-		M3dView curView = M3dView::active3dView();
-		MDagPath camDagPath;
-		curView.getCamera( camDagPath );
-		MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
-		mo->visible = true;
-		mo->scenePtr = this;
-		mo->instanceNumber = 0;
-		this->camList.push_back(mo);
-		mo->index = (int)(this->camList.size() - 1);
-	}
+	//if( MGlobal::mayaState() != MGlobal::kBatch )
+	//{
+	//	// clear cameras and use only the active one
+	//	this->clearObjList(this->camList);
+	//	// if we are in UI rendering state, try to get the current camera
+	//	M3dView curView = M3dView::active3dView();
+	//	MDagPath camDagPath;
+	//	curView.getCamera( camDagPath );
+	//	MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
+	//	mo->visible = true;
+	//	mo->scenePtr = this;
+	//	mo->instanceNumber = 0;
+	//	this->camList.push_back(mo);
+	//	mo->index = (int)(this->camList.size() - 1);
+	//}
 
 	this->good = true;
 	return true;
 
 }
 
+// the camera from the UI is set via render command
+void MayaScene::setCurrentCamera(MDagPath camDagPath)
+{
+	this->clearObjList(this->camList);
+	// if we are in UI rendering state, try to get the current camera
+	MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
+	mo->visible = true;
+	mo->scenePtr = this;
+	mo->instanceNumber = 0;
+	this->camList.push_back(mo);
+	mo->index = (int)(this->camList.size() - 1);
+}
 
 bool MayaScene::updateScene()
 {

@@ -1,15 +1,17 @@
 #ifndef MTAP_CMD_H
 #define MTAP_CMD_H
 
-#include <maya/MGlobal.h>
-#include "mayarendernodes/rendercmd.h"
+#include <string.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSyntax.h>
+#include <maya/MString.h>
 
 #define MAYATOCMDNAME "mayatoappleseed"
 
-class  MayaToAppleseed: public MayaToRendererCmd
+class  MayaToAppleseed: public MPxCommand
 {
 public:
-					MayaToAppleseed() {};
+					MayaToAppleseed();
 	virtual			~MayaToAppleseed(); 
 	static MSyntax	newSyntax();
 

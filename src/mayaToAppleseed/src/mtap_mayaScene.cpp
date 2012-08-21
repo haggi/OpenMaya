@@ -107,7 +107,9 @@ bool mtap_MayaScene::renderImage()
 
 	if( this->renderGlobals->exportXMLFile)
 		this->asr.writeXML();
+
 	this->asr.render(this->renderGlobals);
+
 	return true;
 }
 

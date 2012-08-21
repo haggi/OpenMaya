@@ -1,8 +1,11 @@
+#include "mayatoappleseed.h"
 #include <maya/MGlobal.h>
 #include <maya/MArgDatabase.h>
-#include "mayatoappleseed.h"
+#include <maya/MArgList.h>
+#include <maya/MSelectionList.h>
 #include "mtap_mayaScene.h"
 #include "utilities/logging.h"
+#include "threads/renderQueueWorker.h"
 
 static Logging logger;
 
@@ -11,47 +14,102 @@ void* MayaToAppleseed::creator()
 	return new MayaToAppleseed();
 }
 
+MayaToAppleseed::MayaToAppleseed() {}
 MayaToAppleseed::~MayaToAppleseed() {}
 
 MSyntax MayaToAppleseed::newSyntax()
 {
 	MSyntax syntax;
+	MStatus stat;
 
+	stat = syntax.addFlag( "-cam", "-camera", MSyntax::kString);
+	stat = syntax.addFlag( "-wi", "-width", MSyntax::kLong);
+	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
+	// Flag -startIPR
+	stat = syntax.addFlag( "-sar", "-startIpr");
+	// Flag -stopIPR
+	syntax.addFlag( "-str", "-stopIpr");
+	// Flag -pauseIPR
+	syntax.addFlag( "-par", "-pauseIpr");
+	
 	return syntax;
-}
-
-void printUsage()
-{
-	MString usage("Usage: mayatoappleseed -basePath /root/projects/myproject/mantra -imagePath /root/projects/myproject/images");
 }
 
 MStatus MayaToAppleseed::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
 	MGlobal::displayInfo("Executing mayatoappleseed...");
-	logger.info("");
 	logger.setLogLevel(Logging::Debug);
-
-	mtap_MayaScene mayaScene = mtap_MayaScene();
 	
-	if( !mayaScene.good )
+	MArgDatabase argData(syntax(), args);
+	EventQueue::Event e;
+	e.data = NULL;
+	
+	int width = -1;
+	int height = -1;
+	if ( argData.isFlagSet("-width", &stat))
+	{
+		argData.getFlagArgument("-width", 0, width);
+		logger.debug(MString("width: ") + width);
+	}
+
+	if ( argData.isFlagSet("-height", &stat))
+	{
+		argData.getFlagArgument("-height", 0, height);
+		logger.debug(MString("height: ") + height);
+	}
+
+	if ( argData.isFlagSet("-startIpr", &stat))
+	{
+
+		logger.debug(MString("-startIpr"));
+		return MS::kSuccess;
+	}
+
+	if ( argData.isFlagSet("-stopIpr", &stat))
+	{
+		logger.debug(MString("-stopIpr"));
+		return MS::kSuccess;
+	}
+
+	if ( argData.isFlagSet("-pauseIpr", &stat))
+	{
+		logger.debug(MString("-pauseIpr"));
+		return MS::kSuccess;
+	}
+
+	logger.debug(MString("normal render"));
+	mtap_MayaScene *mayaScene = new mtap_MayaScene();
+	
+	if( !mayaScene->good )
 	{
 		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
 		return MS::kFailure;
 	}
 
-
-	if( !mayaScene.parseScene() )
+	if( !mayaScene->parseScene() )
 	{
 		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
 		return MS::kFailure;
 	}	
 
-	if(!mayaScene.renderScene())
+	if ( argData.isFlagSet("-camera", &stat))
+	{
+	    MDagPath camera;
+        MSelectionList selectionList;
+		argData.getFlagArgument("-camera", 0, selectionList);
+        stat = selectionList.getDagPath(0, camera);
+		camera.extendToShape();
+		logger.debug(MString("camera: ") + camera.fullPathName());
+		mayaScene->setCurrentCamera(camera);
+	}			
+
+	if(!mayaScene->renderScene())
 	{
 		logger.error("Problems have occurred during rendering of the scene. Sorry cannot proceed.\n\n");
 		return MS::kFailure;
 	}	
+
 	MGlobal::displayInfo("mayatoappleseed rendering done.\n");
 	return MStatus::kSuccess;
 }

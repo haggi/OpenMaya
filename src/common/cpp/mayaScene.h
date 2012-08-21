@@ -12,7 +12,14 @@
 class MayaScene
 {
 public:
+	enum RenderType{
+		NORMAL, 
+		IPR,
+		NONE
+	};
 	bool good;
+	RenderType renderType;
+
 	std::vector<int> lightIdentifier; // plugids for detecting new lighttypes
 	std::vector<int> objectIdentifier; // plugids for detecting new objTypes
 
@@ -39,13 +46,6 @@ public:
 	virtual bool doPreRenderJobs() = 0;  // overwrite this in your definition
 	bool doFrameJobs(); // overwrite this in your definition
 
-	//bool renderImageProcess(); // the actual render process, will make renderImage() superfluos
-	//void prepareRenderView();
-	//void finishRenderView(); 
-	//static bool eventWorkerThread(MayaScene *scene); // this method will process the event queue
-	//static bool renderThread(MayaScene *scene); // this method will start the real rendering in a seperate thread
-	//virtual bool renderThreadWorker() = 0; // overwrite with your render starter 
-
 	virtual bool renderImage() = 0; // the actual render job, overwrite
 	virtual bool doPreFrameJobs() = 0; // overwrite this in your definition
 	virtual bool doPostFrameJobs() = 0; // overwrite this in your definition
@@ -59,7 +59,7 @@ public:
 	virtual void mayaObjectDeleter(MayaObject *) = 0;
 	virtual void getRenderGlobals() = 0;
 	void getPasses();
-
+	void setCurrentCamera(MDagPath camera);
 
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);
