@@ -25,7 +25,8 @@ struct Event
 		IPRFRAMEDONE = 11,
 		STARTRENDER = 12,
 		FINISH = 13,
-		USER = 14
+		IPRUPDATESCENE = 14,
+		USER = 15
 	};
 	Types type;
 	void *data;

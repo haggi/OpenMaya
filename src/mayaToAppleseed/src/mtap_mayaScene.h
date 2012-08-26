@@ -27,7 +27,9 @@ public:
 	virtual MayaObject* mayaObjectCreator(MObject&);
 	virtual void mayaObjectDeleter(MayaObject *);
 	virtual void getRenderGlobals();
-
+	virtual void stopRendering();
+	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
+	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
 	mtap_MayaScene();
 	~mtap_MayaScene();
 };

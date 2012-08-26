@@ -23,6 +23,12 @@ void mtap_IRendererController::on_rendering_abort()
 // This method is called before rendering a single frame.
 void mtap_IRendererController::on_frame_begin()
 {
+	this->status = IRendererController::ContinueRendering;
+
+	if( this->entityUpdateProc != NULL)
+	{
+		this->entityUpdateProc();
+	}
 	//IRendererController::on_frame_begin();
 }
 
@@ -35,11 +41,5 @@ void mtap_IRendererController::on_frame_end()
 // This method is called continuously during rendering.
 mtap_IRendererController::Status mtap_IRendererController::on_progress()
 {
-	 if(computation.isInterruptRequested())
-	 {
-		 logger.debug(MString("mtap_IRendererController interrupt requested"));
-		 return IRendererController::AbortRendering;
-	 }
-	 
-	 return IRendererController::ContinueRendering;
+	 return this->status;
 }

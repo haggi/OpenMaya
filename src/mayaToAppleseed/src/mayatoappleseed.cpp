@@ -42,11 +42,10 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 	logger.setLogLevel(Logging::Debug);
 	
 	MArgDatabase argData(syntax(), args);
-	EventQueue::Event e;
-	e.data = NULL;
 	
 	int width = -1;
 	int height = -1;
+
 	if ( argData.isFlagSet("-width", &stat))
 	{
 		argData.getFlagArgument("-width", 0, width);
@@ -59,16 +58,12 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		logger.debug(MString("height: ") + height);
 	}
 
-	if ( argData.isFlagSet("-startIpr", &stat))
-	{
-
-		logger.debug(MString("-startIpr"));
-		return MS::kSuccess;
-	}
-
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{
 		logger.debug(MString("-stopIpr"));
+		EventQueue::Event e;
+		e.type = EventQueue::Event::IPRSTOP;
+		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
@@ -78,7 +73,7 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		return MS::kSuccess;
 	}
 
-	logger.debug(MString("normal render"));
+	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
 	mtap_MayaScene *mayaScene = new mtap_MayaScene();
 	
 	if( !mayaScene->good )
@@ -103,6 +98,20 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		logger.debug(MString("camera: ") + camera.fullPathName());
 		mayaScene->setCurrentCamera(camera);
 	}			
+
+	if( height > 0)
+		mayaScene->renderGlobals->imgHeight = height;
+
+	if( width > 0)
+		mayaScene->renderGlobals->imgWidth = width;
+
+	if ( argData.isFlagSet("-startIpr", &stat))
+	{
+		logger.debug(MString("-startIpr"));
+		mayaScene->renderType = MayaScene::IPR;
+	}else{
+		logger.debug(MString("normal render"));
+	}
 
 	if(!mayaScene->renderScene())
 	{

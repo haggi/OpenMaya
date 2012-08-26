@@ -30,6 +30,12 @@ bool MayaObject::shadowMapCastingLight()
 	return true;
 }
 
+void MayaObject::updateObject()
+{
+	this->transformMatrices.clear();
+	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
+}
+
 MayaObject::MayaObject(MObject& mobject)
 {
 	this->isInstancerObject = false;
@@ -63,7 +69,6 @@ MayaObject::MayaObject(MObject& mobject)
 	this->scenePtr = NULL;
 	this->lightExcludeList = true; // In most cases only a few lights are ignored, so the list is shorter with excluded lights
 	this->shadowExcludeList = true; // in most cases only a few objects ignore shadows, so the list is shorter with ignoring objects
-
 }
 
 

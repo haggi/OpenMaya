@@ -17,6 +17,7 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "threads/renderQueueWorker.h"
 
 static Logging logger;
 
@@ -834,17 +835,36 @@ bool MayaScene::doFrameJobs()
 				logger.info(MString("update scene done"));
 				this->renderGlobals->currentMbStep++;
 			}
-			this->renderImage();
+
+			EventQueue::Event e;
+			e.data = NULL;
+			e.type = EventQueue::Event::STARTRENDER;
+			e.data = this;
+			theRenderEventQueue()->push(e);
+			RenderQueueWorker::startRenderQueueWorker();
 		}		
 	}
 
 	// if we render from UI jump back to full frame after rendering
+	// TODO consider IPR
 	if( MGlobal::mayaState() != MGlobal::kBatch )
 		MGlobal::viewFrame(this->renderGlobals->currentFrame);
 
 	return true;
 }
 
+
+
+void MayaScene::theRenderThread( MayaScene *mayaScene)
+{
+	mayaScene->renderImage();
+}
+
+void MayaScene::startRenderThread()
+{
+	rendererThread = boost::thread(MayaScene::theRenderThread, this);
+	rendererThread.detach();
+}
 
 bool MayaScene::renderScene()
 {

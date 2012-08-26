@@ -191,20 +191,12 @@ class MayaToRenderer(object):
         pm.mel.eval(aeCallbackProc)
     
 
-#    args['renderProcedure'] = utils.pyToMelProc(arnoldRender.arnoldRender,
-#                                          [('int', 'width'), ('int', 'height'),
-#                                           ('int', 'doShadows'), ('int', 'doGlowPass'),
-#                                           ('string', 'camera'), ('string', 'options')])
 #    args['renderRegionProcedure'] = 'mayaRenderRegion'
 #    args['commandRenderProcedure']    = utils.pyToMelProc(arnoldRender.arnoldBatchRender,
 #                                                    [('string', 'option')])
 #    args['batchRenderProcedure']      = utils.pyToMelProc(arnoldRender.arnoldBatchRender,
 #                                                    [('string', 'option')])
 #    args['cancelBatchRenderProcedure']= utils.pyToMelProc(arnoldRender.arnoldBatchStop)
-#    args['iprRenderProcedure']        = utils.pyToMelProc(arnoldRender.arnoldIprRender,
-#                                                    [('int', 'width'), ('int', 'height'),
-#                                                     ('int', 'doShadows'), ('int', 'doGlowPass'),
-#                                                     ('string', 'camera')])
 #    args['isRunningIprProcedure']     = utils.pyToMelProc(arnoldRender.arnoldIprIsRunning, returnType='int')
 #    args['startIprRenderProcedure']   = utils.pyToMelProc(arnoldRender.arnoldIprStart,
 #                                                    [('string', 'editor'), ('int', 'resolutionX'),
@@ -216,32 +208,7 @@ class MayaToRenderer(object):
 #    args['changeIprRegionProcedure']  = utils.pyToMelProc(arnoldRender.arnoldIprChangeRegion,
 #                                                    [('string', 'renderPanel')])
 #    pm.renderer('arnold', rendererUIName='Arnold Renderer', **args)
-#        
-#    pm.renderer('arnold', edit=True, addGlobalsTab=('Common',
-#                                                      utils.pyToMelProc(createArnoldRendererCommonGlobalsTab, useName=True),
-#                                                      utils.pyToMelProc(updateArnoldRendererCommonGlobalsTab, useName=True)))
-#    pm.renderer('arnold', edit=True, addGlobalsTab=('Arnold Renderer',
-#                                                      utils.pyToMelProc(createArnoldRendererGlobalsTab, useName=True),
-#                                                      utils.pyToMelProc(updateArnoldRendererGlobalsTab, useName=True)))
-#    pm.renderer('arnold', edit=True, addGlobalsTab=('AOVs', 
-#                                                      utils.pyToMelProc(createArnoldAOVTab, useName=True), 
-#                                                      utils.pyToMelProc(updateArnoldAOVTab, useName=True)))
-#    pm.renderer('arnold', edit=True, addGlobalsNode='defaultArnoldRenderOptions')
-#    utils.pyToMelProc(updateBackgroundSettings, useName=True)
-#    #We have to source this file otherwise maya will override
-#    #our mel proc overrides below.
-#    #
-#    pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
-#    
-#    utils.pyToMelProc(addOneTabToGlobalsWindow,
-#                      [('string', 'renderer'), ('string', 'tabLabel'), ('string', 'createProc')],
-#                      useName=True)
-#    utils.pyToMelProc(renderSettingsTabLabel_melToUI,
-#                      [('string', 'mel')],
-#                      useName=True)
-#    utils.pyToMelProc(updateMayaImageFormatControl,
-#                      useName=True)
-    
+
     
     def registerRenderer(self):
         log.debug("registerRenderer")
@@ -255,7 +222,6 @@ class MayaToRenderer(object):
                                                                                                                        ('int', 'doGlow'), 
                                                                                                                        ('string', 'camera'), 
                                                                                                                        ('string', 'options')]))
-        #pm.renderer(self.rendererName, edit=True, renderProcedure=self.renderCallback("renderProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsProcedure=self.renderCallback("batchRenderOptionsProcedure"))
@@ -264,16 +230,20 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultResolution")
         pm.renderer(self.rendererName, edit=True, addGlobalsNode=self.renderGlobalsNodeName)
         
+        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.makeMelProcFromPythonCmd(self.startIprRenderProcedure, [('string', 'editor'), 
+                                                                                                                                       ('int', 'resolutionX'),
+                                                                                                                                       ('int', 'resolutionY'),
+                                                                                                                                       ('string', 'camera')]))
+        pm.renderer(self.rendererName, edit=True, stopIprRenderProcedure=self.makeMelProcFromPythonCmd(self.stopIprRenderProcedure, []))
+        pm.renderer(self.rendererName, edit=True, pauseIprRenderProcedure=self.makeMelProcFromPythonCmd(self.pauseIprRenderProcedure, [('string', 'editor'), ('int', 'pause')]))
+        
         pm.renderer(self.rendererName, edit=True, changeIprRegionProcedure=self.renderCallback("changeIprRegionProcedure"))
         pm.renderer(self.rendererName, edit=True, iprOptionsProcedure=self.renderCallback("iprOptionsProcedure"))
         pm.renderer(self.rendererName, edit=True, iprOptionsMenuLabel=self.renderCallback("iprOptionsMenuLabel"))
         pm.renderer(self.rendererName, edit=True, iprRenderProcedure=self.renderCallback("iprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, iprRenderSubMenuProcedure=self.renderCallback("iprRenderSubMenuProcedure"))
         pm.renderer(self.rendererName, edit=True, isRunningIprProcedure=self.renderCallback("isRunningIprProcedure"))
-        pm.renderer(self.rendererName, edit=True, pauseIprRenderProcedure=self.renderCallback("pauseIprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, refreshIprRenderProcedure=self.renderCallback("refreshIprRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, stopIprRenderProcedure=self.renderCallback("stopIprRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.renderCallback("startIprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
         pm.renderer(self.rendererName, edit=True, logoImageName=self.renderCallback("logoImageName"))
         pm.renderer(self.rendererName, edit=True, renderDiagnosticsProcedure=self.renderCallback("renderDiagnosticsProcedure"))
@@ -343,9 +313,8 @@ class MayaToRenderer(object):
         log.debug("isRunningIprProcedure")
         pass
             
-    def pauseIprRenderProcedure(self):
+    def pauseIprRenderProcedure(self, editor, pause):
         log.debug("pauseIprRenderProcedure")
-        pass
             
     def refreshIprRenderProcedure(self):
         log.debug("refreshIprRenderProcedure")
@@ -354,9 +323,8 @@ class MayaToRenderer(object):
     def stopIprRenderProcedure(self):
         self.ipr_isrunning = False
         log.debug("stopIprRenderProcedure")
-        pass
             
-    def startIprRenderProcedure(self):
+    def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True
         log.debug("startIprRenderProcedure")
         pass

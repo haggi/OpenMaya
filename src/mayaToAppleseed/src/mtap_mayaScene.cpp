@@ -1,8 +1,12 @@
 #include <maya/MGlobal.h>
+#include <maya/MSelectionList.h>
+#include <maya/MFnDagNode.h>
 
 #include "mtap_mayaScene.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
 #include "appleseed.h"
+
 
 static Logging logger;
 
@@ -96,6 +100,72 @@ bool mtap_MayaScene::doPostRenderJobs()
 	return true;
 }
 
+//
+//	Check if the selected nodes exist in the scene->MayaObject lists. 
+//	At the moment only shape nodes are exported because we do not have hierarchies yet.
+//	So we make sure that we select a shape node for comparision.
+//
+void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList)
+{
+	std::vector<MObject>::iterator moIter;
+	std::vector<MayaObject *>::iterator mIter;
+
+	for( moIter = mObjectList.begin(); moIter != mObjectList.end(); moIter++)
+	{
+		MSelectionList select;
+		MString objName = getObjectName(*moIter);
+		logger.debug(MString("Object to modify:") + objName);
+		select.add(objName);
+		MDagPath dp;
+		select.getDagPath(0, dp);
+		dp.extendToShape();
+		MObject dagObj = dp.node();
+		//MFnDagNode dagNode(*moIter);
+		//dagObj = dagNode.dagPath().node();
+		for( mIter = this->camList.begin(); mIter != camList.end(); mIter++)
+		{
+			MayaObject *mo = *mIter;
+			if( dagObj == mo->mobject)
+				mtapObjectList.push_back(mo);
+		}		
+		for( mIter = this->objectList.begin(); mIter != objectList.end(); mIter++)
+		{
+		}		
+		for( mIter = this->lightList.begin(); mIter != lightList.end(); mIter++)
+		{
+		}		
+	}
+}
+
+//
+//	after idle process has started, this procedure is called. It does:
+//		search the mobject in the MayaObject list
+//		puts all found objects into a updateList
+//		sets the renderer to restart. 
+//	Then the renderer calls the appleseed updateEntities procedure at the beginning
+//	of a new rendering.
+//
+void mtap_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
+{
+	std::vector<MayaObject *> mayaObjectList;
+	mobjectListToMayaObjectList(mobjList, mayaObjectList);
+	std::vector<MayaObject *>::iterator mIter;
+	this->asr.interactiveUpdateList.clear();
+
+	for( mIter = mayaObjectList.begin(); mIter != mayaObjectList.end(); mIter++)
+	{
+		mtap_MayaObject *mo = (mtap_MayaObject *)*mIter;
+		mo->updateObject(); // update transforms
+		this->asr.interactiveUpdateList.push_back(mo);
+	}	
+	this->asr.mtap_controller.status = asr::IRendererController::RestartRendering;
+}
+
+void mtap_MayaScene::stopRendering()
+{
+	this->asr.mtap_controller.status = asr::IRendererController::AbortRendering;
+}
+
 bool mtap_MayaScene::renderImage()
 {
 	logger.debug("mtap_MayaScene::renderImage");
@@ -108,7 +178,8 @@ bool mtap_MayaScene::renderImage()
 	if( this->renderGlobals->exportXMLFile)
 		this->asr.writeXML();
 
-	this->asr.render(this->renderGlobals);
+	//this->asr.render(this->renderGlobals);
+	this->asr.render();
 
 	return true;
 }

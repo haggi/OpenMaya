@@ -216,11 +216,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
     
-    def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
-        log.debug("renderProcedure")
-        print "renderProcedure", width, height, doShadows, doGlow, camera, options
-        self.createGlobalsNode()    
-        self.preRenderProcedure()
+    def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
         self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
@@ -233,7 +229,28 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         except:
             pass
         self.renderGlobalsNode.imageName.set(imageName)        
+    
+    def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
+        log.debug("renderProcedure")
+        print "renderProcedure", width, height, doShadows, doGlow, camera, options
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
+        self.setImageName()
         pm.mayatoappleseed(width=width, height=height, camera=camera)
+        
+    def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
+        self.ipr_isrunning = True
+        log.debug("startIprRenderProcedure")
+        print "startIprRenderProcedure", editor, resolutionX, resolutionY, camera
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
+        self.setImageName()
+        pm.mayatoappleseed(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
+        
+    def stopIprRenderProcedure(self):
+        self.ipr_isrunning = False
+        log.debug("stopIprRenderProcedure")
+        pm.mayatoappleseed(stopIpr=True)
         
 
 def theRenderer():

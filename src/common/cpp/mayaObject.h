@@ -54,6 +54,7 @@ public:
 	MayaObject *origObject; // this is necessary for instanced objects that have to access the original objects data
 	MayaObject(MObject& mobject);
 	~MayaObject();
+	void updateObject();
 };
 
 #endif

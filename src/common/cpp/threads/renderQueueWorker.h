@@ -19,13 +19,17 @@ public:
 	static void startRenderQueueWorker();
 	static void renderQueueWorkerTimerCallback( float time, float lastTime, void *userPtr);
 	static void renderQueueWorkerNodeDirtyCallback( void *userPtr);
-	static void renderQueueWorkerIdleCallback(void *dummy);
+	static void renderQueueWorkerIdleCallback(float time, float lastTime, void *userPtr);
+	//static void renderQueueWorkerIdleCallback(void *dummy);
 	static void sceneCallback(void *);
 	static void pluginUnloadCallback(void *);
+	static void computationEventThread(void *);
+private:
 };
+
 
 static MComputation renderComputation;
 
-bool isRenderingAtTheMoment();
+std::vector<MObject> *getModifiedObjectList();
 
 #endif

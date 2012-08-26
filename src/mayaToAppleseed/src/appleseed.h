@@ -32,12 +32,14 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <maya/MString.h>
 #include <maya/MFnDependencyNode.h>
 
 #include "mtap_tileCallback.h"
 #include "mtap_mayaObject.h"
+#include "mtap_rendererController.h"
 
 // shaderdefs
 
@@ -65,6 +67,9 @@ public:
 	~AppleseedRenderer();
 	mtap_MayaScene *mtap_scene;
 	mtap_RenderGlobals *renderGlobals;
+	
+	std::vector<mtap_MayaObject *> interactiveUpdateList;
+
 	void writeXML();
 	void defineProject();
 	void defineConfig();
@@ -94,13 +99,20 @@ public:
 	void defineNurbsSurface(mtap_MayaObject *obj);
 	void defineParticle(mtap_MayaObject *obj);
 	void defineFluid(mtap_MayaObject *obj);
+	
+	static void updateEntitiesCaller();
+	void updateEntities();
 
-	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals);
+	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
 	asr::MeshObject *createMeshPtr(MObject& meshObject);
-	void render(mtap_RenderGlobals *renderGlobals);
+	//void render(mtap_RenderGlobals *renderGlobals);
 	void render();
+	//static void renderStarter(AppleseedRenderer *asrenderer);
+	asr::MasterRenderer *masterRenderer;
+	mtap_IRendererController mtap_controller;
+	//boost::thread rendererThread;
 private:
 	asf::auto_release_ptr<asr::Project> project;
 	asf::auto_release_ptr<asr::Assembly> masterAssembly;
@@ -108,6 +120,10 @@ private:
 	asf::auto_release_ptr<asr::Scene> scene;
 	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
 	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);
+	asf::auto_release_ptr<asf::LogTargetBase> log_target;
+	asf::auto_release_ptr<asf::FileLogTarget> m_log_target;
+	asf::LogTargetBase *log_targetPtr;
+
 };
 
 void eventListener();

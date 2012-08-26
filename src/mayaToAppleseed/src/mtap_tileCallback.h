@@ -3,6 +3,7 @@
 
 #include "renderer/api/rendering.h"
 #include "foundation/image/tile.h"
+#include <maya/MRenderView.h>
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -10,7 +11,6 @@ namespace asr = renderer;
 class mtap_ITileCallback : public asr::ITileCallback
 {
 public:
-
     // Delete this instance.
     virtual void release(){ delete this;};
 
@@ -30,6 +30,8 @@ public:
         const asr::Frame& frame,
         const size_t tile_x,
         const size_t tile_y);
+
+	void copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame& frame);
 };
 
 class mtap_ITileCallbackFactory : public asr::ITileCallbackFactory

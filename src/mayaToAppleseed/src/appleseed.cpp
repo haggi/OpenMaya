@@ -1,7 +1,6 @@
 
 
 #include "appleseed.h"
-#include "mtap_rendererController.h"
 #include "mtap_tileCallback.h"
 #include "shadingtools/material.h"
 
@@ -39,6 +38,9 @@
 #include "mtap_mayaScene.h"
 #include "threads/renderQueueWorker.h"
 
+#include <stdio.h>
+#include <iostream>
+
 static Logging logger;
 
 static int tileCount = 0;
@@ -48,11 +50,14 @@ using namespace AppleRender;
 
 std::vector<asr::Entity *> definedEntities;
 
+static AppleseedRenderer *appleRenderer = NULL;
+
 AppleseedRenderer::AppleseedRenderer()
 {
 	this->mtap_scene = NULL;
 	this->renderGlobals = NULL;
 	definedEntities.clear();
+	appleRenderer = this;
 }
 
 AppleseedRenderer::~AppleseedRenderer()
@@ -62,13 +67,27 @@ AppleseedRenderer::~AppleseedRenderer()
 	logger.debug("Releasing project");
 	this->project.reset();
 	logger.debug("Releasing done.");
+	appleRenderer = NULL;
 }
 
 void AppleseedRenderer::defineProject()
 {
 	//TODO: the logging procedures of applesse causes a crash, no idea why.
-	//std::auto_ptr<asf::LogTargetBase> log_target(asf::create_console_log_target(stderr));
-    //asr::global_logger().add_target(log_target.get());
+	//asf::auto_release_ptr<asf::LogTargetBase> log_target(asf::create_console_log_target(stdout));
+	//asr::global_logger().add_target(log_target.get());
+	//asr::global_logger().add_target(log_target.release());
+
+	//RENDERER_LOG_INFO("Testlog");
+
+	//fprintf(stdout, "-------------DassnTest---------: %d:",123);
+	//fflush(stdout);
+
+	//if( this->mtap_scene->renderType == MayaScene::NORMAL)
+	//{
+	//	m_log_target.reset(asf::create_file_log_target());
+	//	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
+	//	asr::global_logger().add_target(m_log_target.get());
+	//}
 
 	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + ".appleseed";
     this->project = asf::auto_release_ptr<asr::Project>(asr::ProjectFactory::create("test project"));
@@ -1897,7 +1916,7 @@ void AppleseedRenderer::MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& app
 //	Appleseed does not support more than one camera at the moment, so break after the first one.
 //
 
-void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals)
+void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera)
 {
 	MStatus stat;
 
@@ -1928,13 +1947,13 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 				getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
 				getFloat(MString("focalLength"), camFn, focalLength);
 				getBool(MString("depthOfField"), camFn, dof);
-				if( dof )
-				{
+				//if( dof )
+				//{
 					getFloat(MString("focusDistance"), camFn, focusDistance);
 					getFloat(MString("fStop"), camFn, fStop);
 					getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
 					getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
-				}
+				//}
 			}		
 		}
 
@@ -1944,9 +1963,17 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		verticalFilmAperture = horizontalFilmAperture * imageAspect;
 		MString filmBack = MString("") + horizontalFilmAperture + " " + verticalFilmAperture;
 		MString focalLen = MString("") + focalLength * 0.001f;
-
-		if( dof )
+		
+		asr::Camera *appleCam;
+		if( updateCamera )
 		{
+			appleCam = this->project->get_scene()->get_camera();
+			appleCam->get_parameters().insert("focal_length", focalLen.asChar());
+			appleCam->get_parameters().insert("focal_distance", (MString("") + focusDistance).asChar());
+			appleCam->get_parameters().insert("f_stop",  (MString("") + fStop).asChar());
+			appleCam->get_parameters().insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
+			appleCam->get_parameters().insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
+		}else{
 			this->camera = asr::ThinLensCameraFactory().create(
 					cam->shortName.asChar(),
 					asr::ParamArray()
@@ -1957,29 +1984,36 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 						.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar())
 						.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar())
 						);
-		}else{
-			this->camera = asr::PinholeCameraFactory().create(
-					cam->shortName.asChar(),
-					asr::ParamArray()
-						.insert("film_dimensions", filmBack.asChar())
-						.insert("focal_length", focalLen.asChar()));
+			appleCam = this->camera.get();
 		}
 
+
+
+		//if( dof )
+		//{
+		//}else{
+		//	this->camera = asr::PinholeCameraFactory().create(
+		//			cam->shortName.asChar(),
+		//			asr::ParamArray()
+		//				.insert("film_dimensions", filmBack.asChar())
+		//				.insert("focal_length", focalLen.asChar()));
+		//}
+		
 		asf::Matrix4d appMatrix;
 		size_t numSteps =  cam->transformMatrices.size();
 		size_t divSteps = numSteps;
 		if( divSteps > 1)
 			divSteps -= 1;
-		//float stepSize = fabs((renderGlobals->mbEndTime - renderGlobals->mbStartTime) / (float)divSteps);
 		float stepSize = 1.0f / (float)divSteps;
 		float start = 0.0f;
 
+		appleCam->transform_sequence().clear();
 		for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
 		{
 			MMatrix colMatrix = cam->transformMatrices[matrixId];
 			this->MMatrixToAMatrix(colMatrix, appMatrix);
 
-			camera->transform_sequence().set_transform(
+			appleCam->transform_sequence().set_transform(
 				start + stepSize * matrixId,
 				asf::Transformd(appMatrix));
 		}
@@ -1987,160 +2021,90 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 	}
 }
 
-//
-//	Seperate thread simply waiting for a render interrupt event like pessing the 'esc' key
-//
-
-void eventListener()
+void AppleseedRenderer::updateEntities()
 {
-    while(true) 
+	if( this->interactiveUpdateList.size() == 0)
+		return;
+
+	size_t numElements = this->interactiveUpdateList.size();
+	logger.debug(MString("Found ") + numElements + " for update.");
+	std::vector<mtap_MayaObject *>::iterator iter;
+	for( iter = this->interactiveUpdateList.begin(); iter != this->interactiveUpdateList.end(); iter++)
 	{
-        if(computation.isInterruptRequested()) 
-			break ;
-		boost::this_thread::sleep(boost::posix_time::milliseconds(10)); 
-    }
-	EventQueue::Event e;
-	e.data = NULL;
-	e.type = EventQueue::Event::INTERRUPT;
-	EventQueue::theQueue()->push(e);
-}
-
-void renderStarter( asr::MasterRenderer *renderer)
-{
-	renderer->render();
-	EventQueue::Event e;
-	e.data = NULL;
-	e.type = EventQueue::Event::RENDERDONE;
-	EventQueue::theQueue()->push(e);
-}
-
-void AppleseedRenderer::render(mtap_RenderGlobals *renderGlobals)
-{
-	logger.debug("AppleseedRenderer::render");
-
-	uint width = renderGlobals->imgWidth;
-	uint height = renderGlobals->imgHeight;
-	MStatus status = MRenderView::startRender(width, height, false, true);
-
-	mtap_IRendererController mtap_controller;	
-	asr::DefaultRendererController renderer_controller;
-	this->tileCallbackFac.reset(new mtap_ITileCallbackFactory());
-
-	asr::MasterRenderer *renderer = NULL;
-
-	bool renderViewExists = MRenderView::doesRenderEditorExist();
-	renderer = new asr::MasterRenderer(
-		this->project.ref(),
-		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
-		&mtap_controller,
-		this->tileCallbackFac.get());
-
-	computation.beginComputation();
-
-	boost::thread rendererThread(renderStarter, renderer); 
-
-	// the events will contain interrupts, tile done, frame done etc. 
-	// the event structure will eventually contain a pointer to a frame or a tile
-	// this data will be created in the tile callback and has to be deleted as soon as 
-	// they are not used any more
-	float numTilesX = (float)width / (float)renderGlobals->tilesize;
-	float numTilesY = (float)height / (float)renderGlobals->tilesize;
-	int numTiles = (int)(numTilesX * numTilesY);
-	int tileCount = 0;
-
-	EventQueue::Event e;
-	while(true)
-	{
-		EventQueue::theQueue()->wait_and_pop(e);
-		if(e.type == EventQueue::Event::INTERRUPT)
+		mtap_MayaObject *obj = *iter;
+		if( obj->mobject.hasFn(MFn::kCamera))
 		{
-			logger.debug(MString("Interrupt called."));
-			break;
-		}
-		if(e.type == EventQueue::Event::PRETILE)
-		{
-			//logger.debug(MString("PreTile called."));
-			if( e.data != NULL)
-			{
-				//reverse tile position in image
-				size_t miny = height - e.tile_ymax;
-				size_t maxy = height - e.tile_ymin - 1;
+			logger.debug(MString("Found camera for update: ") + obj->shortName);
 
-				RV_PIXEL* pixels = (RV_PIXEL*)e.data;
-				if( renderViewExists )
-				{
-					MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, miny, maxy, pixels);
-					MRenderView::refresh(e.tile_xmin, e.tile_xmax, miny, maxy);
-				}
-				delete[] pixels;
-			}
-		}
-		if(e.type == EventQueue::Event::RENDERDONE)
-		{
-			logger.debug(MString("Rendering done called."));
-			break;
-		}
-		if(e.type == EventQueue::Event::TILEDONE)
-		{
-			//logger.debug(MString("Tile done called."));
-			if( e.data != NULL)
-			{
-				if( ((tileCount++ % 20) == 0) || (tileCount == numTiles))
-				{
-					//logger.progress(MString("Tile ") + tileCount + " of " + numTiles + " done");
-					int p =  (int)((float)tileCount/(float)numTiles * 100.0);
-					MString perc =  MString("") + p;
-					if( p < 10)
-						perc = MString(" ") + perc;
-					logger.progress(MString("") + perc + "% done");
-				}
-				RV_PIXEL* pixels = (RV_PIXEL*)e.data;
-				if( renderViewExists )
-				{
-					MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, pixels);
-					MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
-				}
-				delete[] pixels;
-			}
+			this->defineCamera(this->mtap_scene->camList, this->renderGlobals, true);
+			//// find camera in scene
+			//asr::Camera *cam = this->project->get_scene()->get_camera();
+			////asr::Camera *cam = this->scene->get_camera();
+			//MString camName = cam->get_name();
+			//if(!(camName == obj->shortName))
+			//{
+			//	logger.debug(MString("camera names form appleseed: ") + camName + " and mayascene " + obj->shortName + " do not match.");
+			//	continue;
+			//}
+
+			//// At the moment, just update the camera matrix nothing else.
+
+			//MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
+			//asf::Matrix4d appMatrix;
+			//this->MMatrixToAMatrix(colMatrix, appMatrix);
+			//cam->transform_sequence().clear(); // interactive no motionblur after update
+			//cam->transform_sequence().set_transform( 0, asf::Transformd(appMatrix));
 		}
 	}
-
-	computation.endComputation();
-
-	logger.debug(MString("EventQueue done."));
-	
-	rendererThread.join();
-	
-	MRenderView::endRender();
-
-	renderGlobals->getImageName();
-	logger.debug(MString("Current Image name: ") + renderGlobals->imageOutputFile);
-	MString imageOutputFile =  renderGlobals->imageOutputFile;
-
-	project->get_frame()->write(imageOutputFile.asChar());
 }
+
+void AppleseedRenderer::updateEntitiesCaller()
+{
+	logger.debug("AppleseedRenderer::updateEntities");
+	if(appleRenderer != NULL)
+		appleRenderer->updateEntities();
+}
+
 
 void AppleseedRenderer::render()
 {
 	logger.debug("AppleseedRenderer::render");
 
-	mtap_IRendererController mtap_controller;	
-	asr::DefaultRendererController renderer_controller;
+	bool isIpr = this->mtap_scene->renderType == MayaScene::IPR;
+
 	this->tileCallbackFac.reset(new mtap_ITileCallbackFactory());
 
-	asr::MasterRenderer *renderer = NULL;
-
-	renderer = new asr::MasterRenderer(
-		this->project.ref(),
-		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
-		&mtap_controller,
-		this->tileCallbackFac.get());
-
-	boost::thread rendererThread(renderStarter, renderer); 	
-	rendererThread.join();
+	masterRenderer = NULL;
 	
+	mtap_controller.entityUpdateProc = updateEntitiesCaller;
+
+	if( this->mtap_scene->renderType == MayaScene::NORMAL)
+	{
+		masterRenderer = new asr::MasterRenderer(
+			this->project.ref(),
+			this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+			&mtap_controller,
+			this->tileCallbackFac.get());
+	}
+	if( this->mtap_scene->renderType == MayaScene::IPR)
+	{
+		masterRenderer = new asr::MasterRenderer(
+			this->project.ref(),
+			this->project->configurations().get_by_name("interactive")->get_inherited_parameters(),
+			&mtap_controller,
+			this->tileCallbackFac.get());
+	}
+
+	
+	masterRenderer->render();
+
 	this->renderGlobals->getImageName();
 	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write(imageOutputFile.asChar());
+
+	EventQueue::Event e;
+	e.data = NULL;
+	e.type = EventQueue::Event::FRAMEDONE;
+	theRenderEventQueue()->push(e);
 }

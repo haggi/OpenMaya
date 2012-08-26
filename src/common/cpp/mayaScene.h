@@ -5,6 +5,7 @@
 #include <maya/MObject.h>
 #include <maya/MDagPathArray.h>
 #include <vector>
+#include <boost/thread/thread.hpp>
 
 #include "renderGlobals.h"
 #include "mayaObject.h"
@@ -33,20 +34,25 @@ public:
 
 	float currentFrame;
 	RenderGlobals *renderGlobals;
+	boost::thread rendererThread;
 
 	bool parseScene(); // pase whole scene and save/analyze objects
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool updateScene(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject&) = 0;
 	virtual void deformUpdateCallback(MayaObject&) = 0;
+	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
 	bool updateInstancer(); // update all necessary objects
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
 	virtual bool translateShapes(int timeStep) = 0; // overwrite this in your definition
 	bool renderScene();
 	virtual bool doPreRenderJobs() = 0;  // overwrite this in your definition
 	bool doFrameJobs(); // overwrite this in your definition
-
-	virtual bool renderImage() = 0; // the actual render job, overwrite
+	static void theRenderThread( MayaScene *mScene);
+	void startRenderThread();
+	virtual void stopRendering() = 0;
+	// the renderImage method is expected to fire of a render process somehow.
+	virtual bool renderImage() = 0; // the actual render job
 	virtual bool doPreFrameJobs() = 0; // overwrite this in your definition
 	virtual bool doPostFrameJobs() = 0; // overwrite this in your definition
 	virtual bool doPostRenderJobs() = 0; // overwrite this in your definition

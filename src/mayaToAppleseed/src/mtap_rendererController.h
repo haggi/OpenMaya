@@ -2,17 +2,20 @@
 #define MTAP_RENDERER_CONTROLLER_H
 
 #include "renderer/api/rendering.h"
-#include <maya/MComputation.h>
 
-namespace asf = foundation;
+//namespace asf = foundation;
 namespace asr = renderer;
 
 
 class mtap_IRendererController : public asr::IRendererController
 {
   public:
+	  mtap_IRendererController()
+	  {
+		  status =  asr::IRendererController::ContinueRendering;
+	  };
     // Destructor.
-    //~mtap_IRendererController() {}
+    ~mtap_IRendererController() {}
 
     // This method is called before rendering begins.
     void on_rendering_begin();
@@ -32,8 +35,9 @@ class mtap_IRendererController : public asr::IRendererController
     // This method is called continuously during rendering.
     Status on_progress();
 
-};
+	volatile Status status;
 
-static MComputation computation;
+	void (*entityUpdateProc)();
+};
 
 #endif
