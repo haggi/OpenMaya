@@ -147,6 +147,12 @@ public:
 	MString imageName;
 	MString imageOutputFile; // complete path to current image file
 
+	bool	useRenderRegion;
+	int		regionLeft;
+	int		regionRight;
+	int		regionBottom;
+	int		regionTop;
+
 	bool detectShapeDeform;
 
 	std::vector<RenderPass *> renderPasses;

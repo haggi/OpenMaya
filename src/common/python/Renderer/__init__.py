@@ -72,43 +72,43 @@ class MayaToRenderer(object):
     def renderProcedure(self, width, height, doShadows, doGlowPass, camera, options):
         pass
     
-    def batchRenderOptionsProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def batchRenderOptionsProcedure(self):
         self.preRenderProcedure()
         log.debug("batchRenderOptionsProcedure")
     
-    def batchRenderOptionsStringProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def batchRenderOptionsStringProcedure(self):
         self.preRenderProcedure()
         log.debug("batchRenderOptionsStringProcedure")
     
-    def cancelBatchRenderProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def cancelBatchRenderProcedure(self):
         self.preRenderProcedure()
         log.debug("cancelBatchRenderProcedure")
     
-    def showBatchRenderProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def showBatchRenderProcedure(self):
         self.preRenderProcedure()
         log.debug("showBatchRenderProcedure")
     
-    def showRenderLogProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def showRenderLogProcedure(self):
         self.preRenderProcedure()
         log.debug("showRenderLogProcedure")
     
-    def showBatchRenderLogProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def showBatchRenderLogProcedure(self):
         self.preRenderProcedure()
         log.debug("showBatchRenderLogProcedure")
     
-    def renderRegionProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def renderRegionProcedure(self):
         self.preRenderProcedure()
         log.debug("renderRegionProcedure")
     
-    def textureBakingProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def textureBakingProcedure(self):
         self.preRenderProcedure()
         log.debug("textureBakingProcedure")
     
-    def renderingEditorsSubMenuProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def renderingEditorsSubMenuProcedure(self):
         self.preRenderProcedure()
         log.debug("renderingEditorsSubMenuProcedure")
     
-    def renderMenuProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def renderMenuProcedure(self):
         self.preRenderProcedure()
         log.debug("renderMenuProcedure")
             
@@ -253,11 +253,11 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, showBatchRenderProcedure=self.renderCallback("showBatchRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, showRenderLogProcedure=self.renderCallback("showRenderLogProcedure"))
         pm.renderer(self.rendererName, edit=True, showBatchRenderLogProcedure=self.renderCallback("showBatchRenderLogProcedure"))
-        pm.renderer(self.rendererName, edit=True, renderRegionProcedure=self.renderCallback("renderRegionProcedure"))
         pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))
         pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
         pm.renderer(self.rendererName, edit=True, renderMenuProcedure=self.renderCallback("renderMenuProcedure"))
             
+        pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
         
         # because mentalray is still hardcoded in the maya scritps, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults

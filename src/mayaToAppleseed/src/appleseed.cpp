@@ -82,12 +82,6 @@ void AppleseedRenderer::defineProject()
 	//fprintf(stdout, "-------------DassnTest---------: %d:",123);
 	//fflush(stdout);
 
-	//if( this->mtap_scene->renderType == MayaScene::NORMAL)
-	//{
-	//	m_log_target.reset(asf::create_file_log_target());
-	//	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
-	//	asr::global_logger().add_target(m_log_target.get());
-	//}
 
 	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + ".appleseed";
     this->project = asf::auto_release_ptr<asr::Project>(asr::ProjectFactory::create("test project"));
@@ -528,6 +522,21 @@ void AppleseedRenderer::defineConfig()
 		.insert_path("generic_frame_renderer.rendering_threads", numThreads.asChar())
 		.insert_path("lighting_engine", lightingEngine.asChar())
 		.insert_path((lightingEngine + ".max_path_length").asChar(), maxTraceDepth.asChar());
+
+	if( this->renderGlobals->useRenderRegion )
+	{
+		int ybot = (this->renderGlobals->imgHeight - this->renderGlobals->regionBottom);
+		int ytop = (this->renderGlobals->imgHeight - this->renderGlobals->regionTop);
+		int ymin = ybot <  ytop ? ybot :  ytop;
+		int ymax = ybot >  ytop ? ybot :  ytop;
+		MString regionString = MString("") + this->renderGlobals->regionLeft + " "  + ymin;
+		regionString += MString(" ") + this->renderGlobals->regionRight + " "  + ymax;
+		logger.debug("Render region is turned on rendering: " + regionString);
+		this->project->configurations()
+        .get_by_name("final")->get_parameters()
+		.insert_path("generic_tile_renderer.crop_window", regionString.asChar());
+	}
+
 	if( renderGlobals->directLightSamples > 0)
 	{
 		this->project->configurations()
@@ -1364,6 +1373,44 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 	this->addDefaultMaterial(assembly, materialNames);
 }
 
+void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
+{
+	bool perShapeAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
+	asr::Assembly *assembly = this->masterAssembly.get();
+	
+	if( perShapeAssembly )
+	{
+		MString assemblyName = "shapeAssembly" + obj->shortName;
+		MString assemblyInstName = "assembly_inst_" + obj->shortName + obj->instanceNumber;
+		asr::AssemblyInstance *assemblyInstance = this->project->get_scene()->assembly_instances().get_by_name(assemblyInstName.asChar());
+		if( assemblyInstance == NULL)
+		{
+			logger.debug(MString("Assembly for object ") + obj->shortName + " not found. Skipping.");
+			return;
+		}
+		logger.debug(MString("Update object ") + obj->shortName);
+		fillTransformMatices(obj, assemblyInstance);
+	}	
+}
+
+void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
+{
+	bool perShapeAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
+	asr::Assembly *assembly = this->project->get_scene()->assemblies().get_by_name("assembly"); // master assembly
+	if( assembly == NULL )
+	{
+		logger.debug("Master assembly not found for light update.");
+		return;
+	}	
+	MString lightName = obj->shortName;
+	logger.debug(MString("Update light ") + obj->shortName);
+	asr::Light *light = assembly->lights().get_by_name(lightName.asChar());
+	if( light != NULL )
+	{
+		fillTransformMatices(obj, light);
+	}
+}
+
 void AppleseedRenderer::defineObject(mtap_MayaObject *obj)
 {
 	logger.debug(MString("asr define obj ") + obj->shortName);
@@ -1756,6 +1803,58 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 	return true;
 }
 
+void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance)
+{
+	assInstance->transform_sequence().clear();
+	size_t numSteps =  obj->transformMatrices.size();
+	size_t divSteps = numSteps;
+	if( divSteps > 1)
+		divSteps -= 1;
+	float stepSize = 1.0f / (float)divSteps;
+	float start = 0.0f;
+
+	asf::Matrix4d appMatrix;
+	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
+	{
+		MMatrix colMatrix = obj->transformMatrices[matrixId];
+		this->MMatrixToAMatrix(colMatrix, appMatrix);
+
+		assInstance->transform_sequence().set_transform(
+			start + stepSize * matrixId,
+			asf::Transformd(appMatrix));
+	}
+}
+
+void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *assInstance)
+{
+	assInstance->transform_sequence().clear();
+	size_t numSteps =  obj->transformMatrices.size();
+	size_t divSteps = numSteps;
+	if( divSteps > 1)
+		divSteps -= 1;
+	float stepSize = 1.0f / (float)divSteps;
+	float start = 0.0f;
+
+	asf::Matrix4d appMatrix;
+	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
+	{
+		MMatrix colMatrix = obj->transformMatrices[matrixId];
+		this->MMatrixToAMatrix(colMatrix, appMatrix);
+
+		assInstance->transform_sequence().set_transform(
+			start + stepSize * matrixId,
+			asf::Transformd(appMatrix));
+	}
+}
+
+void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Light *light)
+{
+	asf::Matrix4d appMatrix;
+	MMatrix colMatrix = obj->transformMatrices[0];
+	this->MMatrixToAMatrix(colMatrix, appMatrix);
+	light->set_transform(asf::Transformd(appMatrix));	
+}
+
 void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList, std::vector<MayaObject *>& instancerList)
 {
 	logger.debug("AppleseedRenderer::defineScene");
@@ -1766,8 +1865,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
         asr::AssemblyInstanceFactory::create(
             "master_assembly_inst",
             asr::ParamArray(),
-            *this->masterAssembly,
-            asf::Transformd(asf::Matrix4d::identity())));
+            *this->masterAssembly));
 
     // Insert the assembly into the scene.
     this->scene->assemblies().insert(this->masterAssembly);
@@ -1789,12 +1887,14 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 			{
 				asr::Assembly *assembly = obj->objectAssembly.get();
 				logger.debug(MString("Adding orig geo assembly for ") + obj->shortName);
-				this->scene->assembly_instances().insert(
-					asr::AssemblyInstanceFactory::create(
+				asf::auto_release_ptr<asr::AssemblyInstance> assFacPtr = asr::AssemblyInstanceFactory::create(
 					(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
 						asr::ParamArray(),
-						*assembly,
-						asf::Transformd(tmatrix)));
+						*assembly);
+
+				fillTransformMatices(obj, assFacPtr.get());
+				this->scene->assembly_instances().insert(assFacPtr);
+
 				this->scene->assemblies().insert((asf::auto_release_ptr<asr::Assembly>)assembly);
 
 				continue;
@@ -1805,12 +1905,13 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 			logger.debug(MString("Found instance for ") + obj->shortName);
 			mtap_MayaObject *origObj = (mtap_MayaObject *)obj->origObject;
 			asr::Assembly *assembly = origObj->objectAssembly.get();
-		    this->scene->assembly_instances().insert(
-		        asr::AssemblyInstanceFactory::create(
+			asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
 					(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
 				    asr::ParamArray(),
-					*assembly,
-					asf::Transformd(tmatrix)));
+					*assembly);
+			fillTransformMatices(obj, assInstPtr.get());
+		    this->scene->assembly_instances().insert(assInstPtr);
+
 
 		}
 		for(size_t objId = 0; objId < instancerList.size(); objId++)
@@ -1823,13 +1924,12 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 			asr::Assembly *assembly = origObj->objectAssembly.get();
 			asf::Matrix4d tmatrix = asf::Matrix4d::identity();
 			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-
-		    this->scene->assembly_instances().insert(
-		        asr::AssemblyInstanceFactory::create(
+			asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
 					(MString("assembly_instancer_") + obj->shortName + obj->instanceNumber).asChar(),
 				    asr::ParamArray(),
-					*assembly,
-					asf::Transformd(tmatrix)));
+					*assembly);
+			fillTransformMatices(obj, assInstPtr.get());
+		    this->scene->assembly_instances().insert(assInstPtr);
 		}
 	}
 
@@ -1921,6 +2021,12 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 	MStatus stat;
 
 	MayaObject *cam = NULL;
+	// until parameter update is fixed
+	if( updateCamera )
+	{
+		this->project->get_scene()->get_camera()->release();
+		updateCamera = false;
+	}
 	// There is at least one camera
 	for(int objId = 0; objId < cameraList.size(); objId++)
 	{
@@ -1969,10 +2075,10 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		{
 			appleCam = this->project->get_scene()->get_camera();
 			appleCam->get_parameters().insert("focal_length", focalLen.asChar());
-			appleCam->get_parameters().insert("focal_distance", (MString("") + focusDistance).asChar());
-			appleCam->get_parameters().insert("f_stop",  (MString("") + fStop).asChar());
-			appleCam->get_parameters().insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
-			appleCam->get_parameters().insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
+			appleCam->get_parameters().insert("focal_distance", focusDistance);
+			appleCam->get_parameters().insert("f_stop",  fStop);
+			appleCam->get_parameters().insert("diaphragm_blades",  mtap_diaphragm_blades);
+			appleCam->get_parameters().insert("diaphragm_tilt_angle", mtap_diaphragm_tilt_angle);
 		}else{
 			this->camera = asr::ThinLensCameraFactory().create(
 					cam->shortName.asChar(),
@@ -1999,61 +2105,120 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		//				.insert("focal_length", focalLen.asChar()));
 		//}
 		
-		asf::Matrix4d appMatrix;
-		size_t numSteps =  cam->transformMatrices.size();
-		size_t divSteps = numSteps;
-		if( divSteps > 1)
-			divSteps -= 1;
-		float stepSize = 1.0f / (float)divSteps;
-		float start = 0.0f;
+		fillTransformMatices(cam, appleCam);
+		//asf::Matrix4d appMatrix;
+		//size_t numSteps =  cam->transformMatrices.size();
+		//size_t divSteps = numSteps;
+		//if( divSteps > 1)
+		//	divSteps -= 1;
+		//float stepSize = 1.0f / (float)divSteps;
+		//float start = 0.0f;
 
-		appleCam->transform_sequence().clear();
-		for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
-		{
-			MMatrix colMatrix = cam->transformMatrices[matrixId];
-			this->MMatrixToAMatrix(colMatrix, appMatrix);
+		//appleCam->transform_sequence().clear();
+		//for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
+		//{
+		//	MMatrix colMatrix = cam->transformMatrices[matrixId];
+		//	this->MMatrixToAMatrix(colMatrix, appMatrix);
 
-			appleCam->transform_sequence().set_transform(
-				start + stepSize * matrixId,
-				asf::Transformd(appMatrix));
-		}
+		//	appleCam->transform_sequence().set_transform(
+		//		start + stepSize * matrixId,
+		//		asf::Transformd(appMatrix));
+		//}
 		break; // only one camera is supported at the moment
 	}
 }
 
+
+void AppleseedRenderer::updateEnv(MObject mobj)
+{
+	MFnDependencyNode appleseedGlobals(mobj);
+
+	int envType = 0;
+	getEnum(MString("environmentType"), appleseedGlobals, envType);
+
+	MColor envColor;
+	getColor(MString("environmentColor"), appleseedGlobals,envColor);
+
+	MColor envMap;
+	getColor(MString("environmentMap"), appleseedGlobals, envMap);
+
+	float intens = 1.0f;
+	getFloat(MString("environmentIntensity"), appleseedGlobals, intens);
+
+	MColor grHoriz;
+	getColor(MString("gradientHorizon"), appleseedGlobals, grHoriz);
+
+	MColor grZeni;
+	getColor(MString("gradientZenit"), appleseedGlobals, grZeni);
+
+	//this->project->
+	MString envName = "environmentColor";
+	MString envMapName = "environmentMap";
+	MString gradHorizName = "gradientHorizon";
+	MString gradZenitName = "gradientZenit";
+
+	asr::ColorEntity *entity = NULL;
+	entity = this->project->get_scene()->colors().get_by_name(envName.asChar());
+	if( entity != NULL )
+	{
+		logger.debug("Found envColor entity");
+		asr::ColorValueArray cva = entity->get_values();
+		cva[0] = envColor.r;
+		cva[1] = envColor.g;
+		cva[2] = envColor.b;
+	}
+}
+
+void AppleseedRenderer::updateShader( MObject shaderObj)
+{
+}
+
 void AppleseedRenderer::updateEntities()
 {
-	if( this->interactiveUpdateList.size() == 0)
+	if( (this->interactiveUpdateList.size() == 0) && (this->interactiveUpdateMOList.size() == 0))
 		return;
 
 	size_t numElements = this->interactiveUpdateList.size();
 	logger.debug(MString("Found ") + numElements + " for update.");
 	std::vector<mtap_MayaObject *>::iterator iter;
+	std::vector<MObject>::iterator moIter;
+
 	for( iter = this->interactiveUpdateList.begin(); iter != this->interactiveUpdateList.end(); iter++)
 	{
 		mtap_MayaObject *obj = *iter;
 		if( obj->mobject.hasFn(MFn::kCamera))
 		{
 			logger.debug(MString("Found camera for update: ") + obj->shortName);
-
 			this->defineCamera(this->mtap_scene->camList, this->renderGlobals, true);
-			//// find camera in scene
-			//asr::Camera *cam = this->project->get_scene()->get_camera();
-			////asr::Camera *cam = this->scene->get_camera();
-			//MString camName = cam->get_name();
-			//if(!(camName == obj->shortName))
-			//{
-			//	logger.debug(MString("camera names form appleseed: ") + camName + " and mayascene " + obj->shortName + " do not match.");
-			//	continue;
-			//}
-
-			//// At the moment, just update the camera matrix nothing else.
-
-			//MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
-			//asf::Matrix4d appMatrix;
-			//this->MMatrixToAMatrix(colMatrix, appMatrix);
-			//cam->transform_sequence().clear(); // interactive no motionblur after update
-			//cam->transform_sequence().set_transform( 0, asf::Transformd(appMatrix));
+		}
+		if( obj->mobject.hasFn(MFn::kMesh))
+		{
+			logger.debug(MString("Found mesh for update: ") + obj->shortName);
+			updateObject(obj);
+		}
+		if( obj->mobject.hasFn(MFn::kLight))
+		{
+			logger.debug(MString("Found light for update: ") + obj->shortName);
+			updateLight(obj);
+		}
+	}
+	for( moIter = this->interactiveUpdateMOList.begin(); moIter != this->interactiveUpdateMOList.end(); moIter++)
+	{
+		MObject mobj = *moIter;
+		MFnDependencyNode depFn(mobj);
+		// mtap_renderGlobals
+		if( depFn.typeId().id() == 0x00106EF3)
+		{
+			logger.debug(MString("Found mtap_renderGlobals for update"));
+			this->updateEnv(mobj);
+		}
+		if( mobj.hasFn(MFn::kLambert))
+		{
+			logger.debug(MString("Found kLambert for update"));
+		}
+		if( depFn.typeId().id() == 0x00106EF4)
+		{
+			logger.debug(MString("Found physSurfaceShader for update"));
 		}
 	}
 }
@@ -2096,7 +2261,17 @@ void AppleseedRenderer::render()
 	}
 
 	
+	//asf::auto_release_ptr<asf::LogTargetBase> log_target(asf::create_console_log_target(stdout));
+	//asr::global_logger().add_target(log_target.get());
+
+	m_log_target.reset(asf::create_file_log_target());
+	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
+	asr::global_logger().add_target(m_log_target.get());
+
 	masterRenderer->render();
+
+	asr::global_logger().remove_target(m_log_target.get());
+	m_log_target->close();
 
 	this->renderGlobals->getImageName();
 	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);

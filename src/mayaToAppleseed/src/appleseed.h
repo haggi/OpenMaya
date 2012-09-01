@@ -69,6 +69,7 @@ public:
 	mtap_RenderGlobals *renderGlobals;
 	
 	std::vector<mtap_MayaObject *> interactiveUpdateList;
+	std::vector<MObject> interactiveUpdateMOList;
 
 	void writeXML();
 	void defineProject();
@@ -99,9 +100,16 @@ public:
 	void defineNurbsSurface(mtap_MayaObject *obj);
 	void defineParticle(mtap_MayaObject *obj);
 	void defineFluid(mtap_MayaObject *obj);
+	void fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance);
+	void fillTransformMatices(mtap_MayaObject *obj, asr::Camera *assInstance);
+	void fillTransformMatices(mtap_MayaObject *obj, asr::Light *assInstance);
 	
 	static void updateEntitiesCaller();
 	void updateEntities();
+	void updateObject(mtap_MayaObject *obj);
+	void updateLight(mtap_MayaObject *obj);
+	void updateEnv(MObject shaderObj);
+	void updateShader( MObject shaderObj);
 
 	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);

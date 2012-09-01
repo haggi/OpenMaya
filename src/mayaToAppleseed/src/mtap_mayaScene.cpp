@@ -107,8 +107,10 @@ bool mtap_MayaScene::doPostRenderJobs()
 //
 void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList)
 {
-	std::vector<MObject>::iterator moIter;
+	std::vector<MObject>::iterator moIter, moIterFound;
 	std::vector<MayaObject *>::iterator mIter;
+	std::vector<MObject> cleanMObjectList;
+	std::vector<MObject> foundMObjectList;
 
 	for( moIter = mObjectList.begin(); moIter != mObjectList.end(); moIter++)
 	{
@@ -126,15 +128,48 @@ void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 		{
 			MayaObject *mo = *mIter;
 			if( dagObj == mo->mobject)
+			{
 				mtapObjectList.push_back(mo);
+				foundMObjectList.push_back(*moIter);
+			}
 		}		
 		for( mIter = this->objectList.begin(); mIter != objectList.end(); mIter++)
 		{
+			MayaObject *mo = *mIter;
+			if( dagObj == mo->mobject)
+			{
+				mtapObjectList.push_back(mo);
+				foundMObjectList.push_back(*moIter);
+			}
 		}		
 		for( mIter = this->lightList.begin(); mIter != lightList.end(); mIter++)
 		{
+			MayaObject *mo = *mIter;
+			if( dagObj == mo->mobject)
+			{
+				mtapObjectList.push_back(mo);
+				foundMObjectList.push_back(*moIter);
+			}
 		}		
 	}
+
+	for( moIter = mObjectList.begin(); moIter != mObjectList.end(); moIter++)
+	{
+		bool found = false;
+		for( moIterFound = foundMObjectList.begin(); moIterFound != foundMObjectList.end(); moIterFound++)
+		{
+			if( *moIter == *moIterFound)
+			{
+				found = true;
+				continue;
+			}
+		}
+		if(!found)
+			cleanMObjectList.push_back(*moIter);
+	}
+
+	mObjectList = cleanMObjectList;
+
 }
 
 //
@@ -158,7 +193,14 @@ void mtap_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 		mo->updateObject(); // update transforms
 		this->asr.interactiveUpdateList.push_back(mo);
 	}	
-	this->asr.mtap_controller.status = asr::IRendererController::RestartRendering;
+
+	this->asr.interactiveUpdateMOList.clear();
+	for( size_t i = 0; i < mobjList.size(); i++)
+		this->asr.interactiveUpdateMOList.push_back(mobjList[i]);
+
+	if( (this->asr.interactiveUpdateList.size() > 0) || (this->asr.interactiveUpdateMOList.size() > 0))
+		this->asr.mtap_controller.status = asr::IRendererController::ReinitializeRendering;
+		//this->asr.mtap_controller.status = asr::IRendererController::RestartRendering;
 }
 
 void mtap_MayaScene::stopRendering()

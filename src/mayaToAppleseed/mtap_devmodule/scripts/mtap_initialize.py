@@ -3,6 +3,7 @@ import logging
 import Renderer as Renderer
 import traceback
 import sys
+import os
 
 reload(Renderer)
 
@@ -230,13 +231,32 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             pass
         self.renderGlobalsNode.imageName.set(imageName)        
     
+    def removeLogFile(self):
+        logfile = pm.workspace.path + "/applelog.log"
+        try:
+            if os.path.exists(logfile):
+                os.remove(logfile)
+        except:
+            pass
+
+    def showLogFile(self):
+        logfile = pm.workspace.path + "/applelog.log"
+        if os.path.exists(logfile):
+            lh = open(logfile, 'r')
+            rl = lh.readlines()
+            for l in rl:
+                sys.__stdout__.write(l)
+            
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
+        self.removeLogFile()
         print "renderProcedure", width, height, doShadows, doGlow, camera, options
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
         pm.mayatoappleseed(width=width, height=height, camera=camera)
+        if not self.ipr_isrunning:
+            self.showLogFile()
         
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True

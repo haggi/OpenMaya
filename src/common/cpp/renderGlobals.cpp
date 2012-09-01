@@ -226,6 +226,21 @@ bool RenderGlobals::getDefaultGlobals()
 
 	getBool(MString("enableDefaultLight"), fnRenderGlobals, this->createDefaultLight);
 
+	this->useRenderRegion = false;
+	getBool(MString("useRenderRegion"), fnRenderGlobals, useRenderRegion); 
+	
+	this->regionLeft = 0;
+	this->regionRight = this->imgWidth;
+	this->regionBottom = 0;
+	this->regionTop = this->imgHeight;
+
+	getInt(MString("left"), fnRenderGlobals, regionLeft);
+	getInt(MString("rght"), fnRenderGlobals, regionRight);
+	getInt(MString("bot"), fnRenderGlobals, regionBottom);
+	getInt(MString("top"), fnRenderGlobals, regionTop);
+
+
+
 	this->good = true;
 	return true;
 }

@@ -6,6 +6,10 @@ static Logging logger;
 void mtap_IRendererController::on_rendering_begin()
 {
 	//IRendererController::on_rendering_begin();
+	if( this->entityUpdateProc != NULL)
+	{
+		this->entityUpdateProc();
+	}
 }
 
 // This method is called after rendering has succeeded.
@@ -25,10 +29,10 @@ void mtap_IRendererController::on_frame_begin()
 {
 	this->status = IRendererController::ContinueRendering;
 
-	if( this->entityUpdateProc != NULL)
-	{
-		this->entityUpdateProc();
-	}
+	//if( this->entityUpdateProc != NULL)
+	//{
+	//	this->entityUpdateProc();
+	//}
 	//IRendererController::on_frame_begin();
 }
 

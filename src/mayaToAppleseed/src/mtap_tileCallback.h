@@ -23,15 +23,20 @@ public:
 
     // This method is called after a whole frame is rendered (at once).
     void post_render(
-        const asr::Frame& frame);
+        const asr::Frame* frame);
+
+    virtual void post_render_tile(
+        const asr::Frame*    frame,
+        const size_t    tile_x,
+        const size_t    tile_y);
 
     // This method is called after a tile is rendered.
-    void post_render(
-        const asr::Frame& frame,
-        const size_t tile_x,
-        const size_t tile_y);
+    //void post_render(
+    //    const asr::Frame& frame,
+    //    const size_t tile_x,
+    //    const size_t tile_y);
 
-	void copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame& frame);
+	void copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame* frame);
 };
 
 class mtap_ITileCallbackFactory : public asr::ITileCallbackFactory

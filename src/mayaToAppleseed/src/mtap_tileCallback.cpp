@@ -52,9 +52,9 @@ void mtap_ITileCallback::pre_render(
 	theRenderEventQueue()->push(e);
 }
 
-void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame& frame)
+void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame* frame)
 {
-	const asf::CanvasProperties& frame_props = frame.image().properties();
+	const asf::CanvasProperties& frame_props = frame->image().properties();
 	
 	size_t tw =  tile.get_width();
 	size_t th =  tile.get_height();
@@ -78,10 +78,10 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 
 // this will be called for interactive renderings if a frame is complete
 void mtap_ITileCallback::post_render(
-		const asr::Frame& frame)
+		const asr::Frame* frame)
 {
 	logger.debug(MString("Post render interactive frame:"));
-	asf::Image img = frame.image();
+	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
 
     asf::Tile float_tile_storage(
@@ -109,14 +109,14 @@ void mtap_ITileCallback::post_render(
 	{
 		for( int tile_y = 0; tile_y < frame_props.m_tile_count_y; tile_y++)
 		{
-			const asf::Tile& tile = frame.image().tile(tile_x, tile_y);
+			const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
 
 			asf::Tile fp_rgb_tile(
 				tile,
 				asf::PixelFormatFloat,
 				float_tile_storage.get_storage());
 
-			frame.transform_to_output_color_space(fp_rgb_tile);
+			frame->transform_to_output_color_space(fp_rgb_tile);
 
 			static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
 			asf::Tile uint8_rgb_tile(
@@ -126,39 +126,6 @@ void mtap_ITileCallback::post_render(
 
 			int ty = frame_props.m_tile_count_y - tile_y - 1;
 			copyTileToImage(pixels, uint8_rgb_tile, tile_x, ty, frame);
-			//size_t tw =  tile.get_width();
-			//size_t th =  tile.get_height();
-			//size_t numPixels = tw * th;
-			//RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-			//for( size_t yy = 0; yy < th; yy++)
-			//{
-			//	for( size_t xx = 0; xx < tw; xx++)
-			//	{
-			//		size_t pixelId = yy * tw + xx;
-			//		size_t yy1 = th - yy - 1;
-			//		asf::uint8 *source = uint8_rgb_tile.pixel(xx, yy1);
-			//		pixels[pixelId].r = (float)source[0]; 
-			//		pixels[pixelId].g = (float)source[1]; 
-			//		pixels[pixelId].b = (float)source[2]; 
-			//		pixels[pixelId].a = (float)source[3]; 
-			//	}
-			//}
-	
-		 //   size_t x = tile_x * frame_props.m_tile_width;
-			//size_t y = tile_y * frame_props.m_tile_height;
-			//size_t x1 = x + tw - 1;
-			//size_t y1 = y + th;
-			//size_t miny = img.properties().m_canvas_height - y1;
-			//size_t maxy = img.properties().m_canvas_height - y - 1;
-
-			//EventQueue::Event e;
-			//e.data = pixels;
-			//e.type = EventQueue::Event::TILEDONE;
-			//e.tile_xmin = x;
-			//e.tile_xmax = x1;
-			//e.tile_ymin = miny;
-			//e.tile_ymax = maxy;
-			//theRenderEventQueue()->push(e);
 		}
 	}
 	EventQueue::Event e;
@@ -171,14 +138,14 @@ void mtap_ITileCallback::post_render(
 	theRenderEventQueue()->push(e);
 }
 
-void mtap_ITileCallback::post_render(
-        const asr::Frame& frame,
+void mtap_ITileCallback::post_render_tile(
+        const asr::Frame* frame,
         const size_t tile_x,
 		const size_t tile_y)
 {
-	asf::Image img = frame.image();
+	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
-	const asf::Tile& tile = frame.image().tile(tile_x, tile_y);
+	const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
 
     asf::Tile float_tile_storage(
         frame_props.m_tile_width,
@@ -197,7 +164,7 @@ void mtap_ITileCallback::post_render(
         asf::PixelFormatFloat,
 		float_tile_storage.get_storage());
 
-	frame.transform_to_output_color_space(fp_rgb_tile);
+	frame->transform_to_output_color_space(fp_rgb_tile);
 
     static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
     const asf::Tile uint8_rgb_tile(
