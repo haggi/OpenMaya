@@ -35,8 +35,8 @@ void mtap_MayaScene::deformUpdateCallback(MayaObject& obj)
 {
 	if( !obj.geometryShapeSupported() )
 		return;
-	if( !obj.mobject.hasFn(MFn::kMesh))
-		return
+	//if( !obj.mobject.hasFn(MFn::kMesh))
+	//	return
 	logger.debug(MString("mtap_MayaScene::deformUpdateCallback"));
 	asr.defineMeshDeformStep( (mtap_MayaObject *)&obj);
 }

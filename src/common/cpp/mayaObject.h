@@ -19,6 +19,7 @@ public:
 	MObject mobject;
 	MString shortName;
 	MString fullName; 
+	MString fullNiceName;
 	int index;
 	MDagPath dagPath;
 	MayaScene *scenePtr;
@@ -42,6 +43,7 @@ public:
 	MObject instancerMObj;
 
 	bool supported;
+	bool animated;
 	bool shapeConnected; // if shape connected, it can be used to determine if it has to be exported for every frame or not
 	bool visible; // important for instances: orig object can be invisible but must be exported
 	int instanceNumber;
@@ -49,8 +51,10 @@ public:
 	bool motionBlurred; // possibility to turn off motionblur for this object
 	bool geometryMotionblur; // if object has vertex velocity informations, there is no need for real deformation blur
 	bool shadowMapCastingLight(); // to know if I have to add a light to render passes
+	bool isObjAnimated();
+	bool isShapeConnected();
 	virtual bool geometryShapeSupported() = 0;
-
+	MayaObject *parent;
 	MayaObject *origObject; // this is necessary for instanced objects that have to access the original objects data
 	MayaObject(MObject& mobject);
 	~MayaObject();

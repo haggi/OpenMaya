@@ -56,9 +56,10 @@ class MayaToRenderer(object):
         return melProcName
             
     
-    def batchRenderProcedure(self, width, height, doShadows, doGlow, camera, options):
+    def batchRenderProcedure(self, options):
         self.preRenderProcedure()
-        log.debug("batchRenderProcedure")
+        log.debug("batchRenderProcedure: options " + str(options))
+        self.renderProcedure(-1, -1, True, True, None, options)    
     
     def renderOptionsProcedure(self):
         self.preRenderProcedure()
@@ -190,25 +191,6 @@ class MayaToRenderer(object):
         log.debug("aeCallback: " + aeCallbackProc)
         pm.mel.eval(aeCallbackProc)
     
-
-#    args['renderRegionProcedure'] = 'mayaRenderRegion'
-#    args['commandRenderProcedure']    = utils.pyToMelProc(arnoldRender.arnoldBatchRender,
-#                                                    [('string', 'option')])
-#    args['batchRenderProcedure']      = utils.pyToMelProc(arnoldRender.arnoldBatchRender,
-#                                                    [('string', 'option')])
-#    args['cancelBatchRenderProcedure']= utils.pyToMelProc(arnoldRender.arnoldBatchStop)
-#    args['isRunningIprProcedure']     = utils.pyToMelProc(arnoldRender.arnoldIprIsRunning, returnType='int')
-#    args['startIprRenderProcedure']   = utils.pyToMelProc(arnoldRender.arnoldIprStart,
-#                                                    [('string', 'editor'), ('int', 'resolutionX'),
-#                                                     ('int', 'resolutionY'), ('string', 'camera')])
-#    args['stopIprRenderProcedure']    = utils.pyToMelProc(arnoldRender.arnoldIprStop)
-#    args['refreshIprRenderProcedure'] = utils.pyToMelProc(arnoldRender.arnoldIprRefresh)
-#    args['pauseIprRenderProcedure']   = utils.pyToMelProc(arnoldRender.arnoldIprPause,
-#                                                    [('string', 'editor'), ('int', 'pause')])
-#    args['changeIprRegionProcedure']  = utils.pyToMelProc(arnoldRender.arnoldIprChangeRegion,
-#                                                    [('string', 'renderPanel')])
-#    pm.renderer('arnold', rendererUIName='Arnold Renderer', **args)
-
     
     def registerRenderer(self):
         log.debug("registerRenderer")
@@ -222,8 +204,10 @@ class MayaToRenderer(object):
                                                                                                                        ('int', 'doGlow'), 
                                                                                                                        ('string', 'camera'), 
                                                                                                                        ('string', 'options')]))
-        pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
+        pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
+        #pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
+        #pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsProcedure=self.renderCallback("batchRenderOptionsProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsStringProcedure=self.renderCallback("batchRenderOptionsStringProcedure"))
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultRenderGlobals")

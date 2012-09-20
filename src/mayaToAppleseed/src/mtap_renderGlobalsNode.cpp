@@ -27,6 +27,8 @@ MObject MayaToAppleseedGlobals::gradientZenit;
 MObject MayaToAppleseedGlobals::directLightSamples;
 MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
+MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
+
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {}
@@ -101,10 +103,14 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( exportXMLFileName ));
 
 	assemblyExportType = eAttr.create( "assemblyExportType", "assemblyExportType", 0, &stat);
-	stat = eAttr.addField( "One Master Assembly", 0 );
-	stat = eAttr.addField( "Per Shape Assembly", 1 );
-	stat = eAttr.addField( "Per NamedSet Assembly", 2 );
+	stat = eAttr.addField( "Auto", 0 );
+	stat = eAttr.addField( "One Master Assembly", 1 );
+	stat = eAttr.addField( "Per Shape Assembly", 2 );
+	stat = eAttr.addField( "Per NamedSet Assembly", 3 );
 	CHECK_MSTATUS(addAttribute( assemblyExportType ));
+
+	assemblyPolyTheshold = nAttr.create("assemblyPolyTheshold", "assemblyPolyTheshold",  MFnNumericData::kInt, 10000);
+	CHECK_MSTATUS(addAttribute( assemblyPolyTheshold ));
 
 	environmentType = eAttr.create( "environmentType", "environmentType", 0, &stat);
 	stat = eAttr.addField( "Constant", 0 );

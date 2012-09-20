@@ -213,10 +213,16 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Appleseed specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
+        # we will have a thinlens camera only
+        #pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
-    
+        
+        # mesh
+        pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue = False)
+
+        # 
+        
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
         self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
@@ -254,7 +260,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
-        pm.mayatoappleseed(width=width, height=height, camera=camera)
+        
+        if pm.about(batch=True):
+            pm.mayatoappleseed()
+        else:
+            pm.mayatoappleseed(width=width, height=height, camera=camera)
+            
         if not self.ipr_isrunning:
             self.showLogFile()
         

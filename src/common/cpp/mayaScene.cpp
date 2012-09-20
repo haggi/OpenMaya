@@ -173,11 +173,34 @@ void MayaScene::getLightLinking()
 //	return true;
 //}
 
+std::vector<MayaObject *> parentList;
+
+void MayaScene::checkParent(MayaObject *obj)
+{
+	std::vector<MayaObject *>::iterator iter;
+	MFnDagNode node(obj->mobject);
+	if( node.parentCount() == 0)
+	{	
+		obj->parent = NULL;
+		return;
+	}
+	MObject parent = node.parent(0);
+	for( iter = parentList.begin(); iter != parentList.end(); iter++)
+	{
+		if( parent == (*iter)->mobject)
+		{
+			obj->parent = *iter;
+			break;
+		}
+	}
+}
+
 bool MayaScene::parseScene()
 {
 	logger.debug(MString("parseScene"));
 	
 	instancerDagPathList.clear();
+	parentList.clear();
 
 	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
 	MDagPath dagPath;
@@ -193,6 +216,7 @@ bool MayaScene::parseScene()
 		
 		MFnDagNode node(dagPath.node());
 		MObject obj = node.object();
+		bool hasChildren = dagPath.childCount() > 0;
 
 		// here only base objects, instances will be exported later directly
 		int instanceNumber = dagPath.instanceNumber();
@@ -215,6 +239,7 @@ bool MayaScene::parseScene()
 			if( renderable )
 			{
 				MayaObject *mo = this->mayaObjectCreator(obj);
+				if(hasChildren)	parentList.push_back(mo);
 				mo->visible = true;
 				mo->scenePtr = this;
 				mo->instanceNumber = 0;
@@ -231,6 +256,7 @@ bool MayaScene::parseScene()
 				continue;
 			else{
 				MayaObject *mo = this->mayaObjectCreator(obj);
+				if(hasChildren)	parentList.push_back(mo);
 				mo->visible = true;
 				mo->instanceNumber = 0;
 				mo->scenePtr = this;
@@ -260,6 +286,7 @@ bool MayaScene::parseScene()
 					continue;
 				}else{
 					MayaObject *mo = this->mayaObjectCreator(obj);
+					if(hasChildren)	parentList.push_back(mo);
 					mo->visible = true;
 					mo->instanceNumber = 0;
 					mo->scenePtr = this;
@@ -304,6 +331,7 @@ bool MayaScene::parseScene()
 		}
 		
 		MayaObject *mo = this->mayaObjectCreator(node.object());
+		if(hasChildren)	parentList.push_back(mo);
 		mo->scenePtr = this;
 		//mo->findObject = &this->getObject;
 		mo->visible = visible;

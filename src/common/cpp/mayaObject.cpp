@@ -1,5 +1,6 @@
 #include <maya/MFnDagNode.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MPlugArray.h>
 
 #include "mayaObject.h"
 #include "utilities/logging.h"
@@ -49,6 +50,7 @@ MayaObject::MayaObject(MObject& mobject)
 	MString fullPath = dagNode.fullPathName();
 	logger.debug(MString("fullpath: ") + fullPath);
 	this->fullName = fullPath;
+	this->fullNiceName = makeGoodString(fullPath);
 	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
 	this->instanceNumber = 0;
 	// check for light connection. If the geo is connected to a areaLight it is not supposed to be rendered
@@ -67,10 +69,79 @@ MayaObject::MayaObject(MObject& mobject)
 	this->perObjectMbSteps = 1;
 	this->index = -1;
 	this->scenePtr = NULL;
+	this->shapeConnected = false;
 	this->lightExcludeList = true; // In most cases only a few lights are ignored, so the list is shorter with excluded lights
 	this->shadowExcludeList = true; // in most cases only a few objects ignore shadows, so the list is shorter with ignoring objects
+	this->animated = this->isObjAnimated();
+	this->shapeConnected = this->isShapeConnected();
+	this->parent = NULL;
 }
 
+// to check if an object is animated, we need to check e.g. its transform inputs
+bool MayaObject::isObjAnimated()
+{
+	MStatus stat;
+	bool returnValue = false;
+	// check if we can have a transfrom matrix
+	if( this->mobject.hasFn(MFn::kTransform))
+	{
+		MFnDependencyNode depFn(this->mobject, &stat);
+		if(stat)
+		{
+			MPlugArray connections;
+			depFn.getConnections(connections);
+			if( connections.length() == 0)
+				returnValue = false;
+			else{
+				for( uint cId = 0; cId < connections.length(); cId++)
+				{
+					if( connections[cId].isDestination())
+					{
+						returnValue = true;
+					}
+				}
+			}
+			
+		}
+	}
+	return returnValue;
+}
+
+// to check if shape is connected, simply test for the common shape inputs, nurbs: create mesh: inMesh
+bool MayaObject::isShapeConnected()
+{
+	MStatus stat;
+	bool returnValue = false;
+	MPlug inPlug;
+	MFnDependencyNode depFn(this->mobject, &stat);
+	if(stat)
+	{
+		MFn::Type type = this->mobject.apiType();
+		switch(type)
+		{
+		case MFn::kMesh:
+			inPlug = depFn.findPlug(MString("inMesh"), &stat);
+			if( stat)
+				if( inPlug.isConnected())
+					returnValue = true;
+			break;
+		case MFn::kNurbsSurface:
+			inPlug = depFn.findPlug(MString("create"), &stat);
+			if( stat)
+				if( inPlug.isConnected())
+					returnValue = true;
+			break;
+		case MFn::kNurbsCurve:
+			inPlug = depFn.findPlug(MString("create"), &stat);
+			if( stat)
+				if( inPlug.isConnected())
+					returnValue = true;
+			break;
+		}
+	}
+
+	return returnValue;
+}
 
 MayaObject::~MayaObject()
 {}

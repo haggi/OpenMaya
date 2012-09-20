@@ -4,6 +4,8 @@
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>
 #include <maya/MDagPathArray.h>
+#include <maya/MTransformationMatrix.h>
+
 #include <vector>
 #include <boost/thread/thread.hpp>
 
@@ -64,8 +66,10 @@ public:
 	virtual MayaObject* mayaObjectCreator(MObject&) = 0;
 	virtual void mayaObjectDeleter(MayaObject *) = 0;
 	virtual void getRenderGlobals() = 0;
+
 	void getPasses();
 	void setCurrentCamera(MDagPath camera);
+	void checkParent(MayaObject *obj);
 
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);

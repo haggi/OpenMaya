@@ -181,6 +181,8 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getEnum(MString("imageFormat"), appleseedGlobals, this->imageFormat, this->imageFormatString))
 			throw("problem reading appleseedGlobals.imageFormat");
 
+		if(!getInt(MString("assemblyPolyTheshold"), appleseedGlobals, this->assemblyPolyTheshold))
+			throw("problem reading appleseedGlobals.assemblyPolyTheshold");
 
 	}catch(char *errorMsg){
 

@@ -27,6 +27,7 @@ public:
 	MString exportXMLFileName;
 	int assemblyExportType;
 	MString assemblyExportTypeString;
+	int assemblyPolyTheshold;
 	int imageFormat;
 	MString imageFormatString;
 
@@ -38,6 +39,7 @@ public:
 	MColor gradientHorizon;
 	MColor gradientZenit;
 	MColor environmentMap;
+	
 
 	virtual MString getImageExt();
 

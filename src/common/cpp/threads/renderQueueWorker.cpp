@@ -273,8 +273,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 			logger.debug("Event::FRAMEDONE");
 			if( e.data != NULL)
 			{
-				MRenderView::updatePixels(0, e.tile_xmax, 0, e.tile_ymax, (RV_PIXEL *)e.data);
-				MRenderView::refresh(0, e.tile_xmax, 0, e.tile_ymax);
+				if( MRenderView::doesRenderEditorExist() )
+				{
+					MRenderView::updatePixels(0, e.tile_xmax, 0, e.tile_ymax, (RV_PIXEL *)e.data);
+					MRenderView::refresh(0, e.tile_xmax, 0, e.tile_ymax);
+				}
 				delete[]  (RV_PIXEL *)e.data;
 			}
 			e.type = EventQueue::Event::FINISH;

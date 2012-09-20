@@ -33,6 +33,7 @@ private:
 	static	  MObject exportXMLFileName;
 
 	static	  MObject assemblyExportType;
+	static	  MObject assemblyPolyTheshold;
 
 	static	  MObject environmentColor;
 	static	  MObject gradientHorizon;

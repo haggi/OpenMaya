@@ -1,8 +1,9 @@
 #ifndef MTAP_MAYA_OBJECT_H
 #define MTAP_MAYA_OBJECT_H
 
-#include "renderer/api/scene.h"
+//#include <maya/MTransformationMatrix.h>
 
+#include "renderer/api/scene.h"
 #include "mayaObject.h"
 
 namespace asr = renderer;
@@ -17,6 +18,10 @@ public:
 	virtual bool geometryShapeSupported();
 
 	asf::auto_release_ptr<asr::Assembly> objectAssembly;
+	asr::Assembly *parentAssembly;
+
+	// this will maybe go to general MayaObject later
+	//std::vector<MTransformationMatrix> transformMTMatrices;
 };
 
 #endif
