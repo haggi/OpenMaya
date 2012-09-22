@@ -27,6 +27,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MRenderView.h>
 #include <maya/MFileIO.h>
+#include <maya/MItDag.h>
 
 
 
@@ -575,8 +576,11 @@ void AppleseedRenderer::defineMeshDeformStep(mtap_MayaObject *obj)
 
 		if( obj->objectAssembly.get() == NULL)
 		{
-			logger.debug(MString("Is mb deform start step and object has not been defined yet, calling defineObject."));
-			this->defineObject(obj);
+			if( obj->mobject.hasFn(MFn::kMesh))
+			{
+				logger.debug(MString("Is mb deform start step and object has not been defined yet, calling defineObject."));
+				this->defineObject(obj);
+			}
 		}
 		return;
 	}
@@ -1440,6 +1444,12 @@ void AppleseedRenderer::defineObject(mtap_MayaObject *obj)
 
 	asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
 
+	if( meshObject == NULL)
+	{
+		logger.error(MString("mesh obj is NULL."));
+		return;
+	}
+
 	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
 
 	// if we have per object assemblies, the assemblies will inherit the transformation matrix,
@@ -1860,6 +1870,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 	logger.debug("AppleseedRenderer::defineScene");
 
     // Create an instance of the assembly and insert it into the scene.
+	this->parseScene();
 
     this->scene->assembly_instances().insert(
         asr::AssemblyInstanceFactory::create(
@@ -2171,6 +2182,7 @@ void AppleseedRenderer::updateEnv(MObject mobj)
 
 void AppleseedRenderer::updateShader( MObject shaderObj)
 {
+	// redo shader update...
 }
 
 void AppleseedRenderer::updateEntities()
@@ -2230,6 +2242,121 @@ void AppleseedRenderer::updateEntitiesCaller()
 		appleRenderer->updateEntities();
 }
 
+MDagPath  AppleseedRenderer::getWorld()
+{
+	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
+	MDagPath dagPath;
+	
+	for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
+	{
+		dagIterator.getPath(dagPath);
+		if (dagPath.apiType() == MFn::kWorld)
+			break;
+	}
+	return dagPath;
+}
+
+void  AppleseedRenderer::parseScene()
+{
+	logger.info(MString("----------- Apple parse scene ---------------"));
+	MDagPath world = getWorld();
+	if( ! world.isValid())
+	{
+		logger.info(MString("World dagPath not valid."));
+		return;
+	}
+	this->parseHierarchy(world.node(), "world");
+}
+
+MString makeSpace(int level)
+{
+	MString space;
+	for( int i = 0; i < level; i++)
+		space += "  ";
+	return space;
+}
+
+bool isGeo( MObject obj)
+{
+	if( obj.hasFn(MFn::kMesh))
+		return true;
+	return false;
+}
+
+//
+// objects needs own assembly if:
+//		- it is instanced
+//		- it is an animated transform
+//		- its polysize is large (not yet implemented)
+//
+
+bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
+{
+	MFnDagNode dagFn(obj);
+	if( dagFn.parentCount() > 1)
+	{
+		logger.info(MString("obj has more than 1 parent."));
+		return true;
+	}
+	if( obj.hasFn(MFn::kTransform))
+	{
+		MFnDependencyNode depFn(obj);
+		MPlugArray plugArray;
+		depFn.getConnections(plugArray);
+		for( uint i = 0; i < plugArray.length(); i++)
+		{
+			MPlug plug = plugArray[i];
+			if( plug.isDestination())
+			{
+				logger.info(MString("Plug ") + plug.name() + " is destination");
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+void  AppleseedRenderer::parseHierarchy(MObject currentObject, MString parentAss, int level)
+{
+	MStatus stat;
+	MFnDagNode currentNode(currentObject);
+	MString space = makeSpace(level);
+	logger.info(space + MString("parseHierarchy: ") + currentNode.partialPathName());
+
+	uint numChildren = currentNode.childCount();
+
+	for( uint chId = 0; chId < numChildren; chId++)
+	{
+		MObject childObj = currentNode.child(chId);
+		MFnDagNode childNode(childObj);
+		MDagPath childPath(childNode.dagPath());
+		logger.info(MString("Check child: ") + childNode.partialPathName());
+
+		if( childNode.parent(0) != currentObject)
+		{
+			logger.info("Object path from instance side, skipping.");
+			continue;
+		}
+
+		if( isGeo(childObj))
+		{
+			logger.info(MString("Put geo: ") + getObjectName(childObj) + " into parentAssembly: " + parentAss);
+			continue;
+		}
+
+		MString pa = parentAss;
+		if( objectNeedsAssembly(childObj))
+		{
+			// create assembly or so ...
+			logger.info("Child needs own assembly");
+			pa = MString("Assembly_") + childNode.name();
+		}
+
+		this->parseHierarchy(childObj, pa, level + 1);
+	}
+
+}
 
 void AppleseedRenderer::render()
 {
@@ -2268,7 +2395,7 @@ void AppleseedRenderer::render()
 	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
 	asr::global_logger().add_target(m_log_target.get());
 
-	masterRenderer->render();
+	//masterRenderer->render();
 
 	asr::global_logger().remove_target(m_log_target.get());
 	m_log_target->close();

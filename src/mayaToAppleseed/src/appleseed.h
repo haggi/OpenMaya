@@ -36,6 +36,9 @@
 
 #include <maya/MString.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MFnDagNode.h>
+#include <maya/MDagPath.h>
+
 
 #include "mtap_tileCallback.h"
 #include "mtap_mayaObject.h"
@@ -115,12 +118,15 @@ public:
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
 	asr::MeshObject *createMeshPtr(MObject& meshObject);
-	//void render(mtap_RenderGlobals *renderGlobals);
 	void render();
-	//static void renderStarter(AppleseedRenderer *asrenderer);
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
-	//boost::thread rendererThread;
+
+	void parseScene();
+	MDagPath getWorld();
+	void parseHierarchy(MObject currentObject, MString parentAss, int level = 0);
+	bool objectNeedsAssembly(MObject obj);
+
 private:
 	asf::auto_release_ptr<asr::Project> project;
 	asf::auto_release_ptr<asr::Assembly> masterAssembly;
