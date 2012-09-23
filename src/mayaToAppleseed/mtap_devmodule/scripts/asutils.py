@@ -66,8 +66,9 @@ def isTransform(mobj):
         return True
     return False
 
+instList = []
 
-def parseChildren(parentNode, pAssembly, assemblyList, tMatrix):
+def parseChildren(parentNode, pAssembly, assemblyList):
     
     numChildren = parentNode.childCount()
     dagPath = om.MDagPath()
@@ -77,6 +78,9 @@ def parseChildren(parentNode, pAssembly, assemblyList, tMatrix):
 #        print "is inst", dagPath.fullPathName()
 #        return
     
+    if dagPath.isInstanced():
+        instList.append(dagPath)
+        
     #print "Parse", parentNode.fullPathName()
     for cId in range(numChildren):
         childObj = parentNode.child(cId)
@@ -91,13 +95,8 @@ def parseChildren(parentNode, pAssembly, assemblyList, tMatrix):
             print "parent von ", childNode.fullPathName(), "==", childParentNode.fullPathName(), "current parent:", parentNode.fullPathName()
             continue
 
-        cMatrix = tMatrix
         if isTransform(childObj):
-            cMatrix *= childNode.transformationMatrix()
-            print "ParentAss Tranform", pAssembly.name
-            print om.MScriptUtil.getDoubleArrayItem(cMatrix[3], 0)
-            print om.MScriptUtil.getDoubleArrayItem(cMatrix[3], 1)
-            print om.MScriptUtil.getDoubleArrayItem(cMatrix[3], 2)
+            print "ParentAss Transform", pAssembly.name
                                 
         if isGeo(childObj):
             print "Put geo", childNode.partialPathName(), "into parent assembly", pAssembly.name
@@ -111,7 +110,7 @@ def parseChildren(parentNode, pAssembly, assemblyList, tMatrix):
             assemblyList.append(parentAssembly)
             #parentAssembly = pAssembly
             
-        parseChildren(childNode, parentAssembly, assemblyList, cMatrix)
+        parseChildren(childNode, parentAssembly, assemblyList)
     
 def printAss(level, ass = None):
     sp = ""
@@ -133,22 +132,28 @@ def hierarchyA():
     worldAssembly = assembly(worldDag, worldDagNode, "root")
     assemblyList.append(worldAssembly)
     #tMatrix = om.MMatrix()
-    parseChildren(worldDagNode, worldAssembly, assemblyList, tMatrix)
+    parseChildren(worldDagNode, worldAssembly, assemblyList)
     #printAss(0, worldAssembly)
     
-    for ass in assemblyList:
-        parentAss = ass.parentAss
-        if parentAss:
-            print "Assembly List: ", ass.name, "parent", ass.parentAss.name
-        else:
-            print "Assembly List: ", ass.name, "parent", "world"
-        for ai in ass.assembly_instances:
-            print ass.name, "Instance:", ai.name
-        for ai in ass.geometry:
-            print "->Geo:", ai
-#            print om.MScriptUtil.getDoubleArrayItem(ass.transformMatrix[3], 0)
-#            print om.MScriptUtil.getDoubleArrayItem(ass.transformMatrix[3], 1)
-#            print om.MScriptUtil.getDoubleArrayItem(ass.transformMatrix[3], 2)
+#    for ass in assemblyList:
+#        parentAss = ass.parentAss
+#        if parentAss:
+#            print "Assembly List: ", ass.name, "parent", ass.parentAss.name
+#        else:
+#            print "Assembly List: ", ass.name, "parent", "world"
+#        for ai in ass.assembly_instances:
+#            print ass.name, "Instance:", ai.name
+#        for ai in ass.geometry:
+#            print "->Geo:", ai
+
+    for i in instList:
+        print "Instance", i.fullPathName()
+        dpa = om.MDagPathArray()
+        dn = om.MFnDagNode(i)
+        dn.getAllPaths(dpa)
+        print "NumPaths", dpa.length()
+        for dp in range(dpa.length()):
+            print dpa[dp].fullPathName()
     
 def hierarchy():
     

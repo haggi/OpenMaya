@@ -117,15 +117,16 @@ public:
 	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
-	asr::MeshObject *createMeshPtr(MObject& meshObject);
 	void render();
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
 
 	void parseScene();
 	MDagPath getWorld();
-	void parseHierarchy(MObject currentObject, MString parentAss, int level = 0);
+	void parseHierarchy(MObject currentObject, asr::Assembly * parentAss,  MMatrix matrix, int level = 0);
 	bool objectNeedsAssembly(MObject obj);
+	asr::Assembly *createAssembly(MString assemblyName);
+	void putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix); 
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

@@ -739,109 +739,6 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& me
 }
 
 
-asr::MeshObject *AppleseedRenderer::createMeshPtr(MObject& meshObject)
-{
-
-	MStatus stat = MStatus::kSuccess;
-	MFnMesh meshFn(meshObject, &stat);
-	CHECK_MSTATUS(stat);
-	MItMeshPolygon faceIt(meshObject, &stat);
-	CHECK_MSTATUS(stat);
-
-	MPointArray points;
-	meshFn.getPoints(points);
-    MFloatVectorArray normals;
-    meshFn.getNormals( normals, MSpace::kWorld );
-	MFloatArray uArray, vArray;
-	meshFn.getUVs(uArray, vArray);
-
-	logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
-    // Create a new mesh object.
-	//asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFn.name().asChar(), asr::ParamArray());
-	asr::MeshObject *mesh = asr::MeshObjectFactory::create(meshFn.name().asChar(), asr::ParamArray()).release();
-
-	// add vertices
-    // Vertices.
-    //object->push_vertex(GVector3(552.8f, 0.0f,   0.0f));
-	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
-	{
-		asr::GVector3 vtx((float)points[vtxId].x, (float)points[vtxId].y, (float)points[vtxId].z);
-		mesh->push_vertex(vtx);
-	}
-
-	// add normals
-    // Vertex normals.
-    //object->push_vertex_normal(GVector3(0.0f, 1.0f, 0.0f));
-	for( uint nId = 0; nId < normals.length(); nId++)
-	{
-		asr::GVector3 vtx((float)normals[nId].x, (float)normals[nId].y, (float)normals[nId].z);
-		mesh->push_vertex_normal(vtx);
-	}
-
-	for( uint tId = 0; tId < uArray.length(); tId++)
-	{
-		asr::GVector2 vtx((float)uArray[tId], (float)vArray[tId]);
-		mesh->push_tex_coords(vtx);
-	}
-
-   
-	MPointArray triPoints;
-	MIntArray triVtxIds;
-	MIntArray faceVtxIds;
-	MIntArray faceNormalIds;
-
-	for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
-	{
-		int faceId = faceIt.index();
-		int numTris;
-		faceIt.numTriangles(numTris);
-		faceIt.getVertices(faceVtxIds);
-		
-		MIntArray faceUVIndices;
-
-		faceNormalIds.clear();
-		for( uint vtxId = 0; vtxId < faceVtxIds.length(); vtxId++)
-		{
-			faceNormalIds.append(faceIt.normalIndex(vtxId));
-			int uvIndex;
-			faceIt.getUVIndex(vtxId, uvIndex);
-			faceUVIndices.append(uvIndex);
-		}
-
-		for( int triId = 0; triId < numTris; triId++)
-		{
-			int faceRelIds[3];
-			faceIt.getTriangle(triId, triPoints, triVtxIds);
-
-			for( uint triVtxId = 0; triVtxId < 3; triVtxId++)
-			{
-				for(uint faceVtxId = 0; faceVtxId < faceVtxIds.length(); faceVtxId++)
-				{
-					if( faceVtxIds[faceVtxId] == triVtxIds[triVtxId])
-					{
-						faceRelIds[triVtxId] = faceVtxId;
-					}
-				}
-			}
-
-			
-			uint vtxId0 = faceVtxIds[faceRelIds[0]];
-			uint vtxId1 = faceVtxIds[faceRelIds[1]];
-			uint vtxId2 = faceVtxIds[faceRelIds[2]];
-			uint normalId0 = faceNormalIds[faceRelIds[0]];
-			uint normalId1 = faceNormalIds[faceRelIds[1]];
-			uint normalId2 = faceNormalIds[faceRelIds[2]];
-			uint uvId0 = faceUVIndices[faceRelIds[0]];
-			uint uvId1 = faceUVIndices[faceRelIds[1]];
-			uint uvId2 = faceUVIndices[faceRelIds[2]];
-
-			//mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2,  0));
-			mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, 0));
-		}		
-	}
-
-	return mesh;
-}
 
 // 
 //	Same as with materials: Every render sequence will define the colors and textures new
@@ -2242,6 +2139,7 @@ void AppleseedRenderer::updateEntitiesCaller()
 		appleRenderer->updateEntities();
 }
 
+
 MDagPath  AppleseedRenderer::getWorld()
 {
 	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
@@ -2258,14 +2156,22 @@ MDagPath  AppleseedRenderer::getWorld()
 
 void  AppleseedRenderer::parseScene()
 {
-	logger.info(MString("----------- Apple parse scene ---------------"));
+
+	// put this later into MayaScene common lib
+	this->mtap_scene->makeMayaObjectMObjMap();
+
+	logger.trace(MString("----------- Apple parse scene ---------------"));
 	MDagPath world = getWorld();
 	if( ! world.isValid())
 	{
-		logger.info(MString("World dagPath not valid."));
+		logger.trace(MString("World dagPath not valid."));
 		return;
 	}
-	this->parseHierarchy(world.node(), "world");
+	asr::Assembly *worldAssembly = this->createAssembly("world");
+	MMatrix matrix;
+	matrix.setToIdentity();
+	matrix[3][0] = 1.0;
+	this->parseHierarchy(world.node(), worldAssembly, matrix);
 }
 
 MString makeSpace(int level)
@@ -2283,6 +2189,13 @@ bool isGeo( MObject obj)
 	return false;
 }
 
+bool isTransform(MObject obj)
+{
+	if( obj.hasFn(MFn::kTransform))
+		return true;
+	return false;
+}
+
 //
 // objects needs own assembly if:
 //		- it is instanced
@@ -2295,7 +2208,7 @@ bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
 	MFnDagNode dagFn(obj);
 	if( dagFn.parentCount() > 1)
 	{
-		logger.info(MString("obj has more than 1 parent."));
+		logger.trace(MString("obj has more than 1 parent."));
 		return true;
 	}
 	if( obj.hasFn(MFn::kTransform))
@@ -2308,7 +2221,7 @@ bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
 			MPlug plug = plugArray[i];
 			if( plug.isDestination())
 			{
-				logger.info(MString("Plug ") + plug.name() + " is destination");
+				logger.trace(MString("Plug ") + plug.name() + " is destination");
 				return true;
 			}
 		}
@@ -2317,12 +2230,60 @@ bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
 }
 
 
-void  AppleseedRenderer::parseHierarchy(MObject currentObject, MString parentAss, int level)
+//
+//	Create an empty assembly and put it into the scene. 
+//  Returns an pointer to the assembly to fill it later with geometry.
+//
+asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName)
+{
+	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( assemblyName.asChar(), asr::ParamArray());	
+	this->scene->assemblies().insert(assembly);
+	asr::Assembly *assemblyPtr = this->scene->assemblies().get_by_name(assemblyName.asChar());
+	return assemblyPtr;
+}
+
+void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix)
+{
+
+	asf::auto_release_ptr<asr::MeshObject> mesh = this->createMesh(object);
+	MString meshName = mesh->get_name();
+	assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
+	asr::Object *meshObject = assembly->objects().get_by_name(meshName.asChar());
+
+	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+	this->MMatrixToAMatrix(matrix, tmatrix);
+	asf::StringArray material_names;
+	material_names.push_back("gray_material");
+
+	assembly->object_instances().insert(
+			asr::ObjectInstanceFactory::create(
+			(meshName + "_inst").asChar(),
+			asr::ParamArray(),
+			*meshObject,
+			asf::Transformd(tmatrix),
+			material_names
+			));
+}
+	
+
+void  AppleseedRenderer::parseHierarchy(MObject currentObject, asr::Assembly *parentAss, MMatrix matrix, int level)
 {
 	MStatus stat;
 	MFnDagNode currentNode(currentObject);
 	MString space = makeSpace(level);
-	logger.info(space + MString("parseHierarchy: ") + currentNode.partialPathName());
+
+	logger.trace(space + MString("parseHierarchy: ") + currentNode.partialPathName());
+
+	if(isTransform(currentObject))
+		matrix *= currentNode.transformationMatrix();
+
+	if( isGeo(currentObject))
+	{
+		logger.trace(MString("Put geo: ") + getObjectName(currentObject) + " into parentAssembly: " + parentAss->get_name());
+		MMatrix matrix;
+		matrix.setToIdentity();
+		putObjectIntoAssembly(parentAss, currentObject, matrix);
+	}
 
 	uint numChildren = currentNode.childCount();
 
@@ -2331,29 +2292,23 @@ void  AppleseedRenderer::parseHierarchy(MObject currentObject, MString parentAss
 		MObject childObj = currentNode.child(chId);
 		MFnDagNode childNode(childObj);
 		MDagPath childPath(childNode.dagPath());
-		logger.info(MString("Check child: ") + childNode.partialPathName());
+		logger.trace(MString("Check child: ") + childNode.partialPathName());
 
 		if( childNode.parent(0) != currentObject)
 		{
-			logger.info("Object path from instance side, skipping.");
+			logger.trace("Object path from instance side, skipping.");
 			continue;
 		}
 
-		if( isGeo(childObj))
-		{
-			logger.info(MString("Put geo: ") + getObjectName(childObj) + " into parentAssembly: " + parentAss);
-			continue;
-		}
-
-		MString pa = parentAss;
+		asr::Assembly *pa = parentAss;
 		if( objectNeedsAssembly(childObj))
 		{
 			// create assembly or so ...
-			logger.info("Child needs own assembly");
-			pa = MString("Assembly_") + childNode.name();
+			logger.trace("Child needs own assembly");
+			pa = this->createAssembly(childNode.fullPathName());
 		}
 
-		this->parseHierarchy(childObj, pa, level + 1);
+		this->parseHierarchy(childObj, pa, matrix, level + 1);
 	}
 
 }

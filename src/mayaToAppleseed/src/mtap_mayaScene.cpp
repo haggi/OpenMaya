@@ -100,6 +100,26 @@ bool mtap_MayaScene::doPostRenderJobs()
 	return true;
 }
 
+
+//
+//	for easy findings, put all objects into a map
+//
+void  mtap_MayaScene::makeMayaObjectMObjMap()
+{
+	this->mayaObjMObjMap.clear();
+	std::vector<MayaObject *>::iterator iter = this->objectList.begin();
+	for( ;iter != this->objectList.end(); iter++)
+	{
+		this->mayaObjMObjMap.append((*iter)->mobject, *iter);
+	}
+}
+
+mtap_MayaObject *mtap_MayaScene::getMayaObjectFromMap(MObject& obj)
+{
+	mtap_MayaObject *mobj = (mtap_MayaObject *)*mayaObjMObjMap.find(obj);
+	return mobj;
+}
+
 //
 //	Check if the selected nodes exist in the scene->MayaObject lists. 
 //	At the moment only shape nodes are exported because we do not have hierarchies yet.

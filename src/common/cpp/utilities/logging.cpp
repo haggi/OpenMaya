@@ -21,6 +21,7 @@ void Logging::setLogLevel( Logging::LogLevel level)
 void Logging::trace(MString logString)
 {
 	std::cout << "trace: " << logString << "\n";
+	std::cout.flush();
 }
 
 void Logging::info(MString logString)
