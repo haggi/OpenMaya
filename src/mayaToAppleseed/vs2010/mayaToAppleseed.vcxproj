@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\appleseed.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
     <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\appleseed.h" />

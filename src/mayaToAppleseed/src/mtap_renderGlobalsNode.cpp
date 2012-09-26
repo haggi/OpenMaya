@@ -102,11 +102,12 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( exportXMLFileName ));
 
+	// reduced to auto because we do not need the others (I hope) remove the whole attribute in the next release
 	assemblyExportType = eAttr.create( "assemblyExportType", "assemblyExportType", 0, &stat);
 	stat = eAttr.addField( "Auto", 0 );
-	stat = eAttr.addField( "One Master Assembly", 1 );
-	stat = eAttr.addField( "Per Shape Assembly", 2 );
-	stat = eAttr.addField( "Per NamedSet Assembly", 3 );
+	//stat = eAttr.addField( "One Master Assembly", 1 );
+	//stat = eAttr.addField( "Per Shape Assembly", 2 );
+	//stat = eAttr.addField( "Per NamedSet Assembly", 3 );
 	CHECK_MSTATUS(addAttribute( assemblyExportType ));
 
 	assemblyPolyTheshold = nAttr.create("assemblyPolyTheshold", "assemblyPolyTheshold",  MFnNumericData::kInt, 10000);

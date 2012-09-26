@@ -175,11 +175,11 @@ void AppleseedRenderer::defineDefaultMaterial()
 
 }
 
-void AppleseedRenderer::addDefaultMaterial()
+void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
     // Create a color called "gray" and insert it into the assembly.
     static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	this->masterAssembly->colors().insert(
+	assembly->colors().insert(
         asr::ColorEntityFactory::create(
             "gray",
             asr::ParamArray()
@@ -187,20 +187,20 @@ void AppleseedRenderer::addDefaultMaterial()
             asr::ColorValueArray(3, GrayReflectance)));
 
     // Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
-    this->masterAssembly->bsdfs().insert(
+    assembly->bsdfs().insert(
         asr::LambertianBRDFFactory().create(
             "diffuse_gray_brdf",
             asr::ParamArray()
                 .insert("reflectance", "gray")));
 
     // Create a physical surface shader and insert it into the assembly.
-    this->masterAssembly->surface_shaders().insert(
+    assembly->surface_shaders().insert(
         asr::PhysicalSurfaceShaderFactory().create(
             "physical_surface_shader",
             asr::ParamArray()));
 
     // Create a material called "gray_material" and insert it into the assembly.
-    this->masterAssembly->materials().insert(
+    assembly->materials().insert(
         asr::MaterialFactory::create(
             "gray_material",
             asr::ParamArray()
@@ -567,73 +567,75 @@ void AppleseedRenderer::defineOutput()
 
 void AppleseedRenderer::defineMeshDeformStep(mtap_MayaObject *obj)
 {
-	logger.debug(MString("Defining mesh deform step at time: ") + this->renderGlobals->currentFrameNumber);	
-	if( this->renderGlobals->isMbStartStep)
-	{
-		// if it is the start of rendering obj assembly has to be always zero
-		if( obj->objectAssembly.get() != NULL)
-			obj->objectAssembly.reset();
+	return;
 
-		if( obj->objectAssembly.get() == NULL)
-		{
-			if( obj->mobject.hasFn(MFn::kMesh))
-			{
-				logger.debug(MString("Is mb deform start step and object has not been defined yet, calling defineObject."));
-				this->defineObject(obj);
-			}
-		}
-		return;
-	}
+	//logger.debug(MString("Defining mesh deform step at time: ") + this->renderGlobals->currentFrameNumber);	
+	//if( this->renderGlobals->isMbStartStep)
+	//{
+	//	// if it is the start of rendering obj assembly has to be always zero
+	//	if( obj->objectAssembly.get() != NULL)
+	//		obj->objectAssembly.reset();
 
-	MStatus stat = MStatus::kSuccess;
-	MFnMesh meshFn(obj->mobject, &stat);
-	CHECK_MSTATUS(stat);
-	if( !stat )
-		return;
-	MItMeshPolygon faceIt(obj->mobject, &stat);
-	CHECK_MSTATUS(stat);
-	if( !stat )
-		return;
+	//	if( obj->objectAssembly.get() == NULL)
+	//	{
+	//		if( obj->mobject.hasFn(MFn::kMesh))
+	//		{
+	//			logger.debug(MString("Is mb deform start step and object has not been defined yet, calling defineObject."));
+	//			this->defineObject(obj);
+	//		}
+	//	}
+	//	return;
+	//}
 
-	MPointArray points;
-	stat = meshFn.getPoints(points);
-	CHECK_MSTATUS(stat);
-    MFloatVectorArray normals;
-    meshFn.getNormals( normals, MSpace::kWorld );
+	//MStatus stat = MStatus::kSuccess;
+	//MFnMesh meshFn(obj->mobject, &stat);
+	//CHECK_MSTATUS(stat);
+	//if( !stat )
+	//	return;
+	//MItMeshPolygon faceIt(obj->mobject, &stat);
+	//CHECK_MSTATUS(stat);
+	//if( !stat )
+	//	return;
 
-	logger.debug(MString("Defining deform step for mesh object ") + meshFn.name().asChar());
-	
-	asr::Assembly *assembly = this->masterAssembly.get();
-	if( obj->objectAssembly.get() != NULL)
-		assembly = obj->objectAssembly.get();
+	//MPointArray points;
+	//stat = meshFn.getPoints(points);
+	//CHECK_MSTATUS(stat);
+ //   MFloatVectorArray normals;
+ //   meshFn.getNormals( normals, MSpace::kWorld );
 
-	if( assembly == NULL)
-	{
-		logger.debug("No valid master or object assembly found.");
-		return;
-	}
+	//logger.debug(MString("Defining deform step for mesh object ") + meshFn.name().asChar());
+	//
+	//asr::Assembly *assembly = this->masterAssembly.get();
+	//if( obj->objectAssembly.get() != NULL)
+	//	assembly = obj->objectAssembly.get();
 
-	logger.debug(MString("Found objectAssembly called ") +  assembly->get_name());
-	asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
-	if( meshObject == NULL)
-	{
-		logger.debug("could not find base mesh in assembly");
-		return;
-	}
-	asr::MeshObject *meshShape = (asr::MeshObject *)meshObject;
-	MString meshName = meshShape->get_name();
-	int numMbSegments = meshShape->get_motion_segment_count();
-	logger.debug(MString("Mesh name ") + meshName + " has " + numMbSegments + " motion segments");
+	//if( assembly == NULL)
+	//{
+	//	logger.debug("No valid master or object assembly found.");
+	//	return;
+	//}
 
-	// now adding one motion segment
-	size_t mbSegmentIndex = meshShape->get_motion_segment_count() + 1;
-	meshShape->set_motion_segment_count(mbSegmentIndex);
+	//logger.debug(MString("Found objectAssembly called ") +  assembly->get_name());
+	//asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
+	//if( meshObject == NULL)
+	//{
+	//	logger.debug("could not find base mesh in assembly");
+	//	return;
+	//}
+	//asr::MeshObject *meshShape = (asr::MeshObject *)meshObject;
+	//MString meshName = meshShape->get_name();
+	//int numMbSegments = meshShape->get_motion_segment_count();
+	//logger.debug(MString("Mesh name ") + meshName + " has " + numMbSegments + " motion segments");
 
-	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
-	{
-		asr::GVector3 vtx((float)points[vtxId].x, (float)points[vtxId].y, (float)points[vtxId].z);
-		meshShape->set_vertex_pose(vtxId, mbSegmentIndex - 1, vtx);
-	}
+	//// now adding one motion segment
+	//size_t mbSegmentIndex = meshShape->get_motion_segment_count() + 1;
+	//meshShape->set_motion_segment_count(mbSegmentIndex);
+
+	//for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+	//{
+	//	asr::GVector3 vtx((float)points[vtxId].x, (float)points[vtxId].y, (float)points[vtxId].z);
+	//	meshShape->set_vertex_pose(vtxId, mbSegmentIndex - 1, vtx);
+	//}
 }
 
 asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& meshObject)
@@ -791,10 +793,11 @@ void AppleseedRenderer::defineColor(MString& name, MColor& color, asr::Assembly 
 // translate shaders here, will be seperated later if we have a real shading language
 void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
 {
-	bool createAssembly = (renderGlobals->assemblyExportType == 1);
-	asr::Assembly *assembly = this->masterAssembly.get();
-	if( createAssembly )
-		assembly = obj->objectAssembly.get();
+	//bool createAssembly = (renderGlobals->assemblyExportType == 1);
+	//asr::Assembly *assembly = this->masterAssembly.get();
+	//if( createAssembly )
+	//	assembly = obj->objectAssembly.get();
+	asr::Assembly *assembly = obj->objectAssembly;
 
 	MObject shadingGroup;
 	getObjectShadingGroups(obj->dagPath, shadingGroup);
@@ -1314,301 +1317,303 @@ void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 
 void AppleseedRenderer::defineObject(mtap_MayaObject *obj)
 {
-	logger.debug(MString("asr define obj ") + obj->shortName);
-
-	asf::StringArray material_names;
-	material_names.push_back("gray_material");
-
-	bool createAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
-
-	// only create a mesh description for the original shape
-	asf::auto_release_ptr<asr::MeshObject> mesh;
-
-	MString meshName(obj->shortName);
-	mesh = this->createMesh(obj->mobject);
-	asr::Assembly *assembly = this->masterAssembly.get();
-
-	// only create an assembly for the original object instances will be assembly instances
-	if( createAssembly)
-	{
-		obj->objectAssembly = asr::AssemblyFactory::create(
-			(MString("shapeAssembly") + obj->shortName).asChar(),
-			asr::ParamArray());
-		assembly = obj->objectAssembly.get();
-	}
-
-	assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
-
-	asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
-
-	if( meshObject == NULL)
-	{
-		logger.error(MString("mesh obj is NULL."));
-		return;
-	}
-
-	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-
-	// if we have per object assemblies, the assemblies will inherit the transformation matrix,
-	// this is not the case if we have one master assembly, then we have all elements in one assembly
-	if( !createAssembly)
-		this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-	//logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
-
-	material_names.clear();
-	this->defineObjectMaterial(renderGlobals, obj, material_names);
-	asf::StringArray backSideMaterial_names = material_names;
-
-	if( material_names.size() > 1)
-	{
-		MString mn = material_names[0];
-		material_names.clear();
-		material_names.push_back(mn.asChar());
-		mn = backSideMaterial_names[0];
-		backSideMaterial_names.clear();
-		backSideMaterial_names.push_back(mn.asChar());
-	}
-
-	bool doubleSided = true;
-	MFnDependencyNode depFn(obj->mobject);
-	getBool(MString("doubleSided"), depFn, doubleSided);
-
-	//TODO: assign object materials 2 sided only for non light objects
-	if( doubleSided )
-	{
-		assembly->object_instances().insert(
-			asr::ObjectInstanceFactory::create(
-			((meshName + "_inst" + obj->instanceNumber).asChar()),
-			asr::ParamArray(),
-			*meshObject,
-			asf::Transformd(tmatrix),
-			material_names,
-			backSideMaterial_names));
-	}else{
-		assembly->object_instances().insert(
-			asr::ObjectInstanceFactory::create(
-			((meshName + "_inst" + obj->instanceNumber).asChar()),
-			asr::ParamArray(),
-			*meshObject,
-			asf::Transformd(tmatrix),
-			material_names));
-	}
-}
-
-void AppleseedRenderer::defineGeometry()
-{
-	// Create the array of material names.
-	asf::StringArray material_names;
-	material_names.push_back("gray_material");
-
-	bool createAssembly = (renderGlobals->assemblyExportType == 1);
-
-	for(int objId = 0; objId < this->mtap_scene->objectList.size(); objId++)
-	{
-		mtap_MayaObject *obj = (mtap_MayaObject *)this->mtap_scene->objectList[objId];
-
-		// only meshes
-		logger.debug(MString("Translating object ") + obj->shortName);
-		if( !obj->mobject.hasFn(MFn::kMesh) )
-		{
-			logger.debug("Object is not a mesh, igoring");
-			continue;
-		}
-
-		// if we create an assembly per geometry, then all instances will be created later with assembly instances
-		if( createAssembly && (obj->instanceNumber > 0))
-		{
-			logger.debug("Object is instance, no direct mesh creation, trying to add an obj/assembly instance");
-			continue;
-		}
-
-		// only create a mesh description for the original shape
-		asf::auto_release_ptr<asr::MeshObject> mesh;
-		if( obj->instanceNumber == 0)		
-			mesh = this->createMesh(obj->mobject);
-
-		MString meshName(obj->shortName);
-		asr::Assembly *assembly = this->masterAssembly.get();
-
-		// only create an assembly for the original object instances will be assembly instances
-		if( createAssembly)
-		{
-			asf::auto_release_ptr<asr::Assembly> testAss;
-			testAss = asr::AssemblyFactory::create(
-				(MString("shapeAssembly") + obj->shortName).asChar(),
-				asr::ParamArray());
-			//obj->objectAssembly = asr::AssemblyFactory::create(
-			//	(MString("shapeAssembly") + obj->shortName).asChar(),
-			//	asr::ParamArray());
-			obj->objectAssembly.reset();
-			obj->objectAssembly = testAss;
-			assembly = obj->objectAssembly.get();
-		}
-
-		if( obj->instanceNumber == 0)
-			assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
-
-		asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
-
-		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-
-		// if we have per object assemblies, the assemblies will be inherit the transformation matrix,
-		// this is not the case if we have one master assembly, then we have all elements in one assembly
-		if( !createAssembly)
-			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-		logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
-	    // Create an instance of this object and insert it into the assembly.
-		//if( obj->instanceNumber == 0)
-
-		material_names.clear();
-		this->defineObjectMaterial(renderGlobals, obj, material_names);
-		asf::StringArray backSideMaterial_names = material_names;
-
-		if( material_names.size() > 1)
-		{
-			MString mn = material_names[0];
-			material_names.clear();
-			material_names.push_back(mn.asChar());
-			mn = backSideMaterial_names[0];
-			backSideMaterial_names.clear();
-			backSideMaterial_names.push_back(mn.asChar());
-		}
-
-		bool doubleSided = true;
-		MFnDependencyNode depFn(obj->mobject);
-		getBool(MString("doubleSided"), depFn, doubleSided);
-
-		//TODO: assign object materials 2 sided only for non light objects
-		if( doubleSided )
-		{
-			assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				((meshName + "_inst" + obj->instanceNumber).asChar()),
-				asr::ParamArray(),
-				*meshObject,
-				asf::Transformd(tmatrix),
-				material_names,
-				backSideMaterial_names));
-		}else{
-			assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				((meshName + "_inst" + obj->instanceNumber).asChar()),
-				asr::ParamArray(),
-				*meshObject,
-				asf::Transformd(tmatrix),
-				material_names));
-		}
-	}
-}
-
-
-void AppleseedRenderer::defineGeometry(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList)
-{
-	this->defineGeometry();
 	return;
-	// Create the array of material names.
-	asf::StringArray material_names;
-	material_names.push_back("gray_material");
 
-	bool createAssembly = (renderGlobals->assemblyExportType == 1);
+	//logger.debug(MString("asr define obj ") + obj->shortName);
 
-	for(int objId = 0; objId < objectList.size(); objId++)
-	{
-		mtap_MayaObject *obj = (mtap_MayaObject *)objectList[objId];
+	//asf::StringArray material_names;
+	//material_names.push_back("gray_material");
 
-		// only meshes
-		logger.debug(MString("Translating object ") + obj->shortName);
-		if( !obj->mobject.hasFn(MFn::kMesh) )
-		{
-			logger.debug("Object is not a mesh, igoring");
-			continue;
-		}
+	////bool createAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
 
-		// if we create an assembly per geometry, then all instances will be created later with assembly instances
-		if( createAssembly && (obj->instanceNumber > 0))
-		{
-			logger.debug("Object is instance, no direct mesh creation, trying to add an obj/assembly instance");
-			continue;
-		}
+	//// only create a mesh description for the original shape
+	//asf::auto_release_ptr<asr::MeshObject> mesh;
 
-		// only create a mesh description for the original shape
-		asf::auto_release_ptr<asr::MeshObject> mesh;
-		if( obj->instanceNumber == 0)		
-			mesh = this->createMesh(obj->mobject);
+	//MString meshName(obj->shortName);
+	//mesh = this->createMesh(obj->mobject);
+	//asr::Assembly *assembly = this->masterAssembly.get();
 
-		MString meshName(obj->shortName);
-		asr::Assembly *assembly = this->masterAssembly.get();
+	//// only create an assembly for the original object instances will be assembly instances
+	////if( createAssembly)
+	////{
+	////	obj->objectAssembly = asr::AssemblyFactory::create(
+	////		(MString("shapeAssembly") + obj->shortName).asChar(),
+	////		asr::ParamArray());
+	//assembly = obj->objectAssembly;
+	////}
 
-		// only create an assembly for the original object instances will be assembly instances
-		if( createAssembly)
-		{
-			asf::auto_release_ptr<asr::Assembly> testAss;
-			testAss = asr::AssemblyFactory::create(
-				(MString("shapeAssembly") + obj->shortName).asChar(),
-				asr::ParamArray());
-			//obj->objectAssembly = asr::AssemblyFactory::create(
-			//	(MString("shapeAssembly") + obj->shortName).asChar(),
-			//	asr::ParamArray());
-			obj->objectAssembly.reset();
-			obj->objectAssembly = testAss;
-			assembly = obj->objectAssembly.get();
-		}
+	//assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
 
-		if( obj->instanceNumber == 0)
-			assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
+	//asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
 
-		asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
+	//if( meshObject == NULL)
+	//{
+	//	logger.error(MString("mesh obj is NULL."));
+	//	return;
+	//}
 
-		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+	//asf::Matrix4d tmatrix = asf::Matrix4d::identity();
 
-		// if we have per object assemblies, the assemblies will be inherit the transformation matrix,
-		// this is not the case if we have one master assembly, then we have all elements in one assembly
-		if( !createAssembly)
-			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-		logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
-	    // Create an instance of this object and insert it into the assembly.
-		//if( obj->instanceNumber == 0)
+	//// if we have per object assemblies, the assemblies will inherit the transformation matrix,
+	//// this is not the case if we have one master assembly, then we have all elements in one assembly
+	//if( !createAssembly)
+	//	this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
+	////logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
 
-		material_names.clear();
-		this->defineObjectMaterial(renderGlobals, obj, material_names);
-		asf::StringArray backSideMaterial_names = material_names;
+	//material_names.clear();
+	//this->defineObjectMaterial(renderGlobals, obj, material_names);
+	//asf::StringArray backSideMaterial_names = material_names;
 
-		if( material_names.size() > 1)
-		{
-			MString mn = material_names[0];
-			material_names.clear();
-			material_names.push_back(mn.asChar());
-			mn = backSideMaterial_names[0];
-			backSideMaterial_names.clear();
-			backSideMaterial_names.push_back(mn.asChar());
-		}
+	//if( material_names.size() > 1)
+	//{
+	//	MString mn = material_names[0];
+	//	material_names.clear();
+	//	material_names.push_back(mn.asChar());
+	//	mn = backSideMaterial_names[0];
+	//	backSideMaterial_names.clear();
+	//	backSideMaterial_names.push_back(mn.asChar());
+	//}
 
-		bool doubleSided = true;
-		MFnDependencyNode depFn(obj->mobject);
-		getBool(MString("doubleSided"), depFn, doubleSided);
+	//bool doubleSided = true;
+	//MFnDependencyNode depFn(obj->mobject);
+	//getBool(MString("doubleSided"), depFn, doubleSided);
 
-		//TODO: assign object materials 2 sided only for non light objects
-		if( doubleSided )
-		{
-			assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				((meshName + "_inst" + obj->instanceNumber).asChar()),
-				asr::ParamArray(),
-				*meshObject,
-				asf::Transformd(tmatrix),
-				material_names,
-				backSideMaterial_names));
-		}else{
-			assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				((meshName + "_inst" + obj->instanceNumber).asChar()),
-				asr::ParamArray(),
-				*meshObject,
-				asf::Transformd(tmatrix),
-				material_names));
-		}
-	}
+	////TODO: assign object materials 2 sided only for non light objects
+	//if( doubleSided )
+	//{
+	//	assembly->object_instances().insert(
+	//		asr::ObjectInstanceFactory::create(
+	//		((meshName + "_inst" + obj->instanceNumber).asChar()),
+	//		asr::ParamArray(),
+	//		*meshObject,
+	//		asf::Transformd(tmatrix),
+	//		material_names,
+	//		backSideMaterial_names));
+	//}else{
+	//	assembly->object_instances().insert(
+	//		asr::ObjectInstanceFactory::create(
+	//		((meshName + "_inst" + obj->instanceNumber).asChar()),
+	//		asr::ParamArray(),
+	//		*meshObject,
+	//		asf::Transformd(tmatrix),
+	//		material_names));
+	//}
 }
+
+//void AppleseedRenderer::defineGeometry()
+//{
+//	// Create the array of material names.
+//	asf::StringArray material_names;
+//	material_names.push_back("gray_material");
+//
+//	bool createAssembly = (renderGlobals->assemblyExportType == 1);
+//
+//	for(int objId = 0; objId < this->mtap_scene->objectList.size(); objId++)
+//	{
+//		mtap_MayaObject *obj = (mtap_MayaObject *)this->mtap_scene->objectList[objId];
+//
+//		// only meshes
+//		logger.debug(MString("Translating object ") + obj->shortName);
+//		if( !obj->mobject.hasFn(MFn::kMesh) )
+//		{
+//			logger.debug("Object is not a mesh, igoring");
+//			continue;
+//		}
+//
+//		// if we create an assembly per geometry, then all instances will be created later with assembly instances
+//		if( createAssembly && (obj->instanceNumber > 0))
+//		{
+//			logger.debug("Object is instance, no direct mesh creation, trying to add an obj/assembly instance");
+//			continue;
+//		}
+//
+//		// only create a mesh description for the original shape
+//		asf::auto_release_ptr<asr::MeshObject> mesh;
+//		if( obj->instanceNumber == 0)		
+//			mesh = this->createMesh(obj->mobject);
+//
+//		MString meshName(obj->shortName);
+//		asr::Assembly *assembly = NULL;
+//
+//		// only create an assembly for the original object instances will be assembly instances
+//		if( createAssembly)
+//		{
+//			asf::auto_release_ptr<asr::Assembly> testAss;
+//			testAss = asr::AssemblyFactory::create(
+//				(MString("shapeAssembly") + obj->shortName).asChar(),
+//				asr::ParamArray());
+//			//obj->objectAssembly = asr::AssemblyFactory::create(
+//			//	(MString("shapeAssembly") + obj->shortName).asChar(),
+//			//	asr::ParamArray());
+//			//obj->objectAssembly.reset();
+//			//obj->objectAssembly = testAss;
+//			assembly = obj->objectAssembly.get();
+//		}
+//
+//		if( obj->instanceNumber == 0)
+//			assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
+//
+//		asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
+//
+//		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+//
+//		// if we have per object assemblies, the assemblies will be inherit the transformation matrix,
+//		// this is not the case if we have one master assembly, then we have all elements in one assembly
+//		if( !createAssembly)
+//			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
+//		logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
+//	    // Create an instance of this object and insert it into the assembly.
+//		//if( obj->instanceNumber == 0)
+//
+//		material_names.clear();
+//		this->defineObjectMaterial(renderGlobals, obj, material_names);
+//		asf::StringArray backSideMaterial_names = material_names;
+//
+//		if( material_names.size() > 1)
+//		{
+//			MString mn = material_names[0];
+//			material_names.clear();
+//			material_names.push_back(mn.asChar());
+//			mn = backSideMaterial_names[0];
+//			backSideMaterial_names.clear();
+//			backSideMaterial_names.push_back(mn.asChar());
+//		}
+//
+//		bool doubleSided = true;
+//		MFnDependencyNode depFn(obj->mobject);
+//		getBool(MString("doubleSided"), depFn, doubleSided);
+//
+//		//TODO: assign object materials 2 sided only for non light objects
+//		if( doubleSided )
+//		{
+//			assembly->object_instances().insert(
+//				asr::ObjectInstanceFactory::create(
+//				((meshName + "_inst" + obj->instanceNumber).asChar()),
+//				asr::ParamArray(),
+//				*meshObject,
+//				asf::Transformd(tmatrix),
+//				material_names,
+//				backSideMaterial_names));
+//		}else{
+//			assembly->object_instances().insert(
+//				asr::ObjectInstanceFactory::create(
+//				((meshName + "_inst" + obj->instanceNumber).asChar()),
+//				asr::ParamArray(),
+//				*meshObject,
+//				asf::Transformd(tmatrix),
+//				material_names));
+//		}
+//	}
+//}
+
+
+//void AppleseedRenderer::defineGeometry(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList)
+//{
+//	this->defineGeometry();
+//	return;
+//	// Create the array of material names.
+//	asf::StringArray material_names;
+//	material_names.push_back("gray_material");
+//
+//	bool createAssembly = (renderGlobals->assemblyExportType == 1);
+//
+//	for(int objId = 0; objId < objectList.size(); objId++)
+//	{
+//		mtap_MayaObject *obj = (mtap_MayaObject *)objectList[objId];
+//
+//		// only meshes
+//		logger.debug(MString("Translating object ") + obj->shortName);
+//		if( !obj->mobject.hasFn(MFn::kMesh) )
+//		{
+//			logger.debug("Object is not a mesh, igoring");
+//			continue;
+//		}
+//
+//		// if we create an assembly per geometry, then all instances will be created later with assembly instances
+//		if( createAssembly && (obj->instanceNumber > 0))
+//		{
+//			logger.debug("Object is instance, no direct mesh creation, trying to add an obj/assembly instance");
+//			continue;
+//		}
+//
+//		// only create a mesh description for the original shape
+//		asf::auto_release_ptr<asr::MeshObject> mesh;
+//		if( obj->instanceNumber == 0)		
+//			mesh = this->createMesh(obj->mobject);
+//
+//		MString meshName(obj->shortName);
+//		asr::Assembly *assembly = this->masterAssembly.get();
+//
+//		// only create an assembly for the original object instances will be assembly instances
+//		if( createAssembly)
+//		{
+//			asf::auto_release_ptr<asr::Assembly> testAss;
+//			testAss = asr::AssemblyFactory::create(
+//				(MString("shapeAssembly") + obj->shortName).asChar(),
+//				asr::ParamArray());
+//			//obj->objectAssembly = asr::AssemblyFactory::create(
+//			//	(MString("shapeAssembly") + obj->shortName).asChar(),
+//			//	asr::ParamArray());
+//			obj->objectAssembly.reset();
+//			obj->objectAssembly = testAss;
+//			assembly = obj->objectAssembly.get();
+//		}
+//
+//		if( obj->instanceNumber == 0)
+//			assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
+//
+//		asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
+//
+//		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+//
+//		// if we have per object assemblies, the assemblies will be inherit the transformation matrix,
+//		// this is not the case if we have one master assembly, then we have all elements in one assembly
+//		if( !createAssembly)
+//			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
+//		logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
+//	    // Create an instance of this object and insert it into the assembly.
+//		//if( obj->instanceNumber == 0)
+//
+//		material_names.clear();
+//		this->defineObjectMaterial(renderGlobals, obj, material_names);
+//		asf::StringArray backSideMaterial_names = material_names;
+//
+//		if( material_names.size() > 1)
+//		{
+//			MString mn = material_names[0];
+//			material_names.clear();
+//			material_names.push_back(mn.asChar());
+//			mn = backSideMaterial_names[0];
+//			backSideMaterial_names.clear();
+//			backSideMaterial_names.push_back(mn.asChar());
+//		}
+//
+//		bool doubleSided = true;
+//		MFnDependencyNode depFn(obj->mobject);
+//		getBool(MString("doubleSided"), depFn, doubleSided);
+//
+//		//TODO: assign object materials 2 sided only for non light objects
+//		if( doubleSided )
+//		{
+//			assembly->object_instances().insert(
+//				asr::ObjectInstanceFactory::create(
+//				((meshName + "_inst" + obj->instanceNumber).asChar()),
+//				asr::ParamArray(),
+//				*meshObject,
+//				asf::Transformd(tmatrix),
+//				material_names,
+//				backSideMaterial_names));
+//		}else{
+//			assembly->object_instances().insert(
+//				asr::ObjectInstanceFactory::create(
+//				((meshName + "_inst" + obj->instanceNumber).asChar()),
+//				asr::ParamArray(),
+//				*meshObject,
+//				asf::Transformd(tmatrix),
+//				material_names));
+//		}
+//	}
+//}
 
 void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 {
@@ -1781,65 +1786,66 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 	// per object assembly
 	// lets go through all objects and check if they are instance objects.
 	// If yes, then get the original shape and read the assembly of the original.
-	if( renderGlobals->assemblyExportType == 1)
-	{
-		for(size_t objId = 0; objId < objectList.size(); objId++)
-		{
-			mtap_MayaObject *obj = (mtap_MayaObject *)objectList[objId];
-			if( !obj->geometryShapeSupported())
-				continue;
-			asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
 
-			if( obj->instanceNumber == 0)
-			{
-				asr::Assembly *assembly = obj->objectAssembly.get();
-				logger.debug(MString("Adding orig geo assembly for ") + obj->shortName);
-				asf::auto_release_ptr<asr::AssemblyInstance> assFacPtr = asr::AssemblyInstanceFactory::create(
-					(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
-						asr::ParamArray(),
-						*assembly);
+	//if( renderGlobals->assemblyExportType == 1)
+	//{
+	//	for(size_t objId = 0; objId < objectList.size(); objId++)
+	//	{
+	//		mtap_MayaObject *obj = (mtap_MayaObject *)objectList[objId];
+	//		if( !obj->geometryShapeSupported())
+	//			continue;
+	//		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+	//		this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
 
-				fillTransformMatices(obj, assFacPtr.get());
-				this->scene->assembly_instances().insert(assFacPtr);
+	//		if( obj->instanceNumber == 0)
+	//		{
+	//			asr::Assembly *assembly = obj->objectAssembly.get();
+	//			logger.debug(MString("Adding orig geo assembly for ") + obj->shortName);
+	//			asf::auto_release_ptr<asr::AssemblyInstance> assFacPtr = asr::AssemblyInstanceFactory::create(
+	//				(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
+	//					asr::ParamArray(),
+	//					*assembly);
 
-				this->scene->assemblies().insert((asf::auto_release_ptr<asr::Assembly>)assembly);
+	//			fillTransformMatices(obj, assFacPtr.get());
+	//			this->scene->assembly_instances().insert(assFacPtr);
 
-				continue;
-			}
+	//			this->scene->assemblies().insert((asf::auto_release_ptr<asr::Assembly>)assembly);
 
-			if( obj->origObject == NULL)
-				continue;
-			logger.debug(MString("Found instance for ") + obj->shortName);
-			mtap_MayaObject *origObj = (mtap_MayaObject *)obj->origObject;
-			asr::Assembly *assembly = origObj->objectAssembly.get();
-			asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
-					(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
-				    asr::ParamArray(),
-					*assembly);
-			fillTransformMatices(obj, assInstPtr.get());
-		    this->scene->assembly_instances().insert(assInstPtr);
+	//			continue;
+	//		}
+
+	//		if( obj->origObject == NULL)
+	//			continue;
+	//		logger.debug(MString("Found instance for ") + obj->shortName);
+	//		mtap_MayaObject *origObj = (mtap_MayaObject *)obj->origObject;
+	//		asr::Assembly *assembly = origObj->objectAssembly.get();
+	//		asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
+	//				(MString("assembly_inst_") + obj->shortName + obj->instanceNumber).asChar(),
+	//			    asr::ParamArray(),
+	//				*assembly);
+	//		fillTransformMatices(obj, assInstPtr.get());
+	//	    this->scene->assembly_instances().insert(assInstPtr);
 
 
-		}
-		for(size_t objId = 0; objId < instancerList.size(); objId++)
-		{
-			mtap_MayaObject *obj = (mtap_MayaObject *)instancerList[objId];
-			if( obj->origObject == NULL)
-				continue;
-			logger.debug(MString("Found instance for instancerElement ") + obj->shortName);
-			mtap_MayaObject *origObj = (mtap_MayaObject *)obj->origObject;
-			asr::Assembly *assembly = origObj->objectAssembly.get();
-			asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-			this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-			asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
-					(MString("assembly_instancer_") + obj->shortName + obj->instanceNumber).asChar(),
-				    asr::ParamArray(),
-					*assembly);
-			fillTransformMatices(obj, assInstPtr.get());
-		    this->scene->assembly_instances().insert(assInstPtr);
-		}
-	}
+	//	}
+	//	for(size_t objId = 0; objId < instancerList.size(); objId++)
+	//	{
+	//		mtap_MayaObject *obj = (mtap_MayaObject *)instancerList[objId];
+	//		if( obj->origObject == NULL)
+	//			continue;
+	//		logger.debug(MString("Found instance for instancerElement ") + obj->shortName);
+	//		mtap_MayaObject *origObj = (mtap_MayaObject *)obj->origObject;
+	//		asr::Assembly *assembly = origObj->objectAssembly.get();
+	//		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+	//		this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
+	//		asf::auto_release_ptr<asr::AssemblyInstance> assInstPtr = asr::AssemblyInstanceFactory::create(
+	//				(MString("assembly_instancer_") + obj->shortName + obj->instanceNumber).asChar(),
+	//			    asr::ParamArray(),
+	//				*assembly);
+	//		fillTransformMatices(obj, assInstPtr.get());
+	//	    this->scene->assembly_instances().insert(assInstPtr);
+	//	}
+	//}
 
     // Create a pinhole camera with film dimensions 0.980 x 0.735 in (24.892 x 18.669 mm).
     //asf::auto_release_ptr<asr::Camera> camera(
@@ -2154,11 +2160,56 @@ MDagPath  AppleseedRenderer::getWorld()
 	return dagPath;
 }
 
+
+//
+// define assembly instances
+// after parsing the scene all assemblies are done.
+// now we create the assembly instances.
+// The instances are created from the mtap_MayaObject.
+// Here are handled real instances as well with checking the number of parents.
+//
+
+// maybe its more useful to work with two vector arrays instead of minimap in this case
+void AppleseedRenderer::defineAssemblyInstances()
+{
+	for( int i = 0; i < assemblyMOMap.len(); i++)
+	{
+		mtap_MayaObject *obj = *assemblyMOMap.get(i);
+		if( obj != NULL)
+		{
+			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName);
+		    
+			MFnDagNode objNode(obj->mobject);
+			if( objNode.parentCount() > 0)
+			{
+				MDagPathArray pathArray;
+				objNode.getAllPaths(pathArray);
+				
+				for( uint pId = 0; pId < pathArray.length(); pId++)
+				{
+					// find mayaObject...
+					
+					asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+						(obj->shortName + "assembly_inst").asChar(),
+						asr::ParamArray(),
+						*obj->objectAssembly);
+					this->fillTransformMatices(obj, ai.get());
+					this->scene->assembly_instances().insert(ai);
+				}
+			}
+
+		}
+	}
+	
+}
+
+
 void  AppleseedRenderer::parseScene()
 {
 
 	// put this later into MayaScene common lib
 	this->mtap_scene->makeMayaObjectMObjMap();
+	this->assemblyMOMap.clear();
 
 	logger.trace(MString("----------- Apple parse scene ---------------"));
 	MDagPath world = getWorld();
@@ -2167,11 +2218,21 @@ void  AppleseedRenderer::parseScene()
 		logger.trace(MString("World dagPath not valid."));
 		return;
 	}
-	asr::Assembly *worldAssembly = this->createAssembly("world");
+	asr::Assembly *worldAssembly = this->createAssembly("world", world.node());
+	this->addDefaultMaterial(worldAssembly);
+
 	MMatrix matrix;
 	matrix.setToIdentity();
-	matrix[3][0] = 1.0;
 	this->parseHierarchy(world.node(), worldAssembly, matrix);
+
+	for( int i = 0; i < assemblyMOMap.len(); i++)
+	{
+		mtap_MayaObject *obj = *assemblyMOMap.get(i);
+		if( obj != NULL)
+		{
+			logger.trace(MString("obj with assembly: ") + obj->shortName);
+		}
+	}
 }
 
 MString makeSpace(int level)
@@ -2234,13 +2295,29 @@ bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
 //	Create an empty assembly and put it into the scene. 
 //  Returns an pointer to the assembly to fill it later with geometry.
 //
-asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName)
+
+asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName, MObject mobj)
 {
 	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( assemblyName.asChar(), asr::ParamArray());	
 	this->scene->assemblies().insert(assembly);
 	asr::Assembly *assemblyPtr = this->scene->assemblies().get_by_name(assemblyName.asChar());
+	
+	// for testing
+	this->addDefaultMaterial(assemblyPtr);
+
+	mtap_MayaObject **obj = (mtap_MayaObject **)this->mtap_scene->mayaObjMObjMap.find(mobj);
+	if( obj != NULL)
+	{
+		(*obj)->objectAssembly = assemblyPtr;
+		assemblyMOMap.append(assemblyPtr, *obj);
+	}
+
 	return assemblyPtr;
 }
+
+//
+//	Puts Object (only mesh at the moment) into this assembly.
+//
 
 void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix)
 {
@@ -2253,6 +2330,8 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, MObject o
 	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
 	this->MMatrixToAMatrix(matrix, tmatrix);
 	asf::StringArray material_names;
+
+	// default material at the moment
 	material_names.push_back("gray_material");
 
 	assembly->object_instances().insert(
@@ -2265,24 +2344,39 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, MObject o
 			));
 }
 	
+void printTransform(MMatrix m, MString space)
+{
+	logger.trace(space + ": " + m[3][0] + " " + m[3][1] + " " + m[3][2]);
+}
 
 void  AppleseedRenderer::parseHierarchy(MObject currentObject, asr::Assembly *parentAss, MMatrix matrix, int level)
 {
 	MStatus stat;
 	MFnDagNode currentNode(currentObject);
-	MString space = makeSpace(level);
 
+	MString space = makeSpace(level);
 	logger.trace(space + MString("parseHierarchy: ") + currentNode.partialPathName());
 
 	if(isTransform(currentObject))
+	{
 		matrix *= currentNode.transformationMatrix();
+		printTransform(matrix, space);
+	}
 
 	if( isGeo(currentObject))
 	{
 		logger.trace(MString("Put geo: ") + getObjectName(currentObject) + " into parentAssembly: " + parentAss->get_name());
-		MMatrix matrix;
-		matrix.setToIdentity();
 		putObjectIntoAssembly(parentAss, currentObject, matrix);
+	}
+
+	asr::Assembly *pa = parentAss;
+	MMatrix m = matrix;
+	if( objectNeedsAssembly(currentObject))
+	{
+		// create assembly or so ...
+		logger.trace("Child needs own assembly");
+		pa = this->createAssembly(currentNode.fullPathName(), currentObject);
+		m.setToIdentity();
 	}
 
 	uint numChildren = currentNode.childCount();
@@ -2300,15 +2394,7 @@ void  AppleseedRenderer::parseHierarchy(MObject currentObject, asr::Assembly *pa
 			continue;
 		}
 
-		asr::Assembly *pa = parentAss;
-		if( objectNeedsAssembly(childObj))
-		{
-			// create assembly or so ...
-			logger.trace("Child needs own assembly");
-			pa = this->createAssembly(childNode.fullPathName());
-		}
-
-		this->parseHierarchy(childObj, pa, matrix, level + 1);
+		this->parseHierarchy(childObj, pa, m, level + 1);
 	}
 
 }

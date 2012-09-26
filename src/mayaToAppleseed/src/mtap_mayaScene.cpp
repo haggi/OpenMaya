@@ -106,7 +106,7 @@ bool mtap_MayaScene::doPostRenderJobs()
 //
 void  mtap_MayaScene::makeMayaObjectMObjMap()
 {
-	this->mayaObjMObjMap.clear();
+	mayaObjMObjMap.clear();
 	std::vector<MayaObject *>::iterator iter = this->objectList.begin();
 	for( ;iter != this->objectList.end(); iter++)
 	{

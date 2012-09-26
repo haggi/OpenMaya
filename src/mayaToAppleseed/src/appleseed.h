@@ -44,6 +44,8 @@
 #include "mtap_mayaObject.h"
 #include "mtap_rendererController.h"
 
+#include "utilities/MiniMap.h"
+
 // shaderdefs
 
 #define PHYSICAL_SURFACE_SHADER 0x00106EF4
@@ -74,6 +76,8 @@ public:
 	std::vector<mtap_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
 
+	MiniMap<asr::Assembly *, mtap_MayaObject *> assemblyMOMap;
+
 	void writeXML();
 	void defineProject();
 	void defineConfig();
@@ -83,7 +87,7 @@ public:
 	//void checkEDF(asr::BSDFContainer& container, MString name);
 	//void checkColor(asr::BSDFContainer& container, MString name);
 	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL, float intensity = 1.0f);
-	void addDefaultMaterial();
+	void addDefaultMaterial(asr::Assembly *assembly);
 	void defineDefaultMaterial();
 	void addDefaultMaterial(asr::Assembly *assembly, asf::StringArray& materialNames);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
@@ -94,8 +98,8 @@ public:
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
 	// geometry
-	void defineGeometry(mtap_RenderGlobals *renderGlobals,  std::vector<MayaObject *>&);
-	void defineGeometry();
+	//void defineGeometry(mtap_RenderGlobals *renderGlobals,  std::vector<MayaObject *>&);
+	//void defineGeometry();
 	void definePreRender();
 	void defineObject(mtap_MayaObject *obj);
 	void defineMesh(mtap_MayaObject *obj);
@@ -125,8 +129,9 @@ public:
 	MDagPath getWorld();
 	void parseHierarchy(MObject currentObject, asr::Assembly * parentAss,  MMatrix matrix, int level = 0);
 	bool objectNeedsAssembly(MObject obj);
-	asr::Assembly *createAssembly(MString assemblyName);
+	asr::Assembly *createAssembly(MString assemblyName, MObject mobj);
 	void putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix); 
+	void defineAssemblyInstances();
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

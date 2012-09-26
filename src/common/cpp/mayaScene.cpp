@@ -224,8 +224,8 @@ bool MayaScene::parseScene()
 		if( instanceNumber > 0 )
 			continue;
 
-		if (dagPath.apiType() == MFn::kWorld)
-			continue;
+		//if (dagPath.apiType() == MFn::kWorld)
+		//	continue;
 
 		if (obj.hasFn(MFn::kCamera))
 		{

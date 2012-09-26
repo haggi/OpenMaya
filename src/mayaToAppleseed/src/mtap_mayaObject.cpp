@@ -3,6 +3,7 @@
 mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
 	parentAssembly = NULL;
+	objectAssembly = NULL;
 }
 
 mtap_MayaObject::~mtap_MayaObject()

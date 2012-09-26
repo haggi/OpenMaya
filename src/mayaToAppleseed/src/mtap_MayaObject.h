@@ -17,11 +17,9 @@ public:
 
 	virtual bool geometryShapeSupported();
 
-	asf::auto_release_ptr<asr::Assembly> objectAssembly;
+	asr::Assembly *objectAssembly;
 	asr::Assembly *parentAssembly;
 
-	// this will maybe go to general MayaObject later
-	//std::vector<MTransformationMatrix> transformMTMatrices;
 };
 
 #endif

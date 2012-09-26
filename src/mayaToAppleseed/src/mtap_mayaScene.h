@@ -9,56 +9,8 @@
 #include "mtap_renderGlobals.h"
 #include "mtap_MayaObject.h"
 #include "appleseed.h"
+#include "utilities/MiniMap.h"
 
-template <class T, class S> class MiniMap
-{
-public:
-	void append(T, S);
-	S *find(T);
-	void clear();
-private:
-	std::vector<T> tClass;
-	std::vector<S> sClass;
-};
-
-template <class T, class S> void MiniMap<T,S>::clear()
-{
-	this->tClass.clear();
-	this->sClass.clear();
-}
-
-template <class T, class S> void MiniMap<T,S>::append(T t, S s)
-{
-	size_t i = 0;
-	for( i = 0; i < this->tClass.size(); i++)
-	{
-		if( tClass[i] == t )
-		{
-			break;
-		}
-	}
-	if( i >= this->tClass.size())
-	{
-		tClass.push_back(t);
-		sClass.push_back(s);
-	}else{
-		sClass[i] = s;
-	}
-}
-
-template <class T, class S> S *MiniMap<T,S>::find(T t)
-{
-	S *s = NULL;
-	for( size_t i = 0; i < this->tClass.size(); i++)
-	{
-		if( tClass[i] == t )
-		{
-			s = &sClass[i];
-			break;
-		}
-	}
-	return s;
-}
 
 class mtap_MayaScene : public MayaScene
 {
