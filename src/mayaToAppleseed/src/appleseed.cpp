@@ -117,7 +117,7 @@ void AppleseedRenderer::definePreRender()
 	this->scene = asr::SceneFactory::create();
 
 	//this->addDefaultMaterial();
-	this->defineDefaultMaterial();
+	//this->defineDefaultMaterial();
 
 	// maybe enable this one if no lights in the scene and no mesh lights are in the scene and 
 	// the defaultRenderGlobals switch is turned on, but it can be confusing.
@@ -145,7 +145,7 @@ void AppleseedRenderer::defineDefaultMaterial()
 {
     // Create a color called "gray" and insert it into the assembly.
     static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	this->masterAssembly->colors().insert(
+	this->scene->colors().insert(
         asr::ColorEntityFactory::create(
             "gray",
             asr::ParamArray()
@@ -179,34 +179,38 @@ void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
     // Create a color called "gray" and insert it into the assembly.
     static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	assembly->colors().insert(
-        asr::ColorEntityFactory::create(
-            "gray",
-            asr::ParamArray()
-                .insert("color_space", "srgb"),
-            asr::ColorValueArray(3, GrayReflectance)));
+	if( this->scene->colors().get_by_name("gray") == NULL)
+	{
+		this->scene->colors().insert(
+			asr::ColorEntityFactory::create(
+				"gray",
+				asr::ParamArray()
+					.insert("color_space", "srgb"),
+				asr::ColorValueArray(3, GrayReflectance)));
+	}
+	if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
+	{
+		// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
+		assembly->bsdfs().insert(
+			asr::LambertianBRDFFactory().create(
+				"diffuse_gray_brdf",
+				asr::ParamArray()
+					.insert("reflectance", "gray")));
 
-    // Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
-    assembly->bsdfs().insert(
-        asr::LambertianBRDFFactory().create(
-            "diffuse_gray_brdf",
-            asr::ParamArray()
-                .insert("reflectance", "gray")));
+		// Create a physical surface shader and insert it into the assembly.
+		assembly->surface_shaders().insert(
+			asr::PhysicalSurfaceShaderFactory().create(
+				"physical_surface_shader",
+				asr::ParamArray()));
 
-    // Create a physical surface shader and insert it into the assembly.
-    assembly->surface_shaders().insert(
-        asr::PhysicalSurfaceShaderFactory().create(
-            "physical_surface_shader",
-            asr::ParamArray()));
-
-    // Create a material called "gray_material" and insert it into the assembly.
-    assembly->materials().insert(
-        asr::MaterialFactory::create(
-            "gray_material",
-            asr::ParamArray()
-                .insert("surface_shader", "physical_surface_shader")
-                .insert("bsdf", "diffuse_gray_brdf")));
-
+		// Create a material called "gray_material" and insert it into the assembly.
+		assembly->materials().insert(
+			asr::MaterialFactory::create(
+				"gray_material",
+				asr::ParamArray()
+					.insert("surface_shader", "physical_surface_shader")
+					.insert("bsdf", "diffuse_gray_brdf")));
+	}
 }
 
 //
@@ -1714,6 +1718,16 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 
 	return true;
 }
+void AppleseedRenderer::fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance)
+{
+	assInstance->transform_sequence().clear();
+	asf::Matrix4d appMatrix;
+	MMatrix colMatrix = matrix;
+	this->MMatrixToAMatrix(colMatrix, appMatrix);
+	assInstance->transform_sequence().set_transform(
+			0.0f,
+			asf::Transformd(appMatrix));
+}
 
 void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance)
 {
@@ -2180,24 +2194,21 @@ void AppleseedRenderer::defineAssemblyInstances()
 			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName);
 		    
 			MFnDagNode objNode(obj->mobject);
-			if( objNode.parentCount() > 0)
-			{
-				MDagPathArray pathArray;
-				objNode.getAllPaths(pathArray);
+			MDagPathArray pathArray;
+			objNode.getAllPaths(pathArray);
 				
-				for( uint pId = 0; pId < pathArray.length(); pId++)
-				{
-					// find mayaObject...
-					
-					asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-						(obj->shortName + "assembly_inst").asChar(),
-						asr::ParamArray(),
-						*obj->objectAssembly);
-					this->fillTransformMatices(obj, ai.get());
-					this->scene->assembly_instances().insert(ai);
-				}
-			}
+			for( uint pId = 0; pId < pathArray.length(); pId++)
+			{
+				// find mayaObject...
+				MDagPath currentPath = pathArray[pId];
 
+				asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+					(currentPath.fullPathName() + "assembly_inst").asChar(),
+					asr::ParamArray(),
+					*obj->objectAssembly);
+				this->fillTransformMatices(currentPath.inclusiveMatrix(), ai.get());
+				this->scene->assembly_instances().insert(ai);
+			}
 		}
 	}
 	
@@ -2233,6 +2244,7 @@ void  AppleseedRenderer::parseScene()
 			logger.trace(MString("obj with assembly: ") + obj->shortName);
 		}
 	}
+	this->defineAssemblyInstances();
 }
 
 MString makeSpace(int level)

@@ -195,7 +195,45 @@ void MayaScene::checkParent(MayaObject *obj)
 	}
 }
 
-bool MayaScene::parseScene()
+MDagPath MayaScene::getWorld()
+{
+	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
+	MDagPath dagPath;
+	
+	for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
+	{
+		dagIterator.getPath(dagPath);
+		if (dagPath.apiType() == MFn::kWorld)
+			break;
+	}
+	return dagPath;
+}
+
+//
+//	Parse scene starting with "world" through all childs.
+//	This allows an easy inheritance of attributes. e.g. you can give some element
+//	in the hierarchy the colorAttribute "diffuseColor" and all objects below will inherit
+//	this attribute until it is removed or overwritten by another value.
+//
+
+bool MayaScene::parseSceneHierarchy(MObject currentObject, int level, ObjectAttributes *attr)
+{
+	return true;
+}
+
+bool MayaScene::parseScene(ParseType ptype)
+{
+	if( ptype == ParseType::NORMAL)
+		return parseSceneNormal();	
+	if( ptype == ParseType::HIERARCHY)
+	{
+		MDagPath world = getWorld();
+		ObjectAttributes *attr = objectAttributesCreator();
+		return parseSceneHierarchy(world.node(), 0, attr);	
+	}
+}
+
+bool MayaScene::parseSceneNormal()
 {
 	logger.debug(MString("parseScene"));
 	

@@ -17,6 +17,10 @@ void Logging::setLogLevel( Logging::LogLevel level)
 	log_level = level;
 }
 
+void Logging::setOutType(Logging::OutputType outtype)
+{
+	log_outtype = outtype;
+}
 
 void Logging::trace(MString logString)
 {
@@ -26,30 +30,50 @@ void Logging::trace(MString logString)
 
 void Logging::info(MString logString)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB INFO: " + logString;
 	if( log_level >= Logging::Info )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB INFO: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
 void Logging::warning(MString logString)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB WARN: " + logString;
 	if( log_level >= Logging::Warning )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB WARN: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
 void Logging::error(MString logString)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + logString;
 	if( log_level >= Logging::Error )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
 void Logging::debug(MString logString)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + logString;
 	if( log_level >= Logging::Debug )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
 void Logging::progress(MString logString)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB PROG: " + logString;
 	if( log_level >= Logging::Progress )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB PROG: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }

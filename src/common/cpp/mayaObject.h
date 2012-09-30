@@ -13,6 +13,12 @@
 
 class MayaScene;
 
+class ObjectAttributes
+{
+public:
+private:
+};
+
 class MayaObject : public MBoundingBox
 {
 public:
@@ -22,6 +28,7 @@ public:
 	MString fullNiceName;
 	int index;
 	MDagPath dagPath;
+	ObjectAttributes *attributes;
 	MayaScene *scenePtr;
 	std::vector<MDagPath> linkedLights; // for objects - light linking
 	bool lightExcludeList; // if true the linkedLights list contains excluded lights, else included lights

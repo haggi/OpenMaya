@@ -13,8 +13,13 @@ public:
 	Progress,
 	Debug
 	};
+	enum OutputType{
+	ScriptEditor,
+	OutputWindow
+	};
 
 	static void setLogLevel( Logging::LogLevel level);
+	static void setOutType( Logging::OutputType outtype);
 	void info(MString logString);
 	void warning(MString logString);
 	void error(MString logString);
@@ -24,6 +29,7 @@ public:
 };
 
 static  Logging::LogLevel log_level = Logging::Info;
+static  Logging::OutputType log_outtype = Logging::ScriptEditor;
 
 
 #endif

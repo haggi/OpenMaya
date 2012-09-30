@@ -20,6 +20,11 @@ public:
 		IPR,
 		NONE
 	};
+	enum ParseType{
+		NORMAL, 
+		HIERARCHY,
+		NONE
+	};
 	bool good;
 	RenderType renderType;
 
@@ -37,8 +42,12 @@ public:
 	float currentFrame;
 	RenderGlobals *renderGlobals;
 	boost::thread rendererThread;
+	
+	bool parseSceneHierarchy(MObject currentObject, int level, ObjectAttributes *attr); // new, parse whole scene as hierarchy and save/analyze objects
+	bool parseSceneNormal(); // pase whole scene and save/analyze objects
 
-	bool parseScene(); // pase whole scene and save/analyze objects
+	bool parseScene(ParseType ptype = ParseType::NORMAL);
+
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool updateScene(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject&) = 0;
@@ -63,9 +72,15 @@ public:
 	bool getShadingGroups();
 	void getLightLinking();
 	bool listContainsAllLights(MDagPathArray& linkedLights, MDagPathArray& excludedLights);
+	MDagPath getWorld();
+
+	virtual void getRenderGlobals() = 0;
+	
 	virtual MayaObject* mayaObjectCreator(MObject&) = 0;
 	virtual void mayaObjectDeleter(MayaObject *) = 0;
-	virtual void getRenderGlobals() = 0;
+
+	virtual ObjectAttributes* objectAttributesCreator() = 0;
+	virtual void objectAttributesDeleter(ObjectAttributes *) = 0;
 
 	void getPasses();
 	void setCurrentCamera(MDagPath camera);

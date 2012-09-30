@@ -110,6 +110,7 @@ public:
 	void fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance);
 	void fillTransformMatices(mtap_MayaObject *obj, asr::Camera *assInstance);
 	void fillTransformMatices(mtap_MayaObject *obj, asr::Light *assInstance);
+	void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance);
 	
 	static void updateEntitiesCaller();
 	void updateEntities();
