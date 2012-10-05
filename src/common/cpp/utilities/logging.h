@@ -20,14 +20,15 @@ public:
 
 	static void setLogLevel( Logging::LogLevel level);
 	static void setOutType( Logging::OutputType outtype);
-	void info(MString logString);
-	void warning(MString logString);
-	void error(MString logString);
-	void debug(MString logString);
-	void progress(MString logString);
-	void trace(MString logString);
+	void info(MString logString, int level = 0);
+	void warning(MString logString, int level = 0);
+	void error(MString logString, int level = 0);
+	void debug(MString logString, int level = 0);
+	void progress(MString logString, int level = 0);
+	void trace(MString logString, int level = 0);
 };
 
+MString makeSpace(int level);
 static  Logging::LogLevel log_level = Logging::Info;
 static  Logging::OutputType log_outtype = Logging::ScriptEditor;
 

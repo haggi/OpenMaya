@@ -21,9 +21,9 @@ public:
 		NONE
 	};
 	enum ParseType{
-		NORMAL, 
-		HIERARCHY,
-		NONE
+		NORMALPARSE, 
+		HIERARCHYPARSE,
+		NONEPARSE
 	};
 	bool good;
 	RenderType renderType;
@@ -43,15 +43,16 @@ public:
 	RenderGlobals *renderGlobals;
 	boost::thread rendererThread;
 	
-	bool parseSceneHierarchy(MObject currentObject, int level, ObjectAttributes *attr); // new, parse whole scene as hierarchy and save/analyze objects
+	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr); // new, parse whole scene as hierarchy and save/analyze objects
 	bool parseSceneNormal(); // pase whole scene and save/analyze objects
 
-	bool parseScene(ParseType ptype = ParseType::NORMAL);
+	bool parseScene(ParseType ptype = NORMALPARSE);
 
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool updateScene(); // update all necessary objects
-	virtual void transformUpdateCallback(MayaObject&) = 0;
-	virtual void deformUpdateCallback(MayaObject&) = 0;
+	bool updateSceneNew(); // update all necessary objects
+	virtual void transformUpdateCallback(MayaObject *) = 0;
+	virtual void deformUpdateCallback(MayaObject *) = 0;
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
 	bool updateInstancer(); // update all necessary objects
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
@@ -77,14 +78,17 @@ public:
 	virtual void getRenderGlobals() = 0;
 	
 	virtual MayaObject* mayaObjectCreator(MObject&) = 0;
+	virtual MayaObject* mayaObjectCreator(MDagPath&) = 0;
 	virtual void mayaObjectDeleter(MayaObject *) = 0;
-
-	virtual ObjectAttributes* objectAttributesCreator() = 0;
-	virtual void objectAttributesDeleter(ObjectAttributes *) = 0;
 
 	void getPasses();
 	void setCurrentCamera(MDagPath camera);
 	void checkParent(MayaObject *obj);
+
+	void classifyMayaObject(MayaObject *obj);
+	bool isGeo(MObject obj);
+	bool isLight(MObject obj);
+	bool isCamera(MObject obj);
 
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);

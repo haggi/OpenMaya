@@ -209,6 +209,76 @@ MDagPath MayaScene::getWorld()
 	return dagPath;
 }
 
+bool MayaScene::isGeo(MObject obj)
+{
+	if( obj.hasFn(MFn::kMesh))
+		return true;
+	if( obj.hasFn(MFn::kNurbsSurface))
+		return true;
+	if( obj.hasFn(MFn::kParticle))
+		return true;
+	if( obj.hasFn(MFn::kSubSurface))
+		return true;
+	if( obj.hasFn(MFn::kNurbsCurve))
+		return true;
+	if( obj.hasFn(MFn::kHairSystem))
+		return true;
+
+	MFnDependencyNode depFn(obj);
+	uint nodeId = depFn.typeId().id();
+	for( uint lId = 0; lId < this->objectIdentifier.size(); lId++)
+	{
+		if( nodeId == this->objectIdentifier[lId])
+		{
+			logger.debug(MString("Found external objtype: ") + depFn.name());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool MayaScene::isLight(MObject obj)
+{
+	if( obj.hasFn(MFn::kLight))
+		return true;
+
+	MFnDependencyNode depFn(obj);
+	uint nodeId = depFn.typeId().id();
+	for( uint lId = 0; lId < this->lightIdentifier.size(); lId++)
+	{
+		if( nodeId == this->lightIdentifier[lId])
+		{
+			logger.debug(MString("Found external lighttype: ") + depFn.name());
+			return true;
+		}
+	}
+	return false;
+}
+
+bool MayaScene::isCamera(MObject obj)
+{
+	if( obj.hasFn(MFn::kCamera))
+		return true;
+	return false;
+}
+
+
+void  MayaScene::classifyMayaObject(MayaObject *obj)
+{
+	if( this->isCamera(obj->mobject))
+	{
+		this->camList.push_back(obj);
+		return;
+	}
+	if( this->isLight(obj->mobject))
+	{
+		this->lightList.push_back(obj);
+		return;
+	}
+	this->objectList.push_back(obj);
+}
+
 //
 //	Parse scene starting with "world" through all childs.
 //	This allows an easy inheritance of attributes. e.g. you can give some element
@@ -216,21 +286,64 @@ MDagPath MayaScene::getWorld()
 //	this attribute until it is removed or overwritten by another value.
 //
 
-bool MayaScene::parseSceneHierarchy(MObject currentObject, int level, ObjectAttributes *attr)
+std::vector<MayaObject *> origObjects;
+
+bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes)
 {
+	logger.trace(MString("parse: ") + currentPath.fullPathName(), level);
+	MayaObject *mo = mayaObjectCreator(currentPath);
+	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
+
+	classifyMayaObject(mo);
+
+	// 
+	//	find the original mayaObject for instanced objects. Can be useful later.
+	//
+
+	if( currentPath.instanceNumber() == 0)
+		origObjects.push_back(mo);
+	else{
+		MFnDagNode node(currentPath.node());
+		for( size_t iId = 0; iId < origObjects.size(); iId++)
+		{
+			MFnDagNode onode(origObjects[iId]->mobject);
+			if( onode.object() == node.object() )
+			{
+				logger.trace(MString("Orig Node found:") + onode.fullPathName(), level);
+				mo->origObject = origObjects[iId];
+				break;
+			}
+		}
+	}
+
+	uint numChilds = currentPath.childCount();
+	for( uint chId = 0; chId < numChilds; chId++)
+	{
+		MDagPath childPath = currentPath;
+		childPath.push(currentPath.child(chId));
+		parseSceneHierarchy(childPath, level + 1, currentAttributes);
+	}
+
 	return true;
 }
 
 bool MayaScene::parseScene(ParseType ptype)
 {
-	if( ptype == ParseType::NORMAL)
+	if( ptype == NORMALPARSE)
 		return parseSceneNormal();	
-	if( ptype == ParseType::HIERARCHY)
+	if( ptype == HIERARCHYPARSE)
 	{
+		origObjects.clear();
 		MDagPath world = getWorld();
-		ObjectAttributes *attr = objectAttributesCreator();
-		return parseSceneHierarchy(world.node(), 0, attr);	
+		if(parseSceneHierarchy(world, 0, NULL))
+		{
+			this->good = true;
+			this->parseInstancer(); 
+			this->getLightLinking();
+			return true;
+		}
 	}
+	return false;
 }
 
 bool MayaScene::parseSceneNormal()
@@ -470,6 +583,55 @@ void MayaScene::setCurrentCamera(MDagPath camDagPath)
 	mo->instanceNumber = 0;
 	this->camList.push_back(mo);
 	mo->index = (int)(this->camList.size() - 1);
+}
+
+bool MayaScene::updateSceneNew()
+{
+	logger.debug(MString("MayaScene::updateSceneNew."));
+
+	std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
+	for(;mIter!=this->objectList.end(); mIter++)
+	{
+		MayaObject *obj = *mIter;
+
+		if( !this->renderGlobals->isMbStartStep )
+			if( !obj->motionBlurred )
+				continue;
+		
+		if( this->renderGlobals->isTransformStep() )
+			this->transformUpdateCallback(*obj);
+
+		if(this->renderGlobals->isDeformStep())
+			this->deformUpdateCallback(*obj);
+	}
+
+	std::vector<MayaObject *>::iterator mIter = this->camList.begin();
+	for(;mIter!=this->camList.end(); mIter++)
+	{
+		MayaObject *obj = *mIter;
+
+		if( !this->renderGlobals->isMbStartStep )
+			if( !obj->motionBlurred )
+				continue;
+		
+		if( this->renderGlobals->isTransformStep() )
+			this->transformUpdateCallback(*obj);
+	}
+
+	std::vector<MayaObject *>::iterator mIter = this->lightList.begin();
+	for(;mIter!=this->lightList.end(); mIter++)
+	{
+		MayaObject *obj = *mIter;
+
+		if( !this->renderGlobals->isMbStartStep )
+			if( !obj->motionBlurred )
+				continue;
+		
+		if( this->renderGlobals->isTransformStep() )
+			this->transformUpdateCallback(*obj);
+	}
+
+	return true;
 }
 
 bool MayaScene::updateScene()
@@ -897,7 +1059,8 @@ bool MayaScene::doFrameJobs()
 
 				// TODO: dynamic runup necessary?
 
-				this->updateScene();
+				//this->updateScene();
+				this->updateSceneNew();
 				logger.info(MString("update scene done"));
 				this->renderGlobals->currentMbStep++;
 			}

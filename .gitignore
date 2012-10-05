@@ -18,3 +18,4 @@
 *.pyc
 
 *pydevproject
+src/mayaToMitsuba

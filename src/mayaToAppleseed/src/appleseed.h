@@ -133,12 +133,12 @@ public:
 	asr::Assembly *createAssembly(MString assemblyName, MObject mobj);
 	void putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix); 
 	void defineAssemblyInstances();
+	asf::auto_release_ptr<asr::Scene> scene;
 
 private:
 	asf::auto_release_ptr<asr::Project> project;
 	asf::auto_release_ptr<asr::Assembly> masterAssembly;
 	asf::auto_release_ptr<asr::Camera> camera;
-	asf::auto_release_ptr<asr::Scene> scene;
 	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
 	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);
 	asf::auto_release_ptr<asf::LogTargetBase> log_target;

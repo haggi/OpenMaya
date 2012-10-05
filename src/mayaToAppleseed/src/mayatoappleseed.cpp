@@ -82,11 +82,13 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		return MS::kFailure;
 	}
 
-	if( !mayaScene->parseScene() )
+	if( !mayaScene->parseScene(MayaScene::HIERARCHYPARSE) )
 	{
 		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
 		return MS::kFailure;
 	}	
+
+	return MS::kSuccess;
 
 	if ( argData.isFlagSet("-camera", &stat))
 	{

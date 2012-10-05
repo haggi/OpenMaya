@@ -92,19 +92,7 @@ void AppleseedRenderer::defineProject()
 
 void AppleseedRenderer::definePreRender()
 {
-	// Create an default master assembly.
-	// if we use per shape assemblys, it will only contain lights if we have any
-
-	//if( this->masterAssembly.get() != NULL)
-	//	this->masterAssembly.reset();
-
-	//if( this->scene.get() != NULL)
-	//	this->scene.release();
-
-	//if( this->project.get() != NULL)
-	//	this->project.release();
 	this->project.reset();
-
 	this->defineProject();
 	this->defineConfig();
 
@@ -2247,13 +2235,6 @@ void  AppleseedRenderer::parseScene()
 	this->defineAssemblyInstances();
 }
 
-MString makeSpace(int level)
-{
-	MString space;
-	for( int i = 0; i < level; i++)
-		space += "  ";
-	return space;
-}
 
 bool isGeo( MObject obj)
 {

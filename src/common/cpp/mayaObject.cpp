@@ -44,7 +44,6 @@ MayaObject::MayaObject(MObject& mobject)
 	this->mobject = mobject;
 	this->supported = false;
 	this->shortName = getObjectName(mobject);
-	logger.debug(MString("Getting dagNode from: ") + getObjectName(mobject));
 	MFnDagNode dagNode(mobject);
 	dagNode.getPath(this->dagPath);
 	MString fullPath = dagNode.fullPathName();
@@ -75,6 +74,45 @@ MayaObject::MayaObject(MObject& mobject)
 	this->animated = this->isObjAnimated();
 	this->shapeConnected = this->isShapeConnected();
 	this->parent = NULL;
+	this->visible = true;
+}
+
+MayaObject::MayaObject(MDagPath& objPath)
+{
+	this->isInstancerObject = false;
+	this->origObject = NULL;
+	this->mobject = objPath.node();
+	this->supported = false;
+	this->shortName = getObjectName(mobject);
+	MFnDagNode dagNode(mobject);
+	dagNode.getPath(this->dagPath);
+	MString fullPath = objPath.fullPathName();
+	this->dagPath = objPath;
+	this->fullName = fullPath;
+	this->fullNiceName = makeGoodString(fullPath);
+	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
+	this->instanceNumber = dagPath.instanceNumber();
+	MFnDependencyNode depFn(mobject);
+	this->motionBlurred = true;
+	this->geometryMotionblur = false;
+
+	bool mb = true;
+	if( getBool(MString("motionBlur"), depFn, mb) )
+		this->motionBlurred = mb;
+
+	this->perObjectMbSteps = 1;
+	this->index = -1;
+	this->scenePtr = NULL;
+	this->shapeConnected = false;
+	this->lightExcludeList = true; // In most cases only a few lights are ignored, so the list is shorter with excluded lights
+	this->shadowExcludeList = true; // in most cases only a few objects ignore shadows, so the list is shorter with ignoring objects
+	this->animated = this->isObjAnimated();
+	this->shapeConnected = this->isShapeConnected();
+	this->parent = NULL;
+	this->visible = true;
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
+		this->visible = false;
+
 }
 
 // to check if an object is animated, we need to check e.g. its transform inputs
@@ -82,7 +120,6 @@ bool MayaObject::isObjAnimated()
 {
 	MStatus stat;
 	bool returnValue = false;
-	// check if we can have a transfrom matrix
 	if( this->mobject.hasFn(MFn::kTransform))
 	{
 		MFnDependencyNode depFn(this->mobject, &stat);

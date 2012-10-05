@@ -53,7 +53,7 @@ public:
 	bool animated;
 	bool shapeConnected; // if shape connected, it can be used to determine if it has to be exported for every frame or not
 	bool visible; // important for instances: orig object can be invisible but must be exported
-	int instanceNumber;
+	uint instanceNumber;
 	int perObjectMbSteps; // default 1 can be overridden vor some renderers
 	bool motionBlurred; // possibility to turn off motionblur for this object
 	bool geometryMotionblur; // if object has vertex velocity informations, there is no need for real deformation blur
@@ -61,9 +61,11 @@ public:
 	bool isObjAnimated();
 	bool isShapeConnected();
 	virtual bool geometryShapeSupported() = 0;
+	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
 	MayaObject *parent;
 	MayaObject *origObject; // this is necessary for instanced objects that have to access the original objects data
 	MayaObject(MObject& mobject);
+	MayaObject(MDagPath& objPath);
 	~MayaObject();
 	void updateObject();
 };
