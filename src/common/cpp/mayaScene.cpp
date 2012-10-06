@@ -594,18 +594,20 @@ bool MayaScene::updateSceneNew()
 	{
 		MayaObject *obj = *mIter;
 
+		logger.debug(MString("updateObj: ") + obj->dagPath.fullPathName());
+
 		if( !this->renderGlobals->isMbStartStep )
 			if( !obj->motionBlurred )
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 
 		if(this->renderGlobals->isDeformStep())
-			this->deformUpdateCallback(*obj);
+			this->deformUpdateCallback(obj);
 	}
 
-	std::vector<MayaObject *>::iterator mIter = this->camList.begin();
+	mIter = this->camList.begin();
 	for(;mIter!=this->camList.end(); mIter++)
 	{
 		MayaObject *obj = *mIter;
@@ -615,10 +617,10 @@ bool MayaScene::updateSceneNew()
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 	}
 
-	std::vector<MayaObject *>::iterator mIter = this->lightList.begin();
+	mIter = this->lightList.begin();
 	for(;mIter!=this->lightList.end(); mIter++)
 	{
 		MayaObject *obj = *mIter;
@@ -628,7 +630,7 @@ bool MayaScene::updateSceneNew()
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 	}
 
 	return true;
@@ -675,7 +677,7 @@ bool MayaScene::updateScene()
 		if( this->renderGlobals->isTransformStep() )
 		{
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 			//continue;
 		}
 
@@ -707,7 +709,7 @@ bool MayaScene::updateScene()
 				{
 					if( obj->exportFileNames.size() == 0)
 					{
-						this->deformUpdateCallback(*obj);
+						this->deformUpdateCallback(obj);
 					}
 				}
 			}
@@ -722,7 +724,7 @@ bool MayaScene::updateScene()
 					if(obj->geometryMotionblur )
 						continue;
 					logger.debug(MString("Deforming object not at start frame -> exporting ") + obj->shortName);
-					this->deformUpdateCallback(*obj);
+					this->deformUpdateCallback(obj);
 				}
 			}
 		}
@@ -739,7 +741,7 @@ bool MayaScene::updateScene()
 		{
 			logger.debug(MString("Adding cam transform at time ") + this->renderGlobals->currentFrameNumber);
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 		}
 		if( obj->transformMatrices.size() > 1)
 		{
@@ -760,7 +762,7 @@ bool MayaScene::updateScene()
 		if( this->renderGlobals->isTransformStep() )
 		{
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(*obj);
+			this->transformUpdateCallback(obj);
 		}
 	}
 

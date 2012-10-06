@@ -118,6 +118,8 @@ public:
 	void updateLight(mtap_MayaObject *obj);
 	void updateEnv(MObject shaderObj);
 	void updateShader( MObject shaderObj);
+	void updateTransform(mtap_MayaObject *obj);
+	void updateDeform(mtap_MayaObject *obj);
 
 	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
@@ -137,7 +139,7 @@ public:
 
 private:
 	asf::auto_release_ptr<asr::Project> project;
-	asf::auto_release_ptr<asr::Assembly> masterAssembly;
+	asr::Assembly *masterAssembly;
 	asf::auto_release_ptr<asr::Camera> camera;
 	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
 	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);

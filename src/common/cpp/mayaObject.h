@@ -16,6 +16,7 @@ class MayaScene;
 class ObjectAttributes
 {
 public:
+	bool hasInstancerConnection;
 private:
 };
 
@@ -51,6 +52,7 @@ public:
 
 	bool supported;
 	bool animated;
+	bool hasInstancerConnection; // if yes, then the objects below can be visible via instancer even if the original object is not
 	bool shapeConnected; // if shape connected, it can be used to determine if it has to be exported for every frame or not
 	bool visible; // important for instances: orig object can be invisible but must be exported
 	uint instanceNumber;

@@ -19,9 +19,11 @@ mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
 	{
 		needsOwnAssembly = false;
 		assemblyObject = other->assemblyObject;
+		hasInstancerConnection = other->hasInstancerConnection;
 		objectMatrix = other->objectMatrix;
 	}else{
 		needsOwnAssembly = false;
+		this->hasInstancerConnection = false;
 		assemblyObject = NULL;
 		objectMatrix.setToIdentity();
 	}
@@ -36,6 +38,7 @@ mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)
 mtap_MayaObject::mtap_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	objectAssembly = NULL;
+	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
 }
 
 mtap_MayaObject::~mtap_MayaObject()
@@ -51,11 +54,6 @@ bool mtap_MayaObject::geometryShapeSupported()
 	{
 		return true;
 	}
-	if( type == MFn::kTransform)
-	{
-		return true;
-	}
-
 	return false;
 
 }
@@ -68,7 +66,12 @@ bool mtap_MayaObject::geometryShapeSupported()
 mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
 {
 	mtap_ObjectAttributes *myAttributes = new mtap_ObjectAttributes((mtap_ObjectAttributes *)parentAttributes);
-				
+
+	if( this->hasInstancerConnection)
+	{
+		myAttributes->hasInstancerConnection = true;
+	}
+
 	if( this->isGeo())
 	{
 	}
@@ -83,6 +86,7 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 	{
 		myAttributes->needsOwnAssembly = true;
 		myAttributes->assemblyObject = this;
+		myAttributes->objectMatrix.setToIdentity();
 	}
 
 	this->attributes = myAttributes;

@@ -25,39 +25,53 @@ mtap_MayaScene::~mtap_MayaScene()
 // we only need to update the assembly instances, all other elements are static.
 //
 
-//TODO implement lights and cameras here and in global parseScene
-void mtap_MayaScene::transformUpdateCallback(mtap_MayaObject *obj)
+void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
-	logger.debug(MString("mtap_MayaScene::transformUpdateCallback"));
+	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
+	//logger.trace(MString("mtap_MayaScene::transformUpdateCallback"));
 
-	if( obj->objectAssembly == NULL)
-		return;
+	//logger.debug(MString("mtap_updateObj: ") + mobj->dagPath.fullPathName());
 
-	if( obj->objectAssembly != NULL)
-		logger.trace(MString("transformUpdateCallback:Object has objAssembly: ") + obj->shortName);
+	// if this is an instance of an object which has an assembly, then update it,
+	// if not, ignore instance.
+	if( obj->instanceNumber > 0)
+	{
+		if( obj->origObject == NULL)
+			return;
 
-	// search for ass inst, update transform
+		// check if the original object has its own assembly, if not no update is needed
+		if( ((mtap_MayaObject *)obj->origObject)->objectAssembly == NULL)
+			return;
+
+	}else{
+		if( obj->objectAssembly == NULL)
+			return;
+	}
+
+	this->mtap_renderer.updateTransform(obj);
+
 }
 
 //
 //	will be called for every geometry deform step
 //	the very first time it will create an assembly and fill it with data
 //
-void mtap_MayaScene::deformUpdateCallback(mtap_MayaObject *obj)
+void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
 {
+	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
+	logger.trace(MString("mtap_MayaScene::deformUpdateCallback"));
+
 	if( obj->instanceNumber > 0)
 		return;
-	if( obj->objectAssembly == NULL)
-		return;
+
 	if( !obj->geometryShapeSupported() )
 		return;
 
-	logger.trace(MString("deformUpdateCallback:Object has objAssembly: ") + obj->shortName);
-
-	//if( !obj.mobject.hasFn(MFn::kMesh))
-	//	return
-	//logger.debug(MString("mtap_MayaScene::deformUpdateCallback"));
-	//this->mtap_renderer.defineMeshDeformStep( (mtap_MayaObject *)&obj);
+	if( !obj->visible)
+		if( !obj->attributes->hasInstancerConnection )
+			return;
+	
+	this->mtap_renderer.updateDeform(obj);
 }
 
 MayaObject *mtap_MayaScene::mayaObjectCreator(MObject& mobject)
@@ -294,11 +308,13 @@ bool mtap_MayaScene::postParseCallback()
 		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
 		
 		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-		//logger.trace(MString("postParseCallback: Check obj ") + obj->shortName);
+
+		if( !obj->visible)
+			if( !att->hasInstancerConnection )
+				continue;
 
 		if( att->needsOwnAssembly)
 		{
-			//logger.trace(MString("Object ") + obj->shortName + " needs own assembly");
 			obj->objectAssembly = createAssembly(obj);
 		}
 	}
@@ -316,6 +332,7 @@ bool mtap_MayaScene::postParseCallback()
 
 		if( obj->objectAssembly == NULL)
 			continue;
+
 
 		// simply add instances for all paths
 		MFnDagNode objNode(obj->mobject);

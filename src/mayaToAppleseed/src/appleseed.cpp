@@ -96,20 +96,17 @@ void AppleseedRenderer::definePreRender()
 	this->defineProject();
 	this->defineConfig();
 
-	this->masterAssembly = asr::AssemblyFactory::create(
-			"assembly",
-			asr::ParamArray());	
-	// 
 	// define default scene, mayabe this will change in future releases, but at the moment
 	// we do not reuse the scene during a render sequence
 	this->scene = asr::SceneFactory::create();
 
-	//this->addDefaultMaterial();
-	//this->defineDefaultMaterial();
+	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
+			"assembly",
+			asr::ParamArray());	
+	this->scene->assemblies().insert(assembly);
+	this->masterAssembly = this->scene->assemblies().get_by_name("assembly");
+	this->addDefaultMaterial(this->masterAssembly);
 
-	// maybe enable this one if no lights in the scene and no mesh lights are in the scene and 
-	// the defaultRenderGlobals switch is turned on, but it can be confusing.
-	//this->defineDefaultLight();
 }
 
 void AppleseedRenderer::writeXML()
@@ -1272,7 +1269,7 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 {
 	bool perShapeAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
-	asr::Assembly *assembly = this->masterAssembly.get();
+	asr::Assembly *assembly = this->masterAssembly;
 	
 	if( perShapeAssembly )
 	{
@@ -1774,7 +1771,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 	logger.debug("AppleseedRenderer::defineScene");
 
     // Create an instance of the assembly and insert it into the scene.
-	this->parseScene();
+	//this->parseScene();
 
     this->scene->assembly_instances().insert(
         asr::AssemblyInstanceFactory::create(
@@ -1782,8 +1779,6 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
             asr::ParamArray(),
             *this->masterAssembly));
 
-    // Insert the assembly into the scene.
-    this->scene->assemblies().insert(this->masterAssembly);
 
 	// per object assembly
 	// lets go through all objects and check if they are instance objects.
@@ -2307,6 +2302,61 @@ asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName, MObject m
 
 	return assemblyPtr;
 }
+
+void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
+{
+	logger.trace(MString("asr::updateTransform:Object (or instance of it) has objAssembly: ") + obj->shortName);
+	MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
+	asr::AssemblyInstance *assInst = this->scene->assembly_instances().get_by_name(assemblyInstName.asChar());
+	if( assInst == NULL)
+	{
+		logger.trace(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);
+		return;
+	}
+	logger.trace(MString("updateTransform: update assembly found with name : ") + assemblyInstName);
+
+	int mbsamples = this->renderGlobals->xftimesamples;
+	logger.trace(MString("updateTransform: mbsamples : ") + mbsamples);
+
+	size_t numTransforms = assInst->transform_sequence().size();
+	float time = 0.0f;
+	time = (float)numTransforms/(float)mbsamples;
+	logger.trace(MString("updateTransform: numtransforms : ") + numTransforms + " transform time " + time);
+
+	asf::Matrix4d appMatrix;
+	MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
+	this->MMatrixToAMatrix(colMatrix, appMatrix);
+
+	assInst->transform_sequence().set_transform(time, asf::Transformd(appMatrix));
+
+}
+
+
+void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
+{
+	logger.trace(MString("asr::updateDeform: ") + obj->shortName);
+
+	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+	mtap_MayaObject *assObject = att->assemblyObject;
+	
+	// there should be only one case if assObject is NULL, if an objects parent is world
+	// in this case we use a default master assembly
+	MString assemblyName = "assembly";
+	if( assObject != NULL)
+		assemblyName = assObject->fullName;
+
+	logger.trace(MString("deformUpdateCallback: Search for assembly: ") + assemblyName);
+	asr::Assembly *assembly = this->scene->assemblies().get_by_name(assemblyName.asChar());
+
+	if( assembly == NULL)
+	{
+		logger.trace(MString("deformUpdateCallback: Assembly not found."));
+		return;
+	}
+	MMatrix matrix = att->objectMatrix;
+	this->putObjectIntoAssembly(assembly, obj->mobject, matrix);
+}
+
 
 //
 //	Puts Object (only mesh at the moment) into this assembly.

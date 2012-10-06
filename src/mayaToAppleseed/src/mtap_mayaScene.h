@@ -22,8 +22,8 @@ public:
 	//std::map<MayaObject *, MObject> mayaObjMObjMap;
 	MiniMap<MObject, MayaObject *> mayaObjMObjMap;
 
-	virtual void transformUpdateCallback(mtap_MayaObject *);
-	virtual void deformUpdateCallback(mtap_MayaObject *);
+	virtual void transformUpdateCallback(MayaObject *);
+	virtual void deformUpdateCallback(MayaObject *);
 	virtual bool translateShaders(int timeStep);
 	virtual bool translateShapes(int timeStep);
 	virtual bool doPreRenderJobs();

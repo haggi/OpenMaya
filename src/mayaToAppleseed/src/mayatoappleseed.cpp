@@ -88,8 +88,6 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		return MS::kFailure;
 	}	
 
-	return MS::kSuccess;
-
 	if ( argData.isFlagSet("-camera", &stat))
 	{
 	    MDagPath camera;

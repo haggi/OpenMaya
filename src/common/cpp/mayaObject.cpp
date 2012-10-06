@@ -85,7 +85,6 @@ MayaObject::MayaObject(MDagPath& objPath)
 	this->supported = false;
 	this->shortName = getObjectName(mobject);
 	MFnDagNode dagNode(mobject);
-	dagNode.getPath(this->dagPath);
 	MString fullPath = objPath.fullPathName();
 	this->dagPath = objPath;
 	this->fullName = fullPath;
@@ -110,9 +109,34 @@ MayaObject::MayaObject(MDagPath& objPath)
 	this->shapeConnected = this->isShapeConnected();
 	this->parent = NULL;
 	this->visible = true;
-	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
+	this->hasInstancerConnection = false;
+	MDagPath dp;
+	dp = objPath;
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dp) || !IsPathVisible(dp))
 		this->visible = false;
 
+	// get instancer connection
+	MStatus stat;
+	MPlug matrixPlug = depFn.findPlug(MString("matrix"), &stat);
+	if( !stat)
+		logger.debug(MString("Could not find matrix plug"));
+	else{
+		MPlugArray outputs;
+		if( matrixPlug.isConnected())
+		{
+			matrixPlug.connectedTo(outputs, false, true);
+			for( uint i = 0; i < outputs.length(); i++)
+			{
+				MObject otherSide = outputs[i].node();
+				logger.debug(MString("matrix is connected to ") + getObjectName(otherSide));
+				if( otherSide.hasFn(MFn::kInstancer))
+				{
+					logger.debug(MString("other side is instancer"));
+					this->hasInstancerConnection = true;
+				}
+			}
+		}	
+	}
 }
 
 // to check if an object is animated, we need to check e.g. its transform inputs
