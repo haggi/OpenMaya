@@ -1270,10 +1270,9 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 
 void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 {
-	bool perShapeAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
 	asr::Assembly *assembly = this->masterAssembly;
 	
-	if( perShapeAssembly )
+	if( 1 )
 	{
 		MString assemblyName = "shapeAssembly" + obj->shortName;
 		MString assemblyInstName = "assembly_inst_" + obj->shortName + obj->instanceNumber;
@@ -1290,7 +1289,6 @@ void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 
 void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 {
-	bool perShapeAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
 	asr::Assembly *assembly = this->project->get_scene()->assemblies().get_by_name("assembly"); // master assembly
 	if( assembly == NULL )
 	{
@@ -1654,15 +1652,13 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	    environmentEDF = asr::LatLongMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar())
-				.insert("exitance_multiplier", (MString("")+renderGlobals->environmentIntensity).asChar()));
+				.insert("exitance", envMapName.asChar()));
 		break;
 	case 3:
 		environmentEDF = asr::MirrorBallMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar())
-				.insert("exitance_multiplier", (MString("")+renderGlobals->environmentIntensity).asChar()));
+				.insert("exitance", envMapName.asChar()));
 		break;
 	default:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(

@@ -815,6 +815,10 @@ bool MayaScene::updateInstancer()
 {
 	logger.trace("update instancer.");
 	
+	// updates only required for a transform step
+	if( !this->renderGlobals->isTransformStep() )
+		return true;
+
 	size_t numElements = this->instancerNodeElements.size();
 	for( size_t i = 0; i < numElements; i++)
 	{
@@ -827,7 +831,6 @@ bool MayaScene::updateInstancer()
 			logger.trace(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
 		// get matrix from current path?
 		obj->transformMatrices.push_back(matrix);
-
 		this->transformUpdateCallback(obj);
 	}
 	return true;

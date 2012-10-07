@@ -147,13 +147,7 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getString(MString("exportXMLFileName"), appleseedGlobals, this->exportXMLFileName))
 			throw("problem reading appleseedGlobals.exportXMLFileName");
-
-		if(!getInt(MString("assemblyExportType"), appleseedGlobals, this->assemblyExportType))
-			throw("problem reading appleseedGlobals.assemblyExportType");
 		
-		if(!getEnum(MString("assemblyExportType"), appleseedGlobals, this->assemblyExportType, this->assemblyExportTypeString))
-			throw("problem reading appleseedGlobals.assemblyExportTypeString");
-
 		if(!getEnum(MString("environmentType"), appleseedGlobals, this->environmentType, this->environmentTypeString))
 			throw("problem reading appleseedGlobals.environmentTypeString");
 
