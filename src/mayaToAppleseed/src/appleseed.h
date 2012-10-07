@@ -128,13 +128,13 @@ public:
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
 
-	void parseScene();
-	MDagPath getWorld();
-	void parseHierarchy(MObject currentObject, asr::Assembly * parentAss,  MMatrix matrix, int level = 0);
-	bool objectNeedsAssembly(MObject obj);
-	asr::Assembly *createAssembly(MString assemblyName, MObject mobj);
+	//void parseScene();
+	//MDagPath getWorld();
+	//void parseHierarchy(MObject currentObject, asr::Assembly * parentAss,  MMatrix matrix, int level = 0);
+	//bool objectNeedsAssembly(MObject obj);
+	//asr::Assembly *createAssembly(MString assemblyName, MObject mobj);
 	void putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix); 
-	void defineAssemblyInstances();
+	//void defineAssemblyInstances();
 	asf::auto_release_ptr<asr::Scene> scene;
 
 private:

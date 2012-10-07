@@ -359,7 +359,7 @@ bool mtap_MayaScene::postParseCallback()
 			asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
 			(currentPath.fullPathName() + "assembly_inst").asChar(),
 			asr::ParamArray(),
-			*obj->objectAssembly);
+			obj->objectAssembly->get_name());
 			this->mtap_renderer.scene->assembly_instances().insert(ai);
 		}
 	}
@@ -382,7 +382,7 @@ bool mtap_MayaScene::postParseCallback()
 		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
 		(obj->fullName + "assembly_inst").asChar(),
 		asr::ParamArray(),
-		*((mtap_MayaObject *)(obj->origObject))->objectAssembly);
+		((mtap_MayaObject *)(obj->origObject))->objectAssembly->get_name());
 		this->mtap_renderer.scene->assembly_instances().insert(ai);
 
 	}

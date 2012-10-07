@@ -1779,7 +1779,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
         asr::AssemblyInstanceFactory::create(
             "master_assembly_inst",
             asr::ParamArray(),
-            *this->masterAssembly));
+			this->masterAssembly->get_name()));
 
 
 	// per object assembly
@@ -2145,19 +2145,19 @@ void AppleseedRenderer::updateEntitiesCaller()
 }
 
 
-MDagPath  AppleseedRenderer::getWorld()
-{
-	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
-	MDagPath dagPath;
-	
-	for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
-	{
-		dagIterator.getPath(dagPath);
-		if (dagPath.apiType() == MFn::kWorld)
-			break;
-	}
-	return dagPath;
-}
+//MDagPath  AppleseedRenderer::getWorld()
+//{
+//	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
+//	MDagPath dagPath;
+//	
+//	for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
+//	{
+//		dagIterator.getPath(dagPath);
+//		if (dagPath.apiType() == MFn::kWorld)
+//			break;
+//	}
+//	return dagPath;
+//}
 
 
 //
@@ -2169,83 +2169,83 @@ MDagPath  AppleseedRenderer::getWorld()
 //
 
 // maybe its more useful to work with two vector arrays instead of minimap in this case
-void AppleseedRenderer::defineAssemblyInstances()
-{
-	for( int i = 0; i < assemblyMOMap.len(); i++)
-	{
-		mtap_MayaObject *obj = *assemblyMOMap.get(i);
-		if( obj != NULL)
-		{
-			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName);
-		    
-			MFnDagNode objNode(obj->mobject);
-			MDagPathArray pathArray;
-			objNode.getAllPaths(pathArray);
-				
-			for( uint pId = 0; pId < pathArray.length(); pId++)
-			{
-				// find mayaObject...
-				MDagPath currentPath = pathArray[pId];
-
-				asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-					(currentPath.fullPathName() + "assembly_inst").asChar(),
-					asr::ParamArray(),
-					*obj->objectAssembly);
-				this->fillTransformMatices(currentPath.inclusiveMatrix(), ai.get());
-				this->scene->assembly_instances().insert(ai);
-			}
-		}
-	}
-	
-}
-
-
-void  AppleseedRenderer::parseScene()
-{
-
-	// put this later into MayaScene common lib
-	this->mtap_scene->makeMayaObjectMObjMap();
-	this->assemblyMOMap.clear();
-
-	logger.trace(MString("----------- Apple parse scene ---------------"));
-	MDagPath world = getWorld();
-	if( ! world.isValid())
-	{
-		logger.trace(MString("World dagPath not valid."));
-		return;
-	}
-	asr::Assembly *worldAssembly = this->createAssembly("world", world.node());
-	this->addDefaultMaterial(worldAssembly);
-
-	MMatrix matrix;
-	matrix.setToIdentity();
-	this->parseHierarchy(world.node(), worldAssembly, matrix);
-
-	for( int i = 0; i < assemblyMOMap.len(); i++)
-	{
-		mtap_MayaObject *obj = *assemblyMOMap.get(i);
-		if( obj != NULL)
-		{
-			logger.trace(MString("obj with assembly: ") + obj->shortName);
-		}
-	}
-	this->defineAssemblyInstances();
-}
+//void AppleseedRenderer::defineAssemblyInstances()
+//{
+//	for( int i = 0; i < assemblyMOMap.len(); i++)
+//	{
+//		mtap_MayaObject *obj = *assemblyMOMap.get(i);
+//		if( obj != NULL)
+//		{
+//			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName);
+//		    
+//			MFnDagNode objNode(obj->mobject);
+//			MDagPathArray pathArray;
+//			objNode.getAllPaths(pathArray);
+//				
+//			for( uint pId = 0; pId < pathArray.length(); pId++)
+//			{
+//				// find mayaObject...
+//				MDagPath currentPath = pathArray[pId];
+//
+//				asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+//					(currentPath.fullPathName() + "assembly_inst").asChar(),
+//					asr::ParamArray(),
+//					*obj->objectAssembly);
+//				this->fillTransformMatices(currentPath.inclusiveMatrix(), ai.get());
+//				this->scene->assembly_instances().insert(ai);
+//			}
+//		}
+//	}
+//	
+//}
 
 
-bool isGeo( MObject obj)
-{
-	if( obj.hasFn(MFn::kMesh))
-		return true;
-	return false;
-}
-
-bool isTransform(MObject obj)
-{
-	if( obj.hasFn(MFn::kTransform))
-		return true;
-	return false;
-}
+//void  AppleseedRenderer::parseScene()
+//{
+//
+//	// put this later into MayaScene common lib
+//	this->mtap_scene->makeMayaObjectMObjMap();
+//	this->assemblyMOMap.clear();
+//
+//	logger.trace(MString("----------- Apple parse scene ---------------"));
+//	MDagPath world = getWorld();
+//	if( ! world.isValid())
+//	{
+//		logger.trace(MString("World dagPath not valid."));
+//		return;
+//	}
+//	asr::Assembly *worldAssembly = this->createAssembly("world", world.node());
+//	this->addDefaultMaterial(worldAssembly);
+//
+//	MMatrix matrix;
+//	matrix.setToIdentity();
+//	this->parseHierarchy(world.node(), worldAssembly, matrix);
+//
+//	for( int i = 0; i < assemblyMOMap.len(); i++)
+//	{
+//		mtap_MayaObject *obj = *assemblyMOMap.get(i);
+//		if( obj != NULL)
+//		{
+//			logger.trace(MString("obj with assembly: ") + obj->shortName);
+//		}
+//	}
+//	this->defineAssemblyInstances();
+//}
+//
+//
+//bool isGeo( MObject obj)
+//{
+//	if( obj.hasFn(MFn::kMesh))
+//		return true;
+//	return false;
+//}
+//
+//bool isTransform(MObject obj)
+//{
+//	if( obj.hasFn(MFn::kTransform))
+//		return true;
+//	return false;
+//}
 
 //
 // objects needs own assembly if:
@@ -2254,31 +2254,31 @@ bool isTransform(MObject obj)
 //		- its polysize is large (not yet implemented)
 //
 
-bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
-{
-	MFnDagNode dagFn(obj);
-	if( dagFn.parentCount() > 1)
-	{
-		logger.trace(MString("obj has more than 1 parent."));
-		return true;
-	}
-	if( obj.hasFn(MFn::kTransform))
-	{
-		MFnDependencyNode depFn(obj);
-		MPlugArray plugArray;
-		depFn.getConnections(plugArray);
-		for( uint i = 0; i < plugArray.length(); i++)
-		{
-			MPlug plug = plugArray[i];
-			if( plug.isDestination())
-			{
-				logger.trace(MString("Plug ") + plug.name() + " is destination");
-				return true;
-			}
-		}
-	}
-	return false;
-}
+//bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
+//{
+//	MFnDagNode dagFn(obj);
+//	if( dagFn.parentCount() > 1)
+//	{
+//		logger.trace(MString("obj has more than 1 parent."));
+//		return true;
+//	}
+//	if( obj.hasFn(MFn::kTransform))
+//	{
+//		MFnDependencyNode depFn(obj);
+//		MPlugArray plugArray;
+//		depFn.getConnections(plugArray);
+//		for( uint i = 0; i < plugArray.length(); i++)
+//		{
+//			MPlug plug = plugArray[i];
+//			if( plug.isDestination())
+//			{
+//				logger.trace(MString("Plug ") + plug.name() + " is destination");
+//				return true;
+//			}
+//		}
+//	}
+//	return false;
+//}
 
 
 //
@@ -2286,24 +2286,24 @@ bool AppleseedRenderer::objectNeedsAssembly(MObject obj)
 //  Returns an pointer to the assembly to fill it later with geometry.
 //
 
-asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName, MObject mobj)
-{
-	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( assemblyName.asChar(), asr::ParamArray());	
-	this->scene->assemblies().insert(assembly);
-	asr::Assembly *assemblyPtr = this->scene->assemblies().get_by_name(assemblyName.asChar());
-	
-	// for testing
-	this->addDefaultMaterial(assemblyPtr);
-
-	mtap_MayaObject **obj = (mtap_MayaObject **)this->mtap_scene->mayaObjMObjMap.find(mobj);
-	if( obj != NULL)
-	{
-		(*obj)->objectAssembly = assemblyPtr;
-		assemblyMOMap.append(assemblyPtr, *obj);
-	}
-
-	return assemblyPtr;
-}
+//asr::Assembly *AppleseedRenderer::createAssembly(MString assemblyName, MObject mobj)
+//{
+//	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( assemblyName.asChar(), asr::ParamArray());	
+//	this->scene->assemblies().insert(assembly);
+//	asr::Assembly *assemblyPtr = this->scene->assemblies().get_by_name(assemblyName.asChar());
+//	
+//	// for testing
+//	this->addDefaultMaterial(assemblyPtr);
+//
+//	mtap_MayaObject **obj = (mtap_MayaObject **)this->mtap_scene->mayaObjMObjMap.find(mobj);
+//	if( obj != NULL)
+//	{
+//		(*obj)->objectAssembly = assemblyPtr;
+//		assemblyMOMap.append(assemblyPtr, *obj);
+//	}
+//
+//	return assemblyPtr;
+//}
 
 void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {
@@ -2454,71 +2454,73 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, MObject o
 
 	// default material at the moment
 	material_names.push_back("gray_material");
+    asf::StringDictionary matDict = asf::StringDictionary();
+	matDict.insert("default", "gray_material");
 
 	assembly->object_instances().insert(
 			asr::ObjectInstanceFactory::create(
 			(meshName + "_inst").asChar(),
 			asr::ParamArray(),
-			*meshObject,
+			meshObject->get_name(),
 			asf::Transformd(tmatrix),
-			material_names
+			matDict
 			));
 }
 	
-void printTransform(MMatrix m, MString space)
-{
-	logger.trace(space + ": " + m[3][0] + " " + m[3][1] + " " + m[3][2]);
-}
-
-void  AppleseedRenderer::parseHierarchy(MObject currentObject, asr::Assembly *parentAss, MMatrix matrix, int level)
-{
-	MStatus stat;
-	MFnDagNode currentNode(currentObject);
-
-	MString space = makeSpace(level);
-	logger.trace(space + MString("parseHierarchy: ") + currentNode.partialPathName());
-
-	if(isTransform(currentObject))
-	{
-		matrix *= currentNode.transformationMatrix();
-		printTransform(matrix, space);
-	}
-
-	if( isGeo(currentObject))
-	{
-		logger.trace(MString("Put geo: ") + getObjectName(currentObject) + " into parentAssembly: " + parentAss->get_name());
-		putObjectIntoAssembly(parentAss, currentObject, matrix);
-	}
-
-	asr::Assembly *pa = parentAss;
-	MMatrix m = matrix;
-	if( objectNeedsAssembly(currentObject))
-	{
-		// create assembly or so ...
-		logger.trace("Child needs own assembly");
-		pa = this->createAssembly(currentNode.fullPathName(), currentObject);
-		m.setToIdentity();
-	}
-
-	uint numChildren = currentNode.childCount();
-
-	for( uint chId = 0; chId < numChildren; chId++)
-	{
-		MObject childObj = currentNode.child(chId);
-		MFnDagNode childNode(childObj);
-		MDagPath childPath(childNode.dagPath());
-		logger.trace(MString("Check child: ") + childNode.partialPathName());
-
-		if( childNode.parent(0) != currentObject)
-		{
-			logger.trace("Object path from instance side, skipping.");
-			continue;
-		}
-
-		this->parseHierarchy(childObj, pa, m, level + 1);
-	}
-
-}
+//void printTransform(MMatrix m, MString space)
+//{
+//	logger.trace(space + ": " + m[3][0] + " " + m[3][1] + " " + m[3][2]);
+//}
+//
+//void  AppleseedRenderer::parseHierarchy(MObject currentObject, asr::Assembly *parentAss, MMatrix matrix, int level)
+//{
+//	MStatus stat;
+//	MFnDagNode currentNode(currentObject);
+//
+//	MString space = makeSpace(level);
+//	logger.trace(space + MString("parseHierarchy: ") + currentNode.partialPathName());
+//
+//	if(isTransform(currentObject))
+//	{
+//		matrix *= currentNode.transformationMatrix();
+//		printTransform(matrix, space);
+//	}
+//
+//	if( isGeo(currentObject))
+//	{
+//		logger.trace(MString("Put geo: ") + getObjectName(currentObject) + " into parentAssembly: " + parentAss->get_name());
+//		putObjectIntoAssembly(parentAss, currentObject, matrix);
+//	}
+//
+//	asr::Assembly *pa = parentAss;
+//	MMatrix m = matrix;
+//	if( objectNeedsAssembly(currentObject))
+//	{
+//		// create assembly or so ...
+//		logger.trace("Child needs own assembly");
+//		pa = this->createAssembly(currentNode.fullPathName(), currentObject);
+//		m.setToIdentity();
+//	}
+//
+//	uint numChildren = currentNode.childCount();
+//
+//	for( uint chId = 0; chId < numChildren; chId++)
+//	{
+//		MObject childObj = currentNode.child(chId);
+//		MFnDagNode childNode(childObj);
+//		MDagPath childPath(childNode.dagPath());
+//		logger.trace(MString("Check child: ") + childNode.partialPathName());
+//
+//		if( childNode.parent(0) != currentObject)
+//		{
+//			logger.trace("Object path from instance side, skipping.");
+//			continue;
+//		}
+//
+//		this->parseHierarchy(childObj, pa, m, level + 1);
+//	}
+//
+//}
 
 void AppleseedRenderer::render()
 {
@@ -2565,8 +2567,7 @@ void AppleseedRenderer::render()
 	this->renderGlobals->getImageName();
 	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
-	project->get_frame()->write(imageOutputFile.asChar());
-
+	project->get_frame()->write_main_image(imageOutputFile.asChar());
 	EventQueue::Event e;
 	e.data = NULL;
 	e.type = EventQueue::Event::FRAMEDONE;
