@@ -147,6 +147,7 @@ private:
 	asf::auto_release_ptr<asf::FileLogTarget> m_log_target;
 	asf::LogTargetBase *log_targetPtr;
 
+	void addDeformStep(mtap_MayaObject *obj, asr::Assembly *assembly);
 };
 
 void eventListener();

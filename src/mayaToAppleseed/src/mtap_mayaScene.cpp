@@ -364,7 +364,6 @@ bool mtap_MayaScene::postParseCallback()
 		}
 	}
 	
-	
 	mIter  = this->instancerNodeElements.begin();
 	for(;mIter!=this->instancerNodeElements.end(); mIter++)
 	{

@@ -2329,7 +2329,8 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 	size_t numTransforms = assInst->transform_sequence().size();
 	float time = 0.0f;
-	time = (float)numTransforms/(float)mbsamples;
+	if( mbsamples > 1)
+		time = (float)numTransforms/((float)mbsamples - 1.0f);
 	logger.trace(MString("updateTransform: numtransforms : ") + numTransforms + " transform time " + time);
 
 	asf::Matrix4d appMatrix;
@@ -2374,9 +2375,66 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 		return;
 	}
 	MMatrix matrix = att->objectMatrix;
+
+	// put geo into assembly only if object has shape input connections or is not defined yet
+	// an geometry should exist only if we are in an deform step > 0
+	MString geoName = obj->fullNiceName;
+	asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+	if( geoObject != NULL)
+	{
+		logger.trace(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
+		if( !obj->shapeConnected )
+		{
+			logger.trace(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
+			return;
+		}else{
+			logger.trace(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
+			addDeformStep(obj, assembly);
+			return;
+		}
+	}
+
 	this->putObjectIntoAssembly(assembly, obj->mobject, matrix);
 }
 
+void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assembly)
+{
+	MString geoName = obj->fullNiceName;
+	asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+
+	MStatus stat = MStatus::kSuccess;
+	MFnMesh meshFn(obj->mobject, &stat);
+	CHECK_MSTATUS(stat);
+	if( !stat )
+		return;
+	MItMeshPolygon faceIt(obj->mobject, &stat);
+	CHECK_MSTATUS(stat);
+	if( !stat )
+		return;
+
+	MPointArray points;
+	stat = meshFn.getPoints(points);
+	CHECK_MSTATUS(stat);
+    MFloatVectorArray normals;
+    meshFn.getNormals( normals, MSpace::kWorld );
+
+	logger.debug(MString("Defining deform step for mesh object ") + obj->fullNiceName);
+	
+	asr::MeshObject *meshShape = (asr::MeshObject *)geoObject;
+	MString meshName = meshShape->get_name();
+	int numMbSegments = meshShape->get_motion_segment_count();
+	logger.debug(MString("Mesh name ") + meshName + " has " + numMbSegments + " motion segments");
+
+	// now adding one motion segment
+	size_t mbSegmentIndex = meshShape->get_motion_segment_count() + 1;
+	meshShape->set_motion_segment_count(mbSegmentIndex);
+
+	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+	{
+		asr::GVector3 vtx((float)points[vtxId].x, (float)points[vtxId].y, (float)points[vtxId].z);
+		meshShape->set_vertex_pose(vtxId, mbSegmentIndex - 1, vtx);
+	}
+}
 
 //
 //	Puts Object (only mesh at the moment) into this assembly.
@@ -2499,7 +2557,7 @@ void AppleseedRenderer::render()
 	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
 	asr::global_logger().add_target(m_log_target.get());
 
-	//masterRenderer->render();
+	masterRenderer->render();
 
 	asr::global_logger().remove_target(m_log_target.get());
 	m_log_target->close();
