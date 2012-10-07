@@ -276,6 +276,11 @@ void  MayaScene::classifyMayaObject(MayaObject *obj)
 		this->lightList.push_back(obj);
 		return;
 	}
+	if( obj->mobject.hasFn(MFn::kInstancer))
+	{
+		instancerDagPathList.push_back(obj->dagPath);
+		return;
+	}
 	this->objectList.push_back(obj);
 }
 
@@ -320,7 +325,13 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttri
 	for( uint chId = 0; chId < numChilds; chId++)
 	{
 		MDagPath childPath = currentPath;
-		childPath.push(currentPath.child(chId));
+		MStatus stat = childPath.push(currentPath.child(chId));
+		if( !stat )
+		{
+			logger.debug(MString("Child path problem: parent: ") + currentPath.fullPathName() + " child id " + chId + " type " + currentPath.child(chId).apiTypeStr());
+			continue;
+		}
+		MString childName = childPath.fullPathName();
 		parseSceneHierarchy(childPath, level + 1, currentAttributes);
 	}
 
@@ -338,7 +349,7 @@ bool MayaScene::parseScene(ParseType ptype)
 		if(parseSceneHierarchy(world, 0, NULL))
 		{
 			this->good = true;
-			this->parseInstancer(); 
+			this->parseInstancerNew(); 
 			this->getLightLinking();
 			return true;
 		}
@@ -633,6 +644,9 @@ bool MayaScene::updateSceneNew()
 			this->transformUpdateCallback(obj);
 	}
 
+	// new parse in animation to recognize particle deaths and births
+	this->updateInstancer();
+
 	return true;
 }
 
@@ -799,16 +813,22 @@ void MayaScene::clearInstancerNodeList()
 
 bool MayaScene::updateInstancer()
 {
+	logger.trace("update instancer.");
+	
 	size_t numElements = this->instancerNodeElements.size();
 	for( size_t i = 0; i < numElements; i++)
 	{
 		MayaObject *obj =  this->instancerNodeElements[i];
-		MFnInstancer instFn(obj->instancerMObj);
+		MFnInstancer instFn(obj->instancerDagPath);
 		MDagPathArray dagPathArray;
 		MMatrix matrix;
 		instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, matrix); 
+		for( uint k = 0; k < dagPathArray.length(); k++)
+			logger.trace(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
 		// get matrix from current path?
 		obj->transformMatrices.push_back(matrix);
+
+		this->transformUpdateCallback(obj);
 	}
 	return true;
 }
@@ -819,6 +839,98 @@ std::vector<MayaObject *> InstDoneList;
 // The reason why I don't simply add it to the main list is that I have to recreate them
 // during sceneUpdate() for every frame because the list can change with the birth or death 
 // of a particle
+bool MayaScene::parseInstancerNew()
+{
+	bool result = true;
+	logger.debug(MString("parseInstancerNew"));
+	MDagPath dagPath;
+	size_t numInstancers = instancerDagPathList.size();
+	size_t numobjects = this->objectList.size();
+
+	for(int iId = 0; iId < numInstancers; iId++)
+	{
+		MDagPath instPath = instancerDagPathList[iId];
+		MObject instancerMObject = instPath.node();
+		MString path = instPath.fullPathName();
+		MFnInstancer instFn(instPath);
+		int numParticles = instFn.particleCount();
+		logger.debug(MString("Detected instancer. instPath: ") + path + " it has " + numParticles + " particle instances");
+		MDagPathArray allPaths;
+		MMatrixArray allMatrices;
+		MIntArray pathIndices;
+		MIntArray pathStartIndices;
+		
+		// give me all instances in this instancer
+		instFn.allInstances( allPaths, allMatrices, pathStartIndices, pathIndices );
+	
+		for( int p = 0; p < numParticles; p++ )
+		{
+			MMatrix particleMatrix = allMatrices[p];
+
+			//  the number of paths instanced under a particle is computed by
+			//  taking the difference between the starting path index for this
+			//  particle and that of the next particle.  The size of the start
+			//  index array is always one larger than the number of particles.
+			//
+			int numPaths = pathStartIndices[p+1]-pathStartIndices[p];
+	        
+			//  the values pathIndices[pathStart...pathStart+numPaths] give the
+			//  indices in the allPaths array of the paths instanced under this
+			//  particular particle.  Remember, different paths can be instanced
+			//  under each particle.
+			//
+			int pathStart = pathStartIndices[p];
+
+			//  loop through the instanced paths for this particle
+			ObjectAttributes *currentAttributes = NULL;
+			for( int i = pathStart; i < pathStart+numPaths; i++ )
+			{
+				int curPathIndex = pathIndices[i];
+				MDagPath curPath = allPaths[curPathIndex];
+				
+				MayaObject *particleMObject =  this->mayaObjectCreator(curPath);
+				currentAttributes = particleMObject->getObjectAttributes(currentAttributes);
+				MFnDependencyNode pOrigNode(particleMObject->mobject);
+				MObject pOrigObject = pOrigNode.object();
+
+				// search for the correct orig MayaObject element
+				// TODO: visibiliy check - necessary?
+				MayaObject *origObj = NULL;
+				std::vector<MayaObject *>::iterator mIter = origObjects.begin();
+				for( ;mIter != origObjects.end(); mIter++)
+				{
+					MayaObject *obj = *mIter;
+					if( obj->mobject == pOrigObject)
+					{
+						origObj = obj;
+					}
+				}
+				if( origObj == NULL)
+				{
+					logger.debug(MString("Orig particle instancer obj not found."));
+					continue;
+				}
+				particleMObject->origObject = origObj;
+
+				particleMObject->isInstancerObject = true;
+				particleMObject->supported = true;
+				particleMObject->visible = true;
+				particleMObject->instancerParticleId = p;
+				particleMObject->instanceNumber = p;
+				particleMObject->instancerDagPath = instPath;
+				particleMObject->instancerMObj = instancerMObject;
+				particleMObject->fullName = origObj->fullName + MString("_i_") + p;				
+				particleMObject->shortName = origObj->shortName + MString("_i_") + p;
+				this->instancerNodeElements.push_back(particleMObject);
+				particleMObject->index = (int)(this->instancerNodeElements.size() - 1);
+				currentAttributes->hasInstancerConnection = true;
+			}
+		}
+	}
+	return true;
+}
+
+
 bool MayaScene::parseInstancer()
 {
 	bool result = true;
@@ -844,7 +956,7 @@ bool MayaScene::parseInstancer()
 		
 		// give me all instances in this instancer
 		instFn.allInstances( allPaths, allMatrices, pathStartIndices, pathIndices );
-
+	
 		for( int p = 0; p < numParticles; p++ )
 		{
 			MMatrix particleMatrix = allMatrices[p];

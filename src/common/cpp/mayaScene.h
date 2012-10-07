@@ -49,6 +49,7 @@ public:
 	bool parseScene(ParseType ptype = NORMALPARSE);
 
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
+	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
 	bool updateScene(); // update all necessary objects
 	bool updateSceneNew(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject *) = 0;

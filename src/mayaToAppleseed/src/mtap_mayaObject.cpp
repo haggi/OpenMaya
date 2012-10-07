@@ -82,7 +82,7 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 		myAttributes->objectMatrix *= objNode.transformationMatrix();
 	}
 
-	if( this->needsAssembly())
+	if( this->needsAssembly() || myAttributes->hasInstancerConnection)
 	{
 		myAttributes->needsOwnAssembly = true;
 		myAttributes->assemblyObject = this;
@@ -104,6 +104,12 @@ bool mtap_MayaObject::needsAssembly()
 {
 	if( this->instanceNumber > 0)
 		return false;
+
+	if( this->hasInstancerConnection)
+	{
+		logger.trace(MString("obj has instancer connection -> needs assembly."));
+		return true;
+	}
 
 	MFnDagNode dagFn(this->mobject);
 

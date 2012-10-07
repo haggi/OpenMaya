@@ -80,6 +80,9 @@ MayaObject::MayaObject(MObject& mobject)
 MayaObject::MayaObject(MDagPath& objPath)
 {
 	this->isInstancerObject = false;
+	this->instancerParticleId = -1;
+	this->instanceNumber = 0;
+	this->attributes = NULL;
 	this->origObject = NULL;
 	this->mobject = objPath.node();
 	this->supported = false;

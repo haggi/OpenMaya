@@ -28,6 +28,7 @@
 #include <maya/MRenderView.h>
 #include <maya/MFileIO.h>
 #include <maya/MItDag.h>
+#include <maya/MFnInstancer.h>
 
 
 
@@ -644,8 +645,9 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& me
 	meshFn.getUVs(uArray, vArray);
 
 	logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
+	MString meshFullName = makeGoodString(meshFn.fullPathName());
     // Create a new mesh object.
-	asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFn.name().asChar(), asr::ParamArray());
+	asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
 
 	// add vertices
     // Vertices.
@@ -2307,6 +2309,13 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {
 	logger.trace(MString("asr::updateTransform:Object (or instance of it) has objAssembly: ") + obj->shortName);
 	MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
+
+	if( obj->attributes != NULL)
+		if( obj->attributes->hasInstancerConnection )
+		{
+			assemblyInstName = obj->fullName + "assembly_inst";
+		}
+
 	asr::AssemblyInstance *assInst = this->scene->assembly_instances().get_by_name(assemblyInstName.asChar());
 	if( assInst == NULL)
 	{
@@ -2325,6 +2334,17 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 	asf::Matrix4d appMatrix;
 	MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
+
+	if( obj->attributes != NULL)
+		if( obj->attributes->hasInstancerConnection )
+		{
+			logger.trace(MString("Found particle instanced element: ") + obj->fullName);
+			MFnInstancer instFn(obj->instancerDagPath);
+			MDagPathArray dagPathArray;
+			MMatrix matrix;
+			instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, colMatrix); 
+		}
+
 	this->MMatrixToAMatrix(colMatrix, appMatrix);
 
 	assInst->transform_sequence().set_transform(time, asf::Transformd(appMatrix));

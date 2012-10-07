@@ -44,8 +44,17 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 			return;
 
 	}else{
-		if( obj->objectAssembly == NULL)
-			return;
+		if( obj->instancerParticleId > -1)
+		{
+			if( obj->origObject == NULL)
+			{
+				logger.debug(MString("transformUpdateCallback: obj orig obj == NULL with instancerParticleId > -1"));
+				return;
+			}
+		}else{
+			if( obj->objectAssembly == NULL)
+				return;
+		}
 	}
 
 	this->mtap_renderer.updateTransform(obj);
@@ -326,13 +335,15 @@ bool mtap_MayaScene::postParseCallback()
 		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
 		
 		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-		
+
 		if( obj->instanceNumber > 0)
 			continue;
 
 		if( obj->objectAssembly == NULL)
 			continue;
 
+		if( !obj->visible)
+			continue;
 
 		// simply add instances for all paths
 		MFnDagNode objNode(obj->mobject);
@@ -351,6 +362,30 @@ bool mtap_MayaScene::postParseCallback()
 			*obj->objectAssembly);
 			this->mtap_renderer.scene->assembly_instances().insert(ai);
 		}
+	}
+	
+	
+	mIter  = this->instancerNodeElements.begin();
+	for(;mIter!=this->instancerNodeElements.end(); mIter++)
+	{
+		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
+		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+		MString objname = obj->fullName;
+		if( obj->instancerParticleId < 0)
+			continue;
+		if( obj->origObject == NULL)
+			continue;
+		if( ((mtap_MayaObject *)(obj->origObject))->objectAssembly == NULL)
+			continue;
+
+		logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + obj->fullName);
+
+		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+		(obj->fullName + "assembly_inst").asChar(),
+		asr::ParamArray(),
+		*((mtap_MayaObject *)(obj->origObject))->objectAssembly);
+		this->mtap_renderer.scene->assembly_instances().insert(ai);
+
 	}
 
 	return true;

@@ -49,6 +49,7 @@ public:
 	bool isInstancerObject; // is this an instancer object
 	int instancerParticleId; 
 	MObject instancerMObj;
+	MDagPath instancerDagPath;
 
 	bool supported;
 	bool animated;
