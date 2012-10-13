@@ -73,6 +73,12 @@ public:
 	MbElement(void){};
 };
 
+struct RenderType{
+	enum RType{
+		FINAL,
+		INTERACTIVE
+	};
+};
 
 class RenderGlobals
 {
@@ -91,6 +97,7 @@ public:
 
 	bool inBatch;
 	bool useShortNames;
+	RenderType::RType renderType;
 
 	int imgWidth;
 	int imgHeight;
@@ -139,6 +146,12 @@ public:
 	MString imagePath;
 	MString imageName;
 	MString imageOutputFile; // complete path to current image file
+
+	bool	useRenderRegion;
+	int		regionLeft;
+	int		regionRight;
+	int		regionBottom;
+	int		regionTop;
 
 	bool detectShapeDeform;
 

@@ -20,29 +20,57 @@ class MayaToRenderer(object):
     
     # the render callback is called with arguments like this
     # renderCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
-    # if the renderCmd is replaed with a python call it may not get all informations so we 
-    # can thinkg about an alternative call like this
+    # if the renderCmd is replaced with a python call it may not get all informations so we 
+    # can think about an alternative call like this
     # renderMelCmd pythonCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
     # this can result in a pythonCmd(640, 480, 1, 1, perspShape, " -layer defaultRenderLayer") call
     def renderCallback(self, procedureName):
-        cmd = "python(\"{0}{1}()\")".format(self.baseRenderMelCommand, procedureName)
-        print "callback: ", cmd
+        cmd = "python(\"{0}{1}()\");\n".format(self.baseRenderMelCommand, procedureName)
         return cmd
+
+    def makeMelPythonCmdStringFromPythonCmd(self, pythonCmdObj, argSet):
+        pCmd  = "\"{0}{1}(".format(self.baseRenderMelCommand, pythonCmdObj.__name__)
+        argList = []
+        for dtype, value in argSet:
+            if dtype == 'string':
+                argList.append(value + "=" + r"""'"+$%s+"'""" % value)           
+            else:
+                argList.append(value + "=\" + $" + value + " + \"")           
+        pCmd += ",".join(argList)
+        pCmd += ")\""            
+        return pCmd
     
-    def batchRenderProcedure(self):
+    def makeMelProcFromPythonCmd(self, pythonCmdObj, argSet):    
+        cmd = pythonCmdObj.__name__
+        melProcName = "RenderProc_" + cmd
+        melCmd = "global proc %s (" % melProcName
+        argList = []
+        for arg in argSet:
+            argList.append(" $".join(arg))
+        melCmd += ",".join(argList) + ")\n{\n"
+        melCmd += "    string $cmdString = " + self.makeMelPythonCmdStringFromPythonCmd(pythonCmdObj, argSet) + ";\n"
+        melCmd += "    python($cmdString);\n"
+        melCmd += "};\n";
+        print "MelCmd:", melCmd
+        pm.mel.eval(melCmd)
+        return melProcName
+            
+    
+    def batchRenderProcedure(self, options):
         self.preRenderProcedure()
-        log.debug("batchRenderProcedure")
+        log.debug("batchRenderProcedure: options " + str(options))
+        self.renderProcedure(-1, -1, True, True, None, options)    
     
     def renderOptionsProcedure(self):
         self.preRenderProcedure()
         log.debug("RenderOptionsProcedure")
     
-    def commandRenderProcedure(self):
+    def commandRenderProcedure(self, width, height, doShadows, doGlow, camera, options):
         self.preRenderProcedure()
         log.debug("commandRenderProcedure")
         self.renderProcedure()
         
-    def renderProcedure(self):    
+    def renderProcedure(self, width, height, doShadows, doGlowPass, camera, options):
         pass
     
     def batchRenderOptionsProcedure(self):
@@ -163,20 +191,35 @@ class MayaToRenderer(object):
         log.debug("aeCallback: " + aeCallbackProc)
         pm.mel.eval(aeCallbackProc)
     
+    
     def registerRenderer(self):
         log.debug("registerRenderer")
         self.unRegisterRenderer()
         self.registerNodeExtensions()
         self.registerAETemplateCallbacks()
         pm.renderer(self.rendererName, rendererUIName=self.rendererName)
-        pm.renderer(self.rendererName, edit=True, renderProcedure=self.renderCallback("renderProcedure"))
-        pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
+        pm.renderer(self.rendererName, edit=True, renderProcedure=self.makeMelProcFromPythonCmd(self.renderProcedure, [('int', 'width'), 
+                                                                                                                       ('int', 'height'), 
+                                                                                                                       ('int', 'doShadows'), 
+                                                                                                                       ('int', 'doGlow'), 
+                                                                                                                       ('string', 'camera'), 
+                                                                                                                       ('string', 'options')]))
+        pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
+        pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
+        #pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
+        #pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsProcedure=self.renderCallback("batchRenderOptionsProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsStringProcedure=self.renderCallback("batchRenderOptionsStringProcedure"))
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultRenderGlobals")
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultResolution")
         pm.renderer(self.rendererName, edit=True, addGlobalsNode=self.renderGlobalsNodeName)
+        
+        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.makeMelProcFromPythonCmd(self.startIprRenderProcedure, [('string', 'editor'), 
+                                                                                                                                       ('int', 'resolutionX'),
+                                                                                                                                       ('int', 'resolutionY'),
+                                                                                                                                       ('string', 'camera')]))
+        pm.renderer(self.rendererName, edit=True, stopIprRenderProcedure=self.makeMelProcFromPythonCmd(self.stopIprRenderProcedure, []))
+        pm.renderer(self.rendererName, edit=True, pauseIprRenderProcedure=self.makeMelProcFromPythonCmd(self.pauseIprRenderProcedure, [('string', 'editor'), ('int', 'pause')]))
         
         pm.renderer(self.rendererName, edit=True, changeIprRegionProcedure=self.renderCallback("changeIprRegionProcedure"))
         pm.renderer(self.rendererName, edit=True, iprOptionsProcedure=self.renderCallback("iprOptionsProcedure"))
@@ -184,10 +227,7 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, iprRenderProcedure=self.renderCallback("iprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, iprRenderSubMenuProcedure=self.renderCallback("iprRenderSubMenuProcedure"))
         pm.renderer(self.rendererName, edit=True, isRunningIprProcedure=self.renderCallback("isRunningIprProcedure"))
-        pm.renderer(self.rendererName, edit=True, pauseIprRenderProcedure=self.renderCallback("pauseIprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, refreshIprRenderProcedure=self.renderCallback("refreshIprRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, stopIprRenderProcedure=self.renderCallback("stopIprRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.renderCallback("startIprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
         pm.renderer(self.rendererName, edit=True, logoImageName=self.renderCallback("logoImageName"))
         pm.renderer(self.rendererName, edit=True, renderDiagnosticsProcedure=self.renderCallback("renderDiagnosticsProcedure"))
@@ -197,11 +237,11 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, showBatchRenderProcedure=self.renderCallback("showBatchRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, showRenderLogProcedure=self.renderCallback("showRenderLogProcedure"))
         pm.renderer(self.rendererName, edit=True, showBatchRenderLogProcedure=self.renderCallback("showBatchRenderLogProcedure"))
-        pm.renderer(self.rendererName, edit=True, renderRegionProcedure=self.renderCallback("renderRegionProcedure"))
         pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))
         pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
         pm.renderer(self.rendererName, edit=True, renderMenuProcedure=self.renderCallback("renderMenuProcedure"))
             
+        pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
         
         # because mentalray is still hardcoded in the maya scritps, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults
@@ -257,9 +297,8 @@ class MayaToRenderer(object):
         log.debug("isRunningIprProcedure")
         pass
             
-    def pauseIprRenderProcedure(self):
+    def pauseIprRenderProcedure(self, editor, pause):
         log.debug("pauseIprRenderProcedure")
-        pass
             
     def refreshIprRenderProcedure(self):
         log.debug("refreshIprRenderProcedure")
@@ -268,9 +307,8 @@ class MayaToRenderer(object):
     def stopIprRenderProcedure(self):
         self.ipr_isrunning = False
         log.debug("stopIprRenderProcedure")
-        pass
             
-    def startIprRenderProcedure(self):
+    def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True
         log.debug("startIprRenderProcedure")
         pass

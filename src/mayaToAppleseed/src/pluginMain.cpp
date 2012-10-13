@@ -2,16 +2,14 @@
 #include <maya/MFnPlugin.h>
 
 #include "mayatoappleseed.h"
-#include "mtap_renderGlobalsNode.h"
-#include "mtap_physicalSurfaceShader.h"
-#include "mtap_aoShader.h"
-#include "mtap_aoVoxelShader.h"
-#include "mtap_constantShader.h"
-#include "mtap_diagnosticShader.h"
-#include "mtap_fastSSSShader.h"
-#include "mtap_smokeShader.h"
-
-#include "iprcmd.h"
+#include "mtap_common/mtap_renderGlobalsNode.h"
+#include "shaders/mtap_physicalSurfaceShader.h"
+#include "shaders/mtap_aoShader.h"
+#include "shaders/mtap_aoVoxelShader.h"
+#include "shaders/mtap_constantShader.h"
+#include "shaders/mtap_diagnosticShader.h"
+#include "shaders/mtap_fastSSSShader.h"
+#include "shaders/mtap_smokeShader.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
@@ -24,15 +22,9 @@ MStatus initializePlugin( MObject obj )
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 
-	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator );
+	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator, MayaToAppleseed::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: mayatoappleseed");
-		return status;
-	}
-
-	status = plugin.registerCommand(MAYATOCMDIPRNAME, IprTestCmd::creator );
-	if (!status) {
-		status.perror("cannot register command: IprTestCmd");
 		return status;
 	}
 
@@ -126,12 +118,6 @@ MStatus uninitializePlugin( MObject obj)
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
 		status.perror("cannot deregister command: MayaToAppleseedCmd");
-		return status;
-	}
-
-	status = plugin.deregisterCommand( MAYATOCMDIPRNAME );
-	if (!status) {
-		status.perror("cannot deregister command: MAYATOCMDIPRNAME");
 		return status;
 	}
 

@@ -17,38 +17,71 @@ void Logging::setLogLevel( Logging::LogLevel level)
 	log_level = level;
 }
 
-
-void Logging::trace(MString logString)
+void Logging::setOutType(Logging::OutputType outtype)
 {
-	std::cout << "trace: " << logString << "\n";
+	log_outtype = outtype;
 }
 
-void Logging::info(MString logString)
+void Logging::trace(MString logString, int level)
 {
+	std::cout << "trace: " << makeSpace(level) + logString << "\n";
+	std::cout.flush();
+}
+
+void Logging::info(MString logString, int level)
+{
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB INFO: " + makeSpace(level) + logString;
 	if( log_level >= Logging::Info )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB INFO: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
-void Logging::warning(MString logString)
+void Logging::warning(MString logString, int level)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB WARN: " + makeSpace(level) + logString;
 	if( log_level >= Logging::Warning )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB WARN: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
-void Logging::error(MString logString)
+void Logging::error(MString logString, int level)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + makeSpace(level) + logString;
 	if( log_level >= Logging::Error )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
-void Logging::debug(MString logString)
+void Logging::debug(MString logString, int level)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + makeSpace(level) + logString;
 	if( log_level >= Logging::Debug )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
 }
 
-void Logging::progress(MString logString)
+void Logging::progress(MString logString, int level)
 {
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB PROG: " + makeSpace(level) + logString;
 	if( log_level >= Logging::Progress )
-		MGlobal::displayInfo(MString("Mem: ") + getCurrentUsage() + "MB PROG: " + logString);
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
+}
+
+MString makeSpace(int level)
+{
+	MString space;
+	for( int i = 0; i < level; i++)
+		space += "\t";
+	return space;
 }

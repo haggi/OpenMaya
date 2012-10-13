@@ -1,6 +1,9 @@
 import pymel.core as pm
 import logging
 import Renderer as Renderer
+import traceback
+import sys
+import os
 
 reload(Renderer)
 
@@ -210,14 +213,17 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Appleseed specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
+        # we will have a thinlens camera only
+        #pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
-    
-    def renderProcedure(self):
-        log.debug("renderProcedure")
-        self.createGlobalsNode()    
-        self.preRenderProcedure()
+        
+        # mesh
+        pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue = False)
+
+        # 
+        
+    def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
         self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
@@ -230,7 +236,52 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         except:
             pass
         self.renderGlobalsNode.imageName.set(imageName)        
-        pm.mayatoappleseed()
+    
+    def removeLogFile(self):
+        logfile = pm.workspace.path + "/applelog.log"
+        try:
+            if os.path.exists(logfile):
+                os.remove(logfile)
+        except:
+            pass
+
+    def showLogFile(self):
+        logfile = pm.workspace.path + "/applelog.log"
+        if os.path.exists(logfile):
+            lh = open(logfile, 'r')
+            rl = lh.readlines()
+            for l in rl:
+                sys.__stdout__.write(l)
+            
+    def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
+        log.debug("renderProcedure")
+        self.removeLogFile()
+        print "renderProcedure", width, height, doShadows, doGlow, camera, options
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
+        self.setImageName()
+        
+        if pm.about(batch=True):
+            pm.mayatoappleseed()
+        else:
+            pm.mayatoappleseed(width=width, height=height, camera=camera)
+            
+        if not self.ipr_isrunning:
+            self.showLogFile()
+        
+    def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
+        self.ipr_isrunning = True
+        log.debug("startIprRenderProcedure")
+        print "startIprRenderProcedure", editor, resolutionX, resolutionY, camera
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
+        self.setImageName()
+        pm.mayatoappleseed(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
+        
+    def stopIprRenderProcedure(self):
+        self.ipr_isrunning = False
+        log.debug("stopIprRenderProcedure")
+        pm.mayatoappleseed(stopIpr=True)
         
 
 def theRenderer():
@@ -241,6 +292,7 @@ def initRenderer():
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
     except:
+        traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")
         
 def unregister():

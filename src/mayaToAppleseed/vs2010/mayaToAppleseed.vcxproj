@@ -146,6 +146,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp" />
@@ -156,32 +158,37 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
-    <ClCompile Include="..\src\appleseed.cpp" />
-    <ClCompile Include="..\src\iprcmd.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseed.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedLights.cpp" />
+    <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp" />
+    <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
-    <ClCompile Include="..\src\mtap_aoShader.cpp" />
-    <ClCompile Include="..\src\mtap_aoVoxelShader.cpp" />
-    <ClCompile Include="..\src\mtap_constantShader.cpp" />
-    <ClCompile Include="..\src\mtap_diagnosticShader.cpp" />
-    <ClCompile Include="..\src\mtap_fastSSSShader.cpp" />
-    <ClCompile Include="..\src\mtap_iprTest.cpp" />
-    <ClCompile Include="..\src\mtap_mayaObject.cpp" />
-    <ClCompile Include="..\src\mtap_mayaScene.cpp" />
-    <ClCompile Include="..\src\mtap_pysicalSurfaceShader.cpp" />
-    <ClCompile Include="..\src\mtap_rendererController.cpp" />
-    <ClCompile Include="..\src\mtap_renderGlobals.cpp" />
-    <ClCompile Include="..\src\mtap_renderGlobalsNode.cpp" />
-    <ClCompile Include="..\src\mtap_smokeShader.cpp" />
-    <ClCompile Include="..\src\mtap_tileCallback.cpp" />
-    <ClCompile Include="..\src\mtap_wireframeShader.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\appleseedShaders.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_aoShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_aoVoxelShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_constantShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_diagnosticShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_fastSSSShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_pysicalSurfaceShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_smokeShader.cpp" />
+    <ClCompile Include="..\src\shaders\mtap_wireframeShader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h" />
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
@@ -192,29 +199,32 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
+    <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
     <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
-    <ClInclude Include="..\src\appleseed.h" />
-    <ClInclude Include="..\src\iprcmd.h" />
+    <ClInclude Include="..\src\appleseed\appleseed.h" />
+    <ClInclude Include="..\src\appleseed\appleseedGeometry.h" />
+    <ClInclude Include="..\src\appleseed\appleseedLights.h" />
+    <ClInclude Include="..\src\appleseed\mtap_rendererController.h" />
+    <ClInclude Include="..\src\appleseed\mtap_tileCallback.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
-    <ClInclude Include="..\src\mtap_aoShader.h" />
-    <ClInclude Include="..\src\mtap_aoVoxelShader.h" />
-    <ClInclude Include="..\src\mtap_constantShader.h" />
-    <ClInclude Include="..\src\mtap_diagnosticShader.h" />
-    <ClInclude Include="..\src\mtap_fastSSSShader.h" />
-    <ClInclude Include="..\src\mtap_iprTest.h" />
-    <ClInclude Include="..\src\mtap_MayaObject.h" />
-    <ClInclude Include="..\src\mtap_mayaScene.h" />
-    <ClInclude Include="..\src\mtap_rendererController.h" />
-    <ClInclude Include="..\src\mtap_renderGlobals.h" />
-    <ClInclude Include="..\src\mtap_renderGlobalsNode.h" />
-    <ClInclude Include="..\src\mtap_smokeShader.h" />
-    <ClInclude Include="..\src\mtap_physicalSurfaceShader.h" />
-    <ClInclude Include="..\src\mtap_tileCallback.h" />
-    <ClInclude Include="..\src\mtap_wireframeShader.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_MayaObject.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\shaders\appleseedShaders.h" />
+    <ClInclude Include="..\src\shaders\mtap_aoShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_constantShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_diagnosticShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_fastSSSShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_physicalSurfaceShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_smokeShader.h" />
+    <ClInclude Include="..\src\shaders\mtap_wireframeShader.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

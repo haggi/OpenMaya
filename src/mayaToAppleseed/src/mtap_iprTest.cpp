@@ -86,6 +86,7 @@ void IPR::render()
 	logger.debug(MString("render finished."));
 }
 
+
 void IPR::stopRendering()
 {
 	logger.debug(MString("stopRendering()."));
