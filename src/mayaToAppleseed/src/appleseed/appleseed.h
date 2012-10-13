@@ -83,14 +83,9 @@ public:
 	void defineProject();
 	void defineConfig();
 	void defineOutput();
-	//void checkEntity(asr::con
-	//void checkBSDF(asr::BSDFContainer& container, MString name);
-	//void checkEDF(asr::BSDFContainer& container, MString name);
-	//void checkColor(asr::BSDFContainer& container, MString name);
 	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL, float intensity = 1.0f);
 	void addDefaultMaterial(asr::Assembly *assembly);
-	void defineDefaultMaterial();
-	void addDefaultMaterial(asr::Assembly *assembly, asf::StringArray& materialNames);
+	//void addDefaultMaterial(asr::Assembly *assembly, asf::StringArray& materialNames);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
 	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
 	void defineDefaultLight();
@@ -98,9 +93,6 @@ public:
 	void defineLights();
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
-	// geometry
-	//void defineGeometry(mtap_RenderGlobals *renderGlobals,  std::vector<MayaObject *>&);
-	//void defineGeometry();
 	void definePreRender();
 	void defineObject(mtap_MayaObject *obj);
 	void defineMesh(mtap_MayaObject *obj);
@@ -120,7 +112,7 @@ public:
 	void updateShader( MObject shaderObj);
 	void updateTransform(mtap_MayaObject *obj);
 	void updateDeform(mtap_MayaObject *obj);
-
+	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
 	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
@@ -128,8 +120,20 @@ public:
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
 
-	void putObjectIntoAssembly(asr::Assembly *assembly, MObject object, MMatrix matrix); 
+	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix); 
 	asf::auto_release_ptr<asr::Scene> scene;
+	
+	// shaders
+	void definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineAoShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineAoVoxelShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineConstantShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineDiagnosticShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineFastSSSShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineWireframeShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup);
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

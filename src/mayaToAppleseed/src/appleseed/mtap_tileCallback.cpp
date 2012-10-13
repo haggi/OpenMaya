@@ -124,7 +124,7 @@ void mtap_ITileCallback::post_render(
 				asf::PixelFormatUInt8,
 				uint8_tile_storage.get_storage());
 
-			int ty = frame_props.m_tile_count_y - tile_y - 1;
+			int ty = (int)frame_props.m_tile_count_y - tile_y - 1;
 			copyTileToImage(pixels, uint8_rgb_tile, tile_x, ty, frame);
 		}
 	}

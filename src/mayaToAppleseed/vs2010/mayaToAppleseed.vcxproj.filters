@@ -152,13 +152,13 @@
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp">
       <Filter>mtap_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\appleseedShaders.cpp">
-      <Filter>Source Files\appleseed</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp">
       <Filter>Source Files\appleseed</Filter>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedShaders.cpp">
       <Filter>Source Files\appleseed</Filter>
     </ClCompile>
   </ItemGroup>
@@ -247,12 +247,6 @@
     <ClInclude Include="..\src\appleseed\appleseed.h">
       <Filter>Source Files\appleseed</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\appleseed\appleseedGeometry.h">
-      <Filter>Source Files\appleseed</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\appleseed\appleseedLights.h">
-      <Filter>Source Files\appleseed</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mayatoappleseed.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -267,9 +261,6 @@
     </ClInclude>
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h">
       <Filter>mtap_common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\appleseedShaders.h">
-      <Filter>Source Files\appleseed</Filter>
     </ClInclude>
     <ClInclude Include="..\src\appleseed\mtap_rendererController.h">
       <Filter>Source Files\appleseed</Filter>

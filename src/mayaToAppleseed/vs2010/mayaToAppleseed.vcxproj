@@ -168,6 +168,7 @@
     <ClCompile Include="..\src\appleseed\appleseed.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedLights.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedShaders.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
@@ -176,7 +177,6 @@
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
-    <ClCompile Include="..\src\shaders\appleseedShaders.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoVoxelShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_constantShader.cpp" />
@@ -207,8 +207,6 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\appleseed\appleseed.h" />
-    <ClInclude Include="..\src\appleseed\appleseedGeometry.h" />
-    <ClInclude Include="..\src\appleseed\appleseedLights.h" />
     <ClInclude Include="..\src\appleseed\mtap_rendererController.h" />
     <ClInclude Include="..\src\appleseed\mtap_tileCallback.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
@@ -216,7 +214,6 @@
     <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h" />
-    <ClInclude Include="..\src\shaders\appleseedShaders.h" />
     <ClInclude Include="..\src\shaders\mtap_aoShader.h" />
     <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h" />
     <ClInclude Include="..\src\shaders\mtap_constantShader.h" />
