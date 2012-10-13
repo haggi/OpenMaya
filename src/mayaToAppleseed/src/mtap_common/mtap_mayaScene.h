@@ -8,7 +8,7 @@
 #include "mayaScene.h"
 #include "mtap_renderGlobals.h"
 #include "mtap_MayaObject.h"
-#include "appleseed.h"
+#include "../appleseed/appleseed.h"
 #include "utilities/MiniMap.h"
 
 

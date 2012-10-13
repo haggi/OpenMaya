@@ -3,9 +3,7 @@
 
 #include "renderer/api/rendering.h"
 
-//namespace asf = foundation;
 namespace asr = renderer;
-
 
 class mtap_IRendererController : public asr::IRendererController
 {

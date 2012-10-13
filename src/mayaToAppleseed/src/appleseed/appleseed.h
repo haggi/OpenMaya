@@ -41,8 +41,9 @@
 
 
 #include "mtap_tileCallback.h"
-#include "mtap_mayaObject.h"
+#include "../mtap_common/mtap_mayaObject.h"
 #include "mtap_rendererController.h"
+
 
 #include "utilities/MiniMap.h"
 

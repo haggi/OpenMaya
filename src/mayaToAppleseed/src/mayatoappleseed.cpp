@@ -3,7 +3,7 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mtap_mayaScene.h"
+#include "mtap_common/mtap_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 

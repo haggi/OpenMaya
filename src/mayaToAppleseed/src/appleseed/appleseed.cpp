@@ -28,14 +28,12 @@
 #include <maya/MItDag.h>
 #include <maya/MFnInstancer.h>
 
-
-
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "threads/threads.h"
 #include "threads/queue.h"
 #include "utilities/pystring.h"
-#include "mtap_mayaScene.h"
+#include "../mtap_common/mtap_mayaScene.h"
 #include "threads/renderQueueWorker.h"
 
 #include <stdio.h>
