@@ -18,3 +18,5 @@
 *.pyc
 
 *pydevproject
+src/mayaToMitsuba
+src/mayaToLux
