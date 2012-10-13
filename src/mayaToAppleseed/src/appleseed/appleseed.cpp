@@ -563,93 +563,6 @@ void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 	}
 }
 
-void AppleseedRenderer::defineObject(mtap_MayaObject *obj)
-{
-	return;
-
-	//logger.debug(MString("asr define obj ") + obj->shortName);
-
-	//asf::StringArray material_names;
-	//material_names.push_back("gray_material");
-
-	////bool createAssembly = (renderGlobals->assemblyExportType == 1); // per shape?
-
-	//// only create a mesh description for the original shape
-	//asf::auto_release_ptr<asr::MeshObject> mesh;
-
-	//MString meshName(obj->shortName);
-	//mesh = this->createMesh(obj->mobject);
-	//asr::Assembly *assembly = this->masterAssembly.get();
-
-	//// only create an assembly for the original object instances will be assembly instances
-	////if( createAssembly)
-	////{
-	////	obj->objectAssembly = asr::AssemblyFactory::create(
-	////		(MString("shapeAssembly") + obj->shortName).asChar(),
-	////		asr::ParamArray());
-	//assembly = obj->objectAssembly;
-	////}
-
-	//assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
-
-	//asr::Object *meshObject = assembly->objects().get_by_name(obj->shortName.asChar());
-
-	//if( meshObject == NULL)
-	//{
-	//	logger.error(MString("mesh obj is NULL."));
-	//	return;
-	//}
-
-	//asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-
-	//// if we have per object assemblies, the assemblies will inherit the transformation matrix,
-	//// this is not the case if we have one master assembly, then we have all elements in one assembly
-	//if( !createAssembly)
-	//	this->MMatrixToAMatrix(obj->transformMatrices[0], tmatrix);
-	////logger.debug(MString("TransMatrix obj ") + obj->shortName + " tx: " + tmatrix[3]);
-
-	//material_names.clear();
-	//this->defineObjectMaterial(renderGlobals, obj, material_names);
-	//asf::StringArray backSideMaterial_names = material_names;
-
-	//if( material_names.size() > 1)
-	//{
-	//	MString mn = material_names[0];
-	//	material_names.clear();
-	//	material_names.push_back(mn.asChar());
-	//	mn = backSideMaterial_names[0];
-	//	backSideMaterial_names.clear();
-	//	backSideMaterial_names.push_back(mn.asChar());
-	//}
-
-	//bool doubleSided = true;
-	//MFnDependencyNode depFn(obj->mobject);
-	//getBool(MString("doubleSided"), depFn, doubleSided);
-
-	////TODO: assign object materials 2 sided only for non light objects
-	//if( doubleSided )
-	//{
-	//	assembly->object_instances().insert(
-	//		asr::ObjectInstanceFactory::create(
-	//		((meshName + "_inst" + obj->instanceNumber).asChar()),
-	//		asr::ParamArray(),
-	//		*meshObject,
-	//		asf::Transformd(tmatrix),
-	//		material_names,
-	//		backSideMaterial_names));
-	//}else{
-	//	assembly->object_instances().insert(
-	//		asr::ObjectInstanceFactory::create(
-	//		((meshName + "_inst" + obj->instanceNumber).asChar()),
-	//		asr::ParamArray(),
-	//		*meshObject,
-	//		asf::Transformd(tmatrix),
-	//		material_names));
-	//}
-}
-
-
-
 void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 {
  //------------------------------------------------------------------------
@@ -1026,8 +939,6 @@ void AppleseedRenderer::updateEntitiesCaller()
 	if(appleRenderer != NULL)
 		appleRenderer->updateEntities();
 }
-
-
 
 void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {

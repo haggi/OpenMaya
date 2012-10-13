@@ -1,5 +1,6 @@
 #include "utilities/logging.h"
 #include "mtap_MayaObject.h"
+#include "mtap_mayaScene.h"
 
 #include <maya/MPlugArray.h>
 #include <maya/MFnDagNode.h>
@@ -102,6 +103,7 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 
 bool mtap_MayaObject::needsAssembly()
 {
+
 	if( this->instanceNumber > 0)
 		return false;
 
@@ -124,6 +126,13 @@ bool mtap_MayaObject::needsAssembly()
 		logger.trace(MString("Object is animated -> needs assembly."));
 		return true;
 	}
+
+	if(this->scenePtr->renderType = MayaScene::IPR)
+	{
+		logger.trace(MString("IPR mode all objects need assembly."));
+		return true;
+	}
+
 	return false;
 }
 

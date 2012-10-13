@@ -105,10 +105,14 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	if( textureInstance != NULL)
 		this->scene->texture_instances().remove(textureInstance);
 
+	MString colorProfileName;
+	int profileId = 0;
+	getEnum(MString("colorProfile"), fileTextureNode, profileId);
+	logger.debug(MString("Color profile from fileNode: ") + profileId);
 	asr::ParamArray params;
 	logger.debug(MString("Now inserting file name: ") + fileTextureName);
 	params.insert("filename", fileTextureName.asChar());      // OpenEXR only for now. The param is called filename but it can be a path
-    params.insert("color_space", "srgb");					  // the color space the texture is in, often it's sRGB
+    params.insert("color_space", "srgb");					  // the color space the texture is in, often it's sRGB, have to change this
 
     asf::auto_release_ptr<asr::Texture> textureElement(
         asr::DiskTexture2dFactory().create(
@@ -117,13 +121,19 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
             this->project->get_search_paths()));    // the project holds a set of search paths to find textures and other assets
 	this->scene->textures().insert(textureElement);
 
+	bool alphaIsLuminance = false;
+	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
+	asr::ParamArray tInstParams;
+	tInstParams.insert("addressing_mode", "clamp");
+	tInstParams.insert("filtering_mode", "bilinear");
+	if( alphaIsLuminance )
+		tInstParams.insert("alpha_mode", "luminance");
+
 	asf::auto_release_ptr<asr::TextureInstance> tinst = asr::TextureInstanceFactory().create(
 	   textureInstanceName.asChar(),
-	   asr::ParamArray()
-		   .insert("addressing_mode", "clamp")
-		   .insert("filtering_mode", "bilinear"),
-		   textureName.asChar());
-
+	   tInstParams,
+	   textureName.asChar());
+	
 	this->scene->texture_instances().insert(tinst);
 
 	textureDefinition = textureInstanceName;
@@ -329,7 +339,12 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	getColor(MString("color"), shaderNode, color);
 	MString matteRefName = shaderNode.name() + "_matteRefl";
 	this->defineColor(matteRefName, color, assembly);
+	MString origCName = matteRefName;
 	this->defineTexture(shaderNode, MString("color"), matteRefName);
+	bool hasMap = false;
+	if(origCName != matteRefName)
+		hasMap = true;
+
 	MColor incandescence;
 	getColor(MString("incandescence"), shaderNode, incandescence);
 	MString incandName = shaderNode.name() + "_incandescence";
@@ -368,7 +383,8 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
 	lambertSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
 			surfaceShaderNode.asChar(),
-			asr::ParamArray());
+			asr::ParamArray()
+			.insert("alpha_source", "material"));
 
 	assembly->surface_shaders().insert(lambertSurfaceShader);
 
@@ -376,24 +392,18 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	if( entity != NULL)
 		assembly->materials().remove(entity);
 
-	if(edf_name.length() == 0)
-	{
-		assembly->materials().insert(
-			asr::MaterialFactory::create(
-				materialName.asChar(),
-				asr::ParamArray()
-					.insert("surface_shader", surfaceShaderNode.asChar())
-					.insert("bsdf", shaderName.asChar())));
-	}else{
-		assembly->materials().insert(
-			asr::MaterialFactory::create(
-				materialName.asChar(),
-				asr::ParamArray()
-					.insert("surface_shader", surfaceShaderNode.asChar())
-					.insert("bsdf", shaderName.asChar())
-					.insert("edf", edf_name.asChar())));
-	}
+	asr::ParamArray materialParams;
+	materialParams.insert("surface_shader", surfaceShaderNode.asChar());
+	materialParams.insert("bsdf", shaderName.asChar());
+	if( edf_name.length() > 0)
+		materialParams.insert("edf", edf_name.asChar());
+	if(hasMap)
+		materialParams.insert("alpha_map", matteRefName.asChar());
 
+	assembly->materials().insert(
+		asr::MaterialFactory::create(
+				materialName.asChar(),
+				materialParams));
 }
 
 void AppleseedRenderer::defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup)

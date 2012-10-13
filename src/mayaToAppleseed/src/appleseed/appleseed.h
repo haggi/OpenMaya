@@ -85,7 +85,6 @@ public:
 	void defineOutput();
 	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL, float intensity = 1.0f);
 	void addDefaultMaterial(asr::Assembly *assembly);
-	//void addDefaultMaterial(asr::Assembly *assembly, asf::StringArray& materialNames);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
 	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
 	void defineDefaultLight();
@@ -94,7 +93,6 @@ public:
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
 	void definePreRender();
-	void defineObject(mtap_MayaObject *obj);
 	void defineMesh(mtap_MayaObject *obj);
 	void defineNurbsSurface(mtap_MayaObject *obj);
 	void defineParticle(mtap_MayaObject *obj);
