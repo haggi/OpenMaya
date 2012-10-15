@@ -30,6 +30,7 @@ static MCallbackId pluginCallbackId = 0;
 static std::vector<MCallbackId> nodeCallbacks;
 static std::vector<MObject> modifiedObjList;
 static std::vector<MObject> interactiveUpdateList;
+static std::vector<MDagPath> interactiveUpdateListDP;
 
 static std::map<MCallbackId, MObject> objIdMap;
 
@@ -78,7 +79,6 @@ void RenderQueueWorker::addCallbacks()
 		if( stat )
 			nodeCallbacks.push_back(id);
 	}
-
 
 	idleCallbackId = MTimerMessage::addTimerCallback(0.2, RenderQueueWorker::renderQueueWorkerIdleCallback, NULL, &stat);
 	timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL, &stat);
@@ -143,7 +143,6 @@ void RenderQueueWorker::renderQueueWorkerIdleCallback(float time, float lastTime
 {
 	if( modifiedObjList.empty())
 	{
-		//MMessage::removeCallback(idleCallbackId);
 		return;
 	}
 	std::vector<MObject>::iterator iter;

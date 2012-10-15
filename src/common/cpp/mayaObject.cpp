@@ -140,6 +140,12 @@ MayaObject::MayaObject(MDagPath& objPath)
 			}
 		}	
 	}
+
+	// special case "world"
+	if( this->mobject.hasFn(MFn::kWorld))
+	{
+		this->shortName = this->fullName = this->fullNiceName = "world";
+	}
 }
 
 // to check if an object is animated, we need to check e.g. its transform inputs

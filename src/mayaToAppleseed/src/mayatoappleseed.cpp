@@ -73,8 +73,17 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		return MS::kSuccess;
 	}
 
+	MayaScene::RenderType rtype = MayaScene::NORMAL;
+	if ( argData.isFlagSet("-startIpr", &stat))
+	{
+		logger.debug(MString("-startIpr"));
+		rtype = MayaScene::IPR;
+	}else{
+		logger.debug(MString("normal render"));
+	}
+
 	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
-	mtap_MayaScene *mayaScene = new mtap_MayaScene();
+	mtap_MayaScene *mayaScene = new mtap_MayaScene(rtype);
 	
 	if( !mayaScene->good )
 	{
@@ -104,14 +113,6 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 
 	if( width > 0)
 		mayaScene->renderGlobals->imgWidth = width;
-
-	if ( argData.isFlagSet("-startIpr", &stat))
-	{
-		logger.debug(MString("-startIpr"));
-		mayaScene->renderType = MayaScene::IPR;
-	}else{
-		logger.debug(MString("normal render"));
-	}
 
 	if(!mayaScene->renderScene())
 	{

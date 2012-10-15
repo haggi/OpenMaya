@@ -76,6 +76,8 @@ public:
 	
 	std::vector<mtap_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
+	std::vector<asr::AssemblyInstance *> interactiveAIList;
+
 
 	MiniMap<asr::Assembly *, mtap_MayaObject *> assemblyMOMap;
 

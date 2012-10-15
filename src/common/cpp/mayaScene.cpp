@@ -21,6 +21,12 @@
 
 static Logging logger;
 
+MayaScene::MayaScene(RenderType rtype)
+{
+	this->good = true;
+	this->renderType = rtype;
+}
+
 MayaScene::MayaScene()
 {
 	this->good = true;
@@ -293,12 +299,12 @@ void  MayaScene::classifyMayaObject(MayaObject *obj)
 
 std::vector<MayaObject *> origObjects;
 
-bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes)
+bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes, MayaObject *parentObject)
 {
 	logger.trace(MString("parse: ") + currentPath.fullPathName(), level);
 	MayaObject *mo = mayaObjectCreator(currentPath);
 	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
-
+	mo->parent = parentObject;
 	classifyMayaObject(mo);
 
 	// 
@@ -332,7 +338,7 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttri
 			continue;
 		}
 		MString childName = childPath.fullPathName();
-		parseSceneHierarchy(childPath, level + 1, currentAttributes);
+		parseSceneHierarchy(childPath, level + 1, currentAttributes, mo);
 	}
 
 	return true;
@@ -346,7 +352,7 @@ bool MayaScene::parseScene(ParseType ptype)
 	{
 		origObjects.clear();
 		MDagPath world = getWorld();
-		if(parseSceneHierarchy(world, 0, NULL))
+		if(parseSceneHierarchy(world, 0, NULL, NULL))
 		{
 			this->good = true;
 			this->parseInstancerNew(); 

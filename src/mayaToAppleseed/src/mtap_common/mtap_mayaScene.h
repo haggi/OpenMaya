@@ -44,6 +44,7 @@ public:
 	bool parseScene(ParseType ptype = NORMALPARSE);
 	asr::Assembly *createAssembly(mtap_MayaObject *obj);
 	mtap_MayaScene();
+	mtap_MayaScene(RenderType rtype);
 	~mtap_MayaScene();
 };
 

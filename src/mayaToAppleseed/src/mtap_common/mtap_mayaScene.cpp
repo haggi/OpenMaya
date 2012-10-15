@@ -9,12 +9,21 @@
 static Logging logger;
 
 
-mtap_MayaScene::mtap_MayaScene()
+mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 {
 	getRenderGlobals();
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
+}
+
+mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
+{
+	getRenderGlobals();
+	this->mtap_renderer.mtap_scene = this;
+	this->mtap_renderer.renderGlobals = this->renderGlobals;
+	this->mtap_renderer.definePreRender();
+	this->renderType = rtype;
 }
 
 mtap_MayaScene::~mtap_MayaScene()
@@ -173,8 +182,6 @@ mtap_MayaObject *mtap_MayaScene::getMayaObjectFromMap(MObject& obj)
 
 //
 //	Check if the selected nodes exist in the scene->MayaObject lists. 
-//	At the moment only shape nodes are exported because we do not have hierarchies yet.
-//	So we make sure that we select a shape node for comparision.
 //
 void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList)
 {
@@ -185,25 +192,33 @@ void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 
 	for( moIter = mObjectList.begin(); moIter != mObjectList.end(); moIter++)
 	{
+		bool found = false;
 		MSelectionList select;
 		MString objName = getObjectName(*moIter);
 		logger.debug(MString("Object to modify:") + objName);
 		select.add(objName);
 		MDagPath dp;
 		select.getDagPath(0, dp);
-		dp.extendToShape();
+		//dp.extendToShape();
 		MObject dagObj = dp.node();
-		//MFnDagNode dagNode(*moIter);
-		//dagObj = dagNode.dagPath().node();
-		for( mIter = this->camList.begin(); mIter != camList.end(); mIter++)
+
+		if( (*moIter).hasFn(MFn::kCamera))
 		{
-			MayaObject *mo = *mIter;
-			if( dagObj == mo->mobject)
+			for( mIter = this->camList.begin(); mIter != camList.end(); mIter++)
 			{
-				mtapObjectList.push_back(mo);
-				foundMObjectList.push_back(*moIter);
-			}
-		}		
+				MayaObject *mo = *mIter;
+				if( dagObj == mo->mobject)
+				{
+					mtapObjectList.push_back(mo);
+					foundMObjectList.push_back(*moIter);
+					found = true;
+					break;
+				}
+			}		
+			if( found )
+				continue;
+		}
+
 		for( mIter = this->objectList.begin(); mIter != objectList.end(); mIter++)
 		{
 			MayaObject *mo = *mIter;
@@ -211,8 +226,12 @@ void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 			{
 				mtapObjectList.push_back(mo);
 				foundMObjectList.push_back(*moIter);
+				found = true;
+				break;
 			}
 		}		
+		if( found )
+			continue;
 		for( mIter = this->lightList.begin(); mIter != lightList.end(); mIter++)
 		{
 			MayaObject *mo = *mIter;
@@ -220,8 +239,12 @@ void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 			{
 				mtapObjectList.push_back(mo);
 				foundMObjectList.push_back(*moIter);
+				found = true;
+				break;
 			}
 		}		
+		if( found )
+			continue;
 	}
 
 	for( moIter = mObjectList.begin(); moIter != mObjectList.end(); moIter++)
@@ -251,16 +274,20 @@ void mtap_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 //	Then the renderer calls the appleseed updateEntities procedure at the beginning
 //	of a new rendering.
 //
+
 void mtap_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 {
 	std::vector<MayaObject *> mayaObjectList;
 	mobjectListToMayaObjectList(mobjList, mayaObjectList);
 	std::vector<MayaObject *>::iterator mIter;
 	this->mtap_renderer.interactiveUpdateList.clear();
-
+	
+	// this here is for all nodes, defined by an mayaObject, all others will be placed into 
+	// the interactiveUpdateMOList below, e.g. shaders, colors, globals, etc.
 	for( mIter = mayaObjectList.begin(); mIter != mayaObjectList.end(); mIter++)
 	{
 		mtap_MayaObject *mo = (mtap_MayaObject *)*mIter;
+		logger.debug(MString("updateInteraciveRenderScene: obj: ") + mo->shortName);
 		mo->updateObject(); // update transforms
 		this->mtap_renderer.interactiveUpdateList.push_back(mo);
 	}	
@@ -329,7 +356,7 @@ bool mtap_MayaScene::postParseCallback()
 	}
 
 	// all assemblies need their own assembly instance because assemblies are only created where instances are necessary.
-	mIter  = this->objectList.begin();
+	mIter = this->objectList.begin();
 	for(;mIter!=this->objectList.end(); mIter++)
 	{
 		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
@@ -349,18 +376,40 @@ bool mtap_MayaScene::postParseCallback()
 		MFnDagNode objNode(obj->mobject);
 		MDagPathArray pathArray;
 		objNode.getAllPaths(pathArray);
-				
+
+		this->mtap_renderer.interactiveAIList.clear();
+
 		for( uint pId = 0; pId < pathArray.length(); pId++)
 		{
 			// find mayaObject...
 			MDagPath currentPath = pathArray[pId];
 			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName());		    
-
+			MString assemlbyInstName = obj->fullName + "assembly_inst";
 			asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-			(currentPath.fullPathName() + "assembly_inst").asChar(),
+			assemlbyInstName.asChar(),
 			asr::ParamArray(),
 			obj->objectAssembly->get_name());
-			this->mtap_renderer.scene->assembly_instances().insert(ai);
+
+			this->mtap_renderer.interactiveAIList.push_back(ai.get());
+
+			if( this->renderType == MayaScene::IPR)
+			{
+				if( obj->parent != NULL)
+				{
+					mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
+					if( parent->objectAssembly != NULL)
+					{
+						logger.debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
+						parent->objectAssembly->assembly_instances().insert(ai);
+					}else{
+						this->mtap_renderer.scene->assembly_instances().insert(ai);
+					}
+				}else{
+					this->mtap_renderer.scene->assembly_instances().insert(ai);
+				}
+			}else{
+				this->mtap_renderer.scene->assembly_instances().insert(ai);
+			}
 		}
 	}
 	
@@ -398,9 +447,33 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 	logger.trace(MString("Creating new assembly for: ") + obj->fullName);
 	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
 	
-	this->mtap_renderer.scene->assemblies().insert(assembly);
-	asr::Assembly *assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
-	
+	asr::Assembly *assemblyPtr = NULL;
+
+	// in ipr mode we create hierarchies
+	// that means we put the assembly into the parent assembly->assemblies()
+	if( this->renderType == MayaScene::IPR)
+	{
+		if( obj->parent != NULL)
+		{
+			mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
+			if( parent->objectAssembly != NULL)
+			{
+				logger.debug(MString("Insert assembly ") + obj->shortName + " into parent " + parent->shortName);
+				parent->objectAssembly->assemblies().insert(assembly);
+				assemblyPtr = parent->objectAssembly->assemblies().get_by_name(obj->fullName.asChar());
+			}else{
+				this->mtap_renderer.scene->assemblies().insert(assembly);
+				assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+			}
+		}else{
+			this->mtap_renderer.scene->assemblies().insert(assembly);
+			assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+		}
+	}else{
+		this->mtap_renderer.scene->assemblies().insert(assembly);
+		assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+	}
+
 	//// for testing, can be removed later
 	this->mtap_renderer.addDefaultMaterial(assemblyPtr);
 

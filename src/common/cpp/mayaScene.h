@@ -43,7 +43,7 @@ public:
 	RenderGlobals *renderGlobals;
 	boost::thread rendererThread;
 	
-	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr); // new, parse whole scene as hierarchy and save/analyze objects
+	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
 	bool parseSceneNormal(); // pase whole scene and save/analyze objects
 
 	bool parseScene(ParseType ptype = NORMALPARSE);
@@ -94,6 +94,7 @@ public:
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);
 	MayaScene();
+	MayaScene(RenderType rtype);
 	~MayaScene();
 };
 

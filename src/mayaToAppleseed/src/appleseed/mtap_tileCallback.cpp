@@ -66,7 +66,6 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 			size_t yy_pos = y_pos + ty * frame_props.m_canvas_width;
 			size_t pixelId = yy_pos + tile_x * tw + tx;
 			size_t yRev = th - ty - 1;
-			//size_t pixelId = x * y;
 			asf::uint8 *source = tile.pixel(tx, yRev);
 			pixels[pixelId].r = (float)source[0]; 
 			pixels[pixelId].g = (float)source[1]; 
@@ -80,7 +79,7 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 void mtap_ITileCallback::post_render(
 		const asr::Frame* frame)
 {
-	logger.debug(MString("Post render interactive frame:"));
+	//logger.debug(MString("Post render interactive frame:"));
 	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
 
@@ -103,6 +102,7 @@ void mtap_ITileCallback::post_render(
 		pixels[x].r = 255.0f;
 		pixels[x].g = .0f;
 		pixels[x].b = .0f;
+		pixels[x].a = .0f;
 	}
 
 	for( int tile_x = 0; tile_x < frame_props.m_tile_count_x; tile_x++)

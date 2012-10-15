@@ -103,6 +103,22 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 
 bool mtap_MayaObject::needsAssembly()
 {
+	// in IPR mode we recreate the whole maya hierarchy because I don't know
+	// any way to detect if an object has been modified that is not directly manipulated.
+	// e.g. an object in a hierarchy below the current object. 
+	//
+	// This means that I translate all transform nodes as assemblies and place them into their parents.
+	if(this->scenePtr->renderType == MayaScene::IPR)
+	{
+		if( this->isTransform())
+		{
+			return true;
+		}
+	}
+	
+	// this is the root of all assemblies
+	if( this->mobject.hasFn(MFn::kWorld))
+		return true;
 
 	if( this->instanceNumber > 0)
 		return false;
@@ -124,12 +140,6 @@ bool mtap_MayaObject::needsAssembly()
 	if( this->isObjAnimated())
 	{
 		logger.trace(MString("Object is animated -> needs assembly."));
-		return true;
-	}
-
-	if(this->scenePtr->renderType = MayaScene::IPR)
-	{
-		logger.trace(MString("IPR mode all objects need assembly."));
 		return true;
 	}
 

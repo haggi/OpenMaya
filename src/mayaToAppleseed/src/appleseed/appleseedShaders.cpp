@@ -615,6 +615,17 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 // translate shaders here, will be seperated later if we have a real shading language
 void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
 {
+
+//<material name="white_material" model="generic_material">
+//        <parameter name="bsdf" value="white_material_brdf" />
+//        <parameter name="bump_amplitude" value="0.1" />
+//        <parameter name="displacement_map" value="bump_inst" />
+//        <parameter name="displacement_method" value="bump" />
+//        <parameter name="surface_shader" value="physical_shader" />
+//    </material>
+//
+
+
 	asr::Assembly *assembly = getAssemblyFromMayaObject(obj);
 
 	MObject shadingGroup;
