@@ -593,6 +593,8 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	if( edfName != "")
 		materialParams.insert("edf", edfName.asChar());
 
+	defineBumpMap(materialParams, surfaceShader);
+
 	assembly->materials().insert(
 			asr::MaterialFactory::create(
 			materialName.asChar(),
@@ -612,9 +614,50 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 				materialParams));
 	}
 }
-// translate shaders here, will be seperated later if we have a real shading language
-void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
+
+void AppleseedRenderer::defineBumpMap(asr::ParamArray& materialParams, MObject& surfaceShader)
 {
+	MFnDependencyNode shaderNode(surfaceShader);
+
+	MObject bumpObj = getOtherSideNode(MString("normalCamera"), surfaceShader);
+	if( bumpObj == MObject::kNullObj)
+	{
+		logger.debug(MString("No normalCamera input found."));
+		return;
+	}
+	if( !bumpObj.hasFn(MFn::kBump))
+	{
+		logger.debug(MString("Found cameraNormal input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj) + " but is NO bump2d node");
+		return;
+	}
+	logger.debug(MString("Found bump input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj));
+	MFnDependencyNode bumpNode(bumpObj);
+	MObject fileObj = getOtherSideNode(MString("bumpValue"), bumpObj);
+	if( fileObj == MObject::kNullObj)
+	{
+		logger.debug(MString("No bump file node found."));
+		return;
+	}	
+
+	MString textureDefinition = "";
+	this->defineTexture(bumpNode, MString("bumpValue"), textureDefinition);
+	if( textureDefinition == "")
+	{
+		logger.debug(MString("BumpValue texture definition == empty --> invalid."));
+		return;
+	}
+	int bumpInterp = 0;
+	getEnum(MString("bumpInterp"), bumpNode, bumpInterp);
+	float bumpDepth = 1.0f;
+	getFloat(MString("bumpDepth"), bumpNode, bumpDepth);
+
+	materialParams.insert("bump_amplitude", bumpDepth);
+	materialParams.insert("displacement_map", textureDefinition);
+	if( bumpInterp == 0) // bump
+		materialParams.insert("displacement_method", "bump");
+	if( bumpInterp > 0) // normal
+		materialParams.insert("displacement_method", "normal");
+}
 
 //<material name="white_material" model="generic_material">
 //        <parameter name="bsdf" value="white_material_brdf" />
@@ -625,6 +668,9 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 //    </material>
 //
 
+// translate shaders here, will be seperated later if we have a real shading language
+void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
+{
 
 	asr::Assembly *assembly = getAssemblyFromMayaObject(obj);
 
@@ -702,4 +748,5 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 		this->defineMayaPhongShader(assembly, shadingGroup);
 		materialNames.push_back(materialName.asChar());
 	}	
+
 }

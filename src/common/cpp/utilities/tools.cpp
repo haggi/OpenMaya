@@ -173,10 +173,13 @@ MString matrixToString(MMatrix& matrix)
 {
 	MString matString("");
 	for( int i = 0; i < 4; i++)
+	{
 		for( int j = 0; j < 4; j++)
 		{
 			matString += MString(" ") + matrix[i][j];
 		}
+		matString += "\n";
+	}
 	return matString;
 }
 

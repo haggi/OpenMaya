@@ -124,6 +124,7 @@ public:
 	asf::auto_release_ptr<asr::Scene> scene;
 	
 	// shaders
+	void defineBumpMap(asr::ParamArray& materialParams, MObject& surfaceShader);
 	void definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup);
 	void defineAoShader(asr::Assembly *assembly, MObject& shadingGroup);
 	void defineAoVoxelShader(asr::Assembly *assembly, MObject& shadingGroup);
