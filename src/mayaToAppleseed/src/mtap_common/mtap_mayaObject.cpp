@@ -81,13 +81,7 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 	if( this->isTransform())
 	{
 		MFnDagNode objNode(this->mobject);
-		MString pm = matrixToString(myAttributes->objectMatrix);
-		MString tm = matrixToString(objNode.transformationMatrix());
 		myAttributes->objectMatrix = objNode.transformationMatrix() * myAttributes->objectMatrix;
-		MString cm = matrixToString(myAttributes->objectMatrix);
-		logger.debug(MString("ParentMatrix :") + pm);
-		logger.debug(MString("ObjectMatrix :") + tm);
-		logger.debug(MString("CombinMatrix :") + cm);
 	}
 
 	if( this->needsAssembly() || myAttributes->hasInstancerConnection)

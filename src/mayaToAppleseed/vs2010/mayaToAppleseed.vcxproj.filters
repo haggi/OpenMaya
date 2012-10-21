@@ -161,6 +161,9 @@
     <ClCompile Include="..\src\appleseed\appleseedShaders.cpp">
       <Filter>Source Files\appleseed</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedUtils.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

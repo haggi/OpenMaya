@@ -109,10 +109,20 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	int profileId = 0;
 	getEnum(MString("colorProfile"), fileTextureNode, profileId);
 	logger.debug(MString("Color profile from fileNode: ") + profileId);
+	
+	MStringArray colorProfiles;
+	colorProfiles.append("srgb"); //0 == none == default == sRGB
+	colorProfiles.append("srgb"); //1 == undefined == default == sRGB
+	colorProfiles.append("srgb"); //2 == sRGB
+	colorProfiles.append("linear_rgb"); //3 == linear_rgb
+	colorProfiles.append("linear_rgb"); //4 == linear_rec_709
+	colorProfiles.append("linear_rgb"); //5 == hdtv_rec_709
+	MString colorProfile = colorProfiles[profileId];
+	
 	asr::ParamArray params;
 	logger.debug(MString("Now inserting file name: ") + fileTextureName);
 	params.insert("filename", fileTextureName.asChar());      // OpenEXR only for now. The param is called filename but it can be a path
-    params.insert("color_space", "srgb");					  // the color space the texture is in, often it's sRGB, have to change this
+	params.insert("color_space", colorProfile.asChar());
 
     asf::auto_release_ptr<asr::Texture> textureElement(
         asr::DiskTexture2dFactory().create(
