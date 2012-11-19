@@ -298,7 +298,7 @@ void AppleseedRenderer::defineFastSSSShader(asr::Assembly *assembly, MObject& sh
 		getFloat(MString("distortion"), shaderNode, distortion);
 		getColor(MString("albedo"), shaderNode, albedo);
 		MString albedoName = shaderNode.name() + "_albedo";
-		this->defineColor(albedoName, albedo, assembly);
+		this->defineColor(albedoName, albedo);
 
 		asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader;
 		asrSurfaceShader = asr::FastSubSurfaceScatteringSurfaceShaderFactory().create(
@@ -348,7 +348,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	MColor color(1.0f,1.0f,1.0f);
 	getColor(MString("color"), shaderNode, color);
 	MString matteRefName = shaderNode.name() + "_matteRefl";
-	this->defineColor(matteRefName, color, assembly);
+	this->defineColor(matteRefName, color);
 	MString origCName = matteRefName;
 	this->defineTexture(shaderNode, MString("color"), matteRefName);
 	bool hasMap = false;
@@ -358,7 +358,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	MColor incandescence;
 	getColor(MString("incandescence"), shaderNode, incandescence);
 	MString incandName = shaderNode.name() + "_incandescence";
-	this->defineColor(incandName, incandescence, assembly);
+	this->defineColor(incandName, incandescence);
 	this->defineTexture(shaderNode, MString("color"), incandName);
 
 	MString edf_name = "";
@@ -429,7 +429,7 @@ void AppleseedRenderer::defineMayaPhongShader(asr::Assembly *assembly, MObject& 
 	getColor(MString("color"), shaderNode, color);
 
 	MString matteRefName = shaderNode.name() + "_matteRefl";
-	this->defineColor(matteRefName, color, assembly);
+	this->defineColor(matteRefName, color);
 
 	asf::auto_release_ptr<asr::BSDF> phongShader;
 	phongShader = asr::SpecularBRDFFactory().create(
@@ -477,10 +477,10 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	getFloat(MString("shininess_u"), shaderNode, shinyU);
 	getFloat(MString("shininess_v"), shaderNode, shinyV);
 	MString matteRefName = shaderNode.name() + "_matteRefl";
-	this->defineColor(matteRefName, matteReflectance, assembly);
+	this->defineColor(matteRefName, matteReflectance);
 	this->defineTexture(shaderNode, MString("matte_reflectance"), matteRefName);
 	MString specRefName = shaderNode.name() + "_specRefl";
-	this->defineColor(specRefName, specReflectance, assembly);
+	this->defineColor(specRefName, specReflectance);
 	this->defineTexture(shaderNode, MString("specular_reflectance"), specRefName);
 	int shaderType = 0;
 	getInt(MString("bsdf"), shaderNode, shaderType);		
@@ -513,7 +513,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	case 3: // Specular
 			
 		getColor(MString("transmittance"), shaderNode, transmittance);
-		defineColor(transmittanceName, transmittance, assembly);
+		defineColor(transmittanceName, transmittance);
 		defineTexture(shaderNode, MString("transmittance"), transmittanceName);
 		getFloat(MString("transmittance_multiplier"), shaderNode, transmittanceMultiplier);
 			
@@ -577,7 +577,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 		MColor exitance(1.0, 1.0, 1.0);
 		getColor(MString("exitance"), shaderNode, exitance);
 		MString exitanceName = shaderNode.name() + "_exitance";
-		defineColor(exitanceName, exitance, assembly);
+		defineColor(exitanceName, exitance);
 		defineTexture(shaderNode, MString("exitance"), exitanceName);
 		edfName = shaderNode.name() + "_exitance_edf";
 		asr::ParamArray params;

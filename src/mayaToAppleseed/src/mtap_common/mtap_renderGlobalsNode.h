@@ -31,6 +31,7 @@ private:
 	static	  MObject lightingEngine;
 	static	  MObject exportXMLFile;
 	static	  MObject exportXMLFileName;
+	static	  MObject optimizedTexturePath;
 
 	static	  MObject assemblyExportType;
 	static	  MObject assemblyPolyTheshold;

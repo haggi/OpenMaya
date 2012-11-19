@@ -144,9 +144,11 @@ class MayaToRenderer(object):
         self.createGlobalsNode()
         drg = pm.PyNode("defaultRenderGlobals")
         if self.renderGlobalsNode.threads.get() == 0:
-            #:TODO this is windows only, search for another solution...
+            #TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
+        #craete optimized exr textures
+        
         
     def postRenderProcedure(self):
         drg = pm.PyNode("defaultRenderGlobals")
@@ -167,6 +169,10 @@ class MayaToRenderer(object):
                 self.renderGlobalsNode = pm.createNode(self.renderGlobalsNodeName)
                 self.renderGlobalsNode.rename(self.renderGlobalsNodeName)
                 log.debug("Created node " + str(self.renderGlobalsNode))
+                optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+                if not os.path.exists(optimizedPath):
+                    optimizedPath.makedirs()
+                self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
         else:
             log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
 
@@ -182,10 +188,14 @@ class MayaToRenderer(object):
         pm.mel.eval(aeCallbackString)
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
+        aeTemplateImportName = "AETemplate." + aeTemplateName
+        #if pm.about(p=True) == "Maya 2014":
+        #    aeTemplateImportName = "AETemplate." + aeTemplateName
+        
         #aeTemplate = "AEappleSeedNodeTemplate"
         aeCallbackProc = "global proc " + aeCallbackName + "(string $nodeName)\n"
         aeCallbackProc += "{\n"
-        aeCallbackProc += "string $cmd = \"import " + aeTemplateName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
+        aeCallbackProc += "string $cmd = \"import " + aeTemplateImportName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
         aeCallbackProc += "python($cmd);\n"
         aeCallbackProc += "}\n"
         log.debug("aeCallback: " + aeCallbackProc)
@@ -229,7 +239,7 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, isRunningIprProcedure=self.renderCallback("isRunningIprProcedure"))
         pm.renderer(self.rendererName, edit=True, refreshIprRenderProcedure=self.renderCallback("refreshIprRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
-        pm.renderer(self.rendererName, edit=True, logoImageName=self.renderCallback("logoImageName"))
+        pm.renderer(self.rendererName, edit=True, logoImageName=self.rendererName + ".png")
         pm.renderer(self.rendererName, edit=True, renderDiagnosticsProcedure=self.renderCallback("renderDiagnosticsProcedure"))
         
         pm.renderer(self.rendererName, edit=True, renderOptionsProcedure=self.renderCallback("renderOptionsProcedure"))
@@ -317,7 +327,7 @@ class MayaToRenderer(object):
         pass
             
     def logoImageName(self):
-        pass
+        return self.rendererName + ".png"
     
     def renderDiagnosticsProcedure(self):
         pass

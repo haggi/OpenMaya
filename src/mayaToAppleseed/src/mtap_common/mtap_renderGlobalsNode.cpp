@@ -28,6 +28,7 @@ MObject MayaToAppleseedGlobals::directLightSamples;
 MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
+MObject MayaToAppleseedGlobals::optimizedTexturePath;
 
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
@@ -151,6 +152,9 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "Exr", 1 );
 	CHECK_MSTATUS(addAttribute( imageFormat ));
 
+	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
 
 	return stat;
 

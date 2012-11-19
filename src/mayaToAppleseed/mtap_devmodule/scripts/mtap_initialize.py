@@ -4,6 +4,7 @@ import Renderer as Renderer
 import traceback
 import sys
 import os
+import optimizeTextures
 
 reload(Renderer)
 
@@ -268,6 +269,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             
         if not self.ipr_isrunning:
             self.showLogFile()
+        self.postRenderProcedure()
+            
         
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True
@@ -277,12 +280,32 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         self.preRenderProcedure()
         self.setImageName()
         pm.mayatoappleseed(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
+        self.postRenderProcedure()
         
     def stopIprRenderProcedure(self):
         self.ipr_isrunning = False
         log.debug("stopIprRenderProcedure")
         pm.mayatoappleseed(stopIpr=True)
-        
+        self.postRenderProcedure()
+            
+    def preRenderProcedure(self):
+        self.createGlobalsNode()
+        if self.renderGlobalsNode.threads.get() == 0:
+            #TODO this is windows only, search for another solution...
+            numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
+            self.renderGlobalsNode.threads.set(numThreads)
+        if len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
+            optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+            if not os.path.exists(optimizedPath):
+                optimizedPath.makedirs()
+            self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
+
+        #craete optimized exr textures
+        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
+
+    def postRenderProcedure(self):
+        optimizeTextures.postRenderOptimizeTextures()
+
 
 def theRenderer():
     return AppleseedRenderer.theRenderer()

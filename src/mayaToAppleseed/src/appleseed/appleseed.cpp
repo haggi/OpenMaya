@@ -268,10 +268,10 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	MString envMapName = "environmentMap";
 	MString gradHorizName = "gradientHorizon";
 	MString gradZenitName = "gradientZenit";
-	this->defineColor(envName, renderGlobals->environmentColor, NULL, renderGlobals->environmentIntensity);
-	this->defineColor(gradHorizName, renderGlobals->gradientHorizon, NULL, renderGlobals->environmentIntensity);
-	this->defineColor(gradZenitName, renderGlobals->gradientZenit, NULL, renderGlobals->environmentIntensity);
-	this->defineColor(envMapName, renderGlobals->environmentMap, NULL, renderGlobals->environmentIntensity);
+	this->defineColor(envName, renderGlobals->environmentColor, renderGlobals->environmentIntensity);
+	this->defineColor(gradHorizName, renderGlobals->gradientHorizon, renderGlobals->environmentIntensity);
+	this->defineColor(gradZenitName, renderGlobals->gradientZenit, renderGlobals->environmentIntensity);
+	this->defineColor(envMapName, renderGlobals->environmentMap, renderGlobals->environmentIntensity);
 	MFnDependencyNode globalsFn(renderGlobals->renderGlobalsMobject);
 	MString envMapAttrName = envMapName;
 	this->defineTexture(globalsFn, envMapAttrName, envMapName);

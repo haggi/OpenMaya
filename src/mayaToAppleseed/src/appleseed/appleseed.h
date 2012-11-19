@@ -85,7 +85,7 @@ public:
 	void defineProject();
 	void defineConfig();
 	void defineOutput();
-	void defineColor(MString& name, MColor& color, asr::Assembly *assembly = NULL, float intensity = 1.0f);
+	void defineColor(MString& name, MColor& color, float intensity = 1.0f);
 	void addDefaultMaterial(asr::Assembly *assembly);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
 	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
