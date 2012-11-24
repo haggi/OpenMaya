@@ -3,7 +3,7 @@
 
 #include <maya/MStringArray.h>
 #include <maya/MColor.h>
-
+#include <maya/MMatrix.h>
 #include "renderGlobals.h"
 
 class mtap_RenderGlobals : public RenderGlobals
@@ -30,6 +30,8 @@ public:
 	int assemblyPolyTheshold;
 	int imageFormat;
 	MString imageFormatString;
+	float sceneScale;
+	MMatrix sceneScaleMatrix;
 
 	// environment maybe put it into a seperate shader node?
 	MColor environmentColor;
@@ -39,7 +41,8 @@ public:
 	MColor gradientHorizon;
 	MColor gradientZenit;
 	MColor environmentMap;
-	
+	float latlongHoShift;
+	float latlongVeShift;
 
 	virtual MString getImageExt();
 

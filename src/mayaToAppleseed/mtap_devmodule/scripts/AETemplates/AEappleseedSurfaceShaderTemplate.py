@@ -26,23 +26,67 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
     
     
     def updateUi(self, args=None):
-        #shader = self.thisNode.shaderType.get()
+        if args:
+            self.thisNode = pm.PyNode(args)
+        shader = self.thisNode.bsdf.get()
         # ambient occusion
-        #if shader == 0:
-        #    self.dimControl(self.thisNode, "matte_reflectance", True)
-        #    self.dimControl(self.thisNode, "matte_reflectance_multiplier", True)
-        #    self.dimControl(self.thisNode, "specular_reflectance", True)
-        #    self.dimControl(self.thisNode, "specular_reflectance_multiplier", True)
-            
-        return
         
+        # dim all first
+        self.dimControl(self.thisNode, "roughness", True)
+        self.dimControl(self.thisNode, "matte_reflectance", True)
+        self.dimControl(self.thisNode, "matte_reflectance_multiplier", True)
+        self.dimControl(self.thisNode, "specular_reflectance", True)
+        self.dimControl(self.thisNode, "specular_reflectance_multiplier", True)
+        self.dimControl(self.thisNode, "transmittance", True)
+        self.dimControl(self.thisNode, "transmittance_multiplier", True)
+        self.dimControl(self.thisNode, "from_ior", True)
+        self.dimControl(self.thisNode, "to_ior", True)
+        self.dimControl(self.thisNode, "emitLight", True)
+        self.dimControl(self.thisNode, "exitance", True)
+        self.dimControl(self.thisNode, "shininess_u", True)
+        self.dimControl(self.thisNode, "shininess_v", True)
+        
+        if shader == 0: # lambert
+            self.dimControl(self.thisNode, "matte_reflectance", False)
+            self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
+        
+        if shader == 1: # ashikmin
+            self.dimControl(self.thisNode, "matte_reflectance", False)
+            self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "specular_reflectance", False)
+            self.dimControl(self.thisNode, "specular_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "shininess_u", False)
+            self.dimControl(self.thisNode, "shininess_v", False)
+            
+        if shader == 2: # kelemen
+            self.dimControl(self.thisNode, "matte_reflectance", False)
+            self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "specular_reflectance", False)
+            self.dimControl(self.thisNode, "specular_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "roughness", False)
+            
+        if shader == 3: # specular
+            self.dimControl(self.thisNode, "matte_reflectance", False)
+            self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "transmittance", False)
+            self.dimControl(self.thisNode, "transmittance_multiplier", False)
+            self.dimControl(self.thisNode, "from_ior", False)
+            self.dimControl(self.thisNode, "to_ior", False)
+            
+        if shader == 4: # phong
+            self.dimControl(self.thisNode, "matte_reflectance", False)
+            self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
+            
+        self.dimControl(self.thisNode, "emitLight", False)
+        self.dimControl(self.thisNode, "exitance", False)
+            
         
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Surface" ,collapse=0)
         #self.addControl("shaderType", label="Surface Shader Type", changeCommand=self.updateUi)
         #self.addControl("shaderType", label="Surface Shader Type")
-        self.addControl("bsdf", label="BSDF Type")
+        self.addControl("bsdf", label="BSDF Type", changeCommand=self.updateUi)
         self.addSeparator()
         self.addControl("matte_reflectance", label="Matte Reflectance")
         self.addControl("matte_reflectance_multiplier", label="Matte Refl Multiplier")

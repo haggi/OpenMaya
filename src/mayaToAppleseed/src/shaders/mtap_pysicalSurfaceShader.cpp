@@ -152,7 +152,7 @@ MStatus mtap_surfaceShader::initialize()
 	transmittance = nAttr.createColor("transmittance", "transmittance");
 	CHECK_MSTATUS(addAttribute( transmittance ));	
 	
-	transmittanceMultiplier = nAttr.create("transmittance_multiplier", "transmittance_multiplier", MFnNumericData::kFloat, 0.0f);
+	transmittanceMultiplier = nAttr.create("transmittance_multiplier", "transmittance_multiplier", MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( transmittanceMultiplier ));	
 	
 	fromIor = nAttr.create("from_ior", "from_ior", MFnNumericData::kFloat, 1.1f);

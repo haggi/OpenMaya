@@ -178,6 +178,20 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getInt(MString("assemblyPolyTheshold"), appleseedGlobals, this->assemblyPolyTheshold))
 			throw("problem reading appleseedGlobals.assemblyPolyTheshold");
 
+		if(!getFloat(MString("sceneScale"), appleseedGlobals, this->sceneScale))
+			throw("problem reading appleseedGlobals.sceneScale");
+		
+		if(!getFloat(MString("latlongHoShift"), appleseedGlobals, this->latlongHoShift))
+			throw("problem reading appleseedGlobals.latlongHoShift");
+		
+		if(!getFloat(MString("latlongVeShift"), appleseedGlobals, this->latlongVeShift))
+			throw("problem reading appleseedGlobals.latlongVeShift");
+		
+		this->sceneScaleMatrix.setToIdentity();
+		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
+		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;
+		this->sceneScaleMatrix.matrix[2][2] = this->sceneScale;
+
 	}catch(char *errorMsg){
 
 		logger.error(errorMsg);

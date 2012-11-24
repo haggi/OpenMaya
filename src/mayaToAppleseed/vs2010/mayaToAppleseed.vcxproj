@@ -357,6 +357,7 @@
     <ClInclude Include="..\src\shaders\mtap_wireframeShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

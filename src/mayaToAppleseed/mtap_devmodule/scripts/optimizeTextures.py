@@ -3,6 +3,7 @@ import path
 import logging
 import os
 import subprocess
+import shutil
 
 log = logging.getLogger("mtapLogger")
 
@@ -11,9 +12,15 @@ def isOlderThan(fileA, fileB):
 
 def makeExr( filePath, exrFile ):
     log.debug("Convert %s to exr %s" % (filePath, exrFile))
-    cmd = "imf_copy "  + filePath + " " + exrFile    
+    
+    #TODO:currently use mentalrays imf_copy, maybe there is a better way...
+    cmd = "\"" + os.environ['MENTALRAY_LOCATION'] + "bin/imf_copy\" "
+    cmd += filePath + " " + exrFile   
+    log.debug(cmd)
     try:
-        subprocess.call(cmd, shell = True)
+        if subprocess.call(cmd, shell = True) is not 0:
+            log.error("Conversion failed")
+            return False            
     except:
         log.warning("Conversion to exr failed " +  str(sys.exc_info()[0]) + " - skipping")
         return False
@@ -24,6 +31,7 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
     for fileTexture in pm.ls(type="file"):
         fileNamePath = path.path(fileTexture.fileTextureName.get())
         
+        print "fileExtension", fileNamePath.ext
         if fileNamePath.ext == destFormat:
             log.debug("file texture is already an " + destFormat + " skipping.")
             continue
@@ -37,30 +45,43 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
         # or a drive in windows like c:
         # or a dfs name like //server/textures.... 
         optimizedFilePath = path.path(optimizedFilePath)
+        log.debug("optimizedFilePath" + optimizedFilePath)
         if fileNamePath[1] == ":":
             localPath = optimizedFilePath / fileNamePath[3:]
         if fileNamePath.startswith("//"):
             localPath = optimizedFilePath / fileNamePath[2:]
         if fileNamePath.startswith("/"):
             localPath = optimizedFilePath / fileNamePath[1:]
-        log.debug("local path " + localPath)
+        localPath += ".exr"
+        localPath = path.path(localPath)
+        log.debug("local path " + localPath.realpath())
+        localPath = localPath.realpath()
         
-        # make it a exr
-        if not makeExr(fileNamePath, localPath.replace(".exr", "_t.exr")):
-            log.debug("Problem converting " + fileNamePath)
+        doConvert = True
+        if localPath.exists():
+            if isOlderThan(fileNamePath, localPath):
+                log.debug(localPath + " already exists and is older then original file. No conversion needed.")
+                doConvert = False
+        
+        if doConvert:
+            # make it a exr
+            if not makeExr(fileNamePath.realpath(), path.path(localPath.replace(".exr", "_t.exr")).realpath()):
+                log.debug("Problem converting " + fileNamePath)
+                continue
             
-        # executable: maketiledexr(.exe)
-        cmd = "maketiledexr"
-        
-        cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
-        
-        try:
-            subprocess.call(cmd, shell = True)
-        except:
-            log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")
-            continue 
-        
-        os.remove(localPath.replace(".exr", "_t.exr"))
+            shutil.copy(localPath.replace(".exr", "_t.exr"), localPath)
+            # executable: maketiledexr(.exe)
+#            cmd = "maketiledexr"
+#            
+#            cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
+#            
+#            try:
+#                subprocess.call(cmd, shell = True)
+#            except:
+#                log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")
+#                continue 
+            
+            os.remove(localPath.replace(".exr", "_t.exr"))
         
         if not fileTexture.hasAttr("origFilePath"):
             fileTexture.addAttr("origFilePath", dt="string")

@@ -95,12 +95,12 @@ void AppleseedRenderer::definePreRender()
 	// we do not reuse the scene during a render sequence
 	this->scene = asr::SceneFactory::create();
 
-	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
-			"assembly",
-			asr::ParamArray());	
-	this->scene->assemblies().insert(assembly);
-	this->masterAssembly = this->scene->assemblies().get_by_name("assembly");
-	this->addDefaultMaterial(this->masterAssembly);
+	//asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
+	//		"world",
+	//		asr::ParamArray());	
+	//this->scene->assemblies().insert(assembly);
+	//this->masterAssembly = this->scene->assemblies().get_by_name("world");
+	//this->addDefaultMaterial(this->masterAssembly);
 
 }
 
@@ -157,6 +157,13 @@ void AppleseedRenderer::defineConfig()
 		this->project->configurations()
         .get_by_name("final")->get_parameters()
 		.insert_path((lightingEngine + ".dl_light_samples").asChar(), directLightSamples.asChar());
+	}
+
+	if( !renderGlobals->caustics )
+	{
+		this->project->configurations()
+        .get_by_name("final")->get_parameters()
+		.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
 	}
 }
 
@@ -294,16 +301,23 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 				);
 		break;
 	case 2:
+            //m_u_shift = m_params.get_optional<double>("horizontal_shift", 0.0) / 360.0;
+            //m_v_shift = m_params.get_optional<double>("vertical_shift", 0.0) / 360.0;
 	    environmentEDF = asr::LatLongMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar()));
+				.insert("exitance", envMapName.asChar())
+				.insert("exitance_multiplier", renderGlobals->environmentIntensity)
+				.insert("horizontal_shift", renderGlobals->latlongHoShift)
+				.insert("vertical_shift", renderGlobals->latlongVeShift)
+				);
 		break;
 	case 3:
 		environmentEDF = asr::MirrorBallMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar()));
+				.insert("exitance", envMapName.asChar())
+				.insert("exitance_multiplier", renderGlobals->environmentIntensity));
 		break;
 	default:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
@@ -347,16 +361,25 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 	return true;
 }
 
+void AppleseedRenderer::defineMasterAssembly()
+{
+	this->masterAssembly = this->scene->assemblies().get_by_name("world");
+	//asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
+	//		"master",
+	//		asr::ParamArray());	
+	//this->scene->assemblies().insert(assembly);
+	//this->masterAssembly = this->scene->assemblies().get_by_name("master");
+}
 
 void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList, std::vector<MayaObject *>& instancerList)
 {
 	logger.debug("AppleseedRenderer::defineScene");
 
-    this->scene->assembly_instances().insert(
-        asr::AssemblyInstanceFactory::create(
-            "master_assembly_inst",
-            asr::ParamArray(),
-			this->masterAssembly->get_name()));
+   // this->scene->assembly_instances().insert(
+   //     asr::AssemblyInstanceFactory::create(
+   //         "world_inst",
+   //         asr::ParamArray(),
+			//this->masterAssembly->get_name()));
 
 
 	this->defineCamera(camList, renderGlobals);
@@ -387,6 +410,8 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 	for(int objId = 0; objId < cameraList.size(); objId++)
 	{
 		mtap_MayaObject *cam = (mtap_MayaObject *)cameraList[objId];
+		if( cam == NULL)
+			continue;
 		logger.debug(MString("Creating camera: ") + cam->shortName);
 
 		float horizontalFilmAperture = 24.892f;
@@ -400,24 +425,24 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		float fStop = 0.0;
 
 		float focalLength = 35.0f;
-		if( cam != NULL )
-		{
-			MFnCamera camFn(cam->mobject, &stat);
-			if( stat == MStatus::kSuccess)
-			{
-				getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
-				getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
-				getFloat(MString("focalLength"), camFn, focalLength);
-				getBool(MString("depthOfField"), camFn, dof);
-				//if( dof )
-				//{
-					getFloat(MString("focusDistance"), camFn, focusDistance);
-					getFloat(MString("fStop"), camFn, fStop);
-					getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
-					getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
-				//}
-			}		
-		}
+		MFnCamera camFn(cam->mobject, &stat);
+		asr::ParamArray camParams;
+
+		getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
+		getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
+		getFloat(MString("focalLength"), camFn, focalLength);
+		getBool(MString("depthOfField"), camFn, dof);
+		getFloat(MString("focusDistance"), camFn, focusDistance);
+		getFloat(MString("fStop"), camFn, fStop);
+		getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
+		getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
+
+		dof = dof && this->renderGlobals->doDof;
+		// this is a hack because this camera model does not support NON depth of field
+		if( !dof )
+			fStop *= 10000.0f;
+
+		focusDistance *= this->renderGlobals->sceneScale;
 
 		// maya aperture is given in inces so convert to cm and convert to meters
 		horizontalFilmAperture = horizontalFilmAperture * 2.54f * 0.01f;
@@ -426,6 +451,13 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		MString filmBack = MString("") + horizontalFilmAperture + " " + verticalFilmAperture;
 		MString focalLen = MString("") + focalLength * 0.001f;
 		
+		camParams.insert("film_dimensions", filmBack.asChar());
+		camParams.insert("focal_length", focalLen.asChar());
+		camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
+		camParams.insert("f_stop",  (MString("") + fStop).asChar());
+		camParams.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
+		camParams.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
+
 		asr::Camera *appleCam;
 		if( updateCamera )
 		{
@@ -438,14 +470,7 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		}else{
 			this->camera = asr::ThinLensCameraFactory().create(
 					cam->shortName.asChar(),
-					asr::ParamArray()
-						.insert("film_dimensions", filmBack.asChar())
-						.insert("focal_length", focalLen.asChar())
-						.insert("focal_distance", (MString("") + focusDistance).asChar())
-						.insert("f_stop",  (MString("") + fStop).asChar())
-						.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar())
-						.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar())
-						);
+					camParams);
 			appleCam = this->camera.get();
 		}
 		
@@ -580,7 +605,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				if( assemblyInstance != NULL)
 				{
 					logger.debug(MString("Found assembly instance: ") + assemblyInstName);
-					MMatrix colMatrix = MFnDagNode(obj->dagPath).transformationMatrix();
+					MMatrix colMatrix = MFnDagNode(obj->dagPath).transformationMatrix() * this->renderGlobals->sceneScaleMatrix;
 					asf::Matrix4d appMatrix;
 					this->MMatrixToAMatrix(colMatrix, appMatrix);
 					assemblyInstance->transform_sequence().clear();
@@ -590,15 +615,22 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		}
 	}else{
 
+		if( obj->shortName == "world")
+			return;
+
 		MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
 
 		if( obj->attributes != NULL)
+		{
 			if( obj->attributes->hasInstancerConnection )
 			{
 				assemblyInstName = obj->fullName + "assembly_inst";
 			}
-
-		asr::AssemblyInstance *assInst = this->scene->assembly_instances().get_by_name(assemblyInstName.asChar());
+		}
+		// all assemblies except world are placed in the world - assembly
+		asr::Assembly *worldAss = this->scene->assemblies().get_by_name("world");
+		asr::AssemblyInstance *assInst = worldAss->assembly_instances().get_by_name(assemblyInstName.asChar());
+		//asr::AssemblyInstance *assInst = this->scene->assembly_instances().get_by_name(assemblyInstName.asChar());
 		if( assInst == NULL)
 		{
 			logger.trace(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);

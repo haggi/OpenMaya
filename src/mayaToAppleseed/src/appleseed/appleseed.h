@@ -115,6 +115,7 @@ public:
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
 	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
+	void defineMasterAssembly();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
 	void render();
 	asr::MasterRenderer *masterRenderer;
@@ -135,13 +136,14 @@ public:
 	void defineWireframeShader(asr::Assembly *assembly, MObject& shadingGroup);
 	void defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup);
 	void defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup);
+	asr::Assembly *masterAssembly;
+
+	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);
 
 private:
 	asf::auto_release_ptr<asr::Project> project;
-	asr::Assembly *masterAssembly;
 	asf::auto_release_ptr<asr::Camera> camera;
 	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
-	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);
 	asf::auto_release_ptr<asf::LogTargetBase> log_target;
 	asf::auto_release_ptr<asf::FileLogTarget> m_log_target;
 	asf::LogTargetBase *log_targetPtr;

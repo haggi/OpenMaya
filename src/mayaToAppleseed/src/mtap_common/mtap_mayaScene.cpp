@@ -142,8 +142,9 @@ bool mtap_MayaScene::doPreFrameJobs()
 {
 	logger.debug("mtap_MayaScene::doPreFrameJobs");
 
-	// creating scene, env
-	//this->mtap_renderer.definePreRender();
+	MString result;
+	MGlobal::executeCommand(this->renderGlobals->preFrameScript, result, true);
+
 	this->mtap_renderer.defineLights();
 	return true;
 }
@@ -151,6 +152,8 @@ bool mtap_MayaScene::doPreFrameJobs()
 bool mtap_MayaScene::doPostFrameJobs()
 {
 	logger.debug("mtap_MayaScene::doPostFrameJobs");
+	MString result;
+	MGlobal::executeCommand(this->renderGlobals->postFrameScript, result, true);
 	return true;
 }
 
@@ -355,6 +358,10 @@ bool mtap_MayaScene::postParseCallback()
 		}
 	}
 
+	// after the definition of all assemblies, there is a least one "world" assembly, this will be our master assembly
+	// where all the lights and other elements will be placed
+	this->mtap_renderer.defineMasterAssembly();
+
 	// all assemblies need their own assembly instance because assemblies are only created where instances are necessary.
 	mIter = this->objectList.begin();
 	for(;mIter!=this->objectList.end(); mIter++)
@@ -392,6 +399,19 @@ bool mtap_MayaScene::postParseCallback()
 
 			this->mtap_renderer.interactiveAIList.push_back(ai.get());
 
+			// if world, then add a global scene scaling.
+			if( obj->shortName == "world")
+			{
+				asf::Matrix4d appMatrix;
+				MMatrix transformMatrix;
+				transformMatrix.setToIdentity();
+				transformMatrix *= this->renderGlobals->sceneScaleMatrix;
+				this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
+				ai->transform_sequence().set_transform(0.0,	asf::Transformd(appMatrix));
+				this->mtap_renderer.scene->assembly_instances().insert(ai);
+				continue;
+			}
+
 			if( this->renderType == MayaScene::IPR)
 			{
 				if( obj->parent != NULL)
@@ -402,13 +422,16 @@ bool mtap_MayaScene::postParseCallback()
 						logger.debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
 						parent->objectAssembly->assembly_instances().insert(ai);
 					}else{
-						this->mtap_renderer.scene->assembly_instances().insert(ai);
+						//this->mtap_renderer.scene->assembly_instances().insert(ai);
+						this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 					}
 				}else{
-					this->mtap_renderer.scene->assembly_instances().insert(ai);
+					//this->mtap_renderer.scene->assembly_instances().insert(ai);
+					this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 				}
 			}else{
-				this->mtap_renderer.scene->assembly_instances().insert(ai);
+				//this->mtap_renderer.scene->assembly_instances().insert(ai);
+				this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 			}
 		}
 	}
@@ -432,8 +455,8 @@ bool mtap_MayaScene::postParseCallback()
 		(obj->fullName + "assembly_inst").asChar(),
 		asr::ParamArray(),
 		((mtap_MayaObject *)(obj->origObject))->objectAssembly->get_name());
-		this->mtap_renderer.scene->assembly_instances().insert(ai);
-
+		//this->mtap_renderer.scene->assembly_instances().insert(ai);
+		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 	}
 
 	return true;

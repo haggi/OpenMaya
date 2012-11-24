@@ -466,22 +466,32 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 
 	MColor matteReflectance(1.0f,1.0f,1.0f);
 	getColor(MString("matte_reflectance"), shaderNode, matteReflectance);
-	float matteMultiplier = 1.0f;
-	getFloat(MString("matte_reflectance_multiplier"), shaderNode, matteMultiplier);
+
 	MColor specReflectance(1.0f,1.0f,1.0f);
 	getColor(MString("specular_reflectance"), shaderNode, specReflectance);
-	float specMultiplier = 1.0f;
-	getFloat(MString("specular_reflectance_multiplier"), shaderNode, specMultiplier);
+
+	float specular_reflectance_multiplier = 1.0f;
+	getFloat(MString("specular_reflectance_multiplier"), shaderNode, specular_reflectance_multiplier);
+
 	float shinyU = 1000.0f;
 	float shinyV = 1000.0f;
 	getFloat(MString("shininess_u"), shaderNode, shinyU);
 	getFloat(MString("shininess_v"), shaderNode, shinyV);
+
 	MString matteRefName = shaderNode.name() + "_matteRefl";
 	this->defineColor(matteRefName, matteReflectance);
 	this->defineTexture(shaderNode, MString("matte_reflectance"), matteRefName);
+
+	float matte_reflectance_multiplier = 1.0f;
+	getFloat(MString("matte_reflectance_multiplier"), shaderNode, matte_reflectance_multiplier);
+	
 	MString specRefName = shaderNode.name() + "_specRefl";
 	this->defineColor(specRefName, specReflectance);
 	this->defineTexture(shaderNode, MString("specular_reflectance"), specRefName);
+
+	float roughness = .5f;
+	getFloat(MString("roughness"), shaderNode, roughness);
+
 	int shaderType = 0;
 	getInt(MString("bsdf"), shaderNode, shaderType);		
 	float transmittanceMultiplier = 1.0f;
@@ -497,21 +507,37 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	switch(shaderType)
 	{
 	case 0: // lambert
+		bsdf = asr::LambertianBRDFFactory().create(
+			shaderName.asChar(),
+			asr::ParamArray()
+				.insert("reflectance", matteRefName.asChar())
+				.insert("reflectance_multiplier", matte_reflectance_multiplier)
+				);
 		break;
 	case 1: // Ashikhmin
 		bsdf = asr::AshikhminBRDFFactory().create(
 			shaderName.asChar(),
 			asr::ParamArray()
 				.insert("diffuse_reflectance", matteRefName.asChar())
+				.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
 				.insert("glossy_reflectance", specRefName.asChar())
+				.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
 				.insert("shininess_u", (MString("") + shinyU).asChar())
 				.insert("shininess_v", (MString("") + shinyV).asChar())
 				);
 		break;
 	case 2: // Kelemen
+		bsdf = asr::KelemenBRDFFactory().create(
+			shaderName.asChar(),
+			asr::ParamArray()
+				.insert("matte_reflectance", matteRefName.asChar())
+				.insert("matte_reflectance_multiplier", matte_reflectance_multiplier)				
+				.insert("specular_reflectance", specRefName.asChar())
+				.insert("specular_reflectance_multiplier", specular_reflectance_multiplier)
+				.insert("roughness", roughness)
+				);
 		break;
-	case 3: // Specular
-			
+	case 3: // Specular			
 		getColor(MString("transmittance"), shaderNode, transmittance);
 		defineColor(transmittanceName, transmittance);
 		defineTexture(shaderNode, MString("transmittance"), transmittanceName);
@@ -527,8 +553,8 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 			bsdf = asr::SpecularBTDFFactory().create(
 				(shaderName).asChar(),
 				asr::ParamArray()
-					.insert("reflectance", matteRefName.asChar())
-					.insert("reflectance_multiplier", (MString("") + matteMultiplier).asChar())
+					.insert("reflectance",  specRefName.asChar())
+					.insert("reflectance_multiplier",specular_reflectance_multiplier)
 					.insert("from_ior", (MString("") + from_ior).asChar())
 					.insert("to_ior", (MString("") + to_ior).asChar())
 					.insert("transmittance", transmittanceName.asChar())
@@ -537,8 +563,8 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 			bsdfBack = asr::SpecularBTDFFactory().create(
 				(shaderName + "_back").asChar(),
 				asr::ParamArray()
-					.insert("reflectance", matteRefName.asChar())
-					.insert("reflectance_multiplier", (MString("") + matteMultiplier).asChar())
+					.insert("reflectance", specRefName.asChar())
+					.insert("reflectance_multiplier", specular_reflectance_multiplier)
 					.insert("from_ior", (MString("") + to_ior).asChar())
 					.insert("to_ior", (MString("") + from_ior).asChar())
 					.insert("transmittance", transmittanceName.asChar())
@@ -548,7 +574,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 			bsdf = asr::SpecularBRDFFactory().create(
 				shaderName.asChar(),
 				asr::ParamArray()
-					.insert("reflectance", (matteRefName).asChar())
+					.insert("reflectance", specRefName.asChar())
 					);
 		}
 		break;
@@ -556,7 +582,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 		bsdf = asr::SpecularBRDFFactory().create(
 			shaderName.asChar(),
 			asr::ParamArray()
-				.insert("reflectance", matteRefName.asChar()));
+				.insert("reflectance", specRefName.asChar()));
 		break;
 	}
 		

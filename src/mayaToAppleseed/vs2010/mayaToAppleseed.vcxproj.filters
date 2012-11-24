@@ -272,4 +272,9 @@
       <Filter>Source Files\appleseed</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sourceCodeDocs\assemblyWorkflow.txt">
+      <Filter>ressources</Filter>
+    </None>
+  </ItemGroup>
 </Project>

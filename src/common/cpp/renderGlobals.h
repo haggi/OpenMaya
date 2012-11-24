@@ -147,6 +147,11 @@ public:
 	MString imageName;
 	MString imageOutputFile; // complete path to current image file
 
+	MString preFrameScript;
+	MString postFrameScript;
+	MString preRenderLayerScript;
+	MString postRenderLayerScript;
+
 	bool	useRenderRegion;
 	int		regionLeft;
 	int		regionRight;

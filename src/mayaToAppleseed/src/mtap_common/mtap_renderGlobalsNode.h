@@ -42,8 +42,11 @@ private:
 	static	  MObject environmentMap;
 	static	  MObject environmentType;
 	static	  MObject environmentIntensity;
+	static	  MObject latlongHoShift;
+	static	  MObject latlongVeShift;
 
 	static	  MObject imageFormat;
+	static	  MObject sceneScale;
 
 };
 

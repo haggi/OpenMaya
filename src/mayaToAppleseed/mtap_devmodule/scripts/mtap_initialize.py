@@ -79,7 +79,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Adaptive Sampling:", value1 = False, cc = self.AppleseedRendererUpdateTab)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".adaptiveSampling", index = 2)
@@ -141,6 +141,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
                         envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
                         #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
+                        ui = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
+                        ui = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
@@ -174,6 +178,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         if len(filename) > 0:
             print "Got filename", filename
             self.rendererTabUiDict['xml']['xmlFile'].setText(filename[0])
+    
+    def dirBrowse(self, args=None):
+        dirname = pm.fileDialog2(fileMode=3, caption="Select dir")
+        if len(dirname) > 0:
+            self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
         
     def AppleseedTranslatorCreateTab(self):
         log.debug("AppleseedTranslatorCreateTab()")
@@ -183,12 +192,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         scLo = self.rendererName + "TrScrollLayout"
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn = True):
+            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".assemblyExportType")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Assembly Export Type", at=self.renderGlobalsNodeName + ".assemblyExportType", ei = self.getEnumList(attr)) 
+                    ui = pm.attrEnumOptionMenuGrp(label = "Assembly Export Type", at=self.renderGlobalsNodeName + ".assemblyExportType", ei = self.getEnumList(attr))                     
                 with pm.frameLayout(label="Appleseed XML export", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
@@ -200,6 +209,17 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
                         pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
+                with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
+                    with pm.rowColumnLayout(nc=3, width = 120):
+                        optiDict = {}
+                        pm.text(label="OptimizedTex Dir:", width = 60, align="right")
+                        self.rendererTabUiDict['opti'] = optiDict
+                        pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
+                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get(), width = 60)
+                        pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
+                with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
+                    ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".sceneScale", index = 2 )
                          
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
@@ -294,7 +314,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             #TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
-        if len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
+        if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
             optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
             if not os.path.exists(optimizedPath):
                 optimizedPath.makedirs()

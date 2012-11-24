@@ -83,10 +83,21 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *
 	float stepSize = 1.0f / (float)divSteps;
 	float start = 0.0f;
 
+	// here only the transform will be scaled because a scaled camera will result in different renderings (e.g. dof)
+
 	asf::Matrix4d appMatrix;
+	MMatrix transformMatrix;
 	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
 	{
+		transformMatrix.setToIdentity();
+		transformMatrix.matrix[3][0] = obj->transformMatrices[matrixId].matrix[3][0];
+		transformMatrix.matrix[3][1] = obj->transformMatrices[matrixId].matrix[3][1];
+		transformMatrix.matrix[3][2] = obj->transformMatrices[matrixId].matrix[3][2];
+		transformMatrix *= this->renderGlobals->sceneScaleMatrix;
 		MMatrix colMatrix = obj->transformMatrices[matrixId];
+		colMatrix.matrix[3][0] = transformMatrix.matrix[3][0];
+		colMatrix.matrix[3][1] = transformMatrix.matrix[3][1];
+		colMatrix.matrix[3][2] = transformMatrix.matrix[3][2];
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
 
 		assInstance->transform_sequence().set_transform(

@@ -239,6 +239,10 @@ bool RenderGlobals::getDefaultGlobals()
 	getInt(MString("bot"), fnRenderGlobals, regionBottom);
 	getInt(MString("top"), fnRenderGlobals, regionTop);
 
+	getString(MString("preRenderMel"), fnRenderGlobals, this->preFrameScript);
+	getString(MString("postRenderMel"), fnRenderGlobals, this->postFrameScript);
+	getString(MString("preRenderLayerMel"), fnRenderGlobals, this->preRenderLayerScript);
+	getString(MString("postRenderLayerMel"), fnRenderGlobals, this->postRenderLayerScript);
 
 
 	this->good = true;

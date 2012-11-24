@@ -29,6 +29,10 @@ MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
 MObject MayaToAppleseedGlobals::optimizedTexturePath;
+MObject MayaToAppleseedGlobals::sceneScale;
+MObject MayaToAppleseedGlobals::latlongHoShift;
+MObject MayaToAppleseedGlobals::latlongVeShift;
+
 
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
@@ -155,6 +159,15 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
+
+	sceneScale = nAttr.create("sceneScale", "sceneScale",  MFnNumericData::kFloat, .01f);
+	CHECK_MSTATUS(addAttribute( sceneScale ));
+
+	latlongHoShift = nAttr.create("latlongHoShift", "latlongHoShift",  MFnNumericData::kFloat, .0f);
+	CHECK_MSTATUS(addAttribute( latlongHoShift ));
+
+	latlongVeShift = nAttr.create("latlongVeShift", "latlongVeShift",  MFnNumericData::kFloat, .0f);
+	CHECK_MSTATUS(addAttribute( latlongVeShift ));
 
 	return stat;
 
