@@ -225,20 +225,25 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::FINISH:
 			logger.debug("Event::Finish");
 			terminateLoop = true;
-			MRenderView::endRender();
-			if( isIpr )
-			{
-				isIpr = false;
-				RenderQueueWorker::removeCallbacks();
-				if( mayaScenePtr != NULL)
+
+			if( MRenderView::doesRenderEditorExist())
+			{	
+				MRenderView::endRender();
+
+				if( isIpr )
 				{
-					delete mayaScenePtr;
+					isIpr = false;
+					RenderQueueWorker::removeCallbacks();
+					if( mayaScenePtr != NULL)
+					{
+						delete mayaScenePtr;
+					}
+				}else{
+					renderComputation.endComputation();
 				}
-			}else{
-				renderComputation.endComputation();
+				mayaScenePtr = NULL;
+				isRendering = false;
 			}
-			mayaScenePtr = NULL;
-			isRendering = false;
 			break;
 
 		case EventQueue::Event::STARTRENDER:
@@ -250,7 +255,9 @@ void RenderQueueWorker::startRenderQueueWorker()
 				logger.debug(MString("Startrender with size ") + mayaScenePtr->renderGlobals->imgWidth + " and " + mayaScenePtr->renderGlobals->imgHeight);
 				int width = mayaScenePtr->renderGlobals->imgWidth;
 				int height = mayaScenePtr->renderGlobals->imgHeight;
-				status = MRenderView::startRender(width, height, false, true);
+
+				if( MRenderView::doesRenderEditorExist())
+					status = MRenderView::startRender(width, height, false, true);
 
 				if(mayaScenePtr->renderType != MayaScene::IPR)
 				{
@@ -306,8 +313,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::TILEDONE:
 			//logger.debug("Event::TILEDONE");
-			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
-			MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
+			if( MRenderView::doesRenderEditorExist())
+			{
+				MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
+				MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
+			}
 			delete[]  (RV_PIXEL *)e.data;
 			break;
 
@@ -318,8 +328,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 				size_t ymax = mayaScenePtr->renderGlobals->imgHeight - e.tile_ymin - 1;
 
 				//logger.debug("Event::PRETILE");
-				MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, ymin, ymax, (RV_PIXEL *)e.data);
-				MRenderView::refresh(e.tile_xmin, e.tile_xmax, ymin, ymax);
+				if( MRenderView::doesRenderEditorExist())
+				{
+					MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, ymin, ymax, (RV_PIXEL *)e.data);
+					MRenderView::refresh(e.tile_xmin, e.tile_xmax, ymin, ymax);
+				}
 			}
 			delete[]  (RV_PIXEL *)e.data;
 			break;

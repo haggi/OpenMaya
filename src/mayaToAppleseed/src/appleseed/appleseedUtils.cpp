@@ -22,7 +22,7 @@ void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensit
 
 	asf::auto_release_ptr<asr::ColorEntity> colorEntity;
 	
-	asr::Entity *entity = scene->colors().get_by_name(name.asChar());
+	asr::Entity *entity = this->scenePtr->colors().get_by_name(name.asChar());
 
 	if( entity != NULL)
 		return;
@@ -36,7 +36,7 @@ void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensit
 				asr::ColorValueArray(3, colorDef),
 				asr::ColorValueArray(1, &alpha));
 
-	this->scene->colors().insert(colorEntity);
+	this->scenePtr->colors().insert(colorEntity);
 }
 
 

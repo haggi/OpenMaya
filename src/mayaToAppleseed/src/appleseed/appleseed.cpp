@@ -54,6 +54,7 @@ AppleseedRenderer::AppleseedRenderer()
 	this->renderGlobals = NULL;
 	definedEntities.clear();
 	appleRenderer = this;
+    this->project = asf::auto_release_ptr<asr::Project>(asr::ProjectFactory::create("mtap_project"));
 }
 
 AppleseedRenderer::~AppleseedRenderer()
@@ -78,30 +79,23 @@ void AppleseedRenderer::defineProject()
 	//fprintf(stdout, "-------------DassnTest---------: %d:",123);
 	//fflush(stdout);
 
-
 	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + ".appleseed";
-    this->project = asf::auto_release_ptr<asr::Project>(asr::ProjectFactory::create("test project"));
 	this->project->set_path(outputPath.asChar());
+	this->scene = asr::SceneFactory::create();
+	this->scenePtr = this->scene.get();
+	this->project->set_scene(this->scene);
+
 	definedEntities.clear();
 }
 
 void AppleseedRenderer::definePreRender()
 {
-	this->project.reset();
+	//this->project.reset();
 	this->defineProject();
 	this->defineConfig();
 
 	// define default scene, mayabe this will change in future releases, but at the moment
 	// we do not reuse the scene during a render sequence
-	this->scene = asr::SceneFactory::create();
-
-	//asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
-	//		"world",
-	//		asr::ParamArray());	
-	//this->scene->assemblies().insert(assembly);
-	//this->masterAssembly = this->scene->assemblies().get_by_name("world");
-	//this->addDefaultMaterial(this->masterAssembly);
-
 }
 
 void AppleseedRenderer::writeXML()
@@ -179,7 +173,7 @@ void AppleseedRenderer::defineOutput()
         asr::FrameFactory::create(
             "beauty",
             asr::ParamArray()
-                .insert("camera",this->scene->get_camera()->get_name())
+                .insert("camera",this->scenePtr->get_camera()->get_name())
 				.insert("resolution", res.asChar())
 				.insert("tile_size", tileSize.asChar())
 				.insert("color_space", colorSpaceString.asChar())));
@@ -209,7 +203,7 @@ asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj
 		MString assemblyName = "assembly";
 		if( assObject != NULL)
 			assemblyName = assObject->fullName;
-		assembly = this->scene->assemblies().get_by_name(assemblyName.asChar());	
+		assembly = this->scenePtr->assemblies().get_by_name(assemblyName.asChar());	
 	}
 	return assembly;
 }
@@ -285,6 +279,16 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 
 	asf::auto_release_ptr<asr::EnvironmentEDF> environmentEDF;
 
+	if(this->scenePtr->environment_shaders().get_by_name("sky_shader") != NULL)
+	{
+		 this->scenePtr->environment_shaders().remove(this->scenePtr->environment_shaders().get_by_name("sky_shader"));
+	}
+
+	if( this->scenePtr->environment_edfs().get_by_name("sky_edf")  != NULL)
+	{
+		 this->scenePtr->environment_edfs().remove(this->scenePtr->environment_edfs().get_by_name("sky_edf"));
+	}
+
 	switch(renderGlobals->environmentType){
 	case 0:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
@@ -325,18 +329,19 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	            asr::ParamArray()
 				.insert("exitance", envName));
 	}
-	this->scene->environment_edfs().insert(environmentEDF);
+
+	this->scenePtr->environment_edfs().insert(environmentEDF);
 
 
     // Create an environment shader called "sky_shader" and insert it into the scene.
-    this->scene->environment_shaders().insert(
+    this->scenePtr->environment_shaders().insert(
         asr::EDFEnvironmentShaderFactory().create(
             "sky_shader",
             asr::ParamArray()
                 .insert("environment_edf", "sky_edf")));
 
     // Create an environment called "sky" and bind it to the scene.
-    this->scene->set_environment(
+    this->scenePtr->set_environment(
         asr::EnvironmentFactory::create(
             "sky",
             asr::ParamArray()
@@ -363,31 +368,23 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 
 void AppleseedRenderer::defineMasterAssembly()
 {
-	this->masterAssembly = this->scene->assemblies().get_by_name("world");
+	this->masterAssembly = this->scenePtr->assemblies().get_by_name("world");
 	//asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
 	//		"master",
 	//		asr::ParamArray());	
-	//this->scene->assemblies().insert(assembly);
-	//this->masterAssembly = this->scene->assemblies().get_by_name("master");
+	//this->scenePtr->assemblies().insert(assembly);
+	//this->masterAssembly = this->scenePtr->assemblies().get_by_name("master");
 }
 
 void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList, std::vector<MayaObject *>& instancerList)
 {
 	logger.debug("AppleseedRenderer::defineScene");
 
-   // this->scene->assembly_instances().insert(
-   //     asr::AssemblyInstanceFactory::create(
-   //         "world_inst",
-   //         asr::ParamArray(),
-			//this->masterAssembly->get_name()));
-
-
 	this->defineCamera(camList, renderGlobals);
-    this->scene->set_camera(camera);
-
+    this->scenePtr->set_camera(camera);
 	this->defineOutput();
 	this->defineEnvironment(renderGlobals);
-    this->project->set_scene(this->scene);
+	//this->project->set_scene(this->scene);
 }
 
 
@@ -628,9 +625,9 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 			}
 		}
 		// all assemblies except world are placed in the world - assembly
-		asr::Assembly *worldAss = this->scene->assemblies().get_by_name("world");
+		asr::Assembly *worldAss = this->scenePtr->assemblies().get_by_name("world");
 		asr::AssemblyInstance *assInst = worldAss->assembly_instances().get_by_name(assemblyInstName.asChar());
-		//asr::AssemblyInstance *assInst = this->scene->assembly_instances().get_by_name(assemblyInstName.asChar());
+		//asr::AssemblyInstance *assInst = this->scenePtr->assembly_instances().get_by_name(assemblyInstName.asChar());
 		if( assInst == NULL)
 		{
 			logger.trace(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);
@@ -640,6 +637,9 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 		int mbsamples = this->renderGlobals->xftimesamples;
 		logger.trace(MString("updateTransform: mbsamples : ") + mbsamples);
+
+		if( !this->renderGlobals->doMb || !obj->isObjAnimated())
+			assInst->transform_sequence().clear();
 
 		size_t numTransforms = assInst->transform_sequence().size();
 		float time = 0.0f;
@@ -704,7 +704,7 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 			assemblyName = assObject->fullName;
 
 		logger.trace(MString("deformUpdateCallback: Search for assembly: ") + assemblyName);
-		asr::Assembly *assembly = this->scene->assemblies().get_by_name(assemblyName.asChar());
+		asr::Assembly *assembly = this->scenePtr->assemblies().get_by_name(assemblyName.asChar());
 
 		if( assembly == NULL)
 		{
@@ -717,6 +717,7 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 		// an geometry should exist only if we are in an deform step > 0
 		MString geoName = obj->fullNiceName;
 		asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+	
 		if( geoObject != NULL)
 		{
 			logger.trace(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
@@ -725,10 +726,18 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 				logger.trace(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
 				return;
 			}else{
-				logger.trace(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
-				addDeformStep(obj, assembly);
-				return;
+				// only update if this is not a mb start step
+				if( !this->renderGlobals->isMbStartStep)
+				{
+					logger.trace(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
+					addDeformStep(obj, assembly);
+					return;
+				}else{
+					// replace geometry
+				}
 			}
+			// object already exists
+			return;
 		}
 
 		this->putObjectIntoAssembly(assembly, obj, matrix);
@@ -856,16 +865,34 @@ void AppleseedRenderer::render()
 			&mtap_controller,
 			this->tileCallbackFac.get());
 	}
-
 	
 	//asf::auto_release_ptr<asf::LogTargetBase> log_target(asf::create_console_log_target(stdout));
 	//asr::global_logger().add_target(log_target.get());
+
+	//this->scenePtr = this->project->get_scene();
+	//size_t numAss = scenePtr->assemblies().size();
+	//logger.trace(MString("------------- numAssemblies in scene before rendering: ") + numAss);
+	//asr::TypedEntityMap<asr::Assembly>::iterator assIter = scenePtr->assemblies().begin();
+	//for( ;assIter != scenePtr->assemblies().end(); assIter++)
+	//{
+	//	logger.trace(MString("Found assembly: ") + assIter->get_name());
+	//}
 
 	m_log_target.reset(asf::create_file_log_target());
 	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
 	asr::global_logger().add_target(m_log_target.get());
 
+	logger.trace("------------- start rendering ----------------------");
 	masterRenderer->render();
+
+	//this->scenePtr = this->project->get_scene();
+	//numAss = scenePtr->assemblies().size();
+	//logger.trace(MString("------------- numAssemblies in scene after rendering: ") + numAss);
+	//assIter = scenePtr->assemblies().begin();
+	//for( ;assIter != scenePtr->assemblies().end(); assIter++)
+	//{
+	//	logger.trace(MString("Found assembly: ") + assIter->get_name());
+	//}
 
 	asr::global_logger().remove_target(m_log_target.get());
 	m_log_target->close();

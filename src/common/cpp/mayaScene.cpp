@@ -265,7 +265,13 @@ bool MayaScene::isLight(MObject obj)
 bool MayaScene::isCamera(MObject obj)
 {
 	if( obj.hasFn(MFn::kCamera))
-		return true;
+	{
+		MFnDependencyNode camFn(obj);
+		bool renderable = true;
+		getBool(MString("renderable"), camFn, renderable);
+		if( renderable )
+			return true;
+	}
 	return false;
 }
 

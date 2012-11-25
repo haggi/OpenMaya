@@ -21,9 +21,9 @@ void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
     // Create a color called "gray" and insert it into the assembly.
     static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	if( this->scene->colors().get_by_name("gray") == NULL)
+	if( this->scenePtr->colors().get_by_name("gray") == NULL)
 	{
-		this->scene->colors().insert(
+		this->scenePtr->colors().insert(
 			asr::ColorEntityFactory::create(
 				"gray",
 				asr::ParamArray()
@@ -97,13 +97,13 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	}
 
 	MString textureInstanceName = textureName + "_texInst";
-	asr::Texture *texture = this->scene->textures().get_by_name(textureName.asChar());
+	asr::Texture *texture = this->scenePtr->textures().get_by_name(textureName.asChar());
 	if( texture != NULL)
-		this->scene->textures().remove(texture);
+		this->scenePtr->textures().remove(texture);
 
-	asr::TextureInstance *textureInstance = this->scene->texture_instances().get_by_name(textureInstanceName.asChar());
+	asr::TextureInstance *textureInstance = this->scenePtr->texture_instances().get_by_name(textureInstanceName.asChar());
 	if( textureInstance != NULL)
-		this->scene->texture_instances().remove(textureInstance);
+		this->scenePtr->texture_instances().remove(textureInstance);
 
 	MString colorProfileName;
 	int profileId = 0;
@@ -129,7 +129,7 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	    textureName.asChar(),
             params,
             this->project->get_search_paths()));    // the project holds a set of search paths to find textures and other assets
-	this->scene->textures().insert(textureElement);
+	this->scenePtr->textures().insert(textureElement);
 
 	bool alphaIsLuminance = false;
 	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
@@ -144,7 +144,7 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	   tInstParams,
 	   textureName.asChar());
 	
-	this->scene->texture_instances().insert(tinst);
+	this->scenePtr->texture_instances().insert(tinst);
 
 	textureDefinition = textureInstanceName;
 

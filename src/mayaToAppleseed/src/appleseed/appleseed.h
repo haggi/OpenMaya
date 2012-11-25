@@ -123,6 +123,7 @@ public:
 
 	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix); 
 	asf::auto_release_ptr<asr::Scene> scene;
+	asr::Scene *scenePtr;
 	
 	// shaders
 	void defineBumpMap(asr::ParamArray& materialParams, MObject& surfaceShader);

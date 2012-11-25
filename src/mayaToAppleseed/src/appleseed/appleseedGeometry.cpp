@@ -18,8 +18,12 @@ void AppleseedRenderer::defineMesh(mtap_MayaObject *obj)
 {}
 void AppleseedRenderer::defineNurbsSurface(mtap_MayaObject *obj)
 {}
+
 void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
-{}
+{
+
+}
+
 void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
 {}
 

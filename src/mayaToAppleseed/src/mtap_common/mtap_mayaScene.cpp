@@ -144,7 +144,6 @@ bool mtap_MayaScene::doPreFrameJobs()
 
 	MString result;
 	MGlobal::executeCommand(this->renderGlobals->preFrameScript, result, true);
-
 	this->mtap_renderer.defineLights();
 	return true;
 }
@@ -153,7 +152,7 @@ bool mtap_MayaScene::doPostFrameJobs()
 {
 	logger.debug("mtap_MayaScene::doPostFrameJobs");
 	MString result;
-	MGlobal::executeCommand(this->renderGlobals->postFrameScript, result, true);
+	MGlobal::executeCommand(this->renderGlobals->postFrameScript, result, true);	
 	return true;
 }
 
@@ -408,7 +407,7 @@ bool mtap_MayaScene::postParseCallback()
 				transformMatrix *= this->renderGlobals->sceneScaleMatrix;
 				this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
 				ai->transform_sequence().set_transform(0.0,	asf::Transformd(appMatrix));
-				this->mtap_renderer.scene->assembly_instances().insert(ai);
+				this->mtap_renderer.scenePtr->assembly_instances().insert(ai);
 				continue;
 			}
 
@@ -485,16 +484,16 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 				parent->objectAssembly->assemblies().insert(assembly);
 				assemblyPtr = parent->objectAssembly->assemblies().get_by_name(obj->fullName.asChar());
 			}else{
-				this->mtap_renderer.scene->assemblies().insert(assembly);
-				assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+				this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+				assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
 			}
 		}else{
-			this->mtap_renderer.scene->assemblies().insert(assembly);
-			assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+			this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+			assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
 		}
 	}else{
-		this->mtap_renderer.scene->assemblies().insert(assembly);
-		assemblyPtr = this->mtap_renderer.scene->assemblies().get_by_name(obj->fullName.asChar());
+		this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+		assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
 	}
 
 	//// for testing, can be removed later

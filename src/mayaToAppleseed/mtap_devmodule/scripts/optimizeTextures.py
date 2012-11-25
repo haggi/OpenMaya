@@ -27,7 +27,7 @@ def makeExr( filePath, exrFile ):
     return True
 
 def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
-    
+    print "preRenderOptimizeTextures"
     for fileTexture in pm.ls(type="file"):
         fileNamePath = path.path(fileTexture.fileTextureName.get())
         
