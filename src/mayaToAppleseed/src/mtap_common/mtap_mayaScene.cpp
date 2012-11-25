@@ -41,6 +41,12 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 
 	//logger.debug(MString("mtap_updateObj: ") + mobj->dagPath.fullPathName());
 
+	if( isCamera(obj->mobject))
+	{
+		this->mtap_renderer.updateTransform(obj);
+		return;
+	}
+
 	// if this is an instance of an object which has an assembly, then update it,
 	// if not, ignore instance.
 	if( obj->instanceNumber > 0)

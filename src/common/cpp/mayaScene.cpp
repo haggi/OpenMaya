@@ -624,7 +624,13 @@ bool MayaScene::updateSceneNew()
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
+		{
+			if( this->renderGlobals->isMbStartStep )
+				obj->transformMatrices.clear();
+
+			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 			this->transformUpdateCallback(obj);
+		}
 
 		if(this->renderGlobals->isDeformStep())
 			this->deformUpdateCallback(obj);
@@ -640,7 +646,12 @@ bool MayaScene::updateSceneNew()
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
+		{
+			if( this->renderGlobals->isMbStartStep )
+				obj->transformMatrices.clear();
+			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 			this->transformUpdateCallback(obj);
+		}
 	}
 
 	mIter = this->lightList.begin();
@@ -653,7 +664,12 @@ bool MayaScene::updateSceneNew()
 				continue;
 		
 		if( this->renderGlobals->isTransformStep() )
+		{
+			if( this->renderGlobals->isMbStartStep )
+				obj->transformMatrices.clear();
+			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 			this->transformUpdateCallback(obj);
+		}
 	}
 
 	// new parse in animation to recognize particle deaths and births

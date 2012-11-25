@@ -75,6 +75,7 @@ MayaObject::MayaObject(MObject& mobject)
 	this->shapeConnected = this->isShapeConnected();
 	this->parent = NULL;
 	this->visible = true;
+	this->attributes = NULL;
 }
 
 MayaObject::MayaObject(MDagPath& objPath)

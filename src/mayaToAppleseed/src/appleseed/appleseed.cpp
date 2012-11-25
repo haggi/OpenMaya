@@ -380,7 +380,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 {
 	logger.debug("AppleseedRenderer::defineScene");
 
-	this->defineCamera(camList, renderGlobals);
+	this->defineCamera();
     this->scenePtr->set_camera(camera);
 	this->defineOutput();
 	this->defineEnvironment(renderGlobals);
@@ -392,7 +392,7 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 //	Appleseed does not support more than one camera at the moment, so break after the first one.
 //
 
-void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera)
+void AppleseedRenderer::defineCamera(bool updateCamera)
 {
 	MStatus stat;
 
@@ -404,9 +404,9 @@ void AppleseedRenderer::defineCamera(std::vector<MayaObject *>& cameraList, mtap
 		updateCamera = false;
 	}
 	// There is at least one camera
-	for(int objId = 0; objId < cameraList.size(); objId++)
+	for(int objId = 0; objId < this->mtap_scene->camList.size(); objId++)
 	{
-		mtap_MayaObject *cam = (mtap_MayaObject *)cameraList[objId];
+		mtap_MayaObject *cam = (mtap_MayaObject *)this->mtap_scene->camList[objId];
 		if( cam == NULL)
 			continue;
 		logger.debug(MString("Creating camera: ") + cam->shortName);
@@ -538,7 +538,7 @@ void AppleseedRenderer::updateEntities()
 		if( obj->mobject.hasFn(MFn::kCamera))
 		{
 			logger.debug(MString("Found camera for update: ") + obj->shortName);
-			this->defineCamera(this->mtap_scene->camList, this->renderGlobals, true);
+			this->defineCamera(true);
 		}
 		if( obj->mobject.hasFn(MFn::kMesh))
 		{
@@ -615,6 +615,12 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		if( obj->shortName == "world")
 			return;
 
+		if( obj->mobject.hasFn(MFn::kCamera))
+		{
+			this->defineCamera(false);
+			return;
+		}
+
 		MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
 
 		if( obj->attributes != NULL)
@@ -624,6 +630,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				assemblyInstName = obj->fullName + "assembly_inst";
 			}
 		}
+
 		// all assemblies except world are placed in the world - assembly
 		asr::Assembly *worldAss = this->scenePtr->assemblies().get_by_name("world");
 		asr::AssemblyInstance *assInst = worldAss->assembly_instances().get_by_name(assemblyInstName.asChar());

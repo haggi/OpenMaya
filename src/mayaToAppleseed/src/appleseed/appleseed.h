@@ -113,7 +113,7 @@ public:
 	void updateTransform(mtap_MayaObject *obj);
 	void updateDeform(mtap_MayaObject *obj);
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
-	void defineCamera(std::vector<MayaObject *>& cameraList, mtap_RenderGlobals *renderGlobals, bool updateCamera = false);
+	void defineCamera(bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);

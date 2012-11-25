@@ -99,7 +99,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *
 		colMatrix.matrix[3][1] = transformMatrix.matrix[3][1];
 		colMatrix.matrix[3][2] = transformMatrix.matrix[3][2];
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
-
+		logger.trace(MString("cam mat ") + colMatrix.matrix[3][0] + " " + colMatrix.matrix[3][1] + " " + colMatrix.matrix[3][2]);
 		assInstance->transform_sequence().set_transform(
 			start + stepSize * matrixId,
 			asf::Transformd(appMatrix));

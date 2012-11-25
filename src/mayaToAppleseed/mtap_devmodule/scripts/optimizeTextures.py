@@ -27,12 +27,15 @@ def makeExr( filePath, exrFile ):
     return True
 
 def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
-    print "preRenderOptimizeTextures"
     for fileTexture in pm.ls(type="file"):
         fileNamePath = path.path(fileTexture.fileTextureName.get())
+        log.debug("Check file texture:" + fileNamePath)
         
-        print "fileExtension", fileNamePath.ext
-        if fileNamePath.ext == destFormat:
+        if not fileNamePath.exists():
+            log.debug("file texture could not be found, skipping.")
+            continue
+            
+        if fileNamePath.ext[1:] == destFormat:
             log.debug("file texture is already an " + destFormat + " skipping.")
             continue
         
@@ -45,7 +48,7 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
         # or a drive in windows like c:
         # or a dfs name like //server/textures.... 
         optimizedFilePath = path.path(optimizedFilePath)
-        log.debug("optimizedFilePath" + optimizedFilePath)
+        log.debug("optimizedFilePath " + optimizedFilePath)
         if fileNamePath[1] == ":":
             localPath = optimizedFilePath / fileNamePath[3:]
         if fileNamePath.startswith("//"):
@@ -69,17 +72,17 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
                 log.debug("Problem converting " + fileNamePath)
                 continue
             
-            shutil.copy(localPath.replace(".exr", "_t.exr"), localPath)
+            #shutil.copy(localPath.replace(".exr", "_t.exr"), localPath)
             # executable: maketiledexr(.exe)
-#            cmd = "maketiledexr"
-#            
-#            cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
-#            
-#            try:
-#                subprocess.call(cmd, shell = True)
-#            except:
-#                log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")
-#                continue 
+            cmd = "maketiledexr"
+            
+            cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
+            
+            try:
+                subprocess.call(cmd, shell = True)
+            except:
+                log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")
+                continue 
             
             os.remove(localPath.replace(".exr", "_t.exr"))
         
