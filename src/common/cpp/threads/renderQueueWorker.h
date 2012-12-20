@@ -27,6 +27,12 @@ public:
 private:
 };
 
+namespace EventQueue{
+	struct RandomPixel{
+		RV_PIXEL pixel;
+		int x, y;
+	};
+};
 
 static MComputation renderComputation;
 

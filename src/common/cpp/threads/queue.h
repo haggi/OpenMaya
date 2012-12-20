@@ -5,38 +5,47 @@
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition_variable.hpp"
 
+
 namespace EventQueue 
 {
-
-struct Event
-{
-	enum Types{
-		INTERRUPT = 0,
-		TILEDONE = 1,
-		FRAMEDONE = 2,
-		RENDERDONE = 3,
-		PRETILE = 4,
-		FRAMEUPDATE = 5,
-		IPRSTART = 6,
-		IPRSTOP = 7,
-		IPRPAUSE = 8,
-		IPRREMOVE = 9,
-		IPRUPDATE = 10,
-		IPRFRAMEDONE = 11,
-		STARTRENDER = 12,
-		FINISH = 13,
-		IPRUPDATESCENE = 14,
-		USER = 15
-	};
-	Types type;
-	void *data;
-	size_t tile_xmin, tile_xmax, tile_ymin, tile_ymax;
-	Event()
+	struct Event
 	{
-		type = INTERRUPT;
-		data = NULL;
-	}
-};
+		enum Types{
+			INTERRUPT = 0,
+			TILEDONE = 1,
+			FRAMEDONE = 2,
+			RENDERDONE = 3,
+			PRETILE = 4,
+			FRAMEUPDATE = 5,
+			IPRSTART = 6,
+			IPRSTOP = 7,
+			IPRPAUSE = 8,
+			IPRREMOVE = 9,
+			IPRUPDATE = 10,
+			IPRFRAMEDONE = 11,
+			STARTRENDER = 12,
+			FINISH = 13,
+			IPRUPDATESCENE = 14,
+			USER = 15,
+			PIXELSDONE = 16
+		};
+		enum PixelMode{
+			RECT = 0,
+			PIXELS = 1
+		};
+		Types type;
+		PixelMode pixelMode;
+		size_t numPixels;
+		void *data;
+		size_t tile_xmin, tile_xmax, tile_ymin, tile_ymax;
+		Event()
+		{
+			type = INTERRUPT;
+			data = NULL;
+			pixelMode = RECT;
+			numPixels = 0;
+		}
+	};
 
 
 template<typename Data>

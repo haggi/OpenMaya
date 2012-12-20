@@ -47,9 +47,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def updateTest(self, dummy = None):
         print "UpdateTest", dummy             
 
-    def addUserTabs(self):
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("AOVs"))    
-        
     def updateEnvironment(self, dummy=None):
         envDict = self.rendererTabUiDict['environment']
         envType = self.renderGlobalsNode.environmentType.get()
@@ -74,23 +71,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             envDict['gradientHorizon'].setEnable(False)
             envDict['gradientZenit'].setEnable(False)
             envDict['environmentMap'].setEnable(True)
-
-    def AppleseedAOVsCreateTab(self):
-        log.debug("AppleseedAOVsCreateTab()")
-        self.createGlobalsNode()
-        parentForm = pm.setParent(query = True)
-        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
-        scLo = self.rendererName + "AOScrollLayout"
-        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label="AOVs frame", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1 = False)
-        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
-        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
-                    
-
-    def AppleseedAOVsUpdateTab(self):
-        log.debug("AppleseedAOVsUpdateTab()")
             
     def AppleseedRendererCreateTab(self):
         log.debug("AppleseedRendererCreateTab()")

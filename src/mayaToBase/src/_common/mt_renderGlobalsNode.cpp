@@ -2,7 +2,6 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnGenericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
-#include <maya/MFnMessageAttribute.h>
 
 #include "mtap_renderGlobalsNode.h"
 
@@ -33,7 +32,6 @@ MObject MayaToAppleseedGlobals::optimizedTexturePath;
 MObject MayaToAppleseedGlobals::sceneScale;
 MObject MayaToAppleseedGlobals::latlongHoShift;
 MObject MayaToAppleseedGlobals::latlongVeShift;
-MObject MayaToAppleseedGlobals::AOVs;
 
 
 
@@ -57,7 +55,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	MFnTypedAttribute tAttr;
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
-	MFnMessageAttribute mAttr;
 	MStatus stat = MStatus::kSuccess;
 
 	bitdepth = eAttr.create( "bitdepth", "bitdepth", 3, &stat);
@@ -171,10 +168,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	latlongVeShift = nAttr.create("latlongVeShift", "latlongVeShift",  MFnNumericData::kFloat, .0f);
 	CHECK_MSTATUS(addAttribute( latlongVeShift ));
-
-	AOVs = mAttr.create("AOVs", "AOVs");
-	mAttr.setArray(true);
-	CHECK_MSTATUS(addAttribute( AOVs ));
 
 	return stat;
 

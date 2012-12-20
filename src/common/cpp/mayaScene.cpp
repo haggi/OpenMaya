@@ -608,7 +608,7 @@ void MayaScene::setCurrentCamera(MDagPath camDagPath)
 	mo->index = (int)(this->camList.size() - 1);
 }
 
-bool MayaScene::updateSceneNew()
+bool MayaScene::updateScene()
 {
 	logger.debug(MString("MayaScene::updateSceneNew."));
 
@@ -678,149 +678,6 @@ bool MayaScene::updateSceneNew()
 	return true;
 }
 
-bool MayaScene::updateScene()
-{
-	
-	if(this->renderGlobals->currentMbElement.elementType == MbElement::XForm )
-		logger.debug(MString("MayaScene::updateScene for XForm step"));
-	if(this->renderGlobals->currentMbElement.elementType == MbElement::Geo )
-		logger.debug(MString("MayaScene::updateScene for Deform step"));
-	if(this->renderGlobals->currentMbElement.elementType == MbElement::Both )
-		logger.debug(MString("MayaScene::updateScene for Deform and XForm step"));
-
-	int numElements = (int)this->objectList.size();
-	for( int objId = 0; objId < numElements; objId++)
-	{
-		MayaObject *obj = (MayaObject *)this->objectList[objId];
-
-		// check if the geometry shape is supported
-		if( !obj->geometryShapeSupported() )
-			continue;
-
-		// if this is not the very first time step of a rendering
-		// we must be in a motionblur step
-		// isMbStartStep will be always true in an animation without motionblur
-		if( !this->renderGlobals->isMbStartStep )
-		{
-			if( !obj->motionBlurred )
-			{
-				continue;
-			}
-		}
-				
-		// clear transformation matrices if we are at very first mb step
-		// we can have xform and deform steps for the same timeframe
-		// currentMbStep is only 0 for the very first step
-		if( this->renderGlobals->isMbStartStep && this->renderGlobals->isTransformStep())
-		{
-			obj->transformMatrices.clear();			
-		}
-
-		if( this->renderGlobals->isTransformStep() )
-		{
-			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(obj);
-			//continue;
-		}
-
-		// if we are here at the very first motionBlur step, then remove export filesNames, export filenames will be automatically filled by the exporter
-		// at start frame, always clear
-		// not at start frame only clear if shapedeformation is detected
-		if( this->renderGlobals->isMbStartStep )
-		{
-			if( this->renderGlobals->currentFrameNumber != this->renderGlobals->startFrame )
-			{
-				if( obj->shapeConnected && this->renderGlobals->detectShapeDeform)
-				{
-					obj->exportFileNames.clear();
-				}
-			}else{
-				obj->exportFileNames.clear();
-			}
-		}
-		
-		if( this->renderGlobals->isMbStartStep )
-		{
-			if(this->renderGlobals->isTransformStep())
-			{
-			}
-			if(this->renderGlobals->isDeformStep())
-			{
-				if( (!obj->isInstancerObject) && 
-					( obj->instanceNumber == 0))
-				{
-					if( obj->exportFileNames.size() == 0)
-					{
-						this->deformUpdateCallback(obj);
-					}
-				}
-			}
-		}else{
-			// only export if shape has deformation, of course only for original shapes
-			if(obj->shapeConnected && this->renderGlobals->detectShapeDeform && (!obj->isInstancerObject) && (obj->instanceNumber == 0))
-			{
-				// during motion step
-				if( this->renderGlobals->isDeformStep() )
-				{
-					// in case of geometryMotionblur, we need only the first export filename, no additional steps
-					if(obj->geometryMotionblur )
-						continue;
-					logger.debug(MString("Deforming object not at start frame -> exporting ") + obj->shortName);
-					this->deformUpdateCallback(obj);
-				}
-			}
-		}
-	}
-
-	numElements = (int)this->camList.size();
-	for( int objId = 0; objId < numElements; objId++)
-	{
-		MayaObject *obj = (MayaObject *)this->camList[objId];
-		if( this->renderGlobals->currentMbStep == 0)
-			obj->transformMatrices.clear();
-
-		if( this->renderGlobals->isTransformStep() )
-		{
-			logger.debug(MString("Adding cam transform at time ") + this->renderGlobals->currentFrameNumber);
-			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(obj);
-		}
-		if( obj->transformMatrices.size() > 1)
-		{
-			MMatrix m1 = obj->transformMatrices[0];
-			MMatrix m2 = obj->transformMatrices[1];
-			logger.debug(MString("CamMatrix1: t: ") + m1[3][0] + " " + m1[3][1] + " " + m1[3][2]);
-			logger.debug(MString("CamMatrix2: t: ") + m2[3][0] + " " + m2[3][1] + " " + m2[3][2]);
-		}
-	}
-
-	numElements = (int)this->lightList.size();
-	for( int objId = 0; objId < numElements; objId++)
-	{
-		MayaObject *obj = (MayaObject *)this->lightList[objId];
-		if( this->renderGlobals->currentMbStep == 0 )
-			obj->transformMatrices.clear();
-
-		if( this->renderGlobals->isTransformStep() )
-		{
-			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(obj);
-		}
-	}
-
-	// Recreate the instancer array for every frame. If we are in a motion blur step, update it.
-	// With no motionblur, clear the array and re-parse the instancers. This is necessary because the contents of the instancer
-	// can vary from frame to frame e.g. if instances disappear with the death of a particle
-	if( !this->renderGlobals->doMb )
-	{
-		this->clearInstancerNodeList();
-		this->parseInstancer();
-	}else{
-		this->updateInstancer();
-	}
-
-	return true;
-}
 
 void MayaScene::clearObjList(std::vector<MayaObject *>& objList)
 {
@@ -1204,8 +1061,7 @@ bool MayaScene::doFrameJobs()
 
 				// TODO: dynamic runup necessary?
 
-				//this->updateScene();
-				this->updateSceneNew();
+				this->updateScene();
 				logger.info(MString("update scene done"));
 				this->renderGlobals->currentMbStep++;
 			}

@@ -1,10 +1,6 @@
 import pymel.core as pm
 import logging
 import Renderer as Renderer
-import traceback
-import sys
-import os
-import optimizeTextures
 
 reload(Renderer)
 
@@ -47,9 +43,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def updateTest(self, dummy = None):
         print "UpdateTest", dummy             
 
-    def addUserTabs(self):
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("AOVs"))    
-        
     def updateEnvironment(self, dummy=None):
         envDict = self.rendererTabUiDict['environment']
         envType = self.renderGlobalsNode.environmentType.get()
@@ -74,23 +67,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             envDict['gradientHorizon'].setEnable(False)
             envDict['gradientZenit'].setEnable(False)
             envDict['environmentMap'].setEnable(True)
-
-    def AppleseedAOVsCreateTab(self):
-        log.debug("AppleseedAOVsCreateTab()")
-        self.createGlobalsNode()
-        parentForm = pm.setParent(query = True)
-        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
-        scLo = self.rendererName + "AOScrollLayout"
-        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label="AOVs frame", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1 = False)
-        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
-        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
-                    
-
-    def AppleseedAOVsUpdateTab(self):
-        log.debug("AppleseedAOVsUpdateTab()")
             
     def AppleseedRendererCreateTab(self):
         log.debug("AppleseedRendererCreateTab()")
@@ -99,7 +75,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True):
                 with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Adaptive Sampling:", value1 = False, cc = self.AppleseedRendererUpdateTab)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".adaptiveSampling", index = 2)
@@ -161,10 +137,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
                         envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
                         #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
-                        ui = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
-                        ui = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
@@ -198,11 +170,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         if len(filename) > 0:
             print "Got filename", filename
             self.rendererTabUiDict['xml']['xmlFile'].setText(filename[0])
-    
-    def dirBrowse(self, args=None):
-        dirname = pm.fileDialog2(fileMode=3, caption="Select dir")
-        if len(dirname) > 0:
-            self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
         
     def AppleseedTranslatorCreateTab(self):
         log.debug("AppleseedTranslatorCreateTab()")
@@ -212,12 +179,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         scLo = self.rendererName + "TrScrollLayout"
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn = True, width = 400):
+            with pm.columnLayout(self.rendererName + "TrColumnLayout", adjustableColumn = True):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".assemblyExportType")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Assembly Export Type", at=self.renderGlobalsNodeName + ".assemblyExportType", ei = self.getEnumList(attr))                     
+                    ui = pm.attrEnumOptionMenuGrp(label = "Assembly Export Type", at=self.renderGlobalsNodeName + ".assemblyExportType", ei = self.getEnumList(attr)) 
                 with pm.frameLayout(label="Appleseed XML export", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
@@ -229,17 +196,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
                         pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
-                with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        optiDict = {}
-                        pm.text(label="OptimizedTex Dir:", width = 60, align="right")
-                        self.rendererTabUiDict['opti'] = optiDict
-                        pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
-                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get(), width = 60)
-                        pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
-                with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
-                    ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".sceneScale", index = 2 )
                          
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
@@ -254,17 +210,14 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Appleseed specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        # we will have a thinlens camera only
-        #pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
+        pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
-        
-        # mesh
-        pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue = False)
-
-        # 
-        
-    def setImageName(self):
+    
+    def renderProcedure(self):
+        log.debug("renderProcedure")
+        self.createGlobalsNode()    
+        self.preRenderProcedure()
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
         self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
@@ -277,75 +230,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         except:
             pass
         self.renderGlobalsNode.imageName.set(imageName)        
-    
-    def removeLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        try:
-            if os.path.exists(logfile):
-                os.remove(logfile)
-        except:
-            pass
-
-    def showLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        if os.path.exists(logfile):
-            lh = open(logfile, 'r')
-            rl = lh.readlines()
-            for l in rl:
-                sys.__stdout__.write(l)
-            
-    def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
-        log.debug("renderProcedure")
-        self.removeLogFile()
-        print "renderProcedure", width, height, doShadows, doGlow, camera, options
-        self.createGlobalsNode()    
-        self.preRenderProcedure()
-        self.setImageName()
+        pm.mayatoappleseed()
         
-        if pm.about(batch=True):
-            pm.mayatoappleseed()
-        else:
-            pm.mayatoappleseed(width=width, height=height, camera=camera)
-            
-        if not self.ipr_isrunning:
-            self.showLogFile()
-        self.postRenderProcedure()
-            
-        
-    def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
-        self.ipr_isrunning = True
-        log.debug("startIprRenderProcedure")
-        print "startIprRenderProcedure", editor, resolutionX, resolutionY, camera
-        self.createGlobalsNode()    
-        self.preRenderProcedure()
-        self.setImageName()
-        pm.mayatoappleseed(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
-        self.postRenderProcedure()
-        
-    def stopIprRenderProcedure(self):
-        self.ipr_isrunning = False
-        log.debug("stopIprRenderProcedure")
-        pm.mayatoappleseed(stopIpr=True)
-        self.postRenderProcedure()
-            
-    def preRenderProcedure(self):
-        self.createGlobalsNode()
-        if self.renderGlobalsNode.threads.get() == 0:
-            #TODO this is windows only, search for another solution...
-            numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
-            self.renderGlobalsNode.threads.set(numThreads)
-        if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
-            optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
-            if not os.path.exists(optimizedPath):
-                optimizedPath.makedirs()
-            self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
-
-        #craete optimized exr textures
-        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
-
-    def postRenderProcedure(self):
-        optimizeTextures.postRenderOptimizeTextures()
-
 
 def theRenderer():
     return AppleseedRenderer.theRenderer()
@@ -355,7 +241,6 @@ def initRenderer():
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
     except:
-        traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")
         
 def unregister():

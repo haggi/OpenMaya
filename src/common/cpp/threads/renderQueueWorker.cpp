@@ -321,6 +321,35 @@ void RenderQueueWorker::startRenderQueueWorker()
 			delete[]  (RV_PIXEL *)e.data;
 			break;
 
+		case EventQueue::Event::PIXELSDONE:
+			logger.debug("Event::PIXELSDONE");
+			if( MRenderView::doesRenderEditorExist())
+			{
+				int width = mayaScenePtr->renderGlobals->imgWidth;
+				int height = mayaScenePtr->renderGlobals->imgHeight;
+				EventQueue::RandomPixel *pixels = (EventQueue::RandomPixel *)e.data;
+				logger.debug(MString("PIXELSDONE::updating ") + e.numPixels + " pixels");
+				for( size_t pId = 0; pId < e.numPixels; pId++)
+				{
+					//MRenderView::updatePixels(pixels[pId].x, pixels[pId].y, pixels[pId].x, pixels[pId].y, &pixels[pId].pixel);  
+					RV_PIXEL p;
+					p.r = 128;
+					p.g = 128;
+					p.b = 255;
+					p.a = 128.0f;
+					MRenderView::updatePixels(pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
+					if( pixels[pId].x > (width -1))
+						logger.debug(MString("pixel:  x:") + pixels[pId].x + " y:" + pixels[pId].y + " col " + pixels[pId].pixel.r + " " + pixels[pId].pixel.g + " " + pixels[pId].pixel.b);
+					if( pixels[pId].y > (height -1))
+						logger.debug(MString("pixel:  x:") + pixels[pId].x + " y:" + pixels[pId].y + " col " + pixels[pId].pixel.r + " " + pixels[pId].pixel.g + " " + pixels[pId].pixel.b);
+					//MRenderView::updatePixels(pixels[pId].x, pixels[pId].y, pixels[pId].x, pixels[pId].y, &pixels[pId].pixel);  
+					//MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
+				}
+				MRenderView::refresh(0, width-1, 0, height-1);
+			}
+			delete[]  (EventQueue::RandomPixel *)e.data;
+			break;
+		
 		case EventQueue::Event::PRETILE:
 			if( !isIpr )
 			{

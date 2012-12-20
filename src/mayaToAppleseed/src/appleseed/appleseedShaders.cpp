@@ -113,8 +113,8 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	MStringArray colorProfiles;
 	colorProfiles.append("srgb"); //0 == none == default == sRGB
 	colorProfiles.append("srgb"); //1 == undefined == default == sRGB
-	colorProfiles.append("srgb"); //2 == sRGB
-	colorProfiles.append("linear_rgb"); //3 == linear_rgb
+	colorProfiles.append("linear_rgb"); //2 == linear_rgb
+	colorProfiles.append("srgb"); //3 == sRGB
 	colorProfiles.append("linear_rgb"); //4 == linear_rec_709
 	colorProfiles.append("linear_rgb"); //5 == hdtv_rec_709
 	MString colorProfile = colorProfiles[profileId];

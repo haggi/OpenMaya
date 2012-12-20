@@ -45,30 +45,34 @@ public:
 	
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
 	bool parseSceneNormal(); // pase whole scene and save/analyze objects
-
 	bool parseScene(ParseType ptype = NORMALPARSE);
 
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
+
 	bool updateScene(); // update all necessary objects
-	bool updateSceneNew(); // update all necessary objects
+	bool updateInstancer(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject *) = 0;
 	virtual void deformUpdateCallback(MayaObject *) = 0;
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
-	bool updateInstancer(); // update all necessary objects
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
 	virtual bool translateShapes(int timeStep) = 0; // overwrite this in your definition
+
 	bool renderScene();
 	virtual bool doPreRenderJobs() = 0;  // overwrite this in your definition
 	bool doFrameJobs(); // overwrite this in your definition
+
 	static void theRenderThread( MayaScene *mScene);
 	void startRenderThread();
 	virtual void stopRendering() = 0;
+
 	// the renderImage method is expected to fire of a render process somehow.
 	virtual bool renderImage() = 0; // the actual render job
+
 	virtual bool doPreFrameJobs() = 0; // overwrite this in your definition
 	virtual bool doPostFrameJobs() = 0; // overwrite this in your definition
 	virtual bool doPostRenderJobs() = 0; // overwrite this in your definition
+
 	void clearInstancerNodeList();
 	void clearObjList(std::vector<MayaObject *>& objList);
 	bool getShadingGroups();

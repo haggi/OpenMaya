@@ -5,21 +5,17 @@
 
 # Compiled Dynamic libraries
 *.so
-*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
-*.lib
-
-*.ilk
-
 
 # Compiled Python scripts
 *.pyc
-
-*pydevproject
-src/mayaToMitsuba
-src/mayaToLux
-src/mayaToKray
+Debug/
+Release/
+ipch/
+*.sdf
+*.suo
+*.opensdf
