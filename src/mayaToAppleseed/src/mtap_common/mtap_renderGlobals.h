@@ -44,6 +44,17 @@ public:
 	float latlongHoShift;
 	float latlongVeShift;
 
+	int skyModel;
+	float ground_albedo;
+	float horizon_shift;
+	float luminance_multiplier;
+	float saturation_multiplier;
+	float sun_phi;
+	float sun_theta;
+	float turbidity;
+	float turbidity_max;
+	float turbidity_min;
+
 	virtual MString getImageExt();
 
 private:

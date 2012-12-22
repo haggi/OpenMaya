@@ -276,6 +276,7 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	MFnDependencyNode globalsFn(renderGlobals->renderGlobalsMobject);
 	MString envMapAttrName = envMapName;
 	this->defineTexture(globalsFn, envMapAttrName, envMapName);
+	int skyModel = this->renderGlobals->skyModel;
 
 	asf::auto_release_ptr<asr::EnvironmentEDF> environmentEDF;
 
@@ -322,6 +323,35 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	            asr::ParamArray()
 				.insert("exitance", envMapName.asChar())
 				.insert("exitance_multiplier", renderGlobals->environmentIntensity));
+		break;
+	case 4: // physical sky
+		if(skyModel == 0) // preetham
+		{
+			environmentEDF = asr::PreethamEnvironmentEDFFactory().create(
+					"sky_edf",
+					asr::ParamArray()
+					.insert("horizon_shift", renderGlobals->horizon_shift)
+					.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
+					.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
+					.insert("sun_phi", renderGlobals->sun_phi)
+					.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
+					.insert("turbidity", renderGlobals->turbidity)
+					.insert("turbidity_max", renderGlobals->turbidity_max)
+					.insert("turbidity_min", renderGlobals->turbidity_min));
+		}else{ // hosek
+			environmentEDF = asr::HosekEnvironmentEDFFactory().create(
+					"sky_edf",
+					asr::ParamArray()
+					.insert("ground_albedo", renderGlobals->ground_albedo)
+					.insert("horizon_shift", renderGlobals->horizon_shift)
+					.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
+					.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
+					.insert("sun_phi", renderGlobals->sun_phi)
+					.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
+					.insert("turbidity", renderGlobals->turbidity)
+					.insert("turbidity_max", renderGlobals->turbidity_max)
+					.insert("turbidity_min", renderGlobals->turbidity_min));
+		}
 		break;
 	default:
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(

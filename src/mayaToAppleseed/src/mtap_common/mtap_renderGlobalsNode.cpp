@@ -35,7 +35,16 @@ MObject MayaToAppleseedGlobals::latlongHoShift;
 MObject MayaToAppleseedGlobals::latlongVeShift;
 MObject MayaToAppleseedGlobals::AOVs;
 
-
+MObject MayaToAppleseedGlobals::ground_albedo;
+MObject MayaToAppleseedGlobals::horizon_shift;
+MObject MayaToAppleseedGlobals::luminance_multiplier;
+MObject MayaToAppleseedGlobals::saturation_multiplier;
+MObject MayaToAppleseedGlobals::sun_phi;
+MObject MayaToAppleseedGlobals::sun_theta;
+MObject MayaToAppleseedGlobals::turbidity;
+MObject MayaToAppleseedGlobals::turbidity_max;
+MObject MayaToAppleseedGlobals::turbidity_min;
+MObject MayaToAppleseedGlobals::skyModel;
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {}
@@ -126,6 +135,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "Gradient", 1 );
 	stat = eAttr.addField( "Latitude Longitude", 2 );
 	stat = eAttr.addField( "Mirror Ball", 3 );
+	stat = eAttr.addField( "Physical Sky", 4 );
 	CHECK_MSTATUS(addAttribute( environmentType ));
 
 	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
@@ -175,6 +185,38 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	AOVs = mAttr.create("AOVs", "AOVs");
 	mAttr.setArray(true);
 	CHECK_MSTATUS(addAttribute( AOVs ));
+
+	ground_albedo = nAttr.create("ground_albedo", "ground_albedo",  MFnNumericData::kFloat, .0f);
+	CHECK_MSTATUS(addAttribute( ground_albedo ));
+
+	horizon_shift = nAttr.create("horizon_shift", "horizon_shift",  MFnNumericData::kFloat, -0.05f);
+	CHECK_MSTATUS(addAttribute( horizon_shift ));
+
+	luminance_multiplier = nAttr.create("luminance_multiplier", "luminance_multiplier",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( luminance_multiplier ));
+
+	saturation_multiplier = nAttr.create("saturation_multiplier", "saturation_multiplier",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( saturation_multiplier ));
+
+	sun_phi = nAttr.create("sun_phi", "sun_phi",  MFnNumericData::kFloat, .0f);
+	CHECK_MSTATUS(addAttribute( sun_phi ));
+
+	sun_theta = nAttr.create("sun_theta", "sun_theta",  MFnNumericData::kFloat, 60.0f);
+	CHECK_MSTATUS(addAttribute( sun_theta ));
+
+	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( turbidity ));
+
+	turbidity_max = nAttr.create("turbidity_max", "turbidity_max",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( turbidity_max ));
+
+	turbidity_min = nAttr.create("turbidity_min", "turbidity_min",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( turbidity_min ));
+
+	skyModel = eAttr.create( "skyModel", "skyModel", 0, &stat);
+	stat = eAttr.addField( "Preetham", 0 );
+	stat = eAttr.addField( "Hosek", 1 );
+	CHECK_MSTATUS(addAttribute( skyModel ));
 
 	return stat;
 

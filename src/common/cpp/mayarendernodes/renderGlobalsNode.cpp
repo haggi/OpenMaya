@@ -38,6 +38,10 @@ MObject MayaRenderGlobalsNode::basePath;
 MObject MayaRenderGlobalsNode::imagePath;
 
 MObject MayaRenderGlobalsNode::maxTraceDepth;
+MObject MayaRenderGlobalsNode::exportSceneFile;
+MObject MayaRenderGlobalsNode::exportSceneFileName;
+MObject MayaRenderGlobalsNode::sceneScale;
+
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
@@ -59,6 +63,16 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
 	MStatus stat = MStatus::kSuccess;
+
+	sceneScale = nAttr.create("sceneScale", "sceneScale",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( sceneScale ));
+
+	exportSceneFile = nAttr.create("exportSceneFile", "exportSceneFile",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( exportSceneFile ));
+
+	exportSceneFileName = tAttr.create("exportSceneFileName", "exportSceneFileName",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( exportSceneFileName ));
 
 	// sampling adaptive
 	minSamples = nAttr.create("minSamples", "minSamples", MFnNumericData::kInt, 1);

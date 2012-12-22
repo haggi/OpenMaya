@@ -44,11 +44,24 @@ private:
 	static	  MObject environmentIntensity;
 	static	  MObject latlongHoShift;
 	static	  MObject latlongVeShift;
+	
+	//sky shader
+	static	  MObject skyModel;
+	static	  MObject ground_albedo;
+	static	  MObject horizon_shift;
+	static	  MObject luminance_multiplier;
+	static	  MObject saturation_multiplier;
+	static	  MObject sun_phi;
+	static	  MObject sun_theta;
+	static	  MObject turbidity;
+	static	  MObject turbidity_max;
+	static	  MObject turbidity_min;
 
 	static	  MObject imageFormat;
 	static	  MObject sceneScale;
 
 	static	  MObject AOVs;
+
 
 };
 

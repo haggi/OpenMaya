@@ -54,6 +54,11 @@ private:
 	// raytracing
 	static    MObject maxTraceDepth;
 
+	static	  MObject exportSceneFile;
+	static	  MObject exportSceneFileName;
+	static	  MObject sceneScale;
+
+
 
 };
 

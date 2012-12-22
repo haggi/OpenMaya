@@ -49,6 +49,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
     def addUserTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("AOVs"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
         
     def updateEnvironment(self, dummy=None):
         envDict = self.rendererTabUiDict['environment']
@@ -74,6 +75,62 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             envDict['gradientHorizon'].setEnable(False)
             envDict['gradientZenit'].setEnable(False)
             envDict['environmentMap'].setEnable(True)
+
+    def AppleseedEnvironmentCreateTab(self):
+        log.debug("AppleseedEnvironmentCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query = True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        scLo = self.rendererName + "AOScrollLayout"
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
+                with pm.frameLayout(label="Environment Lighting", collapsable = False):
+                    envDict = {}
+                    self.rendererTabUiDict['environment'] = envDict
+                    attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
+                    ui = pm.attrEnumOptionMenu(label = "Environemnt Type", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
+                    #modify via script job
+                    
+                with pm.frameLayout(label="Environment Colors", collapsable = False):
+                    ui = pm.floatFieldGrp(label="Environemnt Intensity:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".environmentIntensity", index = 2 )                    
+                    envDict['environmentColor'] = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
+                    envDict['gradientHorizon'] = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
+                    envDict['gradientZenit'] = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
+                    envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
+                    envDict['latLongHShift'] = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['latLongHShift'], self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
+                    envDict['latLongVShift'] = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['latLongVShift'], self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
+                    
+                with pm.frameLayout(label="Physical Sky", collapsable = False):
+                    attr = pm.Attribute(self.renderGlobalsNodeName + ".skyModel")
+                    envDict['pskModel'] = pm.attrEnumOptionMenu(label = "Sky Model", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".skyModel", ei = self.getEnumList(attr)) 
+                    envDict['pskGrAlbedo'] = pm.floatFieldGrp(label="Ground Albedo:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskGrAlbedo'], self.renderGlobalsNodeName + ".ground_albedo", index = 2 )                    
+                    envDict['pskGrHShit'] = pm.floatFieldGrp(label="Horizon Shift:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskGrHShit'], self.renderGlobalsNodeName + ".horizon_shift", index = 2 )                    
+                    envDict['pskLumMulti'] = pm.floatFieldGrp(label="Luminance Multiplier:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskLumMulti'], self.renderGlobalsNodeName + ".luminance_multiplier", index = 2 )                    
+                    envDict['pskSatMulti'] = pm.floatFieldGrp(label="Saturation Multiplier:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskSatMulti'], self.renderGlobalsNodeName + ".saturation_multiplier", index = 2 )                    
+                    envDict['pskSunAzi'] = pm.floatFieldGrp(label="Sun Azimut:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskSunAzi'], self.renderGlobalsNodeName + ".sun_phi", index = 2 )                    
+                    envDict['pskSunEle'] = pm.floatFieldGrp(label="Sun Elevation:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskSunEle'], self.renderGlobalsNodeName + ".sun_theta", index = 2 )                    
+                    envDict['pskTurb'] = pm.floatFieldGrp(label="Turbidity:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskTurb'], self.renderGlobalsNodeName + ".turbidity", index = 2 )                    
+                    envDict['pskTurbMax'] = pm.floatFieldGrp(label="Turbidity Max:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskTurbMax'], self.renderGlobalsNodeName + ".turbidity_max", index = 2 )                    
+                    envDict['pskTurbMin'] = pm.floatFieldGrp(label="Turbidity Min:", value1 = 1.0, numberOfFields = 1)
+                    pm.connectControl(envDict['pskTurbMin'], self.renderGlobalsNodeName + ".turbidity_min", index = 2 )                    
+                    
+        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
+        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+                    
+
+    def AppleseedEnvironmentUpdateTab(self):
+        log.debug("AppleseedEnvironmentUpdateTab()")
 
     def AppleseedAOVsCreateTab(self):
         log.debug("AppleseedAOVsCreateTab()")
@@ -145,26 +202,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".glossyDepth", index = 2 )
                         ui = pm.intFieldGrp(label="Direct Light Samples:", value1 = 4, numberOfFields = 1)
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".directLightSamples", index = 2 )
-                    with pm.frameLayout(label="Environment Lighting", collapsable = True, collapse=True):
-                        envDict = {}
-                        self.rendererTabUiDict['environment'] = envDict
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
-                        ui = pm.attrEnumOptionMenu(label = "Environemnt Type", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
-                        ui = pm.floatFieldGrp(label="Environemnt Intensity:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".environmentIntensity", index = 2 )
-                        
-                        envDict['environmentColor'] = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentColor")
-                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientHorizon")
-                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
-                        envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
-                        ui = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
-                        ui = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):

@@ -186,7 +186,37 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		
 		if(!getFloat(MString("latlongVeShift"), appleseedGlobals, this->latlongVeShift))
 			throw("problem reading appleseedGlobals.latlongVeShift");
-		
+
+		if(!getEnum(MString("skyModel"), appleseedGlobals, this->skyModel))
+			throw("problem reading appleseedGlobals.skyModel");
+
+		if(!getFloat(MString("ground_albedo"), appleseedGlobals, this->ground_albedo))
+			throw("problem reading appleseedGlobals.ground_albedo");
+
+		if(!getFloat(MString("horizon_shift"), appleseedGlobals, this->horizon_shift))
+			throw("problem reading appleseedGlobals.horizon_shift");
+
+		if(!getFloat(MString("luminance_multiplier"), appleseedGlobals, this->luminance_multiplier))
+			throw("problem reading appleseedGlobals.luminance_multiplier");
+
+		if(!getFloat(MString("saturation_multiplier"), appleseedGlobals, this->saturation_multiplier))
+			throw("problem reading appleseedGlobals.saturation_multiplier");
+
+		if(!getFloat(MString("sun_phi"), appleseedGlobals, this->sun_phi))
+			throw("problem reading appleseedGlobals.sun_phi");
+
+		if(!getFloat(MString("sun_theta"), appleseedGlobals, this->sun_theta))
+			throw("problem reading appleseedGlobals.sun_theta");
+
+		if(!getFloat(MString("turbidity"), appleseedGlobals, this->turbidity))
+			throw("problem reading appleseedGlobals.turbidity");
+
+		if(!getFloat(MString("turbidity_max"), appleseedGlobals, this->turbidity_max))
+			throw("problem reading appleseedGlobals.turbidity_max");
+
+		if(!getFloat(MString("turbidity_min"), appleseedGlobals, this->turbidity_min))
+			throw("problem reading appleseedGlobals.turbidity_min");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;

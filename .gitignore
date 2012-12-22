@@ -22,4 +22,4 @@
 *pydevproject
 src/mayaToMitsuba
 src/mayaToLux
-src/mayaToKray
+src/mayaToNox

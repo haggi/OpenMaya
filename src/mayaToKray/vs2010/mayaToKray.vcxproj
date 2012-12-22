@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug2014|Win32">
+      <Configuration>Debug2014</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug2014|x64">
+      <Configuration>Debug2014</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2014|Win32">
+      <Configuration>Release2014</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2014|x64">
+      <Configuration>Release2014</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;KrayLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;c:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\lib\Debug</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;c:\Users\haggi\coding\C++Libraries\Boost147_2010\lib</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Release/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Release/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToKray.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2008\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Release/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2008\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Release/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToKray.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Release/mayaToKray.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToKray.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Release/mayaToKray.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToKray.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Release\mayaToKray.mll ..\deployment\mayaToKray\plug-ins\mayaToKray.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
+    <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
+    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\src\kray\krayEventListener.cpp" />
+    <ClCompile Include="..\src\kray\krayGeometry.cpp" />
+    <ClCompile Include="..\src\kray\krayLights.cpp" />
+    <ClCompile Include="..\src\kray\krayMaterials.cpp" />
+    <ClCompile Include="..\src\kray\krayRenderer.cpp" />
+    <ClCompile Include="..\src\kray\krayTestScene.cpp" />
+    <ClCompile Include="..\src\mayaToKray.cpp" />
+    <ClCompile Include="..\src\mtkr_common\mtkr_mayaObject.cpp" />
+    <ClCompile Include="..\src\mtkr_common\mtkr_mayaScene.cpp" />
+    <ClCompile Include="..\src\mtkr_common\mtkr_renderGlobals.cpp" />
+    <ClCompile Include="..\src\mtkr_common\mtkr_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\pluginMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h" />
+    <ClInclude Include="..\..\common\cpp\mayaObject.h" />
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
+    <ClInclude Include="..\..\common\cpp\mayaScene.h" />
+    <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
+    <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
+    <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h" />
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
+    <ClInclude Include="..\..\common\cpp\threads\queue.h" />
+    <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
+    <ClInclude Include="..\..\common\cpp\threads\threads.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\src\kray\krayEventListener.h" />
+    <ClInclude Include="..\src\kray\krayLights.h" />
+    <ClInclude Include="..\src\kray\krayMaterials.h" />
+    <ClInclude Include="..\src\kray\krayRenderer.h" />
+    <ClInclude Include="..\src\kray\krayTestScene.h" />
+    <ClInclude Include="..\src\mayaToKray.h" />
+    <ClInclude Include="..\src\mtkr_common\mtkr_mayaObject.h" />
+    <ClInclude Include="..\src\mtkr_common\mtkr_mayaScene.h" />
+    <ClInclude Include="..\src\mtkr_common\mtkr_renderGlobals.h" />
+    <ClInclude Include="..\src\mtkr_common\mtkr_renderGlobalsNode.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
