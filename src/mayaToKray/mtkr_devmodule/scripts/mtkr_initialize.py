@@ -212,8 +212,6 @@ class KrayRenderer(Renderer.MayaToRenderer):
                 
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
-        self.removeLogFile()
-        print "renderProcedure", width, height, doShadows, doGlow, camera, options
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
@@ -223,8 +221,6 @@ class KrayRenderer(Renderer.MayaToRenderer):
         else:
             pm.mayatokray(width=width, height=height, camera=camera)
             
-        if not self.ipr_isrunning:
-            self.showLogFile()
         self.postRenderProcedure()
                 
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):

@@ -23,8 +23,6 @@ public:
 	int diffuseDepth;
 	int glossyDepth;
 	int directLightSamples;
-	bool exportXMLFile;
-	MString exportXMLFileName;
 	int assemblyExportType;
 	MString assemblyExportTypeString;
 	int assemblyPolyTheshold;

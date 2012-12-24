@@ -34,14 +34,15 @@ void setupSimpleMaterialsForMesh(Kray::Prototyper& prot,Kray::MeshSymbol& msh){
 	prot.meshTag_material(msh,0,yellowMat);	// attach yellowMat to mesh tag==0
 	prot.meshTag_material(msh,1,redMat);	// attach redMat to mesh tag==1
 }
-void setupSimpleMeshScene(Kray::Prototyper& prot){
-	Kray::MeshSymbol msh(prot);				// create a mesh
-	buildBoxMesh(prot,msh);					// call box build function
-	setupSimpleMaterialsForMesh(prot,msh);	// call material creating function
-		
-	prot.objectSet_mesh(Kray::Vector(0,0,3.5),Kray::AxesHpb().angles(12,53,43),msh,0);	// add mesh to scene with given position and orientation
 
-	prot.lightAdd_point(Kray::Vector(-1,-1,-2),Kray::Vector(1,1,1));			// add light source to scene
+void setupSimpleMeshScene(Kray::Prototyper& prot){
+	//Kray::MeshSymbol msh(prot);				// create a mesh
+	//buildBoxMesh(prot,msh);					// call box build function
+	//setupSimpleMaterialsForMesh(prot,msh);	// call material creating function
+		
+	//prot.objectSet_mesh(Kray::Vector(0,0,3.5),Kray::AxesHpb().angles(12,53,43),msh,0);	// add mesh to scene with given position and orientation
+
+	prot.lightAdd_point(Kray::Vector(-1, 5, -2),Kray::Vector(1,1,1));			// add light source to scene
 	
 	prot.background_sky(Kray::Vector(0.4,0.8,0.9),Kray::Vector(0,0,0),Kray::Vector(1,1,1),Kray::Vector(0,1,0)); // gradient background
 	

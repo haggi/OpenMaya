@@ -14,6 +14,7 @@ mtkr_MayaScene::mtkr_MayaScene():MayaScene(MayaScene::NORMAL)
 	getRenderGlobals();
 	mtkr_renderer.mtkr_scene = this;
 	mtkr_renderer.mtkr_renderGlobals = this->renderGlobals;
+	mtkr_renderer.definePrototyper();
 }
 
 mtkr_MayaScene::mtkr_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
@@ -22,6 +23,7 @@ mtkr_MayaScene::mtkr_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	this->renderType = rtype;
 	mtkr_renderer.mtkr_scene = this;
 	mtkr_renderer.mtkr_renderGlobals = this->renderGlobals;
+	mtkr_renderer.definePrototyper();
 }
 
 mtkr_MayaScene::~mtkr_MayaScene()

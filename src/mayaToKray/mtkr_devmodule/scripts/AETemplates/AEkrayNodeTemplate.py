@@ -12,7 +12,7 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
 
 
-class AEkrayNodeTemplate(BaseTemplate):
+class AEKrayNodeTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
         self.thisNode = None

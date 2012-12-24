@@ -160,6 +160,9 @@ public:
 
 	bool detectShapeDeform;
 
+	bool exportSceneFile;
+	MString exportSceneFileName;
+
 	std::vector<RenderPass *> renderPasses;
 	RenderPass *currentRenderPass;
 	int currentRenderPassElementId;

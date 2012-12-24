@@ -142,11 +142,11 @@ bool mtkr_RenderGlobals::getMtapGlobals()
 		if(!getInt(MString("glossyDepth"), krayGlobals, this->glossyDepth))
 			throw("problem reading krayGlobals.glossyDepth");
 
-		if(!getBool(MString("exportXMLFile"), krayGlobals, this->exportXMLFile))
-			throw("problem reading krayGlobals.exportXMLFile");
+		if(!getBool(MString("exportSceneFile"), krayGlobals, this->exportSceneFile))
+			throw("problem reading krayGlobals.exportSceneFile");
 
-		if(!getString(MString("exportXMLFileName"), krayGlobals, this->exportXMLFileName))
-			throw("problem reading krayGlobals.exportXMLFileName");
+		if(!getString(MString("exportSceneFileName"), krayGlobals, this->exportSceneFileName))
+			throw("problem reading krayGlobals.exportSceneFileName");
 		
 		if(!getEnum(MString("environmentType"), krayGlobals, this->environmentType, this->environmentTypeString))
 			throw("problem reading krayGlobals.environmentTypeString");

@@ -120,6 +120,9 @@ MStatus MayaToKray::doIt( const MArgList& args)
 		return MS::kFailure;
 	}	
 
+	if( rtype != MayaScene::IPR )
+		delete mayaScene;
+
 	MGlobal::displayInfo("MayaToKray rendering done.\n");
 	return MStatus::kSuccess;
 }

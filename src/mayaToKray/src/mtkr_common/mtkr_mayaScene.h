@@ -1,5 +1,5 @@
-#ifndef mtkr_MAYA_SCENE
-#define mtkr_MAYA_SCENE
+#ifndef mtkr_MAYA_SCENE_H
+#define mtkr_MAYA_SCENE_H
 
 #include <maya/MDagPathArray.h>
 #include <fstream>

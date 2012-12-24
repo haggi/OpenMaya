@@ -1,4 +1,9 @@
-#include "krayRenderer.h"
+//#include "kraysdk/symbol/mesh.h"
+//#include "kraysdk/symbol/vertexmap.h"
+//#include "kraysdk/type/double.h"
+//#include "kraysdk/type/vector.h"
+//#include "kraysdk/type/axes.h"
+
 #include "../mtkr_common/mtkr_mayaObject.h"
 #include "maya/MFnMesh.h"
 #include "maya/MItMeshPolygon.h"
@@ -6,11 +11,21 @@
 #include <maya/MFloatPointArray.h>
 #include <maya/MFloatArray.h>
 #include <maya/MFloatVectorArray.h>
+#include <maya/MTransformationMatrix.h>
+
+#include "krayRenderer.h"
+
+#include "utilities/logging.h"
+
+static Logging logger;
 
 namespace krayRender{
 
 	void KrayRenderer::defineMesh(mtkr_MayaObject *obj)
 	{
+		Kray::MeshSymbol *mesh = new Kray::MeshSymbol(*(this->pro), obj->shortName.asChar());
+
+		logger.debug(MString("Define kray mesh: ") + obj->shortName);
 		MStatus stat = MStatus::kSuccess;
 		MFnMesh meshFn(obj->mobject, &stat);
 		CHECK_MSTATUS(stat);
@@ -23,13 +38,71 @@ namespace krayRender{
 		meshFn.getNormals( normals, MSpace::kWorld );
 		MFloatArray uArray, vArray;
 		meshFn.getUVs(uArray, vArray);
-	
+
+		Kray::VertexMapSymbol vmap(*(this->pro),3);		// create vertex map
+
+		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+		{
+			Kray::Vector v(points[vtxId]. x,points[vtxId].y, points[vtxId].z);
+			vmap.data(vtxId,v);
+		}
+		
+		mesh->points(vmap);
+		MIntArray faceVtxIds;
+
+		Kray::VarLenDoubleDynamic polygon;
+		for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
+		{
+			int faceId = faceIt.index();
+			int numTris;
+			faceIt.numTriangles(numTris);
+			faceIt.getVertices(faceVtxIds);
+			
+			if( faceVtxIds.length() > 5)
+				continue;
+			if( faceVtxIds.length() == 3)
+				polygon.set(faceVtxIds[0], faceVtxIds[1], faceVtxIds[2]);
+			if( faceVtxIds.length() == 4)
+				polygon.set(faceVtxIds[0], faceVtxIds[1], faceVtxIds[2], faceVtxIds[3]);
+			mesh->addPoly(0, polygon); // tag == 0 only one material
+		}
+
+		Kray::Symbol defaultMat(*this->pro);	// create material object, create new KraySymbol
+		this->pro->material(defaultMat);		// register it, as material
+		this->pro->materialSet_color(defaultMat,Kray::Vector(0.8,0.8,1.0));	// modify default color
+
+		this->pro->meshTag_material(*mesh, 0, defaultMat);	// attach yellowMat to mesh tag==0
+		
+		MMatrix matrix = obj->transformMatrices[0];
+		MTransformationMatrix tmatrix(matrix);
+		double axis[3];
+		MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
+		tmatrix.getRotation(axis, order, MSpace::kWorld);
+		axis[0] = axis[1] = axis[2] = 0.0;
+
+		MVector translation = tmatrix.getTranslation(MSpace::kWorld);
+		Kray::Vector pos(translation.x, translation.y, translation.z);
+		double rtg = 360.0/(2.0 * M_PI);
+		this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(0,0,0), *mesh, 0);	// add mesh to scene with given position and orientation
+		//this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(axis[0]*rtg, axis[1]*rtg, axis[2]*rtg), *mesh, 0);	// add mesh to scene with given position and orientation
+		
+		//msh.points(vmap);						// connect positions vertex map with a mesh
+
+		//Kray::VarLenDoubleDynamic polygon;		// create class for storing polygon data
+		//polygon.set(0,2,6,4);		msh.addPoly(0,polygon);	// add polygons to mesh
+		//polygon.set(5,7,3,1);		msh.addPoly(0,polygon);	// all polygons have tag==0
+		//polygon.set(1,3,2,0);		msh.addPoly(0,polygon); // tag is an index to materials table
+		//polygon.set(4,6,7,5);		msh.addPoly(1,polygon); // we will connect yellowMat with tag==0
+		//polygon.set(0,4,5,1);		msh.addPoly(1,polygon); // and redMat with tag==1 later
+		//polygon.set(3,7,6,2);		msh.addPoly(1,polygon);
 	}
 
 	void KrayRenderer::defineGeometry(mtkr_MayaObject *obj)
 	{
 		if( obj->mobject.hasFn(MFn::kMesh))
+		{
 			this->defineMesh(obj);
+		}
 	}
 }
 

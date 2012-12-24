@@ -40,6 +40,7 @@ RenderGlobals::RenderGlobals()
 	this->geotimesamples = 2;
 	this->createDefaultLight = false;
 	this->renderType = RenderType::FINAL;
+	this->exportSceneFile = false;
 }
 
 RenderGlobals::~RenderGlobals()

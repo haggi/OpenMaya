@@ -241,6 +241,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 				}else{
 					renderComputation.endComputation();
 				}
+				// in normal rendering the maya scene pointer will be not deleted, because there are still some 
+				// procedures that have to be done after actual rendering is done.
 				mayaScenePtr = NULL;
 				isRendering = false;
 			}
@@ -322,13 +324,13 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::PIXELSDONE:
-			logger.debug("Event::PIXELSDONE");
+			//logger.debug("Event::PIXELSDONE");
 			if( MRenderView::doesRenderEditorExist())
 			{
 				int width = mayaScenePtr->renderGlobals->imgWidth;
 				int height = mayaScenePtr->renderGlobals->imgHeight;
 				EventQueue::RandomPixel *pixels = (EventQueue::RandomPixel *)e.data;
-				logger.debug(MString("PIXELSDONE::updating ") + e.numPixels + " pixels");
+				//logger.debug(MString("PIXELSDONE::updating ") + e.numPixels + " pixels");
 				for( size_t pId = 0; pId < e.numPixels; pId++)
 				{
 					//MRenderView::updatePixels(pixels[pId].x, pixels[pId].y, pixels[pId].x, pixels[pId].y, &pixels[pId].pixel);  
