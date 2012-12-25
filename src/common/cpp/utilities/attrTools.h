@@ -24,7 +24,7 @@ bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value);
 
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value);
 
-bool getEnum(MString& plugName, MFnDependencyNode& dn, int id, MString& value);
+bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value);
 
 bool getInt2(MString& plugName, MFnDependencyNode& dn, int2& value);
 

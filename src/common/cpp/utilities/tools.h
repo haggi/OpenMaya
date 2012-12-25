@@ -72,5 +72,8 @@ float shadowColorIntensity(MFnDependencyNode& depFn);
 void rowToColumn(MMatrix& from, MMatrix& to);
 
 MObject objectFromName(MString& name);
+
+void posFromMatrix(MMatrix& matrix, MVector& pos);
+
 #endif
 

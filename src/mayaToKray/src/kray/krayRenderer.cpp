@@ -87,23 +87,48 @@ namespace krayRender
 		{	
 			if( this->pro )
 			{
-				//Kray::DirectPrototyper prot(this->kin);		// prototyper gives access to Kray Script command prototypes
-
 				setupSimpleMeshScene(*this->pro);
 			
 				// define image size
 				int width = this->mtkr_renderGlobals->imgWidth;
 				int height = this->mtkr_renderGlobals->imgHeight;
 				this->pro->frameSize(width, height);
+
+				// define pixel order
+				int po = this->mtkr_renderGlobals->pixelOrder;
+				switch(po)
+				{
+				case 0:
+					this->pro->pixelOrder_scanLine();
+					break;
+				case 1:
+					this->pro->pixelOrder_scanRow();
+					break;
+				case 2:
+					this->pro->pixelOrder_random();
+					break;
+				case 3:
+					this->pro->pixelOrder_progressive();
+					break;
+				case 4:
+					this->pro->pixelOrder_worm();		
+					break;
+				case 5:
+					this->pro->pixelOrder_frost();		
+					break;
+				default:
+					this->pro->pixelOrder_worm();		
+					break;
+				};
+
 				// define camera
+
+				this->pro->camera_picture(width, height, 15.0, pos, axis);
 				this->pro->echo("Rendering....");
 				this->pro->render();
 
-				if( this->mtkr_renderGlobals->exportSceneFile)
-				{
-					this->pro->echo("Saving image....");
-					this->pro->outputSave_tif("C:/daten/3dprojects/kray/images/kray.tif");
-				}
+				this->pro->echo("Saving image....");
+				this->pro->outputSave_tif("C:/daten/3dprojects/kray/images/kray.tif");
 			}			
 		}else{
 		}

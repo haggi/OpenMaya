@@ -220,9 +220,6 @@
     <ClInclude Include="..\src\kray\krayTestScene.h">
       <Filter>Source Files\kray</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\kray\krayLights.h">
-      <Filter>Source Files\kray</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\kray\krayMaterials.h">
       <Filter>Source Files\kray</Filter>
     </ClInclude>

@@ -9,7 +9,7 @@ static Logging logger;
 
 mtkr_RenderGlobals::mtkr_RenderGlobals()
 {
-	this->getMtapGlobals();
+	this->getMtkrGlobals();
 }
 
 MString mtkr_RenderGlobals::getImageExt()
@@ -18,9 +18,9 @@ MString mtkr_RenderGlobals::getImageExt()
 }
 
 
-bool mtkr_RenderGlobals::getMtapGlobals()
+bool mtkr_RenderGlobals::getMtkrGlobals()
 {
-	logger.debug("mtkr_RenderGlobals::getMtapGlobals");
+	logger.debug("mtkr_RenderGlobals::getMtkrGlobals");
 
 	MSelectionList krayGlobalsList;
 	krayGlobalsList.add("krayGlobals");
@@ -189,6 +189,50 @@ bool mtkr_RenderGlobals::getMtapGlobals()
 
 		if(!getEnum(MString("samplingType"), krayGlobals, this->samplingType, this->samplingTypeString))
 			throw("problem reading krayGlobals.samplingType");
+
+		if(!getEnum(MString("diffuseModel"), krayGlobals, this->diffuseModel, this->diffuseModelString))
+			throw("problem reading krayGlobals.diffuseModel");
+
+		if(!getEnum(MString("diffuseModelPhoton"), krayGlobals, this->diffuseModelPhoton, this->diffuseModelPhotonString))
+			throw("problem reading krayGlobals.diffuseModelPhoton");
+
+		if(!getEnum(MString("giMode"), krayGlobals, this->giMode, this->giModeString))
+			throw("problem reading krayGlobals.giMode");
+
+		if(!getEnum(MString("pixelOrder"), krayGlobals, this->pixelOrder, this->pixelOrderString))
+			throw("problem reading krayGlobals.pixelOrder");
+		int po = this->pixelOrder;
+
+		if(!getBool(MString("rotateGrid"), krayGlobals, this->rotateGrid))
+			throw("problem reading krayGlobals.rotateGrid");
+
+		if(!getInt(MString("gridSize"), krayGlobals, this->gridSize))
+			throw("problem reading krayGlobals.gridSize");
+
+		if(!getFloat(MString("aa_edgeAbsolute"), krayGlobals, this->aa_edgeAbsolute))
+			throw("problem reading krayGlobals.aa_edgeAbsolute");
+
+		if(!getFloat(MString("aa_relative"), krayGlobals, this->aa_relative))
+			throw("problem reading krayGlobals.aa_relative");
+
+		if(!getFloat(MString("aa_thickness"), krayGlobals, this->aa_thickness))
+			throw("problem reading krayGlobals.aa_thickness");
+
+		if(!getFloat(MString("aa_overburn"), krayGlobals, this->aa_overburn))
+			throw("problem reading krayGlobals.aa_overburn");
+
+		if(!getFloat(MString("aa_normal"), krayGlobals, this->aa_normal))
+			throw("problem reading krayGlobals.aa_normal");
+
+		if(!getFloat(MString("aa_z"), krayGlobals, this->aa_z))
+			throw("problem reading krayGlobals.aa_z");
+
+		if(!getFloat(MString("aa_undersample"), krayGlobals, this->aa_undersample))
+			throw("problem reading krayGlobals.aa_undersample");
+
+		if(!getFloat(MString("aa_threshold"), krayGlobals, this->aa_threshold))
+			throw("problem reading krayGlobals.aa_threshold");
+
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

@@ -44,10 +44,80 @@ public:
 	float latlongHoShift;
 	float latlongVeShift;
 
+	bool rotateGrid;
+	int  gridSize;
+	float filterRadius;
+	
+	// adaptive aa settings
+	float aa_edgeAbsolute;
+	float aa_relative;
+	float aa_thickness;
+	float aa_overburn;
+	float aa_normal;
+	float aa_z;
+	float aa_undersample;
+	float aa_threshold;
+
+	int diffuseModel;
+	MString diffuseModelString;
+	int diffuseModelPhoton;
+	MString diffuseModelPhotonString;
+
+	int giMode;
+	MString giModeString;
+
+	int pixelOrder;
+	MString pixelOrderString;
+	
+	// photons
+	//static	  MObject giResolution;
+	//static	  MObject giResolutionAuto;
+	//static	  MObject previewPhotons;
+	//static	  MObject photonMapType;
+	//static	  MObject photonCount;
+	//static	  MObject photonPower;
+	//static	  MObject photonNBlur;
+	//static	  MObject photonPrecacheDist;
+	//static	  MObject photonPrecacheBlur;
+	//static	  MObject photonUseAutoPhotons;
+	//static	  MObject photonAutoPhotonsLow;
+	//static	  MObject photonAutoPhotonsHigh;
+	//static	  MObject photonAutoPhotonsSteps;
+
+	// caustics
+	//static	  MObject causticsAddToLightmap;
+	//static	  MObject causticsCount;
+	//static	  MObject causticsPower;
+	//static	  MObject causticsNBlur;
+	//static	  MObject causticsUseAutoPhotons;
+	//static	  MObject causticsAutoPhotonsLow;
+	//static	  MObject causticsAutoPhotonsHigh;
+	//static	  MObject causticsAutoPhotonsSteps;
+
+	// FG
+	//static	  MObject fgThreshold;
+	//static	  MObject fgMinRays;
+	//static	  MObject fgMaxRays;
+	//static	  MObject fgPrerender;
+	//static	  MObject fgPasses;
+	//static	  MObject fgSplotchDetect;
+	//static	  MObject fgSensitivity;
+	//static	  MObject fgSpatialTolerance;
+	//static	  MObject fgAngularTolerance;
+	//static	  MObject fgDistMin;
+	//static	  MObject fgDistMax;
+	//static	  MObject fgBrightness;
+	//static	  MObject fgDensity;
+	//static	  MObject fgShowSamples;
+	//static	  MObject fgReflections;
+	//static	  MObject fgRefractions;
+	//static	  MObject fgCornerDist;
+	//static	  MObject fgPathPasses;
+
 	virtual MString getImageExt();
 
 private:
-	bool getMtapGlobals();
+	bool getMtkrGlobals();
 };
 
 #endif

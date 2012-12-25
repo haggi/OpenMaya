@@ -46,7 +46,42 @@ class KrayRenderer(Renderer.MayaToRenderer):
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label="Photons frame", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1 = False)
+                    ui = pm.floatFieldGrp(label="Threshold:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgThreshold", index = 2 )                     
+                    ui = pm.intFieldGrp(label="Min Rays:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMinRays", index = 2 ) 
+                    ui = pm.intFieldGrp(label="Max Rays:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMaxRays", index = 2 ) 
+                    ui = pm.floatFieldGrp(label="Prerender:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPrerender", index = 2 )                     
+                    ui = pm.intFieldGrp(label="Passes:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPasses", index = 2 ) 
+                    ui = pm.floatFieldGrp(label="Sploth Detect:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSplotchDetect", index = 2 )                     
+                    ui = pm.floatFieldGrp(label="Sensitivity:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSensitivity", index = 2 )  
+                    ui = pm.checkBoxGrp(label="FG Reflections:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgReflections", index = 2 ) 
+                    ui = pm.checkBoxGrp(label="FG Refractions:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgRefractions", index = 2 )                   
+                    ui = pm.floatFieldGrp(label="Spatial Tolerance:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSpatialTolerance", index = 2 )  
+                    ui = pm.floatFieldGrp(label="Angular Tolerance:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgAngularTolerance", index = 2 )  
+                    ui = pm.floatFieldGrp(label="FG Min Dist:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMin", index = 2 )  
+                    ui = pm.floatFieldGrp(label="FG Dist Max:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMax", index = 2 )  
+                    ui = pm.floatFieldGrp(label="Density/Brightness:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgBrightness", index = 2 )  
+                    ui = pm.intFieldGrp(label="Path Passes:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPathPasses", index = 2 )  
+                    ui = pm.floatFieldGrp(label="Corner Dist:", numberOfFields = 1)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgCornerDist", index = 2 )  
+                    ui = pm.checkBoxGrp(label="Show Samples:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgShowSamples", index = 2 ) 
+                    
+
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
                     
@@ -118,6 +153,8 @@ class KrayRenderer(Renderer.MayaToRenderer):
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".gridSize", index = 2 ) 
                     ui = pm.checkBoxGrp(label="Grid Rotate:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".rotateGrid", index = 2 ) 
+                    attr = pm.Attribute(self.renderGlobalsNodeName + ".pixelOrder")
+                    ui = pm.attrEnumOptionMenuGrp(label = "Pixel Order", at=self.renderGlobalsNodeName + ".pixelOrder", ei = self.getEnumList(attr)) 
                     
                 with pm.frameLayout(label="Filtering", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
@@ -132,7 +169,7 @@ class KrayRenderer(Renderer.MayaToRenderer):
 
     def KrayRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
-        self.updateEnvironment()
+        #self.updateEnvironment()
         log.debug("KrayRendererUpdateTab()")
 
     def xmlFileBrowse(self, args=None):

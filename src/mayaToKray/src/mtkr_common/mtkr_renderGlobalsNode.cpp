@@ -359,35 +359,75 @@ MStatus	MayaToKrayGlobals::initialize()
 	causticsCount = nAttr.create("causticsCount", "causticsCount",  MFnNumericData::kInt, 50000);
 	CHECK_MSTATUS(addAttribute( causticsCount ));
 
+	causticsUseAutoPhotons = nAttr.create("causticsUseAutoPhotons", "causticsUseAutoPhotons",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( causticsUseAutoPhotons ));
 
-//MObject MayaToKrayGlobals::;
-//MObject MayaToKrayGlobals::causticsPower;
-//MObject MayaToKrayGlobals::causticsNBlur;
-//MObject MayaToKrayGlobals::causticsUseAutoPhotons;
-//MObject MayaToKrayGlobals::causticsAutoPhotonsLow;
-//MObject MayaToKrayGlobals::causticsAutoPhotonsHigh;
-//MObject MayaToKrayGlobals::causticsAutoPhotonsSteps;
-//
-//	// FG
-//MObject MayaToKrayGlobals::fgThreshold;
-//MObject MayaToKrayGlobals::fgMinRays;
-//MObject MayaToKrayGlobals::fgMaxRays;
-//MObject MayaToKrayGlobals::fgPrerender;
-//MObject MayaToKrayGlobals::fgPasses;
-//MObject MayaToKrayGlobals::fgSplotchDetect;
-//MObject MayaToKrayGlobals::fgSensitivity;
-//MObject MayaToKrayGlobals::fgSpatialTolerance;
-//MObject MayaToKrayGlobals::fgAngularTolerance;
-//MObject MayaToKrayGlobals::fgDistMin;
-//MObject MayaToKrayGlobals::fgDistMax;
-//MObject MayaToKrayGlobals::fgBrightness;
-//MObject MayaToKrayGlobals::fgDensity;
-//MObject MayaToKrayGlobals::fgShowSamples;
-//MObject MayaToKrayGlobals::fgReflections;
-//MObject MayaToKrayGlobals::fgRefractions;
-//MObject MayaToKrayGlobals::fgCornerDist;
-//MObject MayaToKrayGlobals::fgPathPasses;
+	causticsAutoPhotonsLow = nAttr.create("causticsAutoPhotonsLow", "causticsAutoPhotonsLow",  MFnNumericData::kFloat, 20.0);
+	CHECK_MSTATUS(addAttribute( causticsAutoPhotonsLow ));
 
+	causticsAutoPhotonsHigh = nAttr.create("causticsAutoPhotonsHigh", "causticsAutoPhotonsHigh",  MFnNumericData::kFloat, 80.0f);
+	CHECK_MSTATUS(addAttribute( causticsAutoPhotonsHigh ));
+
+	causticsAutoPhotonsSteps = nAttr.create("causticsAutoPhotonsSteps", "causticsAutoPhotonsSteps",  MFnNumericData::kFloat, 4.0f);
+	CHECK_MSTATUS(addAttribute( causticsAutoPhotonsSteps ));
+
+	causticsPower = nAttr.create("causticsPower", "causticsPower",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( causticsPower ));
+
+	causticsNBlur = nAttr.create("causticsNBlur", "causticsNBlur",  MFnNumericData::kInt, 400);
+	CHECK_MSTATUS(addAttribute( causticsNBlur ));
+
+	// FG
+	fgThreshold = nAttr.create("fgThreshold", "fgThreshold",  MFnNumericData::kFloat, .0001f);
+	CHECK_MSTATUS(addAttribute( fgThreshold ));
+
+	fgMinRays = nAttr.create("fgMinRays", "fgMinRays",  MFnNumericData::kInt, 100);
+	CHECK_MSTATUS(addAttribute( fgMinRays ));
+
+	fgMaxRays = nAttr.create("fgMaxRays", "fgMaxRays",  MFnNumericData::kInt, 600);
+	CHECK_MSTATUS(addAttribute( fgMaxRays ));
+
+	fgPrerender = nAttr.create("fgPrerender", "fgPrerender",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( fgPrerender ));
+
+	fgPasses = nAttr.create("fgPasses", "fgPasses",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( fgPasses ));
+
+	fgSplotchDetect = nAttr.create("fgSplotchDetect", "fgSplotchDetect",  MFnNumericData::kFloat, .05f);
+	CHECK_MSTATUS(addAttribute( fgSplotchDetect ));
+
+	fgSensitivity = nAttr.create("fgSensitivity", "fgSensitivity",  MFnNumericData::kFloat, .05f);
+	CHECK_MSTATUS(addAttribute( fgSensitivity ));
+
+	fgReflections = nAttr.create("fgReflections", "fgReflections",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( fgReflections ));
+
+	fgRefractions = nAttr.create("fgRefractions", "fgRefractions",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( fgRefractions ));
+
+	fgSpatialTolerance = nAttr.create("fgSpatialTolerance", "fgSpatialTolerance",  MFnNumericData::kFloat, .1f);
+	CHECK_MSTATUS(addAttribute( fgSpatialTolerance ));
+
+	fgAngularTolerance = nAttr.create("fgAngularTolerance", "fgAngularTolerance",  MFnNumericData::kFloat, 30.0f);
+	CHECK_MSTATUS(addAttribute( fgAngularTolerance ));
+
+	fgDistMin = nAttr.create("fgDistMin", "fgDistMin",  MFnNumericData::kFloat, 10.0f);
+	CHECK_MSTATUS(addAttribute( fgDistMin ));
+
+	fgDistMax = nAttr.create("fgDistMax", "fgDistMax",  MFnNumericData::kFloat, 3000.00f);
+	CHECK_MSTATUS(addAttribute( fgDistMax ));
+
+	fgBrightness = nAttr.create("fgBrightness", "fgBrightness",  MFnNumericData::kFloat, 0.00f);
+	CHECK_MSTATUS(addAttribute( fgBrightness ));
+
+	fgPathPasses = nAttr.create("fgPathPasses", "fgPathPasses",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( fgPathPasses ));
+
+	fgCornerDist = nAttr.create("fgCornerDist", "fgCornerDist",  MFnNumericData::kFloat, 50.00f);
+	CHECK_MSTATUS(addAttribute( fgCornerDist ));
+
+	fgShowSamples = nAttr.create("fgShowSamples", "fgShowSamples",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( fgShowSamples ));
 
 	return stat;
 

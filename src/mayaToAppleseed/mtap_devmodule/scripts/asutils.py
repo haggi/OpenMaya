@@ -1,5 +1,6 @@
 import pymel.core as pm
 import maya.OpenMaya as om
+import math
 
 def unload_plugin():
     pm.newFile(force=True)
@@ -221,7 +222,38 @@ def hierarchy():
                 #    print "World!"
                 #    break
     
-        
+def CartesianToPolar(rotation):
+    polar = [0.0,0.0]
+    
+    #calc longitude
+    polar[1] = math.atan(rotation[0], rotation[2])
+
+    #this is easier to write and read than sqrt(pow(x,2), pow(y,2))!
+    
+    xzLen = pm.vector(rotation[0], 0.0, rotation[2]).length() 
+    #atan2 does the magic
+    polar[0] = math.atan(-rotation[1],xzLen);
+
+    #convert to deg
+    polar[0] = math.degrees(polar[0]);
+    polar[1] = math.degrees(polar[1]);
+
+    return polar
+
+
+#function PolarToCartesian(polar:Vector2):Vector3
+#{
+#
+#    //an origin vector, representing lat,lon of 0,0. 
+#
+#    var origin=Vector3(0,0,1);
+#    //build a quaternion using euler angles for lat,lon
+#    var rotation = Quaternion.Euler(polar.x,polar.y,0);
+#    //transform our reference vector by the rotation. Easy-peasy!
+#    var point:Vector3=rotation*origin;
+#
+#    return point;
+#}        
             
     
 

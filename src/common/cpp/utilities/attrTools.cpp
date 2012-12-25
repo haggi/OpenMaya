@@ -146,7 +146,7 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value)
 	return result;
 }
 
-bool getEnum(MString& plugName, MFnDependencyNode& dn, int id, MString& value)
+bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;
 	MStatus stat = MS::kSuccess;
@@ -154,13 +154,13 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int id, MString& value)
 	MPlug plug = dn.findPlug(plugName, &stat);
 	if( !stat )
 		return false;
-	int enumValue = plug.asShort(ctx, &stat);
+	id = plug.asShort(ctx, &stat);
 	if(!stat)
 		return false;
 	MFnEnumAttribute eAttr(plug.attribute(&stat));
 	if(!stat)
 		return false;
-	value = eAttr.fieldName(enumValue, &stat);
+	value = eAttr.fieldName(id, &stat);
 	if(!stat)
 		return false;
 	return true;

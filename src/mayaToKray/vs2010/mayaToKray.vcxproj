@@ -331,7 +331,6 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\kray\krayEventListener.h" />
-    <ClInclude Include="..\src\kray\krayLights.h" />
     <ClInclude Include="..\src\kray\krayMaterials.h" />
     <ClInclude Include="..\src\kray\krayRenderer.h" />
     <ClInclude Include="..\src\kray\krayTestScene.h" />

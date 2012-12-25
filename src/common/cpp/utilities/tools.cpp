@@ -405,3 +405,11 @@ MObject objectFromName(MString& name)
     stat = MStatus::kSuccess;
     return obj;
 }
+
+
+void posFromMatrix(MMatrix& matrix, MVector& pos)
+{
+	pos.x = matrix[3][0];
+	pos.y = matrix[3][1];
+	pos.z = matrix[3][2];
+}
