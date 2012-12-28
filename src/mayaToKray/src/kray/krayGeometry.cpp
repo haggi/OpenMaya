@@ -5,6 +5,7 @@
 //#include "kraysdk/type/axes.h"
 
 #include "../mtkr_common/mtkr_mayaObject.h"
+#include "../mtkr_common/mtkr_renderGlobals.h"
 #include "maya/MFnMesh.h"
 #include "maya/MItMeshPolygon.h"
 #include <maya/MPointArray.h>
@@ -40,10 +41,12 @@ namespace krayRender{
 		meshFn.getUVs(uArray, vArray);
 
 		Kray::VertexMapSymbol vmap(*(this->pro),3);		// create vertex map
-
 		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 		{
-			Kray::Vector v(points[vtxId]. x,points[vtxId].y, points[vtxId].z);
+			MPoint p = points[vtxId];
+			p *= this->mtkr_renderGlobals->sceneScaleMatrix;
+
+			Kray::Vector v(p.x, p.y, p.z);
 			vmap.data(vtxId,v);
 		}
 		
@@ -58,12 +61,12 @@ namespace krayRender{
 			faceIt.numTriangles(numTris);
 			faceIt.getVertices(faceVtxIds);
 			
-			if( faceVtxIds.length() > 5)
-				continue;
-			if( faceVtxIds.length() == 3)
-				polygon.set(faceVtxIds[0], faceVtxIds[1], faceVtxIds[2]);
-			if( faceVtxIds.length() == 4)
-				polygon.set(faceVtxIds[0], faceVtxIds[1], faceVtxIds[2], faceVtxIds[3]);
+			polygon.setLength(faceVtxIds.length());
+
+			for( uint vtxId = 0; vtxId < faceVtxIds.length(); vtxId++)
+			{
+				polygon[vtxId] = faceVtxIds[vtxId];
+			}
 			mesh->addPoly(0, polygon); // tag == 0 only one material
 		}
 
@@ -78,12 +81,13 @@ namespace krayRender{
 		double axis[3];
 		MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
 		tmatrix.getRotation(axis, order, MSpace::kWorld);
-		axis[0] = axis[1] = axis[2] = 0.0;
+		//axis[0] = axis[1] = axis[2] = 0.0;
 
 		MVector translation = tmatrix.getTranslation(MSpace::kWorld);
 		Kray::Vector pos(translation.x, translation.y, translation.z);
 		double rtg = 360.0/(2.0 * M_PI);
-		this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(0,0,0), *mesh, 0);	// add mesh to scene with given position and orientation
+		Kray::AxesHpb kaxis = Kray::AxesHpb().angles(axis[0], axis[1], axis[2]);
+		this->pro->objectSet_mesh(pos, kaxis, *mesh, 0);	// add mesh to scene with given position and orientation
 		//this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(axis[0]*rtg, axis[1]*rtg, axis[2]*rtg), *mesh, 0);	// add mesh to scene with given position and orientation
 		
 		//msh.points(vmap);						// connect positions vertex map with a mesh

@@ -5,6 +5,7 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MColor.h>
 #include "krayRenderer.h"
+#include "krayUtils.h"
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include "utilities/logging.h"
@@ -22,27 +23,33 @@ namespace krayRender{
 
 				if( obj->mobject.hasFn(MFn::kPointLight))
 					this->definePointLight(obj);
+				if( obj->mobject.hasFn(MFn::kDirectionalLight))
+					this->defineDirectionalLight(obj);
 			}
 		}
 
 		void KrayRenderer::definePointLight(mtkr_MayaObject *obj)
 		{
+			logger.debug(MString("Define kray point light: ") + obj->shortName);
 			MFnDependencyNode lightFn(obj->mobject);
 			MColor lightColor(1,1,1);
 			float intensity = 1.0f;
 			getColor(MString("color"), lightFn, lightColor);
 			getFloat(MString("intensity"), lightFn, intensity);
 			lightColor *= intensity;
-			Kray::Vector pos, col;
+			Kray::Vector col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
+			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
 			MVector lpos;
-			posFromMatrix(obj->transformMatrices[0], lpos);
-			pos.setXyz(lpos.x, lpos.y, lpos.z);
-			this->pro->lightAddNamed_point(obj->shortName.asChar(), pos, col); // add light source to scene
+			Kray::Matrix4x4 lightMatrix;
+			MMatrixToAMatrix(matrix, lightMatrix);
+			Kray::Vector lPos(lightMatrix);
+			this->pro->lightAddNamed_point(obj->shortName.asChar(), lPos, col); // add light source to scene
 		}
 
 		void KrayRenderer::defineDirectionalLight(mtkr_MayaObject *obj)
 		{
+			logger.debug(MString("Define kray directional light: ") + obj->shortName);
 			MFnDependencyNode lightFn(obj->mobject);
 			MColor lightColor(1,1,1);
 			float intensity = 1.0f;
@@ -51,13 +58,19 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector pos, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
-			MVector lpos;
-			posFromMatrix(obj->transformMatrices[0], lpos);
-			pos.setXyz(lpos.x, lpos.y, lpos.z);
+			MMatrix matrix = obj->transformMatrices[0];
+			MVector lightRot(0, 0, 1);
+			lightRot *= obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
+			Kray::Vector lDir(lightRot.x,lightRot.y,lightRot.z);			
+			//Kray::Matrix4x4 lightMatrix;
+			//MMatrixToAMatrix(matrix, lightMatrix);
+			//Kray::Vector lPos(lightMatrix);
+			this->pro->lightAddNamed_parallel(lightFn.name().asChar(), lDir, col);
 		}
 
 		void KrayRenderer::defineSpotLight(mtkr_MayaObject *obj)
 		{
+			logger.debug(MString("Define kray spot light: ") + obj->shortName);
 			MFnDependencyNode lightFn(obj->mobject);
 			MColor lightColor(1,1,1);
 			float intensity = 1.0f;
@@ -66,14 +79,17 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector pos, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
+			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
 			MVector lpos;
-			posFromMatrix(obj->transformMatrices[0], lpos);
-			pos.setXyz(lpos.x, lpos.y, lpos.z);
+			Kray::Matrix4x4 lightMatrix;
+			MMatrixToAMatrix(matrix, lightMatrix);
+			Kray::Vector lPos(lightMatrix);
 			//void lightAddNamed_softSpot(const char* name,const VarLenVector& v3,const VarLenVector& v4,const Vector& v5,double d6,double d7);
 		}
 
 		void KrayRenderer::defineAreaLight(mtkr_MayaObject *obj)
 		{
+			logger.debug(MString("Define kray area light: ") + obj->shortName);
 			MFnDependencyNode lightFn(obj->mobject);
 			MColor lightColor(1,1,1);
 			float intensity = 1.0f;
@@ -82,9 +98,11 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector rot, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
-			//MVector lpos;
-			//posFromMatrix(obj->transformMatrices[0], lpos);
-			//pos.setXyz(lpos.x, lpos.y, lpos.z);
+			MMatrix matrix = obj->transformMatrices[0];
+			MVector lpos;
+			Kray::Matrix4x4 lightMatrix;
+			MMatrixToAMatrix(matrix, lightMatrix);
+			Kray::Vector lPos(lightMatrix);
 
 			//this->pro->lightAddNamed_parallel(obj->shortName.asChar(), rot, col);
 		}

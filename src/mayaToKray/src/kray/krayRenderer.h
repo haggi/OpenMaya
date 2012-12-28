@@ -69,6 +69,8 @@ namespace krayRender
 		void updateTransform(mtkr_MayaObject *obj);	// updates the transform node in renderer
 		void updateDeform(mtkr_MayaObject *obj);	// updates the mesh deform node in renderer
 
+		void defineCamera();
+
 		void defineGeometry(mtkr_MayaObject *obj);
 		void defineMesh(mtkr_MayaObject *obj);
 

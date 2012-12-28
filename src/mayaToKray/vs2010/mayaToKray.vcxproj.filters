@@ -137,6 +137,9 @@
     <ClCompile Include="..\src\kray\krayMaterials.cpp">
       <Filter>Source Files\kray</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\kray\krayUtils.cpp">
+      <Filter>Source Files\kray</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -221,6 +224,9 @@
       <Filter>Source Files\kray</Filter>
     </ClInclude>
     <ClInclude Include="..\src\kray\krayMaterials.h">
+      <Filter>Source Files\kray</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\kray\krayUtils.h">
       <Filter>Source Files\kray</Filter>
     </ClInclude>
   </ItemGroup>

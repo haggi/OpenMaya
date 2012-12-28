@@ -5,14 +5,17 @@
 #include "../mtkr_common/mtkr_mayaObject.h"
 #include "../mtkr_common/mtkr_mayaScene.h"
 #include "../mtkr_common/mtkr_renderGlobals.h"
-//
+#include "utilities/tools.h"
+#include "utilities/attrTools.h"
+
+
 //#include "kraysdk/proto/direct.h"
 //#include "kraysdk/SharedSources/libraryDir.h"
 //#include "kraysdk/kray.h"
 //
 #include "krayRenderer.h"
-//#include "krayEventListener.h"
-//
+#include "krayUtils.h"
+
 #include "krayTestScene.h"
 #include "utilities/logging.h"
 
@@ -71,6 +74,47 @@ namespace krayRender
 		this->defineGeometry(obj);
 	}
 
+	void KrayRenderer::defineCamera()
+	{
+		// define image size
+		int width = this->mtkr_renderGlobals->imgWidth;
+		int height = this->mtkr_renderGlobals->imgHeight;
+		//this->pro->frameSize(width, height);
+
+		// define camera
+		//MVector rot;
+		//MPoint pos;
+		//posRotFromMatrix(this->mtkr_scene->camList[0]->transformMatrices[0], pos, rot);
+		MMatrix matrix = this->mtkr_scene->camList[0]->transformMatrices[0];
+		matrix *= this->mtkr_renderGlobals->sceneScaleMatrix;
+
+		MFnDependencyNode camFn(this->mtkr_scene->camList[0]->mobject);
+		
+		float horizontalFilmAperture = 24.892f;
+		float verticalFilmAperture = 18.669f;
+		float imageAspect = (float)this->mtkr_renderGlobals->imgHeight / (float)mtkr_renderGlobals->imgWidth;
+		bool dof = false;
+		float mtap_cameraType = 0;
+		int mtap_diaphragm_blades = 0;
+		float mtap_diaphragm_tilt_angle = 0.0;
+		float focusDistance = 0.0;
+		float fStop = 0.0;
+
+		float focalLength = 35.0f;
+		getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
+		getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
+		getFloat(MString("focalLength"), camFn, focalLength);
+		getBool(MString("depthOfField"), camFn, dof);
+		getFloat(MString("focusDistance"), camFn, focusDistance);
+		getFloat(MString("fStop"), camFn, fStop);
+		
+		Kray::Matrix4x4 camMatrix;
+		MMatrixToAMatrix(matrix, camMatrix);
+		Kray::Vector camPos(camMatrix);
+		Kray::AxesHpb camRot(camMatrix);
+		this->pro->camera_picture(width, height, focalLength * 10.0f, camPos, camRot);
+	}
+
 	void KrayRenderer::render()
 	{	
 		//EventListener listener;
@@ -89,11 +133,6 @@ namespace krayRender
 			{
 				setupSimpleMeshScene(*this->pro);
 			
-				// define image size
-				int width = this->mtkr_renderGlobals->imgWidth;
-				int height = this->mtkr_renderGlobals->imgHeight;
-				this->pro->frameSize(width, height);
-
 				// define pixel order
 				int po = this->mtkr_renderGlobals->pixelOrder;
 				switch(po)
@@ -120,13 +159,12 @@ namespace krayRender
 					this->pro->pixelOrder_worm();		
 					break;
 				};
+				
+				this->defineLigths();
+				this->defineCamera();
 
-				// define camera
-
-				this->pro->camera_picture(width, height, 15.0, pos, axis);
 				this->pro->echo("Rendering....");
 				this->pro->render();
-
 				this->pro->echo("Saving image....");
 				this->pro->outputSave_tif("C:/daten/3dprojects/kray/images/kray.tif");
 			}			

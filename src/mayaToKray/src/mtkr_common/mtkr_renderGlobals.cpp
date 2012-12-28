@@ -1,7 +1,8 @@
 #include "mtkr_renderGlobals.h"
 #include "maya/MSelectionList.h"
 #include "maya/MFnDependencyNode.h"
-
+#include <maya/MTransformationMatrix.h>
+#include <maya/MEulerRotation.h>
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
 
@@ -233,11 +234,15 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getFloat(MString("aa_threshold"), krayGlobals, this->aa_threshold))
 			throw("problem reading krayGlobals.aa_threshold");
 
-
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[2][2] = this->sceneScale;
+
+		MTransformationMatrix tm(this->sceneScaleMatrix);
+		MEulerRotation euler(M_PI, 0.0, 0.0, MEulerRotation::RotationOrder::kXYZ);
+		tm.rotateBy(euler, MSpace::kWorld);
+		this->sceneScaleMatrix = tm.asMatrix();
 
 	}catch(char *errorMsg){
 

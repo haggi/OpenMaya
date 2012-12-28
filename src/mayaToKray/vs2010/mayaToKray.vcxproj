@@ -303,6 +303,7 @@
     <ClCompile Include="..\src\kray\krayMaterials.cpp" />
     <ClCompile Include="..\src\kray\krayRenderer.cpp" />
     <ClCompile Include="..\src\kray\krayTestScene.cpp" />
+    <ClCompile Include="..\src\kray\krayUtils.cpp" />
     <ClCompile Include="..\src\mayaToKray.cpp" />
     <ClCompile Include="..\src\mtkr_common\mtkr_mayaObject.cpp" />
     <ClCompile Include="..\src\mtkr_common\mtkr_mayaScene.cpp" />
@@ -334,6 +335,7 @@
     <ClInclude Include="..\src\kray\krayMaterials.h" />
     <ClInclude Include="..\src\kray\krayRenderer.h" />
     <ClInclude Include="..\src\kray\krayTestScene.h" />
+    <ClInclude Include="..\src\kray\krayUtils.h" />
     <ClInclude Include="..\src\mayaToKray.h" />
     <ClInclude Include="..\src\mtkr_common\mtkr_mayaObject.h" />
     <ClInclude Include="..\src\mtkr_common\mtkr_mayaScene.h" />
