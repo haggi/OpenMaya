@@ -11,7 +11,8 @@ static Logging logger;
 
 mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 {
-	getRenderGlobals();
+	this->renderGlobals = NULL;
+	this->getRenderGlobals();
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
@@ -19,7 +20,8 @@ mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 
 mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 {
-	getRenderGlobals();
+	this->renderGlobals = NULL;
+	this->getRenderGlobals();
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
@@ -121,7 +123,9 @@ void mtap_MayaScene::mayaObjectDeleter(MayaObject *obj)
 
 void mtap_MayaScene::getRenderGlobals()
 {
-	this->renderGlobals = new mtap_RenderGlobals();
+	this->renderGlobals = NULL;
+	mtap_RenderGlobals *tst = new mtap_RenderGlobals();
+	this->renderGlobals = tst;
 	MayaScene::renderGlobals = renderGlobals;
 }
 

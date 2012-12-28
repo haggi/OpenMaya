@@ -78,7 +78,7 @@ public:
 	std::vector<MObject> interactiveUpdateMOList;
 	std::vector<asr::AssemblyInstance *> interactiveAIList;
 
-
+	bool hasAOVs;
 	MiniMap<asr::Assembly *, mtap_MayaObject *> assemblyMOMap;
 
 	void writeXML();
@@ -128,15 +128,27 @@ public:
 	// shaders
 	void defineBumpMap(asr::ParamArray& materialParams, MObject& surfaceShader);
 	void definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void definePhysSurfShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineAoShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineAoShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineAoVoxelShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineAoVoxelShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineConstantShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineConstantShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineDiagnosticShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineDiagnosticShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineFastSSSShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineFastSSSShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineSmokeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineWireframeShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineWireframeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineMayaLambertShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup);
+	void defineMayaPhongShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	void defineCollectionShader(asr::Assembly *assembly, MObject& shadingGroup);
+	bool defineAOVShaders(asr::Assembly *assembly, MString& aovShader);
 	asr::Assembly *masterAssembly;
 
 	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);

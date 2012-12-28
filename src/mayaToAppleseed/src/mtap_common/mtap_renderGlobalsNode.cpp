@@ -30,7 +30,6 @@ MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
 MObject MayaToAppleseedGlobals::optimizedTexturePath;
-MObject MayaToAppleseedGlobals::sceneScale;
 MObject MayaToAppleseedGlobals::latlongHoShift;
 MObject MayaToAppleseedGlobals::latlongVeShift;
 MObject MayaToAppleseedGlobals::AOVs;
@@ -173,9 +172,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
 
-	sceneScale = nAttr.create("sceneScale", "sceneScale",  MFnNumericData::kFloat, .01f);
-	CHECK_MSTATUS(addAttribute( sceneScale ));
-
 	latlongHoShift = nAttr.create("latlongHoShift", "latlongHoShift",  MFnNumericData::kFloat, .0f);
 	CHECK_MSTATUS(addAttribute( latlongHoShift ));
 
@@ -184,6 +180,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	AOVs = mAttr.create("AOVs", "AOVs");
 	mAttr.setArray(true);
+	mAttr.indexMatters(false);
 	CHECK_MSTATUS(addAttribute( AOVs ));
 
 	ground_albedo = nAttr.create("ground_albedo", "ground_albedo",  MFnNumericData::kFloat, .0f);

@@ -58,11 +58,8 @@ private:
 	static	  MObject turbidity_min;
 
 	static	  MObject imageFormat;
-	static	  MObject sceneScale;
 
 	static	  MObject AOVs;
-
-
 };
 
 #endif

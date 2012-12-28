@@ -39,8 +39,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def __init__(self, rendererName, moduleName):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
+        self.aovShaders = ["mtap_aoShader", "mtap_aoVoxelShader",  "mtap_diagnosticShader", "mtap_fastSSSShader", "appleseedSurfaceShader"]
         
-    
     def getEnumList(self, attr):
         return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
 
@@ -132,8 +132,29 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def AppleseedEnvironmentUpdateTab(self):
         log.debug("AppleseedEnvironmentUpdateTab()")
 
+    def AppleseedAOVAddShaders(self, args=None):
+        log.debug("AppleseedAOVAddShaders")
+        aovDict = self.rendererTabUiDict['aovs']
+
+    def AppleseedAOVSelectCommand(self, whichField):
+        log.debug("AppleseedAOVSelectCommand")
+        aovDict = self.rendererTabUiDict['aovs']
+        if whichField == "source":
+            pm.button(aovDict['aovButton'], edit=True, enable=True, label="Add selected Shaders")
+        if whichField == "dest":
+            pm.button(aovDict['aovButton'], edit=True, enable=True, label="Remove selected Shaders")
+            
+    def AppleseedGetAOVConnections(self):
+        aoList = self.renderGlobalsNode.AOVs.inputs()
+        aovList = []
+        for aov in aoList:
+            aovList.append(aov.name()+"(" + str(aov.type()) + ")")
+        return aovList
+            
     def AppleseedAOVsCreateTab(self):
         log.debug("AppleseedAOVsCreateTab()")
+        aovDict = {}
+        self.rendererTabUiDict['aovs'] = aovDict
         self.createGlobalsNode()
         parentForm = pm.setParent(query = True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
@@ -141,7 +162,13 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label="AOVs frame", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1 = False)
+                    with pm.columnLayout():
+                        with pm.paneLayout(configuration="vertical2"):
+                            aovDict['aovSourceField'] = pm.textScrollList("AOVSource", append=self.aovShaders, selectCommand = self.AppleseedAOVSelectCommand("source"))
+                            aovList = self.AppleseedGetAOVConnections()
+                            aovDict['aovDestField'] = pm.textScrollList("AOVDest", append=aovList, selectCommand = self.AppleseedAOVSelectCommand("dest"))
+                        aovDict['aovButton'] = pm.button(label="Selection", enable=False)
+                        
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
                     
@@ -215,7 +242,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
-        self.updateEnvironment()
+        #self.updateEnvironment()
         self.AppleseedRendererUpdateTab()
 
     def AppleseedRendererUpdateTab(self, dummy = None):

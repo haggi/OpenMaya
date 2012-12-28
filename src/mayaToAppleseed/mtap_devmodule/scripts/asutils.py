@@ -1,6 +1,8 @@
 import pymel.core as pm
 import maya.OpenMaya as om
 import math
+import logging 
+log = logging.getLogger("mtapLogger")
 
 def unload_plugin():
     pm.newFile(force=True)
@@ -240,6 +242,95 @@ def CartesianToPolar(rotation):
 
     return polar
 
+
+class aov:
+    def __init__(self):
+        self.rendererTabUiDict = {}
+        self.aovShaders = ["mtap_aoShader", "mtap_aoVoxelShader",  "mtap_diagnosticShader", "mtap_fastSSSShader", "appleseedSurfaceShader"]
+        self.renderGlobalsNode = pm.PyNode("appleseedGlobals")
+        self.AppleseedAOVsCreateTab()
+    
+    def AppleseedAOVAddShaders(self, args=None):
+        log.debug("AppleseedAOVAddShaders")
+        aovDict = self.rendererTabUiDict['aovs']
+
+    def AppleseedAOVSelectCommand(self, whichField):
+        log.debug("AppleseedAOVSelectCommand")
+        aovDict = self.rendererTabUiDict['aovs']
+        if whichField == "source":
+            pm.button(aovDict['aovButton'], edit=True, enable=True, label="Add selected Shaders")
+            pm.textScrollList(aovDict['aovDestField'], edit=True, deselectAll=True) 
+        if whichField == "dest":
+            pm.button(aovDict['aovButton'], edit=True, enable=True, label="Remove selected Shaders")
+            pm.textScrollList(aovDict['aovSourceField'], edit=True, deselectAll=True) 
+
+    def AppleseedAOVUpdateDestList(self):
+        aovDict = self.rendererTabUiDict['aovs']
+        pm.textScrollList(aovDict['aovDestField'], edit=True, removeAll=True) 
+        aovList = self.AppleseedGetAOVConnections()
+        pm.textScrollList(aovDict['aovDestField'], edit=True, append=aovList)
+        
+    def AppleseedAOVButtonCommand(self, args=None):
+        log.debug("AppleseedAOVButtonCommand " + str(args))
+        aovDict = self.rendererTabUiDict['aovs']
+        label = pm.button(aovDict['aovButton'], query=True, label=True)
+        if "Add selected Shaders" in label:
+            log.debug("AppleseedAOVButtonCommand: adding selected shaders")
+            selectedItems = pm.textScrollList(aovDict['aovSourceField'], query=True, selectItem=True) 
+            for item in selectedItems:
+                log.debug("Adding " + item)
+                node = pm.createNode(item)
+                indices=self.renderGlobalsNode.AOVs.getArrayIndices()
+                index = 0
+                if len(indices) > 0:
+                    index = indices[-1] + 1
+                node.message >> self.renderGlobalsNode.AOVs[index]
+            self.AppleseedAOVUpdateDestList()
+            
+        if "Remove selected Shaders" in label:
+            log.debug("AppleseedAOVButtonCommand: removing selected shaders")
+            selectedItems = pm.textScrollList(aovDict['aovDestField'], query=True, selectItem=True) 
+            for item in selectedItems:
+                shaderName = item.split(" ")[0]
+                log.debug("Removing " + shaderName)
+                shader = pm.PyNode(shaderName)
+                attribute = shader.message.outputs(p=True)[0]
+                pm.delete(shader)
+                attribute.remove()
+            self.AppleseedAOVUpdateDestList()
+            
+    def AppleseedDoubleClickCommand(self):
+        log.debug("AppleseedDoubleClickCommand")
+        aovDict = self.rendererTabUiDict['aovs']
+        selectedItems = pm.textScrollList(aovDict['aovDestField'], query=True, selectItem=True) 
+        pm.select(selectedItems[0].split(" ")[0])
+            
+    def AppleseedGetAOVConnections(self):
+        aoList = self.renderGlobalsNode.AOVs.inputs()
+        aovList = []
+        for aov in aoList:
+            aovList.append(aov.name()+" (" + str(aov.type()) + ")")
+        return aovList
+            
+    def AppleseedAOVsCreateTab(self):
+        log.debug("AppleseedAOVsCreateTab()")
+        aovDict = {}
+        self.rendererTabUiDict['aovs'] = aovDict
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        with pm.window() as win:
+            scLo = "AOScrollLayout"
+            with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
+                with pm.columnLayout("ColumnLayout", adjustableColumn = True, width = 400):
+                    with pm.frameLayout(label="AOVs", collapsable = True, collapse=False):
+                        with pm.columnLayout():
+                            with pm.paneLayout(configuration="vertical2", paneSize=(1, 25, 100)):
+                                aovDict['aovSourceField'] = pm.textScrollList("AOVSource", ams=True, append=self.aovShaders, selectCommand = pm.Callback(self.AppleseedAOVSelectCommand,"source"))
+                                aovList = self.AppleseedGetAOVConnections()
+                                aovDict['aovDestField'] = pm.textScrollList("AOVDest", append=aovList, ams=True, dcc=self.AppleseedDoubleClickCommand, selectCommand = pm.Callback(self.AppleseedAOVSelectCommand,"dest"))
+                            aovDict['aovButton'] = pm.button(label="Selection", enable=False, c=self.AppleseedAOVButtonCommand)
+        
+        win.show()
+        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
 
 #function PolarToCartesian(polar:Vector2):Vector3
 #{

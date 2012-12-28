@@ -276,5 +276,8 @@
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="..\mtap_devmodule\ressources\codedata.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include <maya/MString.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MSelectionList.h>
+#include <maya/MTransformationMatrix.h>
 
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -412,4 +413,16 @@ void posFromMatrix(MMatrix& matrix, MVector& pos)
 	pos.x = matrix[3][0];
 	pos.y = matrix[3][1];
 	pos.z = matrix[3][2];
+}
+
+void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot)
+{
+	MTransformationMatrix tm(matrix);
+	MTransformationMatrix::RotationOrder order = MTransformationMatrix::RotationOrder::kXYZ;
+	double rotation[3];
+	tm.getRotation(rotation, order, MSpace::kWorld);
+	rot.x = rotation[0];
+	rot.y = rotation[1];
+	rot.z = rotation[2];
+	pos = tm.getTranslation(MSpace::kWorld);
 }

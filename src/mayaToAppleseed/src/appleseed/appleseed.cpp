@@ -55,6 +55,7 @@ AppleseedRenderer::AppleseedRenderer()
 	definedEntities.clear();
 	appleRenderer = this;
     this->project = asf::auto_release_ptr<asr::Project>(asr::ProjectFactory::create("mtap_project"));
+	hasAOVs = false;
 }
 
 AppleseedRenderer::~AppleseedRenderer()
@@ -938,6 +939,7 @@ void AppleseedRenderer::render()
 	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write_main_image(imageOutputFile.asChar());
+	project->get_frame()->write_aov_images(imageOutputFile.asChar());
 	EventQueue::Event e;
 	e.data = NULL;
 	e.type = EventQueue::Event::FRAMEDONE;

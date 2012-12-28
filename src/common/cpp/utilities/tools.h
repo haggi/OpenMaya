@@ -75,5 +75,7 @@ MObject objectFromName(MString& name);
 
 void posFromMatrix(MMatrix& matrix, MVector& pos);
 
+void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot);
+
 #endif
 
