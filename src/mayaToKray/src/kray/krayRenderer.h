@@ -70,7 +70,7 @@ namespace krayRender
 		void updateDeform(mtkr_MayaObject *obj);	// updates the mesh deform node in renderer
 
 		void defineCamera();
-
+		void defineSampling();
 		void defineGeometry(mtkr_MayaObject *obj);
 		void defineMesh(mtkr_MayaObject *obj);
 

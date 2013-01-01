@@ -49,6 +49,7 @@ private:
 	static	  MObject gridSize;
 	static	  MObject rotateGrid;
 	static	  MObject filterRadius;
+	static	  MObject fullScreenAA;
 	
 	// adaptive aa settings
 	static	  MObject aa_edgeAbsolute;
@@ -58,7 +59,12 @@ private:
 	static	  MObject aa_normal;
 	static	  MObject aa_z;
 	static	  MObject aa_undersample;
+	static	  MObject aa_upsample;
 	static	  MObject aa_threshold;
+	static	  MObject aa_rays;
+	static	  MObject aa_minRays;
+	static	  MObject aa_maxRays;
+	static	  MObject mb_subframes;
 
 	static	  MObject diffuseModel;
 	static	  MObject diffuseModelPhoton;

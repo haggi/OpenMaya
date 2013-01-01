@@ -51,7 +51,7 @@ class MayaToRenderer(object):
         melCmd += "    string $cmdString = " + self.makeMelPythonCmdStringFromPythonCmd(pythonCmdObj, argSet) + ";\n"
         melCmd += "    python($cmdString);\n"
         melCmd += "};\n";
-        print "MelCmd:", melCmd
+        #print "MelCmd:", melCmd
         pm.mel.eval(melCmd)
         return melProcName
             
@@ -188,7 +188,8 @@ class MayaToRenderer(object):
         pm.mel.eval(aeCallbackString)
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
-        aeTemplateImportName = "AETemplate." + aeTemplateName
+        aeTemplateImportName = aeTemplateName
+        #aeTemplateImportName = "AETemplate." + aeTemplateName
         #if pm.about(p=True) == "Maya 2014":
         #    aeTemplateImportName = "AETemplate." + aeTemplateName
         

@@ -30,6 +30,7 @@ public:
 	MString imageFormatString;
 	float sceneScale;
 	MMatrix sceneScaleMatrix;
+	MMatrix sceneRotMatrix;
 	int samplingType;
 	MString samplingTypeString;
 
@@ -47,17 +48,22 @@ public:
 	bool rotateGrid;
 	int  gridSize;
 	float filterRadius;
+	bool fullScreenAA;
 	
 	// adaptive aa settings
 	float aa_edgeAbsolute;
 	float aa_relative;
-	float aa_thickness;
+	int	  aa_thickness;
 	float aa_overburn;
 	float aa_normal;
 	float aa_z;
 	float aa_undersample;
 	float aa_threshold;
-
+	int aa_rays;
+	int aa_minRays;
+	int aa_maxRays;
+	int mb_subframes;
+	int aa_upsample;
 	int diffuseModel;
 	MString diffuseModelString;
 	int diffuseModelPhoton;

@@ -9,7 +9,11 @@ namespace krayRender
 {
 	class EventListener: public Kray::EventListener
 	{
-		char interrupt();
+	public:
+		EventListener();
+		int height;
+		bool interrupted;
+		void doInterrupt();
 		void activate(class Instance *k);	// called when listener is activated (with setEventListner() call)
 		void deactivate(class Instance *k);	// called when listener is deactivated
 		void textLine(void* handle,const char* txt);	// display text line

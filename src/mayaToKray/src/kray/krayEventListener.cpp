@@ -3,6 +3,11 @@
 
 namespace krayRender
 {
+	EventListener::EventListener()
+	{
+		this->interrupted = false;
+	}
+
 	void EventListener::activate(class Instance *k)
 	{
 		std::cout << " EventListener::activate\n" << std::flush;
@@ -31,12 +36,11 @@ namespace krayRender
 
 	int EventListener::getTextFlags(void* handle)
 	{
-		std::cout << " EventListener::getTextFlags\n" << std::flush;
-		return 0;
-		//int getTextFlags(void* handle){	
-		//	return interrupted?KRAY_TEXT_GET_INTERRUPT:0;		// return interupt flag to Kray when user wants to stop rendering
-		//}
-
+		if( interrupted )
+			std::cout << " EventListener::getTextFlags - return stop\n" << std::flush;
+		//else
+		//	std::cout << " EventListener::getTextFlags - return nonstop\n" << std::flush;
+		return interrupted ? KRAY_TEXT_GET_INTERRUPT:0;		// return interupt flag to Kray when user wants to stop rendering
 	}
 
 	void* EventListener::createWindow()
@@ -53,6 +57,7 @@ namespace krayRender
 	void EventListener::setWindowSize(void* windowHandle,const KrayEventWindow& kew)
 	{
 		std::cout << "EventListener::setWindowSize: x: " << kew.width << " y: " << kew.height << "\n";
+		this->height = kew.height;
 	}
 
 	void EventListener::setPixels(void* windowHandle,const KrayEventPixelTable& kept)
@@ -69,7 +74,7 @@ namespace krayRender
 			pix.a = 1.0f;
 			pixels[pId].pixel = pix;
 			pixels[pId].x = kept.pxls[pId].x;
-			pixels[pId].y = kept.pxls[pId].y;
+			pixels[pId].y = this->height - kept.pxls[pId].y - 1;
 		}
 		
 		EventQueue::Event e;
@@ -131,18 +136,18 @@ namespace krayRender
 	
 	int EventListener::getWindowFlags(void* windowHandle)
 	{
-		std::cout << " EventListener::getWindowFlags\n" << std::flush;
+		//std::cout << " EventListener::getWindowFlags\n" << std::flush;
 		return 0;
 	}
 
 	void EventListener::setWindowFlags(void* windowHandle,int flags)
 	{
-		std::cout << " EventListener::setWindowFlags\n" << std::flush;
+		//std::cout << " EventListener::setWindowFlags\n" << std::flush;
 	}
 
 	void EventListener::setWindowTitle(void* windowHandle,const char* title)
 	{
-		std::cout << " EventListener::setWindowTitle\n" << std::flush;
+		//std::cout << " EventListener::setWindowTitle\n" << std::flush;
 	}
 
 	void EventListener::getWindowMouseRawPosition(void* windowHandle, KrayEventMousePosition& mp)
@@ -172,6 +177,12 @@ namespace krayRender
 	void EventListener::renderInterupted()
 	{
 		std::cout << " EventListener::renderInterupted\n" << std::flush;
+	}
+
+	void EventListener::doInterrupt()
+	{
+		std::cout << " EventListener::doInterrupt\n" << std::flush;
+		this->interrupted = true;
 	}
 
 } // namespace

@@ -216,7 +216,7 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getFloat(MString("aa_relative"), krayGlobals, this->aa_relative))
 			throw("problem reading krayGlobals.aa_relative");
 
-		if(!getFloat(MString("aa_thickness"), krayGlobals, this->aa_thickness))
+		if(!getInt(MString("aa_thickness"), krayGlobals, this->aa_thickness))
 			throw("problem reading krayGlobals.aa_thickness");
 
 		if(!getFloat(MString("aa_overburn"), krayGlobals, this->aa_overburn))
@@ -234,15 +234,34 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getFloat(MString("aa_threshold"), krayGlobals, this->aa_threshold))
 			throw("problem reading krayGlobals.aa_threshold");
 
+		if(!getBool(MString("fullScreenAA"), krayGlobals, this->fullScreenAA))
+			throw("problem reading krayGlobals.fullScreenAA");
+
+		if(!getInt(MString("aa_minRays"), krayGlobals, this->aa_minRays))
+			throw("problem reading krayGlobals.aa_minRays");
+
+		if(!getInt(MString("mb_subframes"), krayGlobals, this->mb_subframes))
+			throw("problem reading krayGlobals.mb_subframes");
+
+		if(!getInt(MString("aa_maxRays"), krayGlobals, this->aa_maxRays))
+			throw("problem reading krayGlobals.aa_maxRays");
+
+		if(!getInt(MString("aa_rays"), krayGlobals, this->aa_rays))
+			throw("problem reading krayGlobals.aa_rays");
+
+		if(!getInt(MString("aa_upsample"), krayGlobals, this->aa_upsample))
+			throw("problem reading krayGlobals.aa_upsample");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[2][2] = this->sceneScale;
 
-		MTransformationMatrix tm(this->sceneScaleMatrix);
+		this->sceneRotMatrix.setToIdentity();
+		MTransformationMatrix tm(this->sceneRotMatrix);
 		MEulerRotation euler(M_PI, 0.0, 0.0, MEulerRotation::RotationOrder::kXYZ);
 		tm.rotateBy(euler, MSpace::kWorld);
-		this->sceneScaleMatrix = tm.asMatrix();
+		this->sceneRotMatrix = tm.asMatrix();
 
 	}catch(char *errorMsg){
 

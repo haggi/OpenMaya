@@ -44,7 +44,7 @@ namespace krayRender{
 		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 		{
 			MPoint p = points[vtxId];
-			p *= this->mtkr_renderGlobals->sceneScaleMatrix;
+			p *= this->mtkr_renderGlobals->sceneRotMatrix;
 
 			Kray::Vector v(p.x, p.y, p.z);
 			vmap.data(vtxId,v);
@@ -76,17 +76,18 @@ namespace krayRender{
 
 		this->pro->meshTag_material(*mesh, 0, defaultMat);	// attach yellowMat to mesh tag==0
 		
-		MMatrix matrix = obj->transformMatrices[0];
-		MTransformationMatrix tmatrix(matrix);
+		MMatrix trmatrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneRotMatrix * this->mtkr_renderGlobals->sceneScaleMatrix;
+		MMatrix rmatrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
+		MTransformationMatrix tmatrix(trmatrix);
+		MTransformationMatrix romatrix(rmatrix);
 		double axis[3];
 		MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
-		tmatrix.getRotation(axis, order, MSpace::kWorld);
-		//axis[0] = axis[1] = axis[2] = 0.0;
+		romatrix.getRotation(axis, order, MSpace::kWorld);
 
 		MVector translation = tmatrix.getTranslation(MSpace::kWorld);
 		Kray::Vector pos(translation.x, translation.y, translation.z);
 		double rtg = 360.0/(2.0 * M_PI);
-		Kray::AxesHpb kaxis = Kray::AxesHpb().angles(axis[0], axis[1], axis[2]);
+		Kray::AxesHpb kaxis = Kray::AxesHpb().angles(-axis[1], axis[0], -axis[2]);
 		this->pro->objectSet_mesh(pos, kaxis, *mesh, 0);	// add mesh to scene with given position and orientation
 		//this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(axis[0]*rtg, axis[1]*rtg, axis[2]*rtg), *mesh, 0);	// add mesh to scene with given position and orientation
 		

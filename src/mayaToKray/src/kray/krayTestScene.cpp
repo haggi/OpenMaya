@@ -36,22 +36,11 @@ void setupSimpleMaterialsForMesh(Kray::Prototyper& prot,Kray::MeshSymbol& msh){
 }
 
 void setupSimpleMeshScene(Kray::Prototyper& prot){
-	//Kray::MeshSymbol msh(prot);				// create a mesh
-	//buildBoxMesh(prot,msh);					// call box build function
-	//setupSimpleMaterialsForMesh(prot,msh);	// call material creating function
-		
-	//prot.objectSet_mesh(Kray::Vector(0,0,3.5),Kray::AxesHpb().angles(12,53,43),msh,0);	// add mesh to scene with given position and orientation
 
 	prot.lightAdd_point(Kray::Vector(-1, 5, -2),Kray::Vector(1,1,1));			// add light source to scene
 	
 	prot.background_sky(Kray::Vector(0.4,0.8,0.9),Kray::Vector(0,0,0),Kray::Vector(1,1,1),Kray::Vector(0,1,0)); // gradient background
 	
-	//prot.frameSize(320,240);				// rendered image size
-	
-	prot.imageSampler_totalUniform(3);		// 3x3 sampler per pixel antialiasing
 	prot.pixelFilter_mitchell();			// Mitchel pixel filter makes antialias looks better then box filter (which is default filter becouse of its simplicity)
 	prot.splitScreen_none();				// how render screen is divided between render threads
-	prot.pixelOrder_worm();					// funny pixel order, that eats not rendered pixels until render is finished
-	//prot.pixelOrder_scanRow();
-	//prot.pixelOrder_scanLine();
 }

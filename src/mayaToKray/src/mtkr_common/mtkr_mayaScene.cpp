@@ -306,7 +306,8 @@ void mtkr_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 
 void mtkr_MayaScene::stopRendering()
 {
-	// stop rendering
+	logger.debug("mtkr_MayaScene::stopRendering.");
+	this->mtkr_renderer.listener.doInterrupt();
 }
 
 bool mtkr_MayaScene::renderImage()

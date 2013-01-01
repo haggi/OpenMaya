@@ -39,7 +39,7 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
-			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
+			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
 			MVector lpos;
 			Kray::Matrix4x4 lightMatrix;
 			MMatrixToAMatrix(matrix, lightMatrix);
@@ -60,7 +60,7 @@ namespace krayRender{
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
 			MMatrix matrix = obj->transformMatrices[0];
 			MVector lightRot(0, 0, 1);
-			lightRot *= obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
+			lightRot *= obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
 			Kray::Vector lDir(lightRot.x,lightRot.y,lightRot.z);			
 			//Kray::Matrix4x4 lightMatrix;
 			//MMatrixToAMatrix(matrix, lightMatrix);
@@ -79,7 +79,7 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector pos, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
-			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
+			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
 			MVector lpos;
 			Kray::Matrix4x4 lightMatrix;
 			MMatrixToAMatrix(matrix, lightMatrix);

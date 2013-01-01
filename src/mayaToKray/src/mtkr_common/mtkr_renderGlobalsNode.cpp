@@ -34,6 +34,7 @@ MObject MayaToKrayGlobals::samplingType;
 MObject MayaToKrayGlobals::rotateGrid;
 MObject MayaToKrayGlobals::gridSize;
 MObject MayaToKrayGlobals::filterRadius;
+MObject MayaToKrayGlobals::fullScreenAA;
 
 MObject MayaToKrayGlobals::aa_edgeAbsolute;
 MObject MayaToKrayGlobals::aa_relative;
@@ -41,8 +42,14 @@ MObject MayaToKrayGlobals::aa_thickness;
 MObject MayaToKrayGlobals::aa_overburn;
 MObject MayaToKrayGlobals::aa_normal;
 MObject MayaToKrayGlobals::aa_z;
+MObject MayaToKrayGlobals::aa_upsample;
 MObject MayaToKrayGlobals::aa_undersample;
 MObject MayaToKrayGlobals::aa_threshold;
+MObject MayaToKrayGlobals::aa_rays;
+MObject MayaToKrayGlobals::aa_minRays;
+MObject MayaToKrayGlobals::aa_maxRays;
+MObject MayaToKrayGlobals::mb_subframes;
+
 
 MObject MayaToKrayGlobals::diffuseModel;
 MObject MayaToKrayGlobals::diffuseModelPhoton;
@@ -118,11 +125,10 @@ MStatus	MayaToKrayGlobals::initialize()
 
 	//  DOF (depth of field) and motion blur will not work in adaptive mode.
 	samplingType = eAttr.create( "samplingType", "samplingType", 0, &stat);
-	stat = eAttr.addField( "Grid", 0 );
-	stat = eAttr.addField( "FSAA", 1 );
-	stat = eAttr.addField( "Random FSAA", 2 );
-	stat = eAttr.addField( "QRandom", 3 );
-	stat = eAttr.addField( "None", 4 );
+	stat = eAttr.addField( "None", 0 );
+	stat = eAttr.addField( "Grid", 1 );
+	stat = eAttr.addField( "Qasi Random", 2 );
+	stat = eAttr.addField( "Random Full Screen AA", 3 );
 	CHECK_MSTATUS(addAttribute( samplingType ));
 
 	rotateGrid = nAttr.create("rotateGrid", "rotateGrid",  MFnNumericData::kBoolean, true);
@@ -140,7 +146,7 @@ MStatus	MayaToKrayGlobals::initialize()
 	aa_relative = nAttr.create("aa_relative", "aa_relative",  MFnNumericData::kFloat, 0.2);
 	CHECK_MSTATUS(addAttribute( aa_relative ));
 
-	aa_thickness = nAttr.create("aa_thickness", "aa_thickness",  MFnNumericData::kFloat, 1.0);
+	aa_thickness = nAttr.create("aa_thickness", "aa_thickness",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( aa_thickness ));
 
 	aa_overburn = nAttr.create("aa_overburn", "aa_overburn",  MFnNumericData::kFloat, 1.0);
@@ -157,6 +163,21 @@ MStatus	MayaToKrayGlobals::initialize()
 
 	aa_threshold = nAttr.create("aa_threshold", "aa_threshold",  MFnNumericData::kFloat, 0.01);
 	CHECK_MSTATUS(addAttribute( aa_threshold ));
+
+	aa_minRays = nAttr.create("aa_minRays", "aa_minRays",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( aa_minRays ));
+
+	aa_maxRays = nAttr.create("aa_maxRays", "aa_maxRays",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( aa_maxRays ));
+
+	aa_rays = nAttr.create("aa_rays", "aa_rays",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( aa_rays ));
+
+	mb_subframes = nAttr.create("mb_subframes", "mb_subframes",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( mb_subframes ));
+
+	aa_upsample = nAttr.create("aa_upsample", "aa_upsample",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( aa_upsample ));
 
 	diffuseModel = eAttr.create( "diffuseModel", "diffuseModel", 2, &stat);
 	stat = eAttr.addField( "Raytrace", 0 );
@@ -428,6 +449,10 @@ MStatus	MayaToKrayGlobals::initialize()
 
 	fgShowSamples = nAttr.create("fgShowSamples", "fgShowSamples",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( fgShowSamples ));
+
+	fullScreenAA = nAttr.create("fullScreenAA", "fullScreenAA",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( fullScreenAA ));
+
 
 	return stat;
 
