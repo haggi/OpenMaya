@@ -7,6 +7,8 @@
 #include "../mtkr_common/mtkr_renderGlobals.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "utilities/pystring.h"
+
 #include <maya/MEulerRotation.h>
 
 
@@ -191,12 +193,41 @@ namespace krayRender
 		MMatrixToAMatrix(sceneRotMatrix, rotMatrix);
 		Kray::Vector camPos(camMatrix);
 		Kray::AxesHpb camRot(-rot.y, rot.x, -rot.z);
-
+		this->pro->previewSize(width, height);
 		if( this->mtkr_renderGlobals->doDof)
 		{
 			this->pro->camera_lens1(width, height, focalLength * 10.0f, focusDistance, focusRegionScale, camPos, camRot);
 		}else{
 			this->pro->camera_picture(width, height, focalLength * 10.0f, camPos, camRot);
+		}
+	}
+
+	void KrayRenderer::writeImageFile(MString imageName)
+	{
+		if( this->mtkr_renderGlobals->bitdepth == 0) 
+		{
+			logger.debug(MString("Writing 8-bit output file: ") + imageName);
+			if(pystring::endswith(imageName.asChar(), ".tif"))
+				this->pro->outputSave_tifa(imageName.asChar());
+			if(pystring::endswith(imageName.asChar(), ".hdr"))
+				this->pro->outputSave_hdr(imageName.asChar());
+			if(pystring::endswith(imageName.asChar(), ".tga"))
+				this->pro->outputSave_tgaa(imageName.asChar());
+			if(pystring::endswith(imageName.asChar(), ".jpg"))
+				this->pro->outputSave_jpg(imageName.asChar(), this->mtkr_renderGlobals->jpgQuality);
+			if(pystring::endswith(imageName.asChar(), ".png"))
+				this->pro->outputSave_pnga(imageName.asChar());
+			if(pystring::endswith(imageName.asChar(), ".bmp"))
+				this->pro->outputSave_bmpa(imageName.asChar());
+		}		
+		// 16 bit
+		if( this->mtkr_renderGlobals->bitdepth == 1) 
+		{
+			logger.debug(MString("Writing 16-bit output file: ") + imageName);
+			if(pystring::endswith(imageName.asChar(), ".tif"))
+				this->pro->outputSave_tifa16(imageName.asChar());
+			if(pystring::endswith(imageName.asChar(), ".png"))
+				this->pro->outputSave_pnga16(imageName.asChar());
 		}
 	}
 
@@ -243,6 +274,38 @@ namespace krayRender
 					this->pro->pixelOrder_worm();		
 					break;
 				};
+
+				// define pixel order
+				switch(this->mtkr_renderGlobals->filterType)
+				{
+				case 0: // box
+					this->pro->pixelFilter_box(this->mtkr_renderGlobals->filterRadius);
+					break;
+				case 1: // cone
+					this->pro->pixelFilter_cone(this->mtkr_renderGlobals->filterRadius);
+					break;
+				case 2: // cubic
+					this->pro->pixelFilter_cubic(this->mtkr_renderGlobals->filterRadius);
+					break;
+				case 3: // lanczos
+					this->pro->pixelFilter_lanczos(this->mtkr_renderGlobals->filterRadius);
+					break;
+				case 4: // mitchell
+					this->pro->pixelFilter_mitchell();
+					break;
+				case 5: // spline
+					this->pro->pixelFilter_spline();
+					break;
+				case 6: // catmull
+					this->pro->pixelFilter_catmull();
+					break;
+				case 7: // quadric
+					this->pro->pixelFilter_quadric(this->mtkr_renderGlobals->filterRadius);
+					break;
+				default: // catmull
+					this->pro->pixelFilter_catmull();
+					break;
+				};
 				
 				this->defineLigths();
 				this->defineSampling(); // before defineCamera because ggf. dof will be turned off
@@ -251,8 +314,7 @@ namespace krayRender
 				this->pro->render();
 				if( this->mtkr_renderGlobals->exportSceneFile )
 					this->pro->pause();
-				this->pro->echo("Saving image....");
-				this->pro->outputSave_tif("C:/daten/3dprojects/kray/images/kray.tif");
+				this->writeImageFile(this->mtkr_renderGlobals->imageOutputFile);
 				this->pro->reset();
 			}			
 		}else{

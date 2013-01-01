@@ -15,7 +15,7 @@ mtkr_RenderGlobals::mtkr_RenderGlobals()
 
 MString mtkr_RenderGlobals::getImageExt()
 {
-	return this->imageFormatString;	
+	return this->imageFormatString;
 }
 
 
@@ -175,6 +175,7 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 
 		if(!getEnum(MString("imageFormat"), krayGlobals, this->imageFormat, this->imageFormatString))
 			throw("problem reading krayGlobals.imageFormat");
+		this->imageFormatString = this->imageFormatString.toLowerCase();
 
 		if(!getInt(MString("assemblyPolyTheshold"), krayGlobals, this->assemblyPolyTheshold))
 			throw("problem reading krayGlobals.assemblyPolyTheshold");
@@ -252,6 +253,9 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getInt(MString("aa_upsample"), krayGlobals, this->aa_upsample))
 			throw("problem reading krayGlobals.aa_upsample");
 
+		if(!getInt(MString("jpgQuality"), krayGlobals, this->jpgQuality))
+			throw("problem reading krayGlobals.jpgQuality");
+		
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;

@@ -44,6 +44,7 @@ private:
 	static	  MObject latlongVeShift;
 
 	static	  MObject imageFormat;
+	static	  MObject jpgQuality;
 
 	static	  MObject samplingType;
 	static	  MObject gridSize;

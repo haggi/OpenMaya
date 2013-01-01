@@ -40,6 +40,9 @@ class KrayRenderer(Renderer.MayaToRenderer):
     def KrayPhotonsCreateTab(self):
         log.debug("KrayPhotonsCreateTab()")
         self.createGlobalsNode()
+        photonsDict = {}
+        self.rendererTabUiDict['photons'] = photonsDict
+
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "PhotonsScrollLayout"
@@ -141,77 +144,149 @@ class KrayRenderer(Renderer.MayaToRenderer):
     def KrayRendererCreateTab(self):
         log.debug("KrayRendererCreateTab()")
         self.createGlobalsNode()
+        sDict = {}
+        self.rendererTabUiDict['sampling'] = sDict        
         parentForm = pm.setParent(query=True)
+
+        pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                with pm.frameLayout(label="Image format", collapsable=True, collapse=False):
+                    attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
+                    ui = pm.attrEnumOptionMenuGrp(label="Image format", at=self.renderGlobalsNodeName + ".imageFormat", ei=self.getEnumList(attr)) 
+                    attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
+                    sDict['bitdepth'] = pm.attrEnumOptionMenuGrp(label="Bit depth", at=self.renderGlobalsNodeName + ".bitdepth", ei=self.getEnumList(attr)) 
+                    sDict['jpgQuality'] = pm.intFieldGrp(label="Jpg Quality:", numberOfFields=1)
+                    pm.connectControl(sDict['jpgQuality'], self.renderGlobalsNodeName + ".jpgQuality", index=2)                     
+                
                 with pm.frameLayout(label="Sampling", collapsable=True, collapse=False):
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".samplingType")
-                    ui = pm.attrEnumOptionMenuGrp(label="Sampling Type", at=self.renderGlobalsNodeName + ".samplingType", ei=self.getEnumList(attr)) 
-                    ui = pm.checkBoxGrp(label="Full Screen AA:", value1=False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fullScreenAA", index=2)
-                    pm.separator()
-                    ui = pm.intFieldGrp(label="Grid Size:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".gridSize", index=2)                     
-                    ui = pm.checkBoxGrp(label="Grid Rotate:", value1=False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".rotateGrid", index=2) 
-                    pm.separator()
-                    ui = pm.intFieldGrp(label="Rays:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_rays", index=2)                     
-                    ui = pm.intFieldGrp(label="Min Rays:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_minRays", index=2)                     
-                    ui = pm.intFieldGrp(label="Max Rays:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_maxRays", index=2)                     
-                    ui = pm.intFieldGrp(label="Edge Thickness:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_thickness", index=2)                     
-                    ui = pm.intFieldGrp(label="Upsample:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_upsample", index=2)      
-                    ui = pm.floatFieldGrp(label="Edge Absulut:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_edgeAbsolute", index=2)                     
-                    ui = pm.floatFieldGrp(label="Edge Relative:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_relative", index=2)                     
-                    ui = pm.floatFieldGrp(label="Normal Sentitivity:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_normal", index=2)                     
-                    ui = pm.floatFieldGrp(label="Z Sensitivity:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_z", index=2)                  
-                    ui = pm.floatFieldGrp(label="Max Brightness:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_overburn", index=2)                  
-                    
-                    ui = pm.floatFieldGrp(label="Threshold:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_threshold", index=2)                     
-                    ui = pm.floatFieldGrp(label="Mb Subframes:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".mb_subframes", index=2)                     
-                    
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".pixelOrder")
-                    ui = pm.attrEnumOptionMenuGrp(label="Pixel Order", at=self.renderGlobalsNodeName + ".pixelOrder", ei=self.getEnumList(attr)) 
+                    with pm.columnLayout(self.rendererName + "ColumnLayoutA", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".samplingType")
+                        ui = pm.attrEnumOptionMenuGrp(label="Sampling Type", at=self.renderGlobalsNodeName + ".samplingType", ei=self.getEnumList(attr)) 
+                        sDict['fullScreenAA'] = pm.checkBoxGrp(label="Full Screen AA:", value1=False)
+                        pm.connectControl(sDict['fullScreenAA'], self.renderGlobalsNodeName + ".fullScreenAA", index=2)
+                        pm.separator()
+                        sDict['gridSize'] = pm.intFieldGrp(label="Grid Size:", numberOfFields=1)
+                        pm.connectControl(sDict['gridSize'], self.renderGlobalsNodeName + ".gridSize", index=2)                     
+                        sDict['gridRotate'] = pm.checkBoxGrp(label="Grid Rotate:", value1=False)
+                        pm.connectControl(sDict['gridRotate'], self.renderGlobalsNodeName + ".rotateGrid", index=2) 
+                        pm.separator()
+                        ui = pm.intFieldGrp(label="Rays:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_rays", index=2)                     
+                        ui = pm.intFieldGrp(label="Min Rays:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_minRays", index=2)                     
+                        ui = pm.intFieldGrp(label="Max Rays:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_maxRays", index=2)                     
+                        ui = pm.intFieldGrp(label="Edge Thickness:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_thickness", index=2)                     
+                        ui = pm.intFieldGrp(label="Upsample:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_upsample", index=2)      
+                        ui = pm.floatFieldGrp(label="Edge Absulut:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_edgeAbsolute", index=2)                     
+                        ui = pm.floatFieldGrp(label="Edge Relative:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_relative", index=2)                     
+                        ui = pm.floatFieldGrp(label="Normal Sentitivity:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_normal", index=2)                     
+                        ui = pm.floatFieldGrp(label="Z Sensitivity:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_z", index=2)                  
+                        ui = pm.floatFieldGrp(label="Max Brightness:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_overburn", index=2)                    
+                        ui = pm.floatFieldGrp(label="Threshold:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".aa_threshold", index=2)                     
+                        ui = pm.floatFieldGrp(label="Mb Subframes:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".mb_subframes", index=2)                     
+                        pm.separator()
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".pixelOrder")
+                        ui = pm.attrEnumOptionMenuGrp(label="Pixel Order", at=self.renderGlobalsNodeName + ".pixelOrder", ei=self.getEnumList(attr)) 
                     
                 with pm.frameLayout(label="Filtering", collapsable=True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
                     ui = pm.attrEnumOptionMenuGrp(label="Filter Type", at=self.renderGlobalsNodeName + ".filtertype", ei=self.getEnumList(attr)) 
-                    ui = pm.intFieldGrp(label="Filter Size:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".filtersize", index=2)
+                    sDict['filterSize']  = pm.floatFieldGrp(label="Filter Size:", numberOfFields=1)
+                    pm.connectControl(sDict['filterSize'], self.renderGlobalsNodeName + ".filtersize", index=2)
                                         
                 with pm.frameLayout(label="Features", collapsable=True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Motion Blur:")
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doMb", index=2)
-                    ui = pm.checkBoxGrp(label="Depth Of Field:")
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
+                    sDict['doMb'] = pm.checkBoxGrp(label="Motion Blur:")
+                    pm.connectControl(sDict['doMb'], self.renderGlobalsNodeName + ".doMb", index=2)
+                    sDict['doDof'] = pm.checkBoxGrp(label="Depth Of Field:")
+                    pm.connectControl(sDict['doDof'], self.renderGlobalsNodeName + ".doDof", index=2)
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         self.KrayRendererUpdateTab()
+        
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.filtertype, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
 
     def KrayRendererUIUpdateCallback(self, what=None):
         self.createGlobalsNode()
         #self.updateEnvironment()
         log.debug("KrayRendererUIUpdateCallback(): " + str(what))
+        if what=="sampling":
+            print "Update sampling"
+            sDict = self.rendererTabUiDict['sampling']
+            sType = self.renderGlobalsNode.samplingType.get()
+            
+            if sType != 1: #grid
+                pm.intFieldGrp(sDict['gridSize'], edit=True, enable=False)
+                pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=False)
+            else:
+                pm.intFieldGrp(sDict['gridSize'], edit=True, enable=True)
+                pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=True)
+                
+            fType = self.renderGlobalsNode.filtertype.get()
+            if fType in [4,5,6]:
+                pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=False)
+            else:
+                pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=True)
+                
+            iFormat = self.renderGlobalsNode.imageFormat.get()    
+            if iFormat in [2,3]:
+                pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=True) 
+            else:
+                pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=False) 
+                
+            if iFormat == 1:
+                pm.intFieldGrp(sDict['jpgQuality'], edit=True, enable=True)
+            else:
+                pm.intFieldGrp(sDict['jpgQuality'], edit=True, enable=False)
 
     def KrayRendererUpdateTab(self, dummy=None):
         self.createGlobalsNode()
         #self.updateEnvironment()
         log.debug("KrayRendererUpdateTab()")
+        
+        sDict = self.rendererTabUiDict['sampling']
+        sType = self.renderGlobalsNode.samplingType.get()
+        
+        if sType != 1: #grid
+            pm.intFieldGrp(sDict['gridSize'], edit=True, enable=False)
+            pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=False)
+        else:
+            pm.intFieldGrp(sDict['gridSize'], edit=True, enable=True)
+            pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=True)
 
+        fType = self.renderGlobalsNode.filtertype.get()
+        if fType in [4,5,6]:
+            pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=False)
+        else:
+            pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=True)
+            
+        iFormat = self.renderGlobalsNode.imageFormat.get()    
+        if iFormat in [2,3]:
+            pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=True) 
+        else:
+            pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=False) 
+            
+        if iFormat == 1:
+            pm.intFieldGrp(sDict['jpgQuality'], edit=True, enable=True)
+        else:
+            pm.intFieldGrp(sDict['jpgQuality'], edit=True, enable=False)
+            
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Kray Export File Name")
         if len(filename) > 0:
@@ -352,5 +427,5 @@ def unregister():
     theRenderer().unRegisterRenderer()
     log.debug("Unregister done")
 
-def uiCallback(what = None):
+def uiCallback(what=None):
     theRenderer().KrayRendererUIUpdateCallback(what)

@@ -27,6 +27,7 @@ public:
 	MString assemblyExportTypeString;
 	int assemblyPolyTheshold;
 	int imageFormat;
+	int jpgQuality;
 	MString imageFormatString;
 	float sceneScale;
 	MMatrix sceneScaleMatrix;

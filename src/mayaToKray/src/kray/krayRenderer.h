@@ -73,7 +73,7 @@ namespace krayRender
 		void defineSampling();
 		void defineGeometry(mtkr_MayaObject *obj);
 		void defineMesh(mtkr_MayaObject *obj);
-
+		void writeImageFile(MString fileName);
 		void defineLigths();
 		void definePointLight(mtkr_MayaObject *obj);
 		void defineDirectionalLight(mtkr_MayaObject *obj);

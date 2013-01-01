@@ -101,6 +101,9 @@ MObject MayaToKrayGlobals::fgRefractions;
 MObject MayaToKrayGlobals::fgCornerDist;
 MObject MayaToKrayGlobals::fgPathPasses;
 
+MObject MayaToKrayGlobals::jpgQuality;
+
+
 MayaToKrayGlobals::MayaToKrayGlobals()
 {}
 
@@ -213,10 +216,10 @@ MStatus	MayaToKrayGlobals::initialize()
 	bitdepth = eAttr.create( "bitdepth", "bitdepth", 3, &stat);
 	stat = eAttr.addField( "8bit  Integer", 0 );
 	stat = eAttr.addField( "16bit Integer", 1 );
-	stat = eAttr.addField( "32bit Integer", 2 );
-	stat = eAttr.addField( "16bit Float(Half)", 3 );
-	stat = eAttr.addField( "32bit Float", 4 );
-	stat = eAttr.addField( "64bit Double", 5 );
+	//stat = eAttr.addField( "32bit Integer", 2 );
+	//stat = eAttr.addField( "16bit Float(Half)", 3 );
+	//stat = eAttr.addField( "32bit Float", 4 );
+	//stat = eAttr.addField( "64bit Double", 5 );
 	CHECK_MSTATUS(addAttribute( bitdepth ));
 
 
@@ -320,6 +323,7 @@ MStatus	MayaToKrayGlobals::initialize()
 	stat = eAttr.addField( "TGA", 4 ); // always use tga + alpha
 	stat = eAttr.addField( "BMP", 5 ); // always use bmp + alpha
 	CHECK_MSTATUS(addAttribute( imageFormat ));
+
 
 	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
@@ -453,6 +457,11 @@ MStatus	MayaToKrayGlobals::initialize()
 	fullScreenAA = nAttr.create("fullScreenAA", "fullScreenAA",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( fullScreenAA ));
 
+	jpgQuality = nAttr.create("jpgQuality", "jpgQuality",  MFnNumericData::kInt, 75);
+	nAttr.setMin(0);
+	nAttr.setMax(100);
+	CHECK_MSTATUS(addAttribute( jpgQuality ));
+	
 
 	return stat;
 
