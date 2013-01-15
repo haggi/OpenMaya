@@ -258,7 +258,7 @@
     <ClCompile>
       <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToKray.pch</PrecompiledHeaderOutputFile>
@@ -267,14 +267,14 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;KrayLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToKray.mll</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\lib\Release;c:\Users\haggi\coding\C++Libraries\Boost147_2010\lib</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Release/mayaToKray.pdb</ProgramDatabaseFile>
       <ImportLibrary>Release/mayaToKray.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayaToKray.mll ..\deployment\mayaToKray\plug-ins\mayaToKray.mll</Command>
+      <Command>copy Release\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

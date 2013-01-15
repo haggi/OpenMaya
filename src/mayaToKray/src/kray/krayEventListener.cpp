@@ -20,7 +20,7 @@ namespace krayRender
 
 	void EventListener::textLine(void* handle,const char* txt)
 	{
-		std::cout << "kray says : " << txt << char(13) << std::flush;
+		std::cout << "kray says : " << txt << "\n" << std::flush;
 	};
 
 	void EventListener::textNewLine(void* handle)
@@ -62,7 +62,7 @@ namespace krayRender
 
 	void EventListener::setPixels(void* windowHandle,const KrayEventPixelTable& kept)
 	{
-		std::cout << " EventListener::setPixels count: " << kept.count << "\n" << std::flush;
+		//std::cout << " EventListener::setPixels count: " << kept.count << "\n" << std::flush;
 		EventQueue::RandomPixel *pixels = new EventQueue::RandomPixel[kept.count];
 		for( size_t pId = 0; pId < kept.count; pId++)
 		{

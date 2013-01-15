@@ -39,7 +39,7 @@ namespace krayRender{
 			lightColor *= intensity;
 			Kray::Vector col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
-			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
+			MMatrix matrix = obj->transformMatrices[0];// * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
 			MVector lpos;
 			Kray::Matrix4x4 lightMatrix;
 			MMatrixToAMatrix(matrix, lightMatrix);

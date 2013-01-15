@@ -225,21 +225,36 @@ def hierarchy():
                 #    break
     
 def CartesianToPolar(rotation):
-    polar = [0.0,0.0]
     
-    #calc longitude
-    polar[1] = math.atan(rotation[0], rotation[2])
-
-    #this is easier to write and read than sqrt(pow(x,2), pow(y,2))!
+    v = om.MVector(0,0,1)
+    m = om.MTransformationMatrix()
+    rotation = map(math.radians, rotation)
+    e = om.MEulerRotation()
+    e.setValue(rotation[0], rotation[1], rotation[2])
+    m.rotateBy(e, om.MSpace.kWorld)
+    v = v * m.asMatrix()
+#    r = math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
+#    print "V", v.x, v.y, v.z, r
+#    phi = math.pi/2.0
+#    theta = 1.0
+#    #if v.x != 0.0:
+#    phi = math.atan2(v.y,v.x)
+#    #if v.z != 0.0:
+#    theta = math.atan2(math.sqrt(v.x * v.x + v.y * v.y),v.z)
+    #if v.x != 0.0:
+    #    phi = math.atan(v.y/v.x)
+    #else:
+    #    phi = math.pi/2.0
+    #theta = math.acos(v.z/r)
+    theta = math.asin(v.y)
+    phi = math.asin(v.z)
+    t = math.degrees(theta)
+    p = math.degrees(phi)
     
-    xzLen = pm.vector(rotation[0], 0.0, rotation[2]).length() 
-    #atan2 does the magic
-    polar[0] = math.atan(-rotation[1],xzLen);
-
-    #convert to deg
-    polar[0] = math.degrees(polar[0]);
-    polar[1] = math.degrees(polar[1]);
-
+    if v.x < 0.0:
+        p = 180 - p
+    
+    polar = (p,t)
     return polar
 
 
@@ -250,10 +265,6 @@ class aov:
         self.renderGlobalsNode = pm.PyNode("appleseedGlobals")
         self.AppleseedAOVsCreateTab()
     
-    def AppleseedAOVAddShaders(self, args=None):
-        log.debug("AppleseedAOVAddShaders")
-        aovDict = self.rendererTabUiDict['aovs']
-
     def AppleseedAOVSelectCommand(self, whichField):
         log.debug("AppleseedAOVSelectCommand")
         aovDict = self.rendererTabUiDict['aovs']

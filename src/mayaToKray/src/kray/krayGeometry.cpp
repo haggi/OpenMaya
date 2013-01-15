@@ -46,7 +46,7 @@ namespace krayRender{
 		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 		{
 			MPoint p = points[vtxId];
-			p *= this->mtkr_renderGlobals->sceneRotMatrix;
+			//p *= this->mtkr_renderGlobals->sceneRotMatrix;
 
 			Kray::Vector v(p.x, p.y, p.z);
 			vmap.data(vtxId,v);
@@ -83,10 +83,14 @@ namespace krayRender{
 		MVector rot;
 		posRotFromMatrix( matrix, pos, rot);
 		Kray::Matrix4x4 camMatrix;
-		matrix *=  this->mtkr_renderGlobals->sceneRotMatrix;
+		
+		//matrix *=  this->mtkr_renderGlobals->sceneRotMatrix;
 		MMatrixToAMatrix(matrix, camMatrix);
 		Kray::Vector camPos(camMatrix);
-		Kray::AxesHpb camRot(-rot.y, rot.x, -rot.z);
+		//Kray::AxesHpb camRot(-rot.y, rot.x, -rot.z);
+		Kray::AxesHpb camRot(camMatrix);
+		Kray::Axes camRota(camMatrix);
+
 		this->pro->objectSet_mesh(camPos, camRot, *mesh, 0);	// add mesh to scene with given position and orientation
 		//this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(axis[0]*rtg, axis[1]*rtg, axis[2]*rtg), *mesh, 0);	// add mesh to scene with given position and orientation
 		

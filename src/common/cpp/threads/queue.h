@@ -70,6 +70,11 @@ public:
         return the_queue.empty();
     }
 
+    size_t size() const
+    {
+		return the_queue.size();
+    }
+
     bool try_pop(Data& popped_value)
     {
         boost::mutex::scoped_lock lock(the_mutex);

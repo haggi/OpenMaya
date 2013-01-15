@@ -33,6 +33,7 @@ static std::vector<MObject> interactiveUpdateList;
 static std::vector<MDagPath> interactiveUpdateListDP;
 
 static std::map<MCallbackId, MObject> objIdMap;
+RV_PIXEL *imageBuffer = NULL;
 
 EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue()
 {
@@ -207,7 +208,9 @@ void RenderQueueWorker::startRenderQueueWorker()
 {
 	EventQueue::Event e;
 	bool terminateLoop = false;
-	
+	int pixelsChanged = 0;
+	int minPixelsChanged = 500;
+
 	MStatus status;
 	while(!terminateLoop)
 	{
@@ -219,7 +222,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 		}
 
 		theRenderEventQueue()->wait_and_pop(e);
-
+		
 		switch(e.type)
 		{
 		case EventQueue::Event::FINISH:
@@ -288,6 +291,12 @@ void RenderQueueWorker::startRenderQueueWorker()
 				}
 				delete[]  (RV_PIXEL *)e.data;
 			}
+			if( imageBuffer != NULL)
+			{
+				delete[] imageBuffer;
+				imageBuffer = NULL;
+			}
+
 			e.type = EventQueue::Event::FINISH;
 			theRenderEventQueue()->push(e);
 			isRendering = false;
@@ -324,30 +333,35 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::PIXELSDONE:
-			//logger.debug("Event::PIXELSDONE");
 			if( MRenderView::doesRenderEditorExist())
 			{
 				int width = mayaScenePtr->renderGlobals->imgWidth;
 				int height = mayaScenePtr->renderGlobals->imgHeight;
+				if( imageBuffer == NULL)
+				{
+					imageBuffer = new RV_PIXEL[width * height];
+					for( int x=0; x < width; x++)
+						for( int y=0; y < height; y++)
+							imageBuffer[width*y + x].r = imageBuffer[width*y + x].g = imageBuffer[width*y + x].b = imageBuffer[width*y + x].a = 0.0f;
+				}
 				EventQueue::RandomPixel *pixels = (EventQueue::RandomPixel *)e.data;
-				//logger.debug(MString("PIXELSDONE::updating ") + e.numPixels + " pixels");
 				for( size_t pId = 0; pId < e.numPixels; pId++)
 				{
-					//MRenderView::updatePixels(pixels[pId].x, pixels[pId].y, pixels[pId].x, pixels[pId].y, &pixels[pId].pixel);  
-					RV_PIXEL p;
-					p.r = 128;
-					p.g = 128;
-					p.b = 255;
-					p.a = 128.0f;
-					MRenderView::updatePixels(pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
-					if( pixels[pId].x > (width -1))
-						logger.debug(MString("pixel:  x:") + pixels[pId].x + " y:" + pixels[pId].y + " col " + pixels[pId].pixel.r + " " + pixels[pId].pixel.g + " " + pixels[pId].pixel.b);
-					if( pixels[pId].y > (height -1))
-						logger.debug(MString("pixel:  x:") + pixels[pId].x + " y:" + pixels[pId].y + " col " + pixels[pId].pixel.r + " " + pixels[pId].pixel.g + " " + pixels[pId].pixel.b);
-					//MRenderView::updatePixels(pixels[pId].x, pixels[pId].y, pixels[pId].x, pixels[pId].y, &pixels[pId].pixel);  
-					//MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
+					imageBuffer[width * pixels[pId].y + pixels[pId].x] =  pixels[pId].pixel;
+					//pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
 				}
-				MRenderView::refresh(0, width-1, 0, height-1);
+				//logger.debug(MString("Event::PIXELSDONE - queueSize: ") + theRenderEventQueue()->size()+ " numpixels " + e.numPixels);
+				//for( size_t pId = 0; pId < e.numPixels; pId++)
+				//{
+				//	MRenderView::updatePixels(pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
+				//}
+				pixelsChanged += e.numPixels;
+				if( (theRenderEventQueue()->size() <= 1) || (pixelsChanged >= minPixelsChanged))
+				{
+					MRenderView::updatePixels(0, width-1, 0, height-1, imageBuffer); 
+					MRenderView::refresh(0, width-1, 0, height-1);
+					pixelsChanged = 0;
+				}
 			}
 			delete[]  (EventQueue::RandomPixel *)e.data;
 			break;

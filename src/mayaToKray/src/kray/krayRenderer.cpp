@@ -57,7 +57,8 @@ namespace krayRender
 			{
 				const char *SCRIPTFILENAME = "C:/daten/3dprojects/kray/scene.kray";
 				this->outStream = std::ofstream(SCRIPTFILENAME);
-				this->pro = new krayRender::OstreamPrototyper(this->outStream,false);
+				//this->pro = new krayRender::OstreamPrototyper(this->outStream,false);
+				this->pro = new krayRender::OstreamPlusDirectPrototyper(this->outStream, *this->kin, false);
 				this->pro->parseMode(1);	// turns on, turbo parsing mode
 			}else
 				this->pro = new Kray::DirectPrototyper(this->kin);		// prototyper gives access to Kray Script command prototypes
@@ -174,31 +175,53 @@ namespace krayRender
 		getFloat(MString("fStop"), camFn, fStop);
 		getFloat(MString("focusRegionScale"), camFn, focusRegionScale);
 		
-		MVector rot;
-		MPoint pos;
-		posRotFromMatrix( matrix, pos, rot);
+		// in kray the focal distance is defined in pixels.
+		// So... if you know how big is your virtual sensor in Kray. 
+		// Lets say its standars 35mm film you can find out how big is pixel of Kray's virtual sensor. 
+		// Its pixel_size_in_mm=35mm/image_size . Than you can compute focal_distance_in_pixels=focal_distance_in_mm/pixel_size_in_mm
 
-		MMatrix sceneRotMatrix;
-		sceneRotMatrix.setToIdentity();
-		MTransformationMatrix tm(sceneRotMatrix);
-		MEulerRotation euler(rot.y, rot.x, rot.z, MEulerRotation::kXYZ);
-		tm.rotateBy(euler, MSpace::kWorld);
-		sceneRotMatrix = tm.asMatrix();
-		MString ms = matrixToString(sceneRotMatrix);
-		//logger.debug(MString("rotmat: ") + ms);
-		Kray::Matrix4x4 camMatrix;
-		Kray::Matrix4x4 rotMatrix;
-		matrix *=  this->mtkr_renderGlobals->sceneRotMatrix;
-		MMatrixToAMatrix(matrix, camMatrix);
-		MMatrixToAMatrix(sceneRotMatrix, rotMatrix);
-		Kray::Vector camPos(camMatrix);
-		Kray::AxesHpb camRot(-rot.y, rot.x, -rot.z);
+		// in maya the sensor size is the horizontal film aperture expressed in inces
+		float horizontalImageSizeMM = horizontalFilmAperture * 25.4;
+		float pixelSizeInMM = horizontalImageSizeMM / this->mtkr_renderGlobals->imgWidth;
+		float focalDistance = focalLength / pixelSizeInMM;
+
 		this->pro->previewSize(width, height);
+
+		//MVector rot;
+		//MPoint pos;
+		//posRotFromMatrix( matrix, pos, rot);
+
+		//matrix *= this->mtkr_renderGlobals->sceneRotMatrix;
+		MMatrix posMatrix = matrix;
+		MMatrix rotMatrix = matrix;
+		//MMatrix sceneRotMatrix;
+		//sceneRotMatrix.setToIdentity();
+		//MTransformationMatrix tm(sceneRotMatrix);
+		//MEulerRotation euler(rot.y, rot.x, rot.z, MEulerRotation::kXYZ);
+		//tm.rotateBy(euler, MSpace::kWorld);
+		//sceneRotMatrix = tm.asMatrix();
+
+		//MString ms = matrixToString(this->mtkr_scene->camList[0]->transformMatrices[0]);
+		//logger.debug(MString("MMatrix :\n") + ms);
+		//MMatrix colM;
+		//rowToColumn(this->mtkr_scene->camList[0]->transformMatrices[0], colM);
+		//MString kms = matrixToString(colM);
+		//logger.debug(MString("KMatrix :\n") + kms);
+
+		Kray::Matrix4x4 camPosMatrix;
+		Kray::Matrix4x4 camRotMatrix;
+		
+		MMatrixToAMatrix(posMatrix, camPosMatrix);
+		MMatrixToAMatrix(rotMatrix, camRotMatrix);
+
+		Kray::Vector camPos(camPosMatrix);
+		Kray::AxesHpb camRot(camRotMatrix);
+
 		if( this->mtkr_renderGlobals->doDof)
 		{
-			this->pro->camera_lens1(width, height, focalLength * 10.0f, focusDistance, focusRegionScale, camPos, camRot);
+			this->pro->camera_lens1(width, height, focalDistance, focusDistance, focusRegionScale, camPos, camRot);
 		}else{
-			this->pro->camera_picture(width, height, focalLength * 10.0f, camPos, camRot);
+			this->pro->camera_picture(width, height, focalDistance, camPos, camRot);
 		}
 	}
 
@@ -312,8 +335,8 @@ namespace krayRender
 				this->defineCamera();
 				this->pro->echo("Rendering....");
 				this->pro->render();
-				if( this->mtkr_renderGlobals->exportSceneFile )
-					this->pro->pause();
+				//if( this->mtkr_renderGlobals->exportSceneFile )
+				//	this->pro->pause();
 				this->writeImageFile(this->mtkr_renderGlobals->imageOutputFile);
 				this->pro->reset();
 			}			

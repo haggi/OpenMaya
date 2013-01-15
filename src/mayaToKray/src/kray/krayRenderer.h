@@ -47,6 +47,19 @@ namespace krayRender
 		}
 	};
 
+	class OstreamPlusDirectPrototyper : public Kray::OfflinePrototyper{
+	   std::ostream& stream;
+	   Kray::Instance& ki;
+	public:
+	   OstreamPlusDirectPrototyper(std::ostream& stream,Kray::Instance& ki,bool packEnums=false):stream(stream),ki(ki),OfflinePrototyper(packEnums){
+	   }
+
+	   void out(const char* scriptLine){
+		  stream << scriptLine << std::endl;
+		  ki.parse(scriptLine);
+	   }
+	};
+
 	class KrayRenderer
 	{
 	public:
