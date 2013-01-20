@@ -25,10 +25,24 @@ MObject MayaToKrayGlobals::gradientZenit;
 MObject MayaToKrayGlobals::directLightSamples;
 MObject MayaToKrayGlobals::imageFormat;
 MObject MayaToKrayGlobals::environmentMap;
+MObject MayaToKrayGlobals::environmentMap2;
 MObject MayaToKrayGlobals::assemblyPolyTheshold;
 MObject MayaToKrayGlobals::optimizedTexturePath;
 MObject MayaToKrayGlobals::latlongHoShift;
 MObject MayaToKrayGlobals::latlongVeShift;
+
+MObject MayaToKrayGlobals::sunDir;
+MObject MayaToKrayGlobals::zenithDir;
+MObject MayaToKrayGlobals::nadir;
+MObject MayaToKrayGlobals::skyGamma;
+MObject MayaToKrayGlobals::groundGamma;
+MObject MayaToKrayGlobals::turbidity;
+MObject MayaToKrayGlobals::exposure;
+MObject MayaToKrayGlobals::orientation;
+MObject MayaToKrayGlobals::solidAngle;
+MObject MayaToKrayGlobals::sunIntensity;
+MObject MayaToKrayGlobals::sunSpotAngle;
+MObject MayaToKrayGlobals::groundAlbedo;
 
 MObject MayaToKrayGlobals::samplingType;
 MObject MayaToKrayGlobals::rotateGrid;
@@ -273,9 +287,15 @@ MStatus	MayaToKrayGlobals::initialize()
 
 	environmentType = eAttr.create( "environmentType", "environmentType", 0, &stat);
 	stat = eAttr.addField( "Constant", 0 );
-	stat = eAttr.addField( "Gradient", 1 );
-	stat = eAttr.addField( "Latitude Longitude", 2 );
-	stat = eAttr.addField( "Mirror Ball", 3 );
+	stat = eAttr.addField( "Physical Sky", 1 );
+	stat = eAttr.addField( "Physical Sky 2", 2 );
+	stat = eAttr.addField( "Sky", 3 );
+	stat = eAttr.addField( "Sky2", 4 );
+	stat = eAttr.addField( "Bitmap", 5 );
+	stat = eAttr.addField( "Bitmap2", 6 );
+	stat = eAttr.addField( "DirectionsMap", 7 );
+	stat = eAttr.addField( "LightMap", 8 );
+	stat = eAttr.addField( "SphereMap", 9 );
 	CHECK_MSTATUS(addAttribute( environmentType ));
 
 	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
@@ -297,9 +317,55 @@ MStatus	MayaToKrayGlobals::initialize()
 	nAttr.setDefault(0.6f, 0.7f, 0.9f);
 	CHECK_MSTATUS(addAttribute( environmentMap ));
 
+	environmentMap2 = nAttr.createColor("environmentMap2", "environmentMap2");
+	nAttr.setDefault(0.6f, 0.7f, 0.9f);
+	CHECK_MSTATUS(addAttribute( environmentMap2 ));
+
 	environmentIntensity = nAttr.create("environmentIntensity", "environmentIntensity",  MFnNumericData::kFloat, 1.0f);
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( environmentIntensity ));
+
+	zenithDir = nAttr.createPoint("zenithDir", "zenithDir");
+	nAttr.setDefault(0.0f, 1.0f, 0.0f);
+	CHECK_MSTATUS(addAttribute( zenithDir ));
+
+	orientation = nAttr.createPoint("orientation", "orientation");
+	nAttr.setDefault(0.0f, 1.0f, 0.0f);
+	CHECK_MSTATUS(addAttribute( orientation ));
+
+	sunDir = nAttr.createPoint("sunDir", "sunDir");
+	nAttr.setDefault(0.0f, 1.0f, 0.0f);
+	CHECK_MSTATUS(addAttribute( sunDir ));
+
+	groundAlbedo = nAttr.createColor("groundAlbedo", "groundAlbedo");
+	nAttr.setDefault(1.0f, 1.0f, 1.0f);
+	CHECK_MSTATUS(addAttribute( groundAlbedo ));
+
+	nadir = nAttr.createColor("nadir", "nadir");
+	nAttr.setDefault(0.0f, 0.0f, 0.0f);
+	CHECK_MSTATUS(addAttribute( nadir ));
+
+	sunIntensity = nAttr.create("sunIntensity", "sunIntensity",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( sunIntensity ));
+
+	sunSpotAngle = nAttr.create("sunSpotAngle", "sunSpotAngle",  MFnNumericData::kFloat, 35.0f);
+	CHECK_MSTATUS(addAttribute( sunSpotAngle ));
+
+	solidAngle = nAttr.create("solidAngle", "solidAngle",  MFnNumericData::kFloat, 25.0f);
+	CHECK_MSTATUS(addAttribute( solidAngle ));
+
+	exposure = nAttr.create("exposure", "exposure",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( exposure ));
+
+	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 10.0f);
+	CHECK_MSTATUS(addAttribute( turbidity ));
+
+	groundGamma = nAttr.create("groundGamma", "groundGamma",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( groundGamma ));
+
+	skyGamma = nAttr.create("skyGamma", "skyGamma",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( skyGamma ));
+
 
 	directLightSamples = nAttr.create("directLightSamples", "directLightSamples",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( directLightSamples ));

@@ -267,3 +267,24 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value)
 		return false;
 	return true;
 }
+
+bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return false;
+	MPlug Xplug = dn.findPlug(plugName + "X", &stat);
+	MPlug Yplug = dn.findPlug(plugName + "Y", &stat);
+	MPlug Zplug = dn.findPlug(plugName + "Z", &stat);
+	if( !stat )
+		return false;
+	value.x = Xplug.asDouble(ctx, &stat);
+	value.y = Yplug.asDouble(ctx, &stat);
+	value.z = Zplug.asDouble(ctx, &stat);
+	if( !stat )
+		return false;
+	return true;
+}

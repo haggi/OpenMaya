@@ -140,6 +140,9 @@
     <ClCompile Include="..\src\kray\krayUtils.cpp">
       <Filter>Source Files\kray</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\kray\krayEnvironment.cpp">
+      <Filter>Source Files\kray</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

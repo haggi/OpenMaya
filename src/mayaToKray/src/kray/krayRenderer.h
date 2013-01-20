@@ -87,11 +87,15 @@ namespace krayRender
 		void defineGeometry(mtkr_MayaObject *obj);
 		void defineMesh(mtkr_MayaObject *obj);
 		void writeImageFile(MString fileName);
+
+		void defineEnvironment();
+
 		void defineLigths();
 		void definePointLight(mtkr_MayaObject *obj);
 		void defineDirectionalLight(mtkr_MayaObject *obj);
 		void defineSpotLight(mtkr_MayaObject *obj);
 		void defineAreaLight(mtkr_MayaObject *obj);
+
 		void render();
 
 	private:

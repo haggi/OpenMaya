@@ -37,9 +37,9 @@ void setupSimpleMaterialsForMesh(Kray::Prototyper& prot,Kray::MeshSymbol& msh){
 
 void setupSimpleMeshScene(Kray::Prototyper& prot){
 
-	prot.lightAdd_point(Kray::Vector(-1, 5, -2),Kray::Vector(1,1,1));			// add light source to scene
+	//prot.lightAdd_point(Kray::Vector(-1, 5, -2),Kray::Vector(1,1,1));			// add light source to scene
 	
-	prot.background_sky(Kray::Vector(0.4,0.8,0.9),Kray::Vector(0,0,0),Kray::Vector(1,1,1),Kray::Vector(0,1,0)); // gradient background
+	//prot.background_sky(Kray::Vector(0.4,0.8,0.9),Kray::Vector(0,0,0),Kray::Vector(1,1,1),Kray::Vector(0,1,0)); // gradient background
 	
 	//prot.pixelFilter_mitchell();			// Mitchel pixel filter makes antialias looks better then box filter (which is default filter becouse of its simplicity)
 	prot.splitScreen_none();				// how render screen is divided between render threads

@@ -38,10 +38,26 @@ private:
 	static	  MObject gradientHorizon;
 	static	  MObject gradientZenit;
 	static	  MObject environmentMap;
+	static	  MObject environmentMap2;
 	static	  MObject environmentType;
 	static	  MObject environmentIntensity;
 	static	  MObject latlongHoShift;
 	static	  MObject latlongVeShift;
+	static	  MObject sunDir;
+	static	  MObject zenithDir;
+	static	  MObject nadir;
+	static	  MObject skyGamma;
+	static	  MObject groundGamma;
+	static	  MObject turbidity;
+	static	  MObject exposure;
+	static	  MObject orientation;
+	static	  MObject solidAngle;
+	static	  MObject sunIntensity;
+	static	  MObject sunSpotAngle;
+	static	  MObject groundAlbedo;
+	//static	  MObject bitmapAx;
+	//static	  MObject bitmapAz;
+	//static	  MObject bitmapAxes;
 
 	static	  MObject imageFormat;
 	static	  MObject jpgQuality;

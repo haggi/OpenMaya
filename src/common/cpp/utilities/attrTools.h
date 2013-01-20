@@ -38,4 +38,6 @@ bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
 
+bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
+
 #endif

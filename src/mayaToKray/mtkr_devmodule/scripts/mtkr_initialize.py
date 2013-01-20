@@ -32,57 +32,133 @@ class KrayRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Photons"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("FinalGathering"))    
-        #pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Sampling"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Quality"))    
+
+    def KrayEnvironmentCreateTab(self):
+        log.debug("KrayEnvironmentCreateTab()")
+        self.createGlobalsNode()
+        envDict = {}
+        self.rendererTabUiDict['environment'] = envDict
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
+        scLo = self.rendererName + "EnvScrollLayout"
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                with pm.frameLayout(label="Environment frame", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
+                        ui = pm.attrEnumOptionMenuGrp(label="Environment Type", at=self.renderGlobalsNodeName + ".environmentType", ei=self.getEnumList(attr)) 
+                        envDict['environmentColor'] = pm.attrColorSliderGrp(label="Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
+                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label="Horizon Color", at=self.renderGlobalsNodeName + ".gradientHorizon")
+                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label="Zenith Color", at=self.renderGlobalsNodeName + ".gradientZenit")
+                        envDict['nadir'] = pm.attrColorSliderGrp(label="Bottom Color", at=self.renderGlobalsNodeName + ".nadir")
+                        envDict['groundAlbedo'] = pm.attrColorSliderGrp(label="Ground Albedo", at=self.renderGlobalsNodeName + ".groundAlbedo")
+                        pm.separator()
+                        envDict['environmentMap'] = pm.attrColorSliderGrp(label="Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
+                        envDict['environmentMap2'] = pm.attrColorSliderGrp(label="Environment Map 2", at=self.renderGlobalsNodeName + ".environmentMap2")
+                        pm.separator()
+                        envDict['sunDir'] = pm.attrFieldGrp(label="Sun Direction:", at=self.renderGlobalsNodeName + ".sunDir")
+                        envDict['zenithDir'] = pm.attrFieldGrp(label="Zenith Direction:", at=self.renderGlobalsNodeName + ".zenithDir")
+                        envDict['orientation'] = pm.attrFieldGrp(label="Orientation:", at=self.renderGlobalsNodeName + ".orientation")
+                        pm.separator()
+                        envDict['skyGamma'] = pm.floatFieldGrp(label="Sky Gamma:", numberOfFields=1)
+                        pm.connectControl(envDict['skyGamma'], self.renderGlobalsNodeName + ".skyGamma", index=2)                       
+                        envDict['groundGamma'] = pm.floatFieldGrp(label="Ground Gamma:", numberOfFields=1)
+                        pm.connectControl(envDict['groundGamma'], self.renderGlobalsNodeName + ".groundGamma", index=2)                       
+                        envDict['turbidity'] = pm.floatFieldGrp(label="Turbidity:", numberOfFields=1)
+                        pm.connectControl(envDict['turbidity'], self.renderGlobalsNodeName + ".turbidity", index=2)   
+                        envDict['exposure'] = pm.floatFieldGrp(label="Exposure:", numberOfFields=1)
+                        pm.connectControl(envDict['exposure'], self.renderGlobalsNodeName + ".exposure", index=2)   
+                        envDict['sunIntensity'] = pm.floatFieldGrp(label="Sun Intensity:", numberOfFields=1)
+                        pm.connectControl(envDict['sunIntensity'], self.renderGlobalsNodeName + ".sunIntensity", index=2)  
+                        pm.separator()
+                        envDict['solidAngle'] = pm.floatFieldGrp(label="Solid Angle:", numberOfFields=1)
+                        pm.connectControl(envDict['solidAngle'], self.renderGlobalsNodeName + ".solidAngle", index=2)   
+                        envDict['sunSpotAngle'] = pm.floatFieldGrp(label="Sun Spot Angle:", numberOfFields=1)
+                        pm.connectControl(envDict['sunSpotAngle'], self.renderGlobalsNodeName + ".sunSpotAngle", index=2)   
+                                      
+
+
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+
+        self.KrayRendererUIUpdateCallback("environment")                
+
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.KrayRendererUIUpdateCallback, "environment")])
+         
+
+    def KrayEnvironmentUpdateTab(self):
+        log.debug("KrayEnvironmentUpdateTab()")
+
 
     def KrayPhotonsCreateTab(self):
         log.debug("KrayPhotonsCreateTab()")
         self.createGlobalsNode()
         photonsDict = {}
         self.rendererTabUiDict['photons'] = photonsDict
+        causticDict = {}
+        self.rendererTabUiDict['caustic'] = causticDict
 
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "PhotonsScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                with pm.frameLayout(label="Photons frame", collapsable=True, collapse=False):
-                    ui = pm.floatFieldGrp(label="Threshold:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgThreshold", index=2)                     
-                    ui = pm.intFieldGrp(label="Min Rays:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMinRays", index=2) 
-                    ui = pm.intFieldGrp(label="Max Rays:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMaxRays", index=2) 
-                    ui = pm.floatFieldGrp(label="Prerender:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPrerender", index=2)                     
-                    ui = pm.intFieldGrp(label="Passes:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPasses", index=2) 
-                    ui = pm.floatFieldGrp(label="Sploth Detect:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSplotchDetect", index=2)                     
-                    ui = pm.floatFieldGrp(label="Sensitivity:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSensitivity", index=2)  
-                    ui = pm.checkBoxGrp(label="FG Reflections:", value1=False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgReflections", index=2) 
-                    ui = pm.checkBoxGrp(label="FG Refractions:", value1=False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgRefractions", index=2)                   
-                    ui = pm.floatFieldGrp(label="Spatial Tolerance:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSpatialTolerance", index=2)  
-                    ui = pm.floatFieldGrp(label="Angular Tolerance:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgAngularTolerance", index=2)  
-                    ui = pm.floatFieldGrp(label="FG Min Dist:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMin", index=2)  
-                    ui = pm.floatFieldGrp(label="FG Dist Max:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMax", index=2)  
-                    ui = pm.floatFieldGrp(label="Density/Brightness:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgBrightness", index=2)  
-                    ui = pm.intFieldGrp(label="Path Passes:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPathPasses", index=2)  
-                    ui = pm.floatFieldGrp(label="Corner Dist:", numberOfFields=1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgCornerDist", index=2)  
-                    ui = pm.checkBoxGrp(label="Show Samples:", value1=False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".fgShowSamples", index=2) 
+                with pm.frameLayout(label="Photons", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        ui = pm.floatFieldGrp(label="GI Resolution:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".giResolution", index=2)                     
+                        ui = pm.checkBoxGrp(label="GI Resolution Auto:")
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".giResolutionAuto", index=2)                     
+                        ui = pm.checkBoxGrp(label="Preview Photons:")
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".previewPhotons", index=2)                     
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".photonMapType")
+                        ui = pm.attrEnumOptionMenuGrp(label="Photon Map Type", at=self.renderGlobalsNodeName + ".photonMapType", ei=self.getEnumList(attr)) 
+                        ui = pm.intFieldGrp(label="Photons:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonCount", index=2)                         
+                        ui = pm.floatFieldGrp(label="Power:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonPower", index=2)                     
+                        ui = pm.floatFieldGrp(label="NBlur:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonNBlur", index=2) 
+                        ui = pm.floatFieldGrp(label="Precache Dist:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonPrecacheDist", index=2) 
+                        ui = pm.floatFieldGrp(label="Precache Blur:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonPrecacheBlur", index=2) 
+                        pm.separator() 
+                        ui = pm.checkBoxGrp(label="Auto Photons:")
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonUseAutoPhotons", index=2)                     
+                        ui = pm.floatFieldGrp(label="Auto Photons Low:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonAutoPhotonsLow", index=2)                     
+                        ui = pm.floatFieldGrp(label="Auto Photons High:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonAutoPhotonsHigh", index=2)                     
+                        ui = pm.floatFieldGrp(label="Auto Photons Steps:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".photonAutoPhotonsSteps", index=2)                     
+                        
+                with pm.frameLayout(label="Caustics", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        ui = pm.checkBoxGrp(label="Add To Lightmap:")
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsAddToLightmap", index=2)                     
+                        pm.separator()
+                        ui = pm.intFieldGrp(label="Caustic Photons:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsCount", index=2)                         
+                        ui = pm.floatFieldGrp(label="Caustic Power:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsPower", index=2)                     
+                        ui = pm.floatFieldGrp(label="Caustic NBlur:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsNBlur", index=2)                     
+                        pm.separator()
+                        ui = pm.checkBoxGrp(label="Caustic Auto Photons:")
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsUseAutoPhotons", index=2)                     
+                        ui = pm.floatFieldGrp(label="Caustic Auto Low:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsAutoPhotonsLow", index=2)                     
+                        ui = pm.floatFieldGrp(label="Caustic Auto High:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsAutoPhotonsHigh", index=2)                     
+                        ui = pm.floatFieldGrp(label="Caustic Auto Steps:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".causticsAutoPhotonsSteps", index=2)                     
                     
 
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
@@ -100,7 +176,47 @@ class KrayRenderer(Renderer.MayaToRenderer):
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Photons frame", collapsable=True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1=False)
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        ui = pm.floatFieldGrp(label="Threshold:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgThreshold", index=2)
+                        pm.separator()                     
+                        ui = pm.intFieldGrp(label="Min Rays:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMinRays", index=2) 
+                        ui = pm.intFieldGrp(label="Max Rays:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgMaxRays", index=2) 
+                        ui = pm.floatFieldGrp(label="Prerender:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPrerender", index=2)                     
+                        ui = pm.intFieldGrp(label="Passes:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPasses", index=2) 
+                        pm.separator()                     
+                        ui = pm.floatFieldGrp(label="Sploth Detect:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSplotchDetect", index=2)                     
+                        ui = pm.floatFieldGrp(label="Sensitivity:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSensitivity", index=2)  
+                        pm.separator()                     
+                        ui = pm.checkBoxGrp(label="FG Reflections:", value1=False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgReflections", index=2) 
+                        ui = pm.checkBoxGrp(label="FG Refractions:", value1=False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgRefractions", index=2)                   
+                        pm.separator()                     
+                        ui = pm.floatFieldGrp(label="Spatial Tolerance:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgSpatialTolerance", index=2)  
+                        ui = pm.floatFieldGrp(label="Angular Tolerance:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgAngularTolerance", index=2)  
+                        ui = pm.floatFieldGrp(label="FG Min Dist:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMin", index=2)  
+                        ui = pm.floatFieldGrp(label="FG Dist Max:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgDistMax", index=2)  
+                        ui = pm.floatFieldGrp(label="Density/Brightness:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgBrightness", index=2)  
+                        pm.separator()                     
+                        ui = pm.intFieldGrp(label="Path Passes:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgPathPasses", index=2)  
+                        ui = pm.floatFieldGrp(label="Corner Dist:", numberOfFields=1)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgCornerDist", index=2)  
+                        ui = pm.checkBoxGrp(label="Show Samples:", value1=False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".fgShowSamples", index=2) 
+                        
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
                     
@@ -207,7 +323,7 @@ class KrayRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Filtering", collapsable=True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
                     ui = pm.attrEnumOptionMenuGrp(label="Filter Type", at=self.renderGlobalsNodeName + ".filtertype", ei=self.getEnumList(attr)) 
-                    sDict['filterSize']  = pm.floatFieldGrp(label="Filter Size:", numberOfFields=1)
+                    sDict['filterSize'] = pm.floatFieldGrp(label="Filter Size:", numberOfFields=1)
                     pm.connectControl(sDict['filterSize'], self.renderGlobalsNodeName + ".filtersize", index=2)
                                         
                 with pm.frameLayout(label="Features", collapsable=True, collapse=False):
@@ -220,16 +336,54 @@ class KrayRenderer(Renderer.MayaToRenderer):
         pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         self.KrayRendererUpdateTab()
+
+        self.KrayRendererUIUpdateCallback("sampling")                
         
-        pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
-        pm.scriptJob(attributeChange=[self.renderGlobalsNode.filtertype, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
-        pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")] )
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.filtertype, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
 
     def KrayRendererUIUpdateCallback(self, what=None):
         self.createGlobalsNode()
         #self.updateEnvironment()
         log.debug("KrayRendererUIUpdateCallback(): " + str(what))
-        if what=="sampling":
+        if what == "environment":
+            log.debug("Update environment")
+            eDict = self.rendererTabUiDict['environment']
+            eType = self.renderGlobalsNode.environmentType.get()
+            for key in eDict:
+                eDict[key].setEnable(val=False)
+            
+            if eType == 0: #color
+                eDict['environmentColor'].setEnable(val=True)
+            if eType == 1 or eType == 2: #physSky
+                eDict['sunDir'].setEnable(val=True)
+                eDict['orientation'].setEnable(val=True)
+                eDict['turbidity'].setEnable(val=True)
+                eDict['exposure'].setEnable(val=True)
+            if eType == 2: #physSky2
+                eDict['groundAlbedo'].setEnable(val=True)
+            if eType == 3 or eType == 4: #sky
+                eDict['gradientHorizon'].setEnable(val=True)
+                eDict['gradientZenit'].setEnable(val=True)
+                eDict['nadir'].setEnable(val=True)
+                eDict['zenithDir'].setEnable(val=True)
+            if eType == 4: #sky2
+                eDict['skyGamma'].setEnable(val=True)
+                eDict['groundGamma'].setEnable(val=True)
+            if eType == 5 or eType == 6: #bitmap
+                eDict['environmentMap'].setEnable(val=True)
+            if eType == 6: #bitmap2
+                eDict['environmentMap2'].setEnable(val=True)
+            if eType == 7: #directionsMap
+                pass
+            if eType == 8: #lightMap
+                pass
+            if eType == 9: #sphericalMap
+                eDict['environmentMap'].setEnable(val=True)
+            
+            
+        if what == "sampling":
             print "Update sampling"
             sDict = self.rendererTabUiDict['sampling']
             sType = self.renderGlobalsNode.samplingType.get()
@@ -242,13 +396,13 @@ class KrayRenderer(Renderer.MayaToRenderer):
                 pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=True)
                 
             fType = self.renderGlobalsNode.filtertype.get()
-            if fType in [4,5,6]:
+            if fType in [4, 5, 6]:
                 pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=False)
             else:
                 pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=True)
                 
             iFormat = self.renderGlobalsNode.imageFormat.get()    
-            if iFormat in [2,3]:
+            if iFormat in [2, 3]:
                 pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=True) 
             else:
                 pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=False) 
@@ -274,13 +428,13 @@ class KrayRenderer(Renderer.MayaToRenderer):
             pm.checkBoxGrp(sDict['gridRotate'], edit=True, enable=True)
 
         fType = self.renderGlobalsNode.filtertype.get()
-        if fType in [4,5,6]:
+        if fType in [4, 5, 6]:
             pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=False)
         else:
             pm.floatFieldGrp(sDict['filterSize'], edit=True, enable=True)
             
         iFormat = self.renderGlobalsNode.imageFormat.get()    
-        if iFormat in [2,3]:
+        if iFormat in [2, 3]:
             pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=True) 
         else:
             pm.attrEnumOptionMenuGrp(sDict['bitdepth'], edit=True, enable=False) 

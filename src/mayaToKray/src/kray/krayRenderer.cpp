@@ -187,19 +187,19 @@ namespace krayRender
 
 		this->pro->previewSize(width, height);
 
-		//MVector rot;
-		//MPoint pos;
-		//posRotFromMatrix( matrix, pos, rot);
+		MVector rot;
+		MPoint pos;
+		posRotFromMatrix( matrix, pos, rot);
 
 		//matrix *= this->mtkr_renderGlobals->sceneRotMatrix;
 		MMatrix posMatrix = matrix;
 		MMatrix rotMatrix = matrix;
 		//MMatrix sceneRotMatrix;
 		//sceneRotMatrix.setToIdentity();
-		//MTransformationMatrix tm(sceneRotMatrix);
-		//MEulerRotation euler(rot.y, rot.x, rot.z, MEulerRotation::kXYZ);
-		//tm.rotateBy(euler, MSpace::kWorld);
-		//sceneRotMatrix = tm.asMatrix();
+		MTransformationMatrix tm(rotMatrix);
+		MEulerRotation euler(rot.y, rot.x, rot.z, MEulerRotation::kXYZ);
+		tm.rotateBy(euler, MSpace::kWorld);
+		rotMatrix = tm.asMatrix();
 
 		//MString ms = matrixToString(this->mtkr_scene->camList[0]->transformMatrices[0]);
 		//logger.debug(MString("MMatrix :\n") + ms);
@@ -211,6 +211,8 @@ namespace krayRender
 		Kray::Matrix4x4 camPosMatrix;
 		Kray::Matrix4x4 camRotMatrix;
 		
+		posMatrix[3][1] = -posMatrix[3][1];
+		posMatrix[3][2] = -posMatrix[3][2];
 		MMatrixToAMatrix(posMatrix, camPosMatrix);
 		MMatrixToAMatrix(rotMatrix, camRotMatrix);
 
@@ -333,6 +335,7 @@ namespace krayRender
 				this->defineLigths();
 				this->defineSampling(); // before defineCamera because ggf. dof will be turned off
 				this->defineCamera();
+				this->defineEnvironment();
 				this->pro->echo("Rendering....");
 				this->pro->render();
 				//if( this->mtkr_renderGlobals->exportSceneFile )

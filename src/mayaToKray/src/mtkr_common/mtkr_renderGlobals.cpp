@@ -255,7 +255,37 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 
 		if(!getInt(MString("jpgQuality"), krayGlobals, this->jpgQuality))
 			throw("problem reading krayGlobals.jpgQuality");
-		
+
+		if(!getPoint(MString("sunDir"), krayGlobals, this->sunDir))
+			throw("problem reading krayGlobals.sunDir");
+
+		if(!getPoint(MString("zenithDir"), krayGlobals, this->zenithDir))
+			throw("problem reading krayGlobals.zenithDir");
+
+		if(!getPoint(MString("orientation"), krayGlobals, this->orientation))
+			throw("problem reading krayGlobals.orientation");
+
+		if(!getFloat(MString("skyGamma"), krayGlobals, this->skyGamma))
+			throw("problem reading krayGlobals.skyGamma");
+
+		if(!getFloat(MString("groundGamma"), krayGlobals, this->groundGamma))
+			throw("problem reading krayGlobals.groundGamma");
+
+		if(!getFloat(MString("turbidity"), krayGlobals, this->turbidity))
+			throw("problem reading krayGlobals.turbidity");
+
+		if(!getFloat(MString("exposure"), krayGlobals, this->exposure))
+			throw("problem reading krayGlobals.exposure");
+
+		if(!getFloat(MString("solidAngle"), krayGlobals, this->solidAngle))
+			throw("problem reading krayGlobals.solidAngle");
+
+		if(!getFloat(MString("sunIntensity"), krayGlobals, this->sunIntensity))
+			throw("problem reading krayGlobals.sunIntensity");
+
+		if(!getFloat(MString("sunSpotAngle"), krayGlobals, this->sunSpotAngle))
+			throw("problem reading krayGlobals.sunSpotAngle");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;

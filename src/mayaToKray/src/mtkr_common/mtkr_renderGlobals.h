@@ -3,6 +3,7 @@
 
 #include <maya/MStringArray.h>
 #include <maya/MColor.h>
+#include <maya/MVector.h>
 #include <maya/MMatrix.h>
 #include "renderGlobals.h"
 
@@ -43,6 +44,7 @@ public:
 	MColor gradientHorizon;
 	MColor gradientZenit;
 	MColor environmentMap;
+	MColor environmentMap2;
 	float latlongHoShift;
 	float latlongVeShift;
 
@@ -76,50 +78,63 @@ public:
 	int pixelOrder;
 	MString pixelOrderString;
 	
+	MVector sunDir;
+	MVector zenithDir;
+	MColor nadir;
+	float skyGamma;
+	float groundGamma;
+	float turbidity;
+	float exposure;
+	MVector orientation;
+	float solidAngle;
+	float sunIntensity;
+	float sunSpotAngle;
+	MColor groundAlbedo;
+
 	// photons
-	//static	  MObject giResolution;
-	//static	  MObject giResolutionAuto;
-	//static	  MObject previewPhotons;
-	//static	  MObject photonMapType;
-	//static	  MObject photonCount;
-	//static	  MObject photonPower;
-	//static	  MObject photonNBlur;
-	//static	  MObject photonPrecacheDist;
-	//static	  MObject photonPrecacheBlur;
-	//static	  MObject photonUseAutoPhotons;
-	//static	  MObject photonAutoPhotonsLow;
-	//static	  MObject photonAutoPhotonsHigh;
-	//static	  MObject photonAutoPhotonsSteps;
+	float giResolution;
+	bool giResolutionAuto;
+	bool previewPhotons;
+	int photonMapType;
+	int photonCount;
+	float photonPower;
+	float photonNBlur;
+	float photonPrecacheDist;
+	float photonPrecacheBlur;
+	bool photonUseAutoPhotons;
+	float photonAutoPhotonsLow;
+	float photonAutoPhotonsHigh;
+	float photonAutoPhotonsSteps;
 
 	// caustics
-	//static	  MObject causticsAddToLightmap;
-	//static	  MObject causticsCount;
-	//static	  MObject causticsPower;
-	//static	  MObject causticsNBlur;
-	//static	  MObject causticsUseAutoPhotons;
-	//static	  MObject causticsAutoPhotonsLow;
-	//static	  MObject causticsAutoPhotonsHigh;
-	//static	  MObject causticsAutoPhotonsSteps;
+	bool causticsAddToLightmap;
+	int causticsCount;
+	float causticsPower;
+	float causticsNBlur;
+	bool causticsUseAutoPhotons;
+	float causticsAutoPhotonsLow;
+	float causticsAutoPhotonsHigh;
+	float causticsAutoPhotonsSteps;
 
 	// FG
-	//static	  MObject fgThreshold;
-	//static	  MObject fgMinRays;
-	//static	  MObject fgMaxRays;
-	//static	  MObject fgPrerender;
-	//static	  MObject fgPasses;
-	//static	  MObject fgSplotchDetect;
-	//static	  MObject fgSensitivity;
-	//static	  MObject fgSpatialTolerance;
-	//static	  MObject fgAngularTolerance;
-	//static	  MObject fgDistMin;
-	//static	  MObject fgDistMax;
-	//static	  MObject fgBrightness;
-	//static	  MObject fgDensity;
-	//static	  MObject fgShowSamples;
-	//static	  MObject fgReflections;
-	//static	  MObject fgRefractions;
-	//static	  MObject fgCornerDist;
-	//static	  MObject fgPathPasses;
+	float fgThreshold;
+	int fgMinRays;
+	int fgMaxRays;
+	float fgPrerender;
+	int fgPasses;
+	float fgSplotchDetect;
+	float fgSensitivity;
+	float fgSpatialTolerance;
+	float fgAngularTolerance;
+	float fgDistMin;
+	float fgDistMax;
+	float fgBrightness;
+	float fgDensity;
+	bool fgShowSamples;
+	bool fgReflections;
+	bool fgRefractions;
+	float fgCornerDist;
+	int fgPathPasses;
 
 	virtual MString getImageExt();
 

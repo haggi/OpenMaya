@@ -426,3 +426,52 @@ void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot)
 	rot.z = rotation[2];
 	pos = tm.getTranslation(MSpace::kWorld);
 }
+
+bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value)
+{
+	MStatus stat;
+	MObject obj = objectFromName(nodeName);
+	if( obj == MObject::kNullObj)
+		return false;
+
+	MFnDependencyNode depFn(obj);
+	MPlug plug = depFn.findPlug(plugName, &stat);
+	if( !stat )
+		return false;
+	
+	if( !plug.isConnected())
+		return false;
+
+	MPlugArray parray;
+	plug.connectedTo(parray, true, false, &stat);
+	if( !stat )
+		return false;
+
+	if( parray.length() == 0 )
+		return false;
+
+	MPlug destPlug = parray[0];
+	MObject fileNode = destPlug.node();
+
+	std::cout << "filenode: " << getObjectName(fileNode).asChar() << " plug name " << destPlug.name() << "\n";
+	
+	if( !fileNode.hasFn(MFn::kFileTexture) )
+	{
+		std::cout << "node is not from type fileTexture.\n";
+		return false;
+	}
+
+	MFnDependencyNode fileDepFn(fileNode);
+	MPlug ftn = fileDepFn.findPlug("fileTextureName", &stat);
+
+	if(!stat)
+	{
+		std::cout << "fileTextureName not found at fileTexNode.\n";
+		return false;
+	}
+	
+	MString fileTextureName = ftn.asString();
+	std::cout << "fileTextureName value: " << fileTextureName.asChar() <<"\n";
+	value = fileTextureName;
+	return true;
+}
