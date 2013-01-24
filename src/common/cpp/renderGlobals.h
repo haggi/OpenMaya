@@ -111,7 +111,7 @@ public:
 	int samplesY;
 
 	// filtering
-	int filterSize;
+	float filterSize;
 	int filterType;
 	MString filterTypeString;
 

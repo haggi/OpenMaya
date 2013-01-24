@@ -80,9 +80,6 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getBool(MString("detectShapeDeform"), krayGlobals, this->detectShapeDeform))
 			throw("problem reading krayGlobals.detectShapeDeform");
 
-		if(!getInt(MString("filtersize"), krayGlobals, this->filterSize))
-			throw("problem reading krayGlobals.filtersize");
-
 		if(!getInt(MString("filtertype"), krayGlobals, this->filterType))
 			throw("problem reading krayGlobals.filtertype");
 
@@ -285,6 +282,9 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 
 		if(!getFloat(MString("sunSpotAngle"), krayGlobals, this->sunSpotAngle))
 			throw("problem reading krayGlobals.sunSpotAngle");
+
+		if(!getFloat(MString("filtersize"), krayGlobals, this->filterSize))
+			throw("problem reading krayGlobals.filtersize");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

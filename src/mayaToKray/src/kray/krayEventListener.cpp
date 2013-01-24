@@ -59,10 +59,16 @@ namespace krayRender
 		std::cout << "EventListener::setWindowSize: x: " << kew.width << " y: " << kew.height << "\n";
 		this->height = kew.height;
 	}
+	//int EventListener::setWindowSize(void* windowHandle,const KrayEventWindow& kew)
+	//{
+	//	std::cout << "EventListener::setWindowSize: x: " << kew.width << " y: " << kew.height << "\n";
+	//	this->height = kew.height;
+	//	return 1;
+	//}
 
 	void EventListener::setPixels(void* windowHandle,const KrayEventPixelTable& kept)
 	{
-		//std::cout << " EventListener::setPixels count: " << kept.count << "\n" << std::flush;
+		std::cout << " EventListener::setPixels count: " << kept.count << "\n" << std::flush;
 		EventQueue::RandomPixel *pixels = new EventQueue::RandomPixel[kept.count];
 		for( size_t pId = 0; pId < kept.count; pId++)
 		{

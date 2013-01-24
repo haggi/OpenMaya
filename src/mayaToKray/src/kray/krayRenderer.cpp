@@ -30,9 +30,6 @@ namespace krayRender
 	{
 		const char *libpath = "C:/Users/haggi/coding/OpenMaya/src/mayaToKray/mtkr_devmodule/bin/";
 		this->kli = new Kray::Library(libpath);				// here we start with KrayLib object
-		//Kray::Library klib(KRAY_DIRECTORY);				// here we start with KrayLib object
-		//Kray::Instance* kinst=klib.createInstance();	// then we create Kray instance, each instance have its own scene and settings
-		//klib.createInstanceWithHandler()
 		this->kin = this->kli->createInstanceWithListner(&listener);
 		this->pro = NULL;
 	}
@@ -181,7 +178,7 @@ namespace krayRender
 		// Its pixel_size_in_mm=35mm/image_size . Than you can compute focal_distance_in_pixels=focal_distance_in_mm/pixel_size_in_mm
 
 		// in maya the sensor size is the horizontal film aperture expressed in inces
-		float horizontalImageSizeMM = horizontalFilmAperture * 25.4;
+		float horizontalImageSizeMM = horizontalFilmAperture * 25.4f;
 		float pixelSizeInMM = horizontalImageSizeMM / this->mtkr_renderGlobals->imgWidth;
 		float focalDistance = focalLength / pixelSizeInMM;
 
@@ -211,13 +208,25 @@ namespace krayRender
 		Kray::Matrix4x4 camPosMatrix;
 		Kray::Matrix4x4 camRotMatrix;
 		
-		posMatrix[3][1] = -posMatrix[3][1];
-		posMatrix[3][2] = -posMatrix[3][2];
+		MString ms = matrixToString(posMatrix);
+		logger.debug(MString("Orig cam Matrix :\n") + ms);
+		//MMatrix colM;
+		//rowToColumn(this->mtkr_scene->camList[0]->transformMatrices[0], colM);
+		//MString kms = matrixToString(colM);
+		//logger.debug(MString("KMatrix :\n") + kms);
+
+		//posMatrix[3][1] = posMatrix[3][1];
+		//posMatrix[3][2] = -posMatrix[3][2];
 		MMatrixToAMatrix(posMatrix, camPosMatrix);
 		MMatrixToAMatrix(rotMatrix, camRotMatrix);
 
+		ms = matrixToString(posMatrix);
+		logger.debug(MString("NegZ cam Matrix :\n") + ms);
+
 		Kray::Vector camPos(camPosMatrix);
 		Kray::AxesHpb camRot(camRotMatrix);
+
+		logger.debug(MString("Define camera: img size ") + width + " " + height + " " + focalDistance);
 
 		if( this->mtkr_renderGlobals->doDof)
 		{
@@ -300,20 +309,21 @@ namespace krayRender
 					break;
 				};
 
+				double filterSize = this->mtkr_renderGlobals->filterSize;
 				// define pixel order
 				switch(this->mtkr_renderGlobals->filterType)
 				{
 				case 0: // box
-					this->pro->pixelFilter_box(this->mtkr_renderGlobals->filterRadius);
+					this->pro->pixelFilter_box(filterSize);
 					break;
 				case 1: // cone
-					this->pro->pixelFilter_cone(this->mtkr_renderGlobals->filterRadius);
+					this->pro->pixelFilter_cone(filterSize);
 					break;
 				case 2: // cubic
-					this->pro->pixelFilter_cubic(this->mtkr_renderGlobals->filterRadius);
+					this->pro->pixelFilter_cubic(filterSize);
 					break;
 				case 3: // lanczos
-					this->pro->pixelFilter_lanczos(this->mtkr_renderGlobals->filterRadius);
+					this->pro->pixelFilter_lanczos(filterSize);
 					break;
 				case 4: // mitchell
 					this->pro->pixelFilter_mitchell();
@@ -325,7 +335,7 @@ namespace krayRender
 					this->pro->pixelFilter_catmull();
 					break;
 				case 7: // quadric
-					this->pro->pixelFilter_quadric(this->mtkr_renderGlobals->filterRadius);
+					this->pro->pixelFilter_quadric(filterSize);
 					break;
 				default: // catmull
 					this->pro->pixelFilter_catmull();
@@ -337,9 +347,11 @@ namespace krayRender
 				this->defineCamera();
 				this->defineEnvironment();
 				this->pro->echo("Rendering....");
-				this->pro->render();
+
 				//if( this->mtkr_renderGlobals->exportSceneFile )
-				//	this->pro->pause();
+				//	this->pro->flayer();
+				//else
+				this->pro->render();
 				this->writeImageFile(this->mtkr_renderGlobals->imageOutputFile);
 				this->pro->reset();
 			}			

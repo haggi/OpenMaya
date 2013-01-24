@@ -22,6 +22,7 @@ namespace krayRender
 		int getTextFlags(void* handle);
 		void* createWindow();
 		void destroyWindow(void* windowHandle);
+		//int setWindowSize(void* windowHandle,const KrayEventWindow& kew);
 		void setWindowSize(void* windowHandle,const KrayEventWindow& kew);
 		void setPixels(void* windowHandle,const KrayEventPixelTable& kept);
 		void copyPixels(void* windowHandle,const KrayEventPixelRectangle &kepr);

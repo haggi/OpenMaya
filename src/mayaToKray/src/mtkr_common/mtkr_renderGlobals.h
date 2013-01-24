@@ -136,6 +136,28 @@ public:
 	float fgCornerDist;
 	int fgPathPasses;
 
+	int qLuminosityModel; //"Compute as Indirect","Compute as Direct","Automatic"
+	float qLevel; // float
+	int qAreaLights; // "Compute Separately (AS)","Compute With Luminosity"
+	bool qDoubleSided; // bool
+	int qAreaLightVisibility; // "Visible (Realistic)","Invisible (LW Compatible)"
+	bool qSpotlightsToArea; // bool
+	float qAreaLightsThreshold; // float
+	int qAMinRecursion; // int
+	int qAMaxRecursion; // int
+	float qLinearLightsThreshold; // float
+	int qLMinRecursion; // int
+	int qLMaxRecursion; // int
+	float qLuminosityThreshold; // float
+	int qLumMinRays; // int
+	int qLumMaxRays; // int
+	float qBlurringThreshold; // float
+	int qBLumMinRays; // int
+	int qBLumMaxRays; // int
+	float qBAccuracyLimit; // float
+	bool qTraceDirectLightReflections; // bool
+	int qOctreeDetail; // @"Very Low","Low","Normal","High"@
+
 	virtual MString getImageExt();
 
 private:

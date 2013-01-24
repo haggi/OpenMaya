@@ -146,7 +146,7 @@ namespace krayRender{
 		
 		case 9:
 			{
-			// bitmap
+			// sphere map
 			MString imagePath;
 			if(getConnectedFileTexturePath(MString("environmentMap"), MString("krayGlobals"), imagePath))
 			{

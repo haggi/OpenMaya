@@ -66,6 +66,7 @@ MObject MayaToKrayGlobals::mb_subframes;
 
 
 MObject MayaToKrayGlobals::diffuseModel;
+MObject MayaToKrayGlobals::doCaustics;
 MObject MayaToKrayGlobals::diffuseModelPhoton;
 MObject MayaToKrayGlobals::giMode;
 MObject MayaToKrayGlobals::pixelOrder;
@@ -117,6 +118,28 @@ MObject MayaToKrayGlobals::fgPathPasses;
 
 MObject MayaToKrayGlobals::jpgQuality;
 
+
+MObject MayaToKrayGlobals::qLuminosityModel; //"Compute as Indirect","Compute as Direct","Automatic"
+MObject MayaToKrayGlobals::qLevel; // float
+MObject MayaToKrayGlobals::qAreaLights; // "Compute Separately (AS)","Compute With Luminosity"
+MObject MayaToKrayGlobals::qDoubleSided; // bool
+MObject MayaToKrayGlobals::qAreaLightVisibility; // "Visible (Realistic)","Invisible (LW Compatible)"
+MObject MayaToKrayGlobals::qSpotlightsToArea; // bool
+MObject MayaToKrayGlobals::qAreaLightsThreshold; // float
+MObject MayaToKrayGlobals::qAMinRecursion; // int
+MObject MayaToKrayGlobals::qAMaxRecursion; // int
+MObject MayaToKrayGlobals::qLinearLightsThreshold; // float
+MObject MayaToKrayGlobals::qLMinRecursion; // int
+MObject MayaToKrayGlobals::qLMaxRecursion; // int
+MObject MayaToKrayGlobals::qLuminosityThreshold; // float
+MObject MayaToKrayGlobals::qLumMinRays; // int
+MObject MayaToKrayGlobals::qLumMaxRays; // int
+MObject MayaToKrayGlobals::qBlurringThreshold; // float
+MObject MayaToKrayGlobals::qBLumMinRays; // int
+MObject MayaToKrayGlobals::qBLumMaxRays; // int
+MObject MayaToKrayGlobals::qBAccuracyLimit; // float
+MObject MayaToKrayGlobals::qTraceDirectLightReflections; // bool
+MObject MayaToKrayGlobals::qOctreeDetail; // @"Very Low","Low","Normal","High"@
 
 MayaToKrayGlobals::MayaToKrayGlobals()
 {}
@@ -200,10 +223,13 @@ MStatus	MayaToKrayGlobals::initialize()
 	stat = eAttr.addField( "Raytrace", 0 );
 	stat = eAttr.addField( "Photon Estimate", 1 );
 	stat = eAttr.addField( "Photon Mapping", 2 );
-	stat = eAttr.addField( "Cache irradiance", 3 );
-	stat = eAttr.addField( "Path tracing", 4 );
-	stat = eAttr.addField( "Caustics", 5 );
+	stat = eAttr.addField( "Path tracing", 3 );
+	//stat = eAttr.addField( "Cache irradiance", 3 );
+	//stat = eAttr.addField( "Caustics", 5 );
 	CHECK_MSTATUS(addAttribute( diffuseModel ));
+
+	doCaustics = nAttr.create("doCaustics", "doCaustics",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( doCaustics ));
 
 	diffuseModelPhoton = eAttr.create( "diffuseModelPhoton", "diffuseModelPhoton", 0, &stat);
 	stat = eAttr.addField( "Global Filtered", 0 );
@@ -227,7 +253,7 @@ MStatus	MayaToKrayGlobals::initialize()
 	stat = eAttr.addField( "Frost", 5 );
 	CHECK_MSTATUS(addAttribute( pixelOrder ));
 
-	bitdepth = eAttr.create( "bitdepth", "bitdepth", 3, &stat);
+	bitdepth = eAttr.create( "bitdepth", "bitdepth", 0, &stat);
 	stat = eAttr.addField( "8bit  Integer", 0 );
 	stat = eAttr.addField( "16bit Integer", 1 );
 	//stat = eAttr.addField( "32bit Integer", 2 );
@@ -528,6 +554,79 @@ MStatus	MayaToKrayGlobals::initialize()
 	nAttr.setMax(100);
 	CHECK_MSTATUS(addAttribute( jpgQuality ));
 	
+	qLuminosityModel = eAttr.create( "qLuminosityModel", "qLuminosityModel", 0, &stat);
+	stat = eAttr.addField( "Compute as Indirect", 0 );
+	stat = eAttr.addField( "Compute as Direct", 1 );
+	stat = eAttr.addField( "Automatic", 2 );
+	CHECK_MSTATUS(addAttribute( qLuminosityModel ));
+
+	qLevel = nAttr.create("qLevel", "qLevel",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qLevel ));
+
+	qAreaLights = eAttr.create( "qAreaLights", "qAreaLights", 0, &stat);
+	stat = eAttr.addField( "Compute Separately (AS)", 0 );
+	stat = eAttr.addField( "Compute With Luminosity", 1 );
+	CHECK_MSTATUS(addAttribute( qAreaLights ));
+
+	qDoubleSided = nAttr.create("qDoubleSided", "qDoubleSided",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( qDoubleSided ));
+
+	qAreaLightVisibility = eAttr.create( "qAreaLightVisibility", "qAreaLightVisibility", 0, &stat);
+	stat = eAttr.addField( "Visible (Realistic)", 0 );
+	stat = eAttr.addField( "Invisible", 1 );
+	CHECK_MSTATUS(addAttribute( qAreaLightVisibility ));
+
+	qSpotlightsToArea = nAttr.create("qSpotlightsToArea", "qSpotlightsToArea",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( qSpotlightsToArea ));
+
+	qAreaLightsThreshold = nAttr.create("qAreaLightsThreshold", "qAreaLightsThreshold",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qAreaLightsThreshold ));
+
+	qAMinRecursion = nAttr.create("qAMinRecursion", "qAMinRecursion",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( qAMinRecursion ));
+
+	qAMaxRecursion = nAttr.create("qAMaxRecursion", "qAMaxRecursion",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( qAMaxRecursion ));
+
+	qLinearLightsThreshold = nAttr.create("qLinearLightsThreshold", "qLinearLightsThreshold",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qLinearLightsThreshold ));
+
+	qLMinRecursion = nAttr.create("qLMinRecursion", "qLMinRecursion",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( qLMinRecursion ));
+
+	qLMaxRecursion = nAttr.create("qLMaxRecursion", "qLMaxRecursion",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( qLMaxRecursion ));
+
+	qLuminosityThreshold = nAttr.create("qLuminosityThreshold", "qLuminosityThreshold",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qLuminosityThreshold ));
+
+	qLumMinRays = nAttr.create("qLumMinRays", "qLumMinRays",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( qLumMinRays ));
+
+	qLumMaxRays = nAttr.create("qLumMaxRays", "qLumMaxRays",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( qLumMaxRays ));
+
+	qBlurringThreshold = nAttr.create("qBlurringThreshold", "qBlurringThreshold",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qBlurringThreshold ));
+
+	qBLumMinRays = nAttr.create("qBLumMinRays", "qBLumMinRays",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( qBLumMinRays ));
+
+	qBLumMaxRays = nAttr.create("qBLumMaxRays", "qBLumMaxRays",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( qBLumMaxRays ));
+
+	qBAccuracyLimit = nAttr.create("qBAccuracyLimit", "qBAccuracyLimit",  MFnNumericData::kFloat, 1.00f);
+	CHECK_MSTATUS(addAttribute( qBAccuracyLimit ));
+
+	qTraceDirectLightReflections = nAttr.create("qTraceDirectLightReflections", "qTraceDirectLightReflections",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( qTraceDirectLightReflections ));
+
+	qOctreeDetail = eAttr.create( "qOctreeDetail", "qOctreeDetail", 0, &stat);
+	stat = eAttr.addField( "Very Low", 0 );
+	stat = eAttr.addField( "Low", 1 );
+	stat = eAttr.addField( "Normal", 2 );
+	stat = eAttr.addField( "High", 3 );
+	CHECK_MSTATUS(addAttribute( qOctreeDetail ));
 
 	return stat;
 

@@ -243,13 +243,47 @@ class KrayRenderer(Renderer.MayaToRenderer):
     def KrayQualityCreateTab(self):
         log.debug("KrayFinalGatheringCreateTab()")
         self.createGlobalsNode()
+        qDict = {}
+        self.rendererTabUiDict['quality'] = qDict        
+        
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "PhotonsScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                with pm.frameLayout(label="Photons frame", collapsable=True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Dummy:", value1=False)
+                with pm.frameLayout(label="Quality", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayoutA", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".qLuminosityModel")
+                        ui = pm.attrEnumOptionMenuGrp(label="Luminosity Model", at=self.renderGlobalsNodeName + ".qLuminosityModel", ei=self.getEnumList(attr)) 
+
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".qAreaLights")
+                        ui = pm.attrEnumOptionMenuGrp(label="Area Lights Computation", at=self.renderGlobalsNodeName + ".qAreaLights", ei=self.getEnumList(attr)) 
+
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".qAreaLightVisibility")
+                        ui = pm.attrEnumOptionMenuGrp(label="Area Light Visibility", at=self.renderGlobalsNodeName + ".qAreaLightVisibility", ei=self.getEnumList(attr)) 
+
+                        pm.separator()
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".qOctreeDetail")
+                        ui = pm.attrEnumOptionMenuGrp(label="Octree Detail", at=self.renderGlobalsNodeName + ".qOctreeDetail", ei=self.getEnumList(attr)) 
+
+#    float qLevel; // float
+#    bool qDoubleSided; // bool
+#    bool qSpotlightsToArea; // bool
+#    float qAreaLightsThreshold; // float
+#    int qAMinRecursion; // int
+#    int qAMaxRecursion; // int
+#    float qLinearLightsThreshold; // float
+#    int qLMinRecursion; // int
+#    int qLMaxRecursion; // int
+#    float qLuminosityThreshold; // float
+#    int qLumMinRays; // int
+#    int qLumMaxRays; // int
+#    float qBlurringThreshold; // float
+#    int qBLumMinRays; // int
+#    int qBLumMaxRays; // int
+#    float qBAccuracyLimit; // float
+#    bool qTraceDirectLightReflections; // bool
+#                        
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
                     
@@ -270,12 +304,18 @@ class KrayRenderer(Renderer.MayaToRenderer):
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Image format", collapsable=True, collapse=False):
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
-                    ui = pm.attrEnumOptionMenuGrp(label="Image format", at=self.renderGlobalsNodeName + ".imageFormat", ei=self.getEnumList(attr)) 
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
-                    sDict['bitdepth'] = pm.attrEnumOptionMenuGrp(label="Bit depth", at=self.renderGlobalsNodeName + ".bitdepth", ei=self.getEnumList(attr)) 
-                    sDict['jpgQuality'] = pm.intFieldGrp(label="Jpg Quality:", numberOfFields=1)
-                    pm.connectControl(sDict['jpgQuality'], self.renderGlobalsNodeName + ".jpgQuality", index=2)                     
+                    with pm.columnLayout(self.rendererName + "ColumnLayoutA", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".diffuseModel")
+                        ui = pm.attrEnumOptionMenuGrp(label="Diffuse Model", at=self.renderGlobalsNodeName + ".diffuseModel", ei=self.getEnumList(attr)) 
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".qLuminosityModel")
+                        ui = pm.attrEnumOptionMenuGrp(label="Luminosity Model", at=self.renderGlobalsNodeName + ".qLuminosityModel", ei=self.getEnumList(attr)) 
+                        pm.separator()
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
+                        ui = pm.attrEnumOptionMenuGrp(label="Image format", at=self.renderGlobalsNodeName + ".imageFormat", ei=self.getEnumList(attr)) 
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
+                        sDict['bitdepth'] = pm.attrEnumOptionMenuGrp(label="Bit depth", at=self.renderGlobalsNodeName + ".bitdepth", ei=self.getEnumList(attr)) 
+                        sDict['jpgQuality'] = pm.intFieldGrp(label="Jpg Quality:", numberOfFields=1)
+                        pm.connectControl(sDict['jpgQuality'], self.renderGlobalsNodeName + ".jpgQuality", index=2)                     
                 
                 with pm.frameLayout(label="Sampling", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayoutA", adjustableColumn=True, width=400):

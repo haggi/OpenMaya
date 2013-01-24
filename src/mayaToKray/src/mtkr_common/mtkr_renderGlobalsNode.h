@@ -83,8 +83,9 @@ private:
 	static	  MObject aa_maxRays;
 	static	  MObject mb_subframes;
 
-	static	  MObject diffuseModel;
+	static	  MObject diffuseModel; //"Raytrace","Photons Estimate","Photon Mapping","Path Tracing"
 	static	  MObject diffuseModelPhoton;
+	static	  MObject doCaustics;
 	static	  MObject giMode;
 
 	static	  MObject pixelOrder;
@@ -134,6 +135,32 @@ private:
 	static	  MObject fgCornerDist;
 	static	  MObject fgPathPasses;
 
+	// quality
+	static	  MObject qLuminosityModel; //"Compute as Indirect","Compute as Direct","Automatic"
+	static	  MObject qLevel; // float
+	static	  MObject qAreaLights; // "Compute Separately (AS)","Compute With Luminosity"
+	static	  MObject qDoubleSided; // bool
+	static	  MObject qAreaLightVisibility; // "Visible (Realistic)","Invisible (LW Compatible)"
+	static	  MObject qSpotlightsToArea; // bool
+	static	  MObject qAreaLightsThreshold; // float
+	static	  MObject qAMinRecursion; // int
+	static	  MObject qAMaxRecursion; // int
+	static	  MObject qLinearLightsThreshold; // float
+	static	  MObject qLMinRecursion; // int
+	static	  MObject qLMaxRecursion; // int
+	static	  MObject qLuminosityThreshold; // float
+	static	  MObject qLumMinRays; // int
+	static	  MObject qLumMaxRays; // int
+	static	  MObject qBlurringThreshold; // float
+	static	  MObject qBLumMinRays; // int
+	static	  MObject qBLumMaxRays; // int
+	static	  MObject qBAccuracyLimit; // float
+	static	  MObject qTraceDirectLightReflections; // bool
+	static	  MObject qOctreeDetail; // @"Very Low","Low","Normal","High"@
+
+	
+
+	
 
 };
 
