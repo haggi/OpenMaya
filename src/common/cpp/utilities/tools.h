@@ -77,6 +77,8 @@ void posFromMatrix(MMatrix& matrix, MVector& pos);
 
 void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot);
 
+void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot, MVector& scl);
+
 bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value);
 
 #endif

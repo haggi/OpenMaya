@@ -40,10 +40,12 @@ namespace krayRender{
 			Kray::Vector col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
 			MMatrix matrix = obj->transformMatrices[0];// * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
-			MVector lpos;
-			Kray::Matrix4x4 lightMatrix;
-			MMatrixToAMatrix(matrix, lightMatrix);
-			Kray::Vector lPos(lightMatrix);
+			//MVector lpos;
+			//Kray::Matrix4x4 lightMatrix;
+			//MMatrixToAMatrix(matrix, lightMatrix);
+			Kray::Vector lPos;
+			Kray::AxesHpb lRot;
+			MatrixToRotPos(matrix, lPos, lRot);
 			this->pro->lightAddNamed_point(obj->shortName.asChar(), lPos, col); // add light source to scene
 		}
 
@@ -80,10 +82,13 @@ namespace krayRender{
 			Kray::Vector pos, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
 			MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix * this->mtkr_renderGlobals->sceneRotMatrix;
-			MVector lpos;
-			Kray::Matrix4x4 lightMatrix;
-			MMatrixToAMatrix(matrix, lightMatrix);
-			Kray::Vector lPos(lightMatrix);
+			//MVector lpos;
+			//Kray::Matrix4x4 lightMatrix;
+			//MMatrixToAMatrix(matrix, lightMatrix);
+			//Kray::Vector lPos(lightMatrix);
+			Kray::Vector lPos;
+			Kray::AxesHpb lRot;
+			MatrixToRotPos(matrix, lPos, lRot);
 			//void lightAddNamed_softSpot(const char* name,const VarLenVector& v3,const VarLenVector& v4,const Vector& v5,double d6,double d7);
 		}
 
@@ -99,10 +104,13 @@ namespace krayRender{
 			Kray::Vector rot, col;
 			col.setRgb(lightColor.r, lightColor.g, lightColor.b);
 			MMatrix matrix = obj->transformMatrices[0];
-			MVector lpos;
-			Kray::Matrix4x4 lightMatrix;
-			MMatrixToAMatrix(matrix, lightMatrix);
-			Kray::Vector lPos(lightMatrix);
+			//MVector lpos;
+			//Kray::Matrix4x4 lightMatrix;
+			//MMatrixToAMatrix(matrix, lightMatrix);
+			//Kray::Vector lPos(lightMatrix);
+			Kray::Vector lPos;
+			Kray::AxesHpb lRot;
+			MatrixToRotPos(matrix, lPos, lRot);
 
 			//this->pro->lightAddNamed_parallel(obj->shortName.asChar(), rot, col);
 		}

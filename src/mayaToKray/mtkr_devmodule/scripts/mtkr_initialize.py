@@ -42,44 +42,51 @@ class KrayRenderer(Renderer.MayaToRenderer):
         self.createGlobalsNode()
         envDict = {}
         self.rendererTabUiDict['environment'] = envDict
+        bgDict = {}
+        self.rendererTabUiDict['background'] = bgDict
+        
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "EnvScrollLayout"
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                with pm.frameLayout(label="Environment frame", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Background", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".backgroundType")
+                        ui = pm.attrEnumOptionMenuGrp(label="Background Type", at=self.renderGlobalsNodeName + ".backgroundType", ei=self.getEnumList(attr)) 
+                        bgDict['environmentColor'] = pm.attrColorSliderGrp(label="Background Color", at=self.renderGlobalsNodeName + ".environmentColor")
+                        bgDict['gradientHorizon'] = pm.attrColorSliderGrp(label="Horizon Color", at=self.renderGlobalsNodeName + ".gradientHorizon")
+                        bgDict['gradientZenit'] = pm.attrColorSliderGrp(label="Zenith Color", at=self.renderGlobalsNodeName + ".gradientZenit")
+                        bgDict['nadir'] = pm.attrColorSliderGrp(label="Bottom Color", at=self.renderGlobalsNodeName + ".nadir")
+                        bgDict['groundAlbedo'] = pm.attrColorSliderGrp(label="Ground Albedo", at=self.renderGlobalsNodeName + ".groundAlbedo")
+                        pm.separator()
+                        bgDict['environmentMap'] = pm.attrColorSliderGrp(label="Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
+                        bgDict['environmentMap2'] = pm.attrColorSliderGrp(label="Environment Map 2", at=self.renderGlobalsNodeName + ".environmentMap2")
+                        pm.separator()
+                        bgDict['sunDir'] = pm.attrFieldGrp(label="Sun Direction:", at=self.renderGlobalsNodeName + ".sunDir")
+                        bgDict['zenithDir'] = pm.attrFieldGrp(label="Zenith Direction:", at=self.renderGlobalsNodeName + ".zenithDir")
+                        bgDict['orientation'] = pm.attrFieldGrp(label="Orientation:", at=self.renderGlobalsNodeName + ".orientation")
+                        pm.separator()
+                        bgDict['skyGamma'] = pm.floatFieldGrp(label="Sky Gamma:", numberOfFields=1)
+                        pm.connectControl(bgDict['skyGamma'], self.renderGlobalsNodeName + ".skyGamma", index=2)                       
+                        bgDict['groundGamma'] = pm.floatFieldGrp(label="Ground Gamma:", numberOfFields=1)
+                        pm.connectControl(bgDict['groundGamma'], self.renderGlobalsNodeName + ".groundGamma", index=2)                       
+                        bgDict['turbidity'] = pm.floatFieldGrp(label="Turbidity:", numberOfFields=1)
+                        pm.connectControl(bgDict['turbidity'], self.renderGlobalsNodeName + ".turbidity", index=2)   
+                        bgDict['exposure'] = pm.floatFieldGrp(label="Exposure:", numberOfFields=1)
+                        pm.connectControl(bgDict['exposure'], self.renderGlobalsNodeName + ".exposure", index=2)   
+                        bgDict['sunIntensity'] = pm.floatFieldGrp(label="Sun Intensity:", numberOfFields=1)
+                        pm.connectControl(bgDict['sunIntensity'], self.renderGlobalsNodeName + ".sunIntensity", index=2)  
+                        pm.separator()
+                        bgDict['solidAngle'] = pm.floatFieldGrp(label="Solid Angle:", numberOfFields=1)
+                        pm.connectControl(bgDict['solidAngle'], self.renderGlobalsNodeName + ".solidAngle", index=2)   
+                        bgDict['sunSpotAngle'] = pm.floatFieldGrp(label="Sun Spot Angle:", numberOfFields=1)
+                        pm.connectControl(bgDict['sunSpotAngle'], self.renderGlobalsNodeName + ".sunSpotAngle", index=2)   
+                with pm.frameLayout(label="Environment", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
                         ui = pm.attrEnumOptionMenuGrp(label="Environment Type", at=self.renderGlobalsNodeName + ".environmentType", ei=self.getEnumList(attr)) 
-                        envDict['environmentColor'] = pm.attrColorSliderGrp(label="Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
-                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label="Horizon Color", at=self.renderGlobalsNodeName + ".gradientHorizon")
-                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label="Zenith Color", at=self.renderGlobalsNodeName + ".gradientZenit")
-                        envDict['nadir'] = pm.attrColorSliderGrp(label="Bottom Color", at=self.renderGlobalsNodeName + ".nadir")
-                        envDict['groundAlbedo'] = pm.attrColorSliderGrp(label="Ground Albedo", at=self.renderGlobalsNodeName + ".groundAlbedo")
-                        pm.separator()
-                        envDict['environmentMap'] = pm.attrColorSliderGrp(label="Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
-                        envDict['environmentMap2'] = pm.attrColorSliderGrp(label="Environment Map 2", at=self.renderGlobalsNodeName + ".environmentMap2")
-                        pm.separator()
-                        envDict['sunDir'] = pm.attrFieldGrp(label="Sun Direction:", at=self.renderGlobalsNodeName + ".sunDir")
-                        envDict['zenithDir'] = pm.attrFieldGrp(label="Zenith Direction:", at=self.renderGlobalsNodeName + ".zenithDir")
-                        envDict['orientation'] = pm.attrFieldGrp(label="Orientation:", at=self.renderGlobalsNodeName + ".orientation")
-                        pm.separator()
-                        envDict['skyGamma'] = pm.floatFieldGrp(label="Sky Gamma:", numberOfFields=1)
-                        pm.connectControl(envDict['skyGamma'], self.renderGlobalsNodeName + ".skyGamma", index=2)                       
-                        envDict['groundGamma'] = pm.floatFieldGrp(label="Ground Gamma:", numberOfFields=1)
-                        pm.connectControl(envDict['groundGamma'], self.renderGlobalsNodeName + ".groundGamma", index=2)                       
-                        envDict['turbidity'] = pm.floatFieldGrp(label="Turbidity:", numberOfFields=1)
-                        pm.connectControl(envDict['turbidity'], self.renderGlobalsNodeName + ".turbidity", index=2)   
-                        envDict['exposure'] = pm.floatFieldGrp(label="Exposure:", numberOfFields=1)
-                        pm.connectControl(envDict['exposure'], self.renderGlobalsNodeName + ".exposure", index=2)   
-                        envDict['sunIntensity'] = pm.floatFieldGrp(label="Sun Intensity:", numberOfFields=1)
-                        pm.connectControl(envDict['sunIntensity'], self.renderGlobalsNodeName + ".sunIntensity", index=2)  
-                        pm.separator()
-                        envDict['solidAngle'] = pm.floatFieldGrp(label="Solid Angle:", numberOfFields=1)
-                        pm.connectControl(envDict['solidAngle'], self.renderGlobalsNodeName + ".solidAngle", index=2)   
-                        envDict['sunSpotAngle'] = pm.floatFieldGrp(label="Sun Spot Angle:", numberOfFields=1)
-                        pm.connectControl(envDict['sunSpotAngle'], self.renderGlobalsNodeName + ".sunSpotAngle", index=2)   
                                       
 
 
@@ -88,7 +95,9 @@ class KrayRenderer(Renderer.MayaToRenderer):
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
 
         self.KrayRendererUIUpdateCallback("environment")                
+        self.KrayRendererUIUpdateCallback("background")                
 
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.backgroundType, pm.Callback(self.KrayRendererUIUpdateCallback, "background")])
         pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.KrayRendererUIUpdateCallback, "environment")])
          
 
@@ -371,6 +380,8 @@ class KrayRenderer(Renderer.MayaToRenderer):
                     pm.connectControl(sDict['doMb'], self.renderGlobalsNodeName + ".doMb", index=2)
                     sDict['doDof'] = pm.checkBoxGrp(label="Depth Of Field:")
                     pm.connectControl(sDict['doDof'], self.renderGlobalsNodeName + ".doDof", index=2)
+                    sDict['camSingleSided'] = pm.checkBoxGrp(label="Render Single Sided:")
+                    pm.connectControl(sDict['camSingleSided'], self.renderGlobalsNodeName + ".camSingleSided", index=2)
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
@@ -390,7 +401,11 @@ class KrayRenderer(Renderer.MayaToRenderer):
         if what == "environment":
             log.debug("Update environment")
             eDict = self.rendererTabUiDict['environment']
-            eType = self.renderGlobalsNode.environmentType.get()
+            
+        if what == "background":
+            log.debug("Update background")
+            eDict = self.rendererTabUiDict['background']
+            eType = self.renderGlobalsNode.backgroundType.get()
             for key in eDict:
                 eDict[key].setEnable(val=False)
             

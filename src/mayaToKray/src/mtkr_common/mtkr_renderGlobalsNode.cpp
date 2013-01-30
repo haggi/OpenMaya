@@ -19,6 +19,7 @@ MObject MayaToKrayGlobals::glossyDepth;
 MObject MayaToKrayGlobals::assemblyExportType;
 MObject MayaToKrayGlobals::environmentColor;
 MObject MayaToKrayGlobals::environmentType;
+MObject MayaToKrayGlobals::backgroundType;
 MObject MayaToKrayGlobals::environmentIntensity;
 MObject MayaToKrayGlobals::gradientHorizon;
 MObject MayaToKrayGlobals::gradientZenit;
@@ -140,6 +141,7 @@ MObject MayaToKrayGlobals::qBLumMaxRays; // int
 MObject MayaToKrayGlobals::qBAccuracyLimit; // float
 MObject MayaToKrayGlobals::qTraceDirectLightReflections; // bool
 MObject MayaToKrayGlobals::qOctreeDetail; // @"Very Low","Low","Normal","High"@
+MObject MayaToKrayGlobals::camSingleSided;
 
 MayaToKrayGlobals::MayaToKrayGlobals()
 {}
@@ -303,15 +305,27 @@ MStatus	MayaToKrayGlobals::initialize()
 	// reduced to auto because we do not need the others (I hope) remove the whole attribute in the next release
 	assemblyExportType = eAttr.create( "assemblyExportType", "assemblyExportType", 0, &stat);
 	stat = eAttr.addField( "Auto", 0 );
-	//stat = eAttr.addField( "One Master Assembly", 1 );
-	//stat = eAttr.addField( "Per Shape Assembly", 2 );
-	//stat = eAttr.addField( "Per NamedSet Assembly", 3 );
 	CHECK_MSTATUS(addAttribute( assemblyExportType ));
 
 	assemblyPolyTheshold = nAttr.create("assemblyPolyTheshold", "assemblyPolyTheshold",  MFnNumericData::kInt, 10000);
 	CHECK_MSTATUS(addAttribute( assemblyPolyTheshold ));
 
 	environmentType = eAttr.create( "environmentType", "environmentType", 0, &stat);
+	stat = eAttr.addField( "Color Fade", 0 );
+	stat = eAttr.addField( "Fade", 1 );
+	stat = eAttr.addField( "GVolume", 2 );
+	stat = eAttr.addField( "Physical Sky", 3 );
+	stat = eAttr.addField( "VEffect", 4 );
+	stat = eAttr.addField( "Volume", 5 );
+	//environment  	colorFade, 	<rgb> color, 	<double> amount;
+	//	fade, 	<double> amount;
+	//	gVolume, 	<texture> t2, 	<int> max_recurse, 	<double> adaptive_threshold, 	<double> max_distance, 	<double> probe_per_length, 	<double> photon_per_lenght, 	<double> photon_radius;
+	//	phySky, 	<sharedObject> s2, 	<int> flags;
+	//	vEffect, 	<double> intensity, 	<double> start, 	<double> step1, 	<double> step2, 	<int> n;
+	//	volume, 	<texture> t2, 	<int> max_recurse, 	<double> adaptive_threshold, 	<double> max_distance, 	<double> probe_per_length, 	<double> photon_per_lenght, 	<double> photon_radius; 
+	CHECK_MSTATUS(addAttribute( environmentType ));
+
+	backgroundType = eAttr.create( "backgroundType", "backgroundType", 0, &stat);
 	stat = eAttr.addField( "Constant", 0 );
 	stat = eAttr.addField( "Physical Sky", 1 );
 	stat = eAttr.addField( "Physical Sky 2", 2 );
@@ -322,7 +336,7 @@ MStatus	MayaToKrayGlobals::initialize()
 	stat = eAttr.addField( "DirectionsMap", 7 );
 	stat = eAttr.addField( "LightMap", 8 );
 	stat = eAttr.addField( "SphereMap", 9 );
-	CHECK_MSTATUS(addAttribute( environmentType ));
+	CHECK_MSTATUS(addAttribute( backgroundType ));
 
 	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
 	nAttr.setDefault(0.6f, 0.7f, 0.9f);
@@ -627,6 +641,10 @@ MStatus	MayaToKrayGlobals::initialize()
 	stat = eAttr.addField( "Normal", 2 );
 	stat = eAttr.addField( "High", 3 );
 	CHECK_MSTATUS(addAttribute( qOctreeDetail ));
+
+	camSingleSided = nAttr.create("camSingleSided", "camSingleSided",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( camSingleSided ));
+
 
 	return stat;
 

@@ -40,6 +40,7 @@ private:
 	static	  MObject environmentMap;
 	static	  MObject environmentMap2;
 	static	  MObject environmentType;
+	static	  MObject backgroundType;
 	static	  MObject environmentIntensity;
 	static	  MObject latlongHoShift;
 	static	  MObject latlongVeShift;
@@ -159,7 +160,7 @@ private:
 	static	  MObject qOctreeDetail; // @"Very Low","Low","Normal","High"@
 
 	
-
+	static	  MObject camSingleSided;
 	
 
 };

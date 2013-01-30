@@ -13,6 +13,7 @@
 #include <maya/MFloatArray.h>
 #include <maya/MFloatVectorArray.h>
 #include <maya/MTransformationMatrix.h>
+#include <maya/MEulerRotation.h>
 
 #include "krayRenderer.h"
 #include "krayUtils.h"
@@ -52,8 +53,15 @@ namespace krayRender{
 			vmap.data(vtxId,v);
 		}
 		
-		mesh->points(vmap);
+		//vertexMap pntnormal,3;
+		//Kray::VertexMapSymbol nmap(*(this->pro),3);		// create normal map
+		//Kray::VertexMapSymbol uvmap(*(this->pro),2);	// create uv map
+
 		MIntArray faceVtxIds;
+
+		mesh->points(vmap);
+		
+		//this->pro->meshVmap_pointNormals(*mesh, nmap);
 
 		Kray::VarLenDoubleDynamic polygon;
 		for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
@@ -73,25 +81,39 @@ namespace krayRender{
 		}
 
 		Kray::Symbol defaultMat(*this->pro);	// create material object, create new KraySymbol
-		this->pro->material(defaultMat);		// register it, as material
-		this->pro->materialSet_color(defaultMat,Kray::Vector(0.8,0.8,1.0));	// modify default color
 
+		this->pro->material(defaultMat);		// register it, as material
+		this->pro->materialSet_color(defaultMat,Kray::Vector(0.6,0.6,1.0));	// modify default color
 		this->pro->meshTag_material(*mesh, 0, defaultMat);	// attach yellowMat to mesh tag==0
 		
 		MMatrix matrix = obj->transformMatrices[0] * this->mtkr_renderGlobals->sceneScaleMatrix;
-		MPoint pos;
-		MVector rot;
-		posRotFromMatrix( matrix, pos, rot);
-		Kray::Matrix4x4 camMatrix;
-		
-		//matrix *=  this->mtkr_renderGlobals->sceneRotMatrix;
-		MMatrixToAMatrix(matrix, camMatrix);
-		Kray::Vector camPos(camMatrix);
-		//Kray::AxesHpb camRot(-rot.y, rot.x, -rot.z);
-		Kray::AxesHpb camRot(camMatrix);
-		Kray::Axes camRota(camMatrix);
+		//MMatrix posMatrix = matrix;
+		//MMatrix rotMatrix = matrix;
 
-		this->pro->objectSet_mesh(camPos, camRot, *mesh, 0);	// add mesh to scene with given position and orientation
+		//MVector rot;
+		//MPoint pos;
+		//posRotFromMatrix( rotMatrix, pos, rot);
+		//rotMatrix.setToIdentity();
+		//MTransformationMatrix tm(rotMatrix);
+		//MEulerRotation euler(-rot.x, rot.y, -rot.z, MEulerRotation::kXYZ);
+		//tm.rotateBy(euler, MSpace::kWorld);
+		//rotMatrix = tm.asMatrix();
+
+		//Kray::Matrix4x4 mPosMatrix;
+		//Kray::Matrix4x4 mRotMatrix;
+		//
+		//posMatrix[3][0] = -posMatrix[3][0];
+		//posMatrix[3][2] = -posMatrix[3][2];
+		//MMatrixToAMatrix(posMatrix, mPosMatrix);
+		//MMatrixToAMatrix(rotMatrix, mRotMatrix);
+
+		//Kray::Vector mPos(mPosMatrix);
+		//Kray::AxesHpb mRot(mRotMatrix);
+		Kray::Vector mPos;
+		Kray::AxesHpb mRot;
+		MatrixToRotPos(matrix, mPos, mRot);
+				
+		this->pro->objectSet_mesh(mPos, mRot, *mesh, 0);	// add mesh to scene with given position and orientation
 		//this->pro->objectSet_mesh(pos, Kray::AxesHpb().angles(axis[0]*rtg, axis[1]*rtg, axis[2]*rtg), *mesh, 0);	// add mesh to scene with given position and orientation
 		
 		//msh.points(vmap);						// connect positions vertex map with a mesh

@@ -184,44 +184,27 @@ namespace krayRender
 
 		this->pro->previewSize(width, height);
 
+		MMatrix posMatrix = matrix;// * this->mtkr_renderGlobals->sceneRotMatrix;
+		MMatrix rotMatrix = matrix;
+
 		MVector rot;
 		MPoint pos;
-		posRotFromMatrix( matrix, pos, rot);
-
-		//matrix *= this->mtkr_renderGlobals->sceneRotMatrix;
-		MMatrix posMatrix = matrix;
-		MMatrix rotMatrix = matrix;
-		//MMatrix sceneRotMatrix;
-		//sceneRotMatrix.setToIdentity();
+		posRotFromMatrix( rotMatrix, pos, rot);
+		//logger.debug(MString("rot: ") + rot.x + " " + rot.y + " " + rot.z);
+		rotMatrix.setToIdentity();
 		MTransformationMatrix tm(rotMatrix);
-		MEulerRotation euler(rot.y, rot.x, rot.z, MEulerRotation::kXYZ);
+		// add 180 degree to bank
+		MEulerRotation euler(rot.x + M_PI, rot.y, rot.z, MEulerRotation::kXYZ);
 		tm.rotateBy(euler, MSpace::kWorld);
 		rotMatrix = tm.asMatrix();
-
-		//MString ms = matrixToString(this->mtkr_scene->camList[0]->transformMatrices[0]);
-		//logger.debug(MString("MMatrix :\n") + ms);
-		//MMatrix colM;
-		//rowToColumn(this->mtkr_scene->camList[0]->transformMatrices[0], colM);
-		//MString kms = matrixToString(colM);
-		//logger.debug(MString("KMatrix :\n") + kms);
 
 		Kray::Matrix4x4 camPosMatrix;
 		Kray::Matrix4x4 camRotMatrix;
 		
-		MString ms = matrixToString(posMatrix);
-		logger.debug(MString("Orig cam Matrix :\n") + ms);
-		//MMatrix colM;
-		//rowToColumn(this->mtkr_scene->camList[0]->transformMatrices[0], colM);
-		//MString kms = matrixToString(colM);
-		//logger.debug(MString("KMatrix :\n") + kms);
-
-		//posMatrix[3][1] = posMatrix[3][1];
-		//posMatrix[3][2] = -posMatrix[3][2];
+		//posMatrix[3][0] = -posMatrix[3][0];
+		//posMatrix[3][1] = -posMatrix[3][1];
 		MMatrixToAMatrix(posMatrix, camPosMatrix);
 		MMatrixToAMatrix(rotMatrix, camRotMatrix);
-
-		ms = matrixToString(posMatrix);
-		logger.debug(MString("NegZ cam Matrix :\n") + ms);
 
 		Kray::Vector camPos(camPosMatrix);
 		Kray::AxesHpb camRot(camRotMatrix);
@@ -264,6 +247,70 @@ namespace krayRender
 				this->pro->outputSave_pnga16(imageName.asChar());
 		}
 	}
+	void KrayRenderer::definePixelOrder()
+	{
+		// define pixel order
+		switch(this->mtkr_renderGlobals->pixelOrder)
+		{
+		case 0:
+			this->pro->pixelOrder_scanLine();
+			break;
+		case 1:
+			this->pro->pixelOrder_scanRow();
+			break;
+		case 2:
+			this->pro->pixelOrder_random();
+			break;
+		case 3:
+			this->pro->pixelOrder_progressive();
+			break;
+		case 4:
+			this->pro->pixelOrder_worm();		
+			break;
+		case 5:
+			this->pro->pixelOrder_frost();		
+			break;
+		default:
+			this->pro->pixelOrder_worm();		
+			break;
+		};
+	}
+
+	void KrayRenderer::defineFilter()
+	{
+		double filterSize = this->mtkr_renderGlobals->filterSize;
+		// define pixel order
+		switch(this->mtkr_renderGlobals->filterType)
+		{
+		case 0: // box
+			this->pro->pixelFilter_box(filterSize);
+			break;
+		case 1: // cone
+			this->pro->pixelFilter_cone(filterSize);
+			break;
+		case 2: // cubic
+			this->pro->pixelFilter_cubic(filterSize);
+			break;
+		case 3: // lanczos
+			this->pro->pixelFilter_lanczos(filterSize);
+			break;
+		case 4: // mitchell
+			this->pro->pixelFilter_mitchell();
+			break;
+		case 5: // spline
+			this->pro->pixelFilter_spline();
+			break;
+		case 6: // catmull
+			this->pro->pixelFilter_catmull();
+			break;
+		case 7: // quadric
+			this->pro->pixelFilter_quadric(filterSize);
+			break;
+		default: // catmull
+			this->pro->pixelFilter_catmull();
+			break;
+		};
+	}
 
 	void KrayRenderer::render()
 	{	
@@ -280,77 +327,22 @@ namespace krayRender
 		if (this->kin) // check if instance was created, if not, Kray library wasn't found
 		{	
 			if( this->pro )
-			{
-				setupSimpleMeshScene(*this->pro);
-			
-				// define pixel order
-				switch(this->mtkr_renderGlobals->pixelOrder)
-				{
-				case 0:
-					this->pro->pixelOrder_scanLine();
-					break;
-				case 1:
-					this->pro->pixelOrder_scanRow();
-					break;
-				case 2:
-					this->pro->pixelOrder_random();
-					break;
-				case 3:
-					this->pro->pixelOrder_progressive();
-					break;
-				case 4:
-					this->pro->pixelOrder_worm();		
-					break;
-				case 5:
-					this->pro->pixelOrder_frost();		
-					break;
-				default:
-					this->pro->pixelOrder_worm();		
-					break;
-				};
-
-				double filterSize = this->mtkr_renderGlobals->filterSize;
-				// define pixel order
-				switch(this->mtkr_renderGlobals->filterType)
-				{
-				case 0: // box
-					this->pro->pixelFilter_box(filterSize);
-					break;
-				case 1: // cone
-					this->pro->pixelFilter_cone(filterSize);
-					break;
-				case 2: // cubic
-					this->pro->pixelFilter_cubic(filterSize);
-					break;
-				case 3: // lanczos
-					this->pro->pixelFilter_lanczos(filterSize);
-					break;
-				case 4: // mitchell
-					this->pro->pixelFilter_mitchell();
-					break;
-				case 5: // spline
-					this->pro->pixelFilter_spline();
-					break;
-				case 6: // catmull
-					this->pro->pixelFilter_catmull();
-					break;
-				case 7: // quadric
-					this->pro->pixelFilter_quadric(filterSize);
-					break;
-				default: // catmull
-					this->pro->pixelFilter_catmull();
-					break;
-				};
-				
+			{			
+				if( this->mtkr_renderGlobals->camSingleSided )
+					this->pro->camSingleSide(true);
 				this->defineLigths();
 				this->defineSampling(); // before defineCamera because ggf. dof will be turned off
 				this->defineCamera();
+				this->defineFilter();
+				this->definePixelOrder();
+				this->defineBackground();
 				this->defineEnvironment();
 				this->pro->echo("Rendering....");
-
-				//if( this->mtkr_renderGlobals->exportSceneFile )
-				//	this->pro->flayer();
-				//else
+				//this->pro->groupSelect("Testgroup");
+				//this->pro->instanceAdd("name", vec, ax);
+				this->pro->showInfo_all();
+				//this->pro->groupSelect()
+				//this->pro->animOb_typeMeshInstance("animobj", mesh);
 				this->pro->render();
 				this->writeImageFile(this->mtkr_renderGlobals->imageOutputFile);
 				this->pro->reset();

@@ -5,4 +5,6 @@
 
 void MMatrixToAMatrix(MMatrix& mayaMatrix, Kray::Matrix4x4& krayMatrix);
 
+void MatrixToRotPos(MMatrix& mayaMatrix, Kray::Vector& pos, Kray::AxesHpb& rot);
+
 #endif

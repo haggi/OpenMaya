@@ -22,6 +22,33 @@ namespace krayRender{
 
 	void KrayRenderer::defineEnvironment()
 	{
+	//environment  	colorFade, 	<rgb> color, 	<double> amount;
+	//	fade, 	<double> amount;
+	//	gVolume, 	<texture> t2, 	<int> max_recurse, 	<double> adaptive_threshold, 	<double> max_distance, 	<double> probe_per_length, 	<double> photon_per_lenght, 	<double> photon_radius;
+	//	phySky, 	<sharedObject> s2, 	<int> flags;
+	//	vEffect, 	<double> intensity, 	<double> start, 	<double> step1, 	<double> step2, 	<int> n;
+	//	volume, 	<texture> t2, 	<int> max_recurse, 	<double> adaptive_threshold, 	<double> max_distance, 	<double> probe_per_length, 	<double> photon_per_lenght, 	<double> photon_radius; 
+
+		switch( this->mtkr_renderGlobals->environmentType )
+		{
+		case 0: // color fade
+			{}
+		case 1: // fade
+			{}
+		case 2: // gVolume
+			{}
+		case 3: // physSky
+			{}
+		case 4: // vEffekt
+			{}
+		case 5: // volume
+			{}
+		}
+
+	}
+
+	void KrayRenderer::defineBackground()
+	{
 	//background  	bitmap, 	<bitmap> b2, 	<xyz> ax, 	<xyz> az;
 	//				bitmap2, 	<bitmap> b2, 	<bitmap> b3, 	<hpb> a4;
 	//				color, 	<rgba> color;
@@ -35,7 +62,9 @@ namespace krayRender{
 	//				toneMap;
 	//				toneMapperFilter, 	<toneMapper> t2; 
 
-		switch( this->mtkr_renderGlobals->environmentType )
+		// background types
+
+		switch( this->mtkr_renderGlobals->backgroundType )
 		{
 		case 0:
 			{

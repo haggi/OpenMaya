@@ -1,5 +1,8 @@
 #include "krayUtils.h"
 #include "utilities/tools.h"
+#include <maya/MEulerRotation.h>
+
+#include "krayRenderer.h"
 
 void MMatrixToAMatrix(MMatrix& mayaMatrix, Kray::Matrix4x4& krayResultMatrix)
 {
@@ -24,4 +27,30 @@ void MMatrixToAMatrix(MMatrix& mayaMatrix, Kray::Matrix4x4& krayResultMatrix)
 		for( int k = 0; k < 4; k++)
 			mdata[i * 4 + k] = krayMatrix[i][k];
 	krayResultMatrix.copyTransposed(mdata);
+}
+
+void MatrixToRotPos(MMatrix& mayaMatrix, Kray::Vector& kpos, Kray::AxesHpb& krot)
+{
+	MMatrix posMatrix = mayaMatrix;
+	MMatrix rotMatrix = mayaMatrix;
+
+	MVector rot;
+	MPoint pos;
+	posRotFromMatrix( rotMatrix, pos, rot);
+	rotMatrix.setToIdentity();
+	MTransformationMatrix tm(rotMatrix);
+	MEulerRotation euler(rot.x, rot.y, rot.z, MEulerRotation::kXYZ);
+	tm.rotateBy(euler, MSpace::kWorld);
+	rotMatrix = tm.asMatrix();
+
+	Kray::Matrix4x4 mPosMatrix;
+	Kray::Matrix4x4 mRotMatrix;
+		
+	//posMatrix[3][0] = -posMatrix[3][0];
+	//posMatrix[3][1] = -posMatrix[3][1];
+	MMatrixToAMatrix(posMatrix, mPosMatrix);
+	MMatrixToAMatrix(rotMatrix, mRotMatrix);
+
+	kpos = Kray::Vector(mPosMatrix);
+	krot = Kray::AxesHpb(mRotMatrix);
 }

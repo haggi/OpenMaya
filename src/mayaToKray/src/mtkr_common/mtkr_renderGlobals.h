@@ -39,7 +39,9 @@ public:
 	// environment maybe put it into a seperate shader node?
 	MColor environmentColor;
 	int environmentType;
+	int backgroundType;
 	MString environmentTypeString;
+	MString backgroundTypeString;
 	float environmentIntensity;
 	MColor gradientHorizon;
 	MColor gradientZenit;
@@ -157,6 +159,8 @@ public:
 	float qBAccuracyLimit; // float
 	bool qTraceDirectLightReflections; // bool
 	int qOctreeDetail; // @"Very Low","Low","Normal","High"@
+
+	bool camSingleSided;
 
 	virtual MString getImageExt();
 

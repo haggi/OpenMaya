@@ -88,7 +88,10 @@ namespace krayRender
 		void defineMesh(mtkr_MayaObject *obj);
 		void writeImageFile(MString fileName);
 
+		void defineFilter();
+		void definePixelOrder();
 		void defineEnvironment();
+		void defineBackground();
 
 		void defineLigths();
 		void definePointLight(mtkr_MayaObject *obj);

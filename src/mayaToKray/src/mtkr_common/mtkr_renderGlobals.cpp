@@ -149,6 +149,9 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 		if(!getEnum(MString("environmentType"), krayGlobals, this->environmentType, this->environmentTypeString))
 			throw("problem reading krayGlobals.environmentTypeString");
 
+		if(!getEnum(MString("backgroundType"), krayGlobals, this->backgroundType, this->backgroundTypeString))
+			throw("problem reading krayGlobals.backgroundTypeString");
+
 		if(!getEnum(MString("environmentType"), krayGlobals, this->environmentType))
 			throw("problem reading krayGlobals.environmentType");
 
@@ -285,6 +288,10 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 
 		if(!getFloat(MString("filtersize"), krayGlobals, this->filterSize))
 			throw("problem reading krayGlobals.filtersize");
+
+		if(!getBool(MString("camSingleSided"), krayGlobals, this->camSingleSided))
+			throw("problem reading krayGlobals.camSingleSided");
+		
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
