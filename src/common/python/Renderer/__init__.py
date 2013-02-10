@@ -121,14 +121,24 @@ class MayaToRenderer(object):
     # {Name}RendererCreateTab() and the {Name}RendererUpdateTab()
     # {Name}TranslatorCreateTab() and the {Name}TranslatorUpdateTab()
     def renderTabMelProcedure(self, tabName):
+        
         createTabCmd = "{0}{1}CreateTab".format(self.rendererName, tabName) 
         updateTabCmd = "{0}{1}UpdateTab".format(self.rendererName, tabName) 
         tabLabel = "{0}{1}".format(self.rendererName, tabName)
-        
         createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
         updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
         melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
         melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
+        
+        if tabName == "OpenMayaCommonGlobals":
+            createTabCmd = "{0}CreateTab".format(tabName) 
+            updateTabCmd = "{0}UpdateTab".format(tabName) 
+            tabLabel = "Common"
+            createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
+            updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
+            melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
+            melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
+        
         log.debug("mel create tab: \n" + melCreateCmd)
         log.debug("mel update tab: \n" + melUpdateCmd)
         log.debug("python create tab: \n" + createPyCmd)
@@ -158,7 +168,78 @@ class MayaToRenderer(object):
     
     def postFrameProcedure(self):
         pass
-                            
+
+    def overwriteUpdateMayaImageFormatControl(self):
+        melCmdCreateA = """
+global proc string createMayaImageFormatControl()
+{
+    string $currentRenderer = currentRenderer();
+    if( $currentRenderer == "mentalRay" )
+        return createMRImageFormatControl();
+        """
+        melCmdCreateB = """
+    string $parent = `setParent -query`;
+
+    // Delete the control if it already exists
+    //
+    string $fullPath = $parent + "|imageMenuMayaSW";
+    if (`layout -exists $fullPath`) {
+        deleteUI $fullPath;
+    }
+
+    optionMenuGrp
+        -label (uiRes("m_createMayaSoftwareCommonGlobalsTab.kImageFormatMenu"))
+        -changeCommand "changeMayaSoftwareImageFormat"
+        imageMenuMayaSW;
+
+    int $isVector = 0;
+    if( $currentRenderer == "mayaVector" )
+        $isVector = 1;
+
+    buildImageFormatsMenu($isVector, 1, 1, 1, 1);
+
+    // connect the label, so we can change its color
+    connectControl -index 1 imageMenuMayaSW defaultRenderGlobals.imageFormat;
+    // connect the menu, so it will always match the attribute
+    connectControl -index 2 imageMenuMayaSW defaultRenderGlobals.imageFormat;
+
+    scriptJob
+        -parent $parent
+        -attributeChange
+            "defaultRenderGlobals.imageFormat"
+            "updateMayaSoftwareImageFormatControl";
+
+    return "imageMenuMayaSW";
+}
+
+global proc updateMayaImageFormatControl()
+{
+    string $currentRenderer = currentRenderer();
+        """
+        melCmdCreateC = """
+    else if( $currentRenderer == "mentalRay" )
+        updateMentalRayImageFormatControl();
+    else
+        updateMayaSoftwareImageFormatControl();
+
+    //update the Mulitple camera frame buffer naming control
+        updateMultiCameraBufferNamingMenu();
+}
+        """
+        
+        rendererCmdA = "\n\tif( $currentRenderer == \"{0}\" )\n\
+        return {1};".format(self.rendererName, "python(\"minit.theRenderer().createImageFormatControls()\")")
+        rendererCmdB = "\n\tif( $currentRenderer == \"{0}\" )\n\
+        python(\"minit.theRenderer().updateImageFormatControls()\");".format(self.rendererName)
+
+        melCmd = melCmdCreateA + rendererCmdA +  melCmdCreateB + rendererCmdB + melCmdCreateC 
+        print "Complete mel command", melCmd   
+        pm.mel.eval(melCmd)
+    
+    def unDoOverwriteUpdateMayaImageFormatControl(self):
+        pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
+        pass
+    
     def createGlobalsNode(self):      
         if not self.renderGlobalsNode: 
             # maybe the node has been replaced by replaced by a new loaded node, check this
@@ -196,7 +277,9 @@ class MayaToRenderer(object):
         #aeTemplate = "AEappleSeedNodeTemplate"
         aeCallbackProc = "global proc " + aeCallbackName + "(string $nodeName)\n"
         aeCallbackProc += "{\n"
-        aeCallbackProc += "string $cmd = \"import " + aeTemplateImportName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
+        aeCallbackProc += "\tprint(\"executing aenodecallbacktemplate.\");\n"
+        #aeCallbackProc += "string $cmd = \"import AETemplates." + aeTemplateImportName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
+        aeCallbackProc += "string $cmd = \"import AETemplates as aet; aet." + aeTemplateImportName + "(\\\"\" + $nodeName + \"\\\")\";\n"
         aeCallbackProc += "python($cmd);\n"
         aeCallbackProc += "}\n"
         log.debug("aeCallback: " + aeCallbackProc)
@@ -253,25 +336,124 @@ class MayaToRenderer(object):
         pm.renderer(self.rendererName, edit=True, renderMenuProcedure=self.renderCallback("renderMenuProcedure"))
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
-        
+                
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
+        #self.overwriteUpdateMayaImageFormatControl()
         # because mentalray is still hardcoded in the maya scritps, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
-
+        #pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
+        
         # my own tabs
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))    
         self.addUserTabs()
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
         
+        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
+        pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
         
         log.debug("RegisterRenderer done")
 
+    def createImageFormatControls(self):
+        log.debug("createImageFormatControls()")
+        self.createImageFormats()
+        omg = pm.optionMenuGrp(label="Image Formats")
+        for pr in self.imageFormats:
+            pm.menuItem(pr)
+        return omg
+
+    def updateImageFormatControls(self):
+        log.debug("updateImageFormatControls()")
+                
+    # this is a rediculous one, because I don't have access to the image format popup menu in createMayaSoftwareCommonGlobalsTab, I do it myself, completly    
+    def OpenMayaCommonGlobalsCreateTab(self):
+        log.debug("OpenMayaCommonGlobalsCreateTab()")
+        self.createGlobalsNode()
+        omDict = {}
+        self.rendererTabUiDict['omDict'] = omDict        
+        parentForm = pm.setParent(query=True)
+        
+        colorProfiles = ['Linear sRGB', 'sRGB', 'Linear Rec. 709', 'HDTV (Rec. 709)']
+
+        drg = pm.SCENE.defaultRenderGlobals
+        pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
+        scLo = self.rendererName + "ScrollLayout"
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout("commonTabColumn", adjustableColumn=True, width=400) as ctc:
+                print "Common tab column", str(ctc)
+                with pm.frameLayout(label="Color Management", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        omDict['enableColManagement'] = pm.checkBoxGrp(label="Enable Color Management:", value1=False)
+                        pm.connectControl(omDict['enableColManagement'], drg + ".colorProfileEnabled", index=2)   
+                        omDict['inputProfile'] = pm.optionMenuGrp(label="Default Input Profile")
+                        for pr in colorProfiles:
+                            pm.menuItem(pr)
+                        omDict['outputProfile'] = pm.optionMenuGrp(label="Default Output Profile")
+                        for pr in colorProfiles:
+                            pm.menuItem(pr)
+                                             
+                with pm.frameLayout(label="File Output", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        omDict['fileNamePrefix'] = pm.textFieldGrp(label= "File Name Prefix", text="None", width=60)
+                        pm.connectControl(omDict['fileNamePrefix'], drg + ".imageFilePrefix", index=2)
+
+                with pm.frameLayout(label="Frame Range", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        omDict['startFrame'] = pm.floatFieldGrp(label="Start Frame:", numberOfFields=1)
+                        pm.connectControl(omDict['startFrame'], drg + ".startFrame", index=2)   
+                        omDict['endFrame'] = pm.floatFieldGrp(label="End Frame:", numberOfFields=1)
+                        pm.connectControl(omDict['endFrame'], drg + ".endFrame", index=2)   
+                        omDict['byFrame'] = pm.floatFieldGrp(label="By Frame:", numberOfFields=1)
+                        pm.connectControl(omDict['byFrame'], drg + ".byFrame", index=2)   
+                        omDict['skipExistingFrames'] = pm.checkBoxGrp(label="Skip Existing Frames:", value1=False)
+                        pm.connectControl(omDict['skipExistingFrames'], drg + ".skipExistingFrames", index=2)   
+
+                with pm.frameLayout(label="Renderable Cameras", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400) as renderableCamsCL:
+                        omDict['renderableCamerasCL'] = renderableCamsCL
+                        
+                with pm.frameLayout(label="Image Size", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        omDict['tst'] = pm.checkBoxGrp(label="Cam x:", value1=False)
+                        
+                with pm.frameLayout(label="Render Options", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        omDict['tst'] = pm.checkBoxGrp(label="Cam x:", value1=False)
+                        
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        self.updateRenderableCameras()
+        
+        pm.scriptJob(attributeChange=[drg.colorProfileEnabled, pm.Callback(self.OpenMayaCommonGlobalsUpdateTab, "colorProfile")])
+    
+    def updateRenderableCameras(self):
+        omDict = self.rendererTabUiDict['omDict']
+        columnLayout = omDict['renderableCamerasCL']
+        # delete children
+        renderableCams = []
+        allCams = pm.ls(type="camera")
+        for cam in allCams:
+            if cam.renderable.get():
+                renderableCams.append(cam)
+
+        for cam in renderableCams:
+            pm.optionMenuGrp(label="Renderable Camera", parent=columnLayout)
+            for ca in allCams:
+                pm.menuItem(ca)
+            
+        
+    def OpenMayaCommonGlobalsUpdateTab(self, updateWhat = None):
+        log.debug("OpenMayaCommonGlobalsUpdateTab")
+        pass
+    
     def addUserTabs(self):
         pass
             
     def unRegisterRenderer(self):
         if pm.renderer(self.rendererName, q=True, exists=True):
             pm.renderer(self.rendererName, unregisterRenderer=True)
+            #self.unDoOverwriteUpdateMayaImageFormatControl()
     
     def globalsTabCreateProcNames(self):
         pass

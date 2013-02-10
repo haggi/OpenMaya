@@ -109,6 +109,7 @@ public:
 	// regular sampling
 	int samplesX;
 	int samplesY;
+	bool adaptiveSampling;
 
 	// filtering
 	float filterSize;

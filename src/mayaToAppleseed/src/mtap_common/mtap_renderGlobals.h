@@ -23,6 +23,13 @@ public:
 	int diffuseDepth;
 	int glossyDepth;
 	int directLightSamples;
+	int environmentSamples;
+	int bsdfSamples;
+	bool next_event_estimation;
+	float rr_min_path_length;
+	float max_path_length;
+
+
 	bool exportXMLFile;
 	MString exportXMLFileName;
 	int assemblyExportType;

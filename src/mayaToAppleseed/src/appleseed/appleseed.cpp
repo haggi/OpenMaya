@@ -117,21 +117,33 @@ void AppleseedRenderer::defineConfig()
 	
 	MString minSamples = MString("") + renderGlobals->minSamples;
 	MString maxSamples = MString("") + renderGlobals->maxSamples;
+	float maxError = renderGlobals->maxError;
+
 	MString numThreads = MString("") + renderGlobals->threads;
 	MString maxTraceDepth = MString("") + renderGlobals->maxTraceDepth;
 	MString lightingEngine = "pt";
 	lightingEngine = renderGlobals->lightingEngine == 0 ? lightingEngine : MString("drt");
 	
 	logger.debug(MString("Samples min: ") + minSamples + " max: " + maxSamples);
-	MString directLightSamples = MString("") + renderGlobals->directLightSamples;
 
 	this->project->configurations()
         .get_by_name("final")->get_parameters()
 		.insert_path("generic_tile_renderer.min_samples", minSamples.asChar())
         .insert_path("generic_tile_renderer.max_samples", maxSamples.asChar())
+		.insert_path("generic_tile_renderer.quality", maxError)
+		.insert_path("generic_tile_renderer.enable_ibl", "true")
+		.insert_path("generic_tile_renderer.ibl_bsdf_samples", this->renderGlobals->bsdfSamples)
+		.insert_path("generic_tile_renderer.ibl_env_samples", this->renderGlobals->environmentSamples)
 		.insert_path("generic_frame_renderer.rendering_threads", numThreads.asChar())
 		.insert_path("lighting_engine", lightingEngine.asChar())
 		.insert_path((lightingEngine + ".max_path_length").asChar(), maxTraceDepth.asChar());
+
+	if( this->renderGlobals->adaptiveSampling )
+	{
+		this->project->configurations()
+			.get_by_name("final")->get_parameters()
+			.insert_path("generic_tile_renderer.sampler", "adaptive");
+	}
 
 	if( this->renderGlobals->useRenderRegion )
 	{
@@ -151,7 +163,8 @@ void AppleseedRenderer::defineConfig()
 	{
 		this->project->configurations()
         .get_by_name("final")->get_parameters()
-		.insert_path((lightingEngine + ".dl_light_samples").asChar(), directLightSamples.asChar());
+		.insert_path((lightingEngine + ".dl_light_samples").asChar(), renderGlobals->directLightSamples)
+		;
 	}
 
 	if( !renderGlobals->caustics )
@@ -160,6 +173,12 @@ void AppleseedRenderer::defineConfig()
         .get_by_name("final")->get_parameters()
 		.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
 	}
+
+	this->project->configurations()
+    .get_by_name("final")->get_parameters()
+	.insert_path((lightingEngine + ".filter").asChar(), renderGlobals->filterTypeString.asChar())
+	.insert_path((lightingEngine + ".filter_size").asChar(), renderGlobals->filterSize);
+
 }
 
 void AppleseedRenderer::defineOutput()
@@ -837,6 +856,7 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	asf::StringArray material_names;
 
 	asf::StringDictionary matDict = asf::StringDictionary();
+	asf::StringDictionary matBackDict = asf::StringDictionary();
 
 	this->defineObjectMaterial(renderGlobals, obj, material_names);
 	// if no material is attached, use a default material
@@ -844,9 +864,16 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	{
 		material_names.push_back("gray_material");
 		matDict.insert("default", "gray_material");
+		matBackDict.insert("default", "gray_material");
 	}else{
 		for( size_t i = 0; i < material_names.size(); i++)
-			matDict.insert(MString(MString("default") + i).asChar(), material_names[i]);	
+		{	
+			if( pystring::endswith(material_names[i], "_back") )
+				matBackDict.insert(MString(MString("default") + i).asChar(), material_names[i]);
+			else
+				matDict.insert(MString(MString("default") + i).asChar(), material_names[i]);
+		}
+
 	}
 
 	bool doubleSided = true;
@@ -854,6 +881,10 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	getBool(MString("doubleSided"), depFn, doubleSided);
 
 	if(doubleSided)
+	{
+		if( matBackDict.size() == 0)
+			matBackDict = matDict;
+
 		assembly->object_instances().insert(
 				asr::ObjectInstanceFactory::create(
 				(meshName + "_inst").asChar(),
@@ -861,9 +892,9 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 				meshObject->get_name(),
 				asf::Transformd(tmatrix),
 				matDict,
-				matDict
+				matBackDict
 				));
-	else
+	}else
 		assembly->object_instances().insert(
 				asr::ObjectInstanceFactory::create(
 				(meshName + "_inst").asChar(),

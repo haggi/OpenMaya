@@ -806,45 +806,48 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 				.insert("roughness", roughness)
 				);
 		break;
-	case 3: // Specular			
-		getColor(MString("transmittance"), shaderNode, transmittance);
-		defineColor(transmittanceName, transmittance);
-		defineTexture(shaderNode, MString("transmittance"), transmittanceName);
-		getFloat(MString("transmittance_multiplier"), shaderNode, transmittanceMultiplier);
-			
-		getFloat(MString("from_ior"), shaderNode, from_ior);
-			
-		getFloat(MString("to_ior"), shaderNode, to_ior);
-		// if transmittance > 0 then create a specular_btdf, else a specular brdf
-		if( (transmittance.r + transmittance.g + transmittance.b) > 0.0f)
+	case 3: // Specular		
 		{
-			//doubleSided = true;
-			bsdf = asr::SpecularBTDFFactory().create(
-				(shaderName).asChar(),
-				asr::ParamArray()
-					.insert("reflectance",  specRefName.asChar())
-					.insert("reflectance_multiplier",specular_reflectance_multiplier)
-					.insert("from_ior", (MString("") + from_ior).asChar())
-					.insert("to_ior", (MString("") + to_ior).asChar())
-					.insert("transmittance", transmittanceName.asChar())
-					.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-					);
-			bsdfBack = asr::SpecularBTDFFactory().create(
-				(shaderName + "_back").asChar(),
-				asr::ParamArray()
-					.insert("reflectance", specRefName.asChar())
-					.insert("reflectance_multiplier", specular_reflectance_multiplier)
-					.insert("from_ior", (MString("") + to_ior).asChar())
-					.insert("to_ior", (MString("") + from_ior).asChar())
-					.insert("transmittance", transmittanceName.asChar())
-					.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-					);
-		}else{
-			bsdf = asr::SpecularBRDFFactory().create(
-				shaderName.asChar(),
-				asr::ParamArray()
-					.insert("reflectance", specRefName.asChar())
-					);
+			getColor(MString("transmittance"), shaderNode, transmittance);
+			defineColor(transmittanceName, transmittance);
+			defineTexture(shaderNode, MString("transmittance"), transmittanceName);
+			getFloat(MString("transmittance_multiplier"), shaderNode, transmittanceMultiplier);
+			
+			getFloat(MString("from_ior"), shaderNode, from_ior);
+			
+			getFloat(MString("to_ior"), shaderNode, to_ior);
+			// if transmittance > 0 then create a specular_btdf, else a specular brdf
+			bool isTransparent = (transmittance.r + transmittance.g + transmittance.b) > 0.0f;
+			doubleSided = true;
+			if( isTransparent )
+			{
+				bsdf = asr::SpecularBTDFFactory().create(
+					(shaderName).asChar(),
+					asr::ParamArray()
+						.insert("reflectance",  specRefName.asChar())
+						.insert("reflectance_multiplier",specular_reflectance_multiplier)
+						.insert("from_ior", (MString("") + from_ior).asChar())
+						.insert("to_ior", (MString("") + to_ior).asChar())
+						.insert("transmittance", transmittanceName.asChar())
+						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+						);
+				bsdfBack = asr::SpecularBTDFFactory().create(
+					(shaderName + "_back").asChar(),
+					asr::ParamArray()
+						.insert("reflectance", specRefName.asChar())
+						.insert("reflectance_multiplier", specular_reflectance_multiplier)
+						.insert("from_ior", (MString("") + to_ior).asChar())
+						.insert("to_ior", (MString("") + from_ior).asChar())
+						.insert("transmittance", transmittanceName.asChar())
+						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+						);
+			}else{
+				bsdf = asr::SpecularBRDFFactory().create(
+					shaderName.asChar(),
+					asr::ParamArray()
+						.insert("reflectance", specRefName.asChar())
+						);
+			}
 		}
 		break;
 	case 4: // Phong
@@ -1305,10 +1308,6 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 	{
 		this->definePhysSurfShader(assembly, shadingGroup);
 		materialNames.push_back(materialName.asChar());
-		if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)
-		{
-			materialNames.push_back((materialName + "_back").asChar());
-		}
 	}
 	if( shaderType == MFn::kLambert)
 	{
@@ -1320,5 +1319,11 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 		this->defineMayaPhongShader(assembly, shadingGroup);
 		materialNames.push_back(materialName.asChar());
 	}	
+
+	// if we have double sided shading, we have a xx_back material 
+	if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)
+	{
+		materialNames.push_back((materialName + "_back").asChar());
+	}
 
 }

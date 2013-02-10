@@ -324,6 +324,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::TILEDONE:
 			//logger.debug("Event::TILEDONE");
+			logger.debug(MString("Event::TILEDONE - queueSize: ") + theRenderEventQueue()->size());
 			if( MRenderView::doesRenderEditorExist())
 			{
 				MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);

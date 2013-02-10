@@ -552,9 +552,11 @@ class KrayRenderer(Renderer.MayaToRenderer):
         log.debug("KrayTranslatorUpdateTab()")
 
     def createImageFormats(self):
-        self.imageFormats.append('exr')
-        self.imageFormats.append('png')
-
+        self.createGlobalsNode()
+        iList = self.renderGlobalsNode.imageFormat.getEnums()    
+        self.imageFormats = []
+        self.imageFormats.extend(iList)
+        
     def registerNodeExtensions(self):
         """Register Kray specific node extensions. e.g. camera type, diaphram_blades and others
         """

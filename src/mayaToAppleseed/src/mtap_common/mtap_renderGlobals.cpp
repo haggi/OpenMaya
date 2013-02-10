@@ -79,7 +79,7 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getBool(MString("detectShapeDeform"), appleseedGlobals, this->detectShapeDeform))
 			throw("problem reading appleseedGlobals.detectShapeDeform");
 
-		if(!getInt(MString("filtersize"), appleseedGlobals, this->filterSize))
+		if(!getFloat(MString("filtersize"), appleseedGlobals, this->filterSize))
 			throw("problem reading appleseedGlobals.filtersize");
 
 		if(!getInt(MString("filtertype"), appleseedGlobals, this->filterType))
@@ -216,6 +216,12 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getFloat(MString("turbidity_min"), appleseedGlobals, this->turbidity_min))
 			throw("problem reading appleseedGlobals.turbidity_min");
+
+		if(!getInt(MString("environmentSamples"), appleseedGlobals, this->environmentSamples))
+			throw("problem reading appleseedGlobals.environmentSamples");
+
+		if(!getInt(MString("bsdfSamples"), appleseedGlobals, this->bsdfSamples))
+			throw("problem reading appleseedGlobals.bsdfSamples");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

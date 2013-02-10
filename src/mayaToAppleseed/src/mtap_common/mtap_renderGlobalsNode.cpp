@@ -26,6 +26,13 @@ MObject MayaToAppleseedGlobals::environmentIntensity;
 MObject MayaToAppleseedGlobals::gradientHorizon;
 MObject MayaToAppleseedGlobals::gradientZenit;
 MObject MayaToAppleseedGlobals::directLightSamples;
+
+MObject MayaToAppleseedGlobals::environmentSamples;
+MObject MayaToAppleseedGlobals::bsdfSamples;
+MObject MayaToAppleseedGlobals::next_event_estimation;
+MObject MayaToAppleseedGlobals::rr_min_path_length;
+MObject MayaToAppleseedGlobals::max_path_length;
+
 MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
@@ -99,7 +106,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	clamping = nAttr.create("clamping", "clamping",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( clamping ));
 
-	maxError = nAttr.create("maxError", "maxError",  MFnNumericData::kFloat, 0.01);
+	maxError = nAttr.create("maxError", "maxError",  MFnNumericData::kFloat, 0.01f);
 	CHECK_MSTATUS(addAttribute( maxError ));
 
 	caustics = nAttr.create("caustics", "caustics",  MFnNumericData::kBoolean, false);
@@ -110,6 +117,21 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	glossyDepth = nAttr.create("glossyDepth", "glossyDepth",  MFnNumericData::kInt, 4);
 	CHECK_MSTATUS(addAttribute( glossyDepth ));
+
+	environmentSamples = nAttr.create("environmentSamples", "environmentSamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( environmentSamples ));
+
+	bsdfSamples = nAttr.create("bsdfSamples", "bsdfSamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( bsdfSamples ));
+
+	next_event_estimation = nAttr.create("next_event_estimation", "next_event_estimation",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( next_event_estimation ));
+
+	rr_min_path_length = nAttr.create("rr_min_path_length", "rr_min_path_length",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( rr_min_path_length ));
+
+	max_path_length = nAttr.create("max_path_length", "max_path_length",  MFnNumericData::kFloat, 0.0f);
+	CHECK_MSTATUS(addAttribute( max_path_length ));
 
 	exportXMLFile = nAttr.create("exportXMLFile", "exportXMLFile",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportXMLFile ));

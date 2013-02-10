@@ -26,6 +26,11 @@ private:
 	static	  MObject diffuseDepth;
 	static	  MObject glossyDepth;
 	static	  MObject directLightSamples;
+	static	  MObject environmentSamples;
+	static	  MObject bsdfSamples;
+	static	  MObject next_event_estimation;
+	static	  MObject rr_min_path_length;
+	static	  MObject max_path_length;
 
 	static    MObject filtertype;
 	static	  MObject lightingEngine;
