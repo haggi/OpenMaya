@@ -17,6 +17,7 @@ class MayaToRenderer(object):
         self.baseRenderMelCommand = "import {0} as rcall; rcall.theRenderer().".format(self.moduleName)
         self.imageFormats = []
         self.ipr_isrunning = False
+        self.imageFormatCtrl = None
     
     # the render callback is called with arguments like this
     # renderCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
@@ -339,7 +340,7 @@ global proc updateMayaImageFormatControl()
                 
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
         #self.overwriteUpdateMayaImageFormatControl()
-        # because mentalray is still hardcoded in the maya scritps, I cannot simply use my own commons without replacing some original scripts
+        # because mentalray is still hardcoded in the maya scripts, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults
         #pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
         
@@ -349,104 +350,44 @@ global proc updateMayaImageFormatControl()
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
         
         pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
-        pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
+        #pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
+        self.overwriteUpdateMayaImageFormatControl()
         
         log.debug("RegisterRenderer done")
 
     def createImageFormatControls(self):
         log.debug("createImageFormatControls()")
+        self.createGlobalsNode()        
         self.createImageFormats()
-        omg = pm.optionMenuGrp(label="Image Formats")
+        #self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats")
+        self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats", cc=pm.Callback(self.imageFormatCallback))                    
         for pr in self.imageFormats:
             pm.menuItem(pr)
-        return omg
+        #pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.imageFormatCallback)], parent = self.imageFormatCtrl)
+        return self.imageFormatCtrl
 
     def updateImageFormatControls(self):
         log.debug("updateImageFormatControls()")
-                
-    # this is a rediculous one, because I don't have access to the image format popup menu in createMayaSoftwareCommonGlobalsTab, I do it myself, completly    
-    def OpenMayaCommonGlobalsCreateTab(self):
-        log.debug("OpenMayaCommonGlobalsCreateTab()")
-        self.createGlobalsNode()
-        omDict = {}
-        self.rendererTabUiDict['omDict'] = omDict        
-        parentForm = pm.setParent(query=True)
+        self.createGlobalsNode()   
+        selectedItem = self.renderGlobalsNode.imageFormat.get()
+        enums = self.renderGlobalsNode.imageFormat.getEnums()
+        selectedValue = "---"
+        for key in enums.keys():
+            if enums[key] == selectedItem:
+                selectedValue = key
+        self.imageFormatCtrl.setValue(selectedValue)
+
+    def imageFormatCallback(self):
+        log.debug("imageFormatCallback()")
+        selectedItem = self.imageFormatCtrl.getSelect()
+        selectedValue = self.imageFormatCtrl.getValue()
         
-        colorProfiles = ['Linear sRGB', 'sRGB', 'Linear Rec. 709', 'HDTV (Rec. 709)']
-
-        drg = pm.SCENE.defaultRenderGlobals
-        pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
-        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
-        scLo = self.rendererName + "ScrollLayout"
-        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
-            with pm.columnLayout("commonTabColumn", adjustableColumn=True, width=400) as ctc:
-                print "Common tab column", str(ctc)
-                with pm.frameLayout(label="Color Management", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        omDict['enableColManagement'] = pm.checkBoxGrp(label="Enable Color Management:", value1=False)
-                        pm.connectControl(omDict['enableColManagement'], drg + ".colorProfileEnabled", index=2)   
-                        omDict['inputProfile'] = pm.optionMenuGrp(label="Default Input Profile")
-                        for pr in colorProfiles:
-                            pm.menuItem(pr)
-                        omDict['outputProfile'] = pm.optionMenuGrp(label="Default Output Profile")
-                        for pr in colorProfiles:
-                            pm.menuItem(pr)
-                                             
-                with pm.frameLayout(label="File Output", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        omDict['fileNamePrefix'] = pm.textFieldGrp(label= "File Name Prefix", text="None", width=60)
-                        pm.connectControl(omDict['fileNamePrefix'], drg + ".imageFilePrefix", index=2)
-
-                with pm.frameLayout(label="Frame Range", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        omDict['startFrame'] = pm.floatFieldGrp(label="Start Frame:", numberOfFields=1)
-                        pm.connectControl(omDict['startFrame'], drg + ".startFrame", index=2)   
-                        omDict['endFrame'] = pm.floatFieldGrp(label="End Frame:", numberOfFields=1)
-                        pm.connectControl(omDict['endFrame'], drg + ".endFrame", index=2)   
-                        omDict['byFrame'] = pm.floatFieldGrp(label="By Frame:", numberOfFields=1)
-                        pm.connectControl(omDict['byFrame'], drg + ".byFrame", index=2)   
-                        omDict['skipExistingFrames'] = pm.checkBoxGrp(label="Skip Existing Frames:", value1=False)
-                        pm.connectControl(omDict['skipExistingFrames'], drg + ".skipExistingFrames", index=2)   
-
-                with pm.frameLayout(label="Renderable Cameras", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400) as renderableCamsCL:
-                        omDict['renderableCamerasCL'] = renderableCamsCL
-                        
-                with pm.frameLayout(label="Image Size", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        omDict['tst'] = pm.checkBoxGrp(label="Cam x:", value1=False)
-                        
-                with pm.frameLayout(label="Render Options", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        omDict['tst'] = pm.checkBoxGrp(label="Cam x:", value1=False)
-                        
-        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
-        pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)
-        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
-        self.updateRenderableCameras()
-        
-        pm.scriptJob(attributeChange=[drg.colorProfileEnabled, pm.Callback(self.OpenMayaCommonGlobalsUpdateTab, "colorProfile")])
-    
-    def updateRenderableCameras(self):
-        omDict = self.rendererTabUiDict['omDict']
-        columnLayout = omDict['renderableCamerasCL']
-        # delete children
-        renderableCams = []
-        allCams = pm.ls(type="camera")
-        for cam in allCams:
-            if cam.renderable.get():
-                renderableCams.append(cam)
-
-        for cam in renderableCams:
-            pm.optionMenuGrp(label="Renderable Camera", parent=columnLayout)
-            for ca in allCams:
-                pm.menuItem(ca)
+        id = self.renderGlobalsNode.imageFormat.getEnums()[selectedValue]
+        selectedFormat = self.imageFormats[id]
             
+        log.debug("Selected img format: {0}: {1}".format(selectedItem, selectedValue))
+        self.renderGlobalsNode.imageFormat.set(id)
         
-    def OpenMayaCommonGlobalsUpdateTab(self, updateWhat = None):
-        log.debug("OpenMayaCommonGlobalsUpdateTab")
-        pass
-    
     def addUserTabs(self):
         pass
             

@@ -242,8 +242,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     
                 with pm.frameLayout(label="Output", collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
-                        ui = pm.attrEnumOptionMenuGrp(label = "Image Format", at=self.renderGlobalsNodeName + ".imageFormat", ei = self.getEnumList(attr)) 
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
+                        #ui = pm.attrEnumOptionMenuGrp(label = "Image Format", at=self.renderGlobalsNodeName + ".imageFormat", ei = self.getEnumList(attr)) 
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
                         ui = pm.attrEnumOptionMenuGrp(label = "Bit Depth", at=self.renderGlobalsNodeName + ".bitdepth", ei = self.getEnumList(attr)) 
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".colorSpace")
@@ -284,10 +284,15 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".rendererVerbosity", index = 2 )
                         ui = pm.intFieldGrp(label="Tile Size:", value1 = 32, numberOfFields = 1)
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".tilesize", index = 2 )
+                        ui = pm.checkBoxGrp(label="Use SBVH Acceleration for mb:", value1 = False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".assemblySBVH", index = 2 )
                     
         pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)                    
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        
+        #pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
+
         #self.updateEnvironment()
         self.AppleseedRendererUpdateTab()
 
@@ -358,9 +363,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         log.debug("AppleseedTranslatorUpdateTab()")
 
     def createImageFormats(self):
-        self.imageFormats = []
-        self.imageFormats.append('exr')
-        self.imageFormats.append('png')
+        if self.renderGlobalsNode:
+            iList = self.renderGlobalsNode.imageFormat.getEnums()
+            self.imageFormats = []
+            self.imageFormats.extend(iList)
 
     def registerNodeExtensions(self):
         """Register Appleseed specific node extensions. e.g. camera type, diaphram_blades and others
