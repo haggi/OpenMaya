@@ -5,6 +5,7 @@
 
 #include <maya/MGlobal.h>
 #include <maya/MFnPluginData.h>
+#include <maya/MPlug.h>
 #include "renderGlobalsNode.h"
 
 	// sampling adaptive
@@ -42,9 +43,50 @@ MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
 MObject MayaRenderGlobalsNode::sceneScale;
 
+void MayaRenderGlobalsNode::postConstructor()
+{
+	MObject thisObj = thisMObject();
+	MPlug tileSize(thisObj, tilesize);
+	tileSize.setInt(this->tilesizeDV);
+}
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
+	//adaptiveSamplingDV = true;
+	//int minSamplesDV;
+	//int maxSamplesDV;
+
+	//// sampling raster based
+	//int samplesXDV;
+	//int samplesYDV;
+
+	//bool doMotionBlurDV;
+	//bool doDofDV;
+
+	//// 
+	//int threadsDV;
+	//int translatorVerbosityDV;
+	//int rendererVerbosityDV;
+
+	// detectShapeDeformDV;
+
+	// pixel filtering
+	// filtertype is renderer specific. It will be defined in subclass
+	filtersizeDV = 3.0f;
+	tilesizeDV = 32;
+
+	gammaDV = 1.0f;
+
+	//MString basePathDV;
+	//MString imagePathDV;
+	//MString imageNameDV;
+
+	maxTraceDepthDV = 4;
+
+	exportSceneFileDV = false;
+	exportSceneFileNameDV= "";
+	sceneScaleDV = 1.0f;
+
 }
 
 MayaRenderGlobalsNode::~MayaRenderGlobalsNode()

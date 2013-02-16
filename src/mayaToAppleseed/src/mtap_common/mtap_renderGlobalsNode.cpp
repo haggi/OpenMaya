@@ -32,6 +32,8 @@ MObject MayaToAppleseedGlobals::bsdfSamples;
 MObject MayaToAppleseedGlobals::next_event_estimation;
 MObject MayaToAppleseedGlobals::rr_min_path_length;
 MObject MayaToAppleseedGlobals::max_path_length;
+MObject MayaToAppleseedGlobals::assemblySBVH;
+
 
 MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
@@ -53,7 +55,9 @@ MObject MayaToAppleseedGlobals::turbidity_min;
 MObject MayaToAppleseedGlobals::skyModel;
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
-{}
+{
+	tilesizeDV = 64; // override default of 32
+}
 
 MayaToAppleseedGlobals::~MayaToAppleseedGlobals()
 {}
@@ -126,6 +130,9 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	next_event_estimation = nAttr.create("next_event_estimation", "next_event_estimation",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( next_event_estimation ));
+
+	assemblySBVH = nAttr.create("assemblySBVH", "assemblySBVH",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( assemblySBVH ));
 
 	rr_min_path_length = nAttr.create("rr_min_path_length", "rr_min_path_length",  MFnNumericData::kFloat, 3.0f);
 	CHECK_MSTATUS(addAttribute( rr_min_path_length ));

@@ -223,6 +223,9 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getInt(MString("bsdfSamples"), appleseedGlobals, this->bsdfSamples))
 			throw("problem reading appleseedGlobals.bsdfSamples");
 
+		if(!getBool(MString("assemblySBVH"), appleseedGlobals, this->assemblySBVH))
+			throw("problem reading appleseedGlobals.assemblySBVH");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;

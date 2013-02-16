@@ -509,6 +509,20 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 	//// for testing, can be removed later
 	this->mtap_renderer.addDefaultMaterial(assemblyPtr);
 
+	if( this->renderGlobals->assemblySBVH )
+	{
+		if( obj->animated || obj->isShapeConnected() )
+			assemblyPtr->get_parameters().insert_path("acceleration_structure.algorithm", "sbvh");
+ //<assembly name="some_assembly">
+ //       <parameters name="acceleration_structure">
+ //           <parameter name="algorithm" value="sbvh" />
+ //       </parameters>
+ //       ...
+ //   </assembly>
+
+
+	}
+
 	//return assembly.get();
 	return assemblyPtr;
 }

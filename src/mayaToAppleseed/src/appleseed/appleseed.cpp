@@ -176,8 +176,8 @@ void AppleseedRenderer::defineConfig()
 
 	this->project->configurations()
     .get_by_name("final")->get_parameters()
-	.insert_path((lightingEngine + ".filter").asChar(), renderGlobals->filterTypeString.asChar())
-	.insert_path((lightingEngine + ".filter_size").asChar(), renderGlobals->filterSize);
+	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
+	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
 
 }
 
