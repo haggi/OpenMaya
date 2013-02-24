@@ -62,6 +62,11 @@ private:
 	static	  MObject turbidity;
 	static	  MObject turbidity_max;
 	static	  MObject turbidity_min;
+	static	  MObject physicalSun;
+	static	  MObject physicalSunConnection;
+	static	  MObject sunTurbidity;
+	static	  MObject sunExitanceMultiplier;
+//	static	  MObject sunExitance;
 
 	static	  MObject imageFormat;
 

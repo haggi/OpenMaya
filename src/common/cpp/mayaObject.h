@@ -43,6 +43,9 @@ public:
 	std::vector<MMatrix> transformMatrices; // for every xmb step I have one matrix
 	std::vector<MString> shadowMapFiles; // file paths for a shadow map creating light
 
+	MObjectArray shadingGroups;
+	MIntArray perFaceAssignments;
+
 	Material material; 
 	// instancer node attributes
 	MMatrix instancerMatrix; // matrix of instancer node and paricle node

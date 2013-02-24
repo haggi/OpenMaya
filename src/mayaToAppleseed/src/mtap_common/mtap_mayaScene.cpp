@@ -416,11 +416,10 @@ bool mtap_MayaScene::postParseCallback()
 				transformMatrix.setToIdentity();
 				transformMatrix *= this->renderGlobals->sceneScaleMatrix;
 				this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
-				ai->transform_sequence().set_transform(0.0,	asf::Transformd(appMatrix));
+				ai->transform_sequence().set_transform(0.0,	asf::Transformd::from_local_to_parent(appMatrix));
 				this->mtap_renderer.scenePtr->assembly_instances().insert(ai);
 				continue;
 			}
-
 			if( this->renderType == MayaScene::IPR)
 			{
 				if( obj->parent != NULL)

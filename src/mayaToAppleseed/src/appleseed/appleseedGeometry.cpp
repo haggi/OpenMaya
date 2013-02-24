@@ -27,9 +27,9 @@ void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
 void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
 {}
 
-asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& meshObject)
+asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaObject *obj)
 {
-
+	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);
@@ -78,13 +78,21 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& me
 	MIntArray faceVtxIds;
 	MIntArray faceNormalIds;
 
+
+	mesh->reserve_material_slots(obj->shadingGroups.length());
+	for( uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
+	{
+		MString slotName = MString("slot_") + sgId;
+		mesh->push_material_slot(slotName.asChar());
+	}
+
 	for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
 	{
 		int faceId = faceIt.index();
 		int numTris;
 		faceIt.numTriangles(numTris);
 		faceIt.getVertices(faceVtxIds);
-		
+
 		MIntArray faceUVIndices;
 
 		faceNormalIds.clear();
@@ -95,6 +103,9 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& me
 			faceIt.getUVIndex(vtxId, uvIndex);
 			faceUVIndices.append(uvIndex);
 		}
+
+		int perFaceShadingGroup = obj->perFaceAssignments[faceId];
+		logger.info(MString("Face ") + faceId + " will receive SG " +  perFaceShadingGroup);
 
 		for( int triId = 0; triId < numTris; triId++)
 		{
@@ -123,7 +134,7 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(MObject& me
 			uint uvId1 = faceUVIndices[faceRelIds[1]];
 			uint uvId2 = faceUVIndices[faceRelIds[2]];
 
-			mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, 0));
+			mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, perFaceShadingGroup));
 		}		
 	}
 

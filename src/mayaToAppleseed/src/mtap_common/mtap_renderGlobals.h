@@ -61,8 +61,14 @@ public:
 	float turbidity;
 	float turbidity_max;
 	float turbidity_min;
+	bool physicalSun;
+	float sunTurbidity;
+	float sunExitanceMultiplier;
+	float sunExitance;
 
 	virtual MString getImageExt();
+
+	MObject getRenderGlobalsNode();
 
 private:
 	bool getMtapGlobals();

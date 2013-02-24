@@ -14,7 +14,7 @@ class BaseTemplate(pm.ui.AETemplate):
 
 class AEappleseedSurfaceShaderTemplate(BaseTemplate):
     def __init__(self, nodeName):
-        BaseTemplate.__init__(self,nodeName)
+        BaseTemplate.__init__(self, nodeName)
         log.debug("AEappleseedSurfaceShaderTemplate")
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
@@ -45,6 +45,9 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.dimControl(self.thisNode, "exitance", True)
         self.dimControl(self.thisNode, "shininess_u", True)
         self.dimControl(self.thisNode, "shininess_v", True)
+        self.dimControl(self.thisNode, "fresnelMultiplier", True)
+        self.dimControl(self.thisNode, "mdf", True)
+        self.dimControl(self.thisNode, "mdf_parameter", True)
         
         if shader == 0: # lambert
             self.dimControl(self.thisNode, "matte_reflectance", False)
@@ -57,6 +60,7 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
             self.dimControl(self.thisNode, "specular_reflectance_multiplier", False)
             self.dimControl(self.thisNode, "shininess_u", False)
             self.dimControl(self.thisNode, "shininess_v", False)
+            self.dimControl(self.thisNode, "fresnelMultiplier", False)
             
         if shader == 2: # kelemen
             self.dimControl(self.thisNode, "matte_reflectance", False)
@@ -77,17 +81,27 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
             self.dimControl(self.thisNode, "matte_reflectance", False)
             self.dimControl(self.thisNode, "matte_reflectance_multiplier", False)
             
+        if shader == 5: # Microfacet
+            self.dimControl(self.thisNode, "mdf", False)
+            self.dimControl(self.thisNode, "mdf_parameter", False)
+            self.dimControl(self.thisNode, "specular_reflectance", False)
+            self.dimControl(self.thisNode, "specular_reflectance_multiplier", False)
+            self.dimControl(self.thisNode, "fresnelMultiplier", False)
+            
+            
         self.dimControl(self.thisNode, "emitLight", False)
         self.dimControl(self.thisNode, "exitance", False)
             
         
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
-        self.beginLayout("Surface" ,collapse=0)
+        self.beginLayout("Surface" , collapse=0)
         #self.addControl("shaderType", label="Surface Shader Type", changeCommand=self.updateUi)
         #self.addControl("shaderType", label="Surface Shader Type")
         self.addControl("bsdf", label="BSDF Type", changeCommand=self.updateUi)
         self.addSeparator()
+        self.addControl("mdf", label="Microfacet Distribution")
+        self.addControl("mdf_parameter", label="Microfacet Parameter")
         self.addControl("matte_reflectance", label="Matte Reflectance")
         self.addControl("matte_reflectance_multiplier", label="Matte Refl Multiplier")
         self.addSeparator()
@@ -96,15 +110,16 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.addControl("shininess_u", label="Shininess U")        
         self.addControl("shininess_v", label="Shininess V")        
         self.addControl("roughness", label="Roughness")
+        self.addControl("fresnelMultiplier", label="Fresnel Multiplier")        
         self.endLayout()
         
-        self.beginLayout("BTDF" ,collapse=0)
+        self.beginLayout("BTDF" , collapse=0)
         self.addControl("transmittance", label="Transmittance")        
         self.addControl("transmittance_multiplier", label="Transmittance Multiplier")        
         self.addControl("from_ior", label="From Ior")        
         self.addControl("to_ior", label="To Ior")        
         self.endLayout()
-        self.beginLayout("EDF" ,collapse=0)
+        self.beginLayout("EDF" , collapse=0)
         self.addControl("emitLight", label="emitLight")        
         self.addControl("exitance", label="Exitance")        
         self.endLayout()

@@ -48,7 +48,7 @@ void AppleseedRenderer::fillTransformMatices(MMatrix matrix, asr::AssemblyInstan
 	this->MMatrixToAMatrix(colMatrix, appMatrix);
 	assInstance->transform_sequence().set_transform(
 			0.0f,
-			asf::Transformd(appMatrix));
+			asf::Transformd::from_local_to_parent(appMatrix));
 }
 
 void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance)
@@ -69,7 +69,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Assembly
 
 		assInstance->transform_sequence().set_transform(
 			start + stepSize * matrixId,
-			asf::Transformd(appMatrix));
+			asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
 
@@ -102,7 +102,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *
 		logger.trace(MString("cam mat ") + colMatrix.matrix[3][0] + " " + colMatrix.matrix[3][1] + " " + colMatrix.matrix[3][2]);
 		assInstance->transform_sequence().set_transform(
 			start + stepSize * matrixId,
-			asf::Transformd(appMatrix));
+			asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
 
@@ -111,7 +111,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Light *l
 	asf::Matrix4d appMatrix;
 	MMatrix colMatrix = obj->transformMatrices[0];
 	this->MMatrixToAMatrix(colMatrix, appMatrix);
-	light->set_transform(asf::Transformd(appMatrix));	
+	light->set_transform(asf::Transformd::from_local_to_parent(appMatrix));	
 }
 
 void AppleseedRenderer::MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& appleMatrix)

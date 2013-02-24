@@ -34,12 +34,16 @@ public:
 
 protected:
    static MObject  bsdf;
+   static MObject  mdf;
 	//BSDF
    static MObject  matteReflectance;
    static MObject  matteReflectanceMultiplier;
    static MObject  specularReflectance;
    static MObject  specularReflectanceMultiplier;
    static MObject  roughness;
+   static MObject  fresnelMultiplier;
+   static MObject  mdf_parameter;
+   
    // BTDF
    static MObject  transmittance;
    static MObject  transmittanceMultiplier;

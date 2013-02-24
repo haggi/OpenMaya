@@ -31,6 +31,8 @@
 
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>
+#include <maya/MObjectArray.h>
+#include <maya/MIntArray.h>
 
 #include <vector>
 #include "shadingNode.h"
@@ -39,7 +41,6 @@
 
 class Material;
 static std::vector<Material *> ShadingGroups;
-
 
 class ShadingNetwork
 {
@@ -77,4 +78,5 @@ private:
 
 bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId);
 bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& sGroup);
+bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups);
 #endif

@@ -88,10 +88,12 @@ public:
 	void defineColor(MString& name, MColor& color, float intensity = 1.0f);
 	void addDefaultMaterial(asr::Assembly *assembly);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
+	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, MObjectArray shadingGroups, asf::StringArray& materialNames); 
+	void defineObjectMaterials(mtap_MayaObject *obj);
 	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
 	void defineDefaultLight();
-	void defineLights(std::vector<MayaObject *>&);
 	void defineLights();
+	bool isSunLight(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
 	void definePreRender();
@@ -116,7 +118,7 @@ public:
 	void defineCamera(bool updateCamera = false);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
-	asf::auto_release_ptr<asr::MeshObject> createMesh(MObject& meshObject);
+	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
 	void render();
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
@@ -157,9 +159,12 @@ private:
 	asf::auto_release_ptr<asr::Project> project;
 	asf::auto_release_ptr<asr::Camera> camera;
 	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
-	asf::auto_release_ptr<asf::LogTargetBase> log_target;
+	
+    std::auto_ptr<asf::ILogTarget> log_target;
+
+	//asf::auto_release_ptr<asf::LogTargetBase> log_target;
 	asf::auto_release_ptr<asf::FileLogTarget> m_log_target;
-	asf::LogTargetBase *log_targetPtr;
+	//asf::LogTargetBase *log_targetPtr;
 
 	void addDeformStep(mtap_MayaObject *obj, asr::Assembly *assembly);
 };

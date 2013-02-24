@@ -91,9 +91,12 @@ MObject  mtap_surfaceShader::fromIor;
 MObject  mtap_surfaceShader::toIor;
 MObject  mtap_surfaceShader::shininess_u;
 MObject  mtap_surfaceShader::shininess_v;
+MObject  mtap_surfaceShader::fresnelMultiplier;
 
 MObject  mtap_surfaceShader::exitance;
 MObject  mtap_surfaceShader::emitLight;
+MObject  mtap_surfaceShader::mdf;
+MObject  mtap_surfaceShader::mdf_parameter;
 
 
 mtap_surfaceShader::mtap_surfaceShader() { }
@@ -130,7 +133,18 @@ MStatus mtap_surfaceShader::initialize()
 	stat = eAttr.addField( "Kelemen", 2 );
 	stat = eAttr.addField( "Specular", 3 );
 	stat = eAttr.addField( "Phong", 4 );
+	stat = eAttr.addField( "Microfacet", 5 );
 	CHECK_MSTATUS(addAttribute( bsdf ));
+
+	mdf = eAttr.create( "mdf", "mdf", 1, &stat);
+	stat = eAttr.addField( "Blinn", 0 );
+	stat = eAttr.addField( "Beckmann", 1 );
+	stat = eAttr.addField( "Ward", 2 );
+	stat = eAttr.addField( "GGX", 3 );
+	CHECK_MSTATUS(addAttribute( mdf ));
+
+	mdf_parameter = nAttr.create("mdf_parameter", "mdf_parameter", MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( mdf_parameter ));	
 
 	matteReflectance = nAttr.createColor("matte_reflectance", "matte_reflectance");
 	nAttr.setDefault(0.8, 0.8, 0.8);
@@ -166,6 +180,9 @@ MStatus mtap_surfaceShader::initialize()
 	
 	shininess_v = nAttr.create("shininess_v", "shininess_v", MFnNumericData::kFloat, 1000.0f);
 	CHECK_MSTATUS(addAttribute( shininess_v ));	
+
+	fresnelMultiplier = nAttr.create("fresnelMultiplier", "fresnelMultiplier", MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( fresnelMultiplier ));	
 
 	emitLight = nAttr.create("emitLight", "emitLight", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emitLight ));	

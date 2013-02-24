@@ -17,6 +17,14 @@ MString mtap_RenderGlobals::getImageExt()
 	return this->imageFormatString;	
 }
 
+MObject mtap_RenderGlobals::getRenderGlobalsNode()
+{
+	MSelectionList appleseedGlobalsList;
+	appleseedGlobalsList.add("appleseedGlobals");
+	MObject node;
+	appleseedGlobalsList.getDependNode(0, node);
+	return node;
+}
 
 bool mtap_RenderGlobals::getMtapGlobals()
 {
@@ -225,6 +233,18 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getBool(MString("assemblySBVH"), appleseedGlobals, this->assemblySBVH))
 			throw("problem reading appleseedGlobals.assemblySBVH");
+
+		if(!getBool(MString("physicalSun"), appleseedGlobals, this->physicalSun))
+			throw("problem reading appleseedGlobals.physicalSun");
+
+		if(!getFloat(MString("sunTurbidity"), appleseedGlobals, this->sunTurbidity))
+			throw("problem reading appleseedGlobals.sunTurbidity");
+
+		if(!getFloat(MString("sunExitanceMultiplier"), appleseedGlobals, this->sunExitanceMultiplier))
+			throw("problem reading appleseedGlobals.sunExitanceMultiplier");
+
+		//if(!getFloat(MString("sunExitance"), appleseedGlobals, this->sunExitance))
+		//	throw("problem reading appleseedGlobals.sunExitance");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

@@ -3,7 +3,7 @@
 #include <maya/MFnParticleSystem.h>
 #include <maya/MFnNurbsSurface.h>
 #include <maya/MFnMesh.h>
-
+#include <maya/MItMeshPolygon.h>
 
 #include "material.h"
 #include "utilities/attrTools.h"
@@ -337,3 +337,81 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup)
     return false;
 }
 
+bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups)
+{
+	// if obj is a light, simply return the mobject
+	if(shapeObjectDP.hasFn(MFn::kLight))
+	{
+		perFaceAssignments.clear();
+		shadingGroups.clear();
+		shadingGroups.append(shapeObjectDP.node());
+		return true;
+	}
+
+    if(shapeObjectDP.hasFn(MFn::kMesh))
+    {
+        // Find the Shading Engines Connected to the SourceNode 
+        MFnMesh fnMesh(shapeObjectDP.node());
+
+		perFaceAssignments.clear();
+		shadingGroups.clear();
+
+		perFaceAssignments.setLength(fnMesh.numPolygons());
+
+        // A ShadingGroup will have a MFnSet 
+        MObjectArray sets, comps;
+        fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
+
+        // Each set is a Shading Group. Loop through them.
+        for(unsigned int i = 0; i < sets.length(); ++i)
+        {
+            MFnDependencyNode fnDepSGNode(sets[i]);
+			MItMeshPolygon faceIt(shapeObjectDP, comps[i] );
+			
+			shadingGroups.append(sets[i]);
+
+            for ( faceIt.reset() ; !faceIt.isDone() ; faceIt.next() )
+			{
+				perFaceAssignments[faceIt.index()] = i;
+            }
+        }
+		return true;
+    }
+
+    if(shapeObjectDP.hasFn(MFn::kNurbsSurface)||shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
+    {
+
+        MObject instObjGroupsAttr;
+		if( shapeObjectDP.hasFn(MFn::kNurbsSurface))
+		{
+	        MFnNurbsSurface fnNurbs(shapeObjectDP.node());
+			instObjGroupsAttr = fnNurbs.attribute("instObjGroups");
+		}
+		if( shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
+		{
+	        MFnParticleSystem fnPart(shapeObjectDP.node());
+			instObjGroupsAttr = fnPart.attribute("instObjGroups");
+		}
+        MPlug instPlug(shapeObjectDP.node(), instObjGroupsAttr);
+
+        // Get the instance that our node is referring to;
+        // In other words get the Plug for instObjGroups[intanceNumber];
+        MPlug instPlugElem = instPlug.elementByLogicalIndex(shapeObjectDP.instanceNumber());
+        
+        // Find the ShadingGroup plugs that we are connected to as Source 
+        MPlugArray SGPlugArray;
+        instPlugElem.connectedTo(SGPlugArray, false, true);
+
+		perFaceAssignments.clear();
+		shadingGroups.clear();
+
+        // Loop through each ShadingGroup Plug
+        for(unsigned int i=0; i < SGPlugArray.length(); ++i)
+        {
+            MFnDependencyNode fnDepSGNode(SGPlugArray[i].node());
+			shadingGroups.append(SGPlugArray[i].node());
+			return true;
+        }
+    }
+    return false;
+}

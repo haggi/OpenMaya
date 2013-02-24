@@ -5,6 +5,9 @@
 #include "renderer/modeling/surfaceshader/fastsubsurfacescatteringsurfaceshader.h"
 
 #include <maya/MPlugArray.h>
+#include <maya/MFnMesh.h>
+#include <maya/MFnSet.h>
+#include <maya/MItMeshPolygon.h>
 
 #include "shadingtools/material.h"
 #include "utilities/attrTools.h"
@@ -758,6 +761,11 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	this->defineColor(specRefName, specReflectance);
 	this->defineTexture(shaderNode, MString("specular_reflectance"), specRefName);
 
+	float fresnel_multiplier = 1.0f;
+	//MString fresnelName = shaderNode.name() + "_fresnelMulti";
+	//this->defineTexture(shaderNode, MString("fresnel_multiplier"), fresnelName);
+	getFloat(MString("fresnel_multiplier"), shaderNode, fresnel_multiplier);
+
 	float roughness = .5f;
 	getFloat(MString("roughness"), shaderNode, roughness);
 
@@ -791,8 +799,9 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 				.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
 				.insert("glossy_reflectance", specRefName.asChar())
 				.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
-				.insert("shininess_u", (MString("") + shinyU).asChar())
-				.insert("shininess_v", (MString("") + shinyV).asChar())
+				.insert("shininess_u", shinyU)
+				.insert("shininess_v", shinyV)
+				.insert("fresnel_multiplier", fresnel_multiplier)
 				);
 		break;
 	case 2: // Kelemen
@@ -855,6 +864,25 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 			shaderName.asChar(),
 			asr::ParamArray()
 				.insert("reflectance", specRefName.asChar()));
+		break;
+	case 5: // microfacet
+		{
+			float mdf_param = 1.0f;
+			getFloat(MString("mdf_parameter"), shaderNode, mdf_param);
+			int id = 0;
+			MString mdf("blinn");
+			getEnum(MString("mdf"), shaderNode, id, mdf);
+			mdf = pystring::lower(mdf.asChar()).c_str();
+			bsdf = asr::MicrofacetBRDFFactory().create(
+				shaderName.asChar(),
+				asr::ParamArray()
+					.insert("mdf", mdf.asChar())
+					.insert("mdf_parameter", mdf_param)
+					.insert("reflectance", specRefName.asChar())
+					.insert("reflectance_multiplier", specular_reflectance_multiplier)
+					.insert("fresnel_multiplier",fresnel_multiplier)
+					);
+		}
 		break;
 	}
 		
@@ -1249,81 +1277,87 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 {
 	asr::Assembly *assembly = getAssemblyFromMayaObject(obj);
 
+	// get per face shadingGroups
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+
 	MObject shadingGroup;
-	getObjectShadingGroups(obj->dagPath, shadingGroup);
-	
-	MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	if( surfaceShaderNode == MObject::kNullObj)
-		return;
 
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
+	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
+	{
+		shadingGroup = obj->shadingGroups[sgId];
 
-	// here I reuse the shader if it already exists in the assembly
-	if( assembly->materials().get_by_name(materialName.asChar()) != NULL)
-	{
-		materialNames.push_back(materialName.asChar());
-		return;		
-	}
+		MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), shadingGroup);
+		if( surfaceShaderNode == MObject::kNullObj)
+			return;
 
-	MFn::Type shaderType = surfaceShaderNode.apiType();
-	MFnDependencyNode depFn(surfaceShaderNode);
+		MFnDependencyNode shadingGroupNode(shadingGroup);
+		MString materialName = shadingGroupNode.name();
 
-	MFnDependencyNode shaderNode(surfaceShaderNode);
-	MString shaderName = shaderNode.name();
+		// here I reuse the shader if it already exists in the assembly
+		if( assembly->materials().get_by_name(materialName.asChar()) != NULL)
+		{
+			materialNames.push_back(materialName.asChar());
+			return;		
+		}
 
-	asf::auto_release_ptr<asr::BSDF> bsdf, bsdfFront, bsdfBack;
+		MFn::Type shaderType = surfaceShaderNode.apiType();
+		MFnDependencyNode depFn(surfaceShaderNode);
 
-	int type_id = depFn.typeId().id();
-	if( type_id ==  SMOKE_SHADER)
-	{
-		this->defineSmokeShader(assembly, shadingGroup);
-	}
-	if( type_id ==  DIAGNOSTIC_SHADER)
-	{
-		this->defineDiagnosticShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( type_id ==  CONST_SHADER)
-	{
-		this->defineConstantShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( type_id ==  FASTSSS_SHADER)
-	{
-		this->defineFastSSSShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( type_id ==  AOVOXEL_SHADER)
-	{		
-		this->defineAoVoxelShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( type_id ==  AO_SHADER)
-	{
-		this->defineAoShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( type_id ==  PHYSICAL_SURFACE_SHADER)
-	{
-		this->definePhysSurfShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( shaderType == MFn::kLambert)
-	{
-		this->defineMayaLambertShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}
-	if( shaderType == MFn::kPhong)
-	{
-		this->defineMayaPhongShader(assembly, shadingGroup);
-		materialNames.push_back(materialName.asChar());
-	}	
+		MFnDependencyNode shaderNode(surfaceShaderNode);
+		MString shaderName = shaderNode.name();
 
-	// if we have double sided shading, we have a xx_back material 
-	if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)
-	{
-		materialNames.push_back((materialName + "_back").asChar());
-	}
+		asf::auto_release_ptr<asr::BSDF> bsdf, bsdfFront, bsdfBack;
 
+		int type_id = depFn.typeId().id();
+		if( type_id ==  SMOKE_SHADER)
+		{
+			this->defineSmokeShader(assembly, shadingGroup);
+		}
+		if( type_id ==  DIAGNOSTIC_SHADER)
+		{
+			this->defineDiagnosticShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( type_id ==  CONST_SHADER)
+		{
+			this->defineConstantShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( type_id ==  FASTSSS_SHADER)
+		{
+			this->defineFastSSSShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( type_id ==  AOVOXEL_SHADER)
+		{		
+			this->defineAoVoxelShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( type_id ==  AO_SHADER)
+		{
+			this->defineAoShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( type_id ==  PHYSICAL_SURFACE_SHADER)
+		{
+			this->definePhysSurfShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( shaderType == MFn::kLambert)
+		{
+			this->defineMayaLambertShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}
+		if( shaderType == MFn::kPhong)
+		{
+			this->defineMayaPhongShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+		}	
+
+		// if we have double sided shading, we have a xx_back material 
+		if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)
+		{
+			materialNames.push_back((materialName + "_back").asChar());
+		}
+	}
 }

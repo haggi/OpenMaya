@@ -53,6 +53,11 @@ MObject MayaToAppleseedGlobals::turbidity;
 MObject MayaToAppleseedGlobals::turbidity_max;
 MObject MayaToAppleseedGlobals::turbidity_min;
 MObject MayaToAppleseedGlobals::skyModel;
+MObject MayaToAppleseedGlobals::physicalSun;
+MObject MayaToAppleseedGlobals::physicalSunConnection;
+MObject MayaToAppleseedGlobals::sunTurbidity;
+MObject MayaToAppleseedGlobals::sunExitanceMultiplier;
+//MObject MayaToAppleseedGlobals::sunExitance;
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {
@@ -243,6 +248,21 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "Preetham", 0 );
 	stat = eAttr.addField( "Hosek", 1 );
 	CHECK_MSTATUS(addAttribute( skyModel ));
+
+	physicalSun = nAttr.create("physicalSun", "physicalSun",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( physicalSun ));
+
+	physicalSunConnection = mAttr.create("physicalSunConnection", "physicalSunConnection");
+	CHECK_MSTATUS(addAttribute( physicalSunConnection ));
+
+	sunTurbidity = nAttr.create("sunTurbidity", "sunTurbidity",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( sunTurbidity ));
+
+	sunExitanceMultiplier = nAttr.create("sunExitanceMultiplier", "sunExitanceMultiplier",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( sunExitanceMultiplier ));
+
+	//sunExitance = nAttr.create("sunExitance", "sunExitance",  MFnNumericData::kFloat, 1.0f);
+	//CHECK_MSTATUS(addAttribute( sunExitance ));
 
 	return stat;
 

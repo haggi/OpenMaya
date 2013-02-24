@@ -7,8 +7,7 @@
 #include "renderer/api/environmentshader.h"
 #include "renderer/api/edf.h"
 
-// only temporary until api is updated
-#include "renderer/modeling/light/spotlight.h" 
+#include "renderer/modeling/environmentedf/sphericalcoordinates.h"
 
 #include "maya/MFnDependencyNode.h"
 #include "maya/MFnMesh.h"
@@ -23,6 +22,7 @@
 #include <maya/MFileIO.h>
 #include <maya/MItDag.h>
 #include <maya/MFnInstancer.h>
+#include <maya/MFnTransform.h>
 
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -178,7 +178,6 @@ void AppleseedRenderer::defineConfig()
     .get_by_name("final")->get_parameters()
 	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
 	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
-
 }
 
 void AppleseedRenderer::defineOutput()
@@ -345,32 +344,72 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 				.insert("exitance_multiplier", renderGlobals->environmentIntensity));
 		break;
 	case 4: // physical sky
-		if(skyModel == 0) // preetham
 		{
-			environmentEDF = asr::PreethamEnvironmentEDFFactory().create(
-					"sky_edf",
-					asr::ParamArray()
-					.insert("horizon_shift", renderGlobals->horizon_shift)
-					.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
-					.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
-					.insert("sun_phi", renderGlobals->sun_phi)
-					.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
-					.insert("turbidity", renderGlobals->turbidity)
-					.insert("turbidity_max", renderGlobals->turbidity_max)
-					.insert("turbidity_min", renderGlobals->turbidity_min));
-		}else{ // hosek
-			environmentEDF = asr::HosekEnvironmentEDFFactory().create(
-					"sky_edf",
-					asr::ParamArray()
-					.insert("ground_albedo", renderGlobals->ground_albedo)
-					.insert("horizon_shift", renderGlobals->horizon_shift)
-					.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
-					.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
-					.insert("sun_phi", renderGlobals->sun_phi)
-					.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
-					.insert("turbidity", renderGlobals->turbidity)
-					.insert("turbidity_max", renderGlobals->turbidity_max)
-					.insert("turbidity_min", renderGlobals->turbidity_min));
+			asf::Vector3d unitVector(0.0, 0.0, 0.0);
+			double theta = 90.0f - renderGlobals->sun_theta, phi = renderGlobals->sun_phi;
+
+			if( renderGlobals->physicalSun )
+			{	
+				// get the connected sun light
+				// physicalSunConnection
+				MObject rGlobals = renderGlobals->getRenderGlobalsNode();
+				MFnDependencyNode gFn(rGlobals);
+				MPlug physicalSunConnectionPlug = gFn.findPlug("physicalSunConnection");
+				if( physicalSunConnectionPlug.isConnected() )
+				{
+					MStatus stat;
+					MObject lightNode = getOtherSideNode(physicalSunConnectionPlug);
+					MFnTransform tn(lightNode);
+					MMatrix tm = tn.transformationMatrix(&stat);
+					if( stat )
+					{
+						MVector sunOrient(0,0,1);
+						sunOrient *= tm;
+						sunOrient.normalize();
+						unitVector.x = sunOrient.x;
+						unitVector.y = sunOrient.y;
+						unitVector.z = sunOrient.z;
+						asr::unit_vector_to_angles(unitVector, theta, phi);						
+						theta = 90.0f - RadToDeg(theta);
+						renderGlobals->sun_theta = theta;
+						renderGlobals->sun_phi = RadToDeg(phi);
+						logger.debug(MString("converted unit to theta: ") + renderGlobals->sun_theta + " and phi: " + renderGlobals->sun_phi);
+					}else{
+						logger.warning(MString("Problems creating tmatrix from: ") + getObjectName(lightNode));
+					}
+				}else{
+					logger.warning("physicalSunConnection plug has no connection, but use physical sun is turned on, please correct.");
+				}
+			}
+
+			if(skyModel == 0) // preetham
+			{
+
+				environmentEDF = asr::PreethamEnvironmentEDFFactory().create(
+						"sky_edf",
+						asr::ParamArray()
+						.insert("horizon_shift", renderGlobals->horizon_shift)
+						.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
+						.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
+						.insert("sun_phi", renderGlobals->sun_phi)
+						.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
+						.insert("turbidity", renderGlobals->turbidity)
+						.insert("turbidity_max", renderGlobals->turbidity_max)
+						.insert("turbidity_min", renderGlobals->turbidity_min));
+			}else{ // hosek
+				environmentEDF = asr::HosekEnvironmentEDFFactory().create(
+						"sky_edf",
+						asr::ParamArray()
+						.insert("ground_albedo", renderGlobals->ground_albedo)
+						.insert("horizon_shift", renderGlobals->horizon_shift)
+						.insert("luminance_multiplier", renderGlobals->luminance_multiplier)
+						.insert("saturation_multiplier", renderGlobals->saturation_multiplier)
+						.insert("sun_phi", renderGlobals->sun_phi)
+						.insert("sun_theta", 90.0f - renderGlobals->sun_theta)
+						.insert("turbidity", renderGlobals->turbidity)
+						.insert("turbidity_max", renderGlobals->turbidity_max)
+						.insert("turbidity_min", renderGlobals->turbidity_min));
+			}
 		}
 		break;
 	default:
@@ -656,7 +695,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 					asf::Matrix4d appMatrix;
 					this->MMatrixToAMatrix(colMatrix, appMatrix);
 					assemblyInstance->transform_sequence().clear();
-					assemblyInstance->transform_sequence().set_transform( 0.0, asf::Transformd(appMatrix));
+					assemblyInstance->transform_sequence().set_transform( 0.0, asf::Transformd::from_local_to_parent(appMatrix));
 				}
 			}
 		}
@@ -719,7 +758,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
 
-		assInst->transform_sequence().set_transform(time, asf::Transformd(appMatrix));
+		assInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
 
@@ -846,19 +885,22 @@ void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assem
 
 void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix)
 {
-	asf::auto_release_ptr<asr::MeshObject> mesh = this->createMesh(obj->mobject);
+
+	asf::StringArray material_names;
+	// here the mesh per face assignments are read and placed into the obj->perFaceAssignments
+	this->defineObjectMaterial(renderGlobals, obj, material_names);
+
+	asf::auto_release_ptr<asr::MeshObject> mesh = this->createMesh(obj);
 	MString meshName = mesh->get_name();
 	assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
 	asr::Object *meshObject = assembly->objects().get_by_name(meshName.asChar());
 
 	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
 	this->MMatrixToAMatrix(matrix, tmatrix);
-	asf::StringArray material_names;
 
 	asf::StringDictionary matDict = asf::StringDictionary();
 	asf::StringDictionary matBackDict = asf::StringDictionary();
 
-	this->defineObjectMaterial(renderGlobals, obj, material_names);
 	// if no material is attached, use a default material
 	if( material_names.size() == 0)
 	{
@@ -866,14 +908,16 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 		matDict.insert("default", "gray_material");
 		matBackDict.insert("default", "gray_material");
 	}else{
+		int counterFront = 0;
+		int counterBack = 0;
 		for( size_t i = 0; i < material_names.size(); i++)
 		{	
 			if( pystring::endswith(material_names[i], "_back") )
-				matBackDict.insert(MString(MString("default") + i).asChar(), material_names[i]);
+				matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
 			else
-				matDict.insert(MString(MString("default") + i).asChar(), material_names[i]);
+				matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);
+			
 		}
-
 	}
 
 	bool doubleSided = true;
@@ -890,7 +934,7 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 				(meshName + "_inst").asChar(),
 				asr::ParamArray(),
 				meshObject->get_name(),
-				asf::Transformd(tmatrix),
+				asf::Transformd::from_local_to_parent(tmatrix),
 				matDict,
 				matBackDict
 				));
@@ -900,7 +944,7 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 				(meshName + "_inst").asChar(),
 				asr::ParamArray(),
 				meshObject->get_name(),
-				asf::Transformd(tmatrix),
+				asf::Transformd::from_local_to_parent(tmatrix),
 				matDict
 				));
 }
@@ -935,17 +979,9 @@ void AppleseedRenderer::render()
 			this->tileCallbackFac.get());
 	}
 	
-	//asf::auto_release_ptr<asf::LogTargetBase> log_target(asf::create_console_log_target(stdout));
-	//asr::global_logger().add_target(log_target.get());
-
-	//this->scenePtr = this->project->get_scene();
-	//size_t numAss = scenePtr->assemblies().size();
-	//logger.trace(MString("------------- numAssemblies in scene before rendering: ") + numAss);
-	//asr::TypedEntityMap<asr::Assembly>::iterator assIter = scenePtr->assemblies().begin();
-	//for( ;assIter != scenePtr->assemblies().end(); assIter++)
-	//{
-	//	logger.trace(MString("Found assembly: ") + assIter->get_name());
-	//}
+	
+	//log_target.reset(asf::create_console_log_target(stderr));
+    //asr::global_logger().add_target(log_target.get());
 
 	m_log_target.reset(asf::create_file_log_target());
 	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
@@ -954,15 +990,7 @@ void AppleseedRenderer::render()
 	logger.trace("------------- start rendering ----------------------");
 	masterRenderer->render();
 
-	//this->scenePtr = this->project->get_scene();
-	//numAss = scenePtr->assemblies().size();
-	//logger.trace(MString("------------- numAssemblies in scene after rendering: ") + numAss);
-	//assIter = scenePtr->assemblies().begin();
-	//for( ;assIter != scenePtr->assemblies().end(); assIter++)
-	//{
-	//	logger.trace(MString("Found assembly: ") + assIter->get_name());
-	//}
-
+	//asr::global_logger().remove_target(log_target.get());
 	asr::global_logger().remove_target(m_log_target.get());
 	m_log_target->close();
 
