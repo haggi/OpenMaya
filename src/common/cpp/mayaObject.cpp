@@ -9,6 +9,36 @@
 
 static Logging logger;
 
+// check if the node or any of its parents has a animated visibility
+bool  MayaObject::isVisiblityAnimated()
+{
+	MStatus stat = MStatus::kSuccess;
+	bool visibility = true;
+	MDagPath dp = this->dagPath;
+	while (stat == MStatus::kSuccess)
+	{
+		MFnDependencyNode depFn(dp.node());
+		MPlug vplug = depFn.findPlug("visibility");
+		if(vplug.isConnected())
+		{
+			logger.debug(MString("Object: ") + vplug.name() + " has animated visibility");
+			return true;
+		}
+		stat = dp.pop();
+	}
+
+	return false;	
+}
+
+bool  MayaObject::isObjVisible()
+{
+	MFnDagNode dagNode(this->mobject);
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(this->dagPath) || !IsPathVisible(this->dagPath))
+		return false;
+	return true;
+}
+
+
 bool MayaObject::geometryShapeSupported()
 {
 	return true;
@@ -33,8 +63,15 @@ bool MayaObject::shadowMapCastingLight()
 
 void MayaObject::updateObject()
 {
-	this->transformMatrices.clear();
-	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
+	//this->transformMatrices.clear();
+	//this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
+
+	this->visible = isObjVisible();
+	//if( this->visible )
+	//	logger.debug(MString("Obj: ") + this->shortName + " is visible");
+	//if( !this->visible )
+	//	logger.debug(MString("Obj: ") + this->shortName + " is NOT visible");
+
 }
 
 MayaObject::MayaObject(MObject& mobject)
@@ -102,7 +139,6 @@ MayaObject::MayaObject(MDagPath& objPath)
 	bool mb = true;
 	if( getBool(MString("motionBlur"), depFn, mb) )
 		this->motionBlurred = mb;
-
 	this->perObjectMbSteps = 1;
 	this->index = -1;
 	this->scenePtr = NULL;

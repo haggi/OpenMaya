@@ -307,7 +307,7 @@ std::vector<MayaObject *> origObjects;
 
 bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes, MayaObject *parentObject)
 {
-	logger.trace(MString("parse: ") + currentPath.fullPathName(), level);
+	logger.debug(MString("parse: ") + currentPath.fullPathName(), level);
 	MayaObject *mo = mayaObjectCreator(currentPath);
 	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
 	mo->parent = parentObject;
@@ -326,7 +326,7 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttri
 			MFnDagNode onode(origObjects[iId]->mobject);
 			if( onode.object() == node.object() )
 			{
-				logger.trace(MString("Orig Node found:") + onode.fullPathName(), level);
+				logger.debug(MString("Orig Node found:") + onode.fullPathName(), level);
 				mo->origObject = origObjects[iId];
 				break;
 			}
@@ -616,7 +616,7 @@ bool MayaScene::updateScene()
 	for(;mIter!=this->objectList.end(); mIter++)
 	{
 		MayaObject *obj = *mIter;
-
+		obj->updateObject();
 		logger.debug(MString("updateObj: ") + obj->dagPath.fullPathName());
 
 		if( !this->renderGlobals->isMbStartStep )
@@ -640,6 +640,7 @@ bool MayaScene::updateScene()
 	for(;mIter!=this->camList.end(); mIter++)
 	{
 		MayaObject *obj = *mIter;
+		obj->updateObject();
 
 		if( !this->renderGlobals->isMbStartStep )
 			if( !obj->motionBlurred )
@@ -658,6 +659,7 @@ bool MayaScene::updateScene()
 	for(;mIter!=this->lightList.end(); mIter++)
 	{
 		MayaObject *obj = *mIter;
+		obj->updateObject();
 
 		if( !this->renderGlobals->isMbStartStep )
 			if( !obj->motionBlurred )
@@ -698,7 +700,7 @@ void MayaScene::clearInstancerNodeList()
 
 bool MayaScene::updateInstancer()
 {
-	logger.trace("update instancer.");
+	logger.debug("update instancer.");
 	
 	// updates only required for a transform step
 	if( !this->renderGlobals->isTransformStep() )
@@ -713,7 +715,7 @@ bool MayaScene::updateInstancer()
 		MMatrix matrix;
 		instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, matrix); 
 		for( uint k = 0; k < dagPathArray.length(); k++)
-			logger.trace(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
+			logger.debug(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
 		// get matrix from current path?
 		obj->transformMatrices.push_back(matrix);
 		this->transformUpdateCallback(obj);
@@ -1060,11 +1062,16 @@ bool MayaScene::doFrameJobs()
 				}
 
 				// TODO: dynamic runup necessary?
-
 				this->updateScene();
 				logger.info(MString("update scene done"));
 				this->renderGlobals->currentMbStep++;
 			}
+
+			// Here we set the output type to output window.
+			// This will use the trace() command. The reason is that otherways the output will not be printed until 
+			// the end of rendering.
+			if(this->renderType == MayaScene::NORMAL)
+				logger.setOutType(Logging::OutputWindow);
 
 			EventQueue::Event e;
 			e.data = NULL;
@@ -1072,6 +1079,9 @@ bool MayaScene::doFrameJobs()
 			e.data = this;
 			theRenderEventQueue()->push(e);
 			RenderQueueWorker::startRenderQueueWorker();
+
+			if(this->renderType == MayaScene::NORMAL)
+				logger.setOutType(Logging::ScriptEditor);
 		}		
 	}
 

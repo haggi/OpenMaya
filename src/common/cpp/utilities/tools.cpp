@@ -89,18 +89,17 @@ bool checkDirectory( MString& path)
 	return true;
 }
 
-bool IsPathVisible( MDagPath& dagPath )
+bool IsPathVisible( MDagPath& dp )
 {
    MStatus stat = MStatus::kSuccess;
+   MDagPath dagPath = dp;
    while (stat == MStatus::kSuccess)
    {
       MFnDagNode node(dagPath.node());
       if (!IsVisible(node))
 	  {
-		 //MGlobal::displayInfo("IsPathVisible::Object " + node.name()+" is NOT visible");
          return false;
 	  }else{
-		  //MGlobal::displayInfo("IsPathVisible::Object " + node.name()+" IS visible");
 	  }
       stat = dagPath.pop();
    }
@@ -111,15 +110,20 @@ bool IsVisible(MFnDagNode& node)
 {
 	MStatus stat;
 
-	//MGlobal::displayInfo(MString("IsVisible:Check dag node ") + node.name()  +" for visibility");
 	if (node.isIntermediateObject())
 		return false;
 
 	bool visibility = true;
-	MFnDependencyNode depFn(node.object());
-	getBool(MString("visibility"), depFn, visibility);
+	MFnDependencyNode depFn(node.object(), &stat);
+	if( !stat )
+		MGlobal::displayInfo("Problem getting dep from " + node.name());
+
+	if(!getBool(MString("visibility"), depFn, visibility))
+		MGlobal::displayInfo("Problem getting visibility attr from " + node.name());
+
 	if( !visibility)
 		return false;
+
 	getBool(MString("overrideVisibility"), depFn, visibility);
 	if( !visibility)
 		return false;

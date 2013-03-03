@@ -66,6 +66,8 @@ public:
 	bool shadowMapCastingLight(); // to know if I have to add a light to render passes
 	bool isObjAnimated();
 	bool isShapeConnected();
+	bool isObjVisible();
+	bool isVisiblityAnimated();
 	virtual bool geometryShapeSupported() = 0;
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
 	MayaObject *parent;
