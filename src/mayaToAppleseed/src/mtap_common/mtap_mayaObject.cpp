@@ -40,7 +40,7 @@ mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)
 mtap_MayaObject::mtap_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	objectAssembly = NULL;
-	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	//logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
 }
 
 mtap_MayaObject::~mtap_MayaObject()
@@ -126,7 +126,7 @@ bool mtap_MayaObject::needsAssembly()
 
 	if( this->hasInstancerConnection)
 	{
-		logger.trace(MString("obj has instancer connection -> needs assembly."));
+		logger.debug(MString("obj has instancer connection -> needs assembly."));
 		return true;
 	}
 
@@ -134,13 +134,13 @@ bool mtap_MayaObject::needsAssembly()
 
 	if( dagFn.parentCount() > 1)
 	{
-		logger.trace(MString("obj has more than 1 parent -> needs assembly."));
+		logger.debug(MString("obj has more than 1 parent -> needs assembly."));
 		return true;
 	}
 
 	if( this->isObjAnimated())
 	{
-		logger.trace(MString("Object is animated -> needs assembly."));
+		logger.debug(MString("Object is animated -> needs assembly."));
 		return true;
 	}
 

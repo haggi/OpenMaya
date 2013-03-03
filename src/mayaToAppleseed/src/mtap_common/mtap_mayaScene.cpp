@@ -1,6 +1,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MSelectionList.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MFnMesh.h>
 
 #include "mtap_mayaScene.h"
 #include "utilities/logging.h"
@@ -39,9 +40,7 @@ mtap_MayaScene::~mtap_MayaScene()
 void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
-	//logger.trace(MString("mtap_MayaScene::transformUpdateCallback"));
-
-	//logger.debug(MString("mtap_updateObj: ") + mobj->dagPath.fullPathName());
+	//logger.debug(MString("mtap_MayaScene::transformUpdateCallback"));
 
 	if( isCamera(obj->mobject))
 	{
@@ -68,9 +67,6 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 				logger.debug(MString("transformUpdateCallback: obj orig obj == NULL with instancerParticleId > -1"));
 				return;
 			}
-		}else{
-			if( obj->objectAssembly == NULL)
-				return;
 		}
 	}
 
@@ -85,7 +81,7 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
-	logger.trace(MString("mtap_MayaScene::deformUpdateCallback"));
+	logger.debug(MString("mtap_MayaScene::deformUpdateCallback"));
 
 	if( obj->instanceNumber > 0)
 		return;
@@ -95,8 +91,45 @@ void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
 
 	if( !obj->visible)
 		if( !obj->attributes->hasInstancerConnection )
-			return;
-	
+		{
+			if( obj->mobject.hasFn(MFn::kMesh))
+			{
+				if( !obj->isVisiblityAnimated() )
+				{
+					//MFnMesh meshFn(obj->mobject);
+					//MString meshFullName = makeGoodString(meshFn.fullPathName());
+					//// if obj was visible, delete it from memory.
+					//MString meshInst = meshFullName + "_inst";
+					//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+					//mtap_MayaObject *assObject = att->assemblyObject;
+					//if( assObject != NULL)
+					//{
+					//	if( assObject->objectAssembly != NULL)
+					//	{
+					//		asr::ObjectInstance *oi = assObject->objectAssembly->object_instances().get_by_name(meshInst.asChar());
+					//		if( oi != NULL)
+					//		{
+					//			logger.debug(MString("------ Found and remove a object instance ----") + meshInst);
+					//			//oi->release();
+					//			//oi->bump_version_id();
+					//		}
+					//		asr::Object *o = assObject->objectAssembly->objects().get_by_name(meshFullName.asChar());
+					//		if( o != NULL)
+					//		{
+					//			logger.debug(MString("------ Found and remove a object ----") + meshFullName);
+					//			//o->release();
+					//			//o->bump_version_id();
+					//		}
+					//		
+					//		asr::AssemblyInstance *ai = this->mtap_renderer.masterAssembly->assembly_instances().get_by_name( (obj->parent->fullName + "assembly_inst").asChar());
+					//		//ai->bump_version_id();
+					//		//assObject->objectAssembly->bump_version_id();
+					//	}
+					//}
+				return;
+				}
+			}
+		}
 	this->mtap_renderer.updateDeform(obj);
 }
 
@@ -154,7 +187,6 @@ bool mtap_MayaScene::doPreFrameJobs()
 
 	MString result;
 	MGlobal::executeCommand(this->renderGlobals->preFrameScript, result, true);
-	this->mtap_renderer.defineLights();
 	return true;
 }
 
@@ -354,11 +386,11 @@ bool mtap_MayaScene::postParseCallback()
 	for(;mIter!=this->objectList.end(); mIter++)
 	{
 		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
-		
+		//logger.debug(MString("mtap_MayaScene::postParseCallback: obj: ") + obj->shortName + " dp " + obj->dagPath.fullPathName());
 		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
-		if( !obj->visible)
-			if( !att->hasInstancerConnection )
+		if( !obj->visible && !obj->isVisiblityAnimated() )
+			if( !att->hasInstancerConnection)
 				continue;
 
 		if( att->needsOwnAssembly)
@@ -385,7 +417,7 @@ bool mtap_MayaScene::postParseCallback()
 		if( obj->objectAssembly == NULL)
 			continue;
 
-		if( !obj->visible)
+		if( !obj->visible && !obj->isVisiblityAnimated())
 			continue;
 
 		// simply add instances for all paths
@@ -399,8 +431,8 @@ bool mtap_MayaScene::postParseCallback()
 		{
 			// find mayaObject...
 			MDagPath currentPath = pathArray[pId];
-			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName());		    
 			MString assemlbyInstName = obj->fullName + "assembly_inst";
+			logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemlbyInstName );		    
 			asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
 			assemlbyInstName.asChar(),
 			asr::ParamArray(),
@@ -457,7 +489,7 @@ bool mtap_MayaScene::postParseCallback()
 		if( ((mtap_MayaObject *)(obj->origObject))->objectAssembly == NULL)
 			continue;
 
-		logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + obj->fullName);
+		logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + obj->fullName);
 
 		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
 		(obj->fullName + "assembly_inst").asChar(),
@@ -475,7 +507,7 @@ bool mtap_MayaScene::postParseCallback()
 asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 {
 	
-	logger.trace(MString("Creating new assembly for: ") + obj->fullName);
+	logger.debug(MString("Creating new assembly for: ") + obj->fullName);
 	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
 	
 	asr::Assembly *assemblyPtr = NULL;

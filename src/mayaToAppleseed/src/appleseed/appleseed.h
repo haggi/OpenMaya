@@ -93,6 +93,7 @@ public:
 	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
 	void defineDefaultLight();
 	void defineLights();
+	void defineLight(mtap_MayaObject *obj);
 	bool isSunLight(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);

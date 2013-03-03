@@ -57,6 +57,7 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaOb
 		mesh->push_vertex(vtx);
 	}
 
+
 	// add normals
     // Vertex normals.
     //object->push_vertex_normal(GVector3(0.0f, 1.0f, 0.0f));
@@ -104,8 +105,10 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaOb
 			faceUVIndices.append(uvIndex);
 		}
 
-		int perFaceShadingGroup = obj->perFaceAssignments[faceId];
-		logger.info(MString("Face ") + faceId + " will receive SG " +  perFaceShadingGroup);
+		int perFaceShadingGroup = 0;
+		if( obj->perFaceAssignments.length() > 0)
+			perFaceShadingGroup = obj->perFaceAssignments[faceId];
+		//logger.info(MString("Face ") + faceId + " will receive SG " +  perFaceShadingGroup);
 
 		for( int triId = 0; triId < numTris; triId++)
 		{

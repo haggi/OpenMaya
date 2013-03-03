@@ -102,7 +102,7 @@ void AppleseedRenderer::definePreRender()
 void AppleseedRenderer::writeXML()
 {
 	logger.debug("AppleseedRenderer::writeXML");
-	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + ".appleseed";
+	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + "." + (int)this->renderGlobals->currentFrame + ".appleseed";
 
 	asr::ProjectFileWriter::write(this->project.ref(), outputPath.asChar());
 }
@@ -252,22 +252,6 @@ void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 	fillTransformMatices(obj, assemblyInstance);
 }
 
-void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
-{
-	asr::Assembly *assembly = this->project->get_scene()->assemblies().get_by_name("assembly"); // master assembly
-	if( assembly == NULL )
-	{
-		logger.debug("Master assembly not found for light update.");
-		return;
-	}	
-	MString lightName = obj->shortName;
-	logger.debug(MString("Update light ") + obj->shortName);
-	asr::Light *light = assembly->lights().get_by_name(lightName.asChar());
-	if( light != NULL )
-	{
-		fillTransformMatices(obj, light);
-	}
-}
 
 void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 {
@@ -675,7 +659,10 @@ void AppleseedRenderer::updateEntitiesCaller()
 
 void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {
-	logger.trace(MString("asr::updateTransform: ") + obj->shortName);
+	logger.debug(MString("asr::updateTransform: ") + obj->shortName);
+
+	//logger.debug(MString("asr::updateTransform: ") + obj->shortName + " obj fullp " + obj->dagPath.fullPathName());
+
 
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
@@ -710,8 +697,20 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 			return;
 		}
 
-		MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
+		if( this->mtap_scene->isLight(obj->mobject))
+		{
+			this->updateLight(obj);
+			return;
+		}
 
+		if( obj->objectAssembly == NULL)
+		{
+			return;
+		}
+
+		MString assemblyInstName = obj->fullName + "assembly_inst";
+		
+		//logger.debug(MString("Obj: ") + " name " + obj->fullName + " dpfpname " + obj->dagPath.fullPathName());
 		if( obj->attributes != NULL)
 		{
 			if( obj->attributes->hasInstancerConnection )
@@ -726,22 +725,22 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		//asr::AssemblyInstance *assInst = this->scenePtr->assembly_instances().get_by_name(assemblyInstName.asChar());
 		if( assInst == NULL)
 		{
-			logger.trace(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);
+			logger.debug(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);
 			return;
 		}
-		logger.trace(MString("updateTransform: update assembly found with name : ") + assemblyInstName);
-
+		
 		int mbsamples = this->renderGlobals->xftimesamples;
-		logger.trace(MString("updateTransform: mbsamples : ") + mbsamples);
+		//logger.debug(MString("updateTransform: mbsamples : ") + mbsamples);
 
-		if( !this->renderGlobals->doMb || !obj->isObjAnimated())
+		// if no motionblur or no animation or this is the motionblur start step, then clear the transform list
+		if( !this->renderGlobals->doMb || !obj->isObjAnimated() || this->renderGlobals->isMbStartStep)
 			assInst->transform_sequence().clear();
 
 		size_t numTransforms = assInst->transform_sequence().size();
 		float time = 0.0f;
 		if( mbsamples > 1)
 			time = (float)numTransforms/((float)mbsamples - 1.0f);
-		logger.trace(MString("updateTransform: numtransforms : ") + (int)numTransforms + " transform time " + time);
+		//logger.debug(MString("updateTransform: numtransforms : ") + (int)numTransforms + " transform time " + time);
 
 		asf::Matrix4d appMatrix;
 		MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
@@ -749,7 +748,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		if( obj->attributes != NULL)
 			if( obj->attributes->hasInstancerConnection )
 			{
-				logger.trace(MString("Found particle instanced element: ") + obj->fullName);
+				logger.debug(MString("Found particle instanced element: ") + obj->fullName);
 				MFnInstancer instFn(obj->instancerDagPath);
 				MDagPathArray dagPathArray;
 				MMatrix matrix;
@@ -759,13 +758,28 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
 
 		assInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
+
+		// temporary solution: if object is invisible, scale it to 0.0 if possible
+		if( !obj->visible && obj->isVisiblityAnimated() && !this->renderGlobals->isMbStartStep)
+		{
+			asf::Matrix4d appMatrix;
+			MMatrix zeroMatrix;
+			zeroMatrix.setToIdentity();
+			zeroMatrix[0][0] = zeroMatrix[1][1] = zeroMatrix[2][2] = 0.00001;
+			this->MMatrixToAMatrix(zeroMatrix, appMatrix);
+			assInst->transform_sequence().clear();
+			assInst->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
+			logger.debug(MString("Scaling invisible object to zero : ") + obj->shortName);
+			return;
+		}
+
 	}
 }
 
 
 void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 {
-	logger.trace(MString("asr::updateDeform: ") + obj->shortName);
+	logger.debug(MString("asr::updateDeform: ") + obj->shortName);
 
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
@@ -799,12 +813,12 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 		if( assObject != NULL)
 			assemblyName = assObject->fullName;
 
-		logger.trace(MString("deformUpdateCallback: Search for assembly: ") + assemblyName);
+		logger.debug(MString("deformUpdateCallback: Search for assembly: ") + assemblyName);
 		asr::Assembly *assembly = this->scenePtr->assemblies().get_by_name(assemblyName.asChar());
 
 		if( assembly == NULL)
 		{
-			logger.trace(MString("deformUpdateCallback: Assembly not found."));
+			logger.debug(MString("deformUpdateCallback: Assembly not found."));
 			return;
 		}
 		MMatrix matrix = att->objectMatrix;
@@ -816,16 +830,16 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 	
 		if( geoObject != NULL)
 		{
-			logger.trace(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
+			logger.debug(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
 			if( !obj->shapeConnected )
 			{
-				logger.trace(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
+				logger.debug(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
 				return;
 			}else{
 				// only update if this is not a mb start step
 				if( !this->renderGlobals->isMbStartStep)
 				{
-					logger.trace(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
+					logger.debug(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
 					addDeformStep(obj, assembly);
 					return;
 				}else{
@@ -987,7 +1001,7 @@ void AppleseedRenderer::render()
 	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
 	asr::global_logger().add_target(m_log_target.get());
 
-	logger.trace("------------- start rendering ----------------------");
+	logger.debug("------------- start rendering ----------------------");
 	masterRenderer->render();
 
 	//asr::global_logger().remove_target(log_target.get());
