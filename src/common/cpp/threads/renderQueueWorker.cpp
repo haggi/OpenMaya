@@ -21,7 +21,8 @@ static MayaScene *mayaScenePtr = NULL;
 
 static bool isRendering = false;
 static bool isIpr = false;
-
+static int numTiles = 0;
+static int tilesDone = 0;
 static MCallbackId timerCallbackId = 0;
 static MCallbackId idleCallbackId = 0;
 static MCallbackId sceneCallbackId0 = 0;
@@ -249,6 +250,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				mayaScenePtr = NULL;
 				isRendering = false;
 			}
+			tilesDone = 0;
 			break;
 
 		case EventQueue::Event::STARTRENDER:
@@ -269,6 +271,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 					boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
 					renderComputation.beginComputation();
 				}
+
+				// calculate numtiles
+				int numTX = ceil((float)width/(float)mayaScenePtr->renderGlobals->tilesize);
+				int numTY = ceil((float)height/(float)mayaScenePtr->renderGlobals->tilesize);
+				numTiles = numTX * numTY;
 
 				mayaScenePtr->startRenderThread();
 
@@ -323,14 +330,19 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::TILEDONE:
-			//logger.debug("Event::TILEDONE");
-			logger.debug(MString("Event::TILEDONE - queueSize: ") + theRenderEventQueue()->size());
-			if( MRenderView::doesRenderEditorExist())
 			{
-				MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
-				MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
+				//logger.debug("Event::TILEDONE");
+				logger.debug(MString("Event::TILEDONE - queueSize: ") + theRenderEventQueue()->size());
+				if( MRenderView::doesRenderEditorExist())
+				{
+					MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
+					MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
+				}
+				delete[]  (RV_PIXEL *)e.data;
+				tilesDone++;
+				float percentDone = ((float)tilesDone/(float)numTiles) * 100.0;
+				logger.progress(MString("") + (int)percentDone + "% done");
 			}
-			delete[]  (RV_PIXEL *)e.data;
 			break;
 
 		case EventQueue::Event::PIXELSDONE:
