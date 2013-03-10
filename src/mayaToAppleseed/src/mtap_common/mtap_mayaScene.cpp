@@ -104,6 +104,12 @@ void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
 					//mtap_MayaObject *assObject = att->assemblyObject;
 					//if( assObject != NULL)
 					//{
+					//
+					//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
+					//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
+					//	obj->objectAssembly->bump_version_id();
+					//
+					//
 					//	if( assObject->objectAssembly != NULL)
 					//	{
 					//		asr::ObjectInstance *oi = assObject->objectAssembly->object_instances().get_by_name(meshInst.asChar());

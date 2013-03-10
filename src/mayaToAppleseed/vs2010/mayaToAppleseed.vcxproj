@@ -186,7 +186,7 @@
       <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed.mll</Command>
+      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
@@ -209,7 +209,7 @@
       <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed.mll</Command>
+      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
@@ -232,7 +232,7 @@
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -274,7 +274,7 @@
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\deployment\mayaToAppleseed\plug-ins\mayatoappleseed.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\deployment\mayaToAppleseed\plug-ins\mayatoappleseed_maya2013.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

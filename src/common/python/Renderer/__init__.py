@@ -458,4 +458,8 @@ global proc updateMayaImageFormatControl()
     
     def renderGlobalsProcedure(self):
         pass
+
+    def uiCallback(self, *args):
+        pass
+    
     

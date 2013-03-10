@@ -4,7 +4,7 @@
     <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2013\bin\maya.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
-    <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2014\bin\maya.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2014\bin\mayabatch.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <LocalDebuggerCommand>

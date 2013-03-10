@@ -4,6 +4,11 @@ import math
 import logging 
 log = logging.getLogger("mtapLogger")
 
+def createPackage():
+    pm.version()
+    pass
+
+
 def unload_plugin():
     pm.newFile(force=True)
     if pm.pluginInfo("mayatoappleseed.mll", query=True, loaded=True):
@@ -357,5 +362,4 @@ class aov:
 #    return point;
 #}        
             
-    
 

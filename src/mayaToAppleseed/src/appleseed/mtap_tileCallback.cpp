@@ -1,4 +1,5 @@
 #include "renderer/api/frame.h"
+#include "foundation/image/color.h"
 #include "foundation/image/image.h"
 #include "foundation/image/tile.h"
 
@@ -52,25 +53,56 @@ void mtap_ITileCallback::pre_render(
 	theRenderEventQueue()->push(e);
 }
 
+void mtap_ITileCallback::copyASImageToMayaImage(RV_PIXEL* pixels, const asr::Frame* frame)
+{
+	const asf::CanvasProperties& frame_props = frame->image().properties();
+	double rgba[4];
+	//asf::Color4f col;
+	for( size_t x = 0; x < frame_props.m_canvas_width; x++)
+	{
+		for( size_t y = 0; y < frame_props.m_canvas_height; y++)
+		{
+			size_t pixelId = y * frame_props.m_canvas_width + x;
+			//frame->image().get_pixel(x, y, col);
+		}
+	}
+}
+
+
 void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame* frame)
 {
 	const asf::CanvasProperties& frame_props = frame->image().properties();
-	
 	size_t tw =  tile.get_width();
 	size_t th =  tile.get_height();
-	size_t y_pos = frame_props.m_canvas_width * (th * tile_y);
+	//size_t tile_yy = frame_props.m_tile_count_y - tile_y - 1;
+	size_t y_pos = frame_props.m_canvas_width * (frame_props.m_tile_height * tile_y);
+	size_t max = frame_props.m_canvas_width * frame_props.m_canvas_height;
+
 	for( size_t ty = 0; ty < th; ty++)
 	{
 		for( size_t tx = 0; tx < tw; tx++)
 		{
 			size_t yy_pos = y_pos + ty * frame_props.m_canvas_width;
-			size_t pixelId = yy_pos + tile_x * tw + tx;
+			size_t pixelId = yy_pos + tile_x * frame_props.m_tile_width + tx;
 			size_t yRev = th - ty - 1;
 			asf::uint8 *source = tile.pixel(tx, yRev);
-			pixels[pixelId].r = (float)source[0]; 
-			pixels[pixelId].g = (float)source[1]; 
-			pixels[pixelId].b = (float)source[2]; 
-			pixels[pixelId].a = (float)source[3]; 
+			if( pixelId < max)
+			{
+				pixels[pixelId].r = (float)source[0]; 
+				pixels[pixelId].g = (float)source[1]; 
+				pixels[pixelId].b = (float)source[2]; 
+				pixels[pixelId].a = (float)source[3]; 
+				if( ty == (th - 1))
+				//if( tile_y == 0)
+				{
+					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
+				}
+				if( tx == (tw - 1))
+				{
+					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
+				}
+			}else
+				yRev = 0;
 		}
 	}	
 }
@@ -82,21 +114,10 @@ void mtap_ITileCallback::post_render(
 	//logger.debug(MString("Post render interactive frame:"));
 	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
-
-    asf::Tile float_tile_storage(
-        frame_props.m_tile_width,
-        frame_props.m_tile_height,
-        frame_props.m_channel_count,
-        asf::PixelFormatFloat);
-
-    asf::Tile uint8_tile_storage(
-        frame_props.m_tile_width,
-        frame_props.m_tile_height,
-        frame_props.m_channel_count,
-        asf::PixelFormatUInt8);
-
 	size_t numPixels = frame_props.m_canvas_width * frame_props.m_canvas_height;
+	
 	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+	
 	for( int x = 0; x < numPixels; x++)
 	{
 		pixels[x].r = 255.0f;
@@ -105,11 +126,27 @@ void mtap_ITileCallback::post_render(
 		pixels[x].a = .0f;
 	}
 
+	//copyASImageToMayaImage(pixels, frame);
+
 	for( int tile_x = 0; tile_x < frame_props.m_tile_count_x; tile_x++)
 	{
 		for( int tile_y = 0; tile_y < frame_props.m_tile_count_y; tile_y++)
 		{
+			int ty = (int)frame_props.m_tile_count_y - tile_y - 1;
+
 			const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
+
+			asf::Tile float_tile_storage(
+				tile.get_width(),
+				tile.get_height(),
+				frame_props.m_channel_count,
+				asf::PixelFormatFloat);
+
+			asf::Tile uint8_tile_storage(
+				tile.get_width(),
+				tile.get_height(),
+				frame_props.m_channel_count,
+				asf::PixelFormatUInt8);
 
 			asf::Tile fp_rgb_tile(
 				tile,
@@ -124,10 +161,10 @@ void mtap_ITileCallback::post_render(
 				asf::PixelFormatUInt8,
 				uint8_tile_storage.get_storage());
 
-			int ty = (int)frame_props.m_tile_count_y - tile_y - 1;
-			copyTileToImage(pixels, uint8_rgb_tile, tile_x, ty, frame);
+			copyTileToImage(pixels, uint8_rgb_tile, tile_x, tile_y, frame);
 		}
 	}
+
 	EventQueue::Event e;
 	e.data = pixels;
 	e.type = EventQueue::Event::TILEDONE;

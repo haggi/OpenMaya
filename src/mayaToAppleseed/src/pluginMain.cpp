@@ -28,6 +28,12 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	status = plugin.registerNode(MayaToAppleseedGlobalsName, MayaToAppleseedGlobals::id, MayaToAppleseedGlobals::creator, MayaToAppleseedGlobals::initialize );
+	if (!status) {
+		status.perror("cannot register node: MayaToAppleseedGlobals");
+		return status;
+	}
+
 	status = plugin.registerNode( mtap_surfaceShaderName, mtap_surfaceShader::id, 
 			mtap_surfaceShader::creator, mtap_surfaceShader::initialize, MPxNode::kDependNode,
 			&UserClassify);
@@ -88,12 +94,6 @@ MStatus initializePlugin( MObject obj )
 	command += UserClassify;
 	command += "\");}\n";
 	MGlobal::executeCommand( command );
-
-	status = plugin.registerNode(MayaToAppleseedGlobalsName, MayaToAppleseedGlobals::id, MayaToAppleseedGlobals::creator, MayaToAppleseedGlobals::initialize );
-	if (!status) {
-		status.perror("cannot register node: MayaToAppleseedGlobals");
-		return status;
-	}
 
 	MString cmd = MString("import mtap_initialize as minit; minit.initRenderer()");
 	MGlobal::displayInfo("try to register...");
