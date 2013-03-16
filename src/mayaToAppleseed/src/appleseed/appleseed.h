@@ -94,6 +94,7 @@ public:
 	void defineDefaultLight();
 	void defineLights();
 	void defineLight(mtap_MayaObject *obj);
+	void defineLight(mtap_MayaObject *obj, asr::Assembly *ass);
 	bool isSunLight(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
@@ -103,6 +104,7 @@ public:
 	void defineParticle(mtap_MayaObject *obj);
 	void defineFluid(mtap_MayaObject *obj);
 	void fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance);
+	void fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix);
 	void fillTransformMatices(mtap_MayaObject *obj, asr::Camera *assInstance);
 	void fillTransformMatices(mtap_MayaObject *obj, asr::Light *assInstance);
 	void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance);

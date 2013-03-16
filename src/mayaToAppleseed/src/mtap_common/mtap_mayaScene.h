@@ -42,6 +42,8 @@ public:
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtap_MayaObject *getMayaObjectFromMap(MObject& mobj);
 	bool parseScene(ParseType ptype = NORMALPARSE);
+	void createObjAssembly(mtap_MayaObject *obj);
+	void createObjAssemblyInstances(mtap_MayaObject *obj);
 	asr::Assembly *createAssembly(mtap_MayaObject *obj);
 	mtap_MayaScene();
 	mtap_MayaScene(RenderType rtype);

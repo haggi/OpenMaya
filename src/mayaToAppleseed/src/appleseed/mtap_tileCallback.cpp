@@ -74,18 +74,17 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 	const asf::CanvasProperties& frame_props = frame->image().properties();
 	size_t tw =  tile.get_width();
 	size_t th =  tile.get_height();
-	//size_t tile_yy = frame_props.m_tile_count_y - tile_y - 1;
-	size_t y_pos = frame_props.m_canvas_width * (frame_props.m_tile_height * tile_y);
+	size_t ypos = frame_props.m_canvas_height - tile_y * frame_props.m_tile_height - 1;
+	size_t pixelIdYStart = frame_props.m_canvas_width * ypos;
 	size_t max = frame_props.m_canvas_width * frame_props.m_canvas_height;
-
+	int dummy = 0;
 	for( size_t ty = 0; ty < th; ty++)
 	{
 		for( size_t tx = 0; tx < tw; tx++)
 		{
-			size_t yy_pos = y_pos + ty * frame_props.m_canvas_width;
-			size_t pixelId = yy_pos + tile_x * frame_props.m_tile_width + tx;
-			size_t yRev = th - ty - 1;
-			asf::uint8 *source = tile.pixel(tx, yRev);
+			size_t yPixelPos = pixelIdYStart - ty * frame_props.m_canvas_width;
+			size_t pixelId = yPixelPos + tile_x * frame_props.m_tile_width + tx;
+			asf::uint8 *source = tile.pixel(tx, ty);
 			if( pixelId < max)
 			{
 				pixels[pixelId].r = (float)source[0]; 
@@ -93,7 +92,6 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 				pixels[pixelId].b = (float)source[2]; 
 				pixels[pixelId].a = (float)source[3]; 
 				if( ty == (th - 1))
-				//if( tile_y == 0)
 				{
 					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
 				}
@@ -102,7 +100,7 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
 				}
 			}else
-				yRev = 0;
+				dummy = 0;
 		}
 	}	
 }
@@ -132,8 +130,6 @@ void mtap_ITileCallback::post_render(
 	{
 		for( int tile_y = 0; tile_y < frame_props.m_tile_count_y; tile_y++)
 		{
-			int ty = (int)frame_props.m_tile_count_y - tile_y - 1;
-
 			const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
 
 			asf::Tile float_tile_storage(

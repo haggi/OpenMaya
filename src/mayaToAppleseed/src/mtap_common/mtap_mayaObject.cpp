@@ -144,6 +144,12 @@ bool mtap_MayaObject::needsAssembly()
 		return true;
 	}
 
+	if(isLightTransform(this->dagPath))
+	{
+		logger.debug(MString("Object is light transform -> needs assembly."));
+		return true;
+	}
+
 	return false;
 }
 

@@ -460,7 +460,6 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 	//this->project->set_scene(this->scene);
 }
 
-
 //
 //	Appleseed does not support more than one camera at the moment, so break after the first one.
 //
@@ -470,9 +469,10 @@ void AppleseedRenderer::defineCamera(bool updateCamera)
 	MStatus stat;
 
 	MayaObject *cam = NULL;
-	// until parameter update is fixed
+	// until parameter update is fixed by appleseed, create a new one
 	if( updateCamera )
 	{
+		logger.debug("define camera with update, releasing old one...");
 		this->project->get_scene()->get_camera()->release();
 		updateCamera = false;
 	}
@@ -608,9 +608,10 @@ void AppleseedRenderer::updateEntities()
 	for( iter = this->interactiveUpdateList.begin(); iter != this->interactiveUpdateList.end(); iter++)
 	{
 		mtap_MayaObject *obj = *iter;
-		if( obj->mobject.hasFn(MFn::kCamera))
+
+		if(  findCamera( obj->dagPath ) || obj->mobject.hasFn(MFn::kCamera))
 		{
-			logger.debug(MString("Found camera for update: ") + obj->shortName);
+			logger.debug(MString("Found camera or node above for update: ") + obj->shortName);
 			this->defineCamera(true);
 		}
 		if( obj->mobject.hasFn(MFn::kMesh))

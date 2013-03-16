@@ -51,6 +51,29 @@ void AppleseedRenderer::fillTransformMatices(MMatrix matrix, asr::AssemblyInstan
 			asf::Transformd::from_local_to_parent(appMatrix));
 }
 
+void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix)
+{
+	assInstance->transform_sequence().clear();
+	size_t numSteps =  obj->transformMatrices.size();
+	size_t divSteps = numSteps;
+	if( divSteps > 1)
+		divSteps -= 1;
+	float stepSize = 1.0f / (float)divSteps;
+	float start = 0.0f;
+
+	asf::Matrix4d appMatrix;
+	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
+	{
+		MMatrix colMatrix = obj->transformMatrices[matrixId];
+		colMatrix *= correctorMatrix;
+		this->MMatrixToAMatrix(colMatrix, appMatrix);
+
+		assInstance->transform_sequence().set_transform(
+			start + stepSize * matrixId,
+			asf::Transformd::from_local_to_parent(appMatrix));
+	}
+}
+
 void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance)
 {
 	assInstance->transform_sequence().clear();
