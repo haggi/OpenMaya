@@ -30,10 +30,6 @@ mtco_MayaScene::~mtco_MayaScene()
 {
 }
 
-//
-// we only need to update the assembly instances, all other elements are static.
-//
-
 void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
 	mtco_MayaObject *obj = (mtco_MayaObject *)mobj;
@@ -279,7 +275,7 @@ void mtco_MayaScene::mobjectListToMayaObjectList(std::vector<MObject>& mObjectLi
 //		search the mobject in the MayaObject list
 //		puts all found objects into a updateList
 //		sets the renderer to restart. 
-//	Then the renderer calls the appleseed updateEntities procedure at the beginning
+//	Then the renderer calls the Corona updateEntities procedure at the beginning
 //	of a new rendering.
 //
 
@@ -337,174 +333,14 @@ bool mtco_MayaScene::parseScene(ParseType ptype)
 	postParseCallback();
 	return true;
 }
-//
-//	here we build the assemblies and add them to the scene
-//  Because all assemblies will need an assembly instance, the 
-//	instances are defined as well.
-//
+
 bool mtco_MayaScene::postParseCallback()
 {
 	logger.debug("mtco_MayaScene::postParseCallback");
 
-	std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
-	for(;mIter!=this->objectList.end(); mIter++)
-	{
-		mtco_MayaObject *obj = (mtco_MayaObject *)*mIter;
-		
-		mtco_ObjectAttributes *att = (mtco_ObjectAttributes *)obj->attributes;
-
-		if( !obj->visible)
-			if( !att->hasInstancerConnection )
-				continue;
-
-		if( att->needsOwnAssembly)
-		{
-			obj->objectAssembly = createAssembly(obj);
-		}
-	}
-
-	// after the definition of all assemblies, there is a least one "world" assembly, this will be our master assembly
-	// where all the lights and other elements will be placed
-	this->mtco_renderer.defineMasterAssembly();
-
-	// all assemblies need their own assembly instance because assemblies are only created where instances are necessary.
-	mIter = this->objectList.begin();
-	for(;mIter!=this->objectList.end(); mIter++)
-	{
-		mtco_MayaObject *obj = (mtco_MayaObject *)*mIter;
-		
-		mtco_ObjectAttributes *att = (mtco_ObjectAttributes *)obj->attributes;
-
-		if( obj->instanceNumber > 0)
-			continue;
-
-		if( obj->objectAssembly == NULL)
-			continue;
-
-		if( !obj->visible)
-			continue;
-
-		// simply add instances for all paths
-		MFnDagNode objNode(obj->mobject);
-		MDagPathArray pathArray;
-		objNode.getAllPaths(pathArray);
-
-		this->mtco_renderer.interactiveAIList.clear();
-
-		for( uint pId = 0; pId < pathArray.length(); pId++)
-		{
-			// find mayaObject...
-			MDagPath currentPath = pathArray[pId];
-			logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName());		    
-			MString assemlbyInstName = obj->fullName + "assembly_inst";
-			asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-			assemlbyInstName.asChar(),
-			asr::ParamArray(),
-			obj->objectAssembly->get_name());
-
-			this->mtco_renderer.interactiveAIList.push_back(ai.get());
-
-			// if world, then add a global scene scaling.
-			if( obj->shortName == "world")
-			{
-				asf::Matrix4d appMatrix;
-				MMatrix transformMatrix;
-				transformMatrix.setToIdentity();
-				transformMatrix *= this->renderGlobals->sceneScaleMatrix;
-				this->mtco_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
-				ai->transform_sequence().set_transform(0.0,	asf::Transformd(appMatrix));
-				this->mtco_renderer.scenePtr->assembly_instances().insert(ai);
-				continue;
-			}
-
-			if( this->renderType == MayaScene::IPR)
-			{
-				if( obj->parent != NULL)
-				{
-					mtco_MayaObject *parent = (mtco_MayaObject *)obj->parent;
-					if( parent->objectAssembly != NULL)
-					{
-						logger.debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
-						parent->objectAssembly->assembly_instances().insert(ai);
-					}else{
-						//this->mtco_renderer.scene->assembly_instances().insert(ai);
-						this->mtco_renderer.masterAssembly->assembly_instances().insert(ai);
-					}
-				}else{
-					//this->mtco_renderer.scene->assembly_instances().insert(ai);
-					this->mtco_renderer.masterAssembly->assembly_instances().insert(ai);
-				}
-			}else{
-				//this->mtco_renderer.scene->assembly_instances().insert(ai);
-				this->mtco_renderer.masterAssembly->assembly_instances().insert(ai);
-			}
-		}
-	}
-	
-	mIter  = this->instancerNodeElements.begin();
-	for(;mIter!=this->instancerNodeElements.end(); mIter++)
-	{
-		mtco_MayaObject *obj = (mtco_MayaObject *)*mIter;
-		mtco_ObjectAttributes *att = (mtco_ObjectAttributes *)obj->attributes;
-		MString objname = obj->fullName;
-		if( obj->instancerParticleId < 0)
-			continue;
-		if( obj->origObject == NULL)
-			continue;
-		if( ((mtco_MayaObject *)(obj->origObject))->objectAssembly == NULL)
-			continue;
-
-		logger.trace(MString("Define assembly instance for obj: ") + obj->shortName + " path " + obj->fullName);
-
-		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-		(obj->fullName + "assembly_inst").asChar(),
-		asr::ParamArray(),
-		((mtco_MayaObject *)(obj->origObject))->objectAssembly->get_name());
-		//this->mtco_renderer.scene->assembly_instances().insert(ai);
-		this->mtco_renderer.masterAssembly->assembly_instances().insert(ai);
-	}
 
 	return true;
 }
 
 
 
-asr::Assembly *mtco_MayaScene::createAssembly(mtco_MayaObject *obj)
-{
-	
-	logger.trace(MString("Creating new assembly for: ") + obj->fullName);
-	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
-	
-	asr::Assembly *assemblyPtr = NULL;
-
-	// in ipr mode we create hierarchies
-	// that means we put the assembly into the parent assembly->assemblies()
-	if( this->renderType == MayaScene::IPR)
-	{
-		if( obj->parent != NULL)
-		{
-			mtco_MayaObject *parent = (mtco_MayaObject *)obj->parent;
-			if( parent->objectAssembly != NULL)
-			{
-				logger.debug(MString("Insert assembly ") + obj->shortName + " into parent " + parent->shortName);
-				parent->objectAssembly->assemblies().insert(assembly);
-				assemblyPtr = parent->objectAssembly->assemblies().get_by_name(obj->fullName.asChar());
-			}else{
-				this->mtco_renderer.scenePtr->assemblies().insert(assembly);
-				assemblyPtr = this->mtco_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-			}
-		}else{
-			this->mtco_renderer.scenePtr->assemblies().insert(assembly);
-			assemblyPtr = this->mtco_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-		}
-	}else{
-		this->mtco_renderer.scenePtr->assemblies().insert(assembly);
-		assemblyPtr = this->mtco_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-	}
-
-	//// for testing, can be removed later
-	this->mtco_renderer.addDefaultMaterial(assemblyPtr);
-
-	//return assembly.get();
-	return assemblyPtr;
-}

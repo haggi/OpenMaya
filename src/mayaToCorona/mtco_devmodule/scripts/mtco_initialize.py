@@ -8,28 +8,14 @@ import optimizeTextures
 
 reload(Renderer)
 
-log = logging.getLogger("mtcoLogger")
-
-#    parentForm = pm.setParent(query = True)
-#    pm.setUITemplate( "attributeEditorTemplate", pushTemplate = True)
-#    pm.scrollLayout( "MantraScrollLayout", horizontalScrollBarThickness = 0)
-#    pm.columnLayout("MantraColumnLayout", adjustableColumn = True)
-#
-#    mantraAttributes.mantraGlobalsATList.createUi(mrg)
-#    
-#    pm.setUITemplate( "attributeEditorTemplate", popTemplate = True)
-#    pm.formLayout(parentForm, edit = True, attachForm = [ ("MantraScrollLayout", "top", 0),
-#                                                          ("MantraScrollLayout", "bottom", 0),
-#                                                          ("MantraScrollLayout", "left", 0),
-#                                                          ("MantraScrollLayout", "right", 0)
-#                                                        ])
+log = logging.getLogger("mtCoronaLogger")
 
 
 RENDERER_NAME="Corona"
 
 class CoronaRenderer(Renderer.MayaToRenderer):
     theRendererInstance = None
-    @staticmethod
+    Coronastaticmethod
     def theRenderer(arg = None):
         if not CoronaRenderer.theRendererInstance:
             CoronaRenderer.theRendererInstance = CoronaRenderer(RENDERER_NAME , __name__)
@@ -205,7 +191,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     self.rendererTabUiDict['xml'] = xmlDict
                     with pm.rowColumnLayout(nc=3, width = 120):
                         pm.text(label="XMLFileName:", width = 60, align="right")
-                        defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".corona"
+                        defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
                         pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
@@ -283,9 +269,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.setImageName()
         
         if pm.about(batch=True):
-            pm.mayatocorona()
+            pm.mayatoCorona()
         else:
-            pm.mayatocorona(width=width, height=height, camera=camera)
+            pm.mayatoCorona(width=width, height=height, camera=camera)
             
         if not self.ipr_isrunning:
             self.showLogFile()
@@ -299,13 +285,13 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
-        pm.mayatocorona(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
+        pm.mayatoCorona(width=resolutionX, height=resolutionY, camera=camera, startIpr=True)
         self.postRenderProcedure()
         
     def stopIprRenderProcedure(self):
         self.ipr_isrunning = False
         log.debug("stopIprRenderProcedure")
-        pm.mayatocorona(stopIpr=True)
+        pm.mayatoCorona(stopIpr=True)
         self.postRenderProcedure()
             
     def preRenderProcedure(self):

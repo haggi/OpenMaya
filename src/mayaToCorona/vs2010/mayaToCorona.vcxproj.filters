@@ -107,30 +107,6 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_aoShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_aoVoxelShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_constantShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_diagnosticShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_fastSSSShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_pysicalSurfaceShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_smokeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtco_wireframeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\Corona.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
@@ -222,30 +198,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h">
       <Filter>common\utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_aoShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_aoVoxelShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_constantShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_diagnosticShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_fastSSSShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_physicalSurfaceShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_smokeShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtco_wireframeShader.h">
-      <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Corona\Corona.h">
       <Filter>Source Files\Corona</Filter>

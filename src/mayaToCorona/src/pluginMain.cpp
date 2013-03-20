@@ -1,11 +1,11 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
 
-#include "MayaToCorona.h"
+#include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -17,10 +17,9 @@ MStatus initializePlugin( MObject obj )
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToCorona::creator, MayaToCorona::newSyntax );
 	if (!status) {
-		status.perror("cannot register command: mayatocorona");
+		status.perror("cannot register command: mayatoCorona");
 		return status;
 	}
-
 
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
@@ -52,28 +51,28 @@ MStatus uninitializePlugin( MObject obj)
 
 	const MString UserClassify( "shader/surface" );
 	
-	std::cout << "deregister mtco cmd\n";
+	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
 		status.perror("cannot deregister command: MayaToCoronaCmd");
 		return status;
 	}
 
-	std::cout << "deregister mtco globals\n";
+	std::cout << "deregister mtap globals\n";
 	status = plugin.deregisterNode( MayaToCoronaGlobals::id );
 	if (!status) {
 		status.perror("cannot deregister node: MayaToCoronaGlobals");
 		return status;
 	}
    
-	std::cout << "deregister mtco shader\n";
+	std::cout << "deregister mtap shader\n";
 	status = plugin.deregisterNode( mtco_surfaceShader::id);
 	if (!status) {
 		status.perror("cannot deregister node: mtco_surfaceShader");
 		return status;
 	}
 
-	std::cout << "update mtco shader ui\n";
+	std::cout << "update mtap shader ui\n";
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
 	command += "\");}\n";

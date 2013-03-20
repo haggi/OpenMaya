@@ -116,16 +116,16 @@
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Debug/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\mayaTo_.mll</OutputFile>
+      <OutputFile>Debug\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Debug/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">
@@ -135,16 +135,16 @@
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Debug/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\mayaTo_.mll</OutputFile>
+      <OutputFile>Debug\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Debug/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">
@@ -154,85 +154,85 @@
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Debug/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\mayaTo_.mll</OutputFile>
+      <OutputFile>Debug\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Debug/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;..\devkit\Corona_devkit_win64\include\Corona;..\devkit\Corona_devkit_win64\include\Corona.shared;..\devkit\Corona_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Debug/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\mayaTo_.mll</OutputFile>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Debug/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo_.mll ..\mtco_devmodule\plug-ins\mayaTo_.mll</Command>
+      <Command>copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\Corona_devkit_win64\include\Corona;..\devkit\Corona_devkit_win64\include\Corona.shared;..\devkit\Corona_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Debug/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\mayaTo_.mll</OutputFile>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Debug/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo_.mll ..\mtco_devmodule\plug-ins\mayaTo_.mll</Command>
+      <Command>copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\Corona_devkit_win64\include\Corona;..\devkit\Corona_devkit_win64\include\Corona.shared;..\devkit\Corona_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Release/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Release/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.lib;..\devkit\Corona_devkit_win64\lib\Debug\Corona.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\mayaTo_.mll</OutputFile>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Release/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Release/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Release/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToCorona.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo_.mll ..\mtco_devmodule\plug-ins\mayaTo_.mll</Command>
+      <Command>copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -242,39 +242,39 @@
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2008\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Release/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Release/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\mayaTo_.mll</OutputFile>
+      <OutputFile>Release\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2008\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Release/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Release/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Release/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToCorona.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;..\devkit\Corona_devkit_win64\include\Corona;..\devkit\Corona_devkit_win64\include\Corona.shared;..\devkit\Corona_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>Release/mayaTo_.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>Release/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\Corona_devkit_win64\lib\Release\Corona.lib;..\devkit\Corona_devkit_win64\lib\Release\Corona.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\mayaTo_.mll</OutputFile>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToCorona.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Release/mayaTo_.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Release/mayaTo_.lib</ImportLibrary>
+      <ProgramDatabaseFile>Release/mayaToCorona.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToCorona.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayaTo_.mll ..\deployment\mayaTo_\plug-ins\mayaTo_.mll</Command>
+      <Command>copy Release\mayaToCorona.mll ..\deployment\mayaToCorona\plug-ins\mayaToCorona.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -304,20 +304,12 @@
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp" />
     <ClCompile Include="..\src\Corona\mtco_rendererController.cpp" />
     <ClCompile Include="..\src\Corona\mtco_tileCallback.cpp" />
-    <ClCompile Include="..\src\mayaTo_.cpp" />
+    <ClCompile Include="..\src\mayaToCorona.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaScene.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_aoShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_aoVoxelShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_constantShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_diagnosticShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_fastSSSShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_pysicalSurfaceShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_smokeShader.cpp" />
-    <ClCompile Include="..\src\shaders\mtco_wireframeShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -342,19 +334,11 @@
     <ClInclude Include="..\src\Corona\Corona.h" />
     <ClInclude Include="..\src\Corona\mtco_rendererController.h" />
     <ClInclude Include="..\src\Corona\mtco_tileCallback.h" />
-    <ClInclude Include="..\src\mayaTo_.h" />
+    <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_MayaObject.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
-    <ClInclude Include="..\src\shaders\mtco_aoShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_aoVoxelShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_constantShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_diagnosticShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_fastSSSShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_physicalSurfaceShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_smokeShader.h" />
-    <ClInclude Include="..\src\shaders\mtco_wireframeShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />

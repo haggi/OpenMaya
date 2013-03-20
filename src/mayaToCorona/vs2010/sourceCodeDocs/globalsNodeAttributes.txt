@@ -1,0 +1,5 @@
+environmentType enum 0 Gradient:PhysicalSky
+environmentColor color .3,.7,.5
+samplingSubdivAA int 1
+samplingAdaptiveSteps int 2
+samplingAdaptiveThresh float 0.03

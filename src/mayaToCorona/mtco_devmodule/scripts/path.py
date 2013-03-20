@@ -26,8 +26,8 @@ Original author:
  Jason Orendorff <jason.orendorff\x40gmail\x2ecom>
 
 Contributors:
- Mikhail Gusarov <dottedmag@dottedmag.net>
- Marc Abramowitz <marc@marc-abramowitz.com>
+ Mikhail Gusarov <dottedmagCoronadottedmag.net>
+ Marc Abramowitz <marcCoronamarc-abramowitz.com>
 
 Example:
 

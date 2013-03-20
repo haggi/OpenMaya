@@ -8,14 +8,14 @@
 #include "mayaScene.h"
 #include "mtco_renderGlobals.h"
 #include "mtco_MayaObject.h"
-#include "../appleseed/appleseed.h"
+#include "../Corona/Corona.h"
 #include "utilities/MiniMap.h"
 
 
 class mtco_MayaScene : public MayaScene
 {
 public:
-	AppleRender::AppleseedRenderer mtco_renderer;
+	AppleRender::CoronaRenderer mtco_renderer;
 	mtco_RenderGlobals *renderGlobals;
 	MayaObject *defaultCamera; // needed for motionblur calculation
 	
@@ -42,7 +42,6 @@ public:
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtco_MayaObject *getMayaObjectFromMap(MObject& mobj);
 	bool parseScene(ParseType ptype = NORMALPARSE);
-	asr::Assembly *createAssembly(mtco_MayaObject *obj);
 	mtco_MayaScene();
 	mtco_MayaScene(RenderType rtype);
 	~mtco_MayaScene();
