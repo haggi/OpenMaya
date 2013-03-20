@@ -283,19 +283,11 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj)
 
 }
 
-void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass)
+
+void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bool update)
 {
 	MStatus stat;
 	
-	// assembly
-	// obj->fullName + "assembly_inst"
-	asr::AssemblyInstance *assInst = ass->assembly_instances().get_by_name((obj->fullName + "assembly_inst").asChar());
-	if( assInst == NULL)
-	{
-		logger.error(MString("Could not find a light assembly instance for ") + obj->shortName);
-		return;
-	}
-	// if light is animated and mb is turned on, create/edit light assembly transform
 	mtap_MayaObject *mlight = obj;
 	asf::Matrix4d appMatrix = asf::Matrix4d::identity();
 	logger.debug(MString("Creating light: ") + mlight->shortName);
@@ -316,6 +308,8 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass)
 		
 	MString lightColorName = mlight->shortName + "_exitance";
 	intensity *= 30.0f; // 30 is the default value in the example
+	if( update )
+		logger.debug(MString("defineLight::Updating light "));
 	this->defineColor(lightColorName, color, intensity);
 
 	asf::auto_release_ptr<asr::Light> light;
@@ -345,9 +339,6 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass)
 		tm.rotateBy(e, MSpace::kWorld);
 		rotMatrix = tm.asMatrix();
 
-		//asf::Matrix4d rotMatrix = asf::Matrix4d::rotation(asf::Vector3d(1.0, 0.0, 0.0), asf::deg_to_rad(-90.0));
-		//asf::Matrix4d finalMatrix = appMatrix * rotMatrix;
-
 		light = asf::auto_release_ptr<asr::Light>(
 			asr::SpotLightFactory().create(
 				mlight->shortName.asChar(),
@@ -357,37 +348,38 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass)
 					.insert("inner_angle", inner_angle)
 					.insert("outer_angle", outer_angle)
 					));
-		//light->set_transform(asf::Transformd::from_local_to_parent(finalMatrix));
-		
-		this->fillTransformMatices(obj, assInst, rotMatrix);
 
 		ass->lights().insert(light);		
 	}
 	if( mlight->mobject.hasFn(MFn::kDirectionalLight))
 	{
-		if( this->isSunLight(mlight))
+		if( !update )
 		{
-			logger.debug(MString("Found sunlight."));
-			light = asf::auto_release_ptr<asr::Light>(
-				asr::SunLightFactory().create(
-				"sunLight",
-				asr::ParamArray()
-					.insert("environment_edf", "sky_edf")
-					.insert("turbidity", renderGlobals->sunTurbidity)
-					.insert("exitance_multiplier", renderGlobals->sunExitanceMultiplier * intensity)
-					));
-		}else{
-			light = asf::auto_release_ptr<asr::Light>(
-				asr::DirectionalLightFactory().create(
-					mlight->shortName.asChar(),
+			if( this->isSunLight(mlight))
+			{
+				logger.debug(MString("Found sunlight."));
+				light = asf::auto_release_ptr<asr::Light>(
+					asr::SunLightFactory().create(
+					"sunLight",
 					asr::ParamArray()
-						.insert("exitance", lightColorName.asChar())
-						.insert("exitance_multiplier", 1.0f)
+						.insert("environment_edf", "sky_edf")
+						.insert("turbidity", renderGlobals->sunTurbidity)
+						.insert("exitance_multiplier", renderGlobals->sunExitanceMultiplier * intensity)
 						));
+			}else{
+				light = asf::auto_release_ptr<asr::Light>(
+					asr::DirectionalLightFactory().create(
+						mlight->shortName.asChar(),
+						asr::ParamArray()
+							.insert("exitance", lightColorName.asChar())
+							.insert("exitance_multiplier", 1.0f)
+							));
+			}
+			ass->lights().insert(light);
+		}else{
+			//asr::Light *l = ass->lights().get_by_name(mlight->shortName.asChar());
+			//l->get_parameters().insert("exitance", lightColorName.asChar());
 		}
-		//light->set_transform(asf::Transformd::from_local_to_parent(appMatrix));
-		this->fillTransformMatices(obj, assInst); // correct this - see above
-		ass->lights().insert(light);
 	}
 
 	if( mlight->mobject.hasFn(MFn::kPointLight))
@@ -400,11 +392,9 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass)
 					.insert("exitance_multiplier", 1.0f)
 					));
 		//light->set_transform(asf::Transformd::from_local_to_parent(appMatrix));
-		this->fillTransformMatices(obj, assInst); // correct this - see above
+		//this->fillTransformMatices(obj, assInst); // correct this - see above
 		ass->lights().insert(light);
 	}
-
-
 }
 
 void AppleseedRenderer::defineDefaultLight()
@@ -438,20 +428,12 @@ void AppleseedRenderer::defineDefaultLight()
 
 void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 {
-	asr::Light *light = this->masterAssembly->lights().get_by_name(obj->shortName.asChar());
-	if( light == NULL )
-	{
-		logger.debug("Light not found in masterAssembly, creating one...");
-		this->defineLight(obj);
-		return;
-	}	
-	if( light != NULL )
-	{
-		fillTransformMatices(obj, light);
-	}
+	
+	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+	asr::Assembly *ass = NULL;
+	if( att->assemblyObject && att->assemblyObject->objectAssembly)
+		ass = att->assemblyObject->objectAssembly;
 
-	// new 
-	asr::Assembly *ass = this->masterAssembly->assemblies().get_by_name(obj->fullName.asChar());
 	if( ass != NULL )
 	{
 		logger.debug("Found LightAssembly, search for light...");
@@ -459,7 +441,10 @@ void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 		if( light == NULL )
 		{
 			logger.debug("Light not found in lightAssembly, creating one...");
-			this->defineLight(obj);
+			this->defineLight(obj, ass);
+		}else{
+			logger.debug("Light found in lightAssembly, updating...");
+			this->defineLight(obj, ass, true);
 		}
 		// update instance
 	}else{

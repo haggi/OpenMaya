@@ -53,6 +53,7 @@ public:
 	int instancerParticleId; 
 	MObject instancerMObj;
 	MDagPath instancerDagPath;
+	bool is_light;
 
 	bool supported;
 	bool animated;
@@ -67,6 +68,8 @@ public:
 	bool isObjAnimated();
 	bool isShapeConnected();
 	bool isObjVisible();
+	bool isLight();
+	bool isCamera();
 	bool isVisiblityAnimated();
 	virtual bool geometryShapeSupported() = 0;
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;

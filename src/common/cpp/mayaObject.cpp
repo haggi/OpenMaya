@@ -9,6 +9,18 @@
 
 static Logging logger;
 
+bool MayaObject::isLight()
+{
+	return this->is_light;
+}
+
+bool MayaObject::isCamera()
+{
+	if( this->mobject.hasFn(MFn::kCamera))
+		return true;
+	return false;
+}
+
 // check if the node or any of its parents has a animated visibility
 bool  MayaObject::isVisiblityAnimated()
 {
@@ -76,6 +88,7 @@ void MayaObject::updateObject()
 
 MayaObject::MayaObject(MObject& mobject)
 {
+	this->is_light = false;
 	this->isInstancerObject = false;
 	this->origObject = NULL;
 	this->mobject = mobject;
@@ -117,6 +130,7 @@ MayaObject::MayaObject(MObject& mobject)
 
 MayaObject::MayaObject(MDagPath& objPath)
 {
+	this->is_light = false;
 	this->isInstancerObject = false;
 	this->instancerParticleId = -1;
 	this->instanceNumber = 0;

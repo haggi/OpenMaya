@@ -85,5 +85,7 @@ bool findCamera(MDagPath& dagPath);
 
 bool isLightTransform(MDagPath& dagPath);
 
+bool isCameraTransform(MDagPath& dagPath);
+
 #endif
 

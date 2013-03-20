@@ -255,7 +255,7 @@ void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 
 void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 {
- //------------------------------------------------------------------------
+	//------------------------------------------------------------------------
     // Environment
     //------------------------------------------------------------------------
 
@@ -453,99 +453,182 @@ void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vect
 {
 	logger.debug("AppleseedRenderer::defineScene");
 
-	this->defineCamera();
-    this->scenePtr->set_camera(camera);
+	// camera has to be defined here because the next command defineOutput will need a camera
+	this->updateCamera(true);
 	this->defineOutput();
 	this->defineEnvironment(renderGlobals);
-	//this->project->set_scene(this->scene);
 }
 
 //
 //	Appleseed does not support more than one camera at the moment, so break after the first one.
-//
+//	Cameras are more a mixture between assembly and object. They have a transformation like an assembly but 
+//	attributes like an object.
 
-void AppleseedRenderer::defineCamera(bool updateCamera)
+//void AppleseedRenderer::defineCamera(bool updateCamera)
+//{
+//	MStatus stat;
+//	MayaObject *cam = NULL;
+//	// until parameter update is fixed by appleseed, create a new one
+//	if( updateCamera )
+//	{
+//		logger.debug("define camera with update, releasing old one...");
+//		this->project->get_scene()->get_camera()->release();
+//		updateCamera = false;
+//	}
+//	// There is at least one camera
+//	for(int objId = 0; objId < this->mtap_scene->camList.size(); objId++)
+//	{
+//		mtap_MayaObject *cam = (mtap_MayaObject *)this->mtap_scene->camList[objId];
+//		if( cam == NULL)
+//			continue;
+//		logger.debug(MString("Creating camera: ") + cam->shortName);
+//
+//		float horizontalFilmAperture = 24.892f;
+//		float verticalFilmAperture = 18.669f;
+//		float imageAspect = (float)renderGlobals->imgHeight / (float)renderGlobals->imgWidth;
+//		bool dof = false;
+//		float mtap_cameraType = 0;
+//		int mtap_diaphragm_blades = 0;
+//		float mtap_diaphragm_tilt_angle = 0.0;
+//		float focusDistance = 0.0;
+//		float fStop = 0.0;
+//
+//		float focalLength = 35.0f;
+//		MFnCamera camFn(cam->mobject, &stat);
+//		asr::ParamArray camParams;
+//
+//		getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
+//		getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
+//		getFloat(MString("focalLength"), camFn, focalLength);
+//		getBool(MString("depthOfField"), camFn, dof);
+//		getFloat(MString("focusDistance"), camFn, focusDistance);
+//		getFloat(MString("fStop"), camFn, fStop);
+//		getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
+//		getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
+//
+//		dof = dof && this->renderGlobals->doDof;
+//		// this is a hack because this camera model does not support NON depth of field
+//		if( !dof )
+//			fStop *= 10000.0f;
+//
+//		focusDistance *= this->renderGlobals->sceneScale;
+//
+//		// maya aperture is given in inces so convert to cm and convert to meters
+//		horizontalFilmAperture = horizontalFilmAperture * 2.54f * 0.01f;
+//		verticalFilmAperture = verticalFilmAperture * 2.54f * 0.01f;
+//		verticalFilmAperture = horizontalFilmAperture * imageAspect;
+//		MString filmBack = MString("") + horizontalFilmAperture + " " + verticalFilmAperture;
+//		MString focalLen = MString("") + focalLength * 0.001f;
+//		
+//		camParams.insert("film_dimensions", filmBack.asChar());
+//		camParams.insert("focal_length", focalLen.asChar());
+//		camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
+//		camParams.insert("f_stop",  (MString("") + fStop).asChar());
+//		camParams.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
+//		camParams.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
+//
+//		asr::Camera *appleCam;
+//		if( updateCamera )
+//		{
+//			appleCam = this->project->get_scene()->get_camera();
+//			appleCam->get_parameters().insert("focal_length", focalLen.asChar());
+//			appleCam->get_parameters().insert("focal_distance", focusDistance);
+//			appleCam->get_parameters().insert("f_stop",  fStop);
+//			appleCam->get_parameters().insert("diaphragm_blades",  mtap_diaphragm_blades);
+//			appleCam->get_parameters().insert("diaphragm_tilt_angle", mtap_diaphragm_tilt_angle);
+//		}else{
+//			this->camera = asr::ThinLensCameraFactory().create(
+//					cam->shortName.asChar(),
+//					camParams);
+//			appleCam = this->camera.get();
+//		}
+//		
+//		fillTransformMatices(cam, appleCam);
+//		break; // only one camera is supported at the moment
+//	}
+//}
+
+void AppleseedRenderer::updateCamera(bool shape)
 {
 	MStatus stat;
-
 	MayaObject *cam = NULL;
-	// until parameter update is fixed by appleseed, create a new one
-	if( updateCamera )
-	{
-		logger.debug("define camera with update, releasing old one...");
-		this->project->get_scene()->get_camera()->release();
-		updateCamera = false;
-	}
+
 	// There is at least one camera
 	for(int objId = 0; objId < this->mtap_scene->camList.size(); objId++)
 	{
 		mtap_MayaObject *cam = (mtap_MayaObject *)this->mtap_scene->camList[objId];
 		if( cam == NULL)
 			continue;
-		logger.debug(MString("Creating camera: ") + cam->shortName);
-
-		float horizontalFilmAperture = 24.892f;
-		float verticalFilmAperture = 18.669f;
-		float imageAspect = (float)renderGlobals->imgHeight / (float)renderGlobals->imgWidth;
-		bool dof = false;
-		float mtap_cameraType = 0;
-		int mtap_diaphragm_blades = 0;
-		float mtap_diaphragm_tilt_angle = 0.0;
-		float focusDistance = 0.0;
-		float fStop = 0.0;
-
-		float focalLength = 35.0f;
-		MFnCamera camFn(cam->mobject, &stat);
-		asr::ParamArray camParams;
-
-		getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
-		getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
-		getFloat(MString("focalLength"), camFn, focalLength);
-		getBool(MString("depthOfField"), camFn, dof);
-		getFloat(MString("focusDistance"), camFn, focusDistance);
-		getFloat(MString("fStop"), camFn, fStop);
-		getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
-		getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
-
-		dof = dof && this->renderGlobals->doDof;
-		// this is a hack because this camera model does not support NON depth of field
-		if( !dof )
-			fStop *= 10000.0f;
-
-		focusDistance *= this->renderGlobals->sceneScale;
-
-		// maya aperture is given in inces so convert to cm and convert to meters
-		horizontalFilmAperture = horizontalFilmAperture * 2.54f * 0.01f;
-		verticalFilmAperture = verticalFilmAperture * 2.54f * 0.01f;
-		verticalFilmAperture = horizontalFilmAperture * imageAspect;
-		MString filmBack = MString("") + horizontalFilmAperture + " " + verticalFilmAperture;
-		MString focalLen = MString("") + focalLength * 0.001f;
-		
-		camParams.insert("film_dimensions", filmBack.asChar());
-		camParams.insert("focal_length", focalLen.asChar());
-		camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
-		camParams.insert("f_stop",  (MString("") + fStop).asChar());
-		camParams.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
-		camParams.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
-
-		asr::Camera *appleCam;
-		if( updateCamera )
+		if( this->mtap_scene->renderType == MayaScene::IPR)
 		{
-			appleCam = this->project->get_scene()->get_camera();
-			appleCam->get_parameters().insert("focal_length", focalLen.asChar());
-			appleCam->get_parameters().insert("focal_distance", focusDistance);
-			appleCam->get_parameters().insert("f_stop",  fStop);
-			appleCam->get_parameters().insert("diaphragm_blades",  mtap_diaphragm_blades);
-			appleCam->get_parameters().insert("diaphragm_tilt_angle", mtap_diaphragm_tilt_angle);
-		}else{
+			cam->transformMatrices.clear();
+			cam->transformMatrices.push_back(cam->dagPath.inclusiveMatrix());
+		}
+		asr::Camera *camera = this->scenePtr->get_camera();
+		if( !shape )
+			if( camera == NULL )
+				shape = true;
+		if( shape )
+		{
+			// update the complete camera and place it into the scene
+			logger.debug(MString("Creating camera shape: ") + cam->shortName);
+			float horizontalFilmAperture = 24.892f;
+			float verticalFilmAperture = 18.669f;
+			float imageAspect = (float)renderGlobals->imgHeight / (float)renderGlobals->imgWidth;
+			bool dof = false;
+			float mtap_cameraType = 0;
+			int mtap_diaphragm_blades = 0;
+			float mtap_diaphragm_tilt_angle = 0.0;
+			float focusDistance = 0.0;
+			float fStop = 0.0;
+
+			float focalLength = 35.0f;
+			MFnCamera camFn(cam->mobject, &stat);
+			asr::ParamArray camParams;
+
+			getFloat(MString("horizontalFilmAperture"), camFn, horizontalFilmAperture);
+			getFloat(MString("verticalFilmAperture"), camFn, verticalFilmAperture);
+			getFloat(MString("focalLength"), camFn, focalLength);
+			getBool(MString("depthOfField"), camFn, dof);
+			getFloat(MString("focusDistance"), camFn, focusDistance);
+			getFloat(MString("fStop"), camFn, fStop);
+			getInt(MString("mtap_diaphragm_blades"), camFn, mtap_diaphragm_blades);
+			getFloat(MString("mtap_diaphragm_tilt_angle"), camFn, mtap_diaphragm_tilt_angle);
+
+			dof = dof && this->renderGlobals->doDof;
+			// this is a hack because this camera model does not support NON depth of field
+			if( !dof )
+				fStop *= 10000.0f;
+
+			focusDistance *= this->renderGlobals->sceneScale;
+
+			// maya aperture is given in inces so convert to cm and convert to meters
+			horizontalFilmAperture = horizontalFilmAperture * 2.54f * 0.01f;
+			verticalFilmAperture = verticalFilmAperture * 2.54f * 0.01f;
+			verticalFilmAperture = horizontalFilmAperture * imageAspect;
+			MString filmBack = MString("") + horizontalFilmAperture + " " + verticalFilmAperture;
+			MString focalLen = MString("") + focalLength * 0.001f;
+		
+			camParams.insert("film_dimensions", filmBack.asChar());
+			camParams.insert("focal_length", focalLen.asChar());
+			camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
+			camParams.insert("f_stop",  (MString("") + fStop).asChar());
+			camParams.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
+			camParams.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
+
+			asr::Camera *appleCam;
 			this->camera = asr::ThinLensCameraFactory().create(
 					cam->shortName.asChar(),
 					camParams);
-			appleCam = this->camera.get();
+			appleCam = this->camera.get();		
+			fillTransformMatices(cam, appleCam);
+			this->scenePtr->set_camera(this->camera);
+			break; // only one camera is supported at the moment
+		}else{
+			logger.debug(MString("Updating camera transform: ") + cam->shortName);
+			fillTransformMatices(cam, this->scenePtr->get_camera());	
+			break; // only one camera is supported at the moment
 		}
-		
-		fillTransformMatices(cam, appleCam);
-		break; // only one camera is supported at the moment
 	}
 }
 
@@ -601,7 +684,7 @@ void AppleseedRenderer::updateEntities()
 		return;
 
 	size_t numElements = this->interactiveUpdateList.size();
-	logger.debug(MString("updateEntities: Found ") + (int)numElements + " for update.");
+	logger.debug(MString("updateEntities: Found ") + (int)numElements + " element(s) for update.");
 	std::vector<mtap_MayaObject *>::iterator iter;
 	std::vector<MObject>::iterator moIter;
 
@@ -609,10 +692,10 @@ void AppleseedRenderer::updateEntities()
 	{
 		mtap_MayaObject *obj = *iter;
 
-		if(  findCamera( obj->dagPath ) || obj->mobject.hasFn(MFn::kCamera))
+		if( obj->mobject.hasFn(MFn::kTransform))
 		{
-			logger.debug(MString("Found camera or node above for update: ") + obj->shortName);
-			this->defineCamera(true);
+			logger.debug(MString("Found transform for update: ") + obj->shortName);
+			updateTransform(obj);
 		}
 		if( obj->mobject.hasFn(MFn::kMesh))
 		{
@@ -624,11 +707,6 @@ void AppleseedRenderer::updateEntities()
 			logger.debug(MString("Found light for update: ") + obj->shortName);
 			updateLight(obj);
 		}
-		if( obj->mobject.hasFn(MFn::kTransform))
-		{
-			logger.debug(MString("Found transform for update: ") + obj->shortName);
-			updateTransform(obj);
-		}
 	}
 	for( moIter = this->interactiveUpdateMOList.begin(); moIter != this->interactiveUpdateMOList.end(); moIter++)
 	{
@@ -638,7 +716,8 @@ void AppleseedRenderer::updateEntities()
 		if( depFn.typeId().id() == 0x00106EF3)
 		{
 			logger.debug(MString("Found mtap_renderGlobals for update"));
-			this->updateEnv(mobj);
+			//this->updateEnv(mobj);
+			this->defineEnvironment(this->renderGlobals);
 		}
 		if( mobj.hasFn(MFn::kLambert))
 		{
@@ -664,9 +743,10 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 	//logger.debug(MString("asr::updateTransform: ") + obj->shortName + " obj fullp " + obj->dagPath.fullPathName());
 
-
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
+		obj->transformMatrices.clear();
+		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 		// in ipr mode every transform should have it's own assembly and its own assembly instance
 		// The assembly instance will be placed in the parent->assembly_instances array
 		if( obj->objectAssembly != NULL)
@@ -678,29 +758,29 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				asr::AssemblyInstance *assemblyInstance = parentAssembly->assembly_instances().get_by_name(assemblyInstName.asChar());
 				if( assemblyInstance != NULL)
 				{
-					logger.debug(MString("Found assembly instance: ") + assemblyInstName);
-					MMatrix colMatrix = MFnDagNode(obj->dagPath).transformationMatrix() * this->renderGlobals->sceneScaleMatrix;
-					asf::Matrix4d appMatrix;
-					this->MMatrixToAMatrix(colMatrix, appMatrix);
-					assemblyInstance->transform_sequence().clear();
-					assemblyInstance->transform_sequence().set_transform( 0.0, asf::Transformd::from_local_to_parent(appMatrix));
+					fillTransformMatices(obj, assemblyInstance);
+					//logger.debug(MString("Found assembly instance: ") + assemblyInstName);
+					//MMatrix colMatrix = MFnDagNode(obj->dagPath).transformationMatrix() * this->renderGlobals->sceneScaleMatrix;
+					//asf::Matrix4d appMatrix;
+					//this->MMatrixToAMatrix(colMatrix, appMatrix);
+					//assemblyInstance->transform_sequence().clear();
+					//assemblyInstance->transform_sequence().set_transform( 0.0, asf::Transformd::from_local_to_parent(appMatrix));
 				}
 			}
+		}
+		if( isCameraTransform(obj->dagPath))
+		{
+			this->updateCamera(false);
+			return;
 		}
 	}else{
 
 		if( obj->shortName == "world")
 			return;
 
-		if( obj->mobject.hasFn(MFn::kCamera))
+		if( isCameraTransform(obj->dagPath))
 		{
-			this->defineCamera(false);
-			return;
-		}
-
-		if( this->mtap_scene->isLight(obj->mobject))
-		{
-			this->updateLight(obj);
+			this->updateCamera(false);
 			return;
 		}
 
@@ -777,34 +857,47 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 	}
 }
 
-
-void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
+void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 {
-	logger.debug(MString("asr::updateDeform: ") + obj->shortName);
+	logger.debug(MString("asr::updateShape: ") + obj->shortName);
 
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
-		// in ipr mode, the parent node of an mesh contains the assembly
+		// in ipr mode, all transform nodes of a mesh will get its own assembly, what means
+		// all meshes will be placed into the assembly of their parent object
 		if( obj->parent != NULL)
 		{
-			mtap_MayaObject *parentObject = (mtap_MayaObject *)obj->parent;
-			asr::Assembly *assembly = parentObject->objectAssembly;
-			if( assembly != NULL)
+			if( obj->mobject.hasFn(MFn::kMesh))
 			{
-				MMatrix matrix;
-				matrix.setToIdentity(); // the transform node contains the matrix
-				MString geoName = obj->fullNiceName;
-				asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
-				if( geoObject != NULL)
+				mtap_MayaObject *parentObject = (mtap_MayaObject *)obj->parent;
+				asr::Assembly *assembly = parentObject->objectAssembly;
+				if( assembly != NULL)
 				{
-					// in ipr if object exsits, then return, maybe we can replace the object if it is deformed later.
-					return;
-				}else{
-					this->putObjectIntoAssembly(assembly, obj, matrix);
+					MMatrix matrix;
+					matrix.setToIdentity(); // the transform node contains the matrix
+					MString geoName = obj->fullNiceName;
+					asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+					if( geoObject != NULL)
+					{
+						// in ipr if object exsits, then return, maybe we can replace the object if it is deformed later.
+						return;
+					}else{
+						this->putObjectIntoAssembly(assembly, obj, matrix);
+					}
 				}
 			}
 		}
+		if( obj->isCamera())
+		{
+			this->updateCamera(true);
+		}
+		if( obj->isLight())
+		{
+			this->updateLight(obj);
+		}
+
 	}else{
+
 		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 		mtap_MayaObject *assObject = att->assemblyObject;
 	
@@ -824,36 +917,129 @@ void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
 		}
 		MMatrix matrix = att->objectMatrix;
 
-		// put geo into assembly only if object has shape input connections or is not defined yet
-		// an geometry should exist only if we are in an deform step > 0
-		MString geoName = obj->fullNiceName;
-		asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
-	
-		if( geoObject != NULL)
+		if( obj->mobject.hasFn(MFn::kMesh))
 		{
-			logger.debug(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
-			if( !obj->shapeConnected )
+			// put geo into assembly only if object has shape input connections or is not defined yet
+			// an geometry should exist only if we are in an deform step > 0
+			MString geoName = obj->fullNiceName;
+			asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+	
+			if( geoObject != NULL)
 			{
-				logger.debug(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
-				return;
-			}else{
-				// only update if this is not a mb start step
-				if( !this->renderGlobals->isMbStartStep)
+				logger.debug(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
+				if( !obj->shapeConnected )
 				{
-					logger.debug(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
-					addDeformStep(obj, assembly);
+					logger.debug(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
 					return;
 				}else{
-					// replace geometry
+					// only update if this is not a mb start step
+					if( !this->renderGlobals->isMbStartStep)
+					{
+						logger.debug(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
+						addDeformStep(obj, assembly);
+						return;
+					}else{
+						// replace geometry
+					}
 				}
+				// object already exists
+				return;
 			}
-			// object already exists
-			return;
+			this->putObjectIntoAssembly(assembly, obj, matrix);
 		}
 
-		this->putObjectIntoAssembly(assembly, obj, matrix);
+		if( obj->isLight())
+		{
+			this->updateLight(obj);
+		}
+
+		if( obj->isCamera())
+		{
+			this->updateCamera(true);
+		}
 	}
 }
+
+
+//void AppleseedRenderer::updateDeform(mtap_MayaObject *obj)
+//{
+//	logger.debug(MString("asr::updateDeform: ") + obj->shortName);
+//
+//	if( ! obj->mobject.hasFn(MFn::kMesh))
+//		return;
+//
+//	if( this->mtap_scene->renderType == MayaScene::IPR)
+//	{
+//		// in ipr mode, the parent node of an mesh contains the assembly
+//		if( obj->parent != NULL)
+//		{
+//			mtap_MayaObject *parentObject = (mtap_MayaObject *)obj->parent;
+//			asr::Assembly *assembly = parentObject->objectAssembly;
+//			if( assembly != NULL)
+//			{
+//				MMatrix matrix;
+//				matrix.setToIdentity(); // the transform node contains the matrix
+//				MString geoName = obj->fullNiceName;
+//				asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+//				if( geoObject != NULL)
+//				{
+//					// in ipr if object exsits, then return, maybe we can replace the object if it is deformed later.
+//					return;
+//				}else{
+//					this->putObjectIntoAssembly(assembly, obj, matrix);
+//				}
+//			}
+//		}
+//	}else{
+//		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+//		mtap_MayaObject *assObject = att->assemblyObject;
+//	
+//		// there should be only one case if assObject is NULL, if an objects parent is world
+//		// in this case we use a default master assembly
+//		MString assemblyName = "assembly";
+//		if( assObject != NULL)
+//			assemblyName = assObject->fullName;
+//
+//		logger.debug(MString("deformUpdateCallback: Search for assembly: ") + assemblyName);
+//		asr::Assembly *assembly = this->scenePtr->assemblies().get_by_name(assemblyName.asChar());
+//
+//		if( assembly == NULL)
+//		{
+//			logger.debug(MString("deformUpdateCallback: Assembly not found."));
+//			return;
+//		}
+//		MMatrix matrix = att->objectMatrix;
+//
+//		// put geo into assembly only if object has shape input connections or is not defined yet
+//		// an geometry should exist only if we are in an deform step > 0
+//		MString geoName = obj->fullNiceName;
+//		asr::Object *geoObject = assembly->objects().get_by_name(geoName.asChar());
+//	
+//		if( geoObject != NULL)
+//		{
+//			logger.debug(MString("deformUpdateCallback: Geo found in assembly: ") + geoName);
+//			if( !obj->shapeConnected )
+//			{
+//				logger.debug(MString("deformUpdateCallback: Geo shape has no input connection, skip"));
+//				return;
+//			}else{
+//				// only update if this is not a mb start step
+//				if( !this->renderGlobals->isMbStartStep)
+//				{
+//					logger.debug(MString("deformUpdateCallback: Geo shape is connected, calling addDeform"));
+//					addDeformStep(obj, assembly);
+//					return;
+//				}else{
+//					// replace geometry
+//				}
+//			}
+//			// object already exists
+//			return;
+//		}
+//
+//		this->putObjectIntoAssembly(assembly, obj, matrix);
+//	}
+//}
 
 void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assembly)
 {

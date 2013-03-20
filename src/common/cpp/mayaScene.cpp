@@ -286,6 +286,8 @@ void  MayaScene::classifyMayaObject(MayaObject *obj)
 	if( this->isLight(obj->mobject))
 	{
 		this->lightList.push_back(obj);
+		obj->is_light = true;
+
 		return;
 	}
 	if( obj->mobject.hasFn(MFn::kInstancer))
@@ -633,7 +635,7 @@ bool MayaScene::updateScene()
 		}
 
 		if(this->renderGlobals->isDeformStep())
-			this->deformUpdateCallback(obj);
+			this->shapeUpdateCallback(obj);
 	}
 
 	mIter = this->camList.begin();
@@ -670,7 +672,8 @@ bool MayaScene::updateScene()
 			if( this->renderGlobals->isMbStartStep )
 				obj->transformMatrices.clear();
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(obj);
+			//this->transformUpdateCallback(obj);
+			this->shapeUpdateCallback(obj);
 		}
 	}
 

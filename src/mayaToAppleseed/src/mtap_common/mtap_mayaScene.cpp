@@ -42,11 +42,11 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
 	//logger.debug(MString("mtap_MayaScene::transformUpdateCallback"));
 
-	if( isCamera(obj->mobject))
-	{
-		this->mtap_renderer.updateTransform(obj);
-		return;
-	}
+	//if( isCamera(obj->mobject))
+	//{
+	//	this->mtap_renderer.updateTransform(obj);
+	//	return;
+	//}
 
 	// if this is an instance of an object which has an assembly, then update it,
 	// if not, ignore instance.
@@ -78,10 +78,10 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 //	will be called for every geometry deform step
 //	the very first time it will create an assembly and fill it with data
 //
-void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
+void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
-	logger.debug(MString("mtap_MayaScene::deformUpdateCallback"));
+	logger.debug(MString("mtap_MayaScene::shapeUpdateCallback"));
 
 	if( obj->instanceNumber > 0)
 		return;
@@ -89,55 +89,81 @@ void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
 	if( !obj->geometryShapeSupported() )
 		return;
 
-	if( !obj->visible)
+	if( !obj->visible && !obj->isCamera() )
 		if( !obj->attributes->hasInstancerConnection )
 		{
 			if( obj->mobject.hasFn(MFn::kMesh))
 			{
 				if( !obj->isVisiblityAnimated() )
 				{
-					//MFnMesh meshFn(obj->mobject);
-					//MString meshFullName = makeGoodString(meshFn.fullPathName());
-					//// if obj was visible, delete it from memory.
-					//MString meshInst = meshFullName + "_inst";
-					//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-					//mtap_MayaObject *assObject = att->assemblyObject;
-					//if( assObject != NULL)
-					//{
-					//
-					//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
-					//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
-					//	obj->objectAssembly->bump_version_id();
-					//
-					//
-					//	if( assObject->objectAssembly != NULL)
-					//	{
-					//		asr::ObjectInstance *oi = assObject->objectAssembly->object_instances().get_by_name(meshInst.asChar());
-					//		if( oi != NULL)
-					//		{
-					//			logger.debug(MString("------ Found and remove a object instance ----") + meshInst);
-					//			//oi->release();
-					//			//oi->bump_version_id();
-					//		}
-					//		asr::Object *o = assObject->objectAssembly->objects().get_by_name(meshFullName.asChar());
-					//		if( o != NULL)
-					//		{
-					//			logger.debug(MString("------ Found and remove a object ----") + meshFullName);
-					//			//o->release();
-					//			//o->bump_version_id();
-					//		}
-					//		
-					//		asr::AssemblyInstance *ai = this->mtap_renderer.masterAssembly->assembly_instances().get_by_name( (obj->parent->fullName + "assembly_inst").asChar());
-					//		//ai->bump_version_id();
-					//		//assObject->objectAssembly->bump_version_id();
-					//	}
-					//}
-				return;
+					return;
 				}
 			}
 		}
-	this->mtap_renderer.updateDeform(obj);
+	this->mtap_renderer.updateShape(obj);
 }
+
+//void mtap_MayaScene::deformUpdateCallback(MayaObject *mobj)
+//{
+//	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
+//	logger.debug(MString("mtap_MayaScene::deformUpdateCallback"));
+//
+//	if( obj->instanceNumber > 0)
+//		return;
+//
+//	if( !obj->geometryShapeSupported() )
+//		return;
+//
+//	if( !obj->visible)
+//		if( !obj->attributes->hasInstancerConnection )
+//		{
+//			if( obj->mobject.hasFn(MFn::kMesh))
+//			{
+//				if( !obj->isVisiblityAnimated() )
+//				{
+//					//MFnMesh meshFn(obj->mobject);
+//					//MString meshFullName = makeGoodString(meshFn.fullPathName());
+//					//// if obj was visible, delete it from memory.
+//					//MString meshInst = meshFullName + "_inst";
+//					//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+//					//mtap_MayaObject *assObject = att->assemblyObject;
+//					//if( assObject != NULL)
+//					//{
+//					//
+//					//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
+//					//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
+//					//	obj->objectAssembly->bump_version_id();
+//					//
+//					//
+//					//	if( assObject->objectAssembly != NULL)
+//					//	{
+//					//		asr::ObjectInstance *oi = assObject->objectAssembly->object_instances().get_by_name(meshInst.asChar());
+//					//		if( oi != NULL)
+//					//		{
+//					//			logger.debug(MString("------ Found and remove a object instance ----") + meshInst);
+//					//			//oi->release();
+//					//			//oi->bump_version_id();
+//					//		}
+//					//		asr::Object *o = assObject->objectAssembly->objects().get_by_name(meshFullName.asChar());
+//					//		if( o != NULL)
+//					//		{
+//					//			logger.debug(MString("------ Found and remove a object ----") + meshFullName);
+//					//			//o->release();
+//					//			//o->bump_version_id();
+//					//		}
+//					//		
+//					//		asr::AssemblyInstance *ai = this->mtap_renderer.masterAssembly->assembly_instances().get_by_name( (obj->parent->fullName + "assembly_inst").asChar());
+//					//		//ai->bump_version_id();
+//					//		//assObject->objectAssembly->bump_version_id();
+//					//	}
+//					//}
+//				return;
+//				}
+//			}
+//		}
+//	//this->mtap_renderer.updateDeform(obj);
+//	this->mtap_renderer.updateShape(obj);
+//}
 
 MayaObject *mtap_MayaScene::mayaObjectCreator(MObject& mobject)
 {

@@ -53,7 +53,8 @@ public:
 	bool updateScene(); // update all necessary objects
 	bool updateInstancer(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject *) = 0;
-	virtual void deformUpdateCallback(MayaObject *) = 0;
+	//virtual void deformUpdateCallback(MayaObject *) = 0;
+	virtual void shapeUpdateCallback(MayaObject *) = 0;
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
 	virtual bool translateShapes(int timeStep) = 0; // overwrite this in your definition

@@ -12,6 +12,8 @@ using namespace AppleRender;
 //
 // colors are defined in the scene scope, makes handling easier
 //
+
+
 void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensity)
 {
 	float colorDef[3];
@@ -22,11 +24,17 @@ void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensit
 
 	asf::auto_release_ptr<asr::ColorEntity> colorEntity;
 	
-	asr::Entity *entity = this->scenePtr->colors().get_by_name(name.asChar());
-
+	asr::ColorEntity *entity = this->scenePtr->colors().get_by_name(name.asChar());
 	if( entity != NULL)
-		return;
-
+	{
+		this->scenePtr->colors().remove(entity);
+		//logger.debug(MString("Found color: ") + name);
+		//asr::ColorValueArray cva = entity->get_values();
+		//cva[0] = colorDef[0];
+		//cva[1] = colorDef[1];
+		//cva[2] = colorDef[2];
+		//return;
+	}
 	MString intensityString = MString("") + intensity;
 	colorEntity = asr::ColorEntityFactory::create(
 				name.asChar(),

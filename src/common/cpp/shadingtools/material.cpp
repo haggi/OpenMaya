@@ -403,7 +403,7 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
         
         // Find the ShadingGroup plugs that we are connected to as Source 
         MPlugArray SGPlugArray;
-        instPlugElem.connectedTo(SGPlugArray, false, true);
+		instPlugElem.connectedTo(SGPlugArray, false, true);
 
 		perFaceAssignments.clear();
 		shadingGroups.clear();

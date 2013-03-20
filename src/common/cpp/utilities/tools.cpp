@@ -521,8 +521,6 @@ bool findCamera(MDagPath& dagPath)
 // TODO extend with own light extensions
 bool isLightTransform(MDagPath& dagPath)
 {
-	if( dagPath.node().hasFn(MFn::kLight))
-		return true;
 	uint numChilds = dagPath.childCount();
 	for( uint chId = 0; chId < numChilds; chId++)
 	{
@@ -533,6 +531,23 @@ bool isLightTransform(MDagPath& dagPath)
 			continue;
 		}
 		if( childPath.node().hasFn(MFn::kLight))
+			return true;
+	}
+	return false;
+}
+
+bool isCameraTransform(MDagPath& dagPath)
+{
+	uint numChilds = dagPath.childCount();
+	for( uint chId = 0; chId < numChilds; chId++)
+	{
+		MDagPath childPath = dagPath;
+		MStatus stat = childPath.push(dagPath.child(chId));
+		if( !stat )
+		{
+			continue;
+		}
+		if( childPath.node().hasFn(MFn::kCamera))
 			return true;
 	}
 	return false;

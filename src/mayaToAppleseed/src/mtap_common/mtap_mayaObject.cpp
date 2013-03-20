@@ -31,6 +31,21 @@ mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
 	}
 };
 
+asr::Assembly *mtap_MayaObject::getObjectAssembly()
+{
+	if( this->attributes != NULL )
+	{
+		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)this->attributes;
+		if( att != NULL )
+		{
+			if( att->assemblyObject != NULL )
+			{
+				return att->assemblyObject->objectAssembly;
+			}
+		}
+	}
+	return NULL;
+}
 
 mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
@@ -52,13 +67,18 @@ mtap_MayaObject::~mtap_MayaObject()
 bool mtap_MayaObject::geometryShapeSupported()
 {
 	MFn::Type type = this->mobject.apiType();
-	if( type == MFn::kMesh)
-	{
+	if(this->mobject.hasFn(MFn::kMesh))
 		return true;
-	}
-	return false;
 
+	if(this->isLight())
+		return true;
+
+	if(this->isCamera())
+		return true;
+
+	return false;
 }
+
 
 //
 //	The purpose of this method is to compare object attributes and inherit them if appropriate.
@@ -104,11 +124,12 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 
 bool mtap_MayaObject::needsAssembly()
 {
-	// in IPR mode we recreate the whole maya hierarchy because I don't know
-	// any way to detect if an object has been modified that is not directly manipulated.
-	// e.g. an object in a hierarchy below the current object. 
-	//
-	// This means that I translate all transform nodes as assemblies and place them into their parents.
+	// Normally only a few nodes would need a own assembly.
+	// In IPR we have an update problem: If in a hierarchy a transform node is manipulated,
+	// there is no way to find out that a geometry node below has to be updated, at least I don't know any.
+	// Maybe I have to parse the hierarchy below and check the nodes for a geometry/camera/light node.
+	// So at the moment I let all transform nodes receive their own transforms. This will result in a 
+	// translation of the complete hierarchy as assemblies/assembly instances.	
 	if(this->scenePtr->renderType == MayaScene::IPR)
 	{
 		if( this->isTransform())
@@ -155,11 +176,13 @@ bool mtap_MayaObject::needsAssembly()
 
 
 //
-//	At the moment only meshes are supported
+//	At the moment only meshes are supported - shapes!
 //
 bool mtap_MayaObject::isGeo()
 {
 	if( this->mobject.hasFn(MFn::kMesh))
+		return true;
+	if( this->scenePtr->isLight(this->mobject))
 		return true;
 	return false;
 }

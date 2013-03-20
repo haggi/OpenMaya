@@ -273,8 +273,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 				}
 
 				// calculate numtiles
-				int numTX = ceil((float)width/(float)mayaScenePtr->renderGlobals->tilesize);
-				int numTY = ceil((float)height/(float)mayaScenePtr->renderGlobals->tilesize);
+				int numTX = (int)ceil((float)width/(float)mayaScenePtr->renderGlobals->tilesize);
+				int numTY = (int)ceil((float)height/(float)mayaScenePtr->renderGlobals->tilesize);
 				numTiles = numTX * numTY;
 
 				mayaScenePtr->startRenderThread();

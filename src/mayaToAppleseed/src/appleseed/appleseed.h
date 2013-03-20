@@ -94,7 +94,7 @@ public:
 	void defineDefaultLight();
 	void defineLights();
 	void defineLight(mtap_MayaObject *obj);
-	void defineLight(mtap_MayaObject *obj, asr::Assembly *ass);
+	void defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bool update = false);
 	bool isSunLight(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
@@ -116,9 +116,11 @@ public:
 	void updateEnv(MObject shaderObj);
 	void updateShader( MObject shaderObj);
 	void updateTransform(mtap_MayaObject *obj);
-	void updateDeform(mtap_MayaObject *obj);
+	//void updateDeform(mtap_MayaObject *obj);
+	void updateShape(mtap_MayaObject *obj);
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
-	void defineCamera(bool updateCamera = false);
+	//void defineCamera(bool updateCamera = false);
+	void updateCamera(bool shape = true);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
