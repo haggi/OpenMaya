@@ -1,22 +1,22 @@
-#ifndef MTAP_MAYA_SCENE
-#define MTAP_MAYA_SCENE
+#ifndef mt@_MAYA_SCENE
+#define mt@_MAYA_SCENE
 
 #include <maya/MDagPathArray.h>
 #include <fstream>
 #include <map>
 
 #include "mayaScene.h"
-#include "mtap_renderGlobals.h"
-#include "mtap_MayaObject.h"
-#include "../appleseed/appleseed.h"
+#include "mt@_renderGlobals.h"
+#include "mt@_MayaObject.h"
+#include "../@/@.h"
 #include "utilities/MiniMap.h"
 
 
-class mtap_MayaScene : public MayaScene
+class mt@_MayaScene : public MayaScene
 {
 public:
-	AppleRender::AppleseedRenderer mtap_renderer;
-	mtap_RenderGlobals *renderGlobals;
+	AppleRender::@Renderer mt@_renderer;
+	mt@_RenderGlobals *renderGlobals;
 	MayaObject *defaultCamera; // needed for motionblur calculation
 	
 	//std::map<MayaObject *, MObject> mayaObjMObjMap;
@@ -40,12 +40,11 @@ public:
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
 	virtual bool postParseCallback();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
-	mtap_MayaObject *getMayaObjectFromMap(MObject& mobj);
+	mt@_MayaObject *getMayaObjectFromMap(MObject& mobj);
 	bool parseScene(ParseType ptype = NORMALPARSE);
-	asr::Assembly *createAssembly(mtap_MayaObject *obj);
-	mtap_MayaScene();
-	mtap_MayaScene(RenderType rtype);
-	~mtap_MayaScene();
+	mt@_MayaScene();
+	mt@_MayaScene(RenderType rtype);
+	~mt@_MayaScene();
 };
 
 

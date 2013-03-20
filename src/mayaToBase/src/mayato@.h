@@ -6,13 +6,13 @@
 #include <maya/MSyntax.h>
 #include <maya/MString.h>
 
-#define MAYATOCMDNAME "mayatoappleseed"
+#define MAYATOCMDNAME "mayato@"
 
-class  MayaToAppleseed: public MPxCommand
+class  MayaTo@: public MPxCommand
 {
 public:
-					MayaToAppleseed();
-	virtual			~MayaToAppleseed(); 
+					MayaTo@();
+	virtual			~MayaTo@(); 
 	static MSyntax	newSyntax();
 
 	MStatus     	doIt( const MArgList& args );

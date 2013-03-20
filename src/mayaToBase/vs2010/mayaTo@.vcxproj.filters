@@ -24,7 +24,7 @@
     <Filter Include="ressources">
       <UniqueIdentifier>{f40734d1-1307-4116-8ce5-7bd286f02559}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\appleseed">
+    <Filter Include="Source Files\@">
       <UniqueIdentifier>{831bd360-ab0c-4180-b2e7-a04f84982b9c}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\memory">
@@ -39,7 +39,7 @@
     <Filter Include="common\dummyRenderer">
       <UniqueIdentifier>{22efe55d-4c09-4cb3-89fe-aa87930770de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="mtap_common">
+    <Filter Include="mt@_common">
       <UniqueIdentifier>{70de2472-49c1-4d70-b529-399a19d3cda2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -89,7 +89,7 @@
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp">
       <Filter>common\threads</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mayatoappleseed.cpp">
+    <ClCompile Include="..\src\mayato@.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\pluginMain.cpp">
@@ -107,62 +107,38 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_aoShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\@\@.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_aoVoxelShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\@\@Geometry.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_constantShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\@\@Lights.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_diagnosticShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\mt@_common\mt@_mayaObject.cpp">
+      <Filter>mt@_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_fastSSSShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\mt@_common\mt@_mayaScene.cpp">
+      <Filter>mt@_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_pysicalSurfaceShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\mt@_common\mt@_renderGlobals.cpp">
+      <Filter>mt@_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_smokeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\mt@_common\mt@_renderGlobalsNode.cpp">
+      <Filter>mt@_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_wireframeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
+    <ClCompile Include="..\src\@\mt@_rendererController.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseed.cpp">
-      <Filter>Source Files\appleseed</Filter>
+    <ClCompile Include="..\src\@\mt@_tileCallback.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp">
-      <Filter>Source Files\appleseed</Filter>
+    <ClCompile Include="..\src\@\@Shaders.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedLights.cpp">
-      <Filter>Source Files\appleseed</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp">
-      <Filter>mtap_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp">
-      <Filter>mtap_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp">
-      <Filter>mtap_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp">
-      <Filter>mtap_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp">
-      <Filter>Source Files\appleseed</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp">
-      <Filter>Source Files\appleseed</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedShaders.cpp">
-      <Filter>Source Files\appleseed</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedUtils.cpp">
-      <Filter>Source Files\appleseed</Filter>
+    <ClCompile Include="..\src\@\@Utils.cpp">
+      <Filter>Source Files\@</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,53 +199,29 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h">
       <Filter>common\utilities</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_aoShader.h">
-      <Filter>Source Files\shaders</Filter>
+    <ClInclude Include="..\src\@\@.h">
+      <Filter>Source Files\@</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_constantShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_diagnosticShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_fastSSSShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_physicalSurfaceShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_smokeShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_wireframeShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\appleseed\appleseed.h">
-      <Filter>Source Files\appleseed</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mayatoappleseed.h">
+    <ClInclude Include="..\src\mayato@.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtap_common\mtap_MayaObject.h">
-      <Filter>mtap_common</Filter>
+    <ClInclude Include="..\src\mt@_common\mt@_MayaObject.h">
+      <Filter>mt@_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h">
-      <Filter>mtap_common</Filter>
+    <ClInclude Include="..\src\mt@_common\mt@_mayaScene.h">
+      <Filter>mt@_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h">
-      <Filter>mtap_common</Filter>
+    <ClInclude Include="..\src\mt@_common\mt@_renderGlobals.h">
+      <Filter>mt@_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h">
-      <Filter>mtap_common</Filter>
+    <ClInclude Include="..\src\mt@_common\mt@_renderGlobalsNode.h">
+      <Filter>mt@_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\appleseed\mtap_rendererController.h">
-      <Filter>Source Files\appleseed</Filter>
+    <ClInclude Include="..\src\@\mt@_rendererController.h">
+      <Filter>Source Files\@</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\appleseed\mtap_tileCallback.h">
-      <Filter>Source Files\appleseed</Filter>
+    <ClInclude Include="..\src\@\mt@_tileCallback.h">
+      <Filter>Source Files\@</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
