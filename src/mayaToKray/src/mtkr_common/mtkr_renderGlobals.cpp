@@ -300,7 +300,7 @@ bool mtkr_RenderGlobals::getMtkrGlobals()
 
 		this->sceneRotMatrix.setToIdentity();
 		MTransformationMatrix tm(this->sceneRotMatrix);
-		MEulerRotation euler(M_PI, 0.0, 0.0, MEulerRotation::RotationOrder::kXYZ);
+		MEulerRotation euler(M_PI, 0.0, 0.0, MEulerRotation::kXYZ);
 		tm.rotateBy(euler, MSpace::kWorld);
 		this->sceneRotMatrix = tm.asMatrix();
 

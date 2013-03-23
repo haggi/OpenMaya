@@ -338,6 +338,7 @@ namespace krayRender
 				this->defineBackground();
 				this->defineEnvironment();
 				this->pro->echo("Rendering....");
+				
 				//this->pro->groupSelect("Testgroup");
 				//this->pro->instanceAdd("name", vec, ax);
 				this->pro->showInfo_all();

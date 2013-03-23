@@ -133,9 +133,10 @@ namespace krayRender{
 			MString imagePath;
 			if(getConnectedFileTexturePath(MString("environmentMap"), MString("krayGlobals"), imagePath))
 			{
-			//Kray::BitmapSymbol bmp(imagePath.asChar(), *this->pro);
-			//Kray::Vector ax, az;
-			//this->pro->background_bitmap(bmp, ax, az);
+				Kray::BitmapSymbol bmp(imagePath.asChar(), *this->pro);
+				//this->pro->bitmap(bmp);
+				Kray::Vector ax, az;
+				this->pro->background_bitmap(bmp, ax, az);
 			}else{
 				logger.error("Could not set fileTextureNode.");
 			}

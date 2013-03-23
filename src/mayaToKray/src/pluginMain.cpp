@@ -3,9 +3,10 @@
 
 #include "mayatokray.h"
 #include "mtkr_common/mtkr_renderGlobalsNode.h"
+#include "shaders/krayMaterial.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.2"
+#define VERSION "0.1"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -20,6 +21,15 @@ MStatus initializePlugin( MObject obj )
 		status.perror("cannot register command: mayatokray");
 		return status;
 	}
+
+	status = plugin.registerNode( KrayMaterialName, KrayMaterial::id, 
+			KrayMaterial::creator, KrayMaterial::initialize, MPxNode::kDependNode,
+			&UserClassify);
+	if (!status) {
+		status.perror("cannot register node: KrayMaterial");
+		return status;
+	}
+
 
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
@@ -65,6 +75,19 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
    
+	std::cout << "deregister KrayMaterial shader\n";
+	status = plugin.deregisterNode( KrayMaterial::id);
+	if (!status) {
+		status.perror("cannot deregister node: KrayMaterial");
+		return status;
+	}
+
+	std::cout << "update mtkr shader ui\n";
+	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
+	command += UserClassify;
+	command += "\");}\n";
+	CHECK_MSTATUS( MGlobal::executeCommand( command ) );
+
 	std::cout << "minit.unregister()\n";
 	MString cmd = MString("import mtkr_initialize as minit; minit.unregister()");
 	status = MGlobal::executePythonCommand(cmd);

@@ -12,7 +12,7 @@
 #include "kraysdk/type/axes.h"
 
 #include "kraysdk/proto/direct.h"
-#include "kraysdk/SharedSources/libraryDir.h"
+//#include "kraysdk/SharedSources/libraryDir.h"
 #include "kraysdk/kray.h"
 #include "kraysdk/proto/offline.h"
 
@@ -78,6 +78,7 @@ namespace krayRender
 
 		std::vector<mtkr_MayaObject *> interactiveUpdateList;
 		std::vector<MObject> interactiveUpdateMOList;
+		std::vector<Kray::Symbol *> krayMaterialList; // this is a list of all already defined materials
 
 		void updateTransform(mtkr_MayaObject *obj);	// updates the transform node in renderer
 		void updateDeform(mtkr_MayaObject *obj);	// updates the mesh deform node in renderer
@@ -85,8 +86,9 @@ namespace krayRender
 		void defineCamera();
 		void defineSampling();
 		void defineGeometry(mtkr_MayaObject *obj);
-		void defineMesh(mtkr_MayaObject *obj);
+		Kray::MeshSymbol *defineMesh(mtkr_MayaObject *obj);
 		void writeImageFile(MString fileName);
+		void defineObjectMaterial(mtkr_MayaObject *obj);
 
 		void defineFilter();
 		void definePixelOrder();

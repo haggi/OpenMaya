@@ -186,14 +186,14 @@
       <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
+      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray_maya2013.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaToKray.pch</PrecompiledHeaderOutputFile>
@@ -202,14 +202,14 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;KrayLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Debug\mayaToKray.mll</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;c:\Users\haggi\coding\C++Libraries\Boost147_2010\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;c:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\OpenMaya\src\mayaToKray\devkit\KraySDK3\lib\Debug</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Debug/mayaToKray.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToKray.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray.mll</Command>
+      <Command>copy Debug\mayaToKray.mll ..\mtkr_devmodule\plug-ins\mayaToKray_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
@@ -311,6 +311,7 @@
     <ClCompile Include="..\src\mtkr_common\mtkr_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtkr_common\mtkr_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\krayMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -333,7 +334,6 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\kray\krayEventListener.h" />
-    <ClInclude Include="..\src\kray\krayMaterials.h" />
     <ClInclude Include="..\src\kray\krayRenderer.h" />
     <ClInclude Include="..\src\kray\krayTestScene.h" />
     <ClInclude Include="..\src\kray\krayUtils.h" />
@@ -342,6 +342,7 @@
     <ClInclude Include="..\src\mtkr_common\mtkr_mayaScene.h" />
     <ClInclude Include="..\src\mtkr_common\mtkr_renderGlobals.h" />
     <ClInclude Include="..\src\mtkr_common\mtkr_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\shaders\krayMaterial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

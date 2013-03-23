@@ -75,7 +75,7 @@ void mtkr_MayaScene::transformUpdateCallback(MayaObject *mobj)
 //	will be called for every geometry deform step
 //	the very first time it will create an assembly and fill it with data
 //
-void mtkr_MayaScene::deformUpdateCallback(MayaObject *mobj)
+void mtkr_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtkr_MayaObject *obj = (mtkr_MayaObject *)mobj;
 	logger.trace(MString("mtkr_MayaScene::deformUpdateCallback"));

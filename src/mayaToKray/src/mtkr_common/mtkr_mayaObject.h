@@ -4,6 +4,8 @@
 #include <maya/MMatrix.h>
 
 #include "mayaObject.h"
+#include "kraysdk/kray.h"
+#include "kraysdk/symbol/symbol.h"
 
 class mtkr_MayaObject;
 
@@ -25,6 +27,10 @@ public:
 
 	virtual bool geometryShapeSupported();
 	virtual mtkr_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+
+	std::vector<Kray::Symbol *> krayMaterialList; 
+	//Kray::Symbol *getKrayMaterial(MString materialName);
+	
 	bool isTransform();
 	bool isGeo();
 };

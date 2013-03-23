@@ -1,6 +1,7 @@
 #include "krayUtils.h"
 #include "utilities/tools.h"
 #include <maya/MEulerRotation.h>
+#include <maya/MPlug.h>
 
 #include "krayRenderer.h"
 
@@ -53,4 +54,22 @@ void MatrixToRotPos(MMatrix& mayaMatrix, Kray::Vector& kpos, Kray::AxesHpb& krot
 
 	kpos = Kray::Vector(mPosMatrix);
 	krot = Kray::AxesHpb(mRotMatrix);
+}
+
+bool getConnectedFileTexture(MFnDependencyNode& depFn, MString& attribute, MString& fileName)
+{
+	MStatus stat;
+	MPlug thisPlug = depFn.findPlug(attribute, &stat);
+	if( !stat )
+		return false;
+	MObject otherSideNode = getOtherSideNode(thisPlug);
+	if( !otherSideNode.hasFn(MFn::kFileTexture))
+		return false;
+	MFnDependencyNode fileNode(otherSideNode);
+	MPlug ftn = fileNode.findPlug("fileTextureName", &stat);
+	if(!stat)
+		return false;
+	
+	fileName = ftn.asString();
+	return true;
 }
