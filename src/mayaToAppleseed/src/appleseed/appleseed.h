@@ -116,10 +116,8 @@ public:
 	void updateEnv(MObject shaderObj);
 	void updateShader( MObject shaderObj);
 	void updateTransform(mtap_MayaObject *obj);
-	//void updateDeform(mtap_MayaObject *obj);
 	void updateShape(mtap_MayaObject *obj);
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
-	//void defineCamera(bool updateCamera = false);
 	void updateCamera(bool shape = true);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();

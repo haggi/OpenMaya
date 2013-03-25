@@ -5,6 +5,7 @@ import traceback
 import sys
 import os
 import optimizeTextures
+import AETemplates
 
 reload(Renderer)
 
@@ -515,7 +516,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
 
-
+    def aeTemplateCallback(self, nodeName):
+        log.debug("aeTemplateCallback: " + nodeName)
+        AETemplates.AEappleseedNodeTemplate(nodeName)
+        
 def theRenderer():
     return AppleseedRenderer.theRenderer()
         

@@ -18,11 +18,11 @@ public:
 
 private:
 //	------------- automatically created attributes start ----------- // 
-static    MObject environmentType;
-static    MObject environmentColor;
-static    MObject samplingSubdivAA;
-static    MObject samplingAdaptiveSteps;
-static    MObject samplingAdaptiveThresh;
+	int samplingSubdivAA;
+	int samplingAdaptiveSteps;
+	float samplingAdaptiveThresh;
+	int environmentType;
+	MColor environmentColor;
 //	------------- automatically created attributes end ----------- // 
 };
 

@@ -260,31 +260,64 @@ global proc updateMayaImageFormatControl()
 
     def registerNodeExtensions(self):
         pass
+
+    def hyperShadePanelBuildCreateMenuCallback(self):
+        log.debug("hyperShadePanelBuildCreateMenuCallback")
+        pm.menuItem(label="OpenMayaRenderer")
+        pm.menuItem(divider=True)
     
+    def hyperShadePanelBuildCreateSubMenuCallback(self):
+        log.debug("hyperShadePanelBuildCreateSubMenuCallback")
+        return "shader/surface"
+    
+    def buildRenderNodeTreeListerContentCallback(self, tl, postCommand, filterString):
+        log.debug("buildRenderNodeTreeListerContentCallback")        
+
+        melCmd = "addToRenderNodeTreeLister( {0}, {1}, {2}, {3}, {4}, {5});".format(tl, postCommand, "myRenderer/test", "", "", "")
+        pm.mel.eval(melCmd)
+#        global proc addToRenderNodeTreeLister(
+#            string $renderNodeTreeLister,
+#            string $postCommand,
+#            string $frame,
+#            string $classification,
+#            string $as,
+#            string $flag)
+    
+    def aeTemplateCallback(self, nodeName):
+        log.debug("aeTemplateCallback: " + nodeName)
+        
     def registerAETemplateCallbacks(self):
         log.debug("registerAETemplateCallbacks")
         # callback is defined as mel script, didn't work as pymel command.. 
-        aeCallbackName = "AE{0}NodeCallback".format(self.rendererName)
-        #aeCallbackName = "AEappleSeedNodeCallback"
-        aeCallbackString = "callbacks -addCallback %s -hook AETemplateCustomContent -owner %s;" % (aeCallbackName, self.pluginName)
-        pm.mel.eval(aeCallbackString)
+        #aeCallbackName = "AE{0}NodeCallback".format(self.rendererName)
+        #aeCallbackString = "callbacks -addCallback {0} -hook AETemplateCustomContent -owner {1};".format(aeCallbackName, self.pluginName)
+        #pm.mel.eval(aeCallbackString)
+
+        pm.callbacks(addCallback=self.aeTemplateCallback, hook='AETemplateCustomContent', owner=self.pluginName)
+        
+
+#        aeCallbackName = "{0}hyperShadePanelBuildCreateMenuCallback"
+#        aeCallbackString = "callbacks -addCallback {0} -hook hyperShadePanelBuildCreateMenu -owner {1};".format(aeCallbackName, self.pluginName)
+#
+#        aeCallbackName = "{0}hyperShadePanelBuildCreateSubMenuCallback".format(self.rendererName)
+#        aeCallbackString = "callbacks -addCallback {0} -hook hyperShadePanelBuildCreateSubMenu -owner {1};".format(aeCallbackName, self.pluginName)
+
+        pm.callbacks(addCallback=self.hyperShadePanelBuildCreateMenuCallback, hook='hyperShadePanelBuildCreateMenu', owner=self.pluginName)
+        pm.callbacks(addCallback=self.hyperShadePanelBuildCreateSubMenuCallback, hook='hyperShadePanelBuildCreateSubMenu', owner=self.pluginName)
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
         aeTemplateImportName = aeTemplateName
-        #aeTemplateImportName = "AETemplate." + aeTemplateName
-        #if pm.about(p=True) == "Maya 2014":
-        #    aeTemplateImportName = "AETemplate." + aeTemplateName
+
         
-        #aeTemplate = "AEappleSeedNodeTemplate"
-        aeCallbackProc = "global proc " + aeCallbackName + "(string $nodeName)\n"
-        aeCallbackProc += "{\n"
-        aeCallbackProc += "\tprint(\"executing aenodecallbacktemplate.\");\n"
-        #aeCallbackProc += "string $cmd = \"import AETemplates." + aeTemplateImportName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
-        aeCallbackProc += "string $cmd = \"import AETemplates as aet; aet." + aeTemplateImportName + "(\\\"\" + $nodeName + \"\\\")\";\n"
-        aeCallbackProc += "python($cmd);\n"
-        aeCallbackProc += "}\n"
-        log.debug("aeCallback: " + aeCallbackProc)
-        pm.mel.eval(aeCallbackProc)
+#        aeCallbackProc = "global proc " + aeCallbackName + "(string $nodeName)\n"
+#        aeCallbackProc += "{\n"
+#        aeCallbackProc += "\tprint(\"executing aenodecallbacktemplate.\");\n"
+#        #aeCallbackProc += "string $cmd = \"import AETemplates." + aeTemplateImportName + " as aet; aet." + aeTemplateName + "(\\\"\" + $nodeName + \"\\\")\";\n"
+#        aeCallbackProc += "string $cmd = \"import AETemplates as aet; aet." + aeTemplateImportName + "(\\\"\" + $nodeName + \"\\\")\";\n"
+#        aeCallbackProc += "python($cmd);\n"
+#        aeCallbackProc += "}\n"
+#        log.debug("aeCallback: " + aeCallbackProc)
+#        pm.mel.eval(aeCallbackProc)
     
     
     def registerRenderer(self):

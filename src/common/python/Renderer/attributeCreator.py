@@ -1,32 +1,40 @@
 import path
 import logging
 import shutil
+import os
 
 log = logging
 
 START_ID = "automatically created attributes start"
 END_ID = "automatically created attributes end"
 
+# an automatic attibute is defined as follows:
+# attributeName, type, displayName, defaultValue, options
+# e.g.
+# samples, int, Shading Samples, 2
+# filters, enum, Pixel Filter, 0, Mitchell:Gauss:Triangle
+# bgColor, color, Background Color, 0.4:0.5:0.7
+
 def makeEnum(att):
-    string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &stat);\n".format(att[0], att[2])
-    for index, v in enumerate(att[3].split(":")):
+    string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &stat);\n".format(att[0], att[3])
+    for index, v in enumerate(att[4].split(":")):
         string += "\tstat = eAttr.addField( \"{0}\", {1} );\n".format(v, index) 
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
 def makeInt(att):
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(att[0], att[2])
+    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(att[0], att[3])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
     
 def makeFloat(att):
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(att[0], att[2])
+    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(att[0], att[3])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
 def makeBool(att):
     ba = ["false", "true"]
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(att[0], ba[int(att[2])])
+    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(att[0], ba[int(att[3])])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -36,7 +44,7 @@ def makeColor(att):
 #    nAttr.setConnectable(false);
 #    CHECK_MSTATUS(addAttribute( environmentColor ));
     string = "\t{0} = nAttr.createColor(\"{0}\", \"{0}\");\n".format(att[0])
-    string += "\tnAttr.setDefault({0});\n".format(att[2])
+    string += "\tnAttr.setDefault({0});\n".format(",".join(att[3].split(":")))
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -61,6 +69,8 @@ def fillNodeCPP(renderer, fileName, attArray):
             start_id_found = True
             newContent.append(value + "\n")
             for att in attArray:
+                if att[0].startswith("#"):
+                    continue
                 #MObject MayaToKrayGlobals::caustics;
                 if staticDefToDo:
                     attString = "MObject " + globalsName + "::" + att[0] + ";\n"
@@ -106,6 +116,8 @@ def fillNodeH(fileName, attArray):
             start_id_found = True
             newContent.append(value)
             for att in attArray:
+                if att[0].startswith("#"):
+                    continue
                 print "AttArray", att
                 attString = "static    MObject " + att[0] + ";\n"
                 newContent.append(attString)
@@ -134,6 +146,8 @@ def fillCPP(renderer, fileName, attArray):
             start_id_found = True
             newContent.append(value)
             for att in attArray:
+                if att[0].startswith("#"):
+                    continue
                 attString = ""
                 
                 if att[1] == "enum":
@@ -176,6 +190,8 @@ def fillH(fileName, attArray):
             start_id_found = True
             newContent.append(value)
             for att in attArray:
+                if att[0].startswith("#"):
+                    continue
                 attString = ""
                 if att[1] == "enum":
                     attString = "\tint {0};\n".format(att[0])
@@ -194,15 +210,25 @@ def fillH(fileName, attArray):
             if not start_id_found: 
                 newContent.append(value)
 
-    fh = open(fileName + "_t", "w")
+    fh = open(fileName, "w")
     fh.writelines(newContent)
     fh.close()
 
+def pyRGCreator(renderer, shortCut):
+    pass
+
 def attributeCreator(renderer, shortCut):
     log.debug("attribute creator for renderer " + renderer)
-    
-    basePath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + renderer.capitalize())
-    
+
+    basePath = None
+    if os.name == 'nt':
+        basePath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + renderer.capitalize())
+    else:
+        pass
+    if not basePath:
+        print "No base path"
+        return
+        
     attributesFile = basePath + "/vs2010/sourceCodeDocs/globalsNodeAttributes.txt"
     
     globalsNodeCpp = basePath + "/src/" + shortCut + "_common/mtco_renderGlobalsNode.cpp"
@@ -218,8 +244,12 @@ def attributeCreator(renderer, shortCut):
     attArray = []
     for att in attributes:
         att = att.strip()
-        values = att.split(" ")
-        attArray.append(values)
+        values = att.split(",")
+        values = [a.strip() for a in values]
+        print values
+        if len(values) > 0:
+            if len(values[0]) > 0:
+                attArray.append(values)
 
     fillNodeH(globalsNodeH, attArray)
     fillNodeCPP(renderer, globalsNodeCpp, attArray)

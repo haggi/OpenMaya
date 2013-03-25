@@ -9,11 +9,11 @@ MTypeId	MayaToCoronaGlobals::id(0x00106EF3);
 
 //	------------- automatically created attributes start ----------- // 
 
-MObject MayaToCoronaGlobals::environmentType;
-MObject MayaToCoronaGlobals::environmentColor;
 MObject MayaToCoronaGlobals::samplingSubdivAA;
 MObject MayaToCoronaGlobals::samplingAdaptiveSteps;
 MObject MayaToCoronaGlobals::samplingAdaptiveThresh;
+MObject MayaToCoronaGlobals::environmentType;
+MObject MayaToCoronaGlobals::environmentColor;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -41,15 +41,6 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 //	------------- automatically created attributes start ----------- // 
 
-	environmentType = eAttr.create("environmentType", "environmentType", 0, &stat);
-	stat = eAttr.addField( "Gradient", 0 );
-	stat = eAttr.addField( "PhysicalSky", 1 );
-	CHECK_MSTATUS(addAttribute( environmentType ));
-
-	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
-	nAttr.setDefault(.3,.7,.5);
-	CHECK_MSTATUS(addAttribute( environmentColor ));
-
 	samplingSubdivAA = nAttr.create("samplingSubdivAA", "samplingSubdivAA",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( samplingSubdivAA ));
 
@@ -58,6 +49,15 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	samplingAdaptiveThresh = nAttr.create("samplingAdaptiveThresh", "samplingAdaptiveThresh",  MFnNumericData::kFloat, 0.03);
 	CHECK_MSTATUS(addAttribute( samplingAdaptiveThresh ));
+
+	environmentType = eAttr.create("environmentType", "environmentType", 0, &stat);
+	stat = eAttr.addField( "Gradient", 0 );
+	stat = eAttr.addField( "PhysicalSky", 1 );
+	CHECK_MSTATUS(addAttribute( environmentType ));
+
+	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
+	nAttr.setDefault(.3,.7,.5);
+	CHECK_MSTATUS(addAttribute( environmentColor ));
 
 //	------------- automatically created attributes end ----------- // 
 

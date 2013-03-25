@@ -1,0 +1,3 @@
+#tab common
+sampling, int, Sampling, 2
+filter, enum, Filter Type, 0, Mitchell:Gauss:Triangle 

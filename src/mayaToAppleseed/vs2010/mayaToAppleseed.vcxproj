@@ -232,7 +232,7 @@
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -274,7 +274,7 @@
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\deployment\mayaToAppleseed\plug-ins\mayatoappleseed_maya2013.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -286,6 +286,7 @@
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
@@ -328,6 +329,7 @@
     <ClInclude Include="..\..\common\cpp\mayaScene.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />

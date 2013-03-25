@@ -54,12 +54,6 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		}
 
 //	------------- automatically created attributes start ----------- // 
-		if(!getEnum(MString("environmentType"), coronaGlobals, this->environmentType));
-		throw("problem reading coronaGlobals.environmentType");
-
-		if(!getColor(MString("environmentColor"), coronaGlobals, this->environmentColor));
-		throw("problem reading coronaGlobals.environmentColor");
-
 		if(!getInt(MString("samplingSubdivAA"), coronaGlobals, this->samplingSubdivAA));
 		throw("problem reading coronaGlobals.samplingSubdivAA");
 
@@ -68,6 +62,12 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 
 		if(!getFloat(MString("samplingAdaptiveThresh"), coronaGlobals, this->samplingAdaptiveThresh));
 		throw("problem reading coronaGlobals.samplingAdaptiveThresh");
+
+		if(!getEnum(MString("environmentType"), coronaGlobals, this->environmentType));
+		throw("problem reading coronaGlobals.environmentType");
+
+		if(!getColor(MString("environmentColor"), coronaGlobals, this->environmentColor));
+		throw("problem reading coronaGlobals.environmentColor");
 
 //	------------- automatically created attributes end ----------- // 
 		
