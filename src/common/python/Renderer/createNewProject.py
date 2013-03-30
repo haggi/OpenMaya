@@ -21,6 +21,8 @@ def replaceStringInFile(fileName, rendererName, shortCut):
     fh.close()
     
     for index, string in enumerate(content):
+        if "@staticmethod" in string:
+            continue
         string = string.replace(r'@Renderer', rendererName.capitalize()+"Renderer")
         string = string.replace(r'mt@_', shortCut + "_")    
         string = string.replace(r'@.', rendererName + ".")
@@ -58,7 +60,6 @@ def createNewProject(rendererName=None, shortCut=None):
             print f
             destElement = f.replace(sourceDirBase, destDirBase)
             destElement = replaceString(destElement, rendererName, shortCut)
-            print destElement
             destElement = path.path(destElement)
             if f.isfile():
                 if not destElement.exists():
@@ -66,7 +67,7 @@ def createNewProject(rendererName=None, shortCut=None):
                     shutil.copy(f, destElement)
                     replaceStringInFile(destElement, rendererName, shortCut)
             if f.isdir():
-                print "Is Dir"
+                #print "Is Dir"
                 if not destElement.exists():
                     print "Making dir", destElement
                     destElement.makedirs()

@@ -11,7 +11,8 @@ public:
 	virtual void updateShape(MayaObject *obj) = 0;
 	virtual void updateTransform(MayaObject *obj) = 0;
 	virtual void IPRUpdateEntities() = 0;
-
+	virtual void reinitializeIPRRendering() = 0;
+	virtual void abortRendering() = 0;
 private:
 
 };

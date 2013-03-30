@@ -23,14 +23,21 @@ static Logging logger;
 
 MayaScene::MayaScene(RenderType rtype)
 {
+	this->cando_ipr = false;
 	this->good = true;
 	this->renderType = rtype;
 }
 
 MayaScene::MayaScene()
 {
+	this->cando_ipr = false;
 	this->good = true;
 	this->renderType = NORMAL;
+}
+
+bool MayaScene::canDoIPR()
+{
+	return this->cando_ipr;
 }
 
 MayaScene::~MayaScene()
@@ -1113,6 +1120,13 @@ bool MayaScene::renderScene()
 {
 	logger.info("MayaScene::renderScene()");
 	this->getPasses();
+
+	if( this->renderType == IPR )
+		if(!this->canDoIPR())
+		{
+			logger.warning("Sorry this renderer cannot render in IPR mode.");
+			return false;
+		}
 
 	if(!this->doPreRenderJobs())
 	{

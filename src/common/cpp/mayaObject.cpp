@@ -21,6 +21,22 @@ bool MayaObject::isCamera()
 	return false;
 }
 
+bool MayaObject::isGeo()
+{
+	if( this->mobject.hasFn(MFn::kMesh))
+		return true;
+	if( this->isLight())
+		return true;
+	return false;
+}
+
+bool MayaObject::isTransform()
+{
+	if( this->mobject.hasFn(MFn::kTransform))
+		return true;
+	return false;
+}
+
 // check if the node or any of its parents has a animated visibility
 bool  MayaObject::isVisiblityAnimated()
 {

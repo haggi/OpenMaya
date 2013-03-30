@@ -393,8 +393,14 @@ global proc updateMayaImageFormatControl()
         self.createGlobalsNode()        
         self.createImageFormats()
         #self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats")
-        self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats", cc=pm.Callback(self.imageFormatCallback))                    
+        
+        if pm.optionMenuGrp("openMayaImageFormats", q=True, exists=True):
+            pm.deleteUI("openMayaImageFormats")
+            
+        self.imageFormatCtrl = pm.optionMenuGrp("openMayaImageFormats",label="Image Formats", cc=pm.Callback(self.imageFormatCallback))                    
+        
         for pr in self.imageFormats:
+            log.debug("adding image format: " + pr)
             pm.menuItem(pr)
         #pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.imageFormatCallback)], parent = self.imageFormatCtrl)
         return self.imageFormatCtrl
@@ -405,9 +411,11 @@ global proc updateMayaImageFormatControl()
         selectedItem = self.renderGlobalsNode.imageFormat.get()
         enums = self.renderGlobalsNode.imageFormat.getEnums()
         selectedValue = "---"
+        print enums, "Selected item", selectedItem
         for key in enums.keys():
             if enums[key] == selectedItem:
                 selectedValue = key
+        log.debug("updateImageFormatControls format: " + selectedValue)        
         self.imageFormatCtrl.setValue(selectedValue)
 
     def imageFormatCallback(self):

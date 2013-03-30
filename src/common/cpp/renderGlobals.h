@@ -3,6 +3,7 @@
 
 #include <maya/MObject.h>
 #include <maya/MString.h>
+#include <maya/MMatrix.h>
 #include <vector>
 
 // Render pass definition goes into the global framework because most of the known passses are
@@ -163,6 +164,9 @@ public:
 
 	bool exportSceneFile;
 	MString exportSceneFileName;
+	MMatrix sceneScaleMatrix;
+	float sceneScale;
+	MString optimizedTexturePath;
 
 	std::vector<RenderPass *> renderPasses;
 	RenderPass *currentRenderPass;

@@ -34,7 +34,16 @@ def makeFloat(att):
 
 def makeBool(att):
     ba = ["false", "true"]
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(att[0], ba[int(att[3])])
+    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(att[0], att[3])
+    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
+    return string
+
+def makeString(att):
+#    exportXMLFileName = tAttr.create("exportXMLFileName", "exportXMLFileName",  MFnNumericData::kString);
+#    tAttr.setUsedAsFilename(true);
+#    CHECK_MSTATUS(addAttribute( exportXMLFileName ));
+#        
+    string = "\t{0} = tAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kString);\n".format(att[0])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -45,6 +54,11 @@ def makeColor(att):
 #    CHECK_MSTATUS(addAttribute( environmentColor ));
     string = "\t{0} = nAttr.createColor(\"{0}\", \"{0}\");\n".format(att[0])
     string += "\tnAttr.setDefault({0});\n".format(",".join(att[3].split(":")))
+    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
+    return string
+
+def makeMessage(att):
+    string = "\t{0} = mAttr.create(\"{0}\", \"{0}\");\n".format(att[0])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -87,6 +101,10 @@ def fillNodeCPP(renderer, fileName, attArray):
                         attString = makeBool(att)
                     if att[1] == "color":
                         attString = makeColor(att)
+                    if att[1] == "message":
+                        attString = makeMessage(att)
+                    if att[1] == "string":
+                        attString = makeString(att)
                     newContent.append(attString)                    
             if staticDefToDo:
                 staticDefToDo = False
@@ -133,7 +151,6 @@ def fillNodeH(fileName, attArray):
     
 def fillCPP(renderer, fileName, attArray):
     print "Fill cpp"
-    print "Fill h"
     fh = open(fileName, "r")
     content = fh.readlines()
     fh.close()
@@ -151,20 +168,23 @@ def fillCPP(renderer, fileName, attArray):
                 attString = ""
                 
                 if att[1] == "enum":
-                    attString = "\t\tif(!getEnum(MString(\"{1}\"), {0}Globals, this->{1}));\n".format(renderer.lower(), att[0])
-                    attString += "\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                    attString = "\t\tif(!getEnum(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 if att[1] == "int":
-                    attString = "\t\tif(!getInt(MString(\"{1}\"), {0}Globals, this->{1}));\n".format(renderer.lower(), att[0])
-                    attString += "\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                    attString = "\t\tif(!getInt(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 if att[1] == "float":
-                    attString = "\t\tif(!getFloat(MString(\"{1}\"), {0}Globals, this->{1}));\n".format(renderer.lower(), att[0])
-                    attString += "\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                    attString = "\t\tif(!getFloat(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 if att[1] == "bool":
-                    attString = "\t\tif(!getBool(MString(\"{1}\"), {0}Globals, this->{1}));\n".format(renderer.lower(), att[0])
-                    attString += "\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                    attString = "\t\tif(!getBool(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 if att[1] == "color":
-                    attString = "\t\tif(!getColor(MString(\"{1}\"), {0}Globals, this->{1}));\n".format(renderer.lower(), att[0])
-                    attString += "\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                    attString = "\t\tif(!getColor(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                if att[1] == "string":
+                    attString = "\t\tif(!getString(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 newContent.append(attString)                    
         else:
             if END_ID in value:
@@ -203,6 +223,8 @@ def fillH(fileName, attArray):
                     attString = "\tbool {0};\n".format(att[0])
                 if att[1] == "color":
                     attString = "\tMColor {0};\n".format(att[0])
+                if att[1] == "string":
+                    attString = "\tMString {0};\n".format(att[0])
                 newContent.append(attString)                    
         else:
             if END_ID in value:
@@ -214,9 +236,60 @@ def fillH(fileName, attArray):
     fh.writelines(newContent)
     fh.close()
 
-def pyRGCreator(renderer, shortCut):
-    pass
+def pyRGCreator(pypath, attArray):
+    print "pyRGCreator with file ", pypath
+    
+    fh = open(pypath, "w")
+    fh.write("UIList = []\n")
+    
+    for att in attArray:
+        if att[0].startswith("#"):
+            if att[0].endswith("Tab"):
+                fh.write("tab = {}\n")
+                fh.write("UIList.append(tab)\n")
+                tabName = "tab['name'] = '{0}'".format(att[0].replace("#", "").replace("Tab", ""))
+                fh.write(tabName + "\n")
+                fh.write("tab['entries'] = []\n")
+            else:
+                if att[0].startswith("#frame"):
+                    fh.write('entry = {}\n')
+                    fh.write("entry['name'] = 'None'\n")
+                    fh.write("entry['type'] = 'frame'\n")
+                    fh.write("tab['entries'].append(entry)\n")
+                else:
+                    fh.write('entry = {}\n')
+                    fh.write("entry['name'] = 'None'\n")
+                    fh.write("entry['type'] = 'separator'\n")
+                    fh.write("tab['entries'].append(entry)\n")
+        else:
+            fh.write('entry = {}\n')
+            fh.write("entry['name'] = '{0}'\n".format(att[0]))
+            fh.write("entry['type'] = '{0}'\n".format(att[1]))
+            fh.write("entry['displayName'] = '{0}'\n".format(att[2]))
+            if len(att) > 3:
+                fh.write("entry['default'] = '{0}'\n".format(att[3]))
+            if len(att) > 4:
+                fh.write("entry['addInfo'] = '{0}'\n".format(att[4]))
+            fh.write("tab['entries'].append(entry)\n")
+            
+    fh.close()
 
+    for att in attArray:
+        if att[0].startswith("#"):
+            if att[0].endswith("Tab"):
+                print att[0]
+            else:
+                if att[0].startswith("#frame"):
+                    print  "with pm.frameLayout(label='{0}', collapsable = True, collapse=False):\n".format(att[0].split(" ")[1])
+                    print  "\twith pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):\n"
+                else:
+                    print "pm.separator()\n"
+        else:
+            if len(att) > 4:
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', data='{4}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3],att[4])
+            else:
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
+    
 def attributeCreator(renderer, shortCut):
     log.debug("attribute creator for renderer " + renderer)
 
@@ -231,11 +304,14 @@ def attributeCreator(renderer, shortCut):
         
     attributesFile = basePath + "/vs2010/sourceCodeDocs/globalsNodeAttributes.txt"
     
-    globalsNodeCpp = basePath + "/src/" + shortCut + "_common/mtco_renderGlobalsNode.cpp"
-    globalsNodeH = basePath + "/src/" + shortCut + "_common/mtco_renderGlobalsNode.h"
+    globalsNodeCpp = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobalsNode.cpp"
+    globalsNodeH = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobalsNode.h"
 
-    globalsCpp = basePath + "/src/" + shortCut + "_common/mtco_renderGlobals.cpp"
-    globalsH = basePath + "/src/" + shortCut + "_common/mtco_renderGlobals.h"
+    globalsCpp = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobals.cpp"
+    globalsH = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobals.h"
+
+    pyGlobals = basePath + "/" + shortCut + "_devModule/scripts/renderGlobalsUIInfo.py"
+
     
     fh = open(attributesFile, "r")
     attributes = fh.readlines()
@@ -253,8 +329,11 @@ def attributeCreator(renderer, shortCut):
 
     fillNodeH(globalsNodeH, attArray)
     fillNodeCPP(renderer, globalsNodeCpp, attArray)
-    fillH(globalsNodeH, attArray)
+    fillH(globalsH, attArray)
     fillCPP(renderer, globalsCpp, attArray)
+    
+    pyRGCreator(pyGlobals, attArray)
     
 if __name__ == "__main__":
     attributeCreator("corona", "mtco")
+    

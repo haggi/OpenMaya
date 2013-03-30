@@ -14,6 +14,7 @@ mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 {
 	this->renderGlobals = NULL;
 	this->getRenderGlobals();
+	this->cando_ipr = true;
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
@@ -23,6 +24,7 @@ mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 {
 	this->renderGlobals = NULL;
 	this->getRenderGlobals();
+	this->cando_ipr = true;
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();

@@ -38,7 +38,6 @@ MObject MayaToAppleseedGlobals::assemblySBVH;
 MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
-MObject MayaToAppleseedGlobals::optimizedTexturePath;
 MObject MayaToAppleseedGlobals::latlongHoShift;
 MObject MayaToAppleseedGlobals::latlongVeShift;
 MObject MayaToAppleseedGlobals::AOVs;
@@ -201,10 +200,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "Png", 0 );
 	stat = eAttr.addField( "Exr", 1 );
 	CHECK_MSTATUS(addAttribute( imageFormat ));
-
-	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
-	tAttr.setUsedAsFilename(true);
-	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
 
 	latlongHoShift = nAttr.create("latlongHoShift", "latlongHoShift",  MFnNumericData::kFloat, .0f);
 	CHECK_MSTATUS(addAttribute( latlongHoShift ));

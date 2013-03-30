@@ -50,6 +50,9 @@ public:
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
 
+	bool cando_ipr;
+	bool canDoIPR();
+
 	bool updateScene(); // update all necessary objects
 	bool updateInstancer(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject *) = 0;

@@ -3,6 +3,7 @@
 
 #include <maya/MTypeId.h>
 #include <maya/MString.h>
+#include <maya/MStringArray.h>
 #include <maya/MPxNode.h>
 
 
@@ -18,6 +19,7 @@ public:
 	static  MStatus		initialize();
 
 	static	MTypeId		id;
+	MStringArray	imageFormatList;
 
 private:
 
@@ -58,6 +60,8 @@ private:
 	static	  MObject exportSceneFile;
 	static	  MObject exportSceneFileName;
 	static	  MObject sceneScale;
+	//static	  MObject imageFormat;
+	static	  MObject optimizedTexturePath;
 
 public:
 	bool adaptiveSamplingDV;

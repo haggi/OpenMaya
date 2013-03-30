@@ -42,12 +42,16 @@ MObject MayaRenderGlobalsNode::maxTraceDepth;
 MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
 MObject MayaRenderGlobalsNode::sceneScale;
+MObject MayaRenderGlobalsNode::optimizedTexturePath;
+//MObject MayaRenderGlobalsNode::imageFormat;
 
 void MayaRenderGlobalsNode::postConstructor()
 {
 	MObject thisObj = thisMObject();
 	MPlug tileSize(thisObj, tilesize);
 	tileSize.setInt(this->tilesizeDV);
+	
+	// add image format list
 }
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
@@ -176,6 +180,10 @@ MStatus	MayaRenderGlobalsNode::initialize()
 
 	adaptiveSampling = nAttr.create("adaptiveSampling", "adaptiveSampling", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( adaptiveSampling ));
+
+	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
 
 	return MStatus::kSuccess;
 }
