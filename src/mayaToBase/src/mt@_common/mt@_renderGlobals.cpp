@@ -9,9 +9,13 @@ static Logging logger;
 
 mt@_RenderGlobals::mt@_RenderGlobals()
 {
-	this->getMtapGlobals();
+	this->getMt@Globals();
 }
 
+MString mt@_RenderGlobals::getImageExt()
+{
+	return MString("ext");
+}
 
 bool mt@_RenderGlobals::getMt@Globals()
 {

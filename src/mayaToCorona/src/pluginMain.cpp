@@ -65,14 +65,14 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
    
-	std::cout << "deregister mtap shader\n";
-	status = plugin.deregisterNode( mtco_surfaceShader::id);
-	if (!status) {
-		status.perror("cannot deregister node: mtco_surfaceShader");
-		return status;
-	}
+	//std::cout << "deregister mtCorona shader\n";
+	//status = plugin.deregisterNode( mtco_surfaceShader::id);
+	//if (!status) {
+	//	status.perror("cannot deregister node: mtco_surfaceShader");
+	//	return status;
+	//}
 
-	std::cout << "update mtap shader ui\n";
+	std::cout << "update mtco shader ui\n";
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
 	command += "\");}\n";

@@ -1,23 +1,23 @@
-#include "mayatoappleseed.h"
+#include "mayatoCorona.h"
 #include <maya/MGlobal.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mtap_common/mtap_mayaScene.h"
+#include "mtco_common/mtco_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 
 static Logging logger;
 
-void* MayaToAppleseed::creator()
+void* MayaToCorona::creator()
 {
-	return new MayaToAppleseed();
+	return new MayaToCorona();
 }
 
-MayaToAppleseed::MayaToAppleseed() {}
-MayaToAppleseed::~MayaToAppleseed() {}
+MayaToCorona::MayaToCorona() {}
+MayaToCorona::~MayaToCorona() {}
 
-MSyntax MayaToAppleseed::newSyntax()
+MSyntax MayaToCorona::newSyntax()
 {
 	MSyntax syntax;
 	MStatus stat;
@@ -35,10 +35,10 @@ MSyntax MayaToAppleseed::newSyntax()
 	return syntax;
 }
 
-MStatus MayaToAppleseed::doIt( const MArgList& args)
+MStatus MayaToCorona::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayatoappleseed...");
+	MGlobal::displayInfo("Executing mayatoCorona...");
 	logger.setLogLevel(Logging::Debug);
 	
 	MArgDatabase argData(syntax(), args);
@@ -83,7 +83,7 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 	}
 
 	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
-	mtap_MayaScene *mayaScene = new mtap_MayaScene(rtype);
+	mtco_MayaScene *mayaScene = new mtco_MayaScene(rtype);
 	
 	if( !mayaScene->good )
 	{
@@ -120,6 +120,6 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 		return MS::kFailure;
 	}	
 
-	MGlobal::displayInfo("mayatoappleseed rendering done.\n");
+	MGlobal::displayInfo("mayatoCorona rendering done.\n");
 	return MStatus::kSuccess;
 }

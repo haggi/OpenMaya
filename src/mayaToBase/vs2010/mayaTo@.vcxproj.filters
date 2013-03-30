@@ -42,6 +42,9 @@
     <Filter Include="mt@_common">
       <UniqueIdentifier>{70de2472-49c1-4d70-b529-399a19d3cda2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\rendering">
+      <UniqueIdentifier>{c1321075-f141-478e-bd26-f9286a239cdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -128,16 +131,19 @@
     <ClCompile Include="..\src\mt@_common\mt@_renderGlobalsNode.cpp">
       <Filter>mt@_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\@\mt@_rendererController.cpp">
-      <Filter>Source Files\@</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\@\mt@_tileCallback.cpp">
-      <Filter>Source Files\@</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\@\@Shaders.cpp">
       <Filter>Source Files\@</Filter>
     </ClCompile>
     <ClCompile Include="..\src\@\@Utils.cpp">
+      <Filter>Source Files\@</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\@\@RendererController.cpp">
+      <Filter>Source Files\@</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\@\@TileCallback.cpp">
       <Filter>Source Files\@</Filter>
     </ClCompile>
   </ItemGroup>
@@ -205,9 +211,6 @@
     <ClInclude Include="..\src\mayato@.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mt@_common\mt@_MayaObject.h">
-      <Filter>mt@_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mt@_common\mt@_mayaScene.h">
       <Filter>mt@_common</Filter>
     </ClInclude>
@@ -217,10 +220,16 @@
     <ClInclude Include="..\src\mt@_common\mt@_renderGlobalsNode.h">
       <Filter>mt@_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\@\mt@_rendererController.h">
+    <ClInclude Include="..\..\common\cpp\rendering\renderer.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mt@_common\mt@_mayaObject.h">
+      <Filter>mt@_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\@\@RendererController.h">
       <Filter>Source Files\@</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\@\mt@_tileCallback.h">
+    <ClInclude Include="..\src\@\@TileCallback.h">
       <Filter>Source Files\@</Filter>
     </ClInclude>
   </ItemGroup>

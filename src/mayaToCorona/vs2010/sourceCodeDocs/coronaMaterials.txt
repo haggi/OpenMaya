@@ -1,0 +1,15 @@
+#coronaSurface
+diffuseColor,
+reflectionColor,
+refractionColor,
+reflectionGlossiness,
+opacityColor,
+translucencyColor,
+emissionColor,
+anisotropy,
+anisotropyRotation,
+ior,
+fresnelIOR,
+bump,
+displacement,
+overriedes... 

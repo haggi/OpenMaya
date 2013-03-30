@@ -12,17 +12,19 @@ static Logging logger;
 mtco_MayaScene::mtco_MayaScene():MayaScene(MayaScene::NORMAL)
 {
 	getRenderGlobals();
+	this->cando_ipr = false;
 	this->mtco_renderer.mtco_scene = this;
-	this->mtco_renderer.renderGlobals = this->renderGlobals;
-	this->mtco_renderer.definePreRender();
+	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
+	//this->mtco_renderer.definePreRender();
 }
 
 mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 {
 	getRenderGlobals();
+	this->cando_ipr = false;
 	this->mtco_renderer.mtco_scene = this;
-	this->mtco_renderer.renderGlobals = this->renderGlobals;
-	this->mtco_renderer.definePreRender();
+	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
+	//this->mtco_renderer.definePreRender();
 	this->renderType = rtype;
 }
 
@@ -50,10 +52,6 @@ void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
 		if( obj->origObject == NULL)
 			return;
 
-		// check if the original object has its own assembly, if not no update is needed
-		if( ((mtco_MayaObject *)obj->origObject)->objectAssembly == NULL)
-			return;
-
 	}else{
 		if( obj->instancerParticleId > -1)
 		{
@@ -63,8 +61,6 @@ void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
 				return;
 			}
 		}else{
-			if( obj->objectAssembly == NULL)
-				return;
 		}
 	}
 
@@ -76,7 +72,7 @@ void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
 //	will be called for every geometry deform step
 //	the very first time it will create an assembly and fill it with data
 //
-void mtco_MayaScene::deformUpdateCallback(MayaObject *mobj)
+void mtco_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtco_MayaObject *obj = (mtco_MayaObject *)mobj;
 	logger.trace(MString("mtco_MayaScene::deformUpdateCallback"));
@@ -91,7 +87,7 @@ void mtco_MayaScene::deformUpdateCallback(MayaObject *mobj)
 		if( !obj->attributes->hasInstancerConnection )
 			return;
 	
-	this->mtco_renderer.updateDeform(obj);
+	this->mtco_renderer.updateShape(obj);
 }
 
 MayaObject *mtco_MayaScene::mayaObjectCreator(MObject& mobject)
@@ -146,7 +142,7 @@ bool mtco_MayaScene::doPreFrameJobs()
 
 	MString result;
 	MGlobal::executeCommand(this->renderGlobals->preFrameScript, result, true);
-	this->mtco_renderer.defineLights();
+	//this->mtco_renderer.defineLights();
 	return true;
 }
 
@@ -301,13 +297,14 @@ void mtco_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 		this->mtco_renderer.interactiveUpdateMOList.push_back(mobjList[i]);
 
 	if( (this->mtco_renderer.interactiveUpdateList.size() > 0) || (this->mtco_renderer.interactiveUpdateMOList.size() > 0))
-		this->mtco_renderer.mtco_controller.status = asr::IRendererController::ReinitializeRendering;
-		//this->mtco_renderer.mtco_controller.status = asr::IRendererController::RestartRendering;
+	{
+		this->mtco_renderer.reinitializeIPRRendering();
+	}
 }
 
 void mtco_MayaScene::stopRendering()
 {
-	this->mtco_renderer.mtco_controller.status = asr::IRendererController::AbortRendering;
+	this->mtco_renderer.abortRendering();
 }
 
 bool mtco_MayaScene::renderImage()
@@ -317,10 +314,10 @@ bool mtco_MayaScene::renderImage()
 
 	this->renderGlobals->getImageName();
 
-	this->mtco_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
+	//this->mtco_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
 
-	if( this->renderGlobals->exportXMLFile)
-		this->mtco_renderer.writeXML();
+	//if( this->renderGlobals->exportXMLFile)
+	//	this->mtco_renderer.writeXML();
 
 	this->mtco_renderer.render();
 

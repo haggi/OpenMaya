@@ -15,7 +15,7 @@
 class mt@_MayaScene : public MayaScene
 {
 public:
-	AppleRender::@Renderer mt@_renderer;
+	@Renderer mt@_renderer;
 	mt@_RenderGlobals *renderGlobals;
 	MayaObject *defaultCamera; // needed for motionblur calculation
 	
@@ -23,7 +23,7 @@ public:
 	MiniMap<MObject, MayaObject *> mayaObjMObjMap;
 
 	virtual void transformUpdateCallback(MayaObject *);
-	virtual void deformUpdateCallback(MayaObject *);
+	virtual void shapeUpdateCallback(MayaObject *);
 	virtual bool translateShaders(int timeStep);
 	virtual bool translateShapes(int timeStep);
 	virtual bool doPreRenderJobs();

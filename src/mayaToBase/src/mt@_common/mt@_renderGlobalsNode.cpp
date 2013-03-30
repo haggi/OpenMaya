@@ -2,6 +2,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnGenericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnMessageAttribute.h>
 
 #include "mt@_renderGlobalsNode.h"
 
@@ -31,6 +32,8 @@ MStatus	MayaTo@Globals::initialize()
 	MFnTypedAttribute tAttr;
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
+	MFnMessageAttribute mAttr;
+
 	MStatus stat = MStatus::kSuccess;
 
 //	------------- automatically created attributes start ----------- // 

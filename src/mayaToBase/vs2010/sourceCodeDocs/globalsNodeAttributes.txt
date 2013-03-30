@@ -1,3 +1,113 @@
-#tab common
-sampling, int, Sampling, 2
-filter, enum, Filter Type, 0, Mitchell:Gauss:Triangle 
+accStruct, enum, Acceleration Structure, 2, None:BVH full SAH:Embree BVH2:Embree BVH Spatial:Embree BVH4:Embree BVH4 Spatial
+embreeTris, enum, Embree Triangles, 0, Fast:Precise:Low Memory
+minInstSaving, int, Min. Inst Saving, 50000
+maxDepth, int, Max Depth, 25
+exitColor, color, Ray Exit Color, 0:0:0
+maxNormalDiff, float, Max Normal Diff, 0.55
+
+#displacement
+mode, enum, Subiv Mode, 0, World:Camera
+edgeLen, float, Edge Length, 1.0
+
+#vfb
+showVfb, bool, Use Corona Frame Buffer, false
+
+#filter
+pixelFilter, enum, Pixel Filter, 1, None:Box:Tent:Cone:Gauss
+filterSize, float, Filer Size, 2.0
+blurSize, float, Blur Size, 0.5
+
+infoStamp, string, Info Stamp, Time %t
+
+#settings
+multiThreading, bool, Use Multi Threading, true
+lowThreadPrio, bool, Low Thread Prio, true
+exportSceneOnly, bool, Export Scene Only, false
+overrideMaterial, string, Override Material, ""
+allObjectsHaveSolidAlpha, bool, All Solid Alpha, false
+doShading, bool, Do Shading, true
+filterTexture, bool, Filter Textures, true
+renderer, enum, Renderer, 0, Progressive:LightTracer:Bucket
+
+#GI
+primatrySolver, enum, Primary Solver, 0, IrradianceCache:PathTracing:PhotonMapping:HD Cache
+secondarySolver, enum, Secondary Solver, 2, PathTracing:PhotonMapping:HD Cache
+pathTracingSamples, int, Path Tracing Samples, 16
+maxSampleIntensity, float, Max Sample Intensity, 10.0
+loadSecondaryGI, bool, Load Secondary GI, false
+saveSecondaryGI, bool, Save Secondary GI, false
+secondaryGIFile, string, Secondary GI File, ""
+
+#lights
+lightSolver, enum, Light Solver, 3, Simple:Globally Adaptive:Locally Adaptive:Combined
+lightSamplingMode, enum, Light SamplingMode, 0, MIS Both:BSDF Sampling:Off
+lightSamplesMultiplier, float, Light Samples Multiplier, 2.0
+lightSubdivThreshold, float, Light Subdiv Threshold, 0.0
+lightTextureRes, float, Light Texture Resolution, 1.0
+lightSpotThresh, float, Light Spot Threshold, 100.0
+
+#primary GI irradiance caching
+interpolation, enum, Interpolation, 0,Tabellion&Larmorette:Ward et. al.
+maxGeoError, float, Max Geometric Error, 0.6
+smoothing, float, Smoothing, 1.8
+colorThreshold, float, ColorThreshold, 10.0
+maxInterpSamples, int, Max Interpolation Samples, 2
+gradientRot, bool, Gradient Rotation, true
+gradientTrans, bool, Gradient Translation, true
+relaxedInterp, bool, Relaxed Interpolation, true
+#records
+hemisphericalSubd, int, Hemispherical Subdivs, 7
+validityMin, float, Validity Min, 1.0
+validityMax, float, Validity Max, 20.0
+#precomputation
+finalRes, int, Final Resolution, -1
+iterations, int, Iterations, 5
+usePathTraceCorners, bool, Use Path Tracing Corners, true
+incrementalBuild, bool, Incremental Build, false
+previz, enum, Previz, 0, Indirect Lighting:Dots:Off
+serachStruct, enum, Seracrh Struct, 0, MultiRef Octree:MultiRef KD Tree:BVH
+storeDirectLight, bool, Store Direct Lighting, false
+#sec GI
+emittedPhotons, int, Emitted Photons, 5000
+lookUpCount, int, Lookup Count, 50
+photonStoreDirectLight, bool, Photon Store Direct, true
+#renderer progressive
+timeH, int, Hours, 0
+timeM, int, Minutes, 0
+timeS, int, Seconds, 0
+numberOfPasses, int, Number of Passes, 0
+adaptivity, float, Adaptivity, 0.0
+realcENP, int, Recalc Each N Pass, 999
+#env
+useCorona, bool, Use Corona, false
+directVisibleOverride, color, Direct Visible Override, 0:0:0
+reflectionsOverride, color, Reflections Override, 0:0:0
+refractionsOverride, color, Refractions Override, 0:0:0
+#post
+sceneWhitepoint, float, Scene Whitepoint[K], 6500.0
+displayWhitepoint, float, Display Whitepoint[K], 6500.0
+catColorSpace, enum, Cat Color Space, 0, RGB:None
+colorChannelOutput, color, ColorChannelOutput, 1:1:1
+intensityMult, float, Intensity Multiplier, 1.0
+highLightBurn, float, Hightlight Burn, 1.0
+gamma, float, Gamma, 2.2
+contrast, float, Contrast, 1.0
+#dof mb
+sensorWidth, float, Sensor Width, 35.0
+bokehUse, bool, Use Bokeh, false
+bokehBlades, int, Blades, 6
+bokehRot, float, Rotation, 0.0
+bokehCustomShape, message, Custom Shape, -
+bokehCustomShapeRes, int, Custom Shape Resolution, 500
+mbXform, bool, Transformation Blur, false
+mbDeform, bool, Deformation Blur, false
+mbDuration, float, Duration, 1.0
+mbFrameOffset, float, Frame Offset, 0.0
+mbTransformSegments, int, Transform Segments, 16
+mbDeformSegments, int, Deform Segments, 5
+#bucket
+subdivAA, int, Antialias Subdivs, 1
+adaptiveSteps, int, Adaptive Steps, 2
+adaptiveThreshold, float, Adaptive Threshold, 0.03
+AASampler, enum, Sampler, 0, Adaptive:None
+

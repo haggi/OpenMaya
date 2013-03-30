@@ -42,6 +42,9 @@
     <Filter Include="mtco_common">
       <UniqueIdentifier>{70de2472-49c1-4d70-b529-399a19d3cda2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\rendering">
+      <UniqueIdentifier>{c1321075-f141-478e-bd26-f9286a239cdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -128,16 +131,19 @@
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\mtco_rendererController.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Corona\mtco_tileCallback.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaShaders.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaRendererController.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaTileCallback.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
   </ItemGroup>
@@ -205,9 +211,6 @@
     <ClInclude Include="..\src\mayatoCorona.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtco_common\mtco_MayaObject.h">
-      <Filter>mtco_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h">
       <Filter>mtco_common</Filter>
     </ClInclude>
@@ -217,10 +220,16 @@
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h">
       <Filter>mtco_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\mtco_rendererController.h">
+    <ClInclude Include="..\..\common\cpp\rendering\renderer.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h">
+      <Filter>mtco_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaRendererController.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\mtco_tileCallback.h">
+    <ClInclude Include="..\src\Corona\CoronaTileCallback.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
   </ItemGroup>

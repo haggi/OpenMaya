@@ -186,7 +186,7 @@
       <ImportLibrary>Debug/mayaTo@.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@.mll</Command>
+      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@_maya2013.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
@@ -209,7 +209,7 @@
       <ImportLibrary>Debug/mayaTo@.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@.mll</Command>
+      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
@@ -232,7 +232,7 @@
       <ImportLibrary>Release/mayaTo@.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@.mll</Command>
+      <Command>copy Debug\mayaTo@.mll ..\mt@_devmodule\plug-ins\mayaTo@_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -274,7 +274,7 @@
       <ImportLibrary>Release/mayaTo@.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayaTo@.mll ..\deployment\mayaTo@\plug-ins\mayaTo@.mll</Command>
+      <Command>copy Release\mayaTo@.mll ..\deployment\mayaTo@\plug-ins\mayaTo@_maya2013release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -286,6 +286,7 @@
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
@@ -297,13 +298,13 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\src\@\@RendererController.cpp" />
+    <ClCompile Include="..\src\@\@TileCallback.cpp" />
     <ClCompile Include="..\src\@\@.cpp" />
     <ClCompile Include="..\src\@\@Geometry.cpp" />
     <ClCompile Include="..\src\@\@Lights.cpp" />
     <ClCompile Include="..\src\@\@Shaders.cpp" />
     <ClCompile Include="..\src\@\@Utils.cpp" />
-    <ClCompile Include="..\src\@\mt@_rendererController.cpp" />
-    <ClCompile Include="..\src\@\mt@_tileCallback.cpp" />
     <ClCompile Include="..\src\mayaTo@.cpp" />
     <ClCompile Include="..\src\mt@_common\mt@_mayaObject.cpp" />
     <ClCompile Include="..\src\mt@_common\mt@_mayaScene.cpp" />
@@ -320,6 +321,7 @@
     <ClInclude Include="..\..\common\cpp\mayaScene.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
@@ -331,11 +333,11 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\src\@\@RendererController.h" />
+    <ClInclude Include="..\src\@\@TileCallback.h" />
     <ClInclude Include="..\src\@\@.h" />
-    <ClInclude Include="..\src\@\mt@_rendererController.h" />
-    <ClInclude Include="..\src\@\mt@_tileCallback.h" />
     <ClInclude Include="..\src\mayaTo@.h" />
-    <ClInclude Include="..\src\mt@_common\mt@_MayaObject.h" />
+    <ClInclude Include="..\src\mt@_common\mt@_mayaObject.h" />
     <ClInclude Include="..\src\mt@_common\mt@_mayaScene.h" />
     <ClInclude Include="..\src\mt@_common\mt@_renderGlobals.h" />
     <ClInclude Include="..\src\mt@_common\mt@_renderGlobalsNode.h" />
