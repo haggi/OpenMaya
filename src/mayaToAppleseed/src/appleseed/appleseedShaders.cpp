@@ -138,6 +138,7 @@ void AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attrib
 	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
 	asr::ParamArray tInstParams;
 	tInstParams.insert("addressing_mode", "clamp");
+	//tInstParams.insert("addressing_mode", "wrap");
 	tInstParams.insert("filtering_mode", "bilinear");
 	if( alphaIsLuminance )
 		tInstParams.insert("alpha_mode", "luminance");

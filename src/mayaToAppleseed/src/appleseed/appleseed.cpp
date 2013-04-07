@@ -357,6 +357,7 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 						theta = 90.0f - RadToDeg(theta);
 						renderGlobals->sun_theta = theta;
 						renderGlobals->sun_phi = RadToDeg(phi);
+
 						logger.debug(MString("converted unit to theta: ") + renderGlobals->sun_theta + " and phi: " + renderGlobals->sun_phi);
 					}else{
 						logger.warning(MString("Problems creating tmatrix from: ") + getObjectName(lightNode));
@@ -827,6 +828,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
 
 		if( obj->attributes != NULL)
+		{
 			if( obj->attributes->hasInstancerConnection )
 			{
 				logger.debug(MString("Found particle instanced element: ") + obj->fullName);
@@ -835,9 +837,13 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				MMatrix matrix;
 				instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, colMatrix); 
 			}
+		}
 
+		if( isLightTransform(obj->dagPath))
+			colMatrix.setToIdentity();
+		
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
-
+		
 		assInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
 
 		// temporary solution: if object is invisible, scale it to 0.0 if possible

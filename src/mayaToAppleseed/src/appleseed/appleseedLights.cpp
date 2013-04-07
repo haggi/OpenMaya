@@ -364,7 +364,7 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 					asr::ParamArray()
 						.insert("environment_edf", "sky_edf")
 						.insert("turbidity", renderGlobals->sunTurbidity)
-						.insert("exitance_multiplier", renderGlobals->sunExitanceMultiplier * intensity)
+						.insert("radiance_multiplier", renderGlobals->sunExitanceMultiplier * intensity)
 						));
 			}else{
 				light = asf::auto_release_ptr<asr::Light>(
@@ -376,6 +376,7 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 							));
 			}
 			ass->lights().insert(light);
+			
 		}else{
 			//asr::Light *l = ass->lights().get_by_name(mlight->shortName.asChar());
 			//l->get_parameters().insert("exitance", lightColorName.asChar());

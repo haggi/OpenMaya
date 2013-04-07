@@ -5,7 +5,8 @@ import traceback
 import sys
 import os
 import optimizeTextures
-import AETemplates
+import aeNodeTemplates
+import path
 
 reload(Renderer)
 
@@ -78,6 +79,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         if envType == 4:
             envDict['pskModel'].setEnable(True)
             envDict['pskUsePhySun'].setEnable(True)
+            envDict['pskSunExitMulti'].setEnable(True)
             
             if self.renderGlobalsNode.physicalSun.get():
                 try:
@@ -145,6 +147,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         envDict['pskUsePhySun'] = pm.checkBoxGrp(label="Use Physical Sun:", value1=False, cc=pm.Callback(self.uiCallback, tab="environment"))
                         pm.connectControl(envDict['pskUsePhySun'], self.renderGlobalsNodeName + ".physicalSun", index=2)                    
                         envDict['pskPhySun'] = pm.textFieldGrp(label="Sunobject:", text="", editable=False) 
+                        envDict['pskSunExitMulti'] = pm.floatFieldGrp(label="sunExitance Multiplier:", value1=1.0, numberOfFields=1)
+                        pm.connectControl(envDict['pskSunExitMulti'], self.renderGlobalsNodeName + ".sunExitanceMultiplier", index=2)             
                         #pm.connectControl(envDict['pskPhySun'], self.renderGlobalsNodeName + ".physicalSunConnection", index=2)                                                                   
                         pm.separator()
                         envDict['pskGrAlbedo'] = pm.floatFieldGrp(label="Ground Albedo:", value1=1.0, numberOfFields=1)
@@ -164,7 +168,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         envDict['pskTurbMax'] = pm.floatFieldGrp(label="Turbidity Max:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskTurbMax'], self.renderGlobalsNodeName + ".turbidity_max", index=2)                    
                         envDict['pskTurbMin'] = pm.floatFieldGrp(label="Turbidity Min:", value1=1.0, numberOfFields=1)
-                        pm.connectControl(envDict['pskTurbMin'], self.renderGlobalsNodeName + ".turbidity_min", index=2)                    
+                        pm.connectControl(envDict['pskTurbMin'], self.renderGlobalsNodeName + ".turbidity_min", index=2)
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
@@ -518,7 +522,25 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
-        AETemplates.AEappleseedNodeTemplate(nodeName)
+        aeNodeTemplates.AEappleseedNodeTemplate(nodeName)
+
+"""
+This procedure loads all AETemplates that are loaceted in the AETemplates module. 
+Normally if you load pymel, it automatically loads the templates but only the ones it finds in the
+very first AETemplates directory. If you have several OpenMaya renderers loaded or if you have your own
+AETemplates directory, the automatic loading will not work. So I replace it with this procedure.
+"""
+
+def loadAETemplates():    
+    aeDir = path.path(__file__).dirname() + "/AETemplates/"
+    for d in aeDir.listdir("*.py"):
+        if d.endswith("Template.py"):
+            templateName = d.basename().replace(".py", "")
+            pythonCommand = "import {0}".format(templateName)
+            melCommand = 'python("{0}");'.format(pythonCommand)
+            pm.mel.eval(melCommand)
+            log.debug("load aeTemplate: " + templateName)
+
         
 def theRenderer():
     return AppleseedRenderer.theRenderer()
@@ -527,6 +549,7 @@ def initRenderer():
     try:
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
+        loadAETemplates()
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")

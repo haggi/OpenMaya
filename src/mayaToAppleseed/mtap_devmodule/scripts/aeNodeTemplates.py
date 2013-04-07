@@ -32,4 +32,3 @@ class AEappleseedNodeTemplate(BaseTemplate):
     
     def buildBody(self, nodeName):
         self.buildAppleSeedTemplates(nodeName)
-
