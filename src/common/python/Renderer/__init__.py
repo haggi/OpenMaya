@@ -286,6 +286,7 @@ global proc updateMayaImageFormatControl()
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
         
+        
     def registerAETemplateCallbacks(self):
         log.debug("registerAETemplateCallbacks")
         # callback is defined as mel script, didn't work as pymel command.. 

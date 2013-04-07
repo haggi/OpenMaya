@@ -12,24 +12,21 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
 
 
-class AEappleseedNodeTemplate(BaseTemplate):
+class AE@NodeTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         self.buildBody(nodeName)
-        log.debug("AEappleSeedNodeTemplate")
+        log.debug("AE@NodeTemplate")
         
-    def buildAppleSeedTemplates(self, nodeName):
+    def build@Templates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         if self.thisNode.type() == "camera":
-            log.debug("AEappleSeedNodeTemplate:build camera AE")            
-            self.beginLayout("AppleSeed" ,collapse=1)
-            self.addControl("mtap_cameraType", label="Camera Type")            
-            self.addControl("mtap_diaphragm_blades", label="Diaphragm Blades")            
-            self.addControl("mtap_diaphragm_tilt_angle", label="Diaphragm Tilt Angle")                        
+            log.debug("AE@NodeTemplate:build camera AE")            
+            self.beginLayout("@" ,collapse=1)
             self.endLayout()
     
     def buildBody(self, nodeName):
-        self.buildAppleSeedTemplates(nodeName)
+        self.build@Templates(nodeName)
 

@@ -312,6 +312,22 @@ class @Renderer(Renderer.MayaToRenderer):
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
 
+"""
+This procedure loads all AETemplates that are loaceted in the AETemplates module. 
+Normally if you load pymel, it automatically loads the templates but only the ones it finds in the
+very first AETemplates directory. If you have several OpenMaya renderers loaded or if you have your own
+AETemplates directory, the automatic loading will not work. So I replace it with this procedure.
+"""
+
+def loadAETemplates():    
+    aeDir = path.path(__file__).dirname() + "/AETemplates/"
+    for d in aeDir.listdir("*.py"):
+        if d.endswith("Template.py"):
+            templateName = d.basename().replace(".py", "")
+            pythonCommand = "import {0}".format(templateName)
+            melCommand = 'python("{0}");'.format(pythonCommand)
+            pm.mel.eval(melCommand)
+            log.debug("load aeTemplate: " + templateName)
 
 def theRenderer():
     return @Renderer.theRenderer()
@@ -320,6 +336,7 @@ def initRenderer():
     try:
         log.debug("Init renderer @")
         theRenderer().registerRenderer()
+        loadAETemplates()
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer @ FAILED")
