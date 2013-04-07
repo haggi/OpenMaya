@@ -28,9 +28,14 @@ namespace krayRender
 {
 	KrayRenderer::KrayRenderer()
 	{
+		this->is_good = false;
+		//TODO: path more common
 		const char *libpath = "C:/Users/haggi/coding/OpenMaya/src/mayaToKray/mtkr_devmodule/bin/";
 		this->kli = new Kray::Library(libpath);				// here we start with KrayLib object
 		this->kin = this->kli->createInstanceWithListner(&listener);
+		if( this->kli && this->kin)
+			this->is_good = true;
+
 		this->pro = NULL;
 	}
 
@@ -45,10 +50,14 @@ namespace krayRender
 		if( this->kli )
 			delete this->kli;
 	}
+	bool KrayRenderer::good()
+	{
+		return this->is_good;
+	}
 
 	void KrayRenderer::definePrototyper()
 	{
-		if (this->kin) // check if instance was created, if not, Kray library wasn't found
+		if (this->good()) // check if instance was created, if not, Kray library wasn't found
 		{				
 			if( this->mtkr_renderGlobals->exportSceneFile)
 			{

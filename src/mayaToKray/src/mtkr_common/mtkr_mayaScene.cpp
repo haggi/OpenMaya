@@ -24,6 +24,8 @@ mtkr_MayaScene::mtkr_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	mtkr_renderer.mtkr_scene = this;
 	mtkr_renderer.mtkr_renderGlobals = this->renderGlobals;
 	mtkr_renderer.definePrototyper();
+	if( !mtkr_renderer.good())
+		this->good = false;
 }
 
 mtkr_MayaScene::~mtkr_MayaScene()

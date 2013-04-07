@@ -75,6 +75,8 @@ namespace krayRender
 		Kray::Library *kli;
 		EventListener listener;
 		std::ofstream outStream;
+		bool is_good;
+		bool good();
 
 		std::vector<mtkr_MayaObject *> interactiveUpdateList;
 		std::vector<MObject> interactiveUpdateMOList;

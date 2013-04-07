@@ -171,11 +171,11 @@ namespace krayRender{
  //void materialSet_specularity(const Symbol& m1,double value);
 						MString fileName;
 						if(getConnectedFileTexture(shaderNode, MString("texture_color"), fileName))
-						{
+						{							
 							logger.debug(MString("Found color file texture_color: ") + fileName);
+							//Kray::BitmapSymbol bitmap(fileName.asChar(), *this->pro, (shaderNode.name() + "_texture_color").asChar());
+							//this->pro->materialSet_texture_color(bitmap, bitmap);
 						}
-						//Kray::BitmapSymbol bitmap(fileTextureName.asChar(), *proto, fileNode.name().asChar());
-						//proto->bitmap(bitmap); // register it, as bitmap
 						if(getConnectedFileTexture(shaderNode, MString("texture_diffuse"), fileName))
 						{
 							logger.debug(MString("Found color file texture_diffuse: ") + fileName);
