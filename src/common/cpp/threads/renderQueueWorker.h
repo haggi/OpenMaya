@@ -24,6 +24,7 @@ public:
 	static void sceneCallback(void *);
 	static void pluginUnloadCallback(void *);
 	static void computationEventThread(void *);
+	static void uiUpdateEventThread(void *);
 private:
 };
 

@@ -27,7 +27,8 @@ namespace EventQueue
 			FINISH = 13,
 			IPRUPDATESCENE = 14,
 			USER = 15,
-			PIXELSDONE = 16
+			PIXELSDONE = 16,
+			UPDATEUI = 17
 		};
 		enum PixelMode{
 			RECT = 0,

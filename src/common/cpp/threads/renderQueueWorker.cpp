@@ -205,6 +205,18 @@ void RenderQueueWorker::computationEventThread( void *dummy)
 	logger.debug("computationEventThread finished.");
 }
 
+ void RenderQueueWorker::uiUpdateEventThread(void *dummy)
+ {
+	while(isRendering)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+		EventQueue::Event e;
+		e.type = EventQueue::Event::UPDATEUI;
+		theRenderEventQueue()->push(e);
+	}
+	logger.debug("uiUpdateEventThread finished.");
+ }
+
 void RenderQueueWorker::startRenderQueueWorker()
 {
 	EventQueue::Event e;
@@ -269,6 +281,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if(mayaScenePtr->renderType != MayaScene::IPR)
 				{
 					boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
+					boost::thread(RenderQueueWorker::uiUpdateEventThread, (void *)NULL);
 					renderComputation.beginComputation();
 				}
 
@@ -319,6 +332,16 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::INTERRUPT:
 			logger.debug("Event::INTERRUPT");
 			mayaScenePtr->stopRendering();
+			break;
+
+		case EventQueue::Event::UPDATEUI:
+			{
+				logger.debug("Event::UPDATEUI");
+				MString cmd = "refresh;";
+				MString result;
+				logger.debug("...->update...");
+				MGlobal::executeCommand(cmd, result);
+			}
 			break;
 
 
