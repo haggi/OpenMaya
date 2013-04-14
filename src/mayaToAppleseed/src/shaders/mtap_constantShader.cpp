@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_constantShader::id( 0x00106EF9 );
+MTypeId mtap_constantShader::id( 0x0011CF43 );
 
 void mtap_constantShader::postConstructor( )
 {

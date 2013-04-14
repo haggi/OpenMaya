@@ -6,7 +6,7 @@
 
 #include "mtap_renderGlobalsNode.h"
 
-MTypeId	MayaToAppleseedGlobals::id(0x00106EF3);
+MTypeId	MayaToAppleseedGlobals::id(0x0011CF40);
 
 MObject MayaToAppleseedGlobals::bitdepth;
 MObject MayaToAppleseedGlobals::colorSpace;

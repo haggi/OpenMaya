@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_diagnosticShader::id( 0x00106EFB );
+MTypeId mtap_diagnosticShader::id( 0x0011CF44 );
 
 void mtap_diagnosticShader::postConstructor( )
 {

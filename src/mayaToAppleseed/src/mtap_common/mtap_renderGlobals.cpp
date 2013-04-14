@@ -243,8 +243,9 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getFloat(MString("sunExitanceMultiplier"), appleseedGlobals, this->sunExitanceMultiplier))
 			throw("problem reading appleseedGlobals.sunExitanceMultiplier");
 
-		//if(!getFloat(MString("sunExitance"), appleseedGlobals, this->sunExitance))
-		//	throw("problem reading appleseedGlobals.sunExitance");
+		if(!getBool(MString("adaptiveSampling"), appleseedGlobals, this->adaptiveSampling))
+			throw("problem reading appleseedGlobals.adaptiveSampling");
+
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

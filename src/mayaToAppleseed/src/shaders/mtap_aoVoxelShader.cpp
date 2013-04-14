@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_aoVoxelShader::id( 0x00106EF7 );
+MTypeId mtap_aoVoxelShader::id( 0x0011CF42 );
 
 void mtap_aoVoxelShader::postConstructor( )
 {

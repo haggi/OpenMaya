@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_smokeShader::id( 0x00106EFC );
+MTypeId mtap_smokeShader::id( 0x0011CF47 );
 
 void mtap_smokeShader::postConstructor( )
 {

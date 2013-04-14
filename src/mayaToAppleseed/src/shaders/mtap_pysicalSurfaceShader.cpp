@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_surfaceShader::id( 0x00106EF4 );
+MTypeId mtap_surfaceShader::id( 0x0011CF46 );
 
 
 // the postConstructor() function is called immediately after the objects

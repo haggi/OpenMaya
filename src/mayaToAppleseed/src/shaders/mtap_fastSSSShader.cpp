@@ -16,7 +16,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId mtap_fastSSSShader::id( 0x00106EF8 );
+MTypeId mtap_fastSSSShader::id( 0x0011CF45 );
 
 void mtap_fastSSSShader::postConstructor( )
 {
