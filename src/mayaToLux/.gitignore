@@ -1,0 +1,26 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dll
+
+*.suo
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+*.ilk
+
+
+# Compiled Python scripts
+*.pyc
+
+*pydevproject
+devkit
+deployment
