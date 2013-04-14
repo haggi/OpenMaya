@@ -124,12 +124,12 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 			floatPointArray[vtxCount * 3 + 1] = points[vtxId0].y;
 			floatPointArray[vtxCount * 3 + 2] = points[vtxId0].z;
 
-			//floatNormalArray[vtxCount * 3] = normals[normalId0].x;
-			//floatNormalArray[vtxCount * 3 + 1] = normals[normalId0].y;
-			//floatNormalArray[vtxCount * 3 + 2] = normals[normalId0].z;
+			floatNormalArray[vtxCount * 3] = normals[normalId0].x;
+			floatNormalArray[vtxCount * 3 + 1] = normals[normalId0].y;
+			floatNormalArray[vtxCount * 3 + 2] = normals[normalId0].z;
 
-			//floatUvArray[vtxCount * 3] = uArray[uvId0];
-			//floatUvArray[vtxCount * 3 + 1] = uArray[uvId0];
+			floatUvArray[vtxCount * 2] = uArray[uvId0];
+			floatUvArray[vtxCount * 2 + 1] = vArray[uvId0];
 
 			vtxCount++;
 
@@ -137,12 +137,12 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 			floatPointArray[vtxCount * 3 + 1] = points[vtxId1].y;
 			floatPointArray[vtxCount * 3 + 2] = points[vtxId1].z;
 
-			//floatNormalArray[vtxCount * 3] = normals[normalId1].x;
-			//floatNormalArray[vtxCount * 3 + 1] = normals[normalId1].y;
-			//floatNormalArray[vtxCount * 3 + 2] = normals[normalId1].z;
+			floatNormalArray[vtxCount * 3] = normals[normalId1].x;
+			floatNormalArray[vtxCount * 3 + 1] = normals[normalId1].y;
+			floatNormalArray[vtxCount * 3 + 2] = normals[normalId1].z;
 
-			//floatUvArray[vtxCount * 3] = uArray[uvId1];
-			//floatUvArray[vtxCount * 3 + 1] = uArray[uvId1];
+			floatUvArray[vtxCount * 2] = uArray[uvId1];
+			floatUvArray[vtxCount * 2 + 1] = vArray[uvId1];
 
 			vtxCount++;
 
@@ -150,16 +150,16 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 			floatPointArray[vtxCount * 3 + 1] = points[vtxId2].y;
 			floatPointArray[vtxCount * 3 + 2] = points[vtxId2].z;
 
-			//floatNormalArray[vtxCount * 3] = normals[normalId2].x;
-			//floatNormalArray[vtxCount * 3 + 1] = normals[normalId2].y;
-			//floatNormalArray[vtxCount * 3 + 2] = normals[normalId2].z;
+			floatNormalArray[vtxCount * 3] = normals[normalId2].x;
+			floatNormalArray[vtxCount * 3 + 1] = normals[normalId2].y;
+			floatNormalArray[vtxCount * 3 + 2] = normals[normalId2].z;
 
-			//floatUvArray[vtxCount * 2] = uArray[uvId2];
-			//floatUvArray[vtxCount * 2 + 1] = uArray[uvId2];
+			floatUvArray[vtxCount * 2] = uArray[uvId2];
+			floatUvArray[vtxCount * 2 + 1] = vArray[uvId2];
 
 			vtxCount++;
 			
-			logger.debug(MString("Vertex count: ") + vtxCount + " maxId " + ((vtxCount - 1) * 3 + 2) + " ptArrayLen " + (numTriangles * 3 * 3));
+			//logger.debug(MString("Vertex count: ") + vtxCount + " maxId " + ((vtxCount - 1) * 3 + 2) + " ptArrayLen " + (numTriangles * 3 * 3));
 
 			triangelVtxIdList[triCount * 3] = triCount * 3;
 			triangelVtxIdList[triCount * 3 + 1] = triCount * 3 + 1;
@@ -169,16 +169,13 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 		}		
 	}
 
-	return;
-
 	ParamSet triParams = CreateParamSet();
 	int numPointValues = numTriangles * 3 * 3;
 	int numUvValues = numTriangles * 3 * 2;
 	triParams->AddInt("indices", triangelVtxIdList, numTriangles * 3);
 	triParams->AddPoint("P", floatPointArray, numPointValues);
-
-	//triParams->AddVector("N", floatNormalArray, numPointValues);
-	//triParams->AddFloat("uv",  floatUvArray, numUvValues);
+	triParams->AddVector("N", floatNormalArray, numPointValues);
+	triParams->AddFloat("uv",  floatUvArray, numUvValues);
 
 	this->luxFile << "indices:\n";
 	for( int i = 0; i < (numTriangles * 3); i++)
@@ -230,7 +227,7 @@ void LuxRenderer::defineGeometry()
 
 				this->lux->transformBegin();
 				this->lux->transform(fm);
-				//this->lux->objectInstance(obj->fullNiceName.asChar());
+				this->lux->objectInstance(obj->fullNiceName.asChar());
 				this->lux->transformEnd();
 			}
 		}
