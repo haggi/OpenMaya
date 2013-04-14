@@ -40,8 +40,52 @@ kdEmptybonus, float, Empty Bonus, 0.5
 kdMaxprims, int, Max Prims, 1
 kdMaxdepth, int, Max Depth, -1
 
+#qvbh
+maxprimsperleaf, int, Max Prims Per Leaf, 4
+fullsweepthreshold, int, Full Sweep Thresh, 4 * 4
+skipfactor, int, Skip Factor, 1
 
+#grid
+refineimmediately, bool, Refine Immediately, false
 
-    
- 
+#bvh
+treetype, enum, Tree Type, 0, binary:quadtree:octree
+costsamples, int, Cost Samples, 0
 
+#surface integrator
+surfaceIntegrator, enum, Surface Integrator, 0, bidirectional (default):path:exphotonmap:directlighting:distributedpath
+lightStrategy, enum, Light Strategy, 2, one:all:auto:importance:powerimp:allpowerimp:logpowerimp
+shadowraycount, int, Shadow Rays, 1
+
+#bidirectional
+eyedepth, int, Eye Depth, 8
+lightdepth, int, Light Depth, 8
+eyerrthreshold, float, Eye RR Thresh, 0.0
+lightrrthreshold, float, Light RR Thresh, 0.0
+
+#path
+pathMaxdepth, int, Max Depth, 16
+rrstrategy, enum, RR Strategy, 2, none:probability:efficiency
+rrcontinueprob, float, RR Continue, .65 
+
+#directLight
+dlightMaxdepth, int, Max Depth, 5
+
+#photon
+phRenderingmode, enum, Rendering Mode, 0,	directlighting:path 
+phCausticphotons, int, Caustic Photons, 20000
+phIndirectphotons, int, Indirect Photons, 200000
+phDirectphotons, int, Direct Photons, 200000
+phRadiancephotons, int, Radiance Photons, 200000
+phNphotonsused, int, Irradiance Photons, 50
+phMaxphotondist, float, Max Photon Dist, 0.5
+phMaxdepth, int, Max Specular Bounces, 5
+phMaxphotondepth, int, Max Trace Depth, 10
+phFinalgather, bool, Use Direct Lighing, true	 
+phFinalgathersamples, int, Final Gather Samples, 32
+phGatherangle, float, Gather Angle, 10.0
+phRrstrategy, enum, RR Strategy, 2, none:probability:efficiency
+phRrcontinueprob, float, Cont Prob RR, 0.65
+phDistancethreshold, float, Dist Thresold, 1.25
+phPhotonmapsfile, string, Photon File, ""
+ 	

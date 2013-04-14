@@ -1,1 +1,25 @@
 0x0011CF40 : 0x0011CF7F
+
+Appleseed:
+RenderGlobals:		0x0011CF40
+AOShader:					0x0011CF41
+VoxelShader:			0x0011CF42
+ConstantShader:		0x0011CF43
+DiagnosticShader:	0x0011CF44
+SSSShader:				0x0011CF45
+PhysicalSurfaceS:	0x0011CF46
+SmokeShader:			0x0011CF47
+WireframeShader:	0x0011CF48
+
+Lux:
+RenderGlobals:		0x0011CF49
+
+KRay:
+RenderGlobals:		0x0011CF4A
+KRayMaterial:			0x0011CF4B
+
+Corona:
+RenderGlobals:		0x0011CF4C
+
+Mitsuba:
+RenderGlobals:		

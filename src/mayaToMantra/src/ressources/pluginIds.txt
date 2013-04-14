@@ -15,4 +15,10 @@ mayaToMitusbaGlobals: 0x00106EF9
 krakatoa:
 mtk_renderGlobals: 0x00106EFA
 
+kray:
+mtkr_renderGlobals: 0x00106EFB
+
+Corona:
+mtco_renderGlobals: 0x00106EFC
+
 0x00106EF0 - 0x00106EFF

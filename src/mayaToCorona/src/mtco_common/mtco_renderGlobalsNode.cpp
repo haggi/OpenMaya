@@ -6,7 +6,7 @@
 
 #include "mtco_renderGlobalsNode.h"
 
-MTypeId	MayaToCoronaGlobals::id(0x00106EF3);
+MTypeId	MayaToCoronaGlobals::id(0x0011CF4C);
 
 MObject MayaToCoronaGlobals::imageFormat;
 

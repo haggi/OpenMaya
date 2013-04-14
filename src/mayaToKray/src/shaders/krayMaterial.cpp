@@ -17,7 +17,7 @@
 #include <maya/MStatus.h>
 
 
-MTypeId KrayMaterial::id( 0x00106EE0 );
+MTypeId KrayMaterial::id( 0x0011CF4B );
 
 void KrayMaterial::postConstructor( )
 {
