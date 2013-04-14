@@ -22,7 +22,6 @@ RenderGlobals::RenderGlobals()
 {
 	logger.info("RenderGlobals::RenderGlobals()");
 	this->good = false;
-	this->getDefaultGlobals();
 	this->useShortNames = true;
 	this->currentRenderPass = NULL;
 	this->currentRenderPassElementId = 0;
@@ -42,6 +41,11 @@ RenderGlobals::RenderGlobals()
 	this->renderType = RenderType::FINAL;
 	this->exportSceneFile = false;
 	this->adaptiveSampling = false;
+	this->imageName = "";
+	this->basePath = "";
+	this->exportSceneFileName = "";
+	this->imagePath = "";
+	this->getDefaultGlobals();
 }
 
 RenderGlobals::~RenderGlobals()
@@ -245,9 +249,7 @@ bool RenderGlobals::getDefaultGlobals()
 	getString(MString("postRenderMel"), fnRenderGlobals, this->postFrameScript);
 	getString(MString("preRenderLayerMel"), fnRenderGlobals, this->preRenderLayerScript);
 	getString(MString("postRenderLayerMel"), fnRenderGlobals, this->postRenderLayerScript);
-	getString(MString("optimizedTexturePath"), fnRenderGlobals, this->optimizedTexturePath);
 
-	getBool(MString("adaptiveSampling"), fnRenderGlobals, this->adaptiveSampling);
 
 	this->good = true;
 	return true;

@@ -335,5 +335,5 @@ def attributeCreator(renderer, shortCut):
     pyRGCreator(pyGlobals, attArray)
     
 if __name__ == "__main__":
-    attributeCreator("corona", "mtco")
+    attributeCreator("lux", "mtlu")
     

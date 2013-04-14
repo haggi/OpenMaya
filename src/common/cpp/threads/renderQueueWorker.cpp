@@ -322,6 +322,26 @@ void RenderQueueWorker::startRenderQueueWorker()
 			isRendering = false;
 			break;
 
+		case EventQueue::Event::FRAMEUPDATE:
+			logger.debug("Event::FRAMEUPDATE");
+			if( e.data != NULL)
+			{
+				if( MRenderView::doesRenderEditorExist() )
+				{
+					MRenderView::updatePixels(0, e.tile_xmax, 0, e.tile_ymax, (RV_PIXEL *)e.data);
+					MRenderView::refresh(0, e.tile_xmax, 0, e.tile_ymax);
+				}
+				delete[]  (RV_PIXEL *)e.data;
+			}
+
+			if( imageBuffer != NULL)
+			{
+				delete[] imageBuffer;
+				imageBuffer = NULL;
+			}
+
+			break;
+
 		case EventQueue::Event::IPRUPDATE:
 			logger.debug("Event::IPRUPDATE - whole frame");
 			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);

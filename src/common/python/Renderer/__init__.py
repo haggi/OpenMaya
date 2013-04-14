@@ -55,7 +55,46 @@ class MayaToRenderer(object):
         #print "MelCmd:", melCmd
         pm.mel.eval(melCmd)
         return melProcName
-            
+
+    def getEnumList(self, attr):
+        return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
+    
+    def addUIElement(self, uiType, attribute, uiLabel):
+        ui = None
+        if uiType == 'bool':
+            ui = pm.checkBoxGrp(label=uiLabel)
+        if uiType == 'int':
+            ui = pm.intFieldGrp(label=uiLabel, numberOfFields = 1)
+        if uiType == 'float':
+            ui = pm.floatFieldGrp(label=uiLabel, numberOfFields = 1)
+        if uiType == 'enum':
+            ui = pm.attrEnumOptionMenuGrp(label = uiLabel, at=attribute, ei = self.getEnumList(attribute)) 
+        if uiType == 'color':
+            ui = pm.attrColorSliderGrp(label=uiLabel, at=attribute)
+        if uiType == 'string':
+            ui = pm.textFieldGrp(label=uiLabel)
+        return ui
+    
+    def connectUIElement(self, uiElement, attribute):
+        
+        if attribute.type() == 'enum':
+            #enum is automatically connnected via attrEnumOptionMenu
+            return        
+        if attribute.type() == 'float3':
+            #float3 == color is automatically connnected via attrColorSliderGrp
+            return
+        if attribute.type() == 'message':
+            #no automatic connection necessary, will be controlled by other scritps
+            return
+        log.debug("Adding connection for {0}".format(attribute))
+        pm.connectControl(uiElement, attribute, index = 2)
+    
+    def addRenderGlobalsUIElement(self, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None):
+        
+        attribute = pm.Attribute(self.renderGlobalsNodeName + "." + attName)
+        uiElement = self.addUIElement(uiType, attribute, displayName)
+        self.connectUIElement(uiElement, attribute)
+                
     
     def batchRenderProcedure(self, options):
         self.preRenderProcedure()
