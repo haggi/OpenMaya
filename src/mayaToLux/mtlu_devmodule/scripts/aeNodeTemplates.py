@@ -26,6 +26,11 @@ class AELuxNodeTemplate(BaseTemplate):
             log.debug("AELuxNodeTemplate:build camera AE")            
             self.beginLayout("Lux" ,collapse=1)
             self.endLayout()
+        if self.thisNode.type() == "directionalLight":
+            log.debug("AELuxNodeTemplate:build dir light AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_dirLight_theta", label="Shadow softness")
+            self.endLayout()
     
     def buildBody(self, nodeName):
         self.buildLuxTemplates(nodeName)

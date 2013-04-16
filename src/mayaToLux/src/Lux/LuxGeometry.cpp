@@ -174,13 +174,13 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 	int numUvValues = numTriangles * 3 * 2;
 	triParams->AddInt("indices", triangelVtxIdList, numTriangles * 3);
 	triParams->AddPoint("P", floatPointArray, numPointValues);
-	triParams->AddVector("N", floatNormalArray, numPointValues);
+	triParams->AddNormal("N", floatNormalArray, numPointValues);
 	triParams->AddFloat("uv",  floatUvArray, numUvValues);
 
 	this->luxFile << "indices:\n";
 	for( int i = 0; i < (numTriangles * 3); i++)
 	{
-		logger.debug(MString("id ") + i + " " + triangelVtxIdList[i]);
+		//logger.debug(MString("id ") + i + " " + triangelVtxIdList[i]);
 		int v = triangelVtxIdList[i];
 		this->luxFile << "index " << i << " value " << v << "\n";
 	}
@@ -188,7 +188,7 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 	this->luxFile << "P:\n";
 	for( int i = 0; i < (numPointValues); i++)
 	{
-		logger.debug(MString("p ") + i + " " + floatPointArray[i]);
+		//logger.debug(MString("p ") + i + " " + floatPointArray[i]);
 		float v = floatPointArray[i];
 		this->luxFile << "index " << i << " value " << v << "\n";
 	}
@@ -196,7 +196,7 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 	this->luxFile << "N:\n";
 	for( int i = 0; i < (numPointValues); i++)
 	{
-		logger.debug(MString("n ") + i + " " + floatNormalArray[i]);
+		//logger.debug(MString("n ") + i + " " + floatNormalArray[i]);
 		float v = floatNormalArray[i];
 		this->luxFile << "index " << i << " value " << v << "\n";
 	}
@@ -219,6 +219,7 @@ void LuxRenderer::defineGeometry()
 		{
 			if( obj->mobject.hasFn(MFn::kMesh))
 			{
+				logger.debug(MString("define mesh ") + obj->fullNiceName);
 				this->defineTriangleMesh(obj);
 
 				MMatrix tm = obj->dagPath.inclusiveMatrix();

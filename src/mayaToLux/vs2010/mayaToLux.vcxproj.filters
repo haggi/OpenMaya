@@ -152,6 +152,9 @@
     <ClCompile Include="..\src\Lux\LuxEnvironment.cpp">
       <Filter>Source Files\Lux</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Lux\LuxFilm.cpp">
+      <Filter>Source Files\Lux</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

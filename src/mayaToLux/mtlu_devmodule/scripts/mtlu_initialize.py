@@ -4,8 +4,10 @@ import Renderer as Renderer
 import traceback
 import sys
 import os
-import optimizeTextures
 import path
+
+import optimizeTextures
+import aeNodeTemplates
 
 reload(Renderer)
 
@@ -225,6 +227,8 @@ class LuxRenderer(Renderer.MayaToRenderer):
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_useassembly", attributeType="bool", defaultValue = False)
 
+        # lights
+        pm.addExtension(nodeType="directionalLight", longName="mtlu_dirLight_theta", attributeType="float", defaultValue = 0.0)
         # 
         
     def setImageName(self):
@@ -308,6 +312,11 @@ class LuxRenderer(Renderer.MayaToRenderer):
 
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
+        
+    def aeTemplateCallback(self, nodeName):
+        log.debug("aeTemplateCallback: " + nodeName)
+        aeNodeTemplates.AELuxNodeTemplate(nodeName)
+        
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

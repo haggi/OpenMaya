@@ -300,6 +300,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\Lux\LuxCamera.cpp" />
     <ClCompile Include="..\src\Lux\LuxEnvironment.cpp" />
+    <ClCompile Include="..\src\Lux\LuxFilm.cpp" />
     <ClCompile Include="..\src\Lux\LuxRendererController.cpp" />
     <ClCompile Include="..\src\Lux\LuxTileCallback.cpp" />
     <ClCompile Include="..\src\Lux\Lux.cpp" />

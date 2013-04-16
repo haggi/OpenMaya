@@ -53,5 +53,5 @@
 #            pm.mel.eval(melCommand)
 #            print melCommand
 
-loadAETemplates()
+#loadAETemplates()
 

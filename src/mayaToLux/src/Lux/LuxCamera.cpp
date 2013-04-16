@@ -25,6 +25,11 @@ void LuxRenderer::defineCamera()
 	camEye.z = cm[3][2];
 
 	MVector camUp = camFn.upDirection(MSpace::kWorld);
+
+	logger.debug(MString("cam eye ") + camEye.x + " " + camEye.y + " " + camEye.z);
+	logger.debug(MString("cam Int ") + camInterest.x + " " + camInterest.y + " " + camInterest.z);
+	logger.debug(MString("cam Up ") + camUp.x + " " + camUp.y + " " + camUp.z);
+
 	setZUp(camEye);
 	setZUp(camInterest);
 	setZUp(camUp);

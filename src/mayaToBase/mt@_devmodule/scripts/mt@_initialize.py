@@ -5,6 +5,7 @@ import traceback
 import sys
 import os
 import optimizeTextures
+import aeNodeTemplates
 
 reload(Renderer)
 
@@ -314,6 +315,11 @@ class @Renderer(Renderer.MayaToRenderer):
 
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
+        
+    def aeTemplateCallback(self, nodeName):
+        log.debug("aeTemplateCallback: " + nodeName)
+        aeNodeTemplates.AE@NodeTemplate(nodeName)
+        
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

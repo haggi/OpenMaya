@@ -54,9 +54,17 @@ public:
 	static bool isRendering;
 
 	void defineCamera();
+	
+	void defineFilm();
+
 	void defineGeometry();
 	void defineTriangleMesh(mtlu_MayaObject *obj);
+	
 	void defineLights();
+	void defineDirectionalLight(mtlu_MayaObject *obj);
+	void defineSpotLight(mtlu_MayaObject *obj);
+	void defineSunLight(mtlu_MayaObject *obj);
+	void defineOmniLight(mtlu_MayaObject *obj);
 
 	// writing files
 	std::ofstream luxFile;

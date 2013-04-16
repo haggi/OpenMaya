@@ -7,14 +7,37 @@
 
 void setZUp(MMatrix& matrix)
 {
+	MMatrix YtoZ;
+	YtoZ.setToIdentity();
+	YtoZ[0][0] = 1;
+	YtoZ[0][1] = 0;
+	YtoZ[0][2] = 0;
+	YtoZ[0][3] = 0;
+	
+	YtoZ[1][0] = 0;
+	YtoZ[1][1] = 0;
+	YtoZ[1][2] = 1;
+	YtoZ[1][3] = 0;
+	
+	YtoZ[2][0] = 0;
+	YtoZ[2][1] = -1;
+	YtoZ[2][2] = 0;
+	YtoZ[2][3] = 0;
+	
+	YtoZ[3][0] = 0;
+	YtoZ[3][1] = 0;
+	YtoZ[3][2] = 0;
+	YtoZ[3][3] = 1;	
+
 	if (MGlobal::isYAxisUp())
 	{
-		MTransformationMatrix tMatrix(matrix);
-		tMatrix.rotateBy( MEulerRotation::MEulerRotation(DegToRad(90), 0, 0), MSpace::kTransform);
-		MVector oTrans = tMatrix.getTranslation(MSpace::kTransform);
-		oTrans = MVector( oTrans[0], -oTrans[2], oTrans[1] );
-		tMatrix.setTranslation(oTrans, MSpace::kTransform);
-		matrix = tMatrix.asMatrix();
+		//MTransformationMatrix tMatrix(matrix);
+		//tMatrix.rotateBy( MEulerRotation::MEulerRotation(DegToRad(90), 0, 0), MSpace::kTransform);
+		//MVector oTrans = tMatrix.getTranslation(MSpace::kTransform);
+		//oTrans = MVector( oTrans[0], -oTrans[2], oTrans[1] );
+		//tMatrix.setTranslation(oTrans, MSpace::kTransform);
+		//matrix = tMatrix.asMatrix();
+		matrix *= YtoZ;
 	}
 }
 
