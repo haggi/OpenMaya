@@ -1,0 +1,99 @@
+#commonTab
+#frame Renderer
+renderer, enum, Renderer, 0, sampler:hybridsampler:hybridsppm
+hsConfigFile, string, HSConfig, ""
+hsOclPlatformIndex, int, OCL Platform Index, 0
+hsOclGpuUse, bool, OCL Gpu Use, 1
+hsOclWGroupSize, int, OCL WorkgroupSize, 0
+
+#frame Sampler
+sampler, enum, Sampler, 0, random:low discrepancy:metropolis:rrpt
+pixelSampler, enum, Pixel Sampler, 2, hilbert:linear:vegas:lowdiscrepancy:tile:random
+numSamples, int, Samples, 4
+maxconsecrejects, int, Max Consec Rejects, 512
+largemutationprob, float, Large Mutation Probability, 0.4
+mutationrange, float, Mutation Range, 0.1
+usevariance, bool, Use Variance, 0
+initSamples, int, Init Samples, 100000
+chainLength, int, Chain Length, 2000
+mutationRange, float, Mutation Range, 0.1
+
+physicalSun, bool, Use Physical Sun, false                    
+physicalSunConnection, message, Physical Sun connection, false                    
+sunGain, float, Sun Gain, 1.0
+turbidity, float, Turbidity, 2.0
+skySamples, int, Sky Samples, 1
+sunRelSize, float, Sun Relative Size, 1.0
+
+
+#frame image
+imageFormat, enum, Image Format, 1, Exr:Png:Tga
+premultiplyAlpha, bool, Premultiply Alpha, true
+
+#pixelfilter
+pixelfilter, enum, Pixel Filter, 3, box:trianlge:gauss:mitchell:sinc
+filterWidth, float, Width, 2.0
+filterHeight, float, Height, 2.0
+filterAlpha, float, Alpha, 2.0
+B, float, MitchellB, .33
+C, float, MitchellC, .33
+mSupersample, bool, Supersample, false
+sincTau, float, Tau, 3.0
+
+#frame accelerator
+accelerator, enum, Accelerator, 0, kdtree:qbvh:grid (not thread-safe):unsafekdtree (not thread-safe):bvh (not thread-safe):none
+kdIntersectcost, int, IntersectorCost, 80
+kdTraversalcost, int, TraversalCost, 1
+kdEmptybonus, float, Empty Bonus, 0.5
+kdMaxprims, int, Max Prims, 1
+kdMaxdepth, int, Max Depth, -1
+
+#qvbh
+maxprimsperleaf, int, Max Prims Per Leaf, 4
+fullsweepthreshold, int, Full Sweep Thresh, 4 * 4
+skipfactor, int, Skip Factor, 1
+
+#grid
+refineimmediately, bool, Refine Immediately, false
+
+#bvh
+treetype, enum, Tree Type, 0, binary:quadtree:octree
+costsamples, int, Cost Samples, 0
+
+#surface integrator
+surfaceIntegrator, enum, Surface Integrator, 0, bidirectional (default):path:exphotonmap:directlighting:distributedpath
+lightStrategy, enum, Light Strategy, 2, one:all:auto:importance:powerimp:allpowerimp:logpowerimp
+shadowraycount, int, Shadow Rays, 1
+
+#bidirectional
+eyedepth, int, Eye Depth, 8
+lightdepth, int, Light Depth, 8
+eyerrthreshold, float, Eye RR Thresh, 0.0
+lightrrthreshold, float, Light RR Thresh, 0.0
+
+#path
+pathMaxdepth, int, Max Depth, 16
+rrstrategy, enum, RR Strategy, 2, none:probability:efficiency
+rrcontinueprob, float, RR Continue, .65 
+
+#directLight
+dlightMaxdepth, int, Max Depth, 5
+
+#photon
+phRenderingmode, enum, Rendering Mode, 0,	directlighting:path 
+phCausticphotons, int, Caustic Photons, 20000
+phIndirectphotons, int, Indirect Photons, 200000
+phDirectphotons, int, Direct Photons, 200000
+phRadiancephotons, int, Radiance Photons, 200000
+phNphotonsused, int, Irradiance Photons, 50
+phMaxphotondist, float, Max Photon Dist, 0.5
+phMaxdepth, int, Max Specular Bounces, 5
+phMaxphotondepth, int, Max Trace Depth, 10
+phFinalgather, bool, Use Direct Lighing, true	 
+phFinalgathersamples, int, Final Gather Samples, 32
+phGatherangle, float, Gather Angle, 10.0
+phRrstrategy, enum, RR Strategy, 2, none:probability:efficiency
+phRrcontinueprob, float, Cont Prob RR, 0.65
+phDistancethreshold, float, Dist Thresold, 1.25
+phPhotonmapsfile, string, Photon File, ""
+ 	

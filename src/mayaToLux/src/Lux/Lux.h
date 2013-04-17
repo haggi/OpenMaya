@@ -64,7 +64,8 @@ public:
 	void defineDirectionalLight(mtlu_MayaObject *obj);
 	void defineSpotLight(mtlu_MayaObject *obj);
 	void defineSunLight(mtlu_MayaObject *obj);
-	void defineOmniLight(mtlu_MayaObject *obj);
+	void defineEnvironmentLight(mtlu_MayaObject *obj);
+	void definePointLight(mtlu_MayaObject *obj);
 
 	// writing files
 	std::ofstream luxFile;

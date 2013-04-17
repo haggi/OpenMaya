@@ -5,7 +5,7 @@ import traceback
 import sys
 import os
 import optimizeTextures
-import aeNodeTemplates
+import @.aeNodeTemplates as aet
 
 reload(Renderer)
 
@@ -318,7 +318,7 @@ class @Renderer(Renderer.MayaToRenderer):
         
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
-        aeNodeTemplates.AE@NodeTemplate(nodeName)
+        aet.aeNodeTemplates.AE@NodeTemplate(nodeName)
         
 
 """

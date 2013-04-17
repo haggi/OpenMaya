@@ -7,7 +7,7 @@ import os
 import path
 
 import optimizeTextures
-import aeNodeTemplates
+import Lux.aeNodeTemplates as LuxTemplates
 
 reload(Renderer)
 
@@ -152,7 +152,38 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pass
 
     def LuxEnvironemntCreateTab(self, dummy = None):
-        pass
+        log.debug("LuxEnvironemntCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
+        scLo = self.rendererName + "ENScrollLayout"
+        envDict = {}
+        self.rendererTabUiDict['environment'] = envDict
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                with pm.frameLayout(label="Environment Lighting", collapsable=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        envDict['pskUsePhySun'] = pm.checkBoxGrp(label="Use Physical Sun:", value1=False, cc=pm.Callback(self.uiCallback, tab="environment"))
+                        pm.connectControl(envDict['pskUsePhySun'], self.renderGlobalsNodeName + ".physicalSun", index=2)                    
+                        envDict['pskPhySun'] = pm.textFieldGrp(label="Sun Object:", text="", editable=False) 
+                        pm.separator()
+                        envDict['pskSunGain'] = pm.floatFieldGrp(label="Sun Gain:", value1=1.0, numberOfFields=1)
+                        pm.connectControl(envDict['pskSunGain'], self.renderGlobalsNodeName + ".sunGain", index=2)             
+                        envDict['pskTurb'] = pm.floatFieldGrp(label="Turbidity:", value1=1.0, numberOfFields=1)
+                        pm.connectControl(envDict['pskTurb'], self.renderGlobalsNodeName + ".turbidity", index=2)                    
+                        envDict['pskSamples'] = pm.floatFieldGrp(label="Samples:", value1=1.0, numberOfFields=1)
+                        pm.connectControl(envDict['pskSamples'], self.renderGlobalsNodeName + ".skySamples", index=2)                    
+                        envDict['pskRelSize'] = pm.floatFieldGrp(label="Sun Size:", value1=1.0, numberOfFields=1)
+                        pm.connectControl(envDict['pskRelSize'], self.renderGlobalsNodeName + ".sunRelSize", index=2)                    
+                    
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.uiCallback, tab="environment")])        
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.skyModel, pm.Callback(self.uiCallback, tab="environment")])   
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.physicalSun, pm.Callback(self.uiCallback, tab="environment")])   
+        
+        self.updateEnvironment()     
 
     def LuxEnvironemntUpdateTab(self, dummy = None):
         pass
@@ -228,7 +259,22 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_useassembly", attributeType="bool", defaultValue = False)
 
         # lights
+        pm.addExtension(nodeType="light", longName="mtlu_light_importance", attributeType="float", defaultValue = 1.0)
+        
         pm.addExtension(nodeType="directionalLight", longName="mtlu_dirLight_theta", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_samples", attributeType="long", defaultValue = 1)
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_power", attributeType="float", defaultValue = 100.0)
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_efficacy", attributeType="float", defaultValue = 17.0)
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_ies", attributeType="string", defaultValue = "")
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_geo", attributeType="message")
+        
+        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_power", attributeType="float", defaultValue = 100.0)
+        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_efficacy", attributeType="float", defaultValue = 17.0)
+        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_ies", attributeType="string", defaultValue = "")
+        
+        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_power", attributeType="float", defaultValue = 100.0)
+        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_efficacy", attributeType="float", defaultValue = 17.0)
+        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_ies", attributeType="string", defaultValue = "")
         # 
         
     def setImageName(self):
@@ -315,7 +361,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
         
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
-        aeNodeTemplates.AELuxNodeTemplate(nodeName)
+        LuxTemplates.AELuxNodeTemplate(nodeName)
         
 
 """

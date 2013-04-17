@@ -10,5 +10,7 @@ void setZUp( MMatrix& matrix);
 void setZUp( MMatrix& matrix, float *fm);
 void setZUp( MPoint& point);
 void setZUp( MVector& point);
+void setZUp( MVector& point, float *pos);
+void setZUp( MPoint& point, float *pos);
 
 #endif

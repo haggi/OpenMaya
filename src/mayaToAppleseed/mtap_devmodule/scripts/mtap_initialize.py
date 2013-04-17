@@ -5,7 +5,7 @@ import traceback
 import sys
 import os
 import optimizeTextures
-import aeNodeTemplates
+import Appleseed.aeNodeTemplates as aet
 import path
 
 reload(Renderer)
@@ -522,7 +522,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
-        aeNodeTemplates.AEappleseedNodeTemplate(nodeName)
+        aet.AEappleseedNodeTemplate(nodeName)
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

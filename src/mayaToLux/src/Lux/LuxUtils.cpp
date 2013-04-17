@@ -75,3 +75,35 @@ void setZUp(MVector& point)
 	point.y = matrix[3][1];
 	point.z = matrix[3][2];
 }
+
+void setZUp(MPoint& point, float *p)
+{
+	MMatrix matrix;
+	matrix.setToIdentity();
+	matrix[3][0] = point.x;
+	matrix[3][1] = point.y;
+	matrix[3][2] = point.z;
+	setZUp(matrix);
+	point.x = matrix[3][0];
+	point.y = matrix[3][1];
+	point.z = matrix[3][2];
+	p[0] = point.x;
+	p[1] = point.y;
+	p[2] = point.z;
+}
+
+void setZUp(MVector& point, float *p)
+{
+	MMatrix matrix;
+	matrix.setToIdentity();
+	matrix[3][0] = point.x;
+	matrix[3][1] = point.y;
+	matrix[3][2] = point.z;
+	setZUp(matrix);
+	point.x = matrix[3][0];
+	point.y = matrix[3][1];
+	point.z = matrix[3][2];
+	p[0] = point.x;
+	p[1] = point.y;
+	p[2] = point.z;
+}
