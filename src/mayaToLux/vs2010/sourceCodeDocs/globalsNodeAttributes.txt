@@ -18,6 +18,7 @@ initSamples, int, Init Samples, 100000
 chainLength, int, Chain Length, 2000
 mutationRange, float, Mutation Range, 0.1
 
+usePhysicalSky, bool, Use Physical Sky, false                    
 physicalSun, bool, Use Physical Sun, false                    
 physicalSunConnection, message, Physical Sun connection, false                    
 sunGain, float, Sun Gain, 1.0
@@ -29,6 +30,8 @@ sunRelSize, float, Sun Relative Size, 1.0
 #frame image
 imageFormat, enum, Image Format, 1, Exr:Png:Tga
 premultiplyAlpha, bool, Premultiply Alpha, true
+haltspp, int, Halt Samples PP, 0
+halttime, int, Max Rendertime, 0
 
 #pixelfilter
 pixelfilter, enum, Pixel Filter, 3, box:trianlge:gauss:mitchell:sinc

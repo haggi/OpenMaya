@@ -66,6 +66,9 @@ public:
 	void defineSunLight(mtlu_MayaObject *obj);
 	void defineEnvironmentLight(mtlu_MayaObject *obj);
 	void definePointLight(mtlu_MayaObject *obj);
+	bool isSunLight(mtlu_MayaObject *obj);
+
+	void defineEnvironment();
 
 	// writing files
 	std::ofstream luxFile;

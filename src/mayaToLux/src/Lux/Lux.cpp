@@ -48,7 +48,9 @@ void LuxRenderer::reinitializeIPRRendering()
 {}
 
 void LuxRenderer::abortRendering()
-{}
+{
+	this->lux->abort();
+}
 
 void LuxRenderer::getMeshPoints(MPointArray& pointArray)
 {
@@ -88,18 +90,26 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 		e.data = NULL;
 		size_t numPixels = width * height;
 		RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+		unsigned int mayaPixel = 0;
 
-		for( unsigned int i = 0; i < numPixels; i++)
+		if( fb != NULL )
 		{
-			if( fb != NULL )
+			for( unsigned int y = height-1; y > 0; y--)
 			{
-				pixels[i].r = fb[i * 3];
-				pixels[i].g = fb[i * 3 + 1];
-				pixels[i].b = fb[i * 3 + 2];
-				pixels[i].a = 0.0;
-				if( fa )
-					pixels[i].a = fa[i] * 255.0f;
+				for( unsigned int x = 0; x < width; x++)
+				{
+					unsigned int index = y * width + x;
+					pixels[mayaPixel].r = fb[index * 3];
+					pixels[mayaPixel].g = fb[index * 3 + 1];
+					pixels[mayaPixel].b = fb[index * 3 + 2];
+					pixels[mayaPixel].a = 0.0;
+					if( fa )
+						pixels[mayaPixel].a = fa[index] * 255.0f;
+					mayaPixel++;
+				}
 			}
+		}else{
+			logger.debug("framebuffer == NULL");
 		}
 		
 		e.tile_xmin = e.tile_ymin = 0;
@@ -144,53 +154,16 @@ void LuxRenderer::render()
 
 		this->defineFilm();
 
-		{
-			//ParamSet fp = CreateParamSet();
-			//const int xres = width;
-			//const int yres = height;
-			//const bool write_png = true;
-			//const int halttime = 10;
-			//fp->AddInt("xresolution",&xres);
-			//fp->AddInt("yresolution",&yres);
-			//fp->AddBool("write_png",&write_png);
-			//fp->AddString("filename",filename.c_str());
-			//fp->AddInt("halttime", &halttime);
-			//lux->film("fleximage", boost::get_pointer(fp));
-		}
-
 		lux->worldBegin();
 
 		this->defineLights();
 
-
-		//{
-		//	ParamSet dp = CreateParamSet();
-		//	float r = 10.0f, h = 0.3f;
-		//	dp->AddFloat("radius", &r);
-		//	dp->AddFloat("height", &h);
-		//	lux->shape("disk", boost::get_pointer(dp));
-		//}
 		this->defineGeometry();
 
-		{
-			for( size_t i = 0; i < pointArray.length(); i++)
-			{
-				//MPoint p = pointArray[i];
-
-				//ParamSet dp = CreateParamSet();
-				//float r = (float)rand()/(float)RAND_MAX * 0.3;
-				//dp->AddFloat("radius", &r);
-
-				//lux->transformBegin();
-				//lux->translate(p.x , p.y , p.z);
-				//
-				//lux->shape("sphere", boost::get_pointer(dp));
-				//lux->transformEnd();
-			}
-		}
-
 		lux->worldEnd();
+
 		isRendering = true;
+
 		// wait for the WorldEnd thread to start running
 		// this isn't terribly reliable, cpp_api should be modified
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -198,6 +171,12 @@ void LuxRenderer::render()
 
 		for( int tid = 0; tid < 7; tid++)
 			lux->addThread();
+
+		// test for update...
+		
+		//boost::this_thread::sleep(boost::posix_time::seconds(this->mtlu_renderGlobals->halttime));
+
+		//logger.debug("Calling lux wait...");
 
 		lux->wait();
 

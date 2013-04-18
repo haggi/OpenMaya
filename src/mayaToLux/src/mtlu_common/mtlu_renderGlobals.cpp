@@ -5,6 +5,8 @@
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
 
+#include "../Lux/LuxUtils.h"
+
 static Logging logger;
 
 mtlu_RenderGlobals::mtlu_RenderGlobals()
@@ -103,11 +105,35 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getFloat(MString("mutationRange"), LuxGlobals, this->mutationRange))
 			throw("problem reading luxGlobals.mutationRange");
 
+		if(!getBool(MString("usePhysicalSky"), LuxGlobals, this->usePhysicalSky))
+			throw("problem reading luxGlobals.usePhysicalSky");
+
+		if(!getBool(MString("physicalSun"), LuxGlobals, this->physicalSun))
+			throw("problem reading luxGlobals.physicalSun");
+
+		if(!getFloat(MString("sunGain"), LuxGlobals, this->sunGain))
+			throw("problem reading luxGlobals.sunGain");
+
+		if(!getFloat(MString("turbidity"), LuxGlobals, this->turbidity))
+			throw("problem reading luxGlobals.turbidity");
+
+		if(!getInt(MString("skySamples"), LuxGlobals, this->skySamples))
+			throw("problem reading luxGlobals.skySamples");
+
+		if(!getFloat(MString("sunRelSize"), LuxGlobals, this->sunRelSize))
+			throw("problem reading luxGlobals.sunRelSize");
+
 		if(!getEnum(MString("imageFormat"), LuxGlobals, this->imageFormat))
 			throw("problem reading luxGlobals.imageFormat");
 
 		if(!getBool(MString("premultiplyAlpha"), LuxGlobals, this->premultiplyAlpha))
 			throw("problem reading luxGlobals.premultiplyAlpha");
+
+		if(!getInt(MString("haltspp"), LuxGlobals, this->haltspp))
+			throw("problem reading luxGlobals.haltspp");
+
+		if(!getInt(MString("halttime"), LuxGlobals, this->halttime))
+			throw("problem reading luxGlobals.halttime");
 
 		if(!getEnum(MString("pixelfilter"), LuxGlobals, this->pixelfilter))
 			throw("problem reading luxGlobals.pixelfilter");
@@ -267,10 +293,24 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getBool(MString("adaptiveSampling"), LuxGlobals, this->adaptiveSampling))
 			throw("problem reading luxGlobals.adaptiveSampling");
 
+		if(!getBool(MString("doMotionBlur"), LuxGlobals, this->doMb))
+			throw("problem reading LuxGlobals.doMotionBlur");
+
+		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
+			throw("problem reading LuxGlobals.doDof");
+
+		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
+			throw("problem reading LuxGlobals.doDof");
+
+		if(!getFloat(MString("sceneScale"), LuxGlobals, this->sceneScale))
+			throw("problem reading LuxGlobals.sceneScale");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[2][2] = this->sceneScale;
+		MMatrix m = this->sceneScaleMatrix;
+		setGlobalScaleMatrix(m);
 
 	}catch(char *errorMsg){
 

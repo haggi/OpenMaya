@@ -27,8 +27,16 @@ public:
 	int initSamples;
 	int chainLength;
 	float mutationRange;
+	bool usePhysicalSky;
+	bool physicalSun;
+	float sunGain;
+	float turbidity;
+	int skySamples;
+	float sunRelSize;
 	int imageFormat;
 	bool premultiplyAlpha;
+	int haltspp;
+	int halttime;
 	int pixelfilter;
 	float filterWidth;
 	float filterHeight;

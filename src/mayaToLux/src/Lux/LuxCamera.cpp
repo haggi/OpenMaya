@@ -4,10 +4,13 @@
 #include "../mtlu_common/mtlu_renderGlobals.h"
 #include "../mtlu_common/mtlu_mayaScene.h"
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 
 #include "utilities/logging.h"
 
 static Logging logger;
+
+const char *LensDistributions[] = {"uniform", "exponential", "inverse exponential", "gaussian", "inverse gaussian"};
 
 void LuxRenderer::defineCamera()
 {
@@ -50,6 +53,13 @@ void LuxRenderer::defineCamera()
 
 	// focaldist
 	float focusDist = (float)camFn.focusDistance();
+	float focalLen = (float)camFn.focalLength();
+	float fStop = (float)camFn.fStop();
+
+	bool useDOF = false;
+	getBool(MString("depthOfField"), camFn, useDOF);
+	useDOF = useDOF && this->mtlu_renderGlobals->doDof;
+
 	// hither, yon
 	float hither = (float)camFn.nearClippingPlane();
 	float yon = (float)camFn.farClippingPlane();
@@ -60,11 +70,32 @@ void LuxRenderer::defineCamera()
 	int ymax = ybot >  ytop ? ybot :  ytop;
 
 
+	float lensradius = (focalLen / 1000.0) / ( 2.0 * fStop );
+
+	int blades = 0;
+	getInt(MString("mtlu_diaphragm_blades"), camFn, blades);
+	bool autofocus = false;
+	getBool(MString("mtlu_autofocus"), camFn, autofocus);
+	int dist = 0;
+	getInt(MString("mtlu_distribution"), camFn, dist);
+	logger.debug(MString("Lens distribution: ") + dist + " " + LensDistributions[dist]);
+	float power = 1.0f;
+	getFloat(MString("mtlu_power"), camFn, power);
+
 	ParamSet cp = CreateParamSet();
 	cp->AddFloat("fov", &fov);
 	cp->AddFloat("focaldistance", &focusDist);
 	cp->AddFloat("hither", &hither);
 	cp->AddFloat("yon", &yon);
+	if( blades > 0)
+		cp->AddInt("blades", &blades);
+	if( useDOF )
+	{
+		cp->AddFloat("lensradius", &lensradius);
+		cp->AddBool("autofocus", &autofocus);
+		cp->AddString("distribution", LensDistributions[dist]);
+		cp->AddFloat("power", &power);
+	}
 	luxFile << "Camera \"perspective\" " << " \"float fov\" " << fov << " \"float focaldistance\" " << focusDist << " \"float hither\" " << hither << " \"float yon\" " << yon << "\n";
 	lux->camera("perspective", boost::get_pointer(cp));
 

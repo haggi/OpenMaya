@@ -25,8 +25,17 @@ MObject MayaToLuxGlobals::usevariance;
 MObject MayaToLuxGlobals::initSamples;
 MObject MayaToLuxGlobals::chainLength;
 MObject MayaToLuxGlobals::mutationRange;
+MObject MayaToLuxGlobals::usePhysicalSky;
+MObject MayaToLuxGlobals::physicalSun;
+MObject MayaToLuxGlobals::physicalSunConnection;
+MObject MayaToLuxGlobals::sunGain;
+MObject MayaToLuxGlobals::turbidity;
+MObject MayaToLuxGlobals::skySamples;
+MObject MayaToLuxGlobals::sunRelSize;
 MObject MayaToLuxGlobals::imageFormat;
 MObject MayaToLuxGlobals::premultiplyAlpha;
+MObject MayaToLuxGlobals::haltspp;
+MObject MayaToLuxGlobals::halttime;
 MObject MayaToLuxGlobals::pixelfilter;
 MObject MayaToLuxGlobals::filterWidth;
 MObject MayaToLuxGlobals::filterHeight;
@@ -161,6 +170,27 @@ MStatus	MayaToLuxGlobals::initialize()
 	mutationRange = nAttr.create("mutationRange", "mutationRange",  MFnNumericData::kFloat, 0.1);
 	CHECK_MSTATUS(addAttribute( mutationRange ));
 
+	usePhysicalSky = nAttr.create("usePhysicalSky", "usePhysicalSky",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( usePhysicalSky ));
+
+	physicalSun = nAttr.create("physicalSun", "physicalSun",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( physicalSun ));
+
+	physicalSunConnection = mAttr.create("physicalSunConnection", "physicalSunConnection");
+	CHECK_MSTATUS(addAttribute( physicalSunConnection ));
+
+	sunGain = nAttr.create("sunGain", "sunGain",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( sunGain ));
+
+	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( turbidity ));
+
+	skySamples = nAttr.create("skySamples", "skySamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( skySamples ));
+
+	sunRelSize = nAttr.create("sunRelSize", "sunRelSize",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( sunRelSize ));
+
 	imageFormat = eAttr.create("imageFormat", "imageFormat", 1, &stat);
 	stat = eAttr.addField( "Exr", 0 );
 	stat = eAttr.addField( "Png", 1 );
@@ -169,6 +199,12 @@ MStatus	MayaToLuxGlobals::initialize()
 
 	premultiplyAlpha = nAttr.create("premultiplyAlpha", "premultiplyAlpha",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( premultiplyAlpha ));
+
+	haltspp = nAttr.create("haltspp", "haltspp",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( haltspp ));
+
+	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 20);
+	CHECK_MSTATUS(addAttribute( halttime ));
 
 	pixelfilter = eAttr.create("pixelfilter", "pixelfilter", 3, &stat);
 	stat = eAttr.addField( "box", 0 );

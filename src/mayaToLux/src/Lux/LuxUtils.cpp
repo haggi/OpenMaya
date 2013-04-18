@@ -5,6 +5,8 @@
 #include <maya/MGlobal.h>
 #include "utilities/tools.h"
 
+static MMatrix globalScaleMatrix;
+
 void setZUp(MMatrix& matrix)
 {
 	MMatrix YtoZ;
@@ -39,6 +41,7 @@ void setZUp(MMatrix& matrix)
 		//matrix = tMatrix.asMatrix();
 		matrix *= YtoZ;
 	}
+	matrix *= globalScaleMatrix;
 }
 
 void setZUp(MMatrix& matrix, float *fm)
@@ -106,4 +109,10 @@ void setZUp(MVector& point, float *p)
 	p[0] = point.x;
 	p[1] = point.y;
 	p[2] = point.z;
+}
+
+void setGlobalScaleMatrix(MMatrix& matrix)
+{
+	globalScaleMatrix.setToIdentity();
+	globalScaleMatrix = matrix;
 }
