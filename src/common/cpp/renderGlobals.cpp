@@ -111,9 +111,12 @@ bool RenderGlobals::getMbSteps( MObject& camera)
     
 	//degrees * ( M_PI/ 180.0 );
     //radians * (180.0/M_PI);
+	//TODO: make motionblur calculation time dependent instead of frame dependent
 
 	double shutterDist = shutterAngle / (2.0 * M_PI);
 	MString info;
+
+	this->mbLength = shutterDist;
 
 	double startStep = 0.0;
 

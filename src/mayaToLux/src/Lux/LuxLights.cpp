@@ -85,8 +85,8 @@ void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
 	getFloat(MString("intensity"), lightFn, gain);
 
 	ParamSet lp = CreateParamSet();
-	lp->AddPoint("from", from, 3);
-	lp->AddPoint("to", to, 3);
+	lp->AddPoint("from", from, 1);
+	lp->AddPoint("to", to, 1);
 	lp->AddRGBColor("L", L, 1);
 	lp->AddFloat("theta", &theta, 1);
 	lp->AddFloat("gain", &gain, 1);
@@ -124,7 +124,7 @@ void LuxRenderer::definePointLight(mtlu_MayaObject *obj)
 	getFloat(MString("mtlu_pointLight_efficacy"), lightFn, efficacy);
 
 	ParamSet lp = CreateParamSet();
-	lp->AddPoint("from", from, 3);
+	lp->AddPoint("from", from, 1);
 	lp->AddRGBColor("L", L, 1);
 	lp->AddFloat("gain", &gain, 1);
 	lp->AddFloat("power", &power, 1);
@@ -173,8 +173,8 @@ void LuxRenderer::defineSpotLight(mtlu_MayaObject *obj)
 	penumbraAngle = (float)RadToDeg(penumbraAngle);
 
 	ParamSet lp = CreateParamSet();
-	lp->AddPoint("from", from, 3);
-	lp->AddPoint("to", to, 3);
+	lp->AddPoint("from", from, 1);
+	lp->AddPoint("to", to, 1);
 	lp->AddRGBColor("L", L, 1);
 	lp->AddFloat("gain", &gain, 1);
 	lp->AddFloat("power", &power, 1);
@@ -205,7 +205,7 @@ void LuxRenderer::defineSunLight(mtlu_MayaObject *obj)
 	getFloat(MString("intensity"), lightFn, gain);
 
 	ParamSet lp = CreateParamSet();
-	lp->AddVector("sundir", sundir, 3);
+	lp->AddVector("sundir", sundir, 1);
 	lp->AddFloat("gain", &gain, 1);
 	lp->AddInt("nsamples", &nsamples, 1);
 	lp->AddFloat("turbidity", &turbidity, 1);
@@ -243,19 +243,20 @@ void LuxRenderer::defineEnvironmentLight(mtlu_MayaObject *obj)
 	L[1] = lightColor.g;
 	L[2] = lightColor.b;
 
-	MString mapname;
-	getString(MString("mtlu_ambientLight_map"), lightFn, mapname);
+	MString mapName;
+	getString(MString("mtlu_ambientLight_map"), lightFn, mapName);
 	float gain = 1.0f;
 	getFloat(MString("intensity"), lightFn, gain);
 	int nsamples = 1;
 	getInt(MString("mtlu_ambientLight_samples"), lightFn, nsamples);
+	const char *mapname = mapName.asChar();
 
 	ParamSet lp = CreateParamSet();
 	lp->AddRGBColor("L", L, 1);
 	lp->AddFloat("gain", &gain, 1);
 	lp->AddInt("nsamples", &nsamples, 1);
-	if( mapname.length() > 0)
-		lp->AddString("mapname", mapname.asChar(), 1);
+	if( mapName.length() > 0)
+		lp->AddString("mapname", &mapname, 1);
 
 	lux->lightSource("infinite", boost::get_pointer(lp));
 

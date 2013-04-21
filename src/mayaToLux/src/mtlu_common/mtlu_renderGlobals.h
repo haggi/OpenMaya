@@ -37,6 +37,7 @@ public:
 	bool premultiplyAlpha;
 	int haltspp;
 	int halttime;
+	float uiupdateinterval;
 	int pixelfilter;
 	float filterWidth;
 	float filterHeight;

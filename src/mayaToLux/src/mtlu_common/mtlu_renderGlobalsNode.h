@@ -44,6 +44,7 @@ static    MObject imageFormat;
 static    MObject premultiplyAlpha;
 static    MObject haltspp;
 static    MObject halttime;
+static    MObject uiupdateinterval;
 static    MObject pixelfilter;
 static    MObject filterWidth;
 static    MObject filterHeight;

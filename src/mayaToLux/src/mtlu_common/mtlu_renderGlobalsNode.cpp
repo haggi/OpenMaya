@@ -36,6 +36,7 @@ MObject MayaToLuxGlobals::imageFormat;
 MObject MayaToLuxGlobals::premultiplyAlpha;
 MObject MayaToLuxGlobals::haltspp;
 MObject MayaToLuxGlobals::halttime;
+MObject MayaToLuxGlobals::uiupdateinterval;
 MObject MayaToLuxGlobals::pixelfilter;
 MObject MayaToLuxGlobals::filterWidth;
 MObject MayaToLuxGlobals::filterHeight;
@@ -203,8 +204,11 @@ MStatus	MayaToLuxGlobals::initialize()
 	haltspp = nAttr.create("haltspp", "haltspp",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( haltspp ));
 
-	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 20);
+	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( halttime ));
+
+	uiupdateinterval = nAttr.create("uiupdateinterval", "uiupdateinterval",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( uiupdateinterval ));
 
 	pixelfilter = eAttr.create("pixelfilter", "pixelfilter", 3, &stat);
 	stat = eAttr.addField( "box", 0 );

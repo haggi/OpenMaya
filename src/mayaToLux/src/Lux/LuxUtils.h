@@ -5,6 +5,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
+#include <vector>
 
 void setZUp( MMatrix& matrix);
 void setZUp( MMatrix& matrix, float *fm);

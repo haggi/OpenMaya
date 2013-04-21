@@ -57,8 +57,11 @@ public:
 	
 	void defineFilm();
 
+	void transformGeometry(mtlu_MayaObject *obj, bool doMotionblur); 
+	void transformCamera(mtlu_MayaObject *obj, bool doMotionblur); 
+
 	void defineGeometry();
-	void defineTriangleMesh(mtlu_MayaObject *obj);
+	void defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef);
 	
 	void defineLights();
 	void defineDirectionalLight(mtlu_MayaObject *obj);
@@ -73,6 +76,8 @@ public:
 	// writing files
 	std::ofstream luxFile;
 
+	// file writing methods
+	//void motionBegin(int steps, float *times);
 
 	Instance lux;
 };

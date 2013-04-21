@@ -76,13 +76,17 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 {
 	LuxRenderer *luxRenderer = (LuxRenderer*)pointer;
 	
+	//Context::UpdateFramebuffer
+
 	int width = luxRenderer->mtlu_renderGlobals->imgWidth;
 	int height = luxRenderer->mtlu_renderGlobals->imgHeight;
 	EventQueue::Event e;
 
 	while( isRendering )
 	{
-		logger.debug("Update framebuffer...");
+		//logger.debug("Update framebuffer...");
+
+		luxRenderer->lux->updateFramebuffer();
 
 		const unsigned char *fb = luxRenderer->lux->framebuffer();
 		const float *ffb = luxRenderer->lux->floatFramebuffer();
@@ -119,11 +123,11 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 		e.type = EventQueue::Event::FRAMEUPDATE;
 		theRenderEventQueue()->push(e);
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(luxRenderer->mtlu_renderGlobals->uiupdateinterval * 1000));
 
 	}
 
-	logger.debug("Update framebuffer trhead done.");
+	logger.debug("Update framebuffer thread done.");
 
 }
 

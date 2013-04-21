@@ -25,11 +25,24 @@ class AELuxNodeTemplate(BaseTemplate):
         if self.thisNode.type() == "camera":
             log.debug("AELuxNodeTemplate:build camera AE")            
             self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_diaphragm_blades", label="Blades")
+            self.addControl("mtlu_autofocus", label="Autofocus")
+            self.addControl("mtlu_distribution", label="Distribution")
+            self.addControl("mtlu_power", label="Exponential Distribution Power")
             self.endLayout()
+            
+            
         if self.thisNode.type() == "directionalLight":
             log.debug("AELuxNodeTemplate:build dir light AE")            
             self.beginLayout("Lux" ,collapse=1)
             self.addControl("mtlu_dirLight_theta", label="Shadow softness")
+            self.endLayout()
+
+        if self.thisNode.type() == "ambientLight":
+            log.debug("AELuxNodeTemplate:build ambi light AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_ambientLight_map", label="IBL Map")
+            self.addControl("mtlu_ambientLight_samples", label="Light Samples")
             self.endLayout()
     
     def buildBody(self, nodeName):

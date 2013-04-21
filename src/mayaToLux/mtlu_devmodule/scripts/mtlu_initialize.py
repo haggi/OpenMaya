@@ -36,9 +36,46 @@ class LuxRenderer(Renderer.MayaToRenderer):
     def updateTest(self, dummy = None):
         print "UpdateTest", dummy             
 
+    def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
+
     def updateEnvironment(self, dummy=None):
-        pass
-        #envDict = self.rendererTabUiDict['environment']
+        if not self.rendererTabUiDict.has_key('environment'):
+            return
+        envDict = self.rendererTabUiDict['environment']
+        
+        for key, val in envDict.iteritems():
+            val.setEnable(False)
+            
+        # enable physical sky and enable physical sun becuse we can use physical sun without physical sky
+        envDict['pskSkyUse'].setEnable(True)
+        envDict['pskUsePhySun'].setEnable(True)
+        
+        if not self.renderGlobalsNode.usePhysicalSky.get():
+            return
+        
+        try:
+            sunConnection = self.renderGlobalsNode.physicalSunConnection.listConnections()[0]
+        except:
+            log.info("No asSunLight connected, searching for one.")
+            try:
+                sunConnection = pm.ls("asSunLight")[0]
+                sunConnection.message >> self.renderGlobalsNode.physicalSunConnection
+            except:
+                log.info("No light called asSunLight in scene, creating a new one.")
+                lightShape = pm.createNode("directionalLight")
+                sunConnection = lightShape.getParent()
+                sunConnection.rename("asSunLight")
+                sunConnection.message >> self.renderGlobalsNode.physicalSunConnection
+        envDict['pskPhySun'].setText(str(sunConnection))
+            
+        if self.renderGlobalsNode.physicalSun.get():
+            envDict['pskRelSize'].setEnable(True)
+            
+        envDict['pskSunGain'].setEnable(True)
+        envDict['pskTurb'].setEnable(True)
+        envDict['pskSamples'].setEnable(True)
+    
             
     def LuxRendererCreateTab(self):
         log.debug("LuxRendererCreateTab()")
@@ -52,6 +89,15 @@ class LuxRenderer(Renderer.MayaToRenderer):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label='Renderer', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'haltspp', uiType = 'int', displayName = 'Halt Samper Per Pixel', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'halttime', uiType = 'int', displayName = 'Halt Time (sec)', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'uiupdateinterval', uiType = 'int', displayName = 'Ui Update Interval (sec)', default='2', uiDict=uiDict)
+                        pm.separator()
+                        ui = pm.checkBoxGrp(label="Motionblur:", value1=False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index=2)
+                        ui = pm.checkBoxGrp(label="Depth Of Field:", value1=False)
+                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
+                        pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'renderer', uiType = 'enum', displayName = 'Renderer', default='0', data='sampler:hybridsampler:hybridsppm', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsConfigFile', uiType = 'string', displayName = 'HSConfig', default='""', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsOclPlatformIndex', uiType = 'int', displayName = 'OCL Platform Index', default='0', uiDict=uiDict)
@@ -151,8 +197,8 @@ class LuxRenderer(Renderer.MayaToRenderer):
         log.debug("LuxRendererUpdateTab()")
         pass
 
-    def LuxEnvironemntCreateTab(self, dummy = None):
-        log.debug("LuxEnvironemntCreateTab()")
+    def LuxEnvironmentCreateTab(self, dummy = None):
+        log.debug("LuxEnvironmentCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
@@ -163,6 +209,8 @@ class LuxRenderer(Renderer.MayaToRenderer):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Environment Lighting", collapsable=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        envDict['pskSkyUse'] = pm.checkBoxGrp(label="Use physical Sky:", value1=True, cc=pm.Callback(self.uiCallback, tab="environment"))
+                        pm.connectControl(envDict['pskSkyUse'], self.renderGlobalsNodeName + ".usePhysicalSky", index=2)             
                         envDict['pskUsePhySun'] = pm.checkBoxGrp(label="Use Physical Sun:", value1=False, cc=pm.Callback(self.uiCallback, tab="environment"))
                         pm.connectControl(envDict['pskUsePhySun'], self.renderGlobalsNodeName + ".physicalSun", index=2)                    
                         envDict['pskPhySun'] = pm.textFieldGrp(label="Sun Object:", text="", editable=False) 
@@ -179,13 +227,11 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         
-        pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.uiCallback, tab="environment")])        
-        pm.scriptJob(attributeChange=[self.renderGlobalsNode.skyModel, pm.Callback(self.uiCallback, tab="environment")])   
         pm.scriptJob(attributeChange=[self.renderGlobalsNode.physicalSun, pm.Callback(self.uiCallback, tab="environment")])   
         
         self.updateEnvironment()     
 
-    def LuxEnvironemntUpdateTab(self, dummy = None):
+    def LuxEnvironmentUpdateTab(self, dummy = None):
         pass
     
     def xmlFileBrowse(self, args=None):
@@ -212,17 +258,17 @@ class LuxRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
-                with pm.frameLayout(label="Lux XML export", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
+                with pm.frameLayout(label="Lux Scene File export", collapsable = True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export scene file:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index = 2 )
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
                     with pm.rowColumnLayout(nc=3, width = 120):
-                        pm.text(label="XMLFileName:", width = 60, align="right")
+                        pm.text(label="SceneFileName:", width = 60, align="right")
                         defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Lux"
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
-                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
+                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index = 2 )
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
                     with pm.rowColumnLayout(nc=3, width = 120):
                         optiDict = {}
@@ -246,6 +292,13 @@ class LuxRenderer(Renderer.MayaToRenderer):
             iList = self.renderGlobalsNode.imageFormat.getEnums()
             self.imageFormats = []
             self.imageFormats.extend(iList)
+            
+    def uiCallback(self, **args):
+        log.debug("uiCallback()")
+        
+        if args['tab'] == "environment":
+            self.updateEnvironment()
+            
 
     def registerNodeExtensions(self):
         """Register Lux specific node extensions. e.g. camera type, diaphram_blades and others
@@ -253,7 +306,9 @@ class LuxRenderer(Renderer.MayaToRenderer):
         # we will have a thinlens camera only
         #pm.addExtension(nodeType="camera", longName="mtlu_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtlu_diaphragm_blades", attributeType="long", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtlu_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="camera", longName="mtlu_autofocus", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="camera", longName="mtlu_distribution", attributeType="enum", enumName = "uniform:exponential:inverse exponential:gaussian:inverse gaussian")
+        pm.addExtension(nodeType="camera", longName="mtlu_power", attributeType="long", defaultValue = 1)
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_useassembly", attributeType="bool", defaultValue = False)
@@ -262,19 +317,23 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="light", longName="mtlu_light_importance", attributeType="float", defaultValue = 1.0)
         
         pm.addExtension(nodeType="directionalLight", longName="mtlu_dirLight_theta", attributeType="float", defaultValue = 0.0)
+        
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_samples", attributeType="long", defaultValue = 1)
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_ies", attributeType="string", defaultValue = "")
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_ies", dataType="string")
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_geo", attributeType="message")
         
         pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_ies", attributeType="string", defaultValue = "")
+        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_ies", dataType="string")
         
         pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_ies", attributeType="string", defaultValue = "")
+        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_ies", dataType="string")
+
+        pm.addExtension(nodeType="ambientLight", longName="mtlu_ambientLight_map", dataType="string", usedAsFilename=True)
+        pm.addExtension(nodeType="ambientLight", longName="mtlu_ambientLight_samples", attributeType="long", defaultValue = 1)
         # 
         
     def setImageName(self):

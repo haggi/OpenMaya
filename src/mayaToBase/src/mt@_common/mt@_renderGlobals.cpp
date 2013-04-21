@@ -60,6 +60,39 @@ bool mt@_RenderGlobals::getMt@Globals()
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
 		
+		if(!getString(MString("optimizedTexturePath"), LuxGlobals, this->optimizedTexturePath))
+			throw("problem reading luxGlobals.optimizedTexturePath");
+
+		if(!getString(MString("basePath"), LuxGlobals, this->basePath))
+			throw("problem reading luxGlobals.basePath");
+
+		if(!getString(MString("imagePath"), LuxGlobals, this->imagePath))
+			throw("problem reading luxGlobals.imagePath");
+
+		if(!getBool(MString("exportSceneFile"), LuxGlobals, this->exportSceneFile))
+			throw("problem reading luxGlobals.exportSceneFile");
+
+		if(!getString(MString("exportSceneFileName"), LuxGlobals, this->exportSceneFileName))
+			throw("problem reading luxGlobals.exportSceneFileName");
+
+		if(!getString(MString("imageName"), LuxGlobals, this->imageName))
+			throw("problem reading luxGlobals.imageName");
+
+		if(!getBool(MString("adaptiveSampling"), LuxGlobals, this->adaptiveSampling))
+			throw("problem reading luxGlobals.adaptiveSampling");
+
+		if(!getBool(MString("doMotionBlur"), LuxGlobals, this->doMb))
+			throw("problem reading LuxGlobals.doMotionBlur");
+
+		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
+			throw("problem reading LuxGlobals.doDof");
+
+		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
+			throw("problem reading LuxGlobals.doDof");
+
+		if(!getFloat(MString("sceneScale"), LuxGlobals, this->sceneScale))
+			throw("problem reading LuxGlobals.sceneScale");
+
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;
 		this->sceneScaleMatrix.matrix[1][1] = this->sceneScale;

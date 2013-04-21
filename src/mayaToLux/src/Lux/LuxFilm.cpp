@@ -15,7 +15,7 @@ void LuxRenderer::defineFilm()
 	int height = this->mtlu_renderGlobals->imgHeight;
 	MString outputPath = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".lxs";
 	MString fileName = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".png";
-
+	const char *filename = fileName.asChar();
 	const int xres = width;
 	const int yres = height;
 	const bool write_png = true;
@@ -27,7 +27,7 @@ void LuxRenderer::defineFilm()
 	fp->AddInt("xresolution",&xres);
 	fp->AddInt("yresolution",&yres);
 	fp->AddBool("write_png",&write_png);
-	fp->AddString("filename",fileName.asChar());
+	fp->AddString("filename",&filename);
 	if( halttime > 0)
 		fp->AddInt("halttime", &halttime);
 	if( haltspp > 0)

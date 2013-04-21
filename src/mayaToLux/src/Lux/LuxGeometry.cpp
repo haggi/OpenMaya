@@ -5,6 +5,7 @@
 #include <maya/MIntArray.h>
 #include <maya/MFloatArray.h>
 
+#include <time.h>
 
 #include "../mtlu_common/mtlu_mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
@@ -14,7 +15,7 @@
 #include "utilities/logging.h"
 static Logging logger;
 
-void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
+void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = false)
 {
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
@@ -170,41 +171,52 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj)
 	}
 
 	ParamSet triParams = CreateParamSet();
-	int numPointValues = numTriangles * 3 * 3;
+	int numPointValues = numTriangles * 3;
 	int numUvValues = numTriangles * 3 * 2;
+	clock_t startTime = clock();
+	logger.info(MString("Adding mesh values to params."));
 	triParams->AddInt("indices", triangelVtxIdList, numTriangles * 3);
 	triParams->AddPoint("P", floatPointArray, numPointValues);
 	triParams->AddNormal("N", floatNormalArray, numPointValues);
 	triParams->AddFloat("uv",  floatUvArray, numUvValues);
+	clock_t pTime = clock();
 
-	this->luxFile << "indices:\n";
-	for( int i = 0; i < (numTriangles * 3); i++)
+	if( this->mtlu_renderGlobals->exportSceneFile )
 	{
-		//logger.debug(MString("id ") + i + " " + triangelVtxIdList[i]);
-		int v = triangelVtxIdList[i];
-		this->luxFile << "index " << i << " value " << v << "\n";
+		this->luxFile << "indices:\n";
+		for( int i = 0; i < (numTriangles * 3); i++)
+		{
+			int v = triangelVtxIdList[i];
+			this->luxFile << i << "\n";
+		}
+		this->luxFile << "\n";
+		luxFile.flush();
+		this->luxFile << "P:\n";
+		for( int i = 0; i < (numPointValues); i++)
+		{
+			float v = floatPointArray[i];
+			this->luxFile << v << " ";
+		}
+		this->luxFile << "\n";
+		luxFile.flush();
+		this->luxFile << "N:\n";
+		for( int i = 0; i < (numPointValues); i++)
+		{
+			float v = floatNormalArray[i];
+			this->luxFile << v << " ";
+		}
+		this->luxFile << "\n";
+		luxFile.flush();
 	}
-	luxFile.flush();
-	this->luxFile << "P:\n";
-	for( int i = 0; i < (numPointValues); i++)
-	{
-		//logger.debug(MString("p ") + i + " " + floatPointArray[i]);
-		float v = floatPointArray[i];
-		this->luxFile << "index " << i << " value " << v << "\n";
-	}
-	luxFile.flush();
-	this->luxFile << "N:\n";
-	for( int i = 0; i < (numPointValues); i++)
-	{
-		//logger.debug(MString("n ") + i + " " + floatNormalArray[i]);
-		float v = floatNormalArray[i];
-		this->luxFile << "index " << i << " value " << v << "\n";
-	}
-	luxFile.flush();
 
-	this->lux->objectBegin(meshFullName.asChar());
+	if(!noObjectDef)
+		this->lux->objectBegin(meshFullName.asChar());
 	this->lux->shape("trianglemesh", triParams.get());
-	this->lux->objectEnd();
+	if(!noObjectDef)
+		this->lux->objectEnd();
+
+	clock_t eTime = clock();
+	logger.info(MString("Timing: Parameters: ") + ((pTime - startTime)/CLOCKS_PER_SEC) + " objTime " + ((eTime - pTime)/CLOCKS_PER_SEC) + " all " + ((eTime - startTime)/CLOCKS_PER_SEC));
 
 	return;
 
@@ -219,17 +231,14 @@ void LuxRenderer::defineGeometry()
 		{
 			if( obj->mobject.hasFn(MFn::kMesh))
 			{
-				logger.debug(MString("define mesh ") + obj->fullNiceName);
-				this->defineTriangleMesh(obj);
+				if( obj->instanceNumber == 0)
+				{
+					logger.debug(MString("define mesh ") + obj->fullNiceName);
+					this->defineTriangleMesh(obj);
+				}
 
-				MMatrix tm = obj->dagPath.inclusiveMatrix();
-				float fm[16];
-				setZUp(tm, fm);
-
-				this->lux->transformBegin();
-				this->lux->transform(fm);
-				this->lux->objectInstance(obj->fullNiceName.asChar());
-				this->lux->transformEnd();
+				bool doMotionblur = this->mtlu_renderGlobals->doMb && (obj->motionBlurred) && (obj->transformMatrices.size() > 1);
+				transformGeometry(obj, doMotionblur);
 			}
 		}
 	}

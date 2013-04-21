@@ -121,8 +121,9 @@ public:
 
 	bool doMb;
 	int mbtype; // leading = 0, centered = 1, trailing = 2
-	float mbStartTime; // frame relative start time e.g. -0.2
-	float mbEndTime; // frame relative end time e.g. 0.2
+	float mbStartTime; // frame relative start time e.g. -0.2 frames
+	float mbEndTime; // frame relative end time e.g. 0.2 frames
+	float mbLength; // absolute length of motion blur, e.g. 0.4 frames
 	bool doDof;
 	int bitdepth; // 8, 16, 16halfFloat, 32float
 	

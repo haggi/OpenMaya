@@ -135,6 +135,9 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getInt(MString("halttime"), LuxGlobals, this->halttime))
 			throw("problem reading luxGlobals.halttime");
 
+		if(!getFloat(MString("uiupdateinterval"), LuxGlobals, this->uiupdateinterval))
+			throw("problem reading luxGlobals.uiupdateinterval");
+
 		if(!getEnum(MString("pixelfilter"), LuxGlobals, this->pixelfilter))
 			throw("problem reading luxGlobals.pixelfilter");
 
@@ -286,6 +289,12 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 
 		if(!getString(MString("imagePath"), LuxGlobals, this->imagePath))
 			throw("problem reading luxGlobals.imagePath");
+
+		if(!getBool(MString("exportSceneFile"), LuxGlobals, this->exportSceneFile))
+			throw("problem reading luxGlobals.exportSceneFile");
+
+		if(!getString(MString("exportSceneFileName"), LuxGlobals, this->exportSceneFileName))
+			throw("problem reading luxGlobals.exportSceneFileName");
 
 		if(!getString(MString("imageName"), LuxGlobals, this->imageName))
 			throw("problem reading luxGlobals.imageName");
