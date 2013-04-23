@@ -56,6 +56,56 @@ bool LuxRenderer::isSunLight(mtlu_MayaObject *obj)
 	return false;
 }
 
+void LuxRenderer::defineAreaLight(mtlu_MayaObject *obj)
+{
+	MFnLight lightFn(obj->mobject);
+	
+	MColor lightColor(1,0,0);
+	getColor(MString("color"), lightFn, lightColor);
+	float L[3];
+	L[0] = lightColor.r;
+	L[1] = lightColor.g;
+	L[2] = lightColor.b;
+
+	int nsamples;
+	getInt(MString("mtlu_areaLight_samples"), lightFn, nsamples);
+	float power = 1.0f;
+	getFloat(MString("mtlu_areaLight_power"), lightFn, power);
+	float efficacy = 17.0f;
+	getFloat(MString("mtlu_areaLight_efficacy"), lightFn, efficacy);
+	float gain = 1.0f;
+	getFloat(MString("intensity"), lightFn, gain);
+	MString ies;
+	getString(MString("mtlu_areaLight_ies"), lightFn, ies);
+	const std::string iesname = ies.asChar();
+
+	ParamSet lp = CreateParamSet();
+	lp->AddRGBColor("L", L, 1);
+	lp->AddFloat("gain", &gain, 1);
+	lp->AddFloat("power", &power, 1);
+	lp->AddFloat("efficacy", &efficacy, 1);
+	lp->AddInt("nsamples", &nsamples, 1);
+	if( ies.length() > 0)
+		lp->AddString("iesname", &iesname, 1);
+
+	lux->areaLightSource("area",  boost::get_pointer(lp));
+
+	//createAreaLightMesh(obj);
+
+	lux->transformBegin();
+	{
+		float fm[16];
+		MMatrix tm = obj->transformMatrices[0];
+		setZUp(tm, fm);
+		this->lux->transform(fm);
+		ParamSet sp = CreateParamSet();
+		float r = 2.0f;
+		sp->AddFloat("radius", &r, 1); 
+		lux->shape("sphere", boost::get_pointer(sp));
+	}
+	lux->transformEnd();
+}
+
 
 void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
 {
@@ -83,7 +133,6 @@ void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
 	getFloat(MString("mtlu_dirLight_theta"), lightFn, theta);
 	float gain = 1.0f;
 	getFloat(MString("intensity"), lightFn, gain);
-
 	ParamSet lp = CreateParamSet();
 	lp->AddPoint("from", from, 1);
 	lp->AddPoint("to", to, 1);
@@ -270,6 +319,9 @@ void LuxRenderer::defineLights()
 	{
 		mtlu_MayaObject *obj = (mtlu_MayaObject *)this->mtlu_scene->lightList[lightId];
 
+		if( !obj->visible )
+			continue;
+
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))
 		{
 			if( isSunLight(obj) )
@@ -291,6 +343,11 @@ void LuxRenderer::defineLights()
 		if( obj->mobject.hasFn(MFn::kAmbientLight))
 		{
 			this->defineEnvironmentLight(obj);
+		}
+
+		if( obj->mobject.hasFn(MFn::kAreaLight))
+		{
+			this->defineAreaLight(obj);
 		}
 	}
 }

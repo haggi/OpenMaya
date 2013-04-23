@@ -20,22 +20,6 @@ void LuxRenderer::defineCamera()
 	MFnCamera camFn(mo->mobject);
 	this->transformCamera(mo, this->mtlu_renderGlobals->doMb && (mo->transformMatrices.size() > 1));
 
-	//MPoint camEye = camFn.eyePoint(MSpace::kWorld);
-	//MPoint camInterest = camFn.centerOfInterestPoint(MSpace::kObject);
-	//// kworld seems not to work correctly so I multiply it by cam matrix
-	//camInterest *= cm;
-	//camEye.x = cm[3][0];
-	//camEye.y = cm[3][1];
-	//camEye.z = cm[3][2];
-
-	//MVector camUp = camFn.upDirection(MSpace::kWorld);
-
-	//setZUp(camEye);
-	//setZUp(camInterest);
-	//setZUp(camUp);
-
-	//lux->lookAt(camEye.x, camEye.y, camEye.z, camInterest.x, camInterest.y, camInterest.z, camUp.x, camUp.y, camUp.z);
-
 	// lux uses the fov of the smallest image edge
 	double hFov = RadToDeg(camFn.horizontalFieldOfView());
 	double vFov = RadToDeg(camFn.verticalFieldOfView());

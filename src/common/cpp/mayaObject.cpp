@@ -131,6 +131,11 @@ MayaObject::MayaObject(MObject& mobject)
 	if( getBool(MString("motionBlur"), depFn, mb) )
 		this->motionBlurred = mb;
 
+	// by default the camera has a motionBlur attribute but it cannot be set in the UI
+	// so we turn it on by default and maybe modify it from the renderer UI with something like (cameraMotionBlur)
+	if( this->mobject.hasFn(MFn::kCamera))
+		this->motionBlurred = true;
+
 	this->perObjectMbSteps = 1;
 	this->index = -1;
 	this->scenePtr = NULL;

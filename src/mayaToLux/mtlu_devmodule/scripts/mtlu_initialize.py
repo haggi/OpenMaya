@@ -311,7 +311,15 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtlu_power", attributeType="long", defaultValue = 1)
         
         # mesh
-        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_useassembly", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_generatetangents", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_subAlgo", attributeType="enum", enumName = "loop:microdisplacement")
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_displacementMap", dataType="string")
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmscale", attributeType="float", default=0.1)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmoffset", attributeType="float", default=0.0)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmnormalsmooth", attributeType="bool", defaultValue = True)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmnormalsplit", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmsharpboundary", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_subdivlevel", attributeType="long", defaultValue = 0)
 
         # lights
         pm.addExtension(nodeType="light", longName="mtlu_light_importance", attributeType="float", defaultValue = 1.0)

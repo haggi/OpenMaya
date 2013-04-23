@@ -166,6 +166,8 @@ void LuxRenderer::render()
 
 		lux->worldEnd();
 
+		//lux->texture("mytexture", 
+
 		isRendering = true;
 
 		// wait for the WorldEnd thread to start running

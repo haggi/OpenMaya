@@ -35,16 +35,39 @@ class AELuxNodeTemplate(BaseTemplate):
         if self.thisNode.type() == "directionalLight":
             log.debug("AELuxNodeTemplate:build dir light AE")            
             self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_light_importance", label="Importance")
             self.addControl("mtlu_dirLight_theta", label="Shadow softness")
             self.endLayout()
 
         if self.thisNode.type() == "ambientLight":
             log.debug("AELuxNodeTemplate:build ambi light AE")            
             self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_light_importance", label="Importance")
             self.addControl("mtlu_ambientLight_map", label="IBL Map")
             self.addControl("mtlu_ambientLight_samples", label="Light Samples")
             self.endLayout()
-    
+
+        if self.thisNode.type() == "pointLight":
+            log.debug("AELuxNodeTemplate:build point light AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_light_importance", label="Importance")
+            self.addControl("mtlu_pointLight_power", label="Power")
+            self.addControl("mtlu_pointLight_efficacy", label="Efficacy")
+            self.addControl("mtlu_pointLight_ies", label="IES File")
+            self.endLayout()
+
+        if self.thisNode.type() == "areaLight":
+            log.debug("AELuxNodeTemplate:build area light AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_light_importance", label="Importance")
+            self.addControl("mtlu_areaLight_samples", label="Power")
+            self.addControl("mtlu_areaLight_power", label="Power")
+            self.addControl("mtlu_areaLight_efficacy", label="Efficacy")
+            self.addControl("mtlu_areaLight_ies", label="IES File")
+            self.addControl("mtlu_areaLight_geo", label="Light mesh geometry")
+            self.endLayout()
+            
+                
     def buildBody(self, nodeName):
         self.buildLuxTemplates(nodeName)
 

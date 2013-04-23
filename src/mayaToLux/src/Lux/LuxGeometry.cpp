@@ -4,16 +4,63 @@
 #include <maya/MMatrix.h>
 #include <maya/MIntArray.h>
 #include <maya/MFloatArray.h>
-
+#include <maya/MFnDependencyNode.h>
 #include <time.h>
 
 #include "../mtlu_common/mtlu_mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
 #include "LuxUtils.h"
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 
 #include "utilities/logging.h"
 static Logging logger;
+
+//generatetangents 	bool 	Generate tangent space using miktspace, useful if mesh has a normal map that was also baked using miktspace (such as blender or xnormal) 	false
+//subdivscheme 	string 	Subdivision algorithm, options are "loop" and "microdisplacement" 	"loop"
+//displacementmap 	string 	Name of the texture used for the displacement. Subdivscheme parameter must always be provided, as load-time displacement is handled by the loop-subdivision code. 	none - optional. (loop subdiv can be used without displacement, microdisplacement will not affect the mesh without a displacement map specified)
+//dmscale 	float 	Scale of the displacement (for an LDR map, this is the maximum height of the displacement in meter) 	0.1
+//dmoffset 	float 	Offset of the displacement. 	0
+//dmnormalsmooth 	bool 	Smoothing of the normals of the subdivided faces. Only valid for loop subdivision. 	true
+//dmnormalsplit 	bool 	Force the mesh to split along breaks in the normal. If a mesh has no normals (flat-shaded) it will rip open on all edges. Only valid for loop subdivision. 	false
+//dmsharpboundary 	bool 	Try to preserve mesh boundaries during subdivision. Only valid for loop subdivision. 	false
+//nsubdivlevels 	integer 	Number of subdivision levels. This is only recursive for loop subdivision, microdisplacement will need much larger values (such as 50). 	0
+
+void LuxRenderer::createAreaLightMesh(mtlu_MayaObject *obj)
+{
+	MString meshName("");
+	MFnDependencyNode depFn(obj->mobject);
+	MObject otherSideObj = getOtherSideNode(MString("mtlu_areaLight_geo"), obj->mobject);
+	if( otherSideObj != MObject::kNullObj)
+	{
+
+
+	}else{
+		int indices[6] = {0,1,2,2,3,0};
+		float floatPointArray[12] = {-1, -1, 0,
+									 -1,  1, 0,
+									  1,  1, 0,
+									  1, -1, 0};
+
+		float floatNormalArray[12] = {0,0,-1,
+									  0,0,-1,
+									  0,0,-1,
+									  0,0,-1};
+
+		ParamSet triParams = CreateParamSet();
+		triParams->AddInt("indices", indices, 6);
+		triParams->AddPoint("P", floatPointArray, 4);
+		triParams->AddNormal("N", floatNormalArray, 4);
+		
+		lux->transformBegin();
+		float fm[16];
+		MMatrix tm = obj->transformMatrices[0];
+		setZUp(tm, fm);
+		this->lux->transform(fm);
+		this->lux->shape("trianglemesh", boost::get_pointer(triParams));
+		lux->transformEnd();
+	}
+}
 
 void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = false)
 {
@@ -211,7 +258,7 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 
 	if(!noObjectDef)
 		this->lux->objectBegin(meshFullName.asChar());
-	this->lux->shape("trianglemesh", triParams.get());
+	this->lux->shape("trianglemesh", boost::get_pointer(triParams));
 	if(!noObjectDef)
 		this->lux->objectEnd();
 
