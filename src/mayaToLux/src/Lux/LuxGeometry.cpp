@@ -4,6 +4,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MIntArray.h>
 #include <maya/MFloatArray.h>
+#include <maya/MPlugArray.h>
 #include <maya/MFnDependencyNode.h>
 #include <time.h>
 
@@ -12,19 +13,33 @@
 #include "LuxUtils.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "utilities/pystring.h"
 
 #include "utilities/logging.h"
 static Logging logger;
 
-//generatetangents 	bool 	Generate tangent space using miktspace, useful if mesh has a normal map that was also baked using miktspace (such as blender or xnormal) 	false
-//subdivscheme 	string 	Subdivision algorithm, options are "loop" and "microdisplacement" 	"loop"
-//displacementmap 	string 	Name of the texture used for the displacement. Subdivscheme parameter must always be provided, as load-time displacement is handled by the loop-subdivision code. 	none - optional. (loop subdiv can be used without displacement, microdisplacement will not affect the mesh without a displacement map specified)
-//dmscale 	float 	Scale of the displacement (for an LDR map, this is the maximum height of the displacement in meter) 	0.1
-//dmoffset 	float 	Offset of the displacement. 	0
-//dmnormalsmooth 	bool 	Smoothing of the normals of the subdivided faces. Only valid for loop subdivision. 	true
-//dmnormalsplit 	bool 	Force the mesh to split along breaks in the normal. If a mesh has no normals (flat-shaded) it will rip open on all edges. Only valid for loop subdivision. 	false
-//dmsharpboundary 	bool 	Try to preserve mesh boundaries during subdivision. Only valid for loop subdivision. 	false
-//nsubdivlevels 	integer 	Number of subdivision levels. This is only recursive for loop subdivision, microdisplacement will need much larger values (such as 50). 	0
+bool LuxRenderer::isLightMesh(mtlu_MayaObject *obj)
+{
+	MStatus stat;
+	MObject result = MObject::kNullObj;
+	MFnDependencyNode depFn(obj->mobject, &stat);	if( stat != MStatus::kSuccess) return false;
+	MPlug plug = depFn.findPlug("message", &stat);	if( stat != MStatus::kSuccess) return false;
+	MPlugArray plugArray;
+	plug.connectedTo(plugArray, 0, 1, &stat);if( stat != MStatus::kSuccess) return false;
+	if( plugArray.length() == 0)
+		return false;
+	for( uint i = 0; i < plugArray.length(); i++)
+	{
+		MPlug otherSidePlug = plugArray[i];
+		logger.debug(MString("Checking message connection: ") + otherSidePlug.name());
+		if( !pystring::endswith(otherSidePlug.name().asChar(), "mtlu_areaLight_geo"))
+			continue;
+		result = otherSidePlug.node();
+		if( result.hasFn(MFn::kLight))
+			return true;
+	}
+	return false;
+}
 
 void LuxRenderer::createAreaLightMesh(mtlu_MayaObject *obj)
 {
@@ -217,6 +232,38 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 		}		
 	}
 
+//generatetangents 	bool 	Generate tangent space using miktspace, useful if mesh has a normal map that was also baked using miktspace (such as blender or xnormal) 	false
+//subdivscheme 	string 	Subdivision algorithm, options are "loop" and "microdisplacement" 	"loop"
+//displacementmap 	string 	Name of the texture used for the displacement. Subdivscheme parameter must always be provided, as load-time displacement is handled by the loop-subdivision code. 	none - optional. (loop subdiv can be used without displacement, microdisplacement will not affect the mesh without a displacement map specified)
+//dmscale 	float 	Scale of the displacement (for an LDR map, this is the maximum height of the displacement in meter) 	0.1
+//dmoffset 	float 	Offset of the displacement. 	0
+//dmnormalsmooth 	bool 	Smoothing of the normals of the subdivided faces. Only valid for loop subdivision. 	true
+//dmnormalsplit 	bool 	Force the mesh to split along breaks in the normal. If a mesh has no normals (flat-shaded) it will rip open on all edges. Only valid for loop subdivision. 	false
+//dmsharpboundary 	bool 	Try to preserve mesh boundaries during subdivision. Only valid for loop subdivision. 	false
+//nsubdivlevels 	integer 	Number of subdivision levels. This is only recursive for loop subdivision, microdisplacement will need much larger values (such as 50). 	0
+
+	bool generatetangents = false;
+	getBool(MString("mtlu_mesh_generatetangents"), meshFn, generatetangents);
+	int subdivscheme = 0;
+	const char *subdAlgos[] = {"loop", "microdisplacement"};
+	getInt(MString("mtlu_mesh_subAlgo"), meshFn, subdivscheme);
+	const std::string subdalgo =  subdAlgos[subdivscheme];
+	float dmscale;
+	getFloat(MString("mtlu_mesh_dmscale"), meshFn, dmscale);
+	float dmoffset;
+	getFloat(MString("mtlu_mesh_dmoffset"), meshFn, dmoffset);
+	MString displacementmap;
+	getString(MString("mtlu_mesh_displacementMap"), meshFn, displacementmap);
+	std::string displacemap = displacementmap.asChar();
+	bool dmnormalsmooth = true;
+	getBool(MString("mtlu_mesh_dmnormalsmooth"), meshFn, dmnormalsmooth);
+	bool dmnormalsplit = false;
+	getBool(MString("mtlu_mesh_dmnormalsplit"), meshFn, dmnormalsplit);
+	bool dmsharpboundary = false;
+	getBool(MString("mtlu_mesh_dmsharpboundary"), meshFn, dmsharpboundary);
+	int nsubdivlevels = 0;
+	getInt(MString("mtlu_mesh_subdivlevel"), meshFn, nsubdivlevels);
+
 	ParamSet triParams = CreateParamSet();
 	int numPointValues = numTriangles * 3;
 	int numUvValues = numTriangles * 3 * 2;
@@ -226,36 +273,19 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 	triParams->AddPoint("P", floatPointArray, numPointValues);
 	triParams->AddNormal("N", floatNormalArray, numPointValues);
 	triParams->AddFloat("uv",  floatUvArray, numUvValues);
+	if( nsubdivlevels > 0)
+		triParams->AddInt("nsubdivlevels", &nsubdivlevels, 1);
+	triParams->AddBool("generatetangents",  &generatetangents, 1);
+	triParams->AddString("subdivscheme", &subdalgo , 1);
+	triParams->AddFloat("dmoffset",  &dmoffset, 1);
+	triParams->AddFloat("dmscale",  &dmscale, 1);
+	triParams->AddString("displacementmap", &displacemap , 1);
+	triParams->AddBool("dmnormalsmooth",  &dmnormalsmooth, 1);
+	triParams->AddBool("dmnormalsplit",  &dmnormalsplit, 1);
+	triParams->AddBool("dmsharpboundary",  &dmsharpboundary, 1);
+
+
 	clock_t pTime = clock();
-
-	if( this->mtlu_renderGlobals->exportSceneFile )
-	{
-		this->luxFile << "indices:\n";
-		for( int i = 0; i < (numTriangles * 3); i++)
-		{
-			int v = triangelVtxIdList[i];
-			this->luxFile << i << "\n";
-		}
-		this->luxFile << "\n";
-		luxFile.flush();
-		this->luxFile << "P:\n";
-		for( int i = 0; i < (numPointValues); i++)
-		{
-			float v = floatPointArray[i];
-			this->luxFile << v << " ";
-		}
-		this->luxFile << "\n";
-		luxFile.flush();
-		this->luxFile << "N:\n";
-		for( int i = 0; i < (numPointValues); i++)
-		{
-			float v = floatNormalArray[i];
-			this->luxFile << v << " ";
-		}
-		this->luxFile << "\n";
-		luxFile.flush();
-	}
-
 	if(!noObjectDef)
 		this->lux->objectBegin(meshFullName.asChar());
 	this->lux->shape("trianglemesh", boost::get_pointer(triParams));
@@ -278,6 +308,10 @@ void LuxRenderer::defineGeometry()
 		{
 			if( obj->mobject.hasFn(MFn::kMesh))
 			{
+				if( isLightMesh(obj))
+				{
+					logger.debug(MString("Mesh: "));
+				}
 				if( obj->instanceNumber == 0)
 				{
 					logger.debug(MString("define mesh ") + obj->fullNiceName);

@@ -64,6 +64,7 @@ public:
 	void defineGeometry();
 	void defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef);
 	void createAreaLightMesh(mtlu_MayaObject *obj);
+	bool isLightMesh(mtlu_MayaObject *obj);
 	
 	void defineLights();
 	void defineDirectionalLight(mtlu_MayaObject *obj);

@@ -88,22 +88,22 @@ void LuxRenderer::defineAreaLight(mtlu_MayaObject *obj)
 	if( ies.length() > 0)
 		lp->AddString("iesname", &iesname, 1);
 
-	lux->areaLightSource("area",  boost::get_pointer(lp));
+	//lux->areaLightSource("area",  boost::get_pointer(lp));
 
-	//createAreaLightMesh(obj);
+	createAreaLightMesh(obj);
 
-	lux->transformBegin();
-	{
-		float fm[16];
-		MMatrix tm = obj->transformMatrices[0];
-		setZUp(tm, fm);
-		this->lux->transform(fm);
-		ParamSet sp = CreateParamSet();
-		float r = 2.0f;
-		sp->AddFloat("radius", &r, 1); 
-		lux->shape("sphere", boost::get_pointer(sp));
-	}
-	lux->transformEnd();
+	//lux->transformBegin();
+	//{
+	//	float fm[16];
+	//	MMatrix tm = obj->transformMatrices[0];
+	//	setZUp(tm, fm);
+	//	this->lux->transform(fm);
+	//	ParamSet sp = CreateParamSet();
+	//	float r = 2.0f;
+	//	sp->AddFloat("radius", &r, 1); 
+	//	lux->shape("sphere", boost::get_pointer(sp));
+	//}
+	//lux->transformEnd();
 }
 
 

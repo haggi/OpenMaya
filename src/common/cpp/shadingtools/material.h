@@ -76,7 +76,4 @@ private:
 	void checkNodeList(ShadingNetwork& network);
 };
 
-bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId);
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& sGroup);
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups);
 #endif

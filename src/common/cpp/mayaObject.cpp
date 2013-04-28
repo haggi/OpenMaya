@@ -6,6 +6,7 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "shadingtools/shadingUtils.h"
 
 static Logging logger;
 
@@ -35,6 +36,20 @@ bool MayaObject::isTransform()
 	if( this->mobject.hasFn(MFn::kTransform))
 		return true;
 	return false;
+}
+
+
+void MayaObject::getShadingGroups()
+{
+	// get shading groups only for allowed shapes
+
+	if( this->supported )
+	{
+		logger.debug(MString("getShadingGroups::Supported geo ") + this->shortName);
+		// only makes sense if we have a geometry shape.
+		if( this->mobject.hasFn(MFn::kMesh) || this->mobject.hasFn(MFn::kNurbsSurface) || this->mobject.hasFn(MFn::kParticle) || this->mobject.hasFn(MFn::kNParticle))
+			getObjectShadingGroups(this->dagPath, this->perFaceAssignments, this->shadingGroups);
+	}
 }
 
 // check if the node or any of its parents has a animated visibility
@@ -136,6 +151,8 @@ MayaObject::MayaObject(MObject& mobject)
 	if( this->mobject.hasFn(MFn::kCamera))
 		this->motionBlurred = true;
 
+	this->getShadingGroups();
+
 	this->perObjectMbSteps = 1;
 	this->index = -1;
 	this->scenePtr = NULL;
@@ -218,6 +235,9 @@ MayaObject::MayaObject(MDagPath& objPath)
 	{
 		this->shortName = this->fullName = this->fullNiceName = "world";
 	}
+
+	this->getShadingGroups();
+
 }
 
 // to check if an object is animated, we need to check e.g. its transform inputs

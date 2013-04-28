@@ -32,6 +32,7 @@ imageFormat, enum, Image Format, 1, Exr:Png:Tga
 premultiplyAlpha, bool, Premultiply Alpha, true
 haltspp, int, Halt Samples PP, 0
 halttime, int, Max Rendertime, 0
+uiupdateinterval, float, Update Interval, 2.0
 
 #pixelfilter
 pixelfilter, enum, Pixel Filter, 3, box:trianlge:gauss:mitchell:sinc

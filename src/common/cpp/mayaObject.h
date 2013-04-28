@@ -73,6 +73,7 @@ public:
 	bool isTransform();
 	bool isGeo();
 	bool isVisiblityAnimated();
+	void getShadingGroups();
 	virtual bool geometryShapeSupported() = 0;
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
 	MayaObject *parent;

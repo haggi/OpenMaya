@@ -9,7 +9,7 @@
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include "utilities/logging.h"
-#include "readShaderDefs.h"
+//#include "readShaderDefs.h"
 
 static Logging logger;
 
@@ -17,21 +17,21 @@ static Logging logger;
 // definitions list and sets all necessary data.
 void Material::checkNode(ShadingNode *sn)
 {
-	ShadingNode *sNode = findShaderNodeByTypeName(sn->typeName);
-	if( sNode != NULL)
-	{
-		//logger.debug(MString("Found node ") + sn->typeName + " in shader definitions");
-		ShadingNode sTmp = *sNode;
-		sTmp.mobject = sn->mobject;
-		sTmp.internalName = sn->internalName;
-		sTmp.typeName = sn->typeName;
-		sTmp.mayaName = sn->mayaName;
-		sTmp.outShadingNodes = sn->outShadingNodes;
-		*sn = sTmp;
-		sn->updateData();
-	}else{
-		sn->supported = false;
-	}
+	//ShadingNode *sNode = findShaderNodeByTypeName(sn->typeName);
+	//if( sNode != NULL)
+	//{
+	//	//logger.debug(MString("Found node ") + sn->typeName + " in shader definitions");
+	//	ShadingNode sTmp = *sNode;
+	//	sTmp.mobject = sn->mobject;
+	//	sTmp.internalName = sn->internalName;
+	//	sTmp.typeName = sn->typeName;
+	//	sTmp.mayaName = sn->mayaName;
+	//	sTmp.outShadingNodes = sn->outShadingNodes;
+	//	*sn = sTmp;
+	//	sn->updateData();
+	//}else{
+	//	sn->supported = false;
+	//}
 }
 
 // here the nodes are checked if they are defined in the shaderDefinions file
@@ -177,7 +177,7 @@ void Material::printNodes(ShadingNetwork& network)
 	}
 }
 
-// Modify to use light materials as well
+
 Material::Material(MObject &shadingEngine)
 {
 	this->shadingEngineNode = shadingEngine;
@@ -191,6 +191,7 @@ Material::Material(MObject &shadingEngine)
 	MObject imageShaderNode = getOtherSideNode(MString("imageShader"), this->shadingEngineNode);
 
 	// if a mr material is connected, check it and use it instead of the normal shader connection
+	// mr can be supported because it is the default maya renderer
 	MObject miMaterialShaderNode = getOtherSideNode(MString("miMaterialShader"), this->shadingEngineNode);
 	MObject miShadowShaderNode = getOtherSideNode(MString("miShadowShader"), this->shadingEngineNode);
 	MObject miVolumeShaderNode = getOtherSideNode(MString("miVolumeShader"), this->shadingEngineNode);
@@ -207,6 +208,7 @@ Material::Material(MObject &shadingEngine)
 		this->parseNetwork(surfaceShaderNode, this->surfaceShaderNet, &sn);
 		this->checkNodeList(this->surfaceShaderNet);
 	}
+
 	// read volume shader hierarchy
 	// if mr node is defined, use it, if not use the normal one
 	if( (miVolumeShaderNode != MObject::kNullObj) || (volumeShaderNode != MObject::kNullObj) )
@@ -230,14 +232,13 @@ Material::Material(MObject &shadingEngine)
 		this->checkNodeList(this->displacementShaderNet);
 	}
 
-	// read light shader hierarchy, only for maya lights, not for mtm_envlight yet
+	// read light shader hierarchy
 	if( (lightShaderNode != MObject::kNullObj) && (lightShaderNode.hasFn(MFn::kLight)) )
 	{
 		ShadingNode *sn = NULL;
 		this->parseNetwork(lightShaderNode, this->lightShaderNet, &sn);
 		this->checkNodeList(this->lightShaderNet);
 	}
-
 }
 
 Material::Material()
@@ -246,175 +247,3 @@ Material::Material()
 Material::~Material()
 {}
 
-//// GLOBAL PROCS //////
-
-bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId)
-{
-
-	MPlugArray	connections;
-	MFnDependencyNode dependNode(geoObject);
-	//logger.debug(MString(" shading object ") + dependNode.name());
-	MPlug plug(geoObject, dependNode.attribute("instObjGroups"));
-	int numConnections = plug.numConnectedElements();
-	
-	plug.elementByLogicalIndex(instId).connectedTo(connections, false, true);
-	
-	if( connections.length() > 0)
-	{
-		MObject shadingGroup(connections[0].node());
-		if (shadingGroup.apiType() == MFn::kShadingEngine )
-		{
-			//logger.debug(MString("Found shading group for object ")  + dependNode.name() + " == " + getObjectName(shadingGroup));
-			sGroup = shadingGroup; 
-			return true;
-		}
-	}else{
-		logger.debug(MString("Object-instObjGroups has no connection to shading group."));
-	}
-	return false;
-}
-
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup)
-{
-	// if obj is a light, simply return the mobject
-	if(shapeObjectDP.hasFn(MFn::kLight))
-		shadingGroup = shapeObjectDP.node();
-	
-    if(shapeObjectDP.hasFn(MFn::kMesh))
-    {
-        // Find the Shading Engines Connected to the SourceNode 
-        MFnMesh fnMesh(shapeObjectDP.node());
-
-        // A ShadingGroup will have a MFnSet 
-        MObjectArray sets, comps;
-        fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
-
-        // Each set is a Shading Group. Loop through them
-		//logger.debug(MString("Found ") + sets.length()  + " shading groups for mesh object " + fnMesh.name());
-        for(unsigned int i = 0; i < sets.length(); ++i)
-        {
-            MFnDependencyNode fnDepSGNode(sets[i]);
-			//logger.debug(MString("SG: ") + fnDepSGNode.name());
-			shadingGroup = sets[i];
-			return true;
-            //cout << fnDepSGNode.name() << endl;
-        }
-    }
-
-    if(shapeObjectDP.hasFn(MFn::kNurbsSurface)||shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
-    {
-
-        MObject instObjGroupsAttr;
-		if( shapeObjectDP.hasFn(MFn::kNurbsSurface))
-		{
-	        MFnNurbsSurface fnNurbs(shapeObjectDP.node());
-			instObjGroupsAttr = fnNurbs.attribute("instObjGroups");
-		}
-		if( shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
-		{
-	        MFnParticleSystem fnPart(shapeObjectDP.node());
-			instObjGroupsAttr = fnPart.attribute("instObjGroups");
-		}
-        MPlug instPlug(shapeObjectDP.node(), instObjGroupsAttr);
-
-        // Get the instance that our node is referring to;
-        // In other words get the Plug for instObjGroups[intanceNumber];
-        MPlug instPlugElem = instPlug.elementByLogicalIndex(shapeObjectDP.instanceNumber());
-        
-        // Find the ShadingGroup plugs that we are connected to as Source 
-        MPlugArray SGPlugArray;
-        instPlugElem.connectedTo(SGPlugArray, false, true);
-
-        // Loop through each ShadingGroup Plug
-        for(unsigned int i=0; i < SGPlugArray.length(); ++i)
-        {
-            MFnDependencyNode fnDepSGNode(SGPlugArray[i].node());
-            //cout << fnDepSGNode.name() << endl;
-			shadingGroup = SGPlugArray[i].node();
-			return true;
-        }
-    }
-    return false;
-}
-
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups)
-{
-	// if obj is a light, simply return the mobject
-
-	logger.debug(MString("getObjectShadingGroups:: obj: ") +  shapeObjectDP.partialPathName() + " type: " + shapeObjectDP.node().apiTypeStr());
-
-	if(shapeObjectDP.node().hasFn(MFn::kLight))
-	{
-		perFaceAssignments.clear();
-		shadingGroups.clear();
-		shadingGroups.append(shapeObjectDP.node());
-		return true;
-	}
-
-    if(shapeObjectDP.node().hasFn(MFn::kMesh))
-    {
-        // Find the Shading Engines Connected to the SourceNode 
-        MFnMesh fnMesh(shapeObjectDP.node());
-
-		perFaceAssignments.clear();
-		shadingGroups.clear();
-
-		perFaceAssignments.setLength(fnMesh.numPolygons());
-
-        // A ShadingGroup will have a MFnSet 
-        MObjectArray sets, comps;
-        fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
-
-        // Each set is a Shading Group. Loop through them.
-        for(unsigned int i = 0; i < sets.length(); ++i)
-        {
-            MFnDependencyNode fnDepSGNode(sets[i]);
-			MItMeshPolygon faceIt(shapeObjectDP, comps[i] );
-			
-			shadingGroups.append(sets[i]);
-
-            for ( faceIt.reset() ; !faceIt.isDone() ; faceIt.next() )
-			{
-				perFaceAssignments[faceIt.index()] = i;
-            }
-        }
-		return true;
-    }
-
-    if(shapeObjectDP.node().hasFn(MFn::kNurbsSurface)||shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
-    {
-
-        MObject instObjGroupsAttr;
-		if( shapeObjectDP.hasFn(MFn::kNurbsSurface))
-		{
-	        MFnNurbsSurface fnNurbs(shapeObjectDP.node());
-			instObjGroupsAttr = fnNurbs.attribute("instObjGroups");
-		}
-		if( shapeObjectDP.hasFn(MFn::kParticle)||shapeObjectDP.hasFn(MFn::kNParticle))
-		{
-	        MFnParticleSystem fnPart(shapeObjectDP.node());
-			instObjGroupsAttr = fnPart.attribute("instObjGroups");
-		}
-        MPlug instPlug(shapeObjectDP.node(), instObjGroupsAttr);
-
-        // Get the instance that our node is referring to;
-        // In other words get the Plug for instObjGroups[intanceNumber];
-        MPlug instPlugElem = instPlug.elementByLogicalIndex(shapeObjectDP.instanceNumber());
-        
-        // Find the ShadingGroup plugs that we are connected to as Source 
-        MPlugArray SGPlugArray;
-		instPlugElem.connectedTo(SGPlugArray, false, true);
-
-		perFaceAssignments.clear();
-		shadingGroups.clear();
-
-        // Loop through each ShadingGroup Plug
-        for(unsigned int i=0; i < SGPlugArray.length(); ++i)
-        {
-            MFnDependencyNode fnDepSGNode(SGPlugArray[i].node());
-			shadingGroups.append(SGPlugArray[i].node());
-			return true;
-        }
-    }
-    return false;
-}

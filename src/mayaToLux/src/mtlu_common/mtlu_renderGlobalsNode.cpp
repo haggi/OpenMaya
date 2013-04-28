@@ -180,7 +180,7 @@ MStatus	MayaToLuxGlobals::initialize()
 	physicalSunConnection = mAttr.create("physicalSunConnection", "physicalSunConnection");
 	CHECK_MSTATUS(addAttribute( physicalSunConnection ));
 
-	sunGain = nAttr.create("sunGain", "sunGain",  MFnNumericData::kFloat, 1.0);
+	sunGain = nAttr.create("sunGain", "sunGain",  MFnNumericData::kFloat, .005);
 	CHECK_MSTATUS(addAttribute( sunGain ));
 
 	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.0);
