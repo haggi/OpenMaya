@@ -266,6 +266,15 @@
     <ClCompile Include="..\src\shaders\velvetMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtlu_common\mtlu_material.cpp">
+      <Filter>mtlu_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtlu_common\mtlu_shadingNode.cpp">
+      <Filter>mtlu_common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -462,6 +471,15 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\velvetMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
+      <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtlu_common\mtlu_shadingNode.h">
+      <Filter>mtlu_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtlu_common\mtlu_material.h">
+      <Filter>mtlu_common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

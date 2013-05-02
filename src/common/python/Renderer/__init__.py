@@ -301,19 +301,44 @@ global proc updateMayaImageFormatControl()
         pass
 
     def hyperShadePanelBuildCreateMenuCallback(self):
-        log.debug("hyperShadePanelBuildCreateMenuCallback")
-        pm.menuItem(label="OpenMayaRenderer")
+        #log.debug("hyperShadePanelBuildCreateMenuCallback")
+        pm.menuItem(label=self.rendererName)
         pm.menuItem(divider=True)
     
     def hyperShadePanelBuildCreateSubMenuCallback(self):
-        log.debug("hyperShadePanelBuildCreateSubMenuCallback")
+        #log.debug("hyperShadePanelBuildCreateSubMenuCallback")
         return "shader/surface"
     
     def buildRenderNodeTreeListerContentCallback(self, tl, postCommand, filterString):
-        log.debug("buildRenderNodeTreeListerContentCallback")        
+        #log.debug("buildRenderNodeTreeListerContentCallback")        
 
-        melCmd = "addToRenderNodeTreeLister( {0}, {1}, {2}, {3}, {4}, {5});".format(tl, postCommand, "myRenderer/test", "", "", "")
-        pm.mel.eval(melCmd)
+#        int $numCategories = mrNumNodeCategories();
+#        int $i;
+#        for( $i = 0; $i < $numCategories; $i++ )
+#        {
+#            string $categoryInfo[] = mrGetNodeCategory( $i );
+#            string $title = $categoryInfo[0];
+#            string $uiBaseName = $categoryInfo[1];
+#            string $staticClassification = $categoryInfo[2];
+#            string $runtimeClassification = $categoryInfo[3];
+#
+#            // add to the treeLister
+#            //
+#            addToRenderNodeTreeLister($renderNodeTreeLister, $postCommand, "mental ray/" + $title, $staticClassification, $runtimeClassification, "" );
+#
+#        }
+
+#        $mrNodeTypeInfo[$index++] = getPluginResource("Mayatomr", "kmrCustomNodeUIMaterials");
+#        $mrNodeTypeInfo[$index++] = "mrMaterials";
+#        $mrNodeTypeInfo[$index++] = "rendernode/mentalray/material";
+#        $mrNodeTypeInfo[$index++] = "-asShader";
+
+        # this is necessary for < maya2014 because in these versions the mentalray plugin somehow destroys the callback call
+        if len(tl) > 0:
+            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", "lux/material", "-asShader", "")
+            #melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
+            log.debug("Treelister cmd " + melCmd)
+            pm.mel.eval(melCmd)
 #        global proc addToRenderNodeTreeLister(
 #            string $renderNodeTreeLister,
 #            string $postCommand,
@@ -344,6 +369,7 @@ global proc updateMayaImageFormatControl()
 
         pm.callbacks(addCallback=self.hyperShadePanelBuildCreateMenuCallback, hook='hyperShadePanelBuildCreateMenu', owner=self.pluginName)
         pm.callbacks(addCallback=self.hyperShadePanelBuildCreateSubMenuCallback, hook='hyperShadePanelBuildCreateSubMenu', owner=self.pluginName)
+        pm.callbacks(addCallback=self.buildRenderNodeTreeListerContentCallback, hook='buildRenderNodeTreeListerContent', owner=self.pluginName)
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
         aeTemplateImportName = aeTemplateName

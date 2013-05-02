@@ -160,6 +160,8 @@ void LuxRenderer::render()
 
 		lux->worldBegin();
 
+		this->defineShaders();
+
 		this->defineLights();
 
 		this->defineGeometry();

@@ -164,6 +164,7 @@ MayaObject::MayaObject(MObject& mobject)
 	this->parent = NULL;
 	this->visible = true;
 	this->attributes = NULL;
+	this->supported = this->geometryShapeSupported();
 }
 
 MayaObject::MayaObject(MDagPath& objPath)
@@ -229,6 +230,8 @@ MayaObject::MayaObject(MDagPath& objPath)
 			}
 		}	
 	}
+
+	this->supported = this->geometryShapeSupported();
 
 	// special case "world"
 	if( this->mobject.hasFn(MFn::kWorld))

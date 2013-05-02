@@ -66,6 +66,22 @@ class AELuxNodeTemplate(BaseTemplate):
             self.addControl("mtlu_areaLight_ies", label="IES File")
             self.addControl("mtlu_areaLight_geo", label="Light mesh geometry")
             self.endLayout()
+
+        if self.thisNode.type() == "mesh":
+            log.debug("AELuxNodeTemplate:build mesh AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.addControl("mtlu_mesh_subdivlevel", label="Subdivisions")
+            self.addControl("mtlu_mesh_subAlgo", label="Subdivision Algorithm")
+            self.addSeparator()
+            self.addControl("mtlu_mesh_displacementMap", label="Displacment Map Image File")
+            self.addControl("mtlu_mesh_dmscale", label="Displacement Scale")
+            self.addControl("mtlu_mesh_dmoffset", label="Displacement Offset")
+            self.addControl("mtlu_mesh_dmnormalsmooth", label="Displacement Smooth Normals (Loop)")
+            self.addControl("mtlu_mesh_dmnormalsplit", label="Displacement Split Normals (Loop)")
+            self.addControl("mtlu_mesh_dmsharpboundary", label="Displacement Sharp Bounds  (Loop)")
+            self.addSeparator()
+            self.addControl("mtlu_mesh_generatetangents", label="Generate Tangents")            
+            self.endLayout()
             
                 
     def buildBody(self, nodeName):

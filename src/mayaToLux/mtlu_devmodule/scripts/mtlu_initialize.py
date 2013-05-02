@@ -313,7 +313,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_generatetangents", attributeType="bool", defaultValue = False)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_subAlgo", attributeType="enum", enumName = "loop:microdisplacement")
-        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_displacementMap", dataType="string")
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_displacementMap", dataType="string", usedAsFilename=True)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmscale", attributeType="float", default=0.1)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmoffset", attributeType="float", default=0.0)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmnormalsmooth", attributeType="bool", defaultValue = True)
@@ -329,16 +329,16 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_samples", attributeType="long", defaultValue = 1)
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_ies", dataType="string")
+        pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_ies", dataType="string", usedAsFilename=True)
         pm.addExtension(nodeType="areaLight", longName="mtlu_areaLight_geo", attributeType="message")
         
         pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_ies", dataType="string")
+        pm.addExtension(nodeType="pointLight", longName="mtlu_pointLight_ies", dataType="string", usedAsFilename=True)
         
         pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_power", attributeType="float", defaultValue = 100.0)
         pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_efficacy", attributeType="float", defaultValue = 17.0)
-        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_ies", dataType="string")
+        pm.addExtension(nodeType="spotLight", longName="mtlu_spotLight_ies", dataType="string", usedAsFilename=True)
 
         pm.addExtension(nodeType="ambientLight", longName="mtlu_ambientLight_map", dataType="string", usedAsFilename=True)
         pm.addExtension(nodeType="ambientLight", longName="mtlu_ambientLight_samples", attributeType="long", defaultValue = 1)
@@ -439,14 +439,15 @@ AETemplates directory, the automatic loading will not work. So I replace it with
 """
 
 def loadAETemplates():    
-    aeDir = path.path(__file__).dirname() + "/AETemplates/"
+    rendererName = "Lux"
+    aeDir = path.path(__file__).dirname() + "/" + rendererName +"/AETemplate/"
     for d in aeDir.listdir("*.py"):
         if d.endswith("Template.py"):
             templateName = d.basename().replace(".py", "")
-            pythonCommand = "import {0}".format(templateName)
+            pythonCommand = "import {1}.AETemplate.{0}".format(templateName, rendererName)
             melCommand = 'python("{0}");'.format(pythonCommand)
+            #log.debug("load aeTemplate: " + templateName + " : " + melCommand)
             pm.mel.eval(melCommand)
-            log.debug("load aeTemplate: " + templateName)
 
 def theRenderer():
     return LuxRenderer.theRenderer()

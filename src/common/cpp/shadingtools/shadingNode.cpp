@@ -44,7 +44,6 @@ void ShadingNode::addOutPlug(MString plugName, MString plugType)
 
 void ShadingNode::init(void)
 {
-	this->supported = false;
 	this->hasConnections = false;
 	this->userPointer = NULL;
 	this->mobject = MObject::kNullObj;

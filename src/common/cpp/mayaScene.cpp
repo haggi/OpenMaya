@@ -955,29 +955,29 @@ bool MayaScene::parseInstancer()
 
 bool MayaScene::getShadingGroups()
 {
-	size_t numobjects = this->objectList.size();
-	for( size_t objId = 0; objId < numobjects; objId++)
-	{
-		MayaObject *mo = this->objectList[objId];
-		MObject sg;
-		if(getObjectShadingGroups(mo->dagPath, sg))
-			mo->material = Material(sg);
-	}
-	numobjects = this->instancerNodeElements.size();
-	for( uint objId = 0; objId < numobjects; objId++)
-	{
-		MayaObject *mo = this->instancerNodeElements[objId];
-		MObject sg;
-		if(getObjectShadingGroups(mo->dagPath, sg))
-			mo->material = Material(sg);
-	}
-	numobjects = this->lightList.size();
-	for( uint objId = 0; objId < numobjects; objId++)
-	{
-		MayaObject *mo = this->lightList[objId];
-		MObject sg = mo->mobject;
-		mo->material = Material(sg);
-	}
+	//size_t numobjects = this->objectList.size();
+	//for( size_t objId = 0; objId < numobjects; objId++)
+	//{
+	//	MayaObject *mo = this->objectList[objId];
+	//	MObject sg;
+	//	if(getObjectShadingGroups(mo->dagPath, sg))
+	//		mo->material = Material(sg);
+	//}
+	//numobjects = this->instancerNodeElements.size();
+	//for( uint objId = 0; objId < numobjects; objId++)
+	//{
+	//	MayaObject *mo = this->instancerNodeElements[objId];
+	//	MObject sg;
+	//	if(getObjectShadingGroups(mo->dagPath, sg))
+	//		mo->material = Material(sg);
+	//}
+	//numobjects = this->lightList.size();
+	//for( uint objId = 0; objId < numobjects; objId++)
+	//{
+	//	MayaObject *mo = this->lightList[objId];
+	//	MObject sg = mo->mobject;
+	//	mo->material = Material(sg);
+	//}
 	return true;
 }
 

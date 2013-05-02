@@ -147,7 +147,6 @@ bool readShaderDefs()
 				else
 					currentNode.internalName = currentNode.typeName;
 				currentNode.mayaName = currentNode.internalName;
-				currentNode.supported = true;
 			}
 
 			if(pystring::startswith(line, "shader_end"))

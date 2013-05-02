@@ -2,6 +2,7 @@
 #include "utilities/tools.h"
 #include "mtlu_MayaObject.h"
 #include "mtlu_mayaScene.h"
+#include "mtlu_material.h"
 
 #include <maya/MPlugArray.h>
 #include <maya/MFnDagNode.h>
@@ -25,6 +26,15 @@ mtlu_ObjectAttributes::mtlu_ObjectAttributes(mtlu_ObjectAttributes *other)
 	}
 };
 
+
+void mtlu_MayaObject::getMaterials()
+{
+	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
+	{
+		mtlu_Material *mat = new mtlu_Material(this->shadingGroups[sgId]);
+		this->materialList.push_back(mat);
+	}
+}
 
 mtlu_MayaObject::mtlu_MayaObject(MObject& mobject) : MayaObject(mobject)
 {

@@ -247,14 +247,14 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 	int subdivscheme = 0;
 	const char *subdAlgos[] = {"loop", "microdisplacement"};
 	getInt(MString("mtlu_mesh_subAlgo"), meshFn, subdivscheme);
-	const std::string subdalgo =  subdAlgos[subdivscheme];
+	const char *subdalgo =  subdAlgos[subdivscheme];
 	float dmscale;
 	getFloat(MString("mtlu_mesh_dmscale"), meshFn, dmscale);
 	float dmoffset;
 	getFloat(MString("mtlu_mesh_dmoffset"), meshFn, dmoffset);
 	MString displacementmap;
 	getString(MString("mtlu_mesh_displacementMap"), meshFn, displacementmap);
-	std::string displacemap = displacementmap.asChar();
+	const char *displacemap = displacementmap.asChar();
 	bool dmnormalsmooth = true;
 	getBool(MString("mtlu_mesh_dmnormalsmooth"), meshFn, dmnormalsmooth);
 	bool dmnormalsplit = false;

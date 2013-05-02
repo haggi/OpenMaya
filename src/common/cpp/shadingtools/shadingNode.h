@@ -69,7 +69,6 @@ public:
 class ShadingNode
 {
 public:
-	bool supported;
 	bool hasConnections;
 	MString typeName; //kLambert, kMultiplyDivide
 	MString mayaName; //myLambert1, mdivi_number_123
@@ -93,6 +92,7 @@ public:
 	void addGeoPlug(MString plugName, MString plugType);
 	void addOutPlug(MString plugName, MString plugType);
 	void updateData();
+	virtual bool supported(){return true;};
 
 	MObject mobject;
 private:

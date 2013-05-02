@@ -26,6 +26,7 @@ public:
 
 	virtual bool geometryShapeSupported();
 	virtual mtlu_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual void getMaterials();
 };
 
 #endif

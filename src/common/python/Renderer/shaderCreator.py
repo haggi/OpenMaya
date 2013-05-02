@@ -211,8 +211,70 @@ def insertAttributes(destFileName, attDict, nodeName):
     destH = open(destFileName, "w")
     destH.writelines(contentOut)
     destH.close()
+
+def aeTemplateCreator(attDict, renderer, shortCut):
+    global baseDestPath
     
+    sourceAEFile = baseSourcePath + "/mt@_devmodule/scripts/AETemplate/AE@shaderTemplate.py"
+    destAEPath = path.path(baseDestPath + "/mt@_devmodule/scripts/AETemplate/".replace("mt@_", shortCut + "_"))
     
+    print "Sourcefile", sourceAEFile
+    print "Destpath", destAEPath
+
+    allContent = []
+    for key in attDict.keys():        
+        if key.lower() == "all":
+            for attKey in attDict[key].keys():
+                attName = attKey
+                attDisplayName = attDict[key][attKey][1]
+                allContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
+    
+    for key in attDict.keys():
+        newContent = []
+        
+        aeFileName = "AE" + renderer.lower() + key.capitalize() + "Template.py"
+        destAEFile = path.path(destAEPath + aeFileName)
+        #print "create AE for", key, destAEFile
+        if destAEFile.exists():
+            continue
+        if key.lower() == "all":
+            continue
+        print "Creating AE file", destAEFile
+
+        sourceHandle = open(sourceAEFile, "r")
+        content = sourceHandle.readlines()
+        sourceHandle.close()
+        
+        startIndex = 0
+        endIndex = 0
+        for index, line in enumerate(content):
+            if "AE@shaderTemplate" in line:
+                content[index] = line.replace("AE@shaderTemplate", "AE" + renderer.lower() + key.capitalize() + "Template")                
+            if "#autoAddBegin" in line:
+                print "Start new content"
+                startIndex = index
+            if "#autoAddEnd" in line:
+                print "End new content"
+                endIndex = index
+
+        #print "Creating data for", key
+        #print attDict[key] 
+        for attKey in attDict[key].keys():
+            attName = attKey
+            attDisplayName = attDict[key][attKey][1]
+            #print '        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName)
+            newContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
+        
+        finalContent = []
+        finalContent.extend(content[:startIndex+1])   
+        finalContent.extend(allContent) 
+        finalContent.extend(newContent)    
+        finalContent.extend(content[endIndex:])    
+        #print finalContent
+        destHandle = open(destAEFile, "w")
+        destHandle.writelines(finalContent)
+        destHandle.close()
+        
 def fillNodes(attDict):
     print "Fill node h"
     
@@ -309,6 +371,7 @@ def pyRGCreator(pypath, attArray):
             else:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
     
+    
 def shaderCreator(renderer, shortCut):
     log.debug("shaderCreator " + renderer)
 
@@ -357,9 +420,10 @@ def shaderCreator(renderer, shortCut):
                 newDict[att[0]] = att[1:]
     
     print attrDict
-    fillNodes(attrDict)
-    pluginLoaders(attrDict, renderer)    
+    #fillNodes(attrDict)
+    #pluginLoaders(attrDict, renderer)    
  #   pyRGCreator(pyGlobals, attArray)
+    aeTemplateCreator(attrDict, renderer, shortCut)
     
 if __name__ == "__main__":
     shaderCreator("lux", "mtlu")

@@ -2,16 +2,19 @@
 #define MAYA_OBJECT_H
 
 #include <maya/MObject.h>
+#include <maya/MObjectArray.h>
+#include <maya/MIntArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MBoundingBox.h>
 #include <maya/MString.h>
 #include <maya/MMatrix.h>
 #include <vector>
-#include "shadingtools/material.h"
 
 //typedef void (*functionPointer)(void *, void *); 
 
 class MayaScene;
+class Material;
+
 
 class ObjectAttributes
 {
@@ -44,9 +47,9 @@ public:
 	std::vector<MString> shadowMapFiles; // file paths for a shadow map creating light
 
 	MObjectArray shadingGroups;
-	MIntArray perFaceAssignments;
+	MIntArray perFaceAssignments;	
+	std::vector<Material *> materialList; // for every shading group connected to the shape, we have a material
 
-	Material material; 
 	// instancer node attributes
 	MMatrix instancerMatrix; // matrix of instancer node and paricle node
 	bool isInstancerObject; // is this an instancer object
@@ -76,6 +79,7 @@ public:
 	void getShadingGroups();
 	virtual bool geometryShapeSupported() = 0;
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
+	virtual void getMaterials() = 0;
 	MayaObject *parent;
 	MayaObject *origObject; // this is necessary for instanced objects that have to access the original objects data
 	MayaObject(MObject& mobject);

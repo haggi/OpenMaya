@@ -135,7 +135,7 @@ bool Material::alreadyDefined(ShadingNode *sn, ShadingNetwork& network)
 void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network, ShadingNode **sNode)
 {
 	(*sNode) = NULL;
-	ShadingNode *sn = new ShadingNode(shaderNode);
+	ShadingNode *sn = shadingNodeCreator(shaderNode);
 	
 	// modify this to detect cycles
 	//if( alreadyDefined(sn, network))
@@ -177,14 +177,8 @@ void Material::printNodes(ShadingNetwork& network)
 	}
 }
 
-
-Material::Material(MObject &shadingEngine)
+void Material::parseNetworks()
 {
-	this->shadingEngineNode = shadingEngine;
-	this->materialName = getObjectName(this->shadingEngineNode);
-
-	MObject lightShaderNode = shadingEngine;
-
 	MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), this->shadingEngineNode);
 	MObject volumeShaderNode = getOtherSideNode(MString("volumeShader"), this->shadingEngineNode);
 	MObject displacementShaderNode = getOtherSideNode(MString("displacementShader"), this->shadingEngineNode);
@@ -233,12 +227,18 @@ Material::Material(MObject &shadingEngine)
 	}
 
 	// read light shader hierarchy
-	if( (lightShaderNode != MObject::kNullObj) && (lightShaderNode.hasFn(MFn::kLight)) )
+	if( (this->shadingEngineNode != MObject::kNullObj) && (this->shadingEngineNode.hasFn(MFn::kLight)) )
 	{
 		ShadingNode *sn = NULL;
-		this->parseNetwork(lightShaderNode, this->lightShaderNet, &sn);
+		this->parseNetwork(this->shadingEngineNode, this->lightShaderNet, &sn);
 		this->checkNodeList(this->lightShaderNet);
 	}
+}
+
+Material::Material(MObject &shadingEngine)
+{
+	this->shadingEngineNode = shadingEngine;
+	this->materialName = getObjectName(this->shadingEngineNode);
 }
 
 Material::Material()

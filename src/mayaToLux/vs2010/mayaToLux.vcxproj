@@ -290,6 +290,7 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -310,10 +311,12 @@
     <ClCompile Include="..\src\Lux\LuxShaders.cpp" />
     <ClCompile Include="..\src\Lux\LuxUtils.cpp" />
     <ClCompile Include="..\src\mayaToLux.cpp" />
+    <ClCompile Include="..\src\mtlu_common\mtlu_material.cpp" />
     <ClCompile Include="..\src\mtlu_common\mtlu_mayaObject.cpp" />
     <ClCompile Include="..\src\mtlu_common\mtlu_mayaScene.cpp" />
     <ClCompile Include="..\src\mtlu_common\mtlu_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtlu_common\mtlu_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\mtlu_common\mtlu_shadingNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\carpaintMaterial.cpp" />
     <ClCompile Include="..\src\shaders\carpaintMaterialOverride.cpp" />
@@ -365,6 +368,7 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
@@ -378,10 +382,12 @@
     <ClInclude Include="..\src\Lux\Lux.h" />
     <ClInclude Include="..\src\Lux\LuxUtils.h" />
     <ClInclude Include="..\src\mayaToLux.h" />
+    <ClInclude Include="..\src\mtlu_common\mtlu_material.h" />
     <ClInclude Include="..\src\mtlu_common\mtlu_mayaObject.h" />
     <ClInclude Include="..\src\mtlu_common\mtlu_mayaScene.h" />
     <ClInclude Include="..\src\mtlu_common\mtlu_renderGlobals.h" />
     <ClInclude Include="..\src\mtlu_common\mtlu_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\mtlu_common\mtlu_shadingNode.h" />
     <ClInclude Include="..\src\shaders\carpaintMaterial.h" />
     <ClInclude Include="..\src\shaders\carpaintMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\clothMaterial.h" />

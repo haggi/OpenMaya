@@ -5,6 +5,7 @@ import traceback
 import sys
 import os
 import optimizeTextures
+import path
 
 reload(Renderer)
 
@@ -633,11 +634,11 @@ AETemplates directory, the automatic loading will not work. So I replace it with
 """
 
 def loadAETemplates():    
-    aeDir = path.path(__file__).dirname() + "/AETemplates/"
+    aeDir = path.path(__file__).dirname() + "/AETemplate/"
     for d in aeDir.listdir("*.py"):
         if d.endswith("Template.py"):
             templateName = d.basename().replace(".py", "")
-            pythonCommand = "import {0}".format(templateName)
+            pythonCommand = "import AETemplate.{0}".format(templateName)
             melCommand = 'python("{0}");'.format(pythonCommand)
             pm.mel.eval(melCommand)
             log.debug("load aeTemplate: " + templateName)

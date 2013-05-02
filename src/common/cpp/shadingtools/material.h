@@ -67,6 +67,7 @@ public:
 	Material();
 	Material(MObject& shadingEngine);
 	~Material();
+	void parseNetworks();
 	
 private:
 
@@ -74,6 +75,8 @@ private:
 	bool alreadyDefined(ShadingNode *sn, ShadingNetwork& network);
 	void checkNode(ShadingNode *sn);
 	void checkNodeList(ShadingNetwork& network);
+	virtual ShadingNode *shadingNodeCreator() = 0;
+	virtual ShadingNode *shadingNodeCreator(MObject& snode) = 0;
 };
 
 #endif

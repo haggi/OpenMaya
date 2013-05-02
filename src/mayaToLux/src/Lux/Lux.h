@@ -77,6 +77,8 @@ public:
 
 	void defineEnvironment();
 
+	void defineShaders();
+
 	// writing files
 	std::ofstream luxFile;
 
