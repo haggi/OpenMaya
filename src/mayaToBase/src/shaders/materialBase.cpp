@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId MaterialBase::id( 0x00000 );
+MTypeId	MaterialBase::id( 0x00000 );
 
 
 // the postConstructor() function is called immediately after the objects

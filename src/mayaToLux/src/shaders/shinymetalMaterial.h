@@ -42,18 +42,18 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject compo_visible_indirect_material;
-	static    MObject shinymetal_vroughness;
-	static    MObject shinymetal_uroughness;
-	static    MObject shinymetal_film;
-	static    MObject compo_override_alpha_value;
+	static    MObject vroughness;
+	static    MObject uroughness;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
+	static    MObject Ks;
+	static    MObject Kr;
 	static    MObject compo_visible_material;
-	static    MObject shinymetal_Ks;
-	static    MObject shinymetal_Kr;
-	static    MObject compo_visible_indirect_emission;
 	static    MObject bumpmap;
-	static    MObject shinymetal_filmindex;
+	static    MObject compo_visible_indirect_emission;
+	static    MObject compo_override_alpha_value;
+	static    MObject film;
+	static    MObject filmindex;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -27,7 +27,11 @@ class AEluxMatteTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("sigma", label="Sigma")
+        self.addControl("Kd", label="Diffuse Reflection")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,7 +39,7 @@ class AEluxMatteTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("matte_Kd", label="Diffuse Reflection")
-        self.addControl("matte_sigma", label="Sigma")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

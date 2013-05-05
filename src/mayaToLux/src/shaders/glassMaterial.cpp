@@ -75,20 +75,20 @@ MObject  glass::aPreShadowIntensity;
 MObject  glass::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject glass::glass_filmindex;
+MObject glass::index;
 MObject glass::compo_visible_indirect_material;
-MObject glass::glass_architectural;
-MObject glass::glass_film;
 MObject glass::compo_override_alpha_value;
 MObject glass::compo_visible_emission;
 MObject glass::compo_override_alpha;
+MObject glass::Kr;
 MObject glass::compo_visible_material;
-MObject glass::bumpmap;
+MObject glass::architectural;
+MObject glass::Kt;
 MObject glass::compo_visible_indirect_emission;
-MObject glass::glass_cauchyb;
-MObject glass::glass_Kt;
-MObject glass::glass_Kr;
-MObject glass::glass_index;
+MObject glass::cauchyb;
+MObject glass::bumpmap;
+MObject glass::film;
+MObject glass::filmindex;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -140,17 +140,11 @@ MStatus glass::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	glass_filmindex = nAttr.create("glass_filmindex", "glass_filmindex",  MFnNumericData::kFloat, 1.5);
-	CHECK_MSTATUS(addAttribute( glass_filmindex ));
+	index = nAttr.create("index", "index",  MFnNumericData::kFloat, 1.5);
+	CHECK_MSTATUS(addAttribute( index ));
 
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
-
-	glass_architectural = nAttr.create("glass_architectural", "glass_architectural",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( glass_architectural ));
-
-	glass_film = nAttr.create("glass_film", "glass_film",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( glass_film ));
 
 	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
@@ -161,29 +155,35 @@ MStatus glass::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
+	Kr = nAttr.createColor("Kr", "Kr");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kr ));
+
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
+	architectural = nAttr.create("architectural", "architectural",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( architectural ));
+
+	Kt = nAttr.createColor("Kt", "Kt");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kt ));
+
+	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	cauchyb = nAttr.create("cauchyb", "cauchyb",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( cauchyb ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
 
-	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+	film = nAttr.create("film", "film",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( film ));
 
-	glass_cauchyb = nAttr.create("glass_cauchyb", "glass_cauchyb",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( glass_cauchyb ));
-
-	glass_Kt = nAttr.createColor("glass_Kt", "glass_Kt");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( glass_Kt ));
-
-	glass_Kr = nAttr.createColor("glass_Kr", "glass_Kr");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( glass_Kr ));
-
-	glass_index = nAttr.create("glass_index", "glass_index",  MFnNumericData::kFloat, 1.5);
-	CHECK_MSTATUS(addAttribute( glass_index ));
+	filmindex = nAttr.create("filmindex", "filmindex",  MFnNumericData::kFloat, 1.5);
+	CHECK_MSTATUS(addAttribute( filmindex ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

@@ -27,7 +27,12 @@ class AEluxMetal2Template(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("fresnel", label="Fresnel input")
+        self.addControl("uroughness", label="U Roughness")
+        self.addControl("vroughness", label="V Roughness")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,8 +40,7 @@ class AEluxMetal2Template(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("metal2_uroughness", label="U Roughness")
-        self.addControl("metal2_vroughness", label="V Roughness")
-        self.addControl("metal2_fresnel", label="Fresnel input")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

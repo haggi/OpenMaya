@@ -9,7 +9,7 @@
 #include <maya/MFnSet.h>
 #include <maya/MItMeshPolygon.h>
 
-#include "shadingtools/material.h"
+#include "shadingtools/shadingUtils.h"
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
 #include "utilities/pystring.h"

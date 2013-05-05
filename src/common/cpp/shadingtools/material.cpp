@@ -38,80 +38,80 @@ void Material::checkNode(ShadingNode *sn)
 // They will receive their correct plugs and duble nodes will be removed
 void Material::checkNodeList(ShadingNetwork& network)
 {
-	for( int i = 0; i < (int)network.shaderList.size(); i++)
-	{
-		checkNode(network.shaderList[i]);
+	//for( int i = 0; i < (int)network.shaderList.size(); i++)
+	//{
+	//	checkNode(network.shaderList[i]);
 
-		for( uint k = 0; k < network.shaderList[i]->geoPlugs.size(); k++)
-		{
-			ShadingPlug plug = network.shaderList[i]->geoPlugs[k];
-			bool found = false;
-			for( uint l = 0; l < network.geometryParamsList.size(); l++)
-			{
-				if( network.geometryParamsList[l].name == plug.name)
-				{
-					found = true;
-				}
-			}
-			if(!found)
-				network.geometryParamsList.push_back(plug);
-		}
-	}
-	// remove double nodes, serach from back
-	std::vector<ShadingNode *> cleanList;
-	int numShaders = (int)network.shaderList.size();
-	for( int i = (numShaders-1); i >= 0; i--)
-	{
-		ShadingNode *sn = network.shaderList[i];
-		bool found = false;
-		for( int k = 0; k < (int)cleanList.size(); k++)
-		{
-			if( sn->mayaName == cleanList[k]->mayaName)
-			{
-				found = true;
-				for( int osn = 0; osn < sn->outShadingNodes.size(); osn++)
-				{
-					cleanList[k]->outShadingNodes.push_back(sn->outShadingNodes[osn]);
-				}
-				break;
-			}
-		}
-		if(!found)
-		{
-			cleanList.push_back(sn);
-		}
-	}
-	numShaders = (int)cleanList.size();
-	network.shaderList.clear();
-	for( int i = (numShaders-1); i >= 0; i--)
-	{
-		network.shaderList.push_back(cleanList[i]);
-	}
+	//	for( uint k = 0; k < network.shaderList[i]->geoPlugs.size(); k++)
+	//	{
+	//		ShadingPlug plug = network.shaderList[i]->geoPlugs[k];
+	//		bool found = false;
+	//		for( uint l = 0; l < network.geometryParamsList.size(); l++)
+	//		{
+	//			if( network.geometryParamsList[l].name == plug.name)
+	//			{
+	//				found = true;
+	//			}
+	//		}
+	//		if(!found)
+	//			network.geometryParamsList.push_back(plug);
+	//	}
+	//}
+	//// remove double nodes, serach from back
+	//std::vector<ShadingNode *> cleanList;
+	//int numShaders = (int)network.shaderList.size();
+	//for( int i = (numShaders-1); i >= 0; i--)
+	//{
+	//	ShadingNode *sn = network.shaderList[i];
+	//	bool found = false;
+	//	for( int k = 0; k < (int)cleanList.size(); k++)
+	//	{
+	//		if( sn->mayaName == cleanList[k]->mayaName)
+	//		{
+	//			found = true;
+	//			for( int osn = 0; osn < sn->outShadingNodes.size(); osn++)
+	//			{
+	//				cleanList[k]->outShadingNodes.push_back(sn->outShadingNodes[osn]);
+	//			}
+	//			break;
+	//		}
+	//	}
+	//	if(!found)
+	//	{
+	//		cleanList.push_back(sn);
+	//	}
+	//}
+	//numShaders = (int)cleanList.size();
+	//network.shaderList.clear();
+	//for( int i = (numShaders-1); i >= 0; i--)
+	//{
+	//	network.shaderList.push_back(cleanList[i]);
+	//}
 
-	numShaders = (int)network.shaderList.size();
-	for( uint i = 0; i < numShaders; i++)
-	{
-		std::vector<ShadingNode *> tmpOutList;
-		ShadingNode *sn = network.shaderList[i];
-		int outLen = (int)sn->outShadingNodes.size();
-		for( int k = 0; k < outLen; k++)
-		{
-			ShadingNode *outsn = sn->outShadingNodes[k];
-			bool found = false;
-			for( int l = 0; l < tmpOutList.size(); l++)
-			{
-				if( outsn->mayaName == tmpOutList[l]->mayaName)
-				{
-					found = true;
-					break;
-				}
-			}
-			if( !found)
-				tmpOutList.push_back(outsn);
-		}
-		sn->outShadingNodes = tmpOutList;
-		tmpOutList.clear();
-	}
+	//numShaders = (int)network.shaderList.size();
+	//for( uint i = 0; i < numShaders; i++)
+	//{
+	//	std::vector<ShadingNode *> tmpOutList;
+	//	ShadingNode *sn = network.shaderList[i];
+	//	int outLen = (int)sn->outShadingNodes.size();
+	//	for( int k = 0; k < outLen; k++)
+	//	{
+	//		ShadingNode *outsn = sn->outShadingNodes[k];
+	//		bool found = false;
+	//		for( int l = 0; l < tmpOutList.size(); l++)
+	//		{
+	//			if( outsn->mayaName == tmpOutList[l]->mayaName)
+	//			{
+	//				found = true;
+	//				break;
+	//			}
+	//		}
+	//		if( !found)
+	//			tmpOutList.push_back(outsn);
+	//	}
+	//	sn->outShadingNodes = tmpOutList;
+	//	tmpOutList.clear();
+	//}
 }
 
 bool Material::alreadyDefined(ShadingNode *sn, ShadingNetwork& network)
@@ -137,6 +137,11 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network, Shadin
 	(*sNode) = NULL;
 	ShadingNode *sn = shadingNodeCreator(shaderNode);
 	
+	// if NULL, then this shading node is not supported and useless.
+	// Any shader chain translation will stop here.
+	if( sn == NULL )
+		return;
+
 	// modify this to detect cycles
 	//if( alreadyDefined(sn, network))
 	//{
@@ -150,20 +155,31 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network, Shadin
 	// read incoming connections
 	MObjectArray connectedNodeList;
 	getConnectedNodes(shaderNode, connectedNodeList);
+	if( connectedNodeList.length() > 0)
+	{
+		logger.debug(MString("Node ") + sn->fullName + " has " + connectedNodeList.length() + " input connections.");
+	}else{
+		logger.debug(MString("Node ") + sn->fullName + " has no input connections.");
+	}
+
+	// a shading node can have multiple inputs from the same node, e.g. 
+	// nodea.r -> nodeb.a, nodea.g -> nodeb.r
+	// in this case the node appears multiple times, we clean this here.
+	makeUniqueArray(connectedNodeList);
 
 	for(uint i = 0; i < connectedNodeList.length(); i++)
 	{
 		ShadingNode *upNode = NULL;
 		this->parseNetwork(connectedNodeList[i], network, &upNode);
 		//logger.info(MString("---->> parsed node ") + sn->mayaName);
-		if( upNode != NULL)
-		{
+		//if( upNode != NULL)
+		//{
 			//logger.info(MString("---->> found up node ") + upNode->mayaName + " addr " + (int)upNode);
-			upNode->outShadingNodes.push_back(sn);
+		//	upNode->outShadingNodes.push_back(sn);
 			//logger.info(MString("Node: ") + upNode->mayaName + " has now " + upNode->outShadingNodes.size() + " outputs");
-		}
+		//}
 	}
-	(*sNode) = sn;
+	//(*sNode) = sn;
 }
 
 void Material::printNodes(ShadingNetwork& network)
@@ -173,7 +189,7 @@ void Material::printNodes(ShadingNetwork& network)
 	{
 		ShadingNode *sn = network.shaderList[i];
 		logger.info(MString("Material::Node id ") + (double)i + " typename " + sn->typeName);
-		logger.info(MString("Material::Node id ") + (double)i + " mayaname " + sn->mayaName);
+		logger.info(MString("Material::Node id ") + (double)i + " mayaname " + sn->fullName);
 	}
 }
 

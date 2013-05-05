@@ -75,13 +75,13 @@ MObject  glass2::aPreShadowIntensity;
 MObject  glass2::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject glass2::glass2_architectural;
 MObject glass2::compo_visible_indirect_material;
 MObject glass2::compo_override_alpha_value;
 MObject glass2::compo_visible_emission;
 MObject glass2::compo_override_alpha;
 MObject glass2::glasss2_dispersion;
 MObject glass2::compo_visible_material;
+MObject glass2::architectural;
 MObject glass2::bumpmap;
 MObject glass2::compo_visible_indirect_emission;
 //---------------------------- automatically created attributes end ------------------------------------
@@ -135,9 +135,6 @@ MStatus glass2::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	glass2_architectural = nAttr.create("glass2_architectural", "glass2_architectural",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( glass2_architectural ));
-
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
@@ -155,6 +152,9 @@ MStatus glass2::initialize()
 
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
+	architectural = nAttr.create("architectural", "architectural",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( architectural ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);

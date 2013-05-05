@@ -60,6 +60,9 @@ def makeColor(att):
 #    nAttr.setConnectable(false);
 #    CHECK_MSTATUS(addAttribute( environmentColor ));
     string = "\t{0} = nAttr.createColor(\"{0}\", \"{0}\");\n".format(att[0])
+    if len(att[3].split(":")) == 1:
+        a = att[3].split(":")[0]
+        att[3] = "{0}:{0}:{0}".format(a)
     string += "\tnAttr.setDefault({0});\n".format(",".join(att[3].split(":")))
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
@@ -212,16 +215,127 @@ def insertAttributes(destFileName, attDict, nodeName):
     destH.writelines(contentOut)
     destH.close()
 
+def getPType(att):
+    if att == "enum":
+        return "ENUMSTRING"
+    if att == "int":
+        return "INT"
+    if att == "float":
+        return "FLOAT"
+    if att == "bool":
+        return "BOOL"
+    if att == "color":
+        return "COLOR"
+    if att == "string":
+        return "STRING"
+
+def attrIncludeCreator(attDict, renderer, shortCut):
+    global baseDestPath
+    
+    destAEPath = path.path(baseDestPath + "/src/{0}/{0}ShaderInclude.h".format(renderer.capitalize()))
+    fh = open(destAEPath, "r")
+    content = fh.readlines()
+    fh.close()
+    
+    startIndex = 0
+    endIndex = 0
+    for index, line in enumerate(content):
+        if "automatically created attributes start" in line:
+            print "Start new content"
+            startIndex = index
+        if "automatically created attributes end" in line:
+            print "End new content"
+            endIndex = index
+    
+    allContent = []
+    
+#    for key in attDict.keys():        
+#        if key.lower() == "all":
+#            for attKey in attDict[key].keys():
+#                attName = attKey
+#                attDisplayName = attDict[key][attKey][1]
+#                allContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
+    
+    newContent = []
+    for key in attDict.keys():
+        
+        if key.lower() == "all":
+            continue
+        
+        attrs = attDict[key]
+
+#class GlassMaterial : public LuxMaterial
+#{
+#    GlassMaterial(MObject mObject, Instance l): LuxMaterial(mObject, l)
+#    {
+#        MFnDependencyNode dn(mObject);
+#        AttrParam p;
+#        p.paramName = "Kd";
+#        p.ptype = AttrParam::COLOR;
+#        this->params.push_back(p);
+#    }
+#    virtual void defineParams()
+#    {
+#        createParamsFromMayaNode(this->shaderParams, this->nodeObject, this->params);
+#    }
+#
+#    virtual void defineShader()
+#    {
+#        const char *type = "cloth";
+#        this->shaderParams->AddString("type", &type);
+#        this->lux->makeNamedMaterial(nodeName.asChar(),  boost::get_pointer(this->shaderParams));
+#    }
+#};        
+        cls = "class\t{0}Material : public LuxMaterial\n".format(key.capitalize())
+        cls += "{\npublic:\n"
+        cls += "\t{0}Material(MObject mObject, Instance l) : LuxMaterial(mObject, l)\n".format(key.capitalize())
+        cls += "\t" + "{\n"
+        cls += "\t\t" + "MFnDependencyNode dn(mObject);\n"
+        cls += "\t\t" + "AttrParam p;\n"
+        for attKey in attrs.keys():
+            cls += "\t\t" + 'p.paramName = "{0}";\n'.format(attKey)
+            cls += "\t\t" + 'p.ptype = AttrParam::{0};\n'.format(getPType(attrs[attKey][0]))
+            cls += "\t\t" + 'this->params.push_back(p);\n'
+            
+        cls += "\t" + "}\n"
+        cls += "\t" + "virtual void defineParams()\n\t{\n\t\tcreateParamsFromMayaNode();\n\t}\n\n"
+        cls += "\t" + "virtual void defineShader()\n\t{\n"
+        cls += "\t\t" + 'const char *type = "{0}";\n'.format(key);
+        cls += "\t\t" + 'this->shaderParams->AddString("type", &type);\n'
+        cls += "\t\t" + 'this->lux->makeNamedMaterial(nodeName.asChar(),  boost::get_pointer(this->shaderParams));\n\t}\n'        
+        cls += "\n};\n"
+        
+        newContent.append(cls)
+        #for attKey in attDict[key].keys():
+        #    attName = attKey
+        #    attDisplayName = attDict[key][attKey][1]
+        #    print '        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName)
+        #    newContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
+        
+    finalContent = []
+    finalContent.extend(content[:startIndex+1])   
+    finalContent.extend(allContent) 
+    finalContent.extend(newContent)    
+    finalContent.extend(content[endIndex:])    
+
+    print "Writing data to file", destAEPath
+    fh = open(destAEPath, "w")
+    content = fh.writelines(finalContent)
+    fh.close()
+    
+        #print finalContent
+
 def aeTemplateCreator(attDict, renderer, shortCut):
     global baseDestPath
     
-    sourceAEFile = baseSourcePath + "/mt@_devmodule/scripts/AETemplate/AE@shaderTemplate.py"
-    destAEPath = path.path(baseDestPath + "/mt@_devmodule/scripts/AETemplate/".replace("mt@_", shortCut + "_"))
+    sourceAEFile = baseSourcePath + "/mt@_devmodule/scripts/@/AETemplate/AE@shaderTemplate.py"
+    destAEPath = path.path(baseDestPath + "/mt@_devmodule/scripts/@/AETemplate/".replace("mt@_", shortCut + "_").replace("@", renderer.capitalize()))
     
     print "Sourcefile", sourceAEFile
     print "Destpath", destAEPath
 
     allContent = []
+    allContent.append('        self.addSeparator()\n')
     for key in attDict.keys():        
         if key.lower() == "all":
             for attKey in attDict[key].keys():
@@ -267,8 +381,8 @@ def aeTemplateCreator(attDict, renderer, shortCut):
         
         finalContent = []
         finalContent.extend(content[:startIndex+1])   
-        finalContent.extend(allContent) 
         finalContent.extend(newContent)    
+        finalContent.extend(allContent) 
         finalContent.extend(content[endIndex:])    
         #print finalContent
         destHandle = open(destAEFile, "w")
@@ -419,13 +533,14 @@ def shaderCreator(renderer, shortCut):
             if newDict is not None:
                 newDict[att[0]] = att[1:]
     
-    print attrDict
+    #print attrDict
     #fillNodes(attrDict)
     #pluginLoaders(attrDict, renderer)    
- #   pyRGCreator(pyGlobals, attArray)
+    #pyRGCreator(pyGlobals, attArray)
     aeTemplateCreator(attrDict, renderer, shortCut)
+    #attrIncludeCreator(attrDict, renderer, shortCut)
     
 if __name__ == "__main__":
     shaderCreator("lux", "mtlu")
-    global START_NODE_ID
-    print "ID: --> 0x%08X" % START_NODE_ID
+    #global START_NODE_ID
+    #print "ID: --> 0x%08X" % START_NODE_ID

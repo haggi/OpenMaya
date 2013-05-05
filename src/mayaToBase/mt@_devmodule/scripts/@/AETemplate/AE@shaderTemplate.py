@@ -12,10 +12,10 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
         
 
-class AEluxMattetranslucentTemplate(BaseTemplate):
+class AE@shaderTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
-        log.debug("AEluxMattetranslucentTemplate")
+        log.debug("AE@shaderTemplate")
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         pm.mel.AEswatchDisplay(nodeName)
@@ -29,18 +29,6 @@ class AEluxMattetranslucentTemplate(BaseTemplate):
         self.beginLayout("ShaderSettings" ,collapse=0)
         self.beginNoOptimize()
         #autoAddBegin
-        self.addControl("Kr", label="Diffuse Reflection")
-        self.addControl("sigma", label="Sigma")
-        self.addControl("energyconserving", label="Engergy Conserving")
-        self.addControl("Kt", label="Transmission")
-        self.addSeparator()
-        self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
-        self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
-        self.addControl("compo_visible_emission", label="compo_visible_emission")
-        self.addControl("compo_override_alpha", label="compo_override_alpha")
-        self.addControl("compo_visible_material", label="Compo Visible Material")
-        self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
-        self.addControl("bumpmap", label="Bump Map")
         #autoAddEnd
         self.endNoOptimize()
         self.endLayout()

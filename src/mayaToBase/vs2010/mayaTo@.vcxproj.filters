@@ -146,6 +146,15 @@
     <ClCompile Include="..\src\@\@TileCallback.cpp">
       <Filter>Source Files\@</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\materialBase.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\textureBase.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\materialBaseOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -231,6 +240,15 @@
     </ClInclude>
     <ClInclude Include="..\src\@\@TileCallback.h">
       <Filter>Source Files\@</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\materialBase.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\textureBase.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\materialBaseOverride.h">
+      <Filter>Source Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -76,14 +76,14 @@ MObject  scatter::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject scatter::compo_visible_indirect_material;
-MObject scatter::scatter_Kd;
+MObject scatter::g;
+MObject scatter::Kd;
 MObject scatter::compo_override_alpha_value;
 MObject scatter::compo_visible_emission;
 MObject scatter::compo_override_alpha;
 MObject scatter::compo_visible_material;
 MObject scatter::bumpmap;
 MObject scatter::compo_visible_indirect_emission;
-MObject scatter::scatter_g;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -138,9 +138,12 @@ MStatus scatter::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	scatter_Kd = nAttr.createColor("scatter_Kd", "scatter_Kd");
+	g = nAttr.create("g", "g",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( g ));
+
+	Kd = nAttr.createColor("Kd", "Kd");
 	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( scatter_Kd ));
+	CHECK_MSTATUS(addAttribute( Kd ));
 
 	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
@@ -160,9 +163,6 @@ MStatus scatter::initialize()
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
-
-	scatter_g = nAttr.create("scatter_g", "scatter_g",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( scatter_g ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

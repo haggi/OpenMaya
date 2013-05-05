@@ -41,19 +41,20 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject cloth_repeat_u;
-	static    MObject cloth_warp_Ks;
-	static    MObject compo_visible_material;
-	static    MObject compo_override_alpha_value;
-	static    MObject cloth_warp_Kd;
-	static    MObject compo_visible_emission;
-	static    MObject compo_override_alpha;
-	static    MObject cloth_weft_Ks;
 	static    MObject compo_visible_indirect_material;
+	static    MObject weft_Kd;
+	static    MObject compo_override_alpha_value;
+	static    MObject warp_Ks;
+	static    MObject repeat_u;
+	static    MObject repeat_v;
+	static    MObject compo_visible_emission;
+	static    MObject weft_Ks;
+	static    MObject compo_visible_material;
+	static    MObject compo_override_alpha;
 	static    MObject bumpmap;
-	static    MObject cloth_weft_Kd;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject cloth_presetname;
+	static    MObject warp_Kd;
+	static    MObject presetname;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

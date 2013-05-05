@@ -75,18 +75,18 @@ MObject  velvet::aPreShadowIntensity;
 MObject  velvet::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject velvet::p2;
+MObject velvet::p3;
 MObject velvet::compo_visible_indirect_material;
-MObject velvet::velvet_p1;
-MObject velvet::velvet_p2;
-MObject velvet::velvet_p3;
-MObject velvet::velvet_Kd;
-MObject velvet::compo_override_alpha;
-MObject velvet::compo_visible_emission;
-MObject velvet::velvet_thickness;
+MObject velvet::Kd;
 MObject velvet::compo_visible_material;
+MObject velvet::compo_override_alpha_value;
+MObject velvet::compo_visible_emission;
+MObject velvet::compo_override_alpha;
+MObject velvet::thickness;
+MObject velvet::p1;
 MObject velvet::bumpmap;
 MObject velvet::compo_visible_indirect_emission;
-MObject velvet::compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -138,33 +138,36 @@ MStatus velvet::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	p2 = nAttr.create("p2", "p2",  MFnNumericData::kFloat, 20.0);
+	CHECK_MSTATUS(addAttribute( p2 ));
+
+	p3 = nAttr.create("p3", "p3",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( p3 ));
+
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	velvet_p1 = nAttr.create("velvet_p1", "velvet_p1",  MFnNumericData::kFloat, -2.0);
-	CHECK_MSTATUS(addAttribute( velvet_p1 ));
-
-	velvet_p2 = nAttr.create("velvet_p2", "velvet_p2",  MFnNumericData::kFloat, 20.0);
-	CHECK_MSTATUS(addAttribute( velvet_p2 ));
-
-	velvet_p3 = nAttr.create("velvet_p3", "velvet_p3",  MFnNumericData::kFloat, 2.0);
-	CHECK_MSTATUS(addAttribute( velvet_p3 ));
-
-	velvet_Kd = nAttr.createColor("velvet_Kd", "velvet_Kd");
+	Kd = nAttr.createColor("Kd", "Kd");
 	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( velvet_Kd ));
+	CHECK_MSTATUS(addAttribute( Kd ));
 
-	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
 
-	velvet_thickness = nAttr.create("velvet_thickness", "velvet_thickness",  MFnNumericData::kFloat, 0.10);
-	CHECK_MSTATUS(addAttribute( velvet_thickness ));
+	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+	thickness = nAttr.create("thickness", "thickness",  MFnNumericData::kFloat, 0.10);
+	CHECK_MSTATUS(addAttribute( thickness ));
+
+	p1 = nAttr.create("p1", "p1",  MFnNumericData::kFloat, -2.0);
+	CHECK_MSTATUS(addAttribute( p1 ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -172,9 +175,6 @@ MStatus velvet::initialize()
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
-
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

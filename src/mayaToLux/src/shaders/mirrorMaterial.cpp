@@ -76,15 +76,15 @@ MObject  mirror::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject mirror::compo_visible_indirect_material;
-MObject mirror::mirror_film;
-MObject mirror::mirror_filmindex;
+MObject mirror::compo_override_alpha_value;
 MObject mirror::compo_visible_emission;
 MObject mirror::compo_override_alpha;
+MObject mirror::Kr;
 MObject mirror::compo_visible_material;
-MObject mirror::mirror_Kr;
 MObject mirror::bumpmap;
 MObject mirror::compo_visible_indirect_emission;
-MObject mirror::compo_override_alpha_value;
+MObject mirror::film;
+MObject mirror::filmindex;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -139,11 +139,8 @@ MStatus mirror::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	mirror_film = nAttr.create("mirror_film", "mirror_film",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( mirror_film ));
-
-	mirror_filmindex = nAttr.create("mirror_filmindex", "mirror_filmindex",  MFnNumericData::kFloat, 1.5);
-	CHECK_MSTATUS(addAttribute( mirror_filmindex ));
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -151,12 +148,12 @@ MStatus mirror::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
+	Kr = nAttr.createColor("Kr", "Kr");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kr ));
+
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	mirror_Kr = nAttr.createColor("mirror_Kr", "mirror_Kr");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( mirror_Kr ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -165,8 +162,11 @@ MStatus mirror::initialize()
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+	film = nAttr.create("film", "film",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( film ));
+
+	filmindex = nAttr.create("filmindex", "filmindex",  MFnNumericData::kFloat, 1.5);
+	CHECK_MSTATUS(addAttribute( filmindex ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

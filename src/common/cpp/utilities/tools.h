@@ -87,5 +87,6 @@ bool isLightTransform(MDagPath& dagPath);
 
 bool isCameraTransform(MDagPath& dagPath);
 
+void makeUniqueArray( MObjectArray& );
 #endif
 

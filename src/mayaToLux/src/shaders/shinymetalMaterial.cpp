@@ -76,18 +76,18 @@ MObject  shinymetal::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject shinymetal::compo_visible_indirect_material;
-MObject shinymetal::shinymetal_vroughness;
-MObject shinymetal::shinymetal_uroughness;
-MObject shinymetal::shinymetal_film;
-MObject shinymetal::compo_override_alpha_value;
+MObject shinymetal::vroughness;
+MObject shinymetal::uroughness;
 MObject shinymetal::compo_visible_emission;
 MObject shinymetal::compo_override_alpha;
+MObject shinymetal::Ks;
+MObject shinymetal::Kr;
 MObject shinymetal::compo_visible_material;
-MObject shinymetal::shinymetal_Ks;
-MObject shinymetal::shinymetal_Kr;
-MObject shinymetal::compo_visible_indirect_emission;
 MObject shinymetal::bumpmap;
-MObject shinymetal::shinymetal_filmindex;
+MObject shinymetal::compo_visible_indirect_emission;
+MObject shinymetal::compo_override_alpha_value;
+MObject shinymetal::film;
+MObject shinymetal::filmindex;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -142,17 +142,11 @@ MStatus shinymetal::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	shinymetal_vroughness = nAttr.create("shinymetal_vroughness", "shinymetal_vroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( shinymetal_vroughness ));
+	vroughness = nAttr.create("vroughness", "vroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( vroughness ));
 
-	shinymetal_uroughness = nAttr.create("shinymetal_uroughness", "shinymetal_uroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( shinymetal_uroughness ));
-
-	shinymetal_film = nAttr.create("shinymetal_film", "shinymetal_film",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( shinymetal_film ));
-
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+	uroughness = nAttr.create("uroughness", "uroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( uroughness ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -160,26 +154,32 @@ MStatus shinymetal::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
+	Ks = nAttr.createColor("Ks", "Ks");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Ks ));
+
+	Kr = nAttr.createColor("Kr", "Kr");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kr ));
+
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	shinymetal_Ks = nAttr.createColor("shinymetal_Ks", "shinymetal_Ks");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( shinymetal_Ks ));
-
-	shinymetal_Kr = nAttr.createColor("shinymetal_Kr", "shinymetal_Kr");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( shinymetal_Kr ));
-
-	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
 
-	shinymetal_filmindex = nAttr.create("shinymetal_filmindex", "shinymetal_filmindex",  MFnNumericData::kFloat, 1.5);
-	CHECK_MSTATUS(addAttribute( shinymetal_filmindex ));
+	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+
+	film = nAttr.create("film", "film",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( film ));
+
+	filmindex = nAttr.create("filmindex", "filmindex",  MFnNumericData::kFloat, 1.5);
+	CHECK_MSTATUS(addAttribute( filmindex ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

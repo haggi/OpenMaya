@@ -75,21 +75,21 @@ MObject  layered::aPreShadowIntensity;
 MObject  layered::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject layered::layered_namedmaterial2;
-MObject layered::layered_opacity2;
 MObject layered::compo_visible_indirect_material;
-MObject layered::compo_visible_material;
+MObject layered::opacity4;
 MObject layered::compo_override_alpha_value;
+MObject layered::opacity1;
 MObject layered::compo_visible_emission;
+MObject layered::opacity3;
+MObject layered::opacity2;
+MObject layered::compo_visible_material;
 MObject layered::compo_override_alpha;
-MObject layered::layered_namedmaterial1;
-MObject layered::layered_opacity3;
-MObject layered::layered_namedmaterial3;
-MObject layered::layered_opacity1;
-MObject layered::layered_namedmaterial4;
-MObject layered::layered_opacity4;
 MObject layered::bumpmap;
 MObject layered::compo_visible_indirect_emission;
+MObject layered::namedmaterial4;
+MObject layered::namedmaterial2;
+MObject layered::namedmaterial3;
+MObject layered::namedmaterial1;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -141,48 +141,32 @@ MStatus layered::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	layered_namedmaterial2 = nAttr.createColor("layered_namedmaterial2", "layered_namedmaterial2");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( layered_namedmaterial2 ));
-
-	layered_opacity2 = nAttr.create("layered_opacity2", "layered_opacity2",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( layered_opacity2 ));
-
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+	opacity4 = nAttr.create("opacity4", "opacity4",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( opacity4 ));
 
 	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
+	opacity1 = nAttr.create("opacity1", "opacity1",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( opacity1 ));
+
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
 
+	opacity3 = nAttr.create("opacity3", "opacity3",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( opacity3 ));
+
+	opacity2 = nAttr.create("opacity2", "opacity2",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( opacity2 ));
+
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
-
-	layered_namedmaterial1 = nAttr.createColor("layered_namedmaterial1", "layered_namedmaterial1");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( layered_namedmaterial1 ));
-
-	layered_opacity3 = nAttr.create("layered_opacity3", "layered_opacity3",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( layered_opacity3 ));
-
-	layered_namedmaterial3 = nAttr.createColor("layered_namedmaterial3", "layered_namedmaterial3");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( layered_namedmaterial3 ));
-
-	layered_opacity1 = nAttr.create("layered_opacity1", "layered_opacity1",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( layered_opacity1 ));
-
-	layered_namedmaterial4 = nAttr.createColor("layered_namedmaterial4", "layered_namedmaterial4");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( layered_namedmaterial4 ));
-
-	layered_opacity4 = nAttr.create("layered_opacity4", "layered_opacity4",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( layered_opacity4 ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -190,6 +174,22 @@ MStatus layered::initialize()
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	namedmaterial4 = nAttr.createColor("namedmaterial4", "namedmaterial4");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial4 ));
+
+	namedmaterial2 = nAttr.createColor("namedmaterial2", "namedmaterial2");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial2 ));
+
+	namedmaterial3 = nAttr.createColor("namedmaterial3", "namedmaterial3");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial3 ));
+
+	namedmaterial1 = nAttr.createColor("namedmaterial1", "namedmaterial1");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial1 ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

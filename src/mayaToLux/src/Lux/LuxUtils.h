@@ -15,5 +15,4 @@ void setZUp( MVector& point, float *pos);
 void setZUp( MPoint& point, float *pos);
 
 void setGlobalScaleMatrix(MMatrix& matrix);
-
 #endif

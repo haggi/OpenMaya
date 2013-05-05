@@ -75,19 +75,20 @@ MObject  cloth::aPreShadowIntensity;
 MObject  cloth::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject cloth::cloth_repeat_u;
-MObject cloth::cloth_warp_Ks;
-MObject cloth::compo_visible_material;
-MObject cloth::compo_override_alpha_value;
-MObject cloth::cloth_warp_Kd;
-MObject cloth::compo_visible_emission;
-MObject cloth::compo_override_alpha;
-MObject cloth::cloth_weft_Ks;
 MObject cloth::compo_visible_indirect_material;
+MObject cloth::weft_Kd;
+MObject cloth::compo_override_alpha_value;
+MObject cloth::warp_Ks;
+MObject cloth::repeat_u;
+MObject cloth::repeat_v;
+MObject cloth::compo_visible_emission;
+MObject cloth::weft_Ks;
+MObject cloth::compo_visible_material;
+MObject cloth::compo_override_alpha;
 MObject cloth::bumpmap;
-MObject cloth::cloth_weft_Kd;
 MObject cloth::compo_visible_indirect_emission;
-MObject cloth::cloth_presetname;
+MObject cloth::warp_Kd;
+MObject cloth::presetname;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -139,55 +140,58 @@ MStatus cloth::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	cloth_repeat_u = nAttr.create("cloth_repeat_u", "cloth_repeat_u",  MFnNumericData::kFloat, 100.0);
-	CHECK_MSTATUS(addAttribute( cloth_repeat_u ));
+	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	cloth_warp_Ks = nAttr.createColor("cloth_warp_Ks", "cloth_warp_Ks");
-	nAttr.setDefault(0.5);
-	CHECK_MSTATUS(addAttribute( cloth_warp_Ks ));
-
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+	weft_Kd = nAttr.createColor("weft_Kd", "weft_Kd");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( weft_Kd ));
 
 	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
-	cloth_warp_Kd = nAttr.createColor("cloth_warp_Kd", "cloth_warp_Kd");
-	nAttr.setDefault(0.5);
-	CHECK_MSTATUS(addAttribute( cloth_warp_Kd ));
+	warp_Ks = nAttr.createColor("warp_Ks", "warp_Ks");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( warp_Ks ));
+
+	repeat_u = nAttr.create("repeat_u", "repeat_u",  MFnNumericData::kFloat, 100.0);
+	CHECK_MSTATUS(addAttribute( repeat_u ));
+
+	repeat_v = nAttr.create("repeat_v", "repeat_v",  MFnNumericData::kFloat, 100.0);
+	CHECK_MSTATUS(addAttribute( repeat_v ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
 
+	weft_Ks = nAttr.createColor("weft_Ks", "weft_Ks");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( weft_Ks ));
+
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
-
-	cloth_weft_Ks = nAttr.createColor("cloth_weft_Ks", "cloth_weft_Ks");
-	nAttr.setDefault(0.5);
-	CHECK_MSTATUS(addAttribute( cloth_weft_Ks ));
-
-	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
 
-	cloth_weft_Kd = nAttr.createColor("cloth_weft_Kd", "cloth_weft_Kd");
-	nAttr.setDefault(0.5);
-	CHECK_MSTATUS(addAttribute( cloth_weft_Kd ));
-
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
-	cloth_presetname = eAttr.create("cloth_presetname", "cloth_presetname", 1, &status);
+	warp_Kd = nAttr.createColor("warp_Kd", "warp_Kd");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( warp_Kd ));
+
+	presetname = eAttr.create("presetname", "presetname", 1, &status);
 	status = eAttr.addField( "silk_charmeuse", 0 );
 	status = eAttr.addField( "denim", 1 );
 	status = eAttr.addField( "cotton_twill", 2 );
 	status = eAttr.addField( "wool_gabardine", 3 );
 	status = eAttr.addField( "polyester_lining_cloth", 4 );
 	status = eAttr.addField( "silk_shantung", 5 );
-	CHECK_MSTATUS(addAttribute( cloth_presetname ));
+	CHECK_MSTATUS(addAttribute( presetname ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

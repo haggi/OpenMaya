@@ -76,23 +76,23 @@ MObject  carpaint::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject carpaint::compo_visible_indirect_material;
-MObject carpaint::carpaint_M3;
-MObject carpaint::carpaint_Ks1;
-MObject carpaint::carpaint_Ks3;
-MObject carpaint::carpaint_Ks2;
+MObject carpaint::Ks1;
+MObject carpaint::R1;
+MObject carpaint::Ks3;
+MObject carpaint::Ks2;
+MObject carpaint::R3;
+MObject carpaint::Kd;
+MObject carpaint::R2;
 MObject carpaint::compo_visible_emission;
 MObject carpaint::compo_override_alpha;
-MObject carpaint::carpaint_name;
 MObject carpaint::compo_visible_material;
-MObject carpaint::carpaint_M1;
-MObject carpaint::carpaint_R1;
-MObject carpaint::carpaint_R2;
-MObject carpaint::carpaint_R3;
-MObject carpaint::carpaint_M2;
+MObject carpaint::M1;
+MObject carpaint::M3;
+MObject carpaint::M2;
 MObject carpaint::compo_visible_indirect_emission;
-MObject carpaint::carpaint_Kd;
 MObject carpaint::bumpmap;
 MObject carpaint::compo_override_alpha_value;
+MObject carpaint::name;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -147,20 +147,30 @@ MStatus carpaint::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	carpaint_M3 = nAttr.create("carpaint_M3", "carpaint_M3",  MFnNumericData::kFloat, 0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_M3 ));
-
-	carpaint_Ks1 = nAttr.createColor("carpaint_Ks1", "carpaint_Ks1");
+	Ks1 = nAttr.createColor("Ks1", "Ks1");
 	nAttr.setDefault(0.2,0.2,0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_Ks1 ));
+	CHECK_MSTATUS(addAttribute( Ks1 ));
 
-	carpaint_Ks3 = nAttr.createColor("carpaint_Ks3", "carpaint_Ks3");
-	nAttr.setDefault(0.2,0.2,0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_Ks3 ));
+	R1 = nAttr.create("R1", "R1",  MFnNumericData::kFloat, 0.3);
+	CHECK_MSTATUS(addAttribute( R1 ));
 
-	carpaint_Ks2 = nAttr.createColor("carpaint_Ks2", "carpaint_Ks2");
+	Ks3 = nAttr.createColor("Ks3", "Ks3");
 	nAttr.setDefault(0.2,0.2,0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_Ks2 ));
+	CHECK_MSTATUS(addAttribute( Ks3 ));
+
+	Ks2 = nAttr.createColor("Ks2", "Ks2");
+	nAttr.setDefault(0.2,0.2,0.2);
+	CHECK_MSTATUS(addAttribute( Ks2 ));
+
+	R3 = nAttr.create("R3", "R3",  MFnNumericData::kFloat, 0.3);
+	CHECK_MSTATUS(addAttribute( R3 ));
+
+	Kd = nAttr.createColor("Kd", "Kd");
+	nAttr.setDefault(0.8,0.8,0.8);
+	CHECK_MSTATUS(addAttribute( Kd ));
+
+	R2 = nAttr.create("R2", "R2",  MFnNumericData::kFloat, 0.3);
+	CHECK_MSTATUS(addAttribute( R2 ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -168,7 +178,29 @@ MStatus carpaint::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
-	carpaint_name = eAttr.create("carpaint_name", "carpaint_name", 3, &status);
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
+	M1 = nAttr.create("M1", "M1",  MFnNumericData::kFloat, 0.2);
+	CHECK_MSTATUS(addAttribute( M1 ));
+
+	M3 = nAttr.create("M3", "M3",  MFnNumericData::kFloat, 0.2);
+	CHECK_MSTATUS(addAttribute( M3 ));
+
+	M2 = nAttr.create("M2", "M2",  MFnNumericData::kFloat, 0.2);
+	CHECK_MSTATUS(addAttribute( M2 ));
+
+	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( bumpmap ));
+
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+
+	name = eAttr.create("name", "name", 3, &status);
 	status = eAttr.addField( "ford f8", 0 );
 	status = eAttr.addField( "polaris silber", 1 );
 	status = eAttr.addField( "opel titan", 2 );
@@ -177,39 +209,7 @@ MStatus carpaint::initialize()
 	status = eAttr.addField( "white", 5 );
 	status = eAttr.addField( "blue", 6 );
 	status = eAttr.addField( "blue matte", 7 );
-	CHECK_MSTATUS(addAttribute( carpaint_name ));
-
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	carpaint_M1 = nAttr.create("carpaint_M1", "carpaint_M1",  MFnNumericData::kFloat, 0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_M1 ));
-
-	carpaint_R1 = nAttr.create("carpaint_R1", "carpaint_R1",  MFnNumericData::kFloat, 0.3);
-	CHECK_MSTATUS(addAttribute( carpaint_R1 ));
-
-	carpaint_R2 = nAttr.create("carpaint_R2", "carpaint_R2",  MFnNumericData::kFloat, 0.3);
-	CHECK_MSTATUS(addAttribute( carpaint_R2 ));
-
-	carpaint_R3 = nAttr.create("carpaint_R3", "carpaint_R3",  MFnNumericData::kFloat, 0.3);
-	CHECK_MSTATUS(addAttribute( carpaint_R3 ));
-
-	carpaint_M2 = nAttr.create("carpaint_M2", "carpaint_M2",  MFnNumericData::kFloat, 0.2);
-	CHECK_MSTATUS(addAttribute( carpaint_M2 ));
-
-	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
-
-	carpaint_Kd = nAttr.createColor("carpaint_Kd", "carpaint_Kd");
-	nAttr.setDefault(0.8,0.8,0.8);
-	CHECK_MSTATUS(addAttribute( carpaint_Kd ));
-
-	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
-	nAttr.setDefault(0.0,0.0,0.0);
-	CHECK_MSTATUS(addAttribute( bumpmap ));
-
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+	CHECK_MSTATUS(addAttribute( name ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

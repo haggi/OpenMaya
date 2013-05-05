@@ -41,13 +41,13 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject glass2_architectural;
 	static    MObject compo_visible_indirect_material;
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
 	static    MObject glasss2_dispersion;
 	static    MObject compo_visible_material;
+	static    MObject architectural;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
 //---------------------------- automatically created attributes end ------------------------------------

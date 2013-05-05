@@ -41,20 +41,20 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject roughglass_Kr;
-	static    MObject roughglass_dispersion;
-	static    MObject roughglass_Kt;
-	static    MObject roughglass_uroughness;
-	static    MObject compo_visible_material;
-	static    MObject compo_override_alpha_value;
-	static    MObject roughglass_cauchyb;
+	static    MObject index;
+	static    MObject compo_visible_indirect_material;
+	static    MObject vroughness;
+	static    MObject uroughness;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
-	static    MObject roughglass_index;
-	static    MObject compo_visible_indirect_material;
+	static    MObject dispersion;
+	static    MObject Kr;
+	static    MObject compo_visible_material;
+	static    MObject Kt;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject roughglass_vroughness;
+	static    MObject cauchyb;
 	static    MObject bumpmap;
+	static    MObject compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -41,17 +41,17 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject mattetranslucent_Kt;
 	static    MObject compo_visible_indirect_material;
-	static    MObject mattetranslucent_sigma;
-	static    MObject mattetranslucent_Kr;
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
+	static    MObject Kr;
 	static    MObject compo_visible_material;
+	static    MObject energyconserving;
 	static    MObject bumpmap;
+	static    MObject Kt;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject mattetranslucent_energyconserving;
+	static    MObject sigma;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

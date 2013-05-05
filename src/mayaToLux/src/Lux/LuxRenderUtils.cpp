@@ -11,6 +11,8 @@
 #include "../mtlu_common/mtlu_mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
 #include "LuxUtils.h"
+#include "../mtlu_common/mtlu_shadingNode.h"
+#include "../mtlu_common/mtlu_Material.h"
 #include "utilities/tools.h"
 
 #include "utilities/logging.h"
@@ -91,6 +93,18 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 			MMatrix tm = obj->transformMatrices[0];
 			setZUp(tm, fm);
 			this->lux->transform(fm);
+			{
+				if( obj->materialList.size() > 0)
+				{
+					logger.debug(MString("Trying to define material 0 ") + obj->materialList[0]->materialName);
+					if( obj->materialList[0]->surfaceShaderNet.shaderList.size() > 0)
+					{
+						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)obj->materialList[0]->surfaceShaderNet.shaderList[0];
+						logger.debug(MString("Trying to define surface shading node 0 ") + snode->fullName);
+						this->lux->namedMaterial(snode->fullName.asChar());
+					}
+				}
+			}
 			this->lux->objectInstance(objectInstanceName.asChar());
 		}
 		this->lux->transformEnd();
@@ -117,6 +131,19 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 				}
 			}
 			lux->motionEnd();
+
+			{
+				if( obj->materialList.size() > 0)
+				{
+					logger.debug(MString("Trying to define material 0 ") + obj->materialList[0]->materialName);
+					if( obj->materialList[0]->surfaceShaderNet.shaderList.size() > 0)
+					{
+						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)obj->materialList[0]->surfaceShaderNet.shaderList[0];
+						logger.debug(MString("Trying to define surface shading node 0 ") + snode->fullName);
+						this->lux->namedMaterial(snode->fullName.asChar());
+					}
+				}
+			}
 			this->lux->objectInstance(objectInstanceName.asChar());
 		}
 		lux->attributeEnd();

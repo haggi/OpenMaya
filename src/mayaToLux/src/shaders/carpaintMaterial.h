@@ -42,23 +42,23 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject compo_visible_indirect_material;
-	static    MObject carpaint_M3;
-	static    MObject carpaint_Ks1;
-	static    MObject carpaint_Ks3;
-	static    MObject carpaint_Ks2;
+	static    MObject Ks1;
+	static    MObject R1;
+	static    MObject Ks3;
+	static    MObject Ks2;
+	static    MObject R3;
+	static    MObject Kd;
+	static    MObject R2;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
-	static    MObject carpaint_name;
 	static    MObject compo_visible_material;
-	static    MObject carpaint_M1;
-	static    MObject carpaint_R1;
-	static    MObject carpaint_R2;
-	static    MObject carpaint_R3;
-	static    MObject carpaint_M2;
+	static    MObject M1;
+	static    MObject M3;
+	static    MObject M2;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject carpaint_Kd;
 	static    MObject bumpmap;
 	static    MObject compo_override_alpha_value;
+	static    MObject name;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -42,14 +42,14 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject compo_visible_indirect_material;
-	static    MObject scatter_Kd;
+	static    MObject g;
+	static    MObject Kd;
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
 	static    MObject compo_visible_material;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject scatter_g;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

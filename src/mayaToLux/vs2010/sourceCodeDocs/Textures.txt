@@ -1,0 +1,5 @@
+#checkerboard
+dimension, int, Dimension, 2
+tex1, float, White Checks, 1
+tex2, float, Black Checks, 0
+aamode, enum, Antialias Mode, 0, closedform:supersample:none 

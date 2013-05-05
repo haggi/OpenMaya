@@ -41,21 +41,21 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject layered_namedmaterial2;
-	static    MObject layered_opacity2;
 	static    MObject compo_visible_indirect_material;
-	static    MObject compo_visible_material;
+	static    MObject opacity4;
 	static    MObject compo_override_alpha_value;
+	static    MObject opacity1;
 	static    MObject compo_visible_emission;
+	static    MObject opacity3;
+	static    MObject opacity2;
+	static    MObject compo_visible_material;
 	static    MObject compo_override_alpha;
-	static    MObject layered_namedmaterial1;
-	static    MObject layered_opacity3;
-	static    MObject layered_namedmaterial3;
-	static    MObject layered_opacity1;
-	static    MObject layered_namedmaterial4;
-	static    MObject layered_opacity4;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
+	static    MObject namedmaterial4;
+	static    MObject namedmaterial2;
+	static    MObject namedmaterial3;
+	static    MObject namedmaterial1;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

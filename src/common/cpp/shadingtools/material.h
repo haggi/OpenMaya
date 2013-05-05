@@ -75,6 +75,7 @@ private:
 	bool alreadyDefined(ShadingNode *sn, ShadingNetwork& network);
 	void checkNode(ShadingNode *sn);
 	void checkNodeList(ShadingNetwork& network);
+	virtual bool shadingNodeSupported(MObject& snode) = 0;
 	virtual ShadingNode *shadingNodeCreator() = 0;
 	virtual ShadingNode *shadingNodeCreator(MObject& snode) = 0;
 };

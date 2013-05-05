@@ -41,21 +41,21 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject index;
+	static    MObject Ka;
 	static    MObject compo_visible_indirect_material;
-	static    MObject glossycoating_d;
-	static    MObject glossycoating_basematerial;
-	static    MObject glossycoating_multibounce;
-	static    MObject compo_override_alpha_value;
-	static    MObject glossycoating_vroughness;
-	static    MObject compo_override_alpha;
-	static    MObject glossycoating_Ks;
+	static    MObject multibounce;
+	static    MObject d;
+	static    MObject vroughness;
+	static    MObject uroughness;
 	static    MObject compo_visible_emission;
+	static    MObject compo_override_alpha;
+	static    MObject Ks;
 	static    MObject compo_visible_material;
-	static    MObject glossycoating_index;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject glossycoating_uroughness;
-	static    MObject glossycoating_Ka;
+	static    MObject basematerial;
+	static    MObject compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

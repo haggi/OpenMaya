@@ -481,5 +481,11 @@
     <ClInclude Include="..\src\mtlu_common\mtlu_material.h">
       <Filter>mtlu_common</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\shaderAttributeInclude.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Lux\LuxShaderInclude.h">
+      <Filter>Source Files\Lux</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -71,16 +71,16 @@ class ShadingNode
 public:
 	bool hasConnections;
 	MString typeName; //kLambert, kMultiplyDivide
-	MString mayaName; //myLambert1, mdivi_number_123
+	MString fullName; //myLambert1, mdivi_number_123
 	MString internalName; // Lambert, MultiplyDivide
 
-	std::vector<ShadingNode *> outShadingNodes;
-	void *userPointer;
+	//std::vector<ShadingNode *> outShadingNodes;
+	//void *userPointer;
 
-	SPLUG_LIST externalPlugs;
-	SPLUG_LIST geoPlugs;
-	SPLUG_LIST inPlugs;
-	SPLUG_LIST outPlugs;
+	//SPLUG_LIST externalPlugs;
+	//SPLUG_LIST geoPlugs;
+	//SPLUG_LIST inPlugs;
+	//SPLUG_LIST outPlugs;
 
 	ShadingNode(MObject& object);
 	ShadingNode(ShadingNode& other);
@@ -88,10 +88,10 @@ public:
 	~ShadingNode();
 
 	void init(void);
-	void addInPlug(MString plugName, MString plugType);
-	void addGeoPlug(MString plugName, MString plugType);
-	void addOutPlug(MString plugName, MString plugType);
-	void updateData();
+	//void addInPlug(MString plugName, MString plugType);
+	//void addGeoPlug(MString plugName, MString plugType);
+	//void addOutPlug(MString plugName, MString plugType);
+	//void updateData();
 	virtual bool supported(){return true;};
 
 	MObject mobject;

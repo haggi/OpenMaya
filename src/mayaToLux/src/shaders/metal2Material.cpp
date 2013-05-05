@@ -76,15 +76,15 @@ MObject  metal2::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject metal2::compo_visible_indirect_material;
-MObject metal2::metal2_uroughness;
-MObject metal2::compo_override_alpha_value;
+MObject metal2::vroughness;
+MObject metal2::fresnel;
+MObject metal2::uroughness;
 MObject metal2::compo_visible_emission;
 MObject metal2::compo_override_alpha;
 MObject metal2::compo_visible_material;
-MObject metal2::metal2_vroughness;
 MObject metal2::bumpmap;
 MObject metal2::compo_visible_indirect_emission;
-MObject metal2::metal2_fresnel;
+MObject metal2::compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -139,11 +139,14 @@ MStatus metal2::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	metal2_uroughness = nAttr.create("metal2_uroughness", "metal2_uroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( metal2_uroughness ));
+	vroughness = nAttr.create("vroughness", "vroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( vroughness ));
 
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+	fresnel = nAttr.create("fresnel", "fresnel",  MFnNumericData::kFloat, 5.0);
+	CHECK_MSTATUS(addAttribute( fresnel ));
+
+	uroughness = nAttr.create("uroughness", "uroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( uroughness ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -154,9 +157,6 @@ MStatus metal2::initialize()
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
 
-	metal2_vroughness = nAttr.create("metal2_vroughness", "metal2_vroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( metal2_vroughness ));
-
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
@@ -164,8 +164,8 @@ MStatus metal2::initialize()
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
-	metal2_fresnel = nAttr.create("metal2_fresnel", "metal2_fresnel",  MFnNumericData::kFloat, 5.0);
-	CHECK_MSTATUS(addAttribute( metal2_fresnel ));
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

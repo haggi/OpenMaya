@@ -11,5 +11,6 @@ public:
 
 	virtual ShadingNode *shadingNodeCreator();
 	virtual ShadingNode *shadingNodeCreator(MObject& snode);
+	virtual bool shadingNodeSupported(MObject& snode);
 };
 #endif

@@ -41,20 +41,20 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject glass_filmindex;
+	static    MObject index;
 	static    MObject compo_visible_indirect_material;
-	static    MObject glass_architectural;
-	static    MObject glass_film;
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
+	static    MObject Kr;
 	static    MObject compo_visible_material;
-	static    MObject bumpmap;
+	static    MObject architectural;
+	static    MObject Kt;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject glass_cauchyb;
-	static    MObject glass_Kt;
-	static    MObject glass_Kr;
-	static    MObject glass_index;
+	static    MObject cauchyb;
+	static    MObject bumpmap;
+	static    MObject film;
+	static    MObject filmindex;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

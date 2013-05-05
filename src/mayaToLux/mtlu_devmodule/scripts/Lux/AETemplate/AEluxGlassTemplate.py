@@ -27,7 +27,16 @@ class AEluxGlassTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("index", label="Refraction Index")
+        self.addControl("Kr", label="Reflectivity")
+        self.addControl("architectural", label="Transmission Refraction Off")
+        self.addControl("Kt", label="Transmission")
+        self.addControl("cauchyb", label="Cauchy B Coefficient")
+        self.addControl("film", label="Film Thickness")
+        self.addControl("filmindex", label="Film Refraction Index")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,12 +44,7 @@ class AEluxGlassTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("glass_filmindex", label="Film Refraction Index")
-        self.addControl("glass_architectural", label="Transmission Refraction Off")
-        self.addControl("glass_film", label="Film Thickness")
-        self.addControl("glass_cauchyb", label="Cauchy B Coefficient")
-        self.addControl("glass_Kt", label="Transmission")
-        self.addControl("glass_Kr", label="Reflectivity")
-        self.addControl("glass_index", label="Refraction Index")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

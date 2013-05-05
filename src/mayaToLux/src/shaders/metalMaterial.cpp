@@ -76,15 +76,15 @@ MObject  metal::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject metal::compo_visible_indirect_material;
-MObject metal::metal_uroughness;
-MObject metal::metal_name;
-MObject metal::compo_override_alpha_value;
+MObject metal::name;
+MObject metal::vroughness;
+MObject metal::uroughness;
 MObject metal::compo_visible_emission;
 MObject metal::compo_override_alpha;
 MObject metal::compo_visible_material;
-MObject metal::metal_vroughness;
 MObject metal::bumpmap;
 MObject metal::compo_visible_indirect_emission;
+MObject metal::compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -139,18 +139,18 @@ MStatus metal::initialize()
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	metal_uroughness = nAttr.create("metal_uroughness", "metal_uroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( metal_uroughness ));
-
-	metal_name = eAttr.create("metal_name", "metal_name", 1, &status);
+	name = eAttr.create("name", "name", 1, &status);
 	status = eAttr.addField( "amorphous carbon", 0 );
 	status = eAttr.addField( "silver.gold", 1 );
 	status = eAttr.addField( "copper", 2 );
 	status = eAttr.addField( "aluminium", 3 );
-	CHECK_MSTATUS(addAttribute( metal_name ));
+	CHECK_MSTATUS(addAttribute( name ));
 
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
+	vroughness = nAttr.create("vroughness", "vroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( vroughness ));
+
+	uroughness = nAttr.create("uroughness", "uroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( uroughness ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -161,15 +161,15 @@ MStatus metal::initialize()
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
 
-	metal_vroughness = nAttr.create("metal_vroughness", "metal_vroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( metal_vroughness ));
-
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

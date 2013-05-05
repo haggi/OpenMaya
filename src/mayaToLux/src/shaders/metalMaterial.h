@@ -42,15 +42,15 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject compo_visible_indirect_material;
-	static    MObject metal_uroughness;
-	static    MObject metal_name;
-	static    MObject compo_override_alpha_value;
+	static    MObject name;
+	static    MObject vroughness;
+	static    MObject uroughness;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
 	static    MObject compo_visible_material;
-	static    MObject metal_vroughness;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
+	static    MObject compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

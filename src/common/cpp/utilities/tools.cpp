@@ -188,6 +188,10 @@ MString matrixToString(MMatrix& matrix)
 	return matString;
 }
 
+//
+// simply get the node wich is connected to the named plug.
+// If we have no connection, a kNullObject is returned.
+//
 MObject getOtherSideNode(MString& plugName, MObject& thisObject)
 {
 	MStatus stat;
@@ -326,6 +330,9 @@ bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& other
 
 MString getObjectName(MObject& mobject)
 {
+	if( mobject == MObject::kNullObj)
+		return "";
+
 	MFnDependencyNode depFn(mobject);
 	return depFn.name();
 }
@@ -551,4 +558,24 @@ bool isCameraTransform(MDagPath& dagPath)
 			return true;
 	}
 	return false;
+}
+
+void makeUniqueArray( MObjectArray& oa)
+{
+	MObjectArray tmpArray;
+	for( uint i = 0; i < oa.length(); i++)
+	{
+		bool found = false;
+		for( uint k = 0; k < tmpArray.length(); k++)
+		{
+			if( oa[i] == tmpArray[k])
+			{
+				found = true;
+				break;
+			}
+		}
+		if( !found )
+			tmpArray.append(oa[i]);
+	}
+	oa = tmpArray;
 }

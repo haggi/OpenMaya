@@ -41,28 +41,28 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject glossytranslucent_d;
-	static    MObject glossytranslucent_onesided;
-	static    MObject glossytranslucent_vroughness;
-	static    MObject glossytranslucent_backface_uroughness;
+	static    MObject backface_d;
+	static    MObject vroughness;
 	static    MObject bumpmap;
-	static    MObject glossytranslucent_backface_index;
-	static    MObject glossytranslucent_backface_Ka;
+	static    MObject backface_vroughness;
+	static    MObject index;
+	static    MObject uroughness;
 	static    MObject compo_override_alpha;
-	static    MObject glossytranslucent_backface_Ks;
-	static    MObject glossytranslucent_Kt;
-	static    MObject glossytranslucent_Ks;
-	static    MObject glossytranslucent_backface_vroughness;
+	static    MObject backface_uroughness;
+	static    MObject compo_visible_material;
+	static    MObject Ka;
+	static    MObject Kd;
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
-	static    MObject glossytranslucent_Kd;
-	static    MObject glossytranslucent_index;
-	static    MObject glossytranslucent_Ka;
-	static    MObject compo_visible_indirect_emission;
-	static    MObject compo_visible_material;
+	static    MObject Ks;
 	static    MObject compo_visible_indirect_material;
-	static    MObject glossytranslucent_backface_d;
-	static    MObject glossytranslucent_uroughness;
+	static    MObject Kt;
+	static    MObject compo_visible_indirect_emission;
+	static    MObject backface_index;
+	static    MObject onesided;
+	static    MObject d;
+	static    MObject backface_Ka;
+	static    MObject backface_Ks;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -378,6 +378,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\Lux\LuxRendererController.h" />
+    <ClInclude Include="..\src\Lux\LuxShaderInclude.h" />
     <ClInclude Include="..\src\Lux\LuxTileCallback.h" />
     <ClInclude Include="..\src\Lux\Lux.h" />
     <ClInclude Include="..\src\Lux\LuxUtils.h" />
@@ -420,6 +421,7 @@
     <ClInclude Include="..\src\shaders\roughglassMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\scatterMaterial.h" />
     <ClInclude Include="..\src\shaders\scatterMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\shaderAttributeInclude.h" />
     <ClInclude Include="..\src\shaders\shinymetalMaterial.h" />
     <ClInclude Include="..\src\shaders\shinymetalMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\velvetMaterial.h" />

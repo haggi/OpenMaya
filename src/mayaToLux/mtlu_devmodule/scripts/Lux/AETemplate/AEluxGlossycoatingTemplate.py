@@ -27,7 +27,17 @@ class AEluxGlossycoatingTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("index", label="ReflectionIndex")
+        self.addControl("Ka", label="Absorption")
+        self.addControl("multibounce", label="Multibounce")
+        self.addControl("d", label="Coating Thickness")
+        self.addControl("vroughness", label="V Roughness")
+        self.addControl("uroughness", label="U Roughness")
+        self.addControl("Ks", label="Specular Reflection")
+        self.addControl("basematerial", label="Base Material")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,13 +45,7 @@ class AEluxGlossycoatingTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("glossycoating_d", label="Coating Thickness")
-        self.addControl("glossycoating_basematerial", label="Base Material")
-        self.addControl("glossycoating_multibounce", label="Velvet Reflection")
-        self.addControl("glossycoating_vroughness", label="V Roughness")
-        self.addControl("glossycoating_Ks", label="Specular Reflection")
-        self.addControl("glossycoating_index", label="ReflectionIndex")
-        self.addControl("glossycoating_uroughness", label="U Roughness")
-        self.addControl("glossycoating_Ka", label="Absorption")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

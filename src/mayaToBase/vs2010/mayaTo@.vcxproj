@@ -311,6 +311,9 @@
     <ClCompile Include="..\src\mt@_common\mt@_renderGlobals.cpp" />
     <ClCompile Include="..\src\mt@_common\mt@_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\materialBase.cpp" />
+    <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
+    <ClCompile Include="..\src\shaders\textureBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -341,6 +344,9 @@
     <ClInclude Include="..\src\mt@_common\mt@_mayaScene.h" />
     <ClInclude Include="..\src\mt@_common\mt@_renderGlobals.h" />
     <ClInclude Include="..\src\mt@_common\mt@_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\shaders\materialBase.h" />
+    <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
+    <ClInclude Include="..\src\shaders\textureBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />

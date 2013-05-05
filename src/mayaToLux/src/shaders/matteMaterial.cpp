@@ -75,15 +75,15 @@ MObject  matte::aPreShadowIntensity;
 MObject  matte::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject matte::matte_Kd;
-MObject matte::matte_sigma;
-MObject matte::compo_visible_material;
+MObject matte::compo_visible_indirect_material;
+MObject matte::Kd;
 MObject matte::compo_override_alpha_value;
 MObject matte::compo_visible_emission;
 MObject matte::compo_override_alpha;
-MObject matte::compo_visible_indirect_material;
+MObject matte::compo_visible_material;
 MObject matte::bumpmap;
 MObject matte::compo_visible_indirect_emission;
+MObject matte::sigma;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -135,15 +135,12 @@ MStatus matte::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	matte_Kd = nAttr.createColor("matte_Kd", "matte_Kd");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( matte_Kd ));
+	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	matte_sigma = nAttr.create("matte_sigma", "matte_sigma",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( matte_sigma ));
-
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+	Kd = nAttr.createColor("Kd", "Kd");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kd ));
 
 	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
@@ -154,8 +151,8 @@ MStatus matte::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
-	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -163,6 +160,9 @@ MStatus matte::initialize()
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	sigma = nAttr.create("sigma", "sigma",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( sigma ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

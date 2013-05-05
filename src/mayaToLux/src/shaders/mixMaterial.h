@@ -45,12 +45,12 @@ protected:
 	static    MObject compo_override_alpha_value;
 	static    MObject compo_visible_emission;
 	static    MObject compo_override_alpha;
-	static    MObject mix_amount;
+	static    MObject amount;
 	static    MObject compo_visible_material;
-	static    MObject mix_namedmaterial2;
-	static    MObject mix_namedmaterial1;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
+	static    MObject namedmaterial2;
+	static    MObject namedmaterial1;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -27,7 +27,11 @@ class AEluxGlass2Template(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("glasss2_dispersion", label="Chromatic Dispersion")
+        self.addControl("architectural", label="Refraction Off")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,7 +39,7 @@ class AEluxGlass2Template(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("glass2_architectural", label="Refraction Off")
-        self.addControl("glasss2_dispersion", label="Chromatic Dispersion")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

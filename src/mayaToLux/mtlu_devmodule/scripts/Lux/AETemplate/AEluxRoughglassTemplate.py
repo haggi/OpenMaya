@@ -27,7 +27,16 @@ class AEluxRoughglassTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("index", label="Refraction Index")
+        self.addControl("vroughness", label="V Roughness")
+        self.addControl("uroughness", label="U Roughness")
+        self.addControl("dispersion", label="Accurate Dispersion")
+        self.addControl("Kr", label="Reflectivity")
+        self.addControl("Kt", label="Transmittion Fraction")
+        self.addControl("cauchyb", label="Cauchy B Coefficient")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,12 +44,7 @@ class AEluxRoughglassTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("roughglass_Kr", label="Reflectivity")
-        self.addControl("roughglass_dispersion", label="Accurate Dispersion")
-        self.addControl("roughglass_Kt", label="Transmittion Fraction")
-        self.addControl("roughglass_uroughness", label="U Roughness")
-        self.addControl("roughglass_cauchyb", label="Cauchy B Coefficient")
-        self.addControl("roughglass_index", label="Refraction Index")
-        self.addControl("roughglass_vroughness", label="V Roughness")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

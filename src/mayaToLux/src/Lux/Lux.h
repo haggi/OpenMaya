@@ -7,6 +7,7 @@
 #include <maya/MObject.h>
 #include <maya/MPointArray.h>
 #include <maya/MMatrix.h>
+#include <maya/MString.h>
 #include <vector>
 #include "lux_api.h"
 
@@ -25,6 +26,24 @@ ParamSet CreateParamSet();
 class mtlu_MayaScene;
 class mtlu_RenderGlobals;
 class mtlu_MayaObject;
+
+
+struct AttrParam
+{
+	enum PTypes{
+		INT = 0,
+		STRING,
+		ENUMINT,
+		ENUMSTRING,
+		FLOAT,
+		COLOR,
+		BOOL
+	};
+	MString paramName;
+	PTypes ptype;
+};
+
+#define AttrParams std::vector<AttrParam>	
 
 class LuxRenderer : public Renderer
 {
@@ -78,6 +97,9 @@ public:
 	void defineEnvironment();
 
 	void defineShaders();
+	void shaderCreator(MObject& mobject);
+
+	//void createParamsFromMayaNode(ParamSet&, MObject& mayaNode, AttrParams params);
 
 	// writing files
 	std::ofstream luxFile;

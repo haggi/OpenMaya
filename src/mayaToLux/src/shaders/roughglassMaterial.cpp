@@ -75,20 +75,20 @@ MObject  roughglass::aPreShadowIntensity;
 MObject  roughglass::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject roughglass::roughglass_Kr;
-MObject roughglass::roughglass_dispersion;
-MObject roughglass::roughglass_Kt;
-MObject roughglass::roughglass_uroughness;
-MObject roughglass::compo_visible_material;
-MObject roughglass::compo_override_alpha_value;
-MObject roughglass::roughglass_cauchyb;
+MObject roughglass::index;
+MObject roughglass::compo_visible_indirect_material;
+MObject roughglass::vroughness;
+MObject roughglass::uroughness;
 MObject roughglass::compo_visible_emission;
 MObject roughglass::compo_override_alpha;
-MObject roughglass::roughglass_index;
-MObject roughglass::compo_visible_indirect_material;
+MObject roughglass::dispersion;
+MObject roughglass::Kr;
+MObject roughglass::compo_visible_material;
+MObject roughglass::Kt;
 MObject roughglass::compo_visible_indirect_emission;
-MObject roughglass::roughglass_vroughness;
+MObject roughglass::cauchyb;
 MObject roughglass::bumpmap;
+MObject roughglass::compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -140,28 +140,17 @@ MStatus roughglass::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	roughglass_Kr = nAttr.createColor("roughglass_Kr", "roughglass_Kr");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( roughglass_Kr ));
+	index = nAttr.create("index", "index",  MFnNumericData::kFloat, 1.5);
+	CHECK_MSTATUS(addAttribute( index ));
 
-	roughglass_dispersion = nAttr.create("roughglass_dispersion", "roughglass_dispersion",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( roughglass_dispersion ));
+	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	roughglass_Kt = nAttr.createColor("roughglass_Kt", "roughglass_Kt");
-	nAttr.setDefault(1.0);
-	CHECK_MSTATUS(addAttribute( roughglass_Kt ));
+	vroughness = nAttr.create("vroughness", "vroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( vroughness ));
 
-	roughglass_uroughness = nAttr.create("roughglass_uroughness", "roughglass_uroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( roughglass_uroughness ));
-
-	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
-
-	roughglass_cauchyb = nAttr.create("roughglass_cauchyb", "roughglass_cauchyb",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( roughglass_cauchyb ));
+	uroughness = nAttr.create("uroughness", "uroughness",  MFnNumericData::kFloat, 0.001);
+	CHECK_MSTATUS(addAttribute( uroughness ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
@@ -169,21 +158,32 @@ MStatus roughglass::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
-	roughglass_index = nAttr.create("roughglass_index", "roughglass_index",  MFnNumericData::kFloat, 1.5);
-	CHECK_MSTATUS(addAttribute( roughglass_index ));
+	dispersion = nAttr.create("dispersion", "dispersion",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( dispersion ));
 
-	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
+	Kr = nAttr.createColor("Kr", "Kr");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kr ));
+
+	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( compo_visible_material ));
+
+	Kt = nAttr.createColor("Kt", "Kt");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( Kt ));
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
-	roughglass_vroughness = nAttr.create("roughglass_vroughness", "roughglass_vroughness",  MFnNumericData::kFloat, 0.001);
-	CHECK_MSTATUS(addAttribute( roughglass_vroughness ));
+	cauchyb = nAttr.create("cauchyb", "cauchyb",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( cauchyb ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( bumpmap ));
+
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

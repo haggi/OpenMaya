@@ -27,7 +27,15 @@ class AEluxShinymetalTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("vroughness", label="V Roughness")
+        self.addControl("uroughness", label="U Roughness")
+        self.addControl("Ks", label="Glossyniess")
+        self.addControl("Kr", label="Specularity")
+        self.addControl("film", label="Coating Thickness")
+        self.addControl("filmindex", label="Film Refraction Index")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,11 +43,7 @@ class AEluxShinymetalTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("shinymetal_vroughness", label="V Roughness")
-        self.addControl("shinymetal_uroughness", label="U Roughness")
-        self.addControl("shinymetal_film", label="Coating Thickness")
-        self.addControl("shinymetal_Ks", label="Glossyniess")
-        self.addControl("shinymetal_Kr", label="Specularity")
-        self.addControl("shinymetal_filmindex", label="Film Refraction Index")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

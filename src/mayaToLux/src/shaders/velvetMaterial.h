@@ -41,18 +41,18 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject p2;
+	static    MObject p3;
 	static    MObject compo_visible_indirect_material;
-	static    MObject velvet_p1;
-	static    MObject velvet_p2;
-	static    MObject velvet_p3;
-	static    MObject velvet_Kd;
-	static    MObject compo_override_alpha;
-	static    MObject compo_visible_emission;
-	static    MObject velvet_thickness;
+	static    MObject Kd;
 	static    MObject compo_visible_material;
+	static    MObject compo_override_alpha_value;
+	static    MObject compo_visible_emission;
+	static    MObject compo_override_alpha;
+	static    MObject thickness;
+	static    MObject p1;
 	static    MObject bumpmap;
 	static    MObject compo_visible_indirect_emission;
-	static    MObject compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

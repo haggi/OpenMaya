@@ -27,7 +27,16 @@ class AEluxClothTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("weft_Kd", label="Opposite Diffuse Reflection")
+        self.addControl("warp_Ks", label="Specular Reflection")
+        self.addControl("repeat_u", label="Number of Lines U")
+        self.addControl("repeat_v", label="Number of Lines V")
+        self.addControl("weft_Ks", label="Opposite Specular Reflection")
+        self.addControl("warp_Kd", label="Diffuse Reflection")
+        self.addControl("presetname", label="Fabric Type")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,11 +44,7 @@ class AEluxClothTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("cloth_repeat_u", label="Number of Lines V")
-        self.addControl("cloth_warp_Ks", label="Specular Reflection")
-        self.addControl("cloth_warp_Kd", label="Diffuse Reflection")
-        self.addControl("cloth_weft_Ks", label="Opposite Specular Reflection")
-        self.addControl("cloth_weft_Kd", label="Opposite Diffuse Reflection")
-        self.addControl("cloth_presetname", label="Fabric Type")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

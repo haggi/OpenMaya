@@ -27,7 +27,11 @@ class AEluxScatterTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("g", label="Scatter Asymetry")
+        self.addControl("Kd", label="Material Color")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,7 +39,7 @@ class AEluxScatterTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("scatter_g", label="Scatter Asymetry")
-        self.addControl("scatter_Kd", label="Material Color")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

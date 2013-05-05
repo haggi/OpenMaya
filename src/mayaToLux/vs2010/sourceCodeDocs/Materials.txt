@@ -9,144 +9,144 @@ compo_override_alpha_value,float,compo_override_alpha_value,0.0
 
 
 #carpaint
-carpaint_name,enum, Carpaint Model, 3, ford f8:polaris silber:opel titan:bmw339:2k acrylack:white:blue:blue matte
-carpaint_Kd,color,Diffuse component, 0.8:0.8:0.8
-carpaint_Ks1, color, Spec Component 1, 0.2:0.2:0.2
-carpaint_Ks2, color, Spec Component 2, 0.2:0.2:0.2
-carpaint_Ks3, color, Spec Component 3, 0.2:0.2:0.2
-carpaint_R1,float,Fresnel constant1, 0.3
-carpaint_R2,float,Fresnel constant2, 0.3
-carpaint_R3,float,Fresnel constant3, 0.3
-carpaint_M1,float,Microfacet roughness 3, 0.2
-carpaint_M2,float,Microfacet roughness 3, 0.2
-carpaint_M3,float,Microfacet roughness 3, 0.2
+name,enum, Carpaint Model, 3, ford f8:polaris silber:opel titan:bmw339:2k acrylack:white:blue:blue matte
+Kd,color,Diffuse component, 0.8:0.8:0.8
+Ks1, color, Spec Component 1, 0.2:0.2:0.2
+Ks2, color, Spec Component 2, 0.2:0.2:0.2
+Ks3, color, Spec Component 3, 0.2:0.2:0.2
+R1,float,Fresnel constant1, 0.3
+R2,float,Fresnel constant2, 0.3
+R3,float,Fresnel constant3, 0.3
+M1,float,Microfacet roughness 3, 0.2
+M2,float,Microfacet roughness 3, 0.2
+M3,float,Microfacet roughness 3, 0.2
 
 #cloth
-cloth_warp_Kd, color, Diffuse Reflection, 0.5
-cloth_warp_Ks, color, Specular Reflection, 0.5
-cloth_weft_Kd, color, Opposite Diffuse Reflection, 0.5
-cloth_weft_Ks, color, Opposite Specular Reflection, 0.5 
-cloth_repeat_u, float, Number of Lines U, 100.0
-cloth_repeat_u, float, Number of Lines V, 100.0
-cloth_presetname, enum, Fabric Type, 1, silk_charmeuse:denim:cotton_twill:wool_gabardine:polyester_lining_cloth:silk_shantung 
+warp_Kd, color, Diffuse Reflection, 0.5
+warp_Ks, color, Specular Reflection, 0.5
+weft_Kd, color, Opposite Diffuse Reflection, 0.5
+weft_Ks, color, Opposite Specular Reflection, 0.5 
+repeat_u, float, Number of Lines U, 100.0
+repeat_v, float, Number of Lines V, 100.0
+presetname, enum, Fabric Type, 1, silk_charmeuse:denim:cotton_twill:wool_gabardine:polyester_lining_cloth:silk_shantung 
 
 #glass
-glass_Kr, color, Reflectivity, 1.0:1.0:1.0
-glass_Kt, color,  Transmission, 1.0:1.0:1.0
-glass_index, float, Refraction Index, 1.5
-glass_cauchyb, float, Cauchy B Coefficient, 0.0
-glass_film, float, Film Thickness, 0.0
-glass_filmindex, float, Film Refraction Index, 1.5
-glass_architectural, bool, Transmission Refraction Off, false 
+Kr, color, Reflectivity, 1.0:1.0:1.0
+Kt, color,  Transmission, 1.0:1.0:1.0
+index, float, Refraction Index, 1.5
+cauchyb, float, Cauchy B Coefficient, 0.0
+film, float, Film Thickness, 0.0
+filmindex, float, Film Refraction Index, 1.5
+architectural, bool, Transmission Refraction Off, false 
 
 #glass2
-glass2_architectural, bool, Refraction Off, false
+architectural, bool, Refraction Off, false
 glasss2_dispersion, bool, Chromatic Dispersion, false 
 
 #glossy
-glossy_Kd, color, Diffuse Reflection, 0.5
-glossy_Ks, color, Specular Reflection, 0.5
-glossy_Ka, color, Absorption, 0.0
-glossy_uroughness, float, U Roughness, 0.1
-glossy_vroughness, float, V Roughness, 0.1
-glossy_d, float, Coating Thickness, 0.0
-glossy_index, float, ReflectionIndex, 0.0
-glossy_multibounce, bool, Velvet Reflection, false 
-glossy_separable, bool, Matte And Glossy, true
-glossy_sigma, float, Sigma, 0.0 
+Kd, color, Diffuse Reflection, 0.5:0.5:0.5
+Ks, color, Specular Reflection, 0.5:0.5:0.5
+Ka, color, Absorption, 0.0:0.0:0.0
+uroughness, float, U Roughness, 0.1
+vroughness, float, V Roughness, 0.1
+d, float, Coating Thickness, 0.0
+index, float, ReflectionIndex, 0.0
+multibounce, bool, Multibounce, false 
+separable, bool, Matte And Glossy, true
+sigma, float, Sigma, 0.0 
 
 #glossycoating
-glossycoating_basematerial, color, Base Material, 1.0:1.0:1.0	
-glossycoating_Ks, color, Specular Reflection, 0.5
-glossycoating_Ka, color, Absorption, 0.0
-glossycoating_uroughness, float, U Roughness, 0.1
-glossycoating_vroughness, float, V Roughness, 0.1
-glossycoating_d, float, Coating Thickness, 0.0
-glossycoating_index, float, ReflectionIndex, 0.0
-glossycoating_multibounce, bool, Velvet Reflection, false 
+basematerial, color, Base Material, 1.0:1.0:1.0	
+Ks, color, Specular Reflection, 0.5
+Ka, color, Absorption, 0.0
+uroughness, float, U Roughness, 0.1
+vroughness, float, V Roughness, 0.1
+d, float, Coating Thickness, 0.0
+index, float, ReflectionIndex, 0.0
+multibounce, bool, Multibounce, false 
 
 #glossytranslucent
-glossytranslucent_Kd, color, Diffuse Reflection, 0.5
-glossytranslucent_Ks, color, Specular Reflection, 0.5
-glossytranslucent_Kt, color, Transmission, 1.0
-glossytranslucent_Ka, color, Absorption, 0.0
-glossytranslucent_uroughness, float, U Roughness, 0.1
-glossytranslucent_vroughness, float, V Roughness, 0.1
-glossytranslucent_d, float, Coating Thickness, 0.0
-glossytranslucent_index, float, ReflectionIndex, 0.0
-glossytranslucent_onesided, bool, Disable backface Coating, true
-glossytranslucent_backface_Ks, color, Backface Specular Reflection, 0.5
-glossytranslucent_backface_Ka, color, Backface Absorption, 0.0
-glossytranslucent_backface_uroughness, float, Backface U Roughness, 0.1
-glossytranslucent_backface_vroughness, float, Backface V Roughness, 0.1
-glossytranslucent_backface_d, float, Backface	Coating Thickness, 0.0
-glossytranslucent_backface_index, float, Backface ReflectionIndex, 0.0
+Kd, color, Diffuse Reflection, 0.5:0.5:0.5
+Ks, color, Specular Reflection, 0.5:0.5:0.5
+Kt, color, Transmission, 1.0:1.0:1.0
+Ka, color, Absorption, 0.0:0.0:0.0
+uroughness, float, U Roughness, 0.1
+vroughness, float, V Roughness, 0.1
+d, float, Coating Thickness, 0.0
+index, float, ReflectionIndex, 0.0
+onesided, bool, Disable backface Coating, true
+backface_Ks, color, Backface Specular Reflection, 0.5
+backface_Ka, color, Backface Absorption, 0.0
+backface_uroughness, float, Backface U Roughness, 0.1
+backface_vroughness, float, Backface V Roughness, 0.1
+backface_d, float, Backface	Coating Thickness, 0.0
+backface_index, float, Backface ReflectionIndex, 0.0
 
 #layered
-layered_namedmaterial1, color, Material 1, 1.0:1.0:1.0
-layered_namedmaterial2, color, Material 2, 1.0:1.0:1.0
-layered_namedmaterial3, color, Material 3, 1.0:1.0:1.0
-layered_namedmaterial4, color, Material 4, 1.0:1.0:1.0
-layered_opacity1, float, Opacity 1, 0.5 
-layered_opacity2, float, Opacity 2, 0.5 
-layered_opacity3, float, Opacity 3, 0.5 
-layered_opacity4, float, Opacity 4, 0.5 
+namedmaterial1, color, Material 1, 1.0:1.0:1.0
+namedmaterial2, color, Material 2, 1.0:1.0:1.0
+namedmaterial3, color, Material 3, 1.0:1.0:1.0
+namedmaterial4, color, Material 4, 1.0:1.0:1.0
+opacity1, float, Opacity 1, 0.5 
+opacity2, float, Opacity 2, 0.5 
+opacity3, float, Opacity 3, 0.5 
+opacity4, float, Opacity 4, 0.5 
 
 #matte
-matte_Kd, color, Diffuse Reflection, 1.0
-matte_sigma, float, Sigma, 0.0
+Kd, color, Diffuse Reflection, 1.0
+sigma, float, Sigma, 0.0
 
 #mattetranslucent
-mattetranslucent_Kr, color, Diffuse Reflection, 1.0
-mattetranslucent_Kt, color, Transmission, 1.0
-mattetranslucent_sigma, float, Sigma, 0.0
-mattetranslucent_energyconserving, bool, Engergy Conserving, false 
+Kr, color, Diffuse Reflection, 1.0
+Kt, color, Transmission, 1.0
+sigma, float, Sigma, 0.0
+energyconserving, bool, Engergy Conserving, false 
 
 #metal
-metal_name, enum, Metal Type, 1, amorphous carbon:silver.gold:copper:aluminium
-metal_uroughness, float, U Roughness, 0.001
-metal_vroughness, float, V Roughness, 0.001
+name, enum, Metal Type, 1, amorphous carbon:silver.gold:copper:aluminium
+uroughness, float, U Roughness, 0.001
+vroughness, float, V Roughness, 0.001
     
 #metal2
-metal2_fresnel, float, 	Fresnel input, 5.0
-metal2_uroughness, float, U Roughness, 0.001
-metal2_vroughness, float, V Roughness, 0.001
+fresnel, float, 	Fresnel input, 5.0
+uroughness, float, U Roughness, 0.001
+vroughness, float, V Roughness, 0.001
 
 #mirror
-mirror_Kr, color, Reflectivity, 1.0
-mirror_film, float, Coating Thickness, 0.0
-mirror_filmindex, float, Refraction Index, 1.5
+Kr, color, Reflectivity, 1.0
+film, float, Coating Thickness, 0.0
+filmindex, float, Refraction Index, 1.5
 
 #mix
-mix_namedmaterial1, color, Material 1, 1.0:1.0:1.0
-mix_namedmaterial2, color, Material 2, 1.0:1.0:1.0
-mix_amount, float, Blend Value, 0.5
+namedmaterial1, color, Material 1, 1.0:1.0:1.0
+namedmaterial2, color, Material 2, 1.0:1.0:1.0
+amount, float, Blend Value, 0.5
 
 #roughglass
-roughglass_Kr, color, Reflectivity, 1.0
-roughglass_Kt, color, Transmittion Fraction, 1.0
-roughglass_uroughness, float, U Roughness, 0.001
-roughglass_vroughness, float, V Roughness, 0.001
-roughglass_index, float, Refraction Index, 1.5
-roughglass_cauchyb, float, Cauchy B Coefficient, 0.0
-roughglass_dispersion, bool, Accurate Dispersion, false 
+Kr, color, Reflectivity, 1.0
+Kt, color, Transmittion Fraction, 1.0
+uroughness, float, U Roughness, 0.001
+vroughness, float, V Roughness, 0.001
+index, float, Refraction Index, 1.5
+cauchyb, float, Cauchy B Coefficient, 0.0
+dispersion, bool, Accurate Dispersion, false 
 
 #shinymetal
-shinymetal_uroughness, float, U Roughness, 0.001
-shinymetal_vroughness, float, V Roughness, 0.001
-shinymetal_Ks, color, Glossyniess, 1.0
-shinymetal_Kr, color, Specularity, 1.0
-shinymetal_film, float, Coating Thickness, 0.0
-shinymetal_filmindex, float, Film Refraction Index, 1.5 
+uroughness, float, U Roughness, 0.001
+vroughness, float, V Roughness, 0.001
+Ks, color, Glossyniess, 1.0
+Kr, color, Specularity, 1.0
+film, float, Coating Thickness, 0.0
+filmindex, float, Film Refraction Index, 1.5 
 
 #scatter
-scatter_Kd, color, Material Color, 1.0:1.0:1.0
-scatter_g, float, Scatter Asymetry, 0.0     
+Kd, color, Material Color, 1.0:1.0:1.0
+g, float, Scatter Asymetry, 0.0     
 
 #velvet
-velvet_Kd, color, Fuzz Color, 1.0:1.0:1.0
-velvet_thickness, float, Fuzz Height, 0.10
-velvet_p1, float, Factor P3,-2.0
-velvet_p2, float, Factor P3,20.0
-velvet_p3, float, Factor P3, 2.0 
+Kd, color, Fuzz Color, 1.0:1.0:1.0
+thickness, float, Fuzz Height, 0.10
+p1, float, Factor P3,-2.0
+p2, float, Factor P3,20.0
+p3, float, Factor P3, 2.0 
 

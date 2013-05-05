@@ -27,7 +27,12 @@ class AEluxMirrorTemplate(BaseTemplate):
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("ShaderSettings" ,collapse=0)
+        self.beginNoOptimize()
         #autoAddBegin
+        self.addControl("Kr", label="Reflectivity")
+        self.addControl("film", label="Coating Thickness")
+        self.addControl("filmindex", label="Refraction Index")
+        self.addSeparator()
         self.addControl("compo_visible_indirect_material", label="compo_visible_indirect_material")
         self.addControl("compo_override_alpha_value", label="compo_override_alpha_value")
         self.addControl("compo_visible_emission", label="compo_visible_emission")
@@ -35,8 +40,7 @@ class AEluxMirrorTemplate(BaseTemplate):
         self.addControl("compo_visible_material", label="Compo Visible Material")
         self.addControl("compo_visible_indirect_emission", label="compo_visible_indirect_emission")
         self.addControl("bumpmap", label="Bump Map")
-        self.addControl("mirror_filmindex", label="Refraction Index")
-        self.addControl("mirror_film", label="Coating Thickness")
-        self.addControl("mirror_Kr", label="Reflectivity")
         #autoAddEnd
+        self.endNoOptimize()
         self.endLayout()
+        

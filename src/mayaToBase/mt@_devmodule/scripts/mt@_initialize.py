@@ -329,14 +329,15 @@ AETemplates directory, the automatic loading will not work. So I replace it with
 """
 
 def loadAETemplates():    
-    aeDir = path.path(__file__).dirname() + "/AETemplates/"
+    rendererName = "@"
+    aeDir = path.path(__file__).dirname() + "/" + rendererName +"/AETemplate/"
     for d in aeDir.listdir("*.py"):
         if d.endswith("Template.py"):
             templateName = d.basename().replace(".py", "")
-            pythonCommand = "import {0}".format(templateName)
+            pythonCommand = "import {1}.AETemplate.{0}".format(templateName, rendererName)
             melCommand = 'python("{0}");'.format(pythonCommand)
+            #log.debug("load aeTemplate: " + templateName + " : " + melCommand)
             pm.mel.eval(melCommand)
-            log.debug("load aeTemplate: " + templateName)
 
 def theRenderer():
     return @Renderer.theRenderer()

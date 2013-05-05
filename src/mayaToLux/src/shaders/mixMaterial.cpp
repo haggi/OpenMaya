@@ -79,12 +79,12 @@ MObject mix::compo_visible_indirect_material;
 MObject mix::compo_override_alpha_value;
 MObject mix::compo_visible_emission;
 MObject mix::compo_override_alpha;
-MObject mix::mix_amount;
+MObject mix::amount;
 MObject mix::compo_visible_material;
-MObject mix::mix_namedmaterial2;
-MObject mix::mix_namedmaterial1;
 MObject mix::bumpmap;
 MObject mix::compo_visible_indirect_emission;
+MObject mix::namedmaterial2;
+MObject mix::namedmaterial1;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -148,19 +148,11 @@ MStatus mix::initialize()
 	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
 
-	mix_amount = nAttr.create("mix_amount", "mix_amount",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( mix_amount ));
+	amount = nAttr.create("amount", "amount",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( amount ));
 
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	mix_namedmaterial2 = nAttr.createColor("mix_namedmaterial2", "mix_namedmaterial2");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( mix_namedmaterial2 ));
-
-	mix_namedmaterial1 = nAttr.createColor("mix_namedmaterial1", "mix_namedmaterial1");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( mix_namedmaterial1 ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -168,6 +160,14 @@ MStatus mix::initialize()
 
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
+
+	namedmaterial2 = nAttr.createColor("namedmaterial2", "namedmaterial2");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial2 ));
+
+	namedmaterial1 = nAttr.createColor("namedmaterial1", "namedmaterial1");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( namedmaterial1 ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

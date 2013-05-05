@@ -75,21 +75,21 @@ MObject  glossycoating::aPreShadowIntensity;
 MObject  glossycoating::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject glossycoating::index;
+MObject glossycoating::Ka;
 MObject glossycoating::compo_visible_indirect_material;
-MObject glossycoating::glossycoating_d;
-MObject glossycoating::glossycoating_basematerial;
-MObject glossycoating::glossycoating_multibounce;
-MObject glossycoating::compo_override_alpha_value;
-MObject glossycoating::glossycoating_vroughness;
-MObject glossycoating::compo_override_alpha;
-MObject glossycoating::glossycoating_Ks;
+MObject glossycoating::multibounce;
+MObject glossycoating::d;
+MObject glossycoating::vroughness;
+MObject glossycoating::uroughness;
 MObject glossycoating::compo_visible_emission;
+MObject glossycoating::compo_override_alpha;
+MObject glossycoating::Ks;
 MObject glossycoating::compo_visible_material;
-MObject glossycoating::glossycoating_index;
 MObject glossycoating::bumpmap;
 MObject glossycoating::compo_visible_indirect_emission;
-MObject glossycoating::glossycoating_uroughness;
-MObject glossycoating::glossycoating_Ka;
+MObject glossycoating::basematerial;
+MObject glossycoating::compo_override_alpha_value;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -141,40 +141,40 @@ MStatus glossycoating::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	index = nAttr.create("index", "index",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( index ));
+
+	Ka = nAttr.createColor("Ka", "Ka");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( Ka ));
+
 	compo_visible_indirect_material = nAttr.create("compo_visible_indirect_material", "compo_visible_indirect_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_material ));
 
-	glossycoating_d = nAttr.create("glossycoating_d", "glossycoating_d",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( glossycoating_d ));
+	multibounce = nAttr.create("multibounce", "multibounce",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( multibounce ));
 
-	glossycoating_basematerial = nAttr.createColor("glossycoating_basematerial", "glossycoating_basematerial");
-	nAttr.setDefault(1.0,1.0,1.0);
-	CHECK_MSTATUS(addAttribute( glossycoating_basematerial ));
+	d = nAttr.create("d", "d",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( d ));
 
-	glossycoating_multibounce = nAttr.create("glossycoating_multibounce", "glossycoating_multibounce",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( glossycoating_multibounce ));
+	vroughness = nAttr.create("vroughness", "vroughness",  MFnNumericData::kFloat, 0.1);
+	CHECK_MSTATUS(addAttribute( vroughness ));
 
-	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
-
-	glossycoating_vroughness = nAttr.create("glossycoating_vroughness", "glossycoating_vroughness",  MFnNumericData::kFloat, 0.1);
-	CHECK_MSTATUS(addAttribute( glossycoating_vroughness ));
-
-	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
-
-	glossycoating_Ks = nAttr.createColor("glossycoating_Ks", "glossycoating_Ks");
-	nAttr.setDefault(0.5);
-	CHECK_MSTATUS(addAttribute( glossycoating_Ks ));
+	uroughness = nAttr.create("uroughness", "uroughness",  MFnNumericData::kFloat, 0.1);
+	CHECK_MSTATUS(addAttribute( uroughness ));
 
 	compo_visible_emission = nAttr.create("compo_visible_emission", "compo_visible_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_emission ));
 
+	compo_override_alpha = nAttr.create("compo_override_alpha", "compo_override_alpha",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha ));
+
+	Ks = nAttr.createColor("Ks", "Ks");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( Ks ));
+
 	compo_visible_material = nAttr.create("compo_visible_material", "compo_visible_material",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_material ));
-
-	glossycoating_index = nAttr.create("glossycoating_index", "glossycoating_index",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( glossycoating_index ));
 
 	bumpmap = nAttr.createColor("bumpmap", "bumpmap");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -183,12 +183,12 @@ MStatus glossycoating::initialize()
 	compo_visible_indirect_emission = nAttr.create("compo_visible_indirect_emission", "compo_visible_indirect_emission",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( compo_visible_indirect_emission ));
 
-	glossycoating_uroughness = nAttr.create("glossycoating_uroughness", "glossycoating_uroughness",  MFnNumericData::kFloat, 0.1);
-	CHECK_MSTATUS(addAttribute( glossycoating_uroughness ));
+	basematerial = nAttr.createColor("basematerial", "basematerial");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( basematerial ));
 
-	glossycoating_Ka = nAttr.createColor("glossycoating_Ka", "glossycoating_Ka");
-	nAttr.setDefault(0.0);
-	CHECK_MSTATUS(addAttribute( glossycoating_Ka ));
+	compo_override_alpha_value = nAttr.create("compo_override_alpha_value", "compo_override_alpha_value",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( compo_override_alpha_value ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 
