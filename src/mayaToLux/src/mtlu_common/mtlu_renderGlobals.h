@@ -18,12 +18,14 @@ public:
 	bool hsOclGpuUse;
 	int hsOclWGroupSize;
 	int sampler;
+	bool noiseaware;
 	int pixelSampler;
 	int numSamples;
 	int maxconsecrejects;
 	float largemutationprob;
 	float mutationrange;
 	bool usevariance;
+	bool usecooldown;
 	int initSamples;
 	int chainLength;
 	float mutationRange;

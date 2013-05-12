@@ -47,7 +47,13 @@ entry['name'] = 'sampler'
 entry['type'] = 'enum'
 entry['displayName'] = 'Sampler'
 entry['default'] = '0'
-entry['addInfo'] = 'random:low discrepancy:metropolis:rrpt'
+entry['addInfo'] = 'random:low discrepancy:metropolis'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'noiseaware'
+entry['type'] = 'bool'
+entry['displayName'] = 'Noise Aware'
+entry['default'] = '0'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'pixelSampler'
@@ -84,6 +90,12 @@ entry = {}
 entry['name'] = 'usevariance'
 entry['type'] = 'bool'
 entry['displayName'] = 'Use Variance'
+entry['default'] = '0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'usecooldown'
+entry['type'] = 'bool'
+entry['displayName'] = 'Use Cooldown'
 entry['default'] = '0'
 tab['entries'].append(entry)
 entry = {}
@@ -333,7 +345,7 @@ entry['name'] = 'surfaceIntegrator'
 entry['type'] = 'enum'
 entry['displayName'] = 'Surface Integrator'
 entry['default'] = '0'
-entry['addInfo'] = 'bidirectional (default):path:exphotonmap:directlighting:distributedpath'
+entry['addInfo'] = 'bidirectional (default):path:exphotonmap:directlighting:igi:distributedpath:sppm'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'lightStrategy'

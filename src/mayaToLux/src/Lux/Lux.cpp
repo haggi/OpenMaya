@@ -3,6 +3,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <maya/MStringArray.h>
+
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
 
@@ -24,7 +26,6 @@ Instance CreateInstance(const std::string name) {
 ParamSet CreateParamSet() {
     return ParamSet(CreateLuxParamSet(), DestroyLuxParamSet);
 }
-
 
 LuxRenderer::LuxRenderer()
 {}
@@ -131,6 +132,102 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 
 }
 
+void LuxRenderer::defineSampling()
+{
+	const char *samplerNames[] = {"random", "lowdiscrepancy", "metropolis"};
+	MStringArray samplers(samplerNames, 3);
+	ParamSet samplerParams = CreateParamSet();
+	samplerParams->AddBool("noiseaware", &this->mtlu_renderGlobals->noiseaware);
+
+	if( (samplers[this->mtlu_renderGlobals->sampler] == "random") || (samplers[this->mtlu_renderGlobals->sampler] == "lowdiscrepancy"))
+	{
+		samplerParams->AddInt("pixelsamples", &this->mtlu_renderGlobals->numSamples);
+		const char *pixelSamplerNames[] = {"hilbert", "linear", "vegas", "lowdiscrepancy", "tile", "random"};
+		samplerParams->AddString("pixelsampler", &pixelSamplerNames[this->mtlu_renderGlobals->pixelSampler]);
+	}
+	if( (samplers[this->mtlu_renderGlobals->sampler] == "metropolis"))
+	{
+		samplerParams->AddInt("maxconsecrejects", &this->mtlu_renderGlobals->maxconsecrejects);
+		samplerParams->AddFloat("largemutationprob", &this->mtlu_renderGlobals->largemutationprob);
+		samplerParams->AddFloat("mutationrange", &this->mtlu_renderGlobals->mutationRange);
+		samplerParams->AddBool("usevariance", &this->mtlu_renderGlobals->usevariance);
+		samplerParams->AddBool("usecooldown", &this->mtlu_renderGlobals->usecooldown);
+	}
+
+	this->lux->sampler(samplerNames[this->mtlu_renderGlobals->sampler], boost::get_pointer(samplerParams));
+}
+
+void LuxRenderer::defineRenderer()
+{
+	const char *rendererNames[] = {"sampler", "hybrid", "sppm"};
+	ParamSet rendererParams = CreateParamSet();
+	this->lux->renderer(rendererNames[this->mtlu_renderGlobals->renderer], boost::get_pointer(rendererParams));
+}
+
+void LuxRenderer::definePixelFilter()
+{
+	const char *filterNames[] = {"box", "triangle", "gaussian", "mitchell", "sinc"};
+	MStringArray filters(filterNames, 5);
+	ParamSet filterParams = CreateParamSet();
+	logger.debug(MString("Define pixel filter: ") + filters[this->mtlu_renderGlobals->pixelfilter]);
+	filterParams->AddFloat("xwidth", &this->mtlu_renderGlobals->filterWidth);
+	filterParams->AddFloat("ywidth", &this->mtlu_renderGlobals->filterHeight);
+	logger.debug(MString("Define pixel filter: ") + filters[this->mtlu_renderGlobals->pixelfilter] + " width: " + this->mtlu_renderGlobals->filterWidth);
+	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "gaussian"))
+	{
+		filterParams->AddFloat("alpha", &this->mtlu_renderGlobals->filterAlpha);
+	}
+	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "mitchell"))
+	{
+		filterParams->AddFloat("B", &this->mtlu_renderGlobals->B);
+		filterParams->AddFloat("C", &this->mtlu_renderGlobals->C);
+		filterParams->AddBool("supersample", &this->mtlu_renderGlobals->mSupersample);
+	}
+	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "sinc"))
+	{
+		filterParams->AddFloat("tau", &this->mtlu_renderGlobals->sincTau);
+	}
+	this->lux->pixelFilter(filterNames[this->mtlu_renderGlobals->pixelfilter], boost::get_pointer(filterParams));
+}
+
+void LuxRenderer::defineSurfaceIntegrator()
+{
+	const char *integratorNames[] = {"bidirectional", "path", "exphotonmap", "directlighting", "igi", "distributedpath", "sppm"}; 
+	MStringArray integrators(integratorNames, 7);
+	ParamSet iParams = CreateParamSet();
+	
+	if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] != "sppm")
+	{
+		const char *lStrategies[]= {"one","all","auto","importance","powerimp","allpowerimp","logpowerimp"};
+		iParams->AddString("lightstrategy", &lStrategies[this->mtlu_renderGlobals->lightStrategy]);
+		iParams->AddInt("shadowraycount", &this->mtlu_renderGlobals->shadowraycount);
+	}
+
+	// Bidirectional - hybrid or sampler only
+	if(this->mtlu_renderGlobals->renderer < 2)
+	{
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "bidirectional")
+		{
+			const char *lStrategies[]= {"one","all","auto","importance","powerimp","allpowerimp","logpowerimp"};
+			const char *ls = lStrategies[this->mtlu_renderGlobals->lightStrategy];
+			// hybrid requires "one"
+			if( this->mtlu_renderGlobals->renderer == 1 )
+				ls = lStrategies[0];
+
+			iParams->AddString("lightpathstrategy", &ls);
+
+		}
+	}
+	// direct - sampler only
+	if(this->mtlu_renderGlobals->renderer == 0)
+	{
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "direct")
+		{}
+	}
+	this->lux->surfaceIntegrator(integratorNames[this->mtlu_renderGlobals->surfaceIntegrator], boost::get_pointer(iParams));
+}
+
+
 void LuxRenderer::render()
 {
 	logger.debug(MString("Render lux."));
@@ -157,6 +254,14 @@ void LuxRenderer::render()
 		this->defineCamera();
 
 		this->defineFilm();
+
+		//this->defineSampling();
+
+		//this->defineSurfaceIntegrator();
+
+		//this->defineRenderer();
+
+		this->definePixelFilter();
 
 		lux->worldBegin();
 

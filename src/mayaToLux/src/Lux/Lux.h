@@ -36,8 +36,11 @@ struct AttrParam
 		ENUMINT,
 		ENUMSTRING,
 		FLOAT,
+		FLOATARRAY,
 		COLOR,
-		BOOL
+		COLORARRAY,
+		BOOL,
+		VECTOR
 	};
 	MString paramName;
 	PTypes ptype;
@@ -71,6 +74,14 @@ public:
 
 	static void getFramebufferThread( void *dummy);
 	static bool isRendering;
+
+	void defineSampling();
+
+	void defineRenderer();
+
+	void definePixelFilter();
+
+	void defineSurfaceIntegrator();
 
 	void defineCamera();
 	

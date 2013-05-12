@@ -59,20 +59,28 @@ class MayaToRenderer(object):
     def getEnumList(self, attr):
         return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
     
-    def addUIElement(self, uiType, attribute, uiLabel):
+    def addUIElement(self, uiType, attribute, uiLabel, callback):
         ui = None
         if uiType == 'bool':
             ui = pm.checkBoxGrp(label=uiLabel)
+            if callback is not None:
+                pm.checkBoxGrp(ui, cc=callback)
         if uiType == 'int':
             ui = pm.intFieldGrp(label=uiLabel, numberOfFields = 1)
         if uiType == 'float':
             ui = pm.floatFieldGrp(label=uiLabel, numberOfFields = 1)
         if uiType == 'enum':
             ui = pm.attrEnumOptionMenuGrp(label = uiLabel, at=attribute, ei = self.getEnumList(attribute)) 
+            # attrEnumOptionGrp has no cc callback, so I create a script job
+            if callback is not None:
+                attribute = pm.Attribute(self.renderGlobalsNodeName + "." + attribute)
+                pm.scriptJob(attributeChange=[attribute, callback], parent=ui)           
         if uiType == 'color':
             ui = pm.attrColorSliderGrp(label=uiLabel, at=attribute)
         if uiType == 'string':
             ui = pm.textFieldGrp(label=uiLabel)
+            if callback is not None:
+                pm.textFieldGrp(ui, cc=callback)
         return ui
     
     def connectUIElement(self, uiElement, attribute):
@@ -89,11 +97,12 @@ class MayaToRenderer(object):
         log.debug("Adding connection for {0}".format(attribute))
         pm.connectControl(uiElement, attribute, index = 2)
     
-    def addRenderGlobalsUIElement(self, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None):
+    def addRenderGlobalsUIElement(self, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None, callback=None):
         
         attribute = pm.Attribute(self.renderGlobalsNodeName + "." + attName)
-        uiElement = self.addUIElement(uiType, attribute, displayName)
+        uiElement = self.addUIElement(uiType, attribute, displayName, callback)
         self.connectUIElement(uiElement, attribute)
+        uiDict[attName] = uiElement
                 
     
     def batchRenderProcedure(self, options):
@@ -335,9 +344,11 @@ global proc updateMayaImageFormatControl()
 
         # this is necessary for < maya2014 because in these versions the mentalray plugin somehow destroys the callback call
         if len(tl) > 0:
-            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", "lux/material", "-asShader", "")
+            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", self.rendererName.lower() + "/material", "-asShader", "")
             #melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
             log.debug("Treelister cmd " + melCmd)
+            pm.mel.eval(melCmd)
+            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", self.rendererName.lower() + "/texture", "-asUtility", "")
             pm.mel.eval(melCmd)
 #        global proc addToRenderNodeTreeLister(
 #            string $renderNodeTreeLister,

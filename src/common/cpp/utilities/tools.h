@@ -55,7 +55,13 @@ bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& other
 
 bool getConnectedPlugs(MString& plugName, MObject& thisObject, MPlug& inPlug, MPlug& outPlug);
 
+bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs);
+
+bool getConnectedOutPlugs(MObject& thisObject, MPlugArray& outPlugs);
+
 void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList);
+
+bool hasPlug(MObject& thisObject, MString& plugName);
 
 MString getObjectName(MObject& mobject);
 

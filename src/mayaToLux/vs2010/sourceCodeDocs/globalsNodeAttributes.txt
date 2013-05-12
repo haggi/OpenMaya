@@ -7,13 +7,15 @@ hsOclGpuUse, bool, OCL Gpu Use, 1
 hsOclWGroupSize, int, OCL WorkgroupSize, 0
 
 #frame Sampler
-sampler, enum, Sampler, 0, random:low discrepancy:metropolis:rrpt
+sampler, enum, Sampler, 0, random:low discrepancy:metropolis
+noiseaware,bool, Noise Aware, 0 
 pixelSampler, enum, Pixel Sampler, 2, hilbert:linear:vegas:lowdiscrepancy:tile:random
 numSamples, int, Samples, 4
 maxconsecrejects, int, Max Consec Rejects, 512
 largemutationprob, float, Large Mutation Probability, 0.4
 mutationrange, float, Mutation Range, 0.1
 usevariance, bool, Use Variance, 0
+usecooldown, bool, Use Cooldown, 0
 initSamples, int, Init Samples, 100000
 chainLength, int, Chain Length, 2000
 mutationRange, float, Mutation Range, 0.1
@@ -65,7 +67,7 @@ treetype, enum, Tree Type, 0, binary:quadtree:octree
 costsamples, int, Cost Samples, 0
 
 #surface integrator
-surfaceIntegrator, enum, Surface Integrator, 0, bidirectional (default):path:exphotonmap:directlighting:distributedpath
+surfaceIntegrator, enum, Surface Integrator, 0, bidirectional (default):path:exphotonmap:directlighting:igi:distributedpath:sppm
 lightStrategy, enum, Light Strategy, 2, one:all:auto:importance:powerimp:allpowerimp:logpowerimp
 shadowraycount, int, Shadow Rays, 1
 

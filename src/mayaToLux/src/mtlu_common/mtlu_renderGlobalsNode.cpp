@@ -16,12 +16,14 @@ MObject MayaToLuxGlobals::hsOclPlatformIndex;
 MObject MayaToLuxGlobals::hsOclGpuUse;
 MObject MayaToLuxGlobals::hsOclWGroupSize;
 MObject MayaToLuxGlobals::sampler;
+MObject MayaToLuxGlobals::noiseaware;
 MObject MayaToLuxGlobals::pixelSampler;
 MObject MayaToLuxGlobals::numSamples;
 MObject MayaToLuxGlobals::maxconsecrejects;
 MObject MayaToLuxGlobals::largemutationprob;
 MObject MayaToLuxGlobals::mutationrange;
 MObject MayaToLuxGlobals::usevariance;
+MObject MayaToLuxGlobals::usecooldown;
 MObject MayaToLuxGlobals::initSamples;
 MObject MayaToLuxGlobals::chainLength;
 MObject MayaToLuxGlobals::mutationRange;
@@ -135,8 +137,10 @@ MStatus	MayaToLuxGlobals::initialize()
 	stat = eAttr.addField( "random", 0 );
 	stat = eAttr.addField( "low discrepancy", 1 );
 	stat = eAttr.addField( "metropolis", 2 );
-	stat = eAttr.addField( "rrpt", 3 );
 	CHECK_MSTATUS(addAttribute( sampler ));
+
+	noiseaware = nAttr.create("noiseaware", "noiseaware",  MFnNumericData::kBoolean, 0);
+	CHECK_MSTATUS(addAttribute( noiseaware ));
 
 	pixelSampler = eAttr.create("pixelSampler", "pixelSampler", 2, &stat);
 	stat = eAttr.addField( "hilbert", 0 );
@@ -162,6 +166,9 @@ MStatus	MayaToLuxGlobals::initialize()
 	usevariance = nAttr.create("usevariance", "usevariance",  MFnNumericData::kBoolean, 0);
 	CHECK_MSTATUS(addAttribute( usevariance ));
 
+	usecooldown = nAttr.create("usecooldown", "usecooldown",  MFnNumericData::kBoolean, 0);
+	CHECK_MSTATUS(addAttribute( usecooldown ));
+
 	initSamples = nAttr.create("initSamples", "initSamples",  MFnNumericData::kInt, 100000);
 	CHECK_MSTATUS(addAttribute( initSamples ));
 
@@ -180,7 +187,7 @@ MStatus	MayaToLuxGlobals::initialize()
 	physicalSunConnection = mAttr.create("physicalSunConnection", "physicalSunConnection");
 	CHECK_MSTATUS(addAttribute( physicalSunConnection ));
 
-	sunGain = nAttr.create("sunGain", "sunGain",  MFnNumericData::kFloat, .005);
+	sunGain = nAttr.create("sunGain", "sunGain",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( sunGain ));
 
 	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.0);
@@ -204,7 +211,7 @@ MStatus	MayaToLuxGlobals::initialize()
 	haltspp = nAttr.create("haltspp", "haltspp",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( haltspp ));
 
-	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 0);
+	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 20);
 	CHECK_MSTATUS(addAttribute( halttime ));
 
 	uiupdateinterval = nAttr.create("uiupdateinterval", "uiupdateinterval",  MFnNumericData::kFloat, 2.0);
@@ -289,7 +296,9 @@ MStatus	MayaToLuxGlobals::initialize()
 	stat = eAttr.addField( "path", 1 );
 	stat = eAttr.addField( "exphotonmap", 2 );
 	stat = eAttr.addField( "directlighting", 3 );
-	stat = eAttr.addField( "distributedpath", 4 );
+	stat = eAttr.addField( "igi", 4 );
+	stat = eAttr.addField( "distributedpath", 5 );
+	stat = eAttr.addField( "sppm", 6 );
 	CHECK_MSTATUS(addAttribute( surfaceIntegrator ));
 
 	lightStrategy = eAttr.create("lightStrategy", "lightStrategy", 2, &stat);

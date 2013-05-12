@@ -1,5 +1,6 @@
 #include "Lux.h"
 #include "LuxShaderInclude.h"
+#include "LuxTextureInclude.h"
 
 #include <maya/MFnDependencyNode.h>
 #include <maya/MColor.h>
@@ -14,27 +15,6 @@
 //#include "utilities/logging.h"
 //static Logging logger;
 
-
-class CheckerTexture : public LuxTexture
-{
-public:
-	CheckerTexture(MObject mObject, Instance l) : LuxTexture(mObject, l)
-	{
-		AttrParam p;
-		p.paramName = "dimension";
-		//this->paramNames.push_back("dimension");
-		//this->paramNames.push_back("tex1");
-		//this->paramNames.push_back("tex2");
-		//this->paramNames.push_back("aamode");
-	}
-
-	virtual void defineParams()
-	{}
-
-	virtual void defineShader()
-	{}
-
-};
 
 //
 //	Here we define named textures, named materials derived from the hypershade.
@@ -180,6 +160,197 @@ void LuxRenderer::shaderCreator(MObject& mobject)
 		m.defineShader();
 		return;
 	}
+
+	// textures
+
+	if(typeName == "luxBlackbody")
+	{
+		BlackbodyTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxConstant")
+	{
+		ConstantTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBlender_distortednoise")
+	{
+		Blender_distortednoiseTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxFresnel")
+	{
+		FresnelTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxGaussian")
+	{
+		GaussianTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBlender_marble")
+	{
+		Blender_marbleTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxWindy")
+	{
+		WindyTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxColordepth")
+	{
+		ColordepthTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxMediumclear")
+	{
+		MediumclearTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxFresnelcolor")
+	{
+		FresnelcolorTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxMediumhomogenus")
+	{
+		MediumhomogenusTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxHarlequin")
+	{
+		HarlequinTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxAdd")
+	{
+		AddTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxFbm")
+	{
+		FbmTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBilerp")
+	{
+		BilerpTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBrick")
+	{
+		BrickTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxTabulateddata")
+	{
+		TabulateddataTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBlender_musgrave")
+	{
+		Blender_musgraveTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBand")
+	{
+		BandTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBlender_wood")
+	{
+		Blender_woodTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxUv")
+	{
+		UvTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxBlender_clouds")
+	{
+		Blender_cloudsTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxWrinkled")
+	{
+		WrinkledTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	if(typeName == "luxMarble")
+	{
+		MarbleTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	
+	// maya shaders
+	if(typeName == "lambert")
+	{
+		LambertMaterial m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+	
+	// maya textures
+
+	if(typeName == "file")
+	{
+		MayaFileTexture m(mobject, lux);
+		m.defineParams();
+		m.defineShader();
+		return;
+	}
+
 }
 
 void LuxRenderer::defineShaders()

@@ -264,6 +264,16 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 	int nsubdivlevels = 0;
 	getInt(MString("mtlu_mesh_subdivlevel"), meshFn, nsubdivlevels);
 
+	// a displacment map needs its own texture defintion
+	MString displacementTextureName = "";
+	if(displacementmap.length() > 0)
+	{
+		ParamSet dmParams = CreateParamSet();
+		dmParams->AddString("filename", &displacemap);
+		displacementTextureName = meshFn.name() + "_displacementMap";
+		this->lux->texture(displacementTextureName.asChar(), "float", "imagemap", boost::get_pointer(dmParams));
+	}
+
 	ParamSet triParams = CreateParamSet();
 	int numPointValues = numTriangles * 3;
 	int numUvValues = numTriangles * 3 * 2;
@@ -277,9 +287,13 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 		triParams->AddInt("nsubdivlevels", &nsubdivlevels, 1);
 	triParams->AddBool("generatetangents",  &generatetangents, 1);
 	triParams->AddString("subdivscheme", &subdalgo , 1);
-	triParams->AddFloat("dmoffset",  &dmoffset, 1);
-	triParams->AddFloat("dmscale",  &dmscale, 1);
-	triParams->AddString("displacementmap", &displacemap , 1);
+	if(displacementmap.length() > 0)
+	{
+		triParams->AddFloat("dmoffset",  &dmoffset, 1);
+		triParams->AddFloat("dmscale",  &dmscale, 1);
+		const char *dmft = displacementTextureName.asChar();
+		triParams->AddString("displacementmap", &dmft);
+	}
 	triParams->AddBool("dmnormalsmooth",  &dmnormalsmooth, 1);
 	triParams->AddBool("dmnormalsplit",  &dmnormalsplit, 1);
 	triParams->AddBool("dmsharpboundary",  &dmsharpboundary, 1);

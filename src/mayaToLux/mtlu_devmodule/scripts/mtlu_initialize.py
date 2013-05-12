@@ -93,12 +93,14 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'halttime', uiType = 'int', displayName = 'Halt Time (sec)', default='0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'uiupdateinterval', uiType = 'int', displayName = 'Ui Update Interval (sec)', default='2', uiDict=uiDict)
                         pm.separator()
-                        ui = pm.checkBoxGrp(label="Motionblur:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index=2)
-                        ui = pm.checkBoxGrp(label="Depth Of Field:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
+                        self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motionblur:', default=False, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth of Field:', default=False, uiDict=uiDict)
+#                        ui = pm.checkBoxGrp(label="Motionblur:", value1=False)
+#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index=2)
+#                        ui = pm.checkBoxGrp(label="Depth Of Field:", value1=False)
+#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'renderer', uiType = 'enum', displayName = 'Renderer', default='0', data='sampler:hybridsampler:hybridsppm', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'renderer', uiType = 'enum', displayName = 'Renderer', default='0', data='sampler:hybridsampler:hybridsppm', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'hsConfigFile', uiType = 'string', displayName = 'HSConfig', default='""', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsOclPlatformIndex', uiType = 'int', displayName = 'OCL Platform Index', default='0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsOclGpuUse', uiType = 'bool', displayName = 'OCL Gpu Use', default='1', uiDict=uiDict)
@@ -107,16 +109,18 @@ class LuxRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label='Sampler', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                 
-                        self.addRenderGlobalsUIElement(attName = 'sampler', uiType = 'enum', displayName = 'Sampler', default='0', data='random:low discrepancy:metropolis:rrpt', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pixelSampler', uiType = 'enum', displayName = 'Pixel Sampler', default='2', data='hilbert:linear:vegas:lowdiscrepancy:tile:random', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sampler', uiType = 'enum', displayName = 'Sampler', default='0', data='random:low discrepancy:metropolis:rrpt', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'pixelSampler', uiType = 'enum', displayName = 'Pixel Sampler', default='2', data='hilbert:linear:vegas:lowdiscrepancy:tile:random', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'numSamples', uiType = 'int', displayName = 'Samples', default='4', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'noiseaware', uiType = 'bool', displayName = 'Noise Aware', default=False, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'maxconsecrejects', uiType = 'int', displayName = 'Max Consec Rejects', default='512', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'largemutationprob', uiType = 'float', displayName = 'Large Mutation Probability', default='0.4', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'mutationrange', uiType = 'float', displayName = 'Mutation Range', default='0.1', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'usevariance', uiType = 'bool', displayName = 'Use Variance', default='0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'initSamples', uiType = 'int', displayName = 'Init Samples', default='100000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'chainLength', uiType = 'int', displayName = 'Chain Length', default='2000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'mutationRange', uiType = 'float', displayName = 'Mutation Range', default='0.1', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'usecooldown', uiType = 'bool', displayName = 'Use Cooldown', default='0', uiDict=uiDict)
+                        #self.addRenderGlobalsUIElement(attName = 'initSamples', uiType = 'int', displayName = 'Init Samples', default='100000', uiDict=uiDict)
+                        #self.addRenderGlobalsUIElement(attName = 'chainLength', uiType = 'int', displayName = 'Chain Length', default='2000', uiDict=uiDict)
+                        #self.addRenderGlobalsUIElement(attName = 'mutationRange', uiType = 'float', displayName = 'Mutation Range', default='0.1', uiDict=uiDict)
                 
                 with pm.frameLayout(label='image', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
@@ -124,7 +128,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'imageFormat', uiType = 'enum', displayName = 'Image Format', default='1', data='Exr:Png:Tga', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'premultiplyAlpha', uiType = 'bool', displayName = 'Premultiply Alpha', default='true', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'pixelfilter', uiType = 'enum', displayName = 'Pixel Filter', default='3', data='box:trianlge:gauss:mitchell:sinc', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'pixelfilter', uiType = 'enum', displayName = 'Pixel Filter', default='3', data='box:trianlge:gauss:mitchell:sinc', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'filterWidth', uiType = 'float', displayName = 'Width', default='2.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'filterHeight', uiType = 'float', displayName = 'Height', default='2.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'filterAlpha', uiType = 'float', displayName = 'Alpha', default='2.0', uiDict=uiDict)
@@ -136,7 +140,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label='accelerator', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                 
-                        self.addRenderGlobalsUIElement(attName = 'accelerator', uiType = 'enum', displayName = 'Accelerator', default='0', data='kdtree:qbvh:grid (not thread-safe):unsafekdtree (not thread-safe):bvh (not thread-safe):none', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'accelerator', uiType = 'enum', displayName = 'Accelerator', default='0', data='kdtree:qbvh:grid (not thread-safe):unsafekdtree (not thread-safe):bvh (not thread-safe):none', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'kdIntersectcost', uiType = 'int', displayName = 'IntersectorCost', default='80', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'kdTraversalcost', uiType = 'int', displayName = 'TraversalCost', default='1', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'kdEmptybonus', uiType = 'float', displayName = 'Empty Bonus', default='0.5', uiDict=uiDict)
@@ -151,9 +155,11 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'treetype', uiType = 'enum', displayName = 'Tree Type', default='0', data='binary:quadtree:octree', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'costsamples', uiType = 'int', displayName = 'Cost Samples', default='0', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'surfaceIntegrator', uiType = 'enum', displayName = 'Surface Integrator', default='0', data='bidirectional (default):path:exphotonmap:directlighting:distributedpath', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'lightStrategy', uiType = 'enum', displayName = 'Light Strategy', default='2', data='one:all:auto:importance:powerimp:allpowerimp:logpowerimp', uiDict=uiDict)
+
+                with pm.frameLayout(label='surface integrator', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'surfaceIntegrator', uiType = 'enum', displayName = 'Surface Integrator', default='0', data='bidirectional (default):path:exphotonmap:directlighting:distributedpath', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'lightStrategy', uiType = 'enum', displayName = 'Light Strategy', default='2', data='one:all:auto:importance:powerimp:allpowerimp:logpowerimp', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'shadowraycount', uiType = 'int', displayName = 'Shadow Rays', default='1', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'eyedepth', uiType = 'int', displayName = 'Eye Depth', default='8', uiDict=uiDict)
@@ -162,12 +168,12 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'lightrrthreshold', uiType = 'float', displayName = 'Light RR Thresh', default='0.0', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'pathMaxdepth', uiType = 'int', displayName = 'Max Depth', default='16', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'rrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'rrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict,callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'rrcontinueprob', uiType = 'float', displayName = 'RR Continue', default='.65', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'dlightMaxdepth', uiType = 'int', displayName = 'Max Depth', default='5', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'phRenderingmode', uiType = 'enum', displayName = 'Rendering Mode', default='0', data='directlighting:path', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phRenderingmode', uiType = 'enum', displayName = 'Rendering Mode', default='0', data='directlighting:path', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'phCausticphotons', uiType = 'int', displayName = 'Caustic Photons', default='20000', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phIndirectphotons', uiType = 'int', displayName = 'Indirect Photons', default='200000', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phDirectphotons', uiType = 'int', displayName = 'Direct Photons', default='200000', uiDict=uiDict)
@@ -179,7 +185,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'phFinalgather', uiType = 'bool', displayName = 'Use Direct Lighing', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phFinalgathersamples', uiType = 'int', displayName = 'Final Gather Samples', default='32', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phGatherangle', uiType = 'float', displayName = 'Gather Angle', default='10.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phRrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phRrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'phRrcontinueprob', uiType = 'float', displayName = 'Cont Prob RR', default='0.65', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phDistancethreshold', uiType = 'float', displayName = 'Dist Thresold', default='1.25', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phPhotonmapsfile', uiType = 'string', displayName = 'Photon File', default='""', uiDict=uiDict)
@@ -193,10 +199,55 @@ class LuxRenderer(Renderer.MayaToRenderer):
 
     def LuxRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
-        self.updateEnvironment()
+        #self.updateEnvironment()
         log.debug("LuxRendererUpdateTab()")
-        pass
+        
+        if not self.rendererTabUiDict.has_key('common'):
+            return
+        uiDict = self.rendererTabUiDict['common']
+        
+        defaultOn = ['haltspp','halttime', 'doMotionBlur', 'doDof','uiupdateinterval','renderer', 'sampler', 'imageFormat', 'premultiplyAlpha', 'noiseaware', 'pixelfilter', 'surfaceIntegrator', 'shadowraycount', 'lightStrategy']
+        
+        for key, val in uiDict.iteritems():
+            val.setEnable(False)
 
+        for key, val in uiDict.iteritems():
+            if key in defaultOn:
+                val.setEnable(True)
+
+        sampler = self.renderGlobalsNode.sampler.get()
+        if sampler in [0,1]:
+            uiDict['numSamples'].setEnable(True)
+            uiDict['pixelSampler'].setEnable(True)
+
+        # metropolis
+        if sampler == 2:            
+            uiDict['maxconsecrejects'].setEnable(True)
+            uiDict['largemutationprob'].setEnable(True)
+            uiDict['mutationrange'].setEnable(True)
+            uiDict['usevariance'].setEnable(True)
+            uiDict['usecooldown'].setEnable(True)
+
+        renderer = self.renderGlobalsNode.renderer.get()
+        if renderer == 2:
+            uiDict['hsConfigFile'].setEnable(True)
+            uiDict['hsOclPlatformIndex'].setEnable(True)
+            uiDict['hsOclGpuUse'].setEnable(True)
+            uiDict['hsOclWGroupSize'].setEnable(True)
+            
+        pixelfilter = self.renderGlobalsNode.pixelfilter.get()
+        uiDict['filterWidth'].setEnable(True)
+        uiDict['filterHeight'].setEnable(True)
+        if pixelfilter == 2:
+            uiDict['filterAlpha'].setEnable(True)
+        if pixelfilter == 3:
+            uiDict['B'].setEnable(True)
+            uiDict['C'].setEnable(True)
+            uiDict['mSupersample'].setEnable(True)
+        if pixelfilter == 4:
+            uiDict['sincTau'].setEnable(True)
+                        
+            
     def LuxEnvironmentCreateTab(self, dummy = None):
         log.debug("LuxEnvironmentCreateTab()")
         self.createGlobalsNode()
@@ -314,8 +365,8 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_generatetangents", attributeType="bool", defaultValue = False)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_subAlgo", attributeType="enum", enumName = "loop:microdisplacement")
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_displacementMap", dataType="string", usedAsFilename=True)
-        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmscale", attributeType="float", default=0.1)
-        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmoffset", attributeType="float", default=0.0)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmscale", attributeType="float", defaultValue=0.1)
+        pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmoffset", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmnormalsmooth", attributeType="bool", defaultValue = True)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmnormalsplit", attributeType="bool", defaultValue = False)
         pm.addExtension(nodeType="mesh", longName="mtlu_mesh_dmsharpboundary", attributeType="bool", defaultValue = False)
@@ -421,7 +472,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
             self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
 
         #craete optimized exr textures
-        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
+        #optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
 
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()

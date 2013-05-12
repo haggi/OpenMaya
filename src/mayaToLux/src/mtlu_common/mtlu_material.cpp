@@ -43,6 +43,32 @@ bool  mtlu_Material::shadingNodeSupported(MObject& snode)
 	supportedCustomNodes.append("luxScatter");
 	supportedCustomNodes.append("luxVelvet");
 
+	supportedCustomNodes.append("luxBlackbody");
+	supportedCustomNodes.append("luxConstant");
+	supportedCustomNodes.append("luxBlender_distortednoise");
+	supportedCustomNodes.append("luxFresnel");
+	supportedCustomNodes.append("luxGaussian");
+	supportedCustomNodes.append("luxBlender_marble");
+	supportedCustomNodes.append("luxWindy");
+	supportedCustomNodes.append("luxColordepth");
+	supportedCustomNodes.append("luxMediumclear");
+	supportedCustomNodes.append("luxFresnelcolor");
+	supportedCustomNodes.append("luxMediumhomogenus");
+	supportedCustomNodes.append("luxHarlequin");
+	supportedCustomNodes.append("luxAdd");
+	supportedCustomNodes.append("luxFbm");
+	supportedCustomNodes.append("luxBilerp");
+	supportedCustomNodes.append("luxBrick");
+	supportedCustomNodes.append("luxTabulateddata");
+	supportedCustomNodes.append("luxBlender_musgrave");
+	supportedCustomNodes.append("luxDots");
+	supportedCustomNodes.append("luxBand");
+	supportedCustomNodes.append("luxBlender_wood");
+	supportedCustomNodes.append("luxUv");
+	supportedCustomNodes.append("luxBlender_clouds");
+	supportedCustomNodes.append("luxWrinkled");
+	supportedCustomNodes.append("luxMarble");
+
 	MFnDependencyNode depFn(snode);
 	MString typeName = depFn.typeName();
 	

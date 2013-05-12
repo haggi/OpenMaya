@@ -13,6 +13,8 @@ WireframeShader:	0x0011CF48
 
 Lux:
 RenderGlobals:		0x0011CF49
+Lux Shaders 			0x0011CF4D - 0x0011CF5F
+Lux Txtures 			0x0011CF60 - 0x0011CF79
 
 KRay:
 RenderGlobals:		0x0011CF4A

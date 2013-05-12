@@ -537,7 +537,7 @@ def shaderCreator(renderer, shortCut):
     #fillNodes(attrDict)
     #pluginLoaders(attrDict, renderer)    
     #pyRGCreator(pyGlobals, attArray)
-    aeTemplateCreator(attrDict, renderer, shortCut)
+    #aeTemplateCreator(attrDict, renderer, shortCut)
     #attrIncludeCreator(attrDict, renderer, shortCut)
     
 if __name__ == "__main__":

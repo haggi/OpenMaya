@@ -314,6 +314,47 @@ bool getConnectedPlugs(MString& plugName, MObject& thisObject, MPlug& inPlug, MP
 	return true;
 }
 
+bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs)
+{
+	MStatus stat;
+	bool result = false;
+	MFnDependencyNode depFn(thisObject, &stat);	if( stat != MStatus::kSuccess) return result;
+	MPlugArray pa;
+	depFn.getConnections(pa);
+	for( uint i = 0; i < pa.length(); i++)
+		if( pa[i].isDestination() )
+			inPlugs.append(pa[i]);
+
+	return true;
+}
+
+bool getConnectedOutPlugs(MObject& thisObject, MPlugArray& outPlugs)
+{
+	MStatus stat;
+	bool result = false;
+	MFnDependencyNode depFn(thisObject, &stat);	if( stat != MStatus::kSuccess) return result;
+	MPlugArray pa;
+	depFn.getConnections(pa);
+	for( uint i = 0; i < pa.length(); i++)
+		if( pa[i].isSource() )
+			outPlugs.append(pa[i]);
+
+	return true;
+}
+
+bool hasPlug(MObject& thisObject, MString& plugName)
+{
+	MStatus stat;
+	MFnDependencyNode depFn(thisObject, &stat);	if( stat != MStatus::kSuccess) return false;
+	MPlug plug = depFn.findPlug(plugName, &stat);	
+	if( stat != MStatus::kSuccess) 
+		return false;
+	else
+		return true;
+	return false;
+}
+
+
 bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& otherSidePlugName)
 {
 	MStatus stat;

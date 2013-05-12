@@ -83,6 +83,11 @@ class AELuxNodeTemplate(BaseTemplate):
             self.addControl("mtlu_mesh_generatetangents", label="Generate Tangents")            
             self.endLayout()
             
+
+        if self.thisNode.type() == "file":
+            log.debug("AELuxNodeTemplate:build file AE")            
+            self.beginLayout("Lux" ,collapse=1)
+            self.endLayout()
                 
     def buildBody(self, nodeName):
         self.buildLuxTemplates(nodeName)

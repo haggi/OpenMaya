@@ -78,6 +78,9 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getEnum(MString("sampler"), LuxGlobals, this->sampler))
 			throw("problem reading luxGlobals.sampler");
 
+		if(!getBool(MString("noiseaware"), LuxGlobals, this->noiseaware))
+			throw("problem reading luxGlobals.noiseaware");
+
 		if(!getEnum(MString("pixelSampler"), LuxGlobals, this->pixelSampler))
 			throw("problem reading luxGlobals.pixelSampler");
 
@@ -95,6 +98,9 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 
 		if(!getBool(MString("usevariance"), LuxGlobals, this->usevariance))
 			throw("problem reading luxGlobals.usevariance");
+
+		if(!getBool(MString("usecooldown"), LuxGlobals, this->usecooldown))
+			throw("problem reading luxGlobals.usecooldown");
 
 		if(!getInt(MString("initSamples"), LuxGlobals, this->initSamples))
 			throw("problem reading luxGlobals.initSamples");

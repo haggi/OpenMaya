@@ -1,5 +1,260 @@
-#checkerboard
-dimension, int, Dimension, 2
-tex1, float, White Checks, 1
-tex2, float, Black Checks, 0
-aamode, enum, Antialias Mode, 0, closedform:supersample:none 
+#add
+out,  float:color
+tex1, color, Color A, 0.0
+tex2, color, Color B, 0.0 
+
+#band
+out,  float:color:fresnel
+tex, colorArray, Colors, 0.0
+offsets, floatArray, Weights, 0.0
+amount, float, Amount, 0
+
+#bilerp
+out,  float:color:fresnel
+mapping, enum, Mapping, 0, uv:spherical:cylindrical:planar
+uscale, float, UScale, 1.0
+vscale, float, VScale, 1.0
+udelta, float, UDelta, 1.0
+vdelta, float, VOffset, 1.0
+v1, vector, Plane V0, 1:0:0
+v2, vector, Plane V1, 0:1:0
+v00, color, Value 0, 0
+v10, color, Value 1, 0
+v01, color, Value 2, 0
+v11, color, Value 3, 0
+
+#blackbody
+out,  color
+temperature, color, Temperature in Kelvin, 6500.0
+
+#brick 
+out,  float:color
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+brickbond, enum, Brick pattern, 0, stacked:flemish:english:herringbone:basket:chain link
+brickwidth, float, Brick Width, 0.3
+brickheight, float, Brick Height, 0.1
+brickdepth, float, Brick Depth, 0.15
+mortarsize, float, Mortar Size, 0.01
+brickbevel, float, Brick Bevel, 0.0
+brickrun, float, Linear Offset, 0.75
+bricktex, color, Brick face Color, 1.0
+brickmodtex, float, Brick Face Modulation, 1.0
+motartex, color, Mortar Color, 0.2 
+
+//#checkerboard
+//out,  float
+//dimension, int, Dimension, 2
+//tex1, float, White Checks, 1
+//tex2, float, Black Checks, 0
+//aamode, enum, Antialias Mode, 0, closedform:supersample:none 
+
+#colordepth
+out,  color
+Kt, color, Transmitted color, 0.0
+depth, float, Depth (m), 1.0 
+
+#constant
+out,  float:color:fresnel
+color, color, Color, 1.0
+
+#dots
+out,  float
+mapping, enum, Mapping, 0, uv:spherical:cylindrical:planar
+uscale, float, UScale, 1.0
+vscale, float, VScale, 1.0
+udelta, float, UDelta, 1.0
+vdelta, float, VOffset, 1.0
+v1, vector, Plane V0, 1:0:0
+v2, vector, Plane V1, 0:1:0
+inside, color, Dot Color, 1.0
+outside, color, BG Color, 0.0
+
+#fbm
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+octaves, int, Octaves, 8
+roughness, float, Bumpiness, 0.5 
+
+#fresnel 
+out,  fresnel
+filename, string, NK File, "" 	
+name, enum, Preset, 0, aluminium:amorphous carbon:silver:gold:copper
+
+#fresnelcolor
+out,  fresnel
+Kr, color, Reflected Color, 0.5 
+
+#gaussian
+out,  color
+energy,float, Spectrum Energy,1.0
+wavelength,float, Frequency at the peak, 550.0
+width,float, Width of the curve (in nm), 50.0 
+
+//#imagemap - maya file node
+//out,  float:color
+//filename,string, Path to the image to use. 	Required. No default.
+//wrap,string 	How to wrap the texture using "repeat", "black" (black beyond texture) or "clamp" (clamps to border color) 	Required. No default.
+//filtertype,string 	one of: "bilinear", "mipmap_trilinear", "mipmap_ewa", "nearest". 	"bilinear"
+//maxanisotropy,float 	The eccentricity of the ellipse used in the EWA algorithm 	8
+//trilinear,bool 	Toggle trilinear filtering on from the default (better but slower) EWA algorithm. 	false
+//channel,string 	one of: "mean", "red", "green", "blue","alpha", "colored_mean". 	"mean"
+//gamma,float 	Input gamma value to use for reverse gamma correction 	2.2
+//gain,float 	Scaling factor for the image 	1.0 
+
+#harlequin
+out,  color
+
+#marble
+out,  color
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+octaves,int, Octaves, 8
+roughness,float, Bumpiness, 0.5
+scale,float, Noise Scaling, 1
+variation,float, Perturbation Magnitude, 0.2 
+
+//#mix - maya blend colors
+//tex1/tex2 	color/float/fresnel texture 	The two textures (of the same type) to mix with the "mix" texture. 	0 and 1 respectively
+//amount 	float texture 	The degree of mix between the two textures while linearly interpolating between them. 	0.5 
+
+//#normalmap - maya bump node
+//normalmap::filename 	string 	Path to the image to use. 	Required. No default.
+//normalmap::wrap 	string 	How to wrap the texture using "repeat", "black" (black beyond texture) or "clamp" (clamps to border color) 	Required. No default.
+//normalmap::filtertype 	string 	one of: "bilinear", "mipmap_trilinear", "mipmap_ewa", "nearest". 	"bilinear"
+//normalmap::maxanisotropy 	float 	The eccentricity of the ellipse used in the EWA algorithm 	8
+//normalmap::trilinear 	bool 	Toggle trilinear filtering on from the default (better but slower) EWA algorithm. 	false
+//normalmap::channel 	string 	one of: "mean", "red", "green", "blue","alpha", "colored_mean". 	"mean"
+//normalmap::gamma 	float 	Input gamma value to use for reverse gamma correction 	1.0
+//normalmap::gain 	float 	Scaling factor for the image 	1.0 
+
+//#scale -maya multiply divide
+//constant::value 	color/float/fresnel texture 	The constant value of this texture. 	1
+//scale::tex1/tex2 	color/float/fresnel texture 	The textures to multiply by the "scale" texture 	1 
+
+//#substract
+//subtract::tex1/tex2 	color/float texture 	The textures to subtract. tex2 is subtracted from tex1 	1.0,1.0,1.0 
+
+#tabulateddata
+out,  color
+filename, string, Tabulated data file, "" 
+
+#uv
+out,  color
+
+#windy
+out,  float
+
+#wrinkled
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+octaves, int, Octaves, 8
+roughness, float, Bumpiness, 0.5
+
+#blender_clouds
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+noisetype, enum, Noise type, 0, soft_noise:hard_noise
+noisebasis, enum, Noise Basis, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+noisesize, float, Noise Size, 0.25
+noisedepth, int, Noise Depth, 2
+bright, float, Noise Brightness, 1.0
+contrast, float, Noise Contrast, 1.0 
+
+#blender_distortednoise
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+type, enum, Distort Noise Pattern, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+noisebasis, enum, Noise Basis, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+noisesize, float, Noise Size, 0.25
+distamount, float, Amount of Distortion, 1.0
+noisedepth, int, Noise Depth, 2
+bright, float, Noise Brightness, 1.0
+contrast, float, Noise Contrast, 1.0 
+
+//#blender_magic
+//--
+
+#blender_marble
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+noisesize, float, Noise Size, 0.25
+noisedepth, int, Noise Depth, 2
+turbulance, float, Turbulence, 5.0
+type, enum, Type, 0, soft:sharp:sharper
+noisetype, enum, NoiseType, 1, soft_noise:hard_noise
+noisebasis, enum, Noise Basis, 0, sin:saw:tri
+noisebasis2, enum, Noise Basis 2, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+bright, float, Noise Brightness, 1.0
+contrast, float, Noise Contrast, 1.0 
+
+#blender_musgrave
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+h, float, H, 1.0
+lacu, float, Lacunarity, 2.0
+octs, float, Octaves, 2.0
+gain, float, Gain, 1.0
+offset, float, Offset, 1.0
+noisesize, float, Noise Size, 0.25
+outscale, float, IScale, 1.0
+type, enum, Type, 0, multifractal:ridged_multifractal:hybrid_multifractal:hetero_terrain:fbm
+noisebasis, enum, Noise Basis, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+bright, float, Noise Brightness, 1.0
+contrast, float, Noise Contrast, 1.0
+
+//#blender_noise
+//--
+
+//#blender_stucci
+//--
+
+#blender_wood
+out,  float
+coordinates, enum, Coordinate System, 0, global:local:global normal:localnormal:uv
+translate, vector, Offset, 0:0:0
+rotate, vector, Rotate, 0:0:0
+scale, vector, Scale, 1:1:1 
+type, enum, Pattern Type,0 ,bands:rings:bandnoise:ringnoise
+noisetype, enum, NoiseType, 1, soft_noise:hard_noise
+noisebasis, enum, Noise Basis, 0, blender_original:original_perlin:improved_perlin:voronoi_f1:voronoi_f2:voronoi_f3:voronoi_f4:voronoi_f2f1:voronoi_crackle:cell_noise
+noisebasis2, enum, Noise Basis, 0, sin:saw:tri
+noisesize, float, Noise Size, 0.25
+turbulence, float, Turbulence, 5.0
+bright, float, Noise Brightness, 1.0
+contrast, float, Noise Contrast, 1.0
+
+#mediumclear
+out, color
+fresnel, float, Volume Refractive Index, 1.0
+absorption, color, Absorption, 0.0 
+
+#mediumhomogenus
+out,  color
+sigma_a, color, Absorption, 0
+sigma_s, color, Scattering, 0
+g, float, Phase Function asymmetry parameter, 0
+g1, float, Phase Function asymmetry parameter1, 0
+g2, float, Phase Function asymmetry parameter2, 0

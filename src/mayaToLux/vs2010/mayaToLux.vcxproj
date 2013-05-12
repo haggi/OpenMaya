@@ -354,6 +354,26 @@
     <ClCompile Include="..\src\shaders\shinymetalMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\velvetMaterial.cpp" />
     <ClCompile Include="..\src\shaders\velvetMaterialOverride.cpp" />
+    <ClCompile Include="..\src\textures\addTexture.cpp" />
+    <ClCompile Include="..\src\textures\bandTexture.cpp" />
+    <ClCompile Include="..\src\textures\bilerpTexture.cpp" />
+    <ClCompile Include="..\src\textures\blender_cloudsTexture.cpp" />
+    <ClCompile Include="..\src\textures\blender_distortednoiseTexture.cpp" />
+    <ClCompile Include="..\src\textures\blender_marbleTexture.cpp" />
+    <ClCompile Include="..\src\textures\blender_musgraveTexture.cpp" />
+    <ClCompile Include="..\src\textures\blender_woodTexture.cpp" />
+    <ClCompile Include="..\src\textures\brickTexture.cpp" />
+    <ClCompile Include="..\src\textures\colordepthTexture.cpp" />
+    <ClCompile Include="..\src\textures\dotsTexture.cpp" />
+    <ClCompile Include="..\src\textures\fbmTexture.cpp" />
+    <ClCompile Include="..\src\textures\fresnelcolorTexture.cpp" />
+    <ClCompile Include="..\src\textures\fresnelTexture.cpp" />
+    <ClCompile Include="..\src\textures\gaussianTexture.cpp" />
+    <ClCompile Include="..\src\textures\marbleTexture.cpp" />
+    <ClCompile Include="..\src\textures\mediumclearTexture.cpp" />
+    <ClCompile Include="..\src\textures\mediumhomogenusTexture.cpp" />
+    <ClCompile Include="..\src\textures\tabulateddataTexture.cpp" />
+    <ClCompile Include="..\src\textures\wrinkledTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -378,7 +398,9 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\Lux\LuxRendererController.h" />
+    <ClInclude Include="..\src\Lux\LuxShaderBase.h" />
     <ClInclude Include="..\src\Lux\LuxShaderInclude.h" />
+    <ClInclude Include="..\src\Lux\LuxTextureInclude.h" />
     <ClInclude Include="..\src\Lux\LuxTileCallback.h" />
     <ClInclude Include="..\src\Lux\Lux.h" />
     <ClInclude Include="..\src\Lux\LuxUtils.h" />
@@ -426,6 +448,26 @@
     <ClInclude Include="..\src\shaders\shinymetalMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\velvetMaterial.h" />
     <ClInclude Include="..\src\shaders\velvetMaterialOverride.h" />
+    <ClInclude Include="..\src\textures\addTexture.h" />
+    <ClInclude Include="..\src\textures\bandTexture.h" />
+    <ClInclude Include="..\src\textures\bilerpTexture.h" />
+    <ClInclude Include="..\src\textures\blender_cloudsTexture.h" />
+    <ClInclude Include="..\src\textures\blender_distortednoiseTexture.h" />
+    <ClInclude Include="..\src\textures\blender_marbleTexture.h" />
+    <ClInclude Include="..\src\textures\blender_musgraveTexture.h" />
+    <ClInclude Include="..\src\textures\blender_woodTexture.h" />
+    <ClInclude Include="..\src\textures\brickTexture.h" />
+    <ClInclude Include="..\src\textures\colordepthTexture.h" />
+    <ClInclude Include="..\src\textures\dotsTexture.h" />
+    <ClInclude Include="..\src\textures\fbmTexture.h" />
+    <ClInclude Include="..\src\textures\fresnelcolorTexture.h" />
+    <ClInclude Include="..\src\textures\fresnelTexture.h" />
+    <ClInclude Include="..\src\textures\gaussianTexture.h" />
+    <ClInclude Include="..\src\textures\marbleTexture.h" />
+    <ClInclude Include="..\src\textures\mediumclearTexture.h" />
+    <ClInclude Include="..\src\textures\mediumhomogenusTexture.h" />
+    <ClInclude Include="..\src\textures\tabulateddataTexture.h" />
+    <ClInclude Include="..\src\textures\wrinkledTexture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
