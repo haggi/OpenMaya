@@ -143,7 +143,7 @@ void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
 	lux->lightSource("distant", boost::get_pointer(lp));
 
 	if( this->mtlu_renderGlobals->exportSceneFile)
-		this->luxFile << "LightSource \"distant\" \"color L\" [" << "\n"; 
+		this->luxFile << "LightSource \"distant\" \"point from\" [" << from[0]<<" " << from[1]<<" " << from[2]<<"] \"point to\" [" << to[0]<<" " << to[1]<<" " << to[2]<<"]\n"; 
 }
 
 void LuxRenderer::definePointLight(mtlu_MayaObject *obj)

@@ -338,6 +338,24 @@
     <ClCompile Include="..\src\textures\blender_cloudsTexture.cpp">
       <Filter>Source Files\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Lux\LuxSceneWriter.cpp">
+      <Filter>Source Files\Lux</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textures\blackbodyTexture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textures\constantTexture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textures\harlequinTexture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textures\uvTexture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textures\windyTexture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -615,6 +633,21 @@
     </ClInclude>
     <ClInclude Include="..\src\Lux\LuxTextureInclude.h">
       <Filter>Source Files\Lux</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textures\blackbodyTexture.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textures\constantTexture.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textures\harlequinTexture.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textures\uvTexture.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textures\windyTexture.h">
+      <Filter>Source Files\Textures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

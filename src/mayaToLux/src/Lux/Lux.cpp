@@ -213,17 +213,60 @@ void LuxRenderer::defineSurfaceIntegrator()
 			// hybrid requires "one"
 			if( this->mtlu_renderGlobals->renderer == 1 )
 				ls = lStrategies[0];
-
 			iParams->AddString("lightpathstrategy", &ls);
-
+			iParams->AddInt("eyedepth", &this->mtlu_renderGlobals->eyedepth);
+			iParams->AddFloat("lightrrthreshold",&this->mtlu_renderGlobals->lightrrthreshold);
+			iParams->AddFloat("eyerrthreshold",&this->mtlu_renderGlobals->eyerrthreshold);
+		}
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "path")
+		{
+			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->pathMaxdepth);
+			iParams->AddBool("includeenvironment", &this->mtlu_renderGlobals->includeenvironment);
+			iParams->AddBool("directlightsampling", &this->mtlu_renderGlobals->directlightsampling);
+			const char *rrstrategys[] = {"none", "probability", "efficiency"};
+			const char *rrstrategy = rrstrategys[this->mtlu_renderGlobals->rrstrategy];
+			iParams->AddString("rrstrategy", &rrstrategy);	
+			iParams->AddFloat("rrcontinueprob", &this->mtlu_renderGlobals->rrcontinueprob);
 		}
 	}
+
 	// direct - sampler only
 	if(this->mtlu_renderGlobals->renderer == 0)
 	{
 		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "direct")
-		{}
+		{
+			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->pathMaxdepth);
+			const char *rrstrategys[] = {"none", "probability", "efficiency"};
+			const char *rrstrategy = rrstrategys[this->mtlu_renderGlobals->rrstrategy];
+			iParams->AddString("rrstrategy", &rrstrategy);						
+		}
 	}
+
+	// sppm only
+	if(this->mtlu_renderGlobals->renderer == 2)
+	{
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "sppm")
+		{
+			const char *photonsamplers[]= {"halton", "amc"};
+			//const char *photonsampler= photonsamplers[this->mtlu_renderGlobals->photonSampler];
+			//photonsampler
+			//lookupaccel
+			//parallelhashgridspare
+			//pixelsampler
+			//maxeyedepth
+			//maxphotondepth
+			//photonperpass
+			//startradius
+			//alpha
+			//includeenvironment
+			//directlightsampling
+			//useproba
+			//wavelengthstratification
+			//debug
+			//storeglossy
+		}
+	}
+
 	this->lux->surfaceIntegrator(integratorNames[this->mtlu_renderGlobals->surfaceIntegrator], boost::get_pointer(iParams));
 }
 
@@ -255,15 +298,17 @@ void LuxRenderer::render()
 
 		this->defineFilm();
 
-		//this->defineSampling();
+		this->defineSampling();
 
-		//this->defineSurfaceIntegrator();
+		this->defineSurfaceIntegrator();
 
-		//this->defineRenderer();
+		this->defineRenderer();
 
 		this->definePixelFilter();
 
 		lux->worldBegin();
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "WorldBegin\n";
 
 		this->defineShaders();
 
@@ -272,8 +317,10 @@ void LuxRenderer::render()
 		this->defineGeometry();
 
 		lux->worldEnd();
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "WorldEnd\n";
 
-		//lux->texture("mytexture", 
+		luxFile.close();
 
 		isRendering = true;
 
@@ -282,14 +329,8 @@ void LuxRenderer::render()
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 		boost::thread(LuxRenderer::getFramebufferThread, this);
 
-		for( int tid = 0; tid < 7; tid++)
+		for( int tid = 0; tid < this->mtlu_renderGlobals->threads; tid++)
 			lux->addThread();
-
-		// test for update...
-		
-		//boost::this_thread::sleep(boost::posix_time::seconds(this->mtlu_renderGlobals->halttime));
-
-		//logger.debug("Calling lux wait...");
 
 		lux->wait();
 
@@ -339,7 +380,5 @@ void LuxRenderer::render()
 
 	e.type = EventQueue::Event::FRAMEDONE;
 	theRenderEventQueue()->push(e);
-
-	luxFile.close();
 }
 

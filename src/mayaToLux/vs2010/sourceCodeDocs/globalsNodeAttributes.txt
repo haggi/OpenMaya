@@ -81,11 +81,13 @@ lightrrthreshold, float, Light RR Thresh, 0.0
 pathMaxdepth, int, Max Depth, 16
 rrstrategy, enum, RR Strategy, 2, none:probability:efficiency
 rrcontinueprob, float, RR Continue, .65 
+includeenvironment, bool, Include Env, true
+directlightsampling, bool, Direct Light Sampling, true
 
 #directLight
 dlightMaxdepth, int, Max Depth, 5
 
-#photon
+#exphotonmap
 phRenderingmode, enum, Rendering Mode, 0,	directlighting:path 
 phCausticphotons, int, Caustic Photons, 20000
 phIndirectphotons, int, Indirect Photons, 200000
@@ -102,4 +104,55 @@ phRrstrategy, enum, RR Strategy, 2, none:probability:efficiency
 phRrcontinueprob, float, Cont Prob RR, 0.65
 phDistancethreshold, float, Dist Thresold, 1.25
 phPhotonmapsfile, string, Photon File, ""
+
+#distributedpath
+renderingmode, enum, Rendering Mode, 0,	directlighting:path 
+strategy, enum, Strategy, 0, auto:all:one
+directsampleall, bool, Include diffuse direct, true 
+directsamples, int, Directlight Samples, 1
+indirectsampleall, bool, Use Diffuse Indirect, false 	 
+indirectsamples, int, Num Indirect light Samples, 1
+diffusereflectdepth, int, Max Diffuse Reflection, 3
+diffusereflectsamples, int, Num Reflection Samples, 1
+diffuserefractdepth, int, Max Diffuse Refraction, 5
+diffuserefractsamples, int, Num Refraction Samples, 1
+directdiffuse, bool, Use Diffuse Direct, true
+indirectdiffuse, bool, Include Diffuse Indirect, true 	 
+glossyreflectdepth, int, Max Glossy Reflection, 2
+glossyreflectsamples,int, Num Glossy Samples, 1 
+glossyrefractdepth,int, Max Glossy Refraction, 5
+glossyrefractsamples,int, Num Glossy Refraction Samples, 1
+directglossy,bool, Include Glossy Direct Light Samples, true 	 
+indirectglossy,bool, Include Glossy Indirect Light Samples, true 	 
+specularreflectdepth,int, Max Spec Refl Depth, 3
+specularrefractdepth,int, Max Spec Refr Depth, 3
+diffusereflectreject,bool, Rejection for Diffuse Reflection, false 	 
+diffuserefractreject,bool, Rejection for Diffuse Refraction, false 	 
+diffusereflectreject_threshold,int, Average Reflect Reject Threshold, 10.0
+diffuserefractreject_threshold,int, Average Refract Reject Threshold, 10.0
+glossyreflectreject,bool, Rejection for Glossy Reflection, false 	 
+glossyrefractreject,bool, Rejection for Glossy Refraction, false 	 
+glossyreflectreject_threshold,int, Average Glossy Reflect Threshold, 10.0
+glossyrefractreject_threshold,int, Average Glossy Refract Threshold, 10.0
+
+#sppm
+maxeyedepth, int, Max Eye path len, 16
+maxphotondepth, int, Max photon path len, 16
+photonperpass, int, Photons per Pass, 1000000
+startk, int, Min Photons, 0
+alpha, float, Decrement Tight Serach Radius, 0.7
+glossythreshold, float, Maximum Store PDF, 100
+lookupaccel, enum, Hitpoint Structure, 0, hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid
+pixelsampler, enum, Eye Pass Sampling Pattern, 0, hilbert:linear:tile:vegas
+photonsampler, enum, Photon paths Method, 0, halton:amc
+sppmincludeenvironment, bool, Show Env Light Sources, true
+parallelhashgridspare, float, Parallel Hashgrid Spare, 1.0
+startradius, float, Start Search Radius, 2.0
+sppmdirectlightsampling, bool, Do Direct Lighting Pass, true
+useproba, bool, Use Probea, true
+wavelengthstratification, int, Wavelen Passes, 8
+debug, bool, Debug mode, false
+storeglossy, bool, Storing Glossy Hit Points, false 
+
+
  	

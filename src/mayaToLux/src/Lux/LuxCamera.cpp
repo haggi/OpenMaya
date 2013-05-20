@@ -79,9 +79,9 @@ void LuxRenderer::defineCamera()
 		cp->AddString("distribution", &lensdistribution);
 		cp->AddFloat("power", &power);
 	}
-	luxFile << "Camera \"perspective\" " << " \"float fov\" " << fov << " \"float focaldistance\" " << focusDist << " \"float hither\" " << hither << " \"float yon\" " << yon << "\n";
 	lux->camera("perspective", boost::get_pointer(cp));
-
-	//lux->pixelFilter("mitchell","xwidth", &size, "ywidth" , &size,LUX_NULL);
+	
+	if( this->mtlu_renderGlobals->exportSceneFile)
+		this->luxFile << "Camera \"perspective\" "<< "\"float fov\" [" << fov << "]"  <<"\n";
 
 }

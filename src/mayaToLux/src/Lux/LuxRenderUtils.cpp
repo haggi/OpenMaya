@@ -42,6 +42,10 @@ void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = fals
 		setZUp(camUp);
 
 		lux->lookAt(camEye.x, camEye.y, camEye.z, camInterest.x, camInterest.y, camInterest.z, camUp.x, camUp.y, camUp.z);
+
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "Lookat " << camEye.x <<" "<< camEye.y<<" "<<camEye.z<<" "<<camInterest.x<<" "<<camInterest.y<<" "<<camInterest.z<<" "<<camUp.x<<" "<<camUp.y<<" "<<camUp.z<<"\n";
+
 	}else{
 
 		size_t numMbSteps = obj->transformMatrices.size();
@@ -52,6 +56,18 @@ void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = fals
 			mbsteps[mbStep] = stepSize * mbStep;
 				
 		lux->motionBegin(numMbSteps, mbsteps);
+		if( this->mtlu_renderGlobals->exportSceneFile)
+		{
+			this->luxFile << "MotionBegin [";
+			for( int mbs = 0; mbs < numMbSteps; mbs++)
+			{	
+				if( mbs > 0)
+					this->luxFile << "  ";
+				this->luxFile << mbsteps[mbs];
+			}
+			this->luxFile << "]\n";
+		}
+
 		{
 			for( size_t tId = 0; tId < obj->transformMatrices.size(); tId++)
 			{
@@ -71,9 +87,13 @@ void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = fals
 				setZUp(camInterest);
 				setZUp(camUp);
 				lux->lookAt(camEye.x, camEye.y, camEye.z, camInterest.x, camInterest.y, camInterest.z, camUp.x, camUp.y, camUp.z);
+				if( this->mtlu_renderGlobals->exportSceneFile)
+					this->luxFile << "LookAt " << camEye.x <<" "<< camEye.y<<" "<<camEye.z<<" "<<camInterest.x<<" "<<camInterest.y<<" "<<camInterest.z<<" "<<camUp.x<<" "<<camUp.y<<" "<<camUp.z<<"\n";
 			}
 		}
 		lux->motionEnd();
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "MotionEnd\n";
 	}
 }
 
@@ -92,7 +112,20 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 		{
 			MMatrix tm = obj->transformMatrices[0];
 			setZUp(tm, fm);
+			
+			this->lux->attributeBegin();
 			this->lux->transform(fm);
+
+			if( this->mtlu_renderGlobals->exportSceneFile)
+			{
+				this->luxFile << "Transform [";
+				for( uint i = 0; i < 16; i++)
+				{
+					this->luxFile << fm[i] << " ";
+				}
+				this->luxFile << "]\n";
+			}
+
 			{
 				if( obj->materialList.size() > 0)
 				{
@@ -105,12 +138,19 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 					}
 				}
 			}
+
 			this->lux->objectInstance(objectInstanceName.asChar());
+			if( this->mtlu_renderGlobals->exportSceneFile)
+				this->luxFile << "ObjectInstance \"" << objectInstanceName.asChar() << "\"\n";
+
+			this->lux->attributeEnd();
 		}
 		this->lux->transformEnd();
 	}else{
 
 		lux->attributeBegin();
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "AttributeBegin\n";
 		{
 			size_t numMbSteps = obj->transformMatrices.size();
 			float mbsteps[1024];
@@ -122,15 +162,37 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 			}
 
 			lux->motionBegin(numMbSteps, mbsteps);
+			if( this->mtlu_renderGlobals->exportSceneFile)
+			{
+				this->luxFile << "MotionBegin [";
+				for( int mbs = 0; mbs < numMbSteps; mbs++)
+				{	
+					if( mbs > 0)
+						this->luxFile << " ";
+					this->luxFile << mbsteps[mbs];
+				}
+				this->luxFile << "]\n";
+			}
 			{
 				for( size_t tId = 0; tId < obj->transformMatrices.size(); tId++)
 				{
 					MMatrix tm = obj->transformMatrices[tId];
 					setZUp(tm, fm);
 					this->lux->transform(fm);
+					if( this->mtlu_renderGlobals->exportSceneFile)
+					{
+						this->luxFile << "Transform [";
+						for( uint i = 0; i < 16; i++)
+						{
+							this->luxFile << fm[i] << " ";
+						}
+						this->luxFile << "]\n";
+					}
 				}
 			}
 			lux->motionEnd();
+			if( this->mtlu_renderGlobals->exportSceneFile)
+				this->luxFile << "MotionEnd\n";
 
 			{
 				if( obj->materialList.size() > 0)
@@ -145,7 +207,11 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 				}
 			}
 			this->lux->objectInstance(objectInstanceName.asChar());
+			if( this->mtlu_renderGlobals->exportSceneFile)
+				this->luxFile << "ObjectInstance \"" << objectInstanceName.asChar() << "\"\n";
 		}
 		lux->attributeEnd();
+		if( this->mtlu_renderGlobals->exportSceneFile)
+			this->luxFile << "AttributeEnd\n";
 	}
 }

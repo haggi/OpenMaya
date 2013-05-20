@@ -1,3 +1,6 @@
+#ifndef MAYATO@_TextureBase
+#define MAYATO@_TextureBase
+
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
@@ -26,3 +29,5 @@ class TextureBase :public MPxNode
 //---------------------------- automatically created attributes end ------------------------------------
 
 };
+
+#endif

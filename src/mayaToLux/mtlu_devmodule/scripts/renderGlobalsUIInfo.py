@@ -412,6 +412,18 @@ entry['displayName'] = 'RR Continue'
 entry['default'] = '.65'
 tab['entries'].append(entry)
 entry = {}
+entry['name'] = 'includeenvironment'
+entry['type'] = 'bool'
+entry['displayName'] = 'Include Env'
+entry['default'] = 'True'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'directlightsampling'
+entry['type'] = 'bool'
+entry['displayName'] = 'Direct Light Sampling'
+entry['default'] = 'True'
+tab['entries'].append(entry)
+entry = {}
 entry['name'] = 'None'
 entry['type'] = 'separator'
 tab['entries'].append(entry)
@@ -522,4 +534,287 @@ entry['name'] = 'phPhotonmapsfile'
 entry['type'] = 'string'
 entry['displayName'] = 'Photon File'
 entry['default'] = '""'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'None'
+entry['type'] = 'separator'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'renderingmode'
+entry['type'] = 'enum'
+entry['displayName'] = 'Rendering Mode'
+entry['default'] = '0'
+entry['addInfo'] = 'directlighting:path'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'strategy'
+entry['type'] = 'enum'
+entry['displayName'] = 'Strategy'
+entry['default'] = '0'
+entry['addInfo'] = 'auto:all:one'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'directsampleall'
+entry['type'] = 'bool'
+entry['displayName'] = 'Include diffuse direct'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'directsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Directlight Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'indirectsampleall'
+entry['type'] = 'bool'
+entry['displayName'] = 'Use Diffuse Indirect'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'indirectsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Num Indirect light Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffusereflectdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Diffuse Reflection'
+entry['default'] = '3'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffusereflectsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Num Reflection Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffuserefractdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Diffuse Refraction'
+entry['default'] = '5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffuserefractsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Num Refraction Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'directdiffuse'
+entry['type'] = 'bool'
+entry['displayName'] = 'Use Diffuse Direct'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'indirectdiffuse'
+entry['type'] = 'bool'
+entry['displayName'] = 'Include Diffuse Indirect'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyreflectdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Glossy Reflection'
+entry['default'] = '2'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyreflectsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Num Glossy Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyrefractdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Glossy Refraction'
+entry['default'] = '5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyrefractsamples'
+entry['type'] = 'int'
+entry['displayName'] = 'Num Glossy Refraction Samples'
+entry['default'] = '1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'directglossy'
+entry['type'] = 'bool'
+entry['displayName'] = 'Include Glossy Direct Light Samples'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'indirectglossy'
+entry['type'] = 'bool'
+entry['displayName'] = 'Include Glossy Indirect Light Samples'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'specularreflectdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Spec Refl Depth'
+entry['default'] = '3'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'specularrefractdepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Spec Refr Depth'
+entry['default'] = '3'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffusereflectreject'
+entry['type'] = 'bool'
+entry['displayName'] = 'Rejection for Diffuse Reflection'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffuserefractreject'
+entry['type'] = 'bool'
+entry['displayName'] = 'Rejection for Diffuse Refraction'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffusereflectreject_threshold'
+entry['type'] = 'int'
+entry['displayName'] = 'Average Reflect Reject Threshold'
+entry['default'] = '10.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'diffuserefractreject_threshold'
+entry['type'] = 'int'
+entry['displayName'] = 'Average Refract Reject Threshold'
+entry['default'] = '10.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyreflectreject'
+entry['type'] = 'bool'
+entry['displayName'] = 'Rejection for Glossy Reflection'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyrefractreject'
+entry['type'] = 'bool'
+entry['displayName'] = 'Rejection for Glossy Refraction'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyreflectreject_threshold'
+entry['type'] = 'int'
+entry['displayName'] = 'Average Glossy Reflect Threshold'
+entry['default'] = '10.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossyrefractreject_threshold'
+entry['type'] = 'int'
+entry['displayName'] = 'Average Glossy Refract Threshold'
+entry['default'] = '10.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'None'
+entry['type'] = 'separator'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'maxeyedepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max Eye path len'
+entry['default'] = '16'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'maxphotondepth'
+entry['type'] = 'int'
+entry['displayName'] = 'Max photon path len'
+entry['default'] = '16'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'photonperpass'
+entry['type'] = 'int'
+entry['displayName'] = 'Photons per Pass'
+entry['default'] = '1000000'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'startk'
+entry['type'] = 'int'
+entry['displayName'] = 'Min Photons'
+entry['default'] = '0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'alpha'
+entry['type'] = 'float'
+entry['displayName'] = 'Decrement Tight Serach Radius'
+entry['default'] = '0.7'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'glossythreshold'
+entry['type'] = 'float'
+entry['displayName'] = 'Maximum Store PDF'
+entry['default'] = '100'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'lookupaccel'
+entry['type'] = 'enum'
+entry['displayName'] = 'Hitpoint Structure'
+entry['default'] = '0'
+entry['addInfo'] = 'hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pixelsampler'
+entry['type'] = 'enum'
+entry['displayName'] = 'Eye Pass Sampling Pattern'
+entry['default'] = '0'
+entry['addInfo'] = 'hilbert:linear:tile:vegas'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'photonsampler'
+entry['type'] = 'enum'
+entry['displayName'] = 'Photon paths Method'
+entry['default'] = '0'
+entry['addInfo'] = 'halton:amc'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sppmincludeenvironment'
+entry['type'] = 'bool'
+entry['displayName'] = 'Show Env Light Sources'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'parallelhashgridspare'
+entry['type'] = 'float'
+entry['displayName'] = 'Parallel Hashgrid Spare'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'startradius'
+entry['type'] = 'float'
+entry['displayName'] = 'Start Search Radius'
+entry['default'] = '2.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sppmdirectlightsampling'
+entry['type'] = 'bool'
+entry['displayName'] = 'Do Direct Lighting Pass'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'useproba'
+entry['type'] = 'bool'
+entry['displayName'] = 'Use Probea'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'wavelengthstratification'
+entry['type'] = 'int'
+entry['displayName'] = 'Wavelen Passes'
+entry['default'] = '8'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'debug'
+entry['type'] = 'bool'
+entry['displayName'] = 'Debug mode'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'storeglossy'
+entry['type'] = 'bool'
+entry['displayName'] = 'Storing Glossy Hit Points'
+entry['default'] = 'false'
 tab['entries'].append(entry)

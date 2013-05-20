@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 
 typedef boost::shared_ptr<lux_instance> Instance;
 typedef boost::shared_ptr<lux_paramset> ParamSet;
@@ -110,11 +111,13 @@ public:
 	void defineShaders();
 	void shaderCreator(MObject& mobject);
 
-	//void createParamsFromMayaNode(ParamSet&, MObject& mayaNode, AttrParams params);
-
+	
 	// writing files
 	std::ofstream luxFile;
 
+	void objectBegin(const char *oname);
+	void objectEnd();
+	//void shape(const char *sName, const lux_paramset* params);
 	// file writing methods
 	//void motionBegin(int steps, float *times);
 

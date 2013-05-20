@@ -13,6 +13,8 @@ public:
 	
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
+
+
 	bool getMt@Globals();
 	virtual MString getImageExt();
 

@@ -1,3 +1,6 @@
+#ifndef WRINCLED_H
+#define WRINCLED_H
+
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
@@ -33,3 +36,5 @@ class wrinkled :public MPxNode
 //---------------------------- automatically created attributes end ------------------------------------
 
 };
+
+#endif

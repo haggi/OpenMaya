@@ -79,7 +79,6 @@ MStatus windy::initialize()
 	MAKE_OUTPUT(nAttr);
 	CHECK_MSTATUS(addAttribute( luxOutFloat ));
 
-	CHECK_MSTATUS ( attributeAffects( None, luxOutFloat));
 //---------------------------- automatically created attributes end ------------------------------------
 
     return MS::kSuccess;

@@ -329,6 +329,21 @@ void LuxRenderer::defineGeometry()
 				if( obj->instanceNumber == 0)
 				{
 					logger.debug(MString("define mesh ") + obj->fullNiceName);
+
+					//ParamSet triParams = CreateParamSet();
+					//float r = 0.3;
+					//triParams->AddFloat("radius", &r);
+					//this->lux->objectBegin(obj->fullNiceName.asChar());
+					//this->lux->shape("sphere", boost::get_pointer(triParams));
+					//this->lux->objectEnd();
+
+					if( this->mtlu_renderGlobals->exportSceneFile)
+					{
+						float r = 0.3;
+						this->luxFile << "ObjectBegin \"" << obj->fullNiceName.asChar() << "\"\n";
+						this->luxFile << "Shape \"sphere\" \"float radius\" [" << r << "]\n";
+						this->luxFile << "ObjectEnd\n";
+					}
 					this->defineTriangleMesh(obj);
 				}
 

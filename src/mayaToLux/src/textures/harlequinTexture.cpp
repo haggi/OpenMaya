@@ -79,7 +79,7 @@ MStatus harlequin::initialize()
 	MAKE_OUTPUT(nAttr);
 	CHECK_MSTATUS(addAttribute( luxOutColor ));
 
-	CHECK_MSTATUS ( attributeAffects( None, luxOutColor));
+	//CHECK_MSTATUS ( attributeAffects( None, luxOutColor));
 //---------------------------- automatically created attributes end ------------------------------------
 
     return MS::kSuccess;

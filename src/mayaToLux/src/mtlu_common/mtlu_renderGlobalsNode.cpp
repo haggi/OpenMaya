@@ -69,6 +69,8 @@ MObject MayaToLuxGlobals::lightrrthreshold;
 MObject MayaToLuxGlobals::pathMaxdepth;
 MObject MayaToLuxGlobals::rrstrategy;
 MObject MayaToLuxGlobals::rrcontinueprob;
+MObject MayaToLuxGlobals::includeenvironment;
+MObject MayaToLuxGlobals::directlightsampling;
 MObject MayaToLuxGlobals::dlightMaxdepth;
 MObject MayaToLuxGlobals::phRenderingmode;
 MObject MayaToLuxGlobals::phCausticphotons;
@@ -86,6 +88,51 @@ MObject MayaToLuxGlobals::phRrstrategy;
 MObject MayaToLuxGlobals::phRrcontinueprob;
 MObject MayaToLuxGlobals::phDistancethreshold;
 MObject MayaToLuxGlobals::phPhotonmapsfile;
+MObject MayaToLuxGlobals::renderingmode;
+MObject MayaToLuxGlobals::strategy;
+MObject MayaToLuxGlobals::directsampleall;
+MObject MayaToLuxGlobals::directsamples;
+MObject MayaToLuxGlobals::indirectsampleall;
+MObject MayaToLuxGlobals::indirectsamples;
+MObject MayaToLuxGlobals::diffusereflectdepth;
+MObject MayaToLuxGlobals::diffusereflectsamples;
+MObject MayaToLuxGlobals::diffuserefractdepth;
+MObject MayaToLuxGlobals::diffuserefractsamples;
+MObject MayaToLuxGlobals::directdiffuse;
+MObject MayaToLuxGlobals::indirectdiffuse;
+MObject MayaToLuxGlobals::glossyreflectdepth;
+MObject MayaToLuxGlobals::glossyreflectsamples;
+MObject MayaToLuxGlobals::glossyrefractdepth;
+MObject MayaToLuxGlobals::glossyrefractsamples;
+MObject MayaToLuxGlobals::directglossy;
+MObject MayaToLuxGlobals::indirectglossy;
+MObject MayaToLuxGlobals::specularreflectdepth;
+MObject MayaToLuxGlobals::specularrefractdepth;
+MObject MayaToLuxGlobals::diffusereflectreject;
+MObject MayaToLuxGlobals::diffuserefractreject;
+MObject MayaToLuxGlobals::diffusereflectreject_threshold;
+MObject MayaToLuxGlobals::diffuserefractreject_threshold;
+MObject MayaToLuxGlobals::glossyreflectreject;
+MObject MayaToLuxGlobals::glossyrefractreject;
+MObject MayaToLuxGlobals::glossyreflectreject_threshold;
+MObject MayaToLuxGlobals::glossyrefractreject_threshold;
+MObject MayaToLuxGlobals::maxeyedepth;
+MObject MayaToLuxGlobals::maxphotondepth;
+MObject MayaToLuxGlobals::photonperpass;
+MObject MayaToLuxGlobals::startk;
+MObject MayaToLuxGlobals::alpha;
+MObject MayaToLuxGlobals::glossythreshold;
+MObject MayaToLuxGlobals::lookupaccel;
+MObject MayaToLuxGlobals::pixelsampler;
+MObject MayaToLuxGlobals::photonsampler;
+MObject MayaToLuxGlobals::sppmincludeenvironment;
+MObject MayaToLuxGlobals::parallelhashgridspare;
+MObject MayaToLuxGlobals::startradius;
+MObject MayaToLuxGlobals::sppmdirectlightsampling;
+MObject MayaToLuxGlobals::useproba;
+MObject MayaToLuxGlobals::wavelengthstratification;
+MObject MayaToLuxGlobals::debug;
+MObject MayaToLuxGlobals::storeglossy;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -211,7 +258,7 @@ MStatus	MayaToLuxGlobals::initialize()
 	haltspp = nAttr.create("haltspp", "haltspp",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( haltspp ));
 
-	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 20);
+	halttime = nAttr.create("halttime", "halttime",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( halttime ));
 
 	uiupdateinterval = nAttr.create("uiupdateinterval", "uiupdateinterval",  MFnNumericData::kFloat, 2.0);
@@ -338,6 +385,12 @@ MStatus	MayaToLuxGlobals::initialize()
 	rrcontinueprob = nAttr.create("rrcontinueprob", "rrcontinueprob",  MFnNumericData::kFloat, .65);
 	CHECK_MSTATUS(addAttribute( rrcontinueprob ));
 
+	includeenvironment = nAttr.create("includeenvironment", "includeenvironment",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( includeenvironment ));
+
+	directlightsampling = nAttr.create("directlightsampling", "directlightsampling",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( directlightsampling ));
+
 	dlightMaxdepth = nAttr.create("dlightMaxdepth", "dlightMaxdepth",  MFnNumericData::kInt, 5);
 	CHECK_MSTATUS(addAttribute( dlightMaxdepth ));
 
@@ -393,6 +446,157 @@ MStatus	MayaToLuxGlobals::initialize()
 
 	phPhotonmapsfile = tAttr.create("phPhotonmapsfile", "phPhotonmapsfile",  MFnNumericData::kString);
 	CHECK_MSTATUS(addAttribute( phPhotonmapsfile ));
+
+	renderingmode = eAttr.create("renderingmode", "renderingmode", 0, &stat);
+	stat = eAttr.addField( "directlighting", 0 );
+	stat = eAttr.addField( "path", 1 );
+	CHECK_MSTATUS(addAttribute( renderingmode ));
+
+	strategy = eAttr.create("strategy", "strategy", 0, &stat);
+	stat = eAttr.addField( "auto", 0 );
+	stat = eAttr.addField( "all", 1 );
+	stat = eAttr.addField( "one", 2 );
+	CHECK_MSTATUS(addAttribute( strategy ));
+
+	directsampleall = nAttr.create("directsampleall", "directsampleall",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( directsampleall ));
+
+	directsamples = nAttr.create("directsamples", "directsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( directsamples ));
+
+	indirectsampleall = nAttr.create("indirectsampleall", "indirectsampleall",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( indirectsampleall ));
+
+	indirectsamples = nAttr.create("indirectsamples", "indirectsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( indirectsamples ));
+
+	diffusereflectdepth = nAttr.create("diffusereflectdepth", "diffusereflectdepth",  MFnNumericData::kInt, 3);
+	CHECK_MSTATUS(addAttribute( diffusereflectdepth ));
+
+	diffusereflectsamples = nAttr.create("diffusereflectsamples", "diffusereflectsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( diffusereflectsamples ));
+
+	diffuserefractdepth = nAttr.create("diffuserefractdepth", "diffuserefractdepth",  MFnNumericData::kInt, 5);
+	CHECK_MSTATUS(addAttribute( diffuserefractdepth ));
+
+	diffuserefractsamples = nAttr.create("diffuserefractsamples", "diffuserefractsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( diffuserefractsamples ));
+
+	directdiffuse = nAttr.create("directdiffuse", "directdiffuse",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( directdiffuse ));
+
+	indirectdiffuse = nAttr.create("indirectdiffuse", "indirectdiffuse",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( indirectdiffuse ));
+
+	glossyreflectdepth = nAttr.create("glossyreflectdepth", "glossyreflectdepth",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( glossyreflectdepth ));
+
+	glossyreflectsamples = nAttr.create("glossyreflectsamples", "glossyreflectsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( glossyreflectsamples ));
+
+	glossyrefractdepth = nAttr.create("glossyrefractdepth", "glossyrefractdepth",  MFnNumericData::kInt, 5);
+	CHECK_MSTATUS(addAttribute( glossyrefractdepth ));
+
+	glossyrefractsamples = nAttr.create("glossyrefractsamples", "glossyrefractsamples",  MFnNumericData::kInt, 1);
+	CHECK_MSTATUS(addAttribute( glossyrefractsamples ));
+
+	directglossy = nAttr.create("directglossy", "directglossy",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( directglossy ));
+
+	indirectglossy = nAttr.create("indirectglossy", "indirectglossy",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( indirectglossy ));
+
+	specularreflectdepth = nAttr.create("specularreflectdepth", "specularreflectdepth",  MFnNumericData::kInt, 3);
+	CHECK_MSTATUS(addAttribute( specularreflectdepth ));
+
+	specularrefractdepth = nAttr.create("specularrefractdepth", "specularrefractdepth",  MFnNumericData::kInt, 3);
+	CHECK_MSTATUS(addAttribute( specularrefractdepth ));
+
+	diffusereflectreject = nAttr.create("diffusereflectreject", "diffusereflectreject",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( diffusereflectreject ));
+
+	diffuserefractreject = nAttr.create("diffuserefractreject", "diffuserefractreject",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( diffuserefractreject ));
+
+	diffusereflectreject_threshold = nAttr.create("diffusereflectreject_threshold", "diffusereflectreject_threshold",  MFnNumericData::kInt, 10.0);
+	CHECK_MSTATUS(addAttribute( diffusereflectreject_threshold ));
+
+	diffuserefractreject_threshold = nAttr.create("diffuserefractreject_threshold", "diffuserefractreject_threshold",  MFnNumericData::kInt, 10.0);
+	CHECK_MSTATUS(addAttribute( diffuserefractreject_threshold ));
+
+	glossyreflectreject = nAttr.create("glossyreflectreject", "glossyreflectreject",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( glossyreflectreject ));
+
+	glossyrefractreject = nAttr.create("glossyrefractreject", "glossyrefractreject",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( glossyrefractreject ));
+
+	glossyreflectreject_threshold = nAttr.create("glossyreflectreject_threshold", "glossyreflectreject_threshold",  MFnNumericData::kInt, 10.0);
+	CHECK_MSTATUS(addAttribute( glossyreflectreject_threshold ));
+
+	glossyrefractreject_threshold = nAttr.create("glossyrefractreject_threshold", "glossyrefractreject_threshold",  MFnNumericData::kInt, 10.0);
+	CHECK_MSTATUS(addAttribute( glossyrefractreject_threshold ));
+
+	maxeyedepth = nAttr.create("maxeyedepth", "maxeyedepth",  MFnNumericData::kInt, 16);
+	CHECK_MSTATUS(addAttribute( maxeyedepth ));
+
+	maxphotondepth = nAttr.create("maxphotondepth", "maxphotondepth",  MFnNumericData::kInt, 16);
+	CHECK_MSTATUS(addAttribute( maxphotondepth ));
+
+	photonperpass = nAttr.create("photonperpass", "photonperpass",  MFnNumericData::kInt, 1000000);
+	CHECK_MSTATUS(addAttribute( photonperpass ));
+
+	startk = nAttr.create("startk", "startk",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( startk ));
+
+	alpha = nAttr.create("alpha", "alpha",  MFnNumericData::kFloat, 0.7);
+	CHECK_MSTATUS(addAttribute( alpha ));
+
+	glossythreshold = nAttr.create("glossythreshold", "glossythreshold",  MFnNumericData::kFloat, 100);
+	CHECK_MSTATUS(addAttribute( glossythreshold ));
+
+	lookupaccel = eAttr.create("lookupaccel", "lookupaccel", 0, &stat);
+	stat = eAttr.addField( "hybridhashgrid", 0 );
+	stat = eAttr.addField( "kdtree", 1 );
+	stat = eAttr.addField( "grid", 2 );
+	stat = eAttr.addField( "hashgrid", 3 );
+	stat = eAttr.addField( "parallelhashgrid", 4 );
+	CHECK_MSTATUS(addAttribute( lookupaccel ));
+
+	pixelsampler = eAttr.create("pixelsampler", "pixelsampler", 0, &stat);
+	stat = eAttr.addField( "hilbert", 0 );
+	stat = eAttr.addField( "linear", 1 );
+	stat = eAttr.addField( "tile", 2 );
+	stat = eAttr.addField( "vegas", 3 );
+	CHECK_MSTATUS(addAttribute( pixelsampler ));
+
+	photonsampler = eAttr.create("photonsampler", "photonsampler", 0, &stat);
+	stat = eAttr.addField( "halton", 0 );
+	stat = eAttr.addField( "amc", 1 );
+	CHECK_MSTATUS(addAttribute( photonsampler ));
+
+	sppmincludeenvironment = nAttr.create("sppmincludeenvironment", "sppmincludeenvironment",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( sppmincludeenvironment ));
+
+	parallelhashgridspare = nAttr.create("parallelhashgridspare", "parallelhashgridspare",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( parallelhashgridspare ));
+
+	startradius = nAttr.create("startradius", "startradius",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( startradius ));
+
+	sppmdirectlightsampling = nAttr.create("sppmdirectlightsampling", "sppmdirectlightsampling",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( sppmdirectlightsampling ));
+
+	useproba = nAttr.create("useproba", "useproba",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( useproba ));
+
+	wavelengthstratification = nAttr.create("wavelengthstratification", "wavelengthstratification",  MFnNumericData::kInt, 8);
+	CHECK_MSTATUS(addAttribute( wavelengthstratification ));
+
+	debug = nAttr.create("debug", "debug",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( debug ));
+
+	storeglossy = nAttr.create("storeglossy", "storeglossy",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( storeglossy ));
 
 //	------------- automatically created attributes end ----------- // 
 

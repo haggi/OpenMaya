@@ -60,38 +60,89 @@ bool mt@_RenderGlobals::getMt@Globals()
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
 		
-		if(!getString(MString("optimizedTexturePath"), LuxGlobals, this->optimizedTexturePath))
-			throw("problem reading luxGlobals.optimizedTexturePath");
+		if(!getFloat(MString("filterSize"), @Globals, this->filterSize))
+			throw("problem reading @Globals.filterSize");
 
-		if(!getString(MString("basePath"), LuxGlobals, this->basePath))
-			throw("problem reading luxGlobals.basePath");
+		if(!getFloat(MString("gamma"), @Globals, this->gamma))
+			throw("problem reading @Globals.gamma");
 
-		if(!getString(MString("imagePath"), LuxGlobals, this->imagePath))
-			throw("problem reading luxGlobals.imagePath");
+		if(!getInt(MString("samplesX"), @Globals, this->samplesX))
+			throw("problem reading @Globals.samplesX");
 
-		if(!getBool(MString("exportSceneFile"), LuxGlobals, this->exportSceneFile))
-			throw("problem reading luxGlobals.exportSceneFile");
+		if(!getInt(MString("samplesY"), @Globals, this->samplesY))
+			throw("problem reading @Globals.samplesY");
 
-		if(!getString(MString("exportSceneFileName"), LuxGlobals, this->exportSceneFileName))
-			throw("problem reading luxGlobals.exportSceneFileName");
+		if(!getInt(MString("minSamples"), @Globals, this->minSamples))
+			throw("problem reading @Globals.minSamples");
 
-		if(!getString(MString("imageName"), LuxGlobals, this->imageName))
-			throw("problem reading luxGlobals.imageName");
+		if(!getInt(MString("maxSamples"), @Globals, this->maxSamples))
+			throw("problem reading @Globals.maxSamples");
 
-		if(!getBool(MString("adaptiveSampling"), LuxGlobals, this->adaptiveSampling))
-			throw("problem reading luxGlobals.adaptiveSampling");
+		if(!getInt(MString("mbtype"), @Globals, this->mbtype))
+			throw("problem reading @Globals.mbtype");
 
-		if(!getBool(MString("doMotionBlur"), LuxGlobals, this->doMb))
-			throw("problem reading LuxGlobals.doMotionBlur");
+		if(!getInt(MString("bitdepth"), @Globals, this->bitdepth))
+			throw("problem reading @Globals.bitdepth");
+	
+		if(!getInt(MString("translatorVerbosity"), @Globals, this->translatorVerbosity))
+			throw("problem reading @Globals.translatorVerbosity");
 
-		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
-			throw("problem reading LuxGlobals.doDof");
+		if(!getInt(MString("rendererVerbosity"), @Globals, this->rendererVerbosity))
+			throw("problem reading @Globals.rendererVerbosity");
 
-		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
-			throw("problem reading LuxGlobals.doDof");
+		if(!getInt(MString("tilesize"), @Globals, this->tilesize))
+			throw("problem reading @Globals.tilesize");
 
-		if(!getFloat(MString("sceneScale"), LuxGlobals, this->sceneScale))
-			throw("problem reading LuxGlobals.sceneScale");
+		if(!getInt(MString("threads"), @Globals, this->threads))
+			throw("problem reading @Globals.threads");
+
+		if(!getInt(MString("geotimesamples"), @Globals, this->geotimesamples))
+			throw("problem reading @Globals.geotimesamples");
+
+		if(!getInt(MString("geotimesamples"), @Globals, this->geotimesamples))
+			throw("problem reading @Globals.geotimesamples");
+
+		if(!getInt(MString("xftimesamples"), @Globals, this->xftimesamples))
+			throw("problem reading @Globals.xftimesamples");
+
+		if(!getInt(MString("maxTraceDepth"), @Globals, this->maxTraceDepth))
+			throw("problem reading @Globals.maxTraceDepth");
+
+		if(!getBool(MString("createDefaultLight"), @Globals, this->createDefaultLight))
+			throw("problem reading @Globals.createDefaultLight");
+
+		if(!getBool(MString("detectShapeDeform"), @Globals, this->detectShapeDeform))
+			throw("problem reading @Globals.detectShapeDeform");
+
+		if(!getString(MString("optimizedTexturePath"), @Globals, this->optimizedTexturePath))
+			throw("problem reading @Globals.optimizedTexturePath");
+
+		if(!getString(MString("basePath"), @Globals, this->basePath))
+			throw("problem reading @Globals.basePath");
+
+		if(!getString(MString("imagePath"), @Globals, this->imagePath))
+			throw("problem reading @Globals.imagePath");
+
+		if(!getBool(MString("exportSceneFile"), @Globals, this->exportSceneFile))
+			throw("problem reading @Globals.exportSceneFile");
+
+		if(!getString(MString("exportSceneFileName"), @Globals, this->exportSceneFileName))
+			throw("problem reading @Globals.exportSceneFileName");
+
+		if(!getString(MString("imageName"), @Globals, this->imageName))
+			throw("problem reading @Globals.imageName");
+
+		if(!getBool(MString("adaptiveSampling"), @Globals, this->adaptiveSampling))
+			throw("problem reading @Globals.adaptiveSampling");
+
+		if(!getBool(MString("doMotionBlur"), @Globals, this->doMb))
+			throw("problem reading @Globals.doMotionBlur");
+
+		if(!getBool(MString("doDof"), @Globals, this->doDof))
+			throw("problem reading @Globals.doDof");
+
+		if(!getFloat(MString("sceneScale"), @Globals, this->sceneScale))
+			throw("problem reading @Globals.sceneScale");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

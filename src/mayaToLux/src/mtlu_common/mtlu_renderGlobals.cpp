@@ -234,6 +234,12 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getFloat(MString("rrcontinueprob"), LuxGlobals, this->rrcontinueprob))
 			throw("problem reading luxGlobals.rrcontinueprob");
 
+		if(!getBool(MString("includeenvironment"), LuxGlobals, this->includeenvironment))
+			throw("problem reading luxGlobals.includeenvironment");
+
+		if(!getBool(MString("directlightsampling"), LuxGlobals, this->directlightsampling))
+			throw("problem reading luxGlobals.directlightsampling");
+
 		if(!getInt(MString("dlightMaxdepth"), LuxGlobals, this->dlightMaxdepth))
 			throw("problem reading luxGlobals.dlightMaxdepth");
 
@@ -285,34 +291,220 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getString(MString("phPhotonmapsfile"), LuxGlobals, this->phPhotonmapsfile))
 			throw("problem reading luxGlobals.phPhotonmapsfile");
 
+		if(!getEnum(MString("renderingmode"), LuxGlobals, this->renderingmode))
+			throw("problem reading luxGlobals.renderingmode");
+
+		if(!getEnum(MString("strategy"), LuxGlobals, this->strategy))
+			throw("problem reading luxGlobals.strategy");
+
+		if(!getBool(MString("directsampleall"), LuxGlobals, this->directsampleall))
+			throw("problem reading luxGlobals.directsampleall");
+
+		if(!getInt(MString("directsamples"), LuxGlobals, this->directsamples))
+			throw("problem reading luxGlobals.directsamples");
+
+		if(!getBool(MString("indirectsampleall"), LuxGlobals, this->indirectsampleall))
+			throw("problem reading luxGlobals.indirectsampleall");
+
+		if(!getInt(MString("indirectsamples"), LuxGlobals, this->indirectsamples))
+			throw("problem reading luxGlobals.indirectsamples");
+
+		if(!getInt(MString("diffusereflectdepth"), LuxGlobals, this->diffusereflectdepth))
+			throw("problem reading luxGlobals.diffusereflectdepth");
+
+		if(!getInt(MString("diffusereflectsamples"), LuxGlobals, this->diffusereflectsamples))
+			throw("problem reading luxGlobals.diffusereflectsamples");
+
+		if(!getInt(MString("diffuserefractdepth"), LuxGlobals, this->diffuserefractdepth))
+			throw("problem reading luxGlobals.diffuserefractdepth");
+
+		if(!getInt(MString("diffuserefractsamples"), LuxGlobals, this->diffuserefractsamples))
+			throw("problem reading luxGlobals.diffuserefractsamples");
+
+		if(!getBool(MString("directdiffuse"), LuxGlobals, this->directdiffuse))
+			throw("problem reading luxGlobals.directdiffuse");
+
+		if(!getBool(MString("indirectdiffuse"), LuxGlobals, this->indirectdiffuse))
+			throw("problem reading luxGlobals.indirectdiffuse");
+
+		if(!getInt(MString("glossyreflectdepth"), LuxGlobals, this->glossyreflectdepth))
+			throw("problem reading luxGlobals.glossyreflectdepth");
+
+		if(!getInt(MString("glossyreflectsamples"), LuxGlobals, this->glossyreflectsamples))
+			throw("problem reading luxGlobals.glossyreflectsamples");
+
+		if(!getInt(MString("glossyrefractdepth"), LuxGlobals, this->glossyrefractdepth))
+			throw("problem reading luxGlobals.glossyrefractdepth");
+
+		if(!getInt(MString("glossyrefractsamples"), LuxGlobals, this->glossyrefractsamples))
+			throw("problem reading luxGlobals.glossyrefractsamples");
+
+		if(!getBool(MString("directglossy"), LuxGlobals, this->directglossy))
+			throw("problem reading luxGlobals.directglossy");
+
+		if(!getBool(MString("indirectglossy"), LuxGlobals, this->indirectglossy))
+			throw("problem reading luxGlobals.indirectglossy");
+
+		if(!getInt(MString("specularreflectdepth"), LuxGlobals, this->specularreflectdepth))
+			throw("problem reading luxGlobals.specularreflectdepth");
+
+		if(!getInt(MString("specularrefractdepth"), LuxGlobals, this->specularrefractdepth))
+			throw("problem reading luxGlobals.specularrefractdepth");
+
+		if(!getBool(MString("diffusereflectreject"), LuxGlobals, this->diffusereflectreject))
+			throw("problem reading luxGlobals.diffusereflectreject");
+
+		if(!getBool(MString("diffuserefractreject"), LuxGlobals, this->diffuserefractreject))
+			throw("problem reading luxGlobals.diffuserefractreject");
+
+		if(!getInt(MString("diffusereflectreject_threshold"), LuxGlobals, this->diffusereflectreject_threshold))
+			throw("problem reading luxGlobals.diffusereflectreject_threshold");
+
+		if(!getInt(MString("diffuserefractreject_threshold"), LuxGlobals, this->diffuserefractreject_threshold))
+			throw("problem reading luxGlobals.diffuserefractreject_threshold");
+
+		if(!getBool(MString("glossyreflectreject"), LuxGlobals, this->glossyreflectreject))
+			throw("problem reading luxGlobals.glossyreflectreject");
+
+		if(!getBool(MString("glossyrefractreject"), LuxGlobals, this->glossyrefractreject))
+			throw("problem reading luxGlobals.glossyrefractreject");
+
+		if(!getInt(MString("glossyreflectreject_threshold"), LuxGlobals, this->glossyreflectreject_threshold))
+			throw("problem reading luxGlobals.glossyreflectreject_threshold");
+
+		if(!getInt(MString("glossyrefractreject_threshold"), LuxGlobals, this->glossyrefractreject_threshold))
+			throw("problem reading luxGlobals.glossyrefractreject_threshold");
+
+		if(!getInt(MString("maxeyedepth"), LuxGlobals, this->maxeyedepth))
+			throw("problem reading luxGlobals.maxeyedepth");
+
+		if(!getInt(MString("maxphotondepth"), LuxGlobals, this->maxphotondepth))
+			throw("problem reading luxGlobals.maxphotondepth");
+
+		if(!getInt(MString("photonperpass"), LuxGlobals, this->photonperpass))
+			throw("problem reading luxGlobals.photonperpass");
+
+		if(!getInt(MString("startk"), LuxGlobals, this->startk))
+			throw("problem reading luxGlobals.startk");
+
+		if(!getFloat(MString("alpha"), LuxGlobals, this->alpha))
+			throw("problem reading luxGlobals.alpha");
+
+		if(!getFloat(MString("glossythreshold"), LuxGlobals, this->glossythreshold))
+			throw("problem reading luxGlobals.glossythreshold");
+
+		if(!getEnum(MString("lookupaccel"), LuxGlobals, this->lookupaccel))
+			throw("problem reading luxGlobals.lookupaccel");
+
+		if(!getEnum(MString("pixelsampler"), LuxGlobals, this->pixelsampler))
+			throw("problem reading luxGlobals.pixelsampler");
+
+		if(!getEnum(MString("photonsampler"), LuxGlobals, this->photonsampler))
+			throw("problem reading luxGlobals.photonsampler");
+
+		if(!getBool(MString("sppmincludeenvironment"), LuxGlobals, this->sppmincludeenvironment))
+			throw("problem reading luxGlobals.sppmincludeenvironment");
+
+		if(!getFloat(MString("parallelhashgridspare"), LuxGlobals, this->parallelhashgridspare))
+			throw("problem reading luxGlobals.parallelhashgridspare");
+
+		if(!getFloat(MString("startradius"), LuxGlobals, this->startradius))
+			throw("problem reading luxGlobals.startradius");
+
+		if(!getBool(MString("sppmdirectlightsampling"), LuxGlobals, this->sppmdirectlightsampling))
+			throw("problem reading luxGlobals.sppmdirectlightsampling");
+
+		if(!getBool(MString("useproba"), LuxGlobals, this->useproba))
+			throw("problem reading luxGlobals.useproba");
+
+		if(!getInt(MString("wavelengthstratification"), LuxGlobals, this->wavelengthstratification))
+			throw("problem reading luxGlobals.wavelengthstratification");
+
+		if(!getBool(MString("debug"), LuxGlobals, this->debug))
+			throw("problem reading luxGlobals.debug");
+
+		if(!getBool(MString("storeglossy"), LuxGlobals, this->storeglossy))
+			throw("problem reading luxGlobals.storeglossy");
+
 //	------------- automatically created attributes end ----------- // 
 		
+		if(!getFloat(MString("filterSize"), LuxGlobals, this->filterSize))
+			throw("problem reading LuxGlobals.filterSize");
+
+		if(!getFloat(MString("gamma"), LuxGlobals, this->gamma))
+			throw("problem reading LuxGlobals.gamma");
+
+		if(!getInt(MString("samplesX"), LuxGlobals, this->samplesX))
+			throw("problem reading LuxGlobals.samplesX");
+
+		if(!getInt(MString("samplesY"), LuxGlobals, this->samplesY))
+			throw("problem reading LuxGlobals.samplesY");
+
+		if(!getInt(MString("minSamples"), LuxGlobals, this->minSamples))
+			throw("problem reading LuxGlobals.minSamples");
+
+		if(!getInt(MString("maxSamples"), LuxGlobals, this->maxSamples))
+			throw("problem reading LuxGlobals.maxSamples");
+
+		if(!getInt(MString("mbtype"), LuxGlobals, this->mbtype))
+			throw("problem reading LuxGlobals.mbtype");
+
+		if(!getInt(MString("bitdepth"), LuxGlobals, this->bitdepth))
+			throw("problem reading LuxGlobals.bitdepth");
+	
+		if(!getInt(MString("translatorVerbosity"), LuxGlobals, this->translatorVerbosity))
+			throw("problem reading LuxGlobals.translatorVerbosity");
+
+		if(!getInt(MString("rendererVerbosity"), LuxGlobals, this->rendererVerbosity))
+			throw("problem reading LuxGlobals.rendererVerbosity");
+
+		if(!getInt(MString("tilesize"), LuxGlobals, this->tilesize))
+			throw("problem reading LuxGlobals.tilesize");
+
+		if(!getInt(MString("threads"), LuxGlobals, this->threads))
+			throw("problem reading LuxGlobals.threads");
+
+		if(!getInt(MString("geotimesamples"), LuxGlobals, this->geotimesamples))
+			throw("problem reading LuxGlobals.geotimesamples");
+
+		if(!getInt(MString("geotimesamples"), LuxGlobals, this->geotimesamples))
+			throw("problem reading LuxGlobals.geotimesamples");
+
+		if(!getInt(MString("xftimesamples"), LuxGlobals, this->xftimesamples))
+			throw("problem reading LuxGlobals.xftimesamples");
+
+		if(!getInt(MString("maxTraceDepth"), LuxGlobals, this->maxTraceDepth))
+			throw("problem reading LuxGlobals.maxTraceDepth");
+
+		if(!getBool(MString("createDefaultLight"), LuxGlobals, this->createDefaultLight))
+			throw("problem reading LuxGlobals.createDefaultLight");
+
+		if(!getBool(MString("detectShapeDeform"), LuxGlobals, this->detectShapeDeform))
+			throw("problem reading LuxGlobals.detectShapeDeform");
+
 		if(!getString(MString("optimizedTexturePath"), LuxGlobals, this->optimizedTexturePath))
-			throw("problem reading luxGlobals.optimizedTexturePath");
+			throw("problem reading LuxGlobals.optimizedTexturePath");
 
 		if(!getString(MString("basePath"), LuxGlobals, this->basePath))
-			throw("problem reading luxGlobals.basePath");
+			throw("problem reading LuxGlobals.basePath");
 
 		if(!getString(MString("imagePath"), LuxGlobals, this->imagePath))
-			throw("problem reading luxGlobals.imagePath");
+			throw("problem reading LuxGlobals.imagePath");
 
 		if(!getBool(MString("exportSceneFile"), LuxGlobals, this->exportSceneFile))
-			throw("problem reading luxGlobals.exportSceneFile");
+			throw("problem reading LuxGlobals.exportSceneFile");
 
 		if(!getString(MString("exportSceneFileName"), LuxGlobals, this->exportSceneFileName))
-			throw("problem reading luxGlobals.exportSceneFileName");
+			throw("problem reading LuxGlobals.exportSceneFileName");
 
 		if(!getString(MString("imageName"), LuxGlobals, this->imageName))
-			throw("problem reading luxGlobals.imageName");
+			throw("problem reading LuxGlobals.imageName");
 
 		if(!getBool(MString("adaptiveSampling"), LuxGlobals, this->adaptiveSampling))
-			throw("problem reading luxGlobals.adaptiveSampling");
+			throw("problem reading LuxGlobals.adaptiveSampling");
 
 		if(!getBool(MString("doMotionBlur"), LuxGlobals, this->doMb))
 			throw("problem reading LuxGlobals.doMotionBlur");
-
-		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
-			throw("problem reading LuxGlobals.doDof");
 
 		if(!getBool(MString("doDof"), LuxGlobals, this->doDof))
 			throw("problem reading LuxGlobals.doDof");

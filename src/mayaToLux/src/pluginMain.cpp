@@ -27,26 +27,34 @@
 
 // Textures
 
+#include "textures/addTexture.h"
+#include "textures/bandTexture.h"
+
+#include "textures/blackbodyTexture.h"
+#include "textures/bilerpTexture.h"
+#include "textures/blender_woodTexture.h"
+#include "textures/blender_marbleTexture.h"
+#include "textures/blender_musgraveTexture.h"
 #include "textures/dotsTexture.h"
-#include "textures/mediumclearTexture.h"
 #include "textures/blender_cloudsTexture.h"
 #include "textures/blender_distortednoiseTexture.h"
+#include "textures/colordepthTexture.h"
 #include "textures/fresnelTexture.h"
 #include "textures/gaussianTexture.h"
-#include "textures/blender_marbleTexture.h"
+#include "textures/mediumclearTexture.h"
 #include "textures/marbleTexture.h"
-#include "textures/bandTexture.h"
-#include "textures/addTexture.h"
 #include "textures/mediumhomogenusTexture.h"
 #include "textures/fresnelcolorTexture.h"
-#include "textures/bilerpTexture.h"
 #include "textures/wrinkledTexture.h"
-#include "textures/blender_woodTexture.h"
-#include "textures/colordepthTexture.h"
 #include "textures/tabulateddataTexture.h"
 #include "textures/brickTexture.h"
 #include "textures/fbmTexture.h"
-#include "textures/blender_musgraveTexture.h"
+
+#include "textures/constantTexture.h"
+#include "textures/harlequinTexture.h"
+#include "textures/wrinkledTexture.h"
+#include "textures/windyTexture.h"
+#include "textures/uvTexture.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
@@ -106,15 +114,13 @@ static const MString carpaintsRegistrantId("carpaintPlugin");
 static const MString carpaintsDrawDBClassification("drawdb/shader/surface/lux/carpaint");
 static const MString carpaintsFullClassification("lux/material:shader/surface:" + carpaintsDrawDBClassification);
 
-static const MString dotssRegistrantId("dotsPlugin");
-static const MString dotssDrawDBClassification("drawdb/shader/surface/dots");
-static const MString dotssFullClassification("lux/texture:shader/surface:" + dotssDrawDBClassification);
-static const MString mediumclearsRegistrantId("mediumclearPlugin");
-static const MString mediumclearsDrawDBClassification("drawdb/shader/surface/mediumclear");
-static const MString mediumclearsFullClassification("lux/texture:shader/surface:" + mediumclearsDrawDBClassification);
-static const MString blender_woodsRegistrantId("blender_woodPlugin");
-static const MString blender_woodsDrawDBClassification("drawdb/shader/surface/blender_wood");
-static const MString blender_woodsFullClassification("lux/texture:shader/surface:" + blender_woodsDrawDBClassification);
+// textures
+static const MString blackbodysRegistrantId("blackbodyPlugin");
+static const MString blackbodysDrawDBClassification("drawdb/shader/surface/blackbody");
+static const MString blackbodysFullClassification("lux/texture:shader/surface:" + blackbodysDrawDBClassification);
+static const MString constantsRegistrantId("constantPlugin");
+static const MString constantsDrawDBClassification("drawdb/shader/surface/constant");
+static const MString constantsFullClassification("lux/texture:shader/surface:" + constantsDrawDBClassification);
 static const MString blender_distortednoisesRegistrantId("blender_distortednoisePlugin");
 static const MString blender_distortednoisesDrawDBClassification("drawdb/shader/surface/blender_distortednoise");
 static const MString blender_distortednoisesFullClassification("lux/texture:shader/surface:" + blender_distortednoisesDrawDBClassification);
@@ -127,45 +133,63 @@ static const MString gaussiansFullClassification("lux/texture:shader/surface:" +
 static const MString blender_marblesRegistrantId("blender_marblePlugin");
 static const MString blender_marblesDrawDBClassification("drawdb/shader/surface/blender_marble");
 static const MString blender_marblesFullClassification("lux/texture:shader/surface:" + blender_marblesDrawDBClassification);
-static const MString marblesRegistrantId("marblePlugin");
-static const MString marblesDrawDBClassification("drawdb/shader/surface/marble");
-static const MString marblesFullClassification("lux/texture:shader/surface:" + marblesDrawDBClassification);
-static const MString bandsRegistrantId("bandPlugin");
-static const MString bandsDrawDBClassification("drawdb/shader/surface/band");
-static const MString bandsFullClassification("lux/texture:shader/surface:" + bandsDrawDBClassification);
-static const MString addsRegistrantId("addPlugin");
-static const MString addsDrawDBClassification("drawdb/shader/surface/add");
-static const MString addsFullClassification("lux/texture:shader/surface:" + addsDrawDBClassification);
-static const MString blender_cloudssRegistrantId("blender_cloudsPlugin");
-static const MString blender_cloudssDrawDBClassification("drawdb/shader/surface/blender_clouds");
-static const MString blender_cloudssFullClassification("lux/texture:shader/surface:" + blender_cloudssDrawDBClassification);
-static const MString fresnelcolorsRegistrantId("fresnelcolorPlugin");
-static const MString fresnelcolorsDrawDBClassification("drawdb/shader/surface/fresnelcolor");
-static const MString fresnelcolorsFullClassification("lux/texture:shader/surface:" + fresnelcolorsDrawDBClassification);
-static const MString bilerpsRegistrantId("bilerpPlugin");
-static const MString bilerpsDrawDBClassification("drawdb/shader/surface/bilerp");
-static const MString bilerpsFullClassification("lux/texture:shader/surface:" + bilerpsDrawDBClassification);
-static const MString wrinkledsRegistrantId("wrinkledPlugin");
-static const MString wrinkledsDrawDBClassification("drawdb/shader/surface/wrinkled");
-static const MString wrinkledsFullClassification("lux/texture:shader/surface:" + wrinkledsDrawDBClassification);
-static const MString mediumhomogenussRegistrantId("mediumhomogenusPlugin");
-static const MString mediumhomogenussDrawDBClassification("drawdb/shader/surface/mediumhomogenus");
-static const MString mediumhomogenussFullClassification("lux/texture:shader/surface:" + mediumhomogenussDrawDBClassification);
+static const MString windysRegistrantId("windyPlugin");
+static const MString windysDrawDBClassification("drawdb/shader/surface/windy");
+static const MString windysFullClassification("lux/texture:shader/surface:" + windysDrawDBClassification);
 static const MString colordepthsRegistrantId("colordepthPlugin");
 static const MString colordepthsDrawDBClassification("drawdb/shader/surface/colordepth");
 static const MString colordepthsFullClassification("lux/texture:shader/surface:" + colordepthsDrawDBClassification);
-static const MString tabulateddatasRegistrantId("tabulateddataPlugin");
-static const MString tabulateddatasDrawDBClassification("drawdb/shader/surface/tabulateddata");
-static const MString tabulateddatasFullClassification("lux/texture:shader/surface:" + tabulateddatasDrawDBClassification);
-static const MString bricksRegistrantId("brickPlugin");
-static const MString bricksDrawDBClassification("drawdb/shader/surface/brick");
-static const MString bricksFullClassification("lux/texture:shader/surface:" + bricksDrawDBClassification);
+static const MString mediumclearsRegistrantId("mediumclearPlugin");
+static const MString mediumclearsDrawDBClassification("drawdb/shader/surface/mediumclear");
+static const MString mediumclearsFullClassification("lux/texture:shader/surface:" + mediumclearsDrawDBClassification);
+static const MString fresnelcolorsRegistrantId("fresnelcolorPlugin");
+static const MString fresnelcolorsDrawDBClassification("drawdb/shader/surface/fresnelcolor");
+static const MString fresnelcolorsFullClassification("lux/texture:shader/surface:" + fresnelcolorsDrawDBClassification);
+static const MString mediumhomogenussRegistrantId("mediumhomogenusPlugin");
+static const MString mediumhomogenussDrawDBClassification("drawdb/shader/surface/mediumhomogenus");
+static const MString mediumhomogenussFullClassification("lux/texture:shader/surface:" + mediumhomogenussDrawDBClassification);
+static const MString harlequinsRegistrantId("harlequinPlugin");
+static const MString harlequinsDrawDBClassification("drawdb/shader/surface/harlequin");
+static const MString harlequinsFullClassification("lux/texture:shader/surface:" + harlequinsDrawDBClassification);
+static const MString addsRegistrantId("addPlugin");
+static const MString addsDrawDBClassification("drawdb/shader/surface/add");
+static const MString addsFullClassification("lux/texture:shader/surface:" + addsDrawDBClassification);
 static const MString fbmsRegistrantId("fbmPlugin");
 static const MString fbmsDrawDBClassification("drawdb/shader/surface/fbm");
 static const MString fbmsFullClassification("lux/texture:shader/surface:" + fbmsDrawDBClassification);
+static const MString bilerpsRegistrantId("bilerpPlugin");
+static const MString bilerpsDrawDBClassification("drawdb/shader/surface/bilerp");
+static const MString bilerpsFullClassification("lux/texture:shader/surface:" + bilerpsDrawDBClassification);
+static const MString bricksRegistrantId("brickPlugin");
+static const MString bricksDrawDBClassification("drawdb/shader/surface/brick");
+static const MString bricksFullClassification("lux/texture:shader/surface:" + bricksDrawDBClassification);
+static const MString tabulateddatasRegistrantId("tabulateddataPlugin");
+static const MString tabulateddatasDrawDBClassification("drawdb/shader/surface/tabulateddata");
+static const MString tabulateddatasFullClassification("lux/texture:shader/surface:" + tabulateddatasDrawDBClassification);
 static const MString blender_musgravesRegistrantId("blender_musgravePlugin");
 static const MString blender_musgravesDrawDBClassification("drawdb/shader/surface/blender_musgrave");
 static const MString blender_musgravesFullClassification("lux/texture:shader/surface:" + blender_musgravesDrawDBClassification);
+static const MString dotssRegistrantId("dotsPlugin");
+static const MString dotssDrawDBClassification("drawdb/shader/surface/dots");
+static const MString dotssFullClassification("lux/texture:shader/surface:" + dotssDrawDBClassification);
+static const MString bandsRegistrantId("bandPlugin");
+static const MString bandsDrawDBClassification("drawdb/shader/surface/band");
+static const MString bandsFullClassification("lux/texture:shader/surface:" + bandsDrawDBClassification);
+static const MString blender_woodsRegistrantId("blender_woodPlugin");
+static const MString blender_woodsDrawDBClassification("drawdb/shader/surface/blender_wood");
+static const MString blender_woodsFullClassification("lux/texture:shader/surface:" + blender_woodsDrawDBClassification);
+static const MString uvsRegistrantId("uvPlugin");
+static const MString uvsDrawDBClassification("drawdb/shader/surface/uv");
+static const MString uvsFullClassification("lux/texture:shader/surface:" + uvsDrawDBClassification);
+static const MString blender_cloudssRegistrantId("blender_cloudsPlugin");
+static const MString blender_cloudssDrawDBClassification("drawdb/shader/surface/blender_clouds");
+static const MString blender_cloudssFullClassification("lux/texture:shader/surface:" + blender_cloudssDrawDBClassification);
+static const MString wrinkledsRegistrantId("wrinkledPlugin");
+static const MString wrinkledsDrawDBClassification("drawdb/shader/surface/wrinkled");
+static const MString wrinkledsFullClassification("lux/texture:shader/surface:" + wrinkledsDrawDBClassification);
+static const MString marblesRegistrantId("marblePlugin");
+static const MString marblesDrawDBClassification("drawdb/shader/surface/marble");
+static const MString marblesFullClassification("lux/texture:shader/surface:" + marblesDrawDBClassification);
 
 
 MStatus initializePlugin( MObject obj )
@@ -262,26 +286,31 @@ MStatus initializePlugin( MObject obj )
 
 	// Textures
 
-	CHECK_MSTATUS( plugin.registerNode( "luxDots", dots::id, dots::creator, dots::initialize, MPxNode::kDependNode, &dotssFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxMediumclear", mediumclear::id, mediumclear::creator, mediumclear::initialize, MPxNode::kDependNode, &mediumclearsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxBlender_wood", blender_wood::id, blender_wood::creator, blender_wood::initialize, MPxNode::kDependNode, &blender_woodsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBlackbody", blackbody::id, blackbody::creator, blackbody::initialize, MPxNode::kDependNode, &blackbodysFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxConstant", constant::id, constant::creator, constant::initialize, MPxNode::kDependNode, &constantsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxBlender_distortednoise", blender_distortednoise::id, blender_distortednoise::creator, blender_distortednoise::initialize, MPxNode::kDependNode, &blender_distortednoisesFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxFresnel", fresnel::id, fresnel::creator, fresnel::initialize, MPxNode::kDependNode, &fresnelsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxGaussian", gaussian::id, gaussian::creator, gaussian::initialize, MPxNode::kDependNode, &gaussiansFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxBlender_marble", blender_marble::id, blender_marble::creator, blender_marble::initialize, MPxNode::kDependNode, &blender_marblesFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxMarble", marble::id, marble::creator, marble::initialize, MPxNode::kDependNode, &marblesFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxBand", band::id, band::creator, band::initialize, MPxNode::kDependNode, &bandsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxAdd", add::id, add::creator, add::initialize, MPxNode::kDependNode, &addsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxBlender_clouds", blender_clouds::id, blender_clouds::creator, blender_clouds::initialize, MPxNode::kDependNode, &blender_cloudssFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxFresnelcolor", fresnelcolor::id, fresnelcolor::creator, fresnelcolor::initialize, MPxNode::kDependNode, &fresnelcolorsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxBilerp", bilerp::id, bilerp::creator, bilerp::initialize, MPxNode::kDependNode, &bilerpsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxWrinkled", wrinkled::id, wrinkled::creator, wrinkled::initialize, MPxNode::kDependNode, &wrinkledsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxMediumhomogenus", mediumhomogenus::id, mediumhomogenus::creator, mediumhomogenus::initialize, MPxNode::kDependNode, &mediumhomogenussFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxWindy", windy::id, windy::creator, windy::initialize, MPxNode::kDependNode, &windysFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxColordepth", colordepth::id, colordepth::creator, colordepth::initialize, MPxNode::kDependNode, &colordepthsFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxTabulateddata", tabulateddata::id, tabulateddata::creator, tabulateddata::initialize, MPxNode::kDependNode, &tabulateddatasFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "luxBrick", brick::id, brick::creator, brick::initialize, MPxNode::kDependNode, &bricksFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMediumclear", mediumclear::id, mediumclear::creator, mediumclear::initialize, MPxNode::kDependNode, &mediumclearsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxFresnelcolor", fresnelcolor::id, fresnelcolor::creator, fresnelcolor::initialize, MPxNode::kDependNode, &fresnelcolorsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMediumhomogenus", mediumhomogenus::id, mediumhomogenus::creator, mediumhomogenus::initialize, MPxNode::kDependNode, &mediumhomogenussFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxHarlequin", harlequin::id, harlequin::creator, harlequin::initialize, MPxNode::kDependNode, &harlequinsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxAdd", add::id, add::creator, add::initialize, MPxNode::kDependNode, &addsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxFbm", fbm::id, fbm::creator, fbm::initialize, MPxNode::kDependNode, &fbmsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBilerp", bilerp::id, bilerp::creator, bilerp::initialize, MPxNode::kDependNode, &bilerpsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBrick", brick::id, brick::creator, brick::initialize, MPxNode::kDependNode, &bricksFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxTabulateddata", tabulateddata::id, tabulateddata::creator, tabulateddata::initialize, MPxNode::kDependNode, &tabulateddatasFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "luxBlender_musgrave", blender_musgrave::id, blender_musgrave::creator, blender_musgrave::initialize, MPxNode::kDependNode, &blender_musgravesFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxDots", dots::id, dots::creator, dots::initialize, MPxNode::kDependNode, &dotssFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBand", band::id, band::creator, band::initialize, MPxNode::kDependNode, &bandsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBlender_wood", blender_wood::id, blender_wood::creator, blender_wood::initialize, MPxNode::kDependNode, &blender_woodsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxUv", uv::id, uv::creator, uv::initialize, MPxNode::kDependNode, &uvsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxBlender_clouds", blender_clouds::id, blender_clouds::creator, blender_clouds::initialize, MPxNode::kDependNode, &blender_cloudssFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxWrinkled", wrinkled::id, wrinkled::creator, wrinkled::initialize, MPxNode::kDependNode, &wrinkledsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMarble", marble::id, marble::creator, marble::initialize, MPxNode::kDependNode, &marblesFullClassification ));
 
 
 	status = plugin.registerNode(MayaToLuxGlobalsName, MayaToLuxGlobals::id, MayaToLuxGlobals::creator, MayaToLuxGlobals::initialize );
@@ -401,26 +430,31 @@ MStatus uninitializePlugin( MObject obj)
 
 	// Textures
 
-	CHECK_MSTATUS( plugin.deregisterNode( dots::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( mediumclear::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( blender_wood::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( blackbody::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( constant::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( blender_distortednoise::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( fresnel::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( gaussian::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( blender_marble::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( marble::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( band::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( add::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( blender_clouds::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( fresnelcolor::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( bilerp::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( wrinkled::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( mediumhomogenus::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( windy::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( colordepth::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( tabulateddata::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( brick::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( mediumclear::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( fresnelcolor::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( mediumhomogenus::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( harlequin::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( add::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( fbm::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( bilerp::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( brick::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( tabulateddata::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( blender_musgrave::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( dots::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( band::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( blender_wood::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( uv::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( blender_clouds::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( wrinkled::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( marble::id ) );
 
 
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );

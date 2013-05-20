@@ -38,6 +38,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
 
     def addUserTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("SurfaceIntegrator"))    
 
     def updateEnvironment(self, dummy=None):
         if not self.rendererTabUiDict.has_key('environment'):
@@ -75,8 +76,150 @@ class LuxRenderer(Renderer.MayaToRenderer):
         envDict['pskSunGain'].setEnable(True)
         envDict['pskTurb'].setEnable(True)
         envDict['pskSamples'].setEnable(True)
+
     
+    def LuxSurfaceIntegratorCreateTab(self):
+        log.debug("LuxSurfaceIntegratorCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query = True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        scLo = self.rendererName + "ScrollLayout"
+        uiDict = {}
+        self.rendererTabUiDict['surfaceIntegrator'] = uiDict
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
+                with pm.frameLayout(label='surface integrator', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'surfaceIntegrator', uiType = 'enum', displayName = 'Surface Integrator', default='0', data='bidirectional (default):path:exphotonmap:directlighting:igi:distributedpath:sppm', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'lightStrategy', uiType = 'enum', displayName = 'Light Strategy', default='2', data='one:all:auto:importance:powerimp:allpowerimp:logpowerimp', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'shadowraycount', uiType = 'int', displayName = 'Shadow Rays', default='1', uiDict=uiDict)
+                        pm.separator() # bidirectional
+                        self.addRenderGlobalsUIElement(attName = 'eyedepth', uiType = 'int', displayName = 'Eye Depth', default='8', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'lightdepth', uiType = 'int', displayName = 'Light Depth', default='8', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'eyerrthreshold', uiType = 'float', displayName = 'Eye RR Thresh', default='0.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'lightrrthreshold', uiType = 'float', displayName = 'Light RR Thresh', default='0.0', uiDict=uiDict)
+                        pm.separator() # path
+                        self.addRenderGlobalsUIElement(attName = 'pathMaxdepth', uiType = 'int', displayName = 'Max Depth', default='16', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'rrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict,callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'includeenvironment', uiType = 'bool', displayName = 'Use Environment', default=True, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directlightsampling', uiType = 'bool', displayName = 'Use Direct Light', default=True, uiDict=uiDict)
+                        pm.separator() # photon map
+                        self.addRenderGlobalsUIElement(attName = 'phRenderingmode', uiType = 'enum', displayName = 'Rendering Mode', default='0', data='directlighting:path', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'phCausticphotons', uiType = 'int', displayName = 'Caustic Photons', default='20000', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phIndirectphotons', uiType = 'int', displayName = 'Indirect Photons', default='200000', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phDirectphotons', uiType = 'int', displayName = 'Direct Photons', default='200000', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phRadiancephotons', uiType = 'int', displayName = 'Radiance Photons', default='200000', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phNphotonsused', uiType = 'int', displayName = 'Irradiance Photons', default='50', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phMaxphotondist', uiType = 'float', displayName = 'Max Photon Dist', default='0.5', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phMaxdepth', uiType = 'int', displayName = 'Max Specular Bounces', default='5', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phMaxphotondepth', uiType = 'int', displayName = 'Max Trace Depth', default='10', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phFinalgather', uiType = 'bool', displayName = 'Use Direct Lighing', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phFinalgathersamples', uiType = 'int', displayName = 'Final Gather Samples', default='32', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phGatherangle', uiType = 'float', displayName = 'Gather Angle', default='10.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phRrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'phRrcontinueprob', uiType = 'float', displayName = 'Cont Prob RR', default='0.65', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phDistancethreshold', uiType = 'float', displayName = 'Dist Thresold', default='1.25', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'phPhotonmapsfile', uiType = 'string', displayName = 'Photon File', default='""', uiDict=uiDict)
+                        pm.separator() # direct lighting
+                        self.addRenderGlobalsUIElement(attName = 'dlightMaxdepth', uiType = 'int', displayName = 'Max Depth', default='5', uiDict=uiDict)
+                        pm.separator() # distributed path
+                        self.addRenderGlobalsUIElement(attName = 'renderingmode', uiType = 'enum', displayName = 'Rendering Mode', default=0,data='directlighting:path',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'strategy', uiType = 'enum', displayName = 'Strategy', default=0,data='auto:all:one',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directsampleall', uiType = 'bool', displayName = 'Include diffuse direct', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directsamples', uiType = 'int', displayName = 'Directlight Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'indirectsampleall', uiType = 'bool', displayName = 'Use Diffuse Indirect', default=False,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'indirectsamples', uiType = 'int', displayName = 'Num Indirect light Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffusereflectdepth', uiType = 'int', displayName = 'Max Diffuse Reflection', default=3,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffusereflectsamples', uiType = 'int', displayName = 'Num Reflection Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffuserefractdepth', uiType = 'int', displayName = 'Max Diffuse Refraction', default=5,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffuserefractsamples', uiType = 'int', displayName = 'Num Refraction Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directdiffuse', uiType = 'bool', displayName = 'Use Diffuse Direct', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'indirectdiffuse', uiType = 'bool', displayName = 'Include Diffuse Indirect', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyreflectdepth', uiType = 'int', displayName = 'Max Glossy Reflection', default=2,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyreflectsamples', uiType = 'int', displayName = 'Num Glossy Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyrefractdepth', uiType = 'int', displayName = 'Max Glossy Refraction', default=5,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyrefractsamples', uiType = 'int', displayName = 'Num Glossy Refraction Samples', default=1,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directglossy', uiType = 'bool', displayName = 'Include Glossy Direct Light Samples', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'indirectglossy', uiType = 'bool', displayName = 'Include Glossy Indirect Light Samples', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'specularreflectdepth', uiType = 'int', displayName = 'Max Spec Refl Depth', default=3,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'specularrefractdepth', uiType = 'int', displayName = 'Max Spec Refr Depth', default=3,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffusereflectreject', uiType = 'bool', displayName = 'Rejection for Diffuse Reflection', default=False,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffuserefractreject', uiType = 'bool', displayName = 'Rejection for Diffuse Refraction', default=False,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffusereflectreject_threshold', uiType = 'int', displayName = 'Average Reflect Reject Threshold', default=10.0,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'diffuserefractreject_threshold', uiType = 'int', displayName = 'Average Refract Reject Threshold', default=10.0,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyreflectreject', uiType = 'bool', displayName = 'Rejection for Glossy Reflection', default=False,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossyrefractreject', uiType = 'bool', displayName = 'Rejection for Glossy Refraction', default=False,uiDict=uiDict) 
+                        pm.separator() # sppm
+                        self.addRenderGlobalsUIElement(attName = 'maxeyedepth', uiType = 'int', displayName = 'Max Eye Depth', default='16', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'maxphotondepth', uiType = 'int', displayName = 'Max Photon Depth', default='16', uiDict=uiDict)                        
+                        self.addRenderGlobalsUIElement(attName = 'photonperpass', uiType = 'int', displayName = 'Photons per Pass', default=1000000,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'startk', uiType = 'int', displayName = 'Min Photons', default=0,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'alpha', uiType = 'float', displayName = 'Decrement Tight Serach Radius', default=0.7,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'glossythreshold', uiType = 'float', displayName = 'Maximum Store PDF', default=100,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'lookupaccel', uiType = 'enum', displayName = 'Hitpoint Structure', default=0,data='hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'pixelsampler', uiType = 'enum', displayName = 'Eye Pass Sampling Pattern', default=0,data='hilbert:linear:tile:vegas',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'photonsampler', uiType = 'enum', displayName = 'Photon paths Method', default=0,data='halton:amc',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'includeenvironment', uiType = 'bool', displayName = 'Show Env Light Sources', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'parallelhashgridspare', uiType = 'float', displayName = 'Parallel Hashgrid Spare', default=1.0,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'startradius', uiType = 'float', displayName = 'Start Search Radius', default=2.0,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'directlightsampling', uiType = 'bool', displayName = 'Do Direct Lighting Pass', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'useproba', uiType = 'bool', displayName = 'Use Probea', default=True,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'wavelengthstratification', uiType = 'int', displayName = 'Wavelen Passes', default=8,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'debug', uiType = 'bool', displayName = 'Debug mode', default=False,uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'storeglossy', uiType = 'bool', displayName = 'Storing Glossy Hit Points', default=False,uiDict=uiDict)
+                        
+        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
+        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        self.LuxSurfaceIntegratorUpdateTab()
+
+                        
+
+    def LuxSurfaceIntegratorUpdateTab(self, dummy=None):
+        log.debug("LuxSurfaceIntegratorUpdateTab()")
+        self.createGlobalsNode()
+        
+        if not self.rendererTabUiDict.has_key('surfaceIntegrator'):
+            return
+        uiDict = self.rendererTabUiDict['surfaceIntegrator']
+        
+                    
+        defaultOn = ['surfaceIntegrator']
+        
+        # if not spp 
+        if self.renderGlobalsNode.renderer.get() < 2:
+            defaultOn.extend(['lightStrategy', 'shadowraycount'])
             
+        for key, val in uiDict.iteritems():
+            val.setEnable(False)
+
+        for key, val in uiDict.iteritems():
+            if key in defaultOn:
+                val.setEnable(True)
+                
+        # bidirectional
+        if self.renderGlobalsNode.surfaceIntegrator.get() == 0:
+            uiDict['eyedepth'].setEnable(True)
+            uiDict['lightdepth'].setEnable(True)
+            uiDict['eyerrthreshold'].setEnable(True)
+            uiDict['lightrrthreshold'].setEnable(True)
+
+        # path
+        if self.renderGlobalsNode.surfaceIntegrator.get() == 1:
+            uiDict['pathMaxdepth'].setEnable(True)
+            uiDict['rrstrategy'].setEnable(True)
+            uiDict['includeenvironment'].setEnable(True)
+            uiDict['directlightsampling'].setEnable(True)
+        else:
+            uiDict['includeenvironment'].setEnable(False)
+            uiDict['directlightsampling'].setEnable(False)
+        # photon map
+        if self.renderGlobalsNode.surfaceIntegrator.get() == 2:
+            uiDict['pathMaxdepth'].setEnable(True)
+                        
+        # direct light
+        if self.renderGlobalsNode.surfaceIntegrator.get() == 3:
+            uiDict['dlightMaxdepth'].setEnable(True)
+        
     def LuxRendererCreateTab(self):
         log.debug("LuxRendererCreateTab()")
         self.createGlobalsNode()
@@ -101,6 +244,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
 #                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'renderer', uiType = 'enum', displayName = 'Renderer', default='0', data='sampler:hybridsampler:hybridsppm', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
+                        self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'NumThreads', default='4', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsConfigFile', uiType = 'string', displayName = 'HSConfig', default='""', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsOclPlatformIndex', uiType = 'int', displayName = 'OCL Platform Index', default='0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'hsOclGpuUse', uiType = 'bool', displayName = 'OCL Gpu Use', default='1', uiDict=uiDict)
@@ -155,40 +299,6 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'treetype', uiType = 'enum', displayName = 'Tree Type', default='0', data='binary:quadtree:octree', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'costsamples', uiType = 'int', displayName = 'Cost Samples', default='0', uiDict=uiDict)
-
-                with pm.frameLayout(label='surface integrator', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'surfaceIntegrator', uiType = 'enum', displayName = 'Surface Integrator', default='0', data='bidirectional (default):path:exphotonmap:directlighting:distributedpath', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
-                        self.addRenderGlobalsUIElement(attName = 'lightStrategy', uiType = 'enum', displayName = 'Light Strategy', default='2', data='one:all:auto:importance:powerimp:allpowerimp:logpowerimp', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
-                        self.addRenderGlobalsUIElement(attName = 'shadowraycount', uiType = 'int', displayName = 'Shadow Rays', default='1', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'eyedepth', uiType = 'int', displayName = 'Eye Depth', default='8', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'lightdepth', uiType = 'int', displayName = 'Light Depth', default='8', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'eyerrthreshold', uiType = 'float', displayName = 'Eye RR Thresh', default='0.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'lightrrthreshold', uiType = 'float', displayName = 'Light RR Thresh', default='0.0', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'pathMaxdepth', uiType = 'int', displayName = 'Max Depth', default='16', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'rrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict,callback=pm.Callback(self.LuxRendererUpdateTab))
-                        self.addRenderGlobalsUIElement(attName = 'rrcontinueprob', uiType = 'float', displayName = 'RR Continue', default='.65', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'dlightMaxdepth', uiType = 'int', displayName = 'Max Depth', default='5', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'phRenderingmode', uiType = 'enum', displayName = 'Rendering Mode', default='0', data='directlighting:path', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
-                        self.addRenderGlobalsUIElement(attName = 'phCausticphotons', uiType = 'int', displayName = 'Caustic Photons', default='20000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phIndirectphotons', uiType = 'int', displayName = 'Indirect Photons', default='200000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phDirectphotons', uiType = 'int', displayName = 'Direct Photons', default='200000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phRadiancephotons', uiType = 'int', displayName = 'Radiance Photons', default='200000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phNphotonsused', uiType = 'int', displayName = 'Irradiance Photons', default='50', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phMaxphotondist', uiType = 'float', displayName = 'Max Photon Dist', default='0.5', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phMaxdepth', uiType = 'int', displayName = 'Max Specular Bounces', default='5', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phMaxphotondepth', uiType = 'int', displayName = 'Max Trace Depth', default='10', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phFinalgather', uiType = 'bool', displayName = 'Use Direct Lighing', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phFinalgathersamples', uiType = 'int', displayName = 'Final Gather Samples', default='32', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phGatherangle', uiType = 'float', displayName = 'Gather Angle', default='10.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phRrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict, callback=pm.Callback(self.LuxRendererUpdateTab))
-                        self.addRenderGlobalsUIElement(attName = 'phRrcontinueprob', uiType = 'float', displayName = 'Cont Prob RR', default='0.65', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phDistancethreshold', uiType = 'float', displayName = 'Dist Thresold', default='1.25', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'phPhotonmapsfile', uiType = 'string', displayName = 'Photon File', default='""', uiDict=uiDict)
 
                     
                     
