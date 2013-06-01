@@ -84,6 +84,8 @@ public:
 
 	void defineSurfaceIntegrator();
 
+	void defineAccelerator();
+
 	void defineCamera();
 	
 	void defineFilm();

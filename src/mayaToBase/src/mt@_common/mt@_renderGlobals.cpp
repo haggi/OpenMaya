@@ -60,8 +60,8 @@ bool mt@_RenderGlobals::getMt@Globals()
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
 		
-		if(!getFloat(MString("filterSize"), @Globals, this->filterSize))
-			throw("problem reading @Globals.filterSize");
+		if(!getFloat(MString("filtersize"), @Globals, this->filterSize))
+			throw("problem reading @Globals.filtersize");
 
 		if(!getFloat(MString("gamma"), @Globals, this->gamma))
 			throw("problem reading @Globals.gamma");

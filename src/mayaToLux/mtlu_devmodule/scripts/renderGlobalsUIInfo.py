@@ -415,13 +415,13 @@ entry = {}
 entry['name'] = 'includeenvironment'
 entry['type'] = 'bool'
 entry['displayName'] = 'Include Env'
-entry['default'] = 'True'
+entry['default'] = 'true'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'directlightsampling'
 entry['type'] = 'bool'
 entry['displayName'] = 'Direct Light Sampling'
-entry['default'] = 'True'
+entry['default'] = 'true'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'None'
@@ -757,7 +757,7 @@ entry['default'] = '0'
 entry['addInfo'] = 'hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'pixelsampler'
+entry['name'] = 'sppmpixelsampler'
 entry['type'] = 'enum'
 entry['displayName'] = 'Eye Pass Sampling Pattern'
 entry['default'] = '0'

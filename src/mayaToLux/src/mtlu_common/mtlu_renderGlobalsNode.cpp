@@ -123,7 +123,7 @@ MObject MayaToLuxGlobals::startk;
 MObject MayaToLuxGlobals::alpha;
 MObject MayaToLuxGlobals::glossythreshold;
 MObject MayaToLuxGlobals::lookupaccel;
-MObject MayaToLuxGlobals::pixelsampler;
+MObject MayaToLuxGlobals::sppmpixelsampler;
 MObject MayaToLuxGlobals::photonsampler;
 MObject MayaToLuxGlobals::sppmincludeenvironment;
 MObject MayaToLuxGlobals::parallelhashgridspare;
@@ -165,7 +165,7 @@ MStatus	MayaToLuxGlobals::initialize()
 	renderer = eAttr.create("renderer", "renderer", 0, &stat);
 	stat = eAttr.addField( "sampler", 0 );
 	stat = eAttr.addField( "hybridsampler", 1 );
-	stat = eAttr.addField( "hybridsppm", 2 );
+	stat = eAttr.addField( "sppm", 2 );
 	CHECK_MSTATUS(addAttribute( renderer ));
 
 	hsConfigFile = tAttr.create("hsConfigFile", "hsConfigFile",  MFnNumericData::kString);
@@ -296,9 +296,9 @@ MStatus	MayaToLuxGlobals::initialize()
 	accelerator = eAttr.create("accelerator", "accelerator", 0, &stat);
 	stat = eAttr.addField( "kdtree", 0 );
 	stat = eAttr.addField( "qbvh", 1 );
-	stat = eAttr.addField( "grid (not thread-safe)", 2 );
-	stat = eAttr.addField( "unsafekdtree (not thread-safe)", 3 );
-	stat = eAttr.addField( "bvh (not thread-safe)", 4 );
+	//stat = eAttr.addField( "grid (not thread-safe)", 2 );
+	//stat = eAttr.addField( "unsafekdtree (not thread-safe)", 3 );
+	//stat = eAttr.addField( "bvh (not thread-safe)", 4 );
 	stat = eAttr.addField( "none", 5 );
 	CHECK_MSTATUS(addAttribute( accelerator ));
 
@@ -562,12 +562,12 @@ MStatus	MayaToLuxGlobals::initialize()
 	stat = eAttr.addField( "parallelhashgrid", 4 );
 	CHECK_MSTATUS(addAttribute( lookupaccel ));
 
-	pixelsampler = eAttr.create("pixelsampler", "pixelsampler", 0, &stat);
+	sppmpixelsampler = eAttr.create("sppmpixelsampler", "sppmpixelsampler", 0, &stat);
 	stat = eAttr.addField( "hilbert", 0 );
 	stat = eAttr.addField( "linear", 1 );
 	stat = eAttr.addField( "tile", 2 );
 	stat = eAttr.addField( "vegas", 3 );
-	CHECK_MSTATUS(addAttribute( pixelsampler ));
+	CHECK_MSTATUS(addAttribute( sppmpixelsampler ));
 
 	photonsampler = eAttr.create("photonsampler", "photonsampler", 0, &stat);
 	stat = eAttr.addField( "halton", 0 );

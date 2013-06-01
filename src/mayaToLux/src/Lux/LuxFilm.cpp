@@ -14,7 +14,8 @@ void LuxRenderer::defineFilm()
 	int width = this->mtlu_renderGlobals->imgWidth;
 	int height = this->mtlu_renderGlobals->imgHeight;
 	MString outputPath = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".lxs";
-	MString fileName = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".png";
+	// file path without extension, will be added automatically by the renderer
+	MString fileName = this->mtlu_renderGlobals->imagePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame;
 	const char *filename = fileName.asChar();
 	const int xres = width;
 	const int yres = height;

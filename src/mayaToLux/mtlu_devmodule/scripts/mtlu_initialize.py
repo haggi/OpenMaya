@@ -40,6 +40,10 @@ class LuxRenderer(Renderer.MayaToRenderer):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("SurfaceIntegrator"))    
 
+    def afterGlobalsNodeReplacement(self):
+        log.debug("afterGlobalsNodeReplacement")        
+        self.rendererTabUiDict = {}
+    
     def updateEnvironment(self, dummy=None):
         if not self.rendererTabUiDict.has_key('environment'):
             return
@@ -81,6 +85,8 @@ class LuxRenderer(Renderer.MayaToRenderer):
     def LuxSurfaceIntegratorCreateTab(self):
         log.debug("LuxSurfaceIntegratorCreateTab()")
         self.createGlobalsNode()
+        if self.rendererTabUiDict.has_key('surfaceIntegrator'):
+            self.rendererTabUiDict.pop('surfaceIntegrator')
         parentForm = pm.setParent(query = True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
@@ -93,17 +99,23 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'surfaceIntegrator', uiType = 'enum', displayName = 'Surface Integrator', default='0', data='bidirectional (default):path:exphotonmap:directlighting:igi:distributedpath:sppm', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'lightStrategy', uiType = 'enum', displayName = 'Light Strategy', default='2', data='one:all:auto:importance:powerimp:allpowerimp:logpowerimp', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'shadowraycount', uiType = 'int', displayName = 'Shadow Rays', default='1', uiDict=uiDict)
-                        pm.separator() # bidirectional
+                with pm.frameLayout(label='Bidirectional', collapsable = True, collapse=False) as bidirFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['bidirFrame'] = bidirFrame
                         self.addRenderGlobalsUIElement(attName = 'eyedepth', uiType = 'int', displayName = 'Eye Depth', default='8', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'lightdepth', uiType = 'int', displayName = 'Light Depth', default='8', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'eyerrthreshold', uiType = 'float', displayName = 'Eye RR Thresh', default='0.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'lightrrthreshold', uiType = 'float', displayName = 'Light RR Thresh', default='0.0', uiDict=uiDict)
-                        pm.separator() # path
+                with pm.frameLayout(label='Path', collapsable = True, collapse=True) as pathFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['pathFrame'] = pathFrame
                         self.addRenderGlobalsUIElement(attName = 'pathMaxdepth', uiType = 'int', displayName = 'Max Depth', default='16', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'rrstrategy', uiType = 'enum', displayName = 'RR Strategy', default='2', data='none:probability:efficiency', uiDict=uiDict,callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'includeenvironment', uiType = 'bool', displayName = 'Use Environment', default=True, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'directlightsampling', uiType = 'bool', displayName = 'Use Direct Light', default=True, uiDict=uiDict)
-                        pm.separator() # photon map
+                with pm.frameLayout(label='Photonmap', collapsable = True, collapse=True) as photonmapFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['photonmapFrame'] = photonmapFrame
                         self.addRenderGlobalsUIElement(attName = 'phRenderingmode', uiType = 'enum', displayName = 'Rendering Mode', default='0', data='directlighting:path', uiDict=uiDict, callback=pm.Callback(self.LuxSurfaceIntegratorUpdateTab))
                         self.addRenderGlobalsUIElement(attName = 'phCausticphotons', uiType = 'int', displayName = 'Caustic Photons', default='20000', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phIndirectphotons', uiType = 'int', displayName = 'Indirect Photons', default='200000', uiDict=uiDict)
@@ -120,9 +132,13 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'phRrcontinueprob', uiType = 'float', displayName = 'Cont Prob RR', default='0.65', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phDistancethreshold', uiType = 'float', displayName = 'Dist Thresold', default='1.25', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'phPhotonmapsfile', uiType = 'string', displayName = 'Photon File', default='""', uiDict=uiDict)
-                        pm.separator() # direct lighting
+                with pm.frameLayout(label='Direct', collapsable = True, collapse=True) as directFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['directFrame'] = directFrame
                         self.addRenderGlobalsUIElement(attName = 'dlightMaxdepth', uiType = 'int', displayName = 'Max Depth', default='5', uiDict=uiDict)
-                        pm.separator() # distributed path
+                with pm.frameLayout(label='Distributed Path', collapsable = True, collapse=True) as distpathFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['distpathFrame'] = distpathFrame
                         self.addRenderGlobalsUIElement(attName = 'renderingmode', uiType = 'enum', displayName = 'Rendering Mode', default=0,data='directlighting:path',uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'strategy', uiType = 'enum', displayName = 'Strategy', default=0,data='auto:all:one',uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'directsampleall', uiType = 'bool', displayName = 'Include diffuse direct', default=True,uiDict=uiDict)
@@ -149,7 +165,9 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'diffuserefractreject_threshold', uiType = 'int', displayName = 'Average Refract Reject Threshold', default=10.0,uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'glossyreflectreject', uiType = 'bool', displayName = 'Rejection for Glossy Reflection', default=False,uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'glossyrefractreject', uiType = 'bool', displayName = 'Rejection for Glossy Refraction', default=False,uiDict=uiDict) 
-                        pm.separator() # sppm
+                with pm.frameLayout(label='SPPM', collapsable = True, collapse=True) as sppmFrame:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        uiDict['sppmFrame'] = sppmFrame
                         self.addRenderGlobalsUIElement(attName = 'maxeyedepth', uiType = 'int', displayName = 'Max Eye Depth', default='16', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'maxphotondepth', uiType = 'int', displayName = 'Max Photon Depth', default='16', uiDict=uiDict)                        
                         self.addRenderGlobalsUIElement(attName = 'photonperpass', uiType = 'int', displayName = 'Photons per Pass', default=1000000,uiDict=uiDict)
@@ -157,7 +175,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'alpha', uiType = 'float', displayName = 'Decrement Tight Serach Radius', default=0.7,uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'glossythreshold', uiType = 'float', displayName = 'Maximum Store PDF', default=100,uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'lookupaccel', uiType = 'enum', displayName = 'Hitpoint Structure', default=0,data='hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid',uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pixelsampler', uiType = 'enum', displayName = 'Eye Pass Sampling Pattern', default=0,data='hilbert:linear:tile:vegas',uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sppmpixelsampler', uiType = 'enum', displayName = 'Eye Pass Sampling Pattern', default=0,data='hilbert:linear:tile:vegas',uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'photonsampler', uiType = 'enum', displayName = 'Photon paths Method', default=0,data='halton:amc',uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'includeenvironment', uiType = 'bool', displayName = 'Show Env Light Sources', default=True,uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'parallelhashgridspare', uiType = 'float', displayName = 'Parallel Hashgrid Spare', default=1.0,uiDict=uiDict)
@@ -177,52 +195,95 @@ class LuxRenderer(Renderer.MayaToRenderer):
     def LuxSurfaceIntegratorUpdateTab(self, dummy=None):
         log.debug("LuxSurfaceIntegratorUpdateTab()")
         self.createGlobalsNode()
-        
+
         if not self.rendererTabUiDict.has_key('surfaceIntegrator'):
             return
         uiDict = self.rendererTabUiDict['surfaceIntegrator']
-        
+        print uiDict
                     
         defaultOn = ['surfaceIntegrator']
         
         # if not spp 
         if self.renderGlobalsNode.renderer.get() < 2:
             defaultOn.extend(['lightStrategy', 'shadowraycount'])
+
+        for key, val in uiDict.iteritems():
+            val.setEnable(True)
             
-        for key, val in uiDict.iteritems():
-            val.setEnable(False)
-
-        for key, val in uiDict.iteritems():
-            if key in defaultOn:
-                val.setEnable(True)
+        uiDict['bidirFrame'].setEnable(False)
+        uiDict['pathFrame'].setEnable(False)
+        uiDict['sppmFrame'].setEnable(False)
+        uiDict['distpathFrame'].setEnable(False)
+        uiDict['directFrame'].setEnable(False)
+        uiDict['photonmapFrame'].setEnable(False)
+            
+#        for key, val in uiDict.iteritems():
+#            val.setEnable(False)
+#
+#        for key, val in uiDict.iteritems():
+#            if key in defaultOn:
+#                val.setEnable(True)
                 
-        # bidirectional
-        if self.renderGlobalsNode.surfaceIntegrator.get() == 0:
-            uiDict['eyedepth'].setEnable(True)
-            uiDict['lightdepth'].setEnable(True)
-            uiDict['eyerrthreshold'].setEnable(True)
-            uiDict['lightrrthreshold'].setEnable(True)
-
-        # path
-        if self.renderGlobalsNode.surfaceIntegrator.get() == 1:
-            uiDict['pathMaxdepth'].setEnable(True)
-            uiDict['rrstrategy'].setEnable(True)
-            uiDict['includeenvironment'].setEnable(True)
-            uiDict['directlightsampling'].setEnable(True)
-        else:
-            uiDict['includeenvironment'].setEnable(False)
-            uiDict['directlightsampling'].setEnable(False)
-        # photon map
-        if self.renderGlobalsNode.surfaceIntegrator.get() == 2:
-            uiDict['pathMaxdepth'].setEnable(True)
+        # sampler or hybrid only
+        if self.renderGlobalsNode.renderer.get() < 2:
+            # bidirectional
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 0:
+#                uiDict['eyedepth'].setEnable(True)
+#                uiDict['lightdepth'].setEnable(True)
+#                uiDict['eyerrthreshold'].setEnable(True)
+#                uiDict['lightrrthreshold'].setEnable(True)
+                uiDict['bidirFrame'].setEnable(True)
+                uiDict['bidirFrame'].setCollapse(False)
+    
+            # path
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 1:
+#                uiDict['pathMaxdepth'].setEnable(True)
+#                uiDict['rrstrategy'].setEnable(True)
+#                uiDict['includeenvironment'].setEnable(True)
+#                uiDict['directlightsampling'].setEnable(True)
+                uiDict['pathFrame'].setEnable(True)
+                uiDict['pathFrame'].setCollapse(False)
+#            else:
+#                uiDict['includeenvironment'].setEnable(False)
+#                uiDict['directlightsampling'].setEnable(False)
+                
+        # sampler only
+        if self.renderGlobalsNode.renderer.get() == 0:
+            # photon map
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 2:
+#                uiDict['pathMaxdepth'].setEnable(True)
+                uiDict['photonmapFrame'].setEnable(True)
+                uiDict['photonmapFrame'].setCollapse(False)
                         
-        # direct light
-        if self.renderGlobalsNode.surfaceIntegrator.get() == 3:
-            uiDict['dlightMaxdepth'].setEnable(True)
+            # direct light
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 3:
+#                uiDict['dlightMaxdepth'].setEnable(True)
+                uiDict['directFrame'].setEnable(True)
+                uiDict['directFrame'].setCollapse(False)
+
+            # igi
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 4:
+                pass
+            
+            # distributed path
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 5:
+                uiDict['distpathFrame'].setEnable(True)
+                uiDict['distpathFrame'].setCollapse(False)
+                
+        # sppm
+        if self.renderGlobalsNode.renderer.get() == 2:
+            # sppm
+            if self.renderGlobalsNode.surfaceIntegrator.get() == 6:
+                uiDict['sppmFrame'].setEnable(True)
+                uiDict['sppmFrame'].setCollapse(False)
         
     def LuxRendererCreateTab(self):
         log.debug("LuxRendererCreateTab()")
         self.createGlobalsNode()
+        
+        if self.rendererTabUiDict.has_key('common'):
+            self.rendererTabUiDict.pop('common')
+        
         parentForm = pm.setParent(query = True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
@@ -309,14 +370,13 @@ class LuxRenderer(Renderer.MayaToRenderer):
 
     def LuxRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
-        #self.updateEnvironment()
         log.debug("LuxRendererUpdateTab()")
-        
+                
         if not self.rendererTabUiDict.has_key('common'):
             return
         uiDict = self.rendererTabUiDict['common']
         
-        defaultOn = ['haltspp','halttime', 'doMotionBlur', 'doDof','uiupdateinterval','renderer', 'sampler', 'imageFormat', 'premultiplyAlpha', 'noiseaware', 'pixelfilter', 'surfaceIntegrator', 'shadowraycount', 'lightStrategy']
+        defaultOn = ['accelerator', 'haltspp','halttime', 'doMotionBlur', 'doDof','uiupdateinterval','renderer', 'sampler', 'imageFormat', 'premultiplyAlpha', 'noiseaware', 'pixelfilter', 'surfaceIntegrator', 'shadowraycount', 'lightStrategy']
         
         for key, val in uiDict.iteritems():
             val.setEnable(False)
@@ -324,6 +384,20 @@ class LuxRenderer(Renderer.MayaToRenderer):
         for key, val in uiDict.iteritems():
             if key in defaultOn:
                 val.setEnable(True)
+
+        acc = self.renderGlobalsNode.accelerator.get()
+        # kdtree
+        if acc == 0:            
+            uiDict['kdIntersectcost'].setEnable(True)
+            uiDict['kdTraversalcost'].setEnable(True)
+            uiDict['kdEmptybonus'].setEnable(True)
+            uiDict['kdMaxprims'].setEnable(True)
+            uiDict['kdMaxdepth'].setEnable(True)
+        # qbvh
+        if acc == 1:            
+            uiDict['maxprimsperleaf'].setEnable(True)
+            uiDict['fullsweepthreshold'].setEnable(True)
+            uiDict['skipfactor'].setEnable(True)
 
         sampler = self.renderGlobalsNode.sampler.get()
         if sampler in [0,1]:
@@ -356,11 +430,18 @@ class LuxRenderer(Renderer.MayaToRenderer):
             uiDict['mSupersample'].setEnable(True)
         if pixelfilter == 4:
             uiDict['sincTau'].setEnable(True)
+            
+        # update surface integrator because some integrators only work with sppm or sampler
+        self.LuxSurfaceIntegratorUpdateTab()
                         
             
     def LuxEnvironmentCreateTab(self, dummy = None):
         log.debug("LuxEnvironmentCreateTab()")
         self.createGlobalsNode()
+        
+        if self.rendererTabUiDict.has_key('environment'):
+            self.rendererTabUiDict.pop('environment')
+        
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ENScrollLayout"
@@ -507,7 +588,7 @@ class LuxRenderer(Renderer.MayaToRenderer):
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
-        self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
+        self.renderGlobalsNode.imagePath.set(pm.workspace.path + "/" + pm.workspace.fileRules['images'])
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
         # check for mayabatch name like sceneName_number 
         numberPart = imageName.split("__")[-1]

@@ -396,8 +396,8 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getEnum(MString("lookupaccel"), LuxGlobals, this->lookupaccel))
 			throw("problem reading luxGlobals.lookupaccel");
 
-		if(!getEnum(MString("pixelsampler"), LuxGlobals, this->pixelsampler))
-			throw("problem reading luxGlobals.pixelsampler");
+		if(!getEnum(MString("sppmpixelsampler"), LuxGlobals, this->sppmpixelsampler))
+			throw("problem reading luxGlobals.sppmpixelsampler");
 
 		if(!getEnum(MString("photonsampler"), LuxGlobals, this->photonsampler))
 			throw("problem reading luxGlobals.photonsampler");
@@ -428,8 +428,8 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 
 //	------------- automatically created attributes end ----------- // 
 		
-		if(!getFloat(MString("filterSize"), LuxGlobals, this->filterSize))
-			throw("problem reading LuxGlobals.filterSize");
+		if(!getFloat(MString("filtersize"), LuxGlobals, this->filterSize))
+			throw("problem reading LuxGlobals.filtersize");
 
 		if(!getFloat(MString("gamma"), LuxGlobals, this->gamma))
 			throw("problem reading LuxGlobals.gamma");
@@ -446,11 +446,11 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getInt(MString("maxSamples"), LuxGlobals, this->maxSamples))
 			throw("problem reading LuxGlobals.maxSamples");
 
-		if(!getInt(MString("mbtype"), LuxGlobals, this->mbtype))
-			throw("problem reading LuxGlobals.mbtype");
+		//if(!getInt(MString("mbtype"), LuxGlobals, this->mbtype))
+		//	throw("problem reading LuxGlobals.mbtype");
 
-		if(!getInt(MString("bitdepth"), LuxGlobals, this->bitdepth))
-			throw("problem reading LuxGlobals.bitdepth");
+		//if(!getInt(MString("bitdepth"), LuxGlobals, this->bitdepth))
+		//	throw("problem reading LuxGlobals.bitdepth");
 	
 		if(!getInt(MString("translatorVerbosity"), LuxGlobals, this->translatorVerbosity))
 			throw("problem reading LuxGlobals.translatorVerbosity");
@@ -464,20 +464,17 @@ bool mtlu_RenderGlobals::getMtLuxGlobals()
 		if(!getInt(MString("threads"), LuxGlobals, this->threads))
 			throw("problem reading LuxGlobals.threads");
 
-		if(!getInt(MString("geotimesamples"), LuxGlobals, this->geotimesamples))
-			throw("problem reading LuxGlobals.geotimesamples");
+		//if(!getInt(MString("geotimesamples"), LuxGlobals, this->geotimesamples))
+		//	throw("problem reading LuxGlobals.geotimesamples");
 
-		if(!getInt(MString("geotimesamples"), LuxGlobals, this->geotimesamples))
-			throw("problem reading LuxGlobals.geotimesamples");
-
-		if(!getInt(MString("xftimesamples"), LuxGlobals, this->xftimesamples))
-			throw("problem reading LuxGlobals.xftimesamples");
+		//if(!getInt(MString("xftimesamples"), LuxGlobals, this->xftimesamples))
+		//	throw("problem reading LuxGlobals.xftimesamples");
 
 		if(!getInt(MString("maxTraceDepth"), LuxGlobals, this->maxTraceDepth))
 			throw("problem reading LuxGlobals.maxTraceDepth");
 
-		if(!getBool(MString("createDefaultLight"), LuxGlobals, this->createDefaultLight))
-			throw("problem reading LuxGlobals.createDefaultLight");
+		//if(!getBool(MString("createDefaultLight"), LuxGlobals, this->createDefaultLight))
+		//	throw("problem reading LuxGlobals.createDefaultLight");
 
 		if(!getBool(MString("detectShapeDeform"), LuxGlobals, this->detectShapeDeform))
 			throw("problem reading LuxGlobals.detectShapeDeform");

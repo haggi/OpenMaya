@@ -124,7 +124,7 @@ public:
 	float alpha;
 	float glossythreshold;
 	int lookupaccel;
-	int pixelsampler;
+	int sppmpixelsampler;
 	int photonsampler;
 	bool sppmincludeenvironment;
 	float parallelhashgridspare;

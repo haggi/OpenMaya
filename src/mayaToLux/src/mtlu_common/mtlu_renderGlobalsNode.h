@@ -131,7 +131,7 @@ static    MObject startk;
 static    MObject alpha;
 static    MObject glossythreshold;
 static    MObject lookupaccel;
-static    MObject pixelsampler;
+static    MObject sppmpixelsampler;
 static    MObject photonsampler;
 static    MObject sppmincludeenvironment;
 static    MObject parallelhashgridspare;

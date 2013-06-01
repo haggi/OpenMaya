@@ -157,6 +157,31 @@ void LuxRenderer::defineSampling()
 	this->lux->sampler(samplerNames[this->mtlu_renderGlobals->sampler], boost::get_pointer(samplerParams));
 }
 
+void LuxRenderer::defineAccelerator()
+{
+	const char *rendererNames[] = {"kdtree", "qbvh", "grid", "unsafekdtree", "bvh", "none"};
+	const char *rendererName = rendererNames[this->mtlu_renderGlobals->accelerator];
+	ParamSet accParams = CreateParamSet();
+
+	if( MString(rendererName) == "kdtree")
+	{
+		accParams->AddInt("intersectcost", &this->mtlu_renderGlobals->kdIntersectcost);
+		accParams->AddInt("traversalcost", &this->mtlu_renderGlobals->kdTraversalcost);
+		accParams->AddFloat("emptybonus", &this->mtlu_renderGlobals->kdEmptybonus);
+		accParams->AddInt("maxprims", &this->mtlu_renderGlobals->kdMaxprims);
+		accParams->AddInt("maxdepth", &this->mtlu_renderGlobals->kdMaxdepth);
+	}
+
+	if( MString(rendererName) == "qbvh")
+	{
+		accParams->AddInt("maxprimsperleaf", &this->mtlu_renderGlobals->maxprimsperleaf);
+		accParams->AddInt("fullsweepthreshold", &this->mtlu_renderGlobals->fullsweepthreshold);
+		accParams->AddInt("skipfactor", &this->mtlu_renderGlobals->skipfactor);
+	}
+
+	this->lux->accelerator(rendererName, boost::get_pointer(accParams));
+}
+
 void LuxRenderer::defineRenderer()
 {
 	const char *rendererNames[] = {"sampler", "hybrid", "sppm"};
@@ -218,6 +243,7 @@ void LuxRenderer::defineSurfaceIntegrator()
 			iParams->AddFloat("lightrrthreshold",&this->mtlu_renderGlobals->lightrrthreshold);
 			iParams->AddFloat("eyerrthreshold",&this->mtlu_renderGlobals->eyerrthreshold);
 		}
+
 		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "path")
 		{
 			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->pathMaxdepth);
@@ -230,7 +256,7 @@ void LuxRenderer::defineSurfaceIntegrator()
 		}
 	}
 
-	// direct - sampler only
+	// direct/photonmap - sampler only
 	if(this->mtlu_renderGlobals->renderer == 0)
 	{
 		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "direct")
@@ -240,6 +266,66 @@ void LuxRenderer::defineSurfaceIntegrator()
 			const char *rrstrategy = rrstrategys[this->mtlu_renderGlobals->rrstrategy];
 			iParams->AddString("rrstrategy", &rrstrategy);						
 		}
+
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "exphotonmap")
+		{
+			const char *phRenderingmodes[] =  { "directlighting","path" };
+			const char *phRenderingmode = phRenderingmodes[this->mtlu_renderGlobals->phRenderingmode];
+			iParams->AddString("renderingmode", &phRenderingmode);
+			iParams->AddInt("causticphotons", &this->mtlu_renderGlobals->phCausticphotons);
+			iParams->AddInt("indirectphotons", &this->mtlu_renderGlobals->phIndirectphotons);
+			iParams->AddInt("directphotons", &this->mtlu_renderGlobals->phDirectphotons);
+			iParams->AddInt("radiancephotons", &this->mtlu_renderGlobals->phRadiancephotons);
+			iParams->AddInt("nphotonsused", &this->mtlu_renderGlobals->phNphotonsused);
+			iParams->AddFloat("maxphotondist", &this->mtlu_renderGlobals->phMaxphotondist);
+			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->phMaxdepth);
+			iParams->AddInt("maxphotondepth", &this->mtlu_renderGlobals->phMaxphotondepth);
+			iParams->AddBool("finalgather", &this->mtlu_renderGlobals->phFinalgather);
+			iParams->AddInt("finalgathersamples", &this->mtlu_renderGlobals->phFinalgathersamples);
+			iParams->AddFloat("gatherangle", &this->mtlu_renderGlobals->phGatherangle);
+			const char *phRrstrategys[] =  { "none","probability","efficiency" };
+			const char *phRrstrategy = phRrstrategys[this->mtlu_renderGlobals->phRrstrategy];
+			iParams->AddString("rrstrategy", &phRrstrategy);
+			iParams->AddFloat("rrcontinueprob", &this->mtlu_renderGlobals->phRrcontinueprob);
+			iParams->AddFloat("distancethreshold", &this->mtlu_renderGlobals->phDistancethreshold);
+		}
+		
+		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "distributedpath")
+		{
+			const char *renderingmodes[] =  { "directlighting","path" };
+			const char *renderingmode = renderingmodes[this->mtlu_renderGlobals->renderingmode];
+			iParams->AddString("renderingmode", &renderingmode);
+			const char *strategys[] =  { "auto","all","one" };
+			const char *strategy = strategys[this->mtlu_renderGlobals->strategy];
+			iParams->AddString("strategy", &strategy);
+			iParams->AddBool("directsampleall", &this->mtlu_renderGlobals->directsampleall);
+			iParams->AddInt("directsamples", &this->mtlu_renderGlobals->directsamples);
+			iParams->AddBool("indirectsampleall", &this->mtlu_renderGlobals->indirectsampleall);
+			iParams->AddInt("indirectsamples", &this->mtlu_renderGlobals->indirectsamples);
+			iParams->AddInt("diffusereflectdepth", &this->mtlu_renderGlobals->diffusereflectdepth);
+			iParams->AddInt("diffusereflectsamples", &this->mtlu_renderGlobals->diffusereflectsamples);
+			iParams->AddInt("diffuserefractdepth", &this->mtlu_renderGlobals->diffuserefractdepth);
+			iParams->AddInt("diffuserefractsamples", &this->mtlu_renderGlobals->diffuserefractsamples);
+			iParams->AddBool("directdiffuse", &this->mtlu_renderGlobals->directdiffuse);
+			iParams->AddBool("indirectdiffuse", &this->mtlu_renderGlobals->indirectdiffuse);
+			iParams->AddInt("glossyreflectdepth", &this->mtlu_renderGlobals->glossyreflectdepth);
+			iParams->AddInt("glossyreflectsamples", &this->mtlu_renderGlobals->glossyreflectsamples);
+			iParams->AddInt("glossyrefractdepth", &this->mtlu_renderGlobals->glossyrefractdepth);
+			iParams->AddInt("glossyrefractsamples", &this->mtlu_renderGlobals->glossyrefractsamples);
+			iParams->AddBool("directglossy", &this->mtlu_renderGlobals->directglossy);
+			iParams->AddBool("indirectglossy", &this->mtlu_renderGlobals->indirectglossy);
+			iParams->AddInt("specularreflectdepth", &this->mtlu_renderGlobals->specularreflectdepth);
+			iParams->AddInt("specularrefractdepth", &this->mtlu_renderGlobals->specularrefractdepth);
+			iParams->AddBool("diffusereflectreject", &this->mtlu_renderGlobals->diffusereflectreject);
+			iParams->AddBool("diffuserefractreject", &this->mtlu_renderGlobals->diffuserefractreject);
+			iParams->AddInt("diffusereflectreject_threshold", &this->mtlu_renderGlobals->diffusereflectreject_threshold);
+			iParams->AddInt("diffuserefractreject_threshold", &this->mtlu_renderGlobals->diffuserefractreject_threshold);
+			iParams->AddBool("glossyreflectreject", &this->mtlu_renderGlobals->glossyreflectreject);
+			iParams->AddBool("glossyrefractreject", &this->mtlu_renderGlobals->glossyrefractreject);
+			iParams->AddInt("glossyreflectreject_threshold", &this->mtlu_renderGlobals->glossyreflectreject_threshold);
+			iParams->AddInt("glossyrefractreject_threshold", &this->mtlu_renderGlobals->glossyrefractreject_threshold);
+		}
+
 	}
 
 	// sppm only
@@ -248,22 +334,28 @@ void LuxRenderer::defineSurfaceIntegrator()
 		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "sppm")
 		{
 			const char *photonsamplers[]= {"halton", "amc"};
-			//const char *photonsampler= photonsamplers[this->mtlu_renderGlobals->photonSampler];
-			//photonsampler
-			//lookupaccel
-			//parallelhashgridspare
-			//pixelsampler
-			//maxeyedepth
-			//maxphotondepth
-			//photonperpass
-			//startradius
-			//alpha
-			//includeenvironment
-			//directlightsampling
-			//useproba
-			//wavelengthstratification
-			//debug
-			//storeglossy
+			const char *photonsampler= photonsamplers[this->mtlu_renderGlobals->photonsampler];
+			iParams->AddString("photonsampler", &photonsampler);
+			const char *lookupaccels[] = {"hybridhashgrid","kdtree","grid","hashgrid","parallelhashgrid"};
+			const char *lookupaccel = lookupaccels[this->mtlu_renderGlobals->lookupaccel];
+			iParams->AddString("lookupaccel", &lookupaccel);
+			const char *pixelsamplers[] = {"hilbert", "linear", "tile", "vegas"};
+			const char *pixelsampler = pixelsamplers[this->mtlu_renderGlobals->sppmpixelsampler] ;
+			iParams->AddString("pixelsampler", &pixelsampler);
+			iParams->AddFloat("parallelhashgridspare", &this->mtlu_renderGlobals->parallelhashgridspare);
+			iParams->AddBool("includeenvironment", &this->mtlu_renderGlobals->sppmincludeenvironment);
+			iParams->AddBool("directlightsampling", &this->mtlu_renderGlobals->sppmdirectlightsampling);
+			iParams->AddInt("photonperpass", &this->mtlu_renderGlobals->photonperpass);
+			iParams->AddInt("startk", &this->mtlu_renderGlobals->startk);
+			iParams->AddFloat("alpha", &this->mtlu_renderGlobals->alpha);
+			iParams->AddFloat("glossythreshold", &this->mtlu_renderGlobals->glossythreshold);
+			iParams->AddFloat("startradius", &this->mtlu_renderGlobals->startradius);
+			iParams->AddBool("useproba", &this->mtlu_renderGlobals->useproba);
+			iParams->AddInt("wavelengthstratification", &this->mtlu_renderGlobals->wavelengthstratification);
+			iParams->AddBool("debug", &this->mtlu_renderGlobals->debug);
+			iParams->AddBool("storeglossy", &this->mtlu_renderGlobals->storeglossy);
+			iParams->AddInt("maxeyedepth", &this->mtlu_renderGlobals->maxeyedepth);
+			iParams->AddInt("maxphotondepth", &this->mtlu_renderGlobals->maxphotondepth);
 		}
 	}
 
@@ -301,6 +393,8 @@ void LuxRenderer::render()
 		this->defineSampling();
 
 		this->defineSurfaceIntegrator();
+
+		this->defineAccelerator();
 
 		this->defineRenderer();
 
@@ -369,6 +463,7 @@ void LuxRenderer::render()
 		// saveFLM needs extension
 		filename = filename + ".flm";
 		lux->saveFLM(filename.c_str());
+		
 
 		logger.debug(MString("Render lux."));
 
