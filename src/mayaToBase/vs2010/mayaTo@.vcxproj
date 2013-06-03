@@ -194,7 +194,7 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaTo@.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -217,7 +217,7 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaTo@.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -298,6 +298,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\src\%40\%40Camera.cpp" />
     <ClCompile Include="..\src\@\@RendererController.cpp" />
     <ClCompile Include="..\src\@\@TileCallback.cpp" />
     <ClCompile Include="..\src\@\@.cpp" />
@@ -314,6 +315,7 @@
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
+    <ClCompile Include="%40Environment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />

@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId carpaint::id( 0x0011CF5F );
+MTypeId	carpaint::id( 0x0011CF5F );
 
 
 // the postConstructor() function is called immediately after the objects

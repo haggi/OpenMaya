@@ -1,7 +1,9 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
+#ifdef HAS_OVERRIDE
 #include "roughglassMaterialOverride.h"
+#endif
 
 // Plugin roughglass Shader Class //
 

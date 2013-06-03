@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId velvet::id( 0x0011CF5C );
+MTypeId	velvet::id( 0x0011CF5C );
 
 
 // the postConstructor() function is called immediately after the objects

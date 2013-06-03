@@ -1,7 +1,9 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
+#ifdef HAS_OVERRIDE
 #include "clothMaterialOverride.h"
+#endif
 
 // Plugin cloth Shader Class //
 

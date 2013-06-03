@@ -5,8 +5,10 @@
 {}
 @Renderer::~@Renderer()
 {}
+
 void @Renderer::render()
 {}
+
 void @Renderer::initializeRenderer()
 {}
 void @Renderer::updateShape(MayaObject *obj)

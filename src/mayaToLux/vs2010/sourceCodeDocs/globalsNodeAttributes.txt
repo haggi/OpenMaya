@@ -143,7 +143,7 @@ startk, int, Min Photons, 0
 alpha, float, Decrement Tight Serach Radius, 0.7
 glossythreshold, float, Maximum Store PDF, 100
 lookupaccel, enum, Hitpoint Structure, 0, hybridhashgrid:kdtree:grid:hashgrid:parallelhashgrid
-pixelsampler, enum, Eye Pass Sampling Pattern, 0, hilbert:linear:tile:vegas
+sppmpixelsampler, enum, Eye Pass Sampling Pattern, 0, hilbert:linear:tile:vegas
 photonsampler, enum, Photon paths Method, 0, halton:amc
 sppmincludeenvironment, bool, Show Env Light Sources, true
 parallelhashgridspare, float, Parallel Hashgrid Spare, 1.0

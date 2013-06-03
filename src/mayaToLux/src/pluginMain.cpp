@@ -214,74 +214,43 @@ MStatus initializePlugin( MObject obj )
 	// register shading nodes
 
 	CHECK_MSTATUS( plugin.registerNode( "luxMix", mix::id, mix::creator, mix::initialize, MPxNode::kDependNode, &mixsFullClassification ));
+#ifdef HAS_OVERRIDE
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( mixsDrawDBClassification, mixsRegistrantId,mixOverride::creator));
-
-	CHECK_MSTATUS( plugin.registerNode( "luxMattetranslucent", mattetranslucent::id, mattetranslucent::creator, mattetranslucent::initialize, MPxNode::kDependNode, &mattetranslucentsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( mattetranslucentsDrawDBClassification, mattetranslucentsRegistrantId,mattetranslucentOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxGlass", glass::id, glass::creator, glass::initialize, MPxNode::kDependNode, &glasssFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( glasssDrawDBClassification, glasssRegistrantId,glassOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxGlass2", glass2::id, glass2::creator, glass2::initialize, MPxNode::kDependNode, &glass2sFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( glass2sDrawDBClassification, glass2sRegistrantId,glass2Override::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxLayered", layered::id, layered::creator, layered::initialize, MPxNode::kDependNode, &layeredsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( layeredsDrawDBClassification, layeredsRegistrantId,layeredOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxRoughglass", roughglass::id, roughglass::creator, roughglass::initialize, MPxNode::kDependNode, &roughglasssFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( roughglasssDrawDBClassification, roughglasssRegistrantId,roughglassOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxMetal", metal::id, metal::creator, metal::initialize, MPxNode::kDependNode, &metalsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( metalsDrawDBClassification, metalsRegistrantId,metalOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxMetal2", metal2::id, metal2::creator, metal2::initialize, MPxNode::kDependNode, &metal2sFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( metal2sDrawDBClassification, metal2sRegistrantId,metal2Override::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxShinymetal", shinymetal::id, shinymetal::creator, shinymetal::initialize, MPxNode::kDependNode, &shinymetalsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( shinymetalsDrawDBClassification, shinymetalsRegistrantId,shinymetalOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxCloth", cloth::id, cloth::creator, cloth::initialize, MPxNode::kDependNode, &clothsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( clothsDrawDBClassification, clothsRegistrantId,clothOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxMatte", matte::id, matte::creator, matte::initialize, MPxNode::kDependNode, &mattesFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( mattesDrawDBClassification, mattesRegistrantId,matteOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxGlossycoating", glossycoating::id, glossycoating::creator, glossycoating::initialize, MPxNode::kDependNode, &glossycoatingsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( glossycoatingsDrawDBClassification, glossycoatingsRegistrantId,glossycoatingOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxGlossy", glossy::id, glossy::creator, glossy::initialize, MPxNode::kDependNode, &glossysFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( glossysDrawDBClassification, glossysRegistrantId,glossyOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxMirror", mirror::id, mirror::creator, mirror::initialize, MPxNode::kDependNode, &mirrorsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( mirrorsDrawDBClassification, mirrorsRegistrantId,mirrorOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxVelvet", velvet::id, velvet::creator, velvet::initialize, MPxNode::kDependNode, &velvetsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( velvetsDrawDBClassification, velvetsRegistrantId,velvetOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxScatter", scatter::id, scatter::creator, scatter::initialize, MPxNode::kDependNode, &scattersFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( scattersDrawDBClassification, scattersRegistrantId,scatterOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxGlossytranslucent", glossytranslucent::id, glossytranslucent::creator, glossytranslucent::initialize, MPxNode::kDependNode, &glossytranslucentsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( glossytranslucentsDrawDBClassification, glossytranslucentsRegistrantId,glossytranslucentOverride::creator));
-
-
-	CHECK_MSTATUS( plugin.registerNode( "luxCarpaint", carpaint::id, carpaint::creator, carpaint::initialize, MPxNode::kDependNode, &carpaintsFullClassification ));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( carpaintsDrawDBClassification, carpaintsRegistrantId,carpaintOverride::creator));
+#endif
+	CHECK_MSTATUS( plugin.registerNode( "luxMattetranslucent", mattetranslucent::id, mattetranslucent::creator, mattetranslucent::initialize, MPxNode::kDependNode, &mattetranslucentsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxGlass", glass::id, glass::creator, glass::initialize, MPxNode::kDependNode, &glasssFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxGlass2", glass2::id, glass2::creator, glass2::initialize, MPxNode::kDependNode, &glass2sFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxLayered", layered::id, layered::creator, layered::initialize, MPxNode::kDependNode, &layeredsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxRoughglass", roughglass::id, roughglass::creator, roughglass::initialize, MPxNode::kDependNode, &roughglasssFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMetal", metal::id, metal::creator, metal::initialize, MPxNode::kDependNode, &metalsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMetal2", metal2::id, metal2::creator, metal2::initialize, MPxNode::kDependNode, &metal2sFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxShinymetal", shinymetal::id, shinymetal::creator, shinymetal::initialize, MPxNode::kDependNode, &shinymetalsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxCloth", cloth::id, cloth::creator, cloth::initialize, MPxNode::kDependNode, &clothsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMatte", matte::id, matte::creator, matte::initialize, MPxNode::kDependNode, &mattesFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxGlossycoating", glossycoating::id, glossycoating::creator, glossycoating::initialize, MPxNode::kDependNode, &glossycoatingsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxGlossy", glossy::id, glossy::creator, glossy::initialize, MPxNode::kDependNode, &glossysFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxMirror", mirror::id, mirror::creator, mirror::initialize, MPxNode::kDependNode, &mirrorsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxVelvet", velvet::id, velvet::creator, velvet::initialize, MPxNode::kDependNode, &velvetsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxScatter", scatter::id, scatter::creator, scatter::initialize, MPxNode::kDependNode, &scattersFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxGlossytranslucent", glossytranslucent::id, glossytranslucent::creator, glossytranslucent::initialize, MPxNode::kDependNode, &glossytranslucentsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "luxCarpaint", carpaint::id, carpaint::creator, carpaint::initialize, MPxNode::kDependNode, &carpaintsFullClassification ));
 
 
 	// Textures
@@ -355,78 +324,45 @@ MStatus uninitializePlugin( MObject obj)
 	// shaders
 
 	CHECK_MSTATUS( plugin.deregisterNode( mix::id ) );
+#ifdef HAS_OVERRIDE
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(mixsDrawDBClassification, mixsRegistrantId));
-
-	CHECK_MSTATUS( plugin.deregisterNode( mix::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(mixsDrawDBClassification, mixsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( mattetranslucent::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(mattetranslucentsDrawDBClassification, mattetranslucentsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( glass::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(glasssDrawDBClassification, glasssRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( glass2::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(glass2sDrawDBClassification, glass2sRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( layered::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(layeredsDrawDBClassification, layeredsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( roughglass::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(roughglasssDrawDBClassification, roughglasssRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( metal::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(metalsDrawDBClassification, metalsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( metal2::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(metal2sDrawDBClassification, metal2sRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( shinymetal::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(shinymetalsDrawDBClassification, shinymetalsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( cloth::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(clothsDrawDBClassification, clothsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( matte::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(mattesDrawDBClassification, mattesRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( glossycoating::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(glossycoatingsDrawDBClassification, glossycoatingsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( glossy::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(glossysDrawDBClassification, glossysRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( mirror::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(mirrorsDrawDBClassification, mirrorsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( velvet::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(velvetsDrawDBClassification, velvetsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( scatter::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(scattersDrawDBClassification, scattersRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( glossytranslucent::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(glossytranslucentsDrawDBClassification, glossytranslucentsRegistrantId));
-
-
-	CHECK_MSTATUS( plugin.deregisterNode( carpaint::id ) );
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(carpaintsDrawDBClassification, carpaintsRegistrantId));
+#endif
+	CHECK_MSTATUS( plugin.deregisterNode( mix::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( mattetranslucent::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( glass::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( glass2::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( layered::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( roughglass::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( metal::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( metal2::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( shinymetal::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( cloth::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( matte::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( glossycoating::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( glossy::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( mirror::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( velvet::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( scatter::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( glossytranslucent::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( carpaint::id ) );
 
 	// Textures
 

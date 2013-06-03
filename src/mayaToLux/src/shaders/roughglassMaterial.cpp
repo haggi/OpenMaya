@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId roughglass::id( 0x0011CF53 );
+MTypeId	roughglass::id( 0x0011CF53 );
 
 
 // the postConstructor() function is called immediately after the objects

@@ -534,7 +534,7 @@ def shaderCreator(renderer, shortCut):
                 newDict[att[0]] = att[1:]
     
     #print attrDict
-    #fillNodes(attrDict)
+    fillNodes(attrDict)
     #pluginLoaders(attrDict, renderer)    
     #pyRGCreator(pyGlobals, attArray)
     #aeTemplateCreator(attrDict, renderer, shortCut)

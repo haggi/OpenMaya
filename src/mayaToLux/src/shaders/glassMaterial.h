@@ -1,7 +1,9 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
+#ifdef HAS_OVERRIDE
 #include "glassMaterialOverride.h"
+#endif
 
 // Plugin glass Shader Class //
 

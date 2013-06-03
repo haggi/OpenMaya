@@ -1,7 +1,9 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
+#ifdef HAS_OVERRIDE
 #include "glossycoatingMaterialOverride.h"
+#endif
 
 // Plugin glossycoating Shader Class //
 

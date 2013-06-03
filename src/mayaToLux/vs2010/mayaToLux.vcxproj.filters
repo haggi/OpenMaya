@@ -164,109 +164,55 @@
     <ClCompile Include="..\src\shaders\mixMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mixMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\carpaintMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\carpaintMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\clothMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\clothMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\glass2Material.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\glass2MaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\glassMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\glassMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\glossycoatingMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\glossycoatingMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\glossyMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\glossyMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\glossytranslucentMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\glossytranslucentMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\layeredMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\layeredMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\matteMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\matteMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\mattetranslucentMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\mattetranslucentMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\metal2Material.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\metal2MaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\metalMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\metalMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\mirrorMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mirrorMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\roughglassMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\roughglassMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\scatterMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\scatterMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\shinymetalMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\shinymetalMaterialOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\velvetMaterial.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\velvetMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
@@ -355,6 +301,60 @@
     </ClCompile>
     <ClCompile Include="..\src\textures\windyTexture.cpp">
       <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\carpaintMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\clothMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\glass2MaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\glassMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\glossycoatingMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\glossyMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\glossytranslucentMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\layeredMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\matteMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\mattetranslucentMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\metal2MaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\metalMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\mirrorMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\mixMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\roughglassMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\scatterMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\shinymetalMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\velvetMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -448,109 +448,55 @@
     <ClInclude Include="..\src\shaders\mixMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\mixMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\carpaintMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\carpaintMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\clothMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\clothMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\glass2Material.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\glass2MaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\glassMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\glassMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\glossycoatingMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\glossycoatingMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\glossyMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\glossyMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\glossytranslucentMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\glossytranslucentMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\layeredMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\layeredMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\matteMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\matteMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\mattetranslucentMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\mattetranslucentMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\metal2Material.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\metal2MaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\metalMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\metalMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\mirrorMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mirrorMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\roughglassMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\roughglassMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\scatterMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\scatterMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\shinymetalMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\shinymetalMaterialOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\velvetMaterial.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\velvetMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
@@ -649,5 +595,64 @@
     <ClInclude Include="..\src\textures\windyTexture.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\carpaintMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\clothMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\glass2MaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\glassMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\glossycoatingMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\glossyMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\glossytranslucentMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\layeredMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\matteMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\mattetranslucentMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\metal2MaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\metalMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\mirrorMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\mixMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\roughglassMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\scatterMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\shinymetalMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\velvetMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="todoListe.txt">
+      <Filter>Miscellaneous Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

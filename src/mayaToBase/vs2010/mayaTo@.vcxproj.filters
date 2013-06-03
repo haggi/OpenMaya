@@ -155,6 +155,12 @@
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="%40Environment.cpp">
+      <Filter>Source Files\%40</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\%40\%40Camera.cpp">
+      <Filter>Source Files\%40</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

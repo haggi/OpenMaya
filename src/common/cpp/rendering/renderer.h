@@ -6,6 +6,11 @@ class MayaObject;
 class Renderer{
 
 public:
+	virtual void defineCamera() = 0;
+	virtual void defineEnvironment() = 0;
+	virtual void defineGeometry() = 0;
+	virtual void defineLights() = 0;
+
 	virtual void render() = 0;
 	virtual void initializeRenderer() = 0;
 	virtual void updateShape(MayaObject *obj) = 0;

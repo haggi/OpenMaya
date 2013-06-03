@@ -1,0 +1,12 @@
+- add missing shaders
+
+- add instancing
+
+- test basic shapes for area lights
+
+- implement tonemapping
+
+- create plugin package
+
+- create plugin package for maya 2013
+

@@ -17,6 +17,14 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2014NoOpenCl|Win32">
+      <Configuration>Release2014NoOpenCl</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2014NoOpenCl|x64">
+      <Configuration>Release2014NoOpenCl</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release2014|Win32">
       <Configuration>Release2014</Configuration>
       <Platform>Win32</Platform>
@@ -53,6 +61,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
@@ -60,6 +71,9 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -80,6 +94,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -89,21 +106,28 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'">Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'">Release\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
@@ -166,6 +190,25 @@
       <ImportLibrary>Debug/mayaToLux.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayaToLux.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayaToLux.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayaToLux.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayaToLux.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
@@ -184,6 +227,7 @@
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Debug/mayaToLux.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToLux.lib</ImportLibrary>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy Debug\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2013.mll</Command>
@@ -194,7 +238,7 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaToLux.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -207,6 +251,7 @@
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Debug;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Debug/mayaToLux.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToLux.lib</ImportLibrary>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy Debug\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014.mll</Command>
@@ -217,22 +262,49 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToLux.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/subsystem:windows /dll /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToLux.mll</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Release/mayaToLux.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayaToLux.lib</ImportLibrary>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo "copy copy Release\mayaToLux.mll to ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014release.mll"
+copy Release\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014release.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Release/mayaToLux.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayaToLux.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release NoOpenCL;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Release NoOpenCL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Release/mayaToLux.pdb</ProgramDatabaseFile>
       <ImportLibrary>Release/mayaToLux.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014release.mll</Command>
+      <Command>echo "copy Release\mayaToLux.mll to ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014releaseNCL.mll"
+copy Release\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014releaseNCL.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -258,7 +330,7 @@
     <ClCompile>
       <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToLux.pch</PrecompiledHeaderOutputFile>
@@ -267,9 +339,9 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToLux.mll</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Release/mayaToLux.pdb</ProgramDatabaseFile>
       <ImportLibrary>Release/mayaToLux.lib</ImportLibrary>
     </Link>
@@ -479,6 +551,9 @@
     <ClInclude Include="..\src\textures\uvTexture.h" />
     <ClInclude Include="..\src\textures\windyTexture.h" />
     <ClInclude Include="..\src\textures\wrinkledTexture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="todoListe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
