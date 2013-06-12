@@ -294,5 +294,8 @@
     <None Include="..\mtap_devmodule\ressources\codedata.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="todo.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

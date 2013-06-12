@@ -1,6 +1,6 @@
 - add missing shaders
 
-- add instancing
+- add particle instancing
 
 - test basic shapes for area lights
 

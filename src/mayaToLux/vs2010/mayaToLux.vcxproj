@@ -259,17 +259,18 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
-      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToLux.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/subsystem:windows /dll /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToLux.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -285,7 +286,7 @@ copy Release\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014release.
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014NoOpenCl|x64'">
     <ClCompile>
-      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;C:\Users\haggi\coding\lux\lux\core;C:\Users\haggi\coding\lux\lux\cpp_api;C:\Users\haggi\coding\lux\luxrays\include;C:\Users\haggi\coding\lux\lux;C:\Users\haggi\coding\lux\lux\core\queryable;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -295,7 +296,7 @@ copy Release\mayaToLux.mll ..\mtlu_devmodule\plug-ins\mayaToLux_maya2014release.
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/subsystem:windows /dll /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToLux.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;C:\Users\haggi\coding\lux\windows\Projects\luxrays\x64\Release NoOpenCL;C:\Users\haggi\coding\lux\windows\Projects\luxrender\x64\Release NoOpenCL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

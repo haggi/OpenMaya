@@ -7,4 +7,8 @@
     <LocalDebuggerAttach>true</LocalDebuggerAttach>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
+    <LocalDebuggerCommand />
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

@@ -1,0 +1,8 @@
+
+- reimplement particle instancing
+
+- update and implement alpha 18 features
+
+- implmement spot light texturing
+
+- start test driven development with render and diff tests
