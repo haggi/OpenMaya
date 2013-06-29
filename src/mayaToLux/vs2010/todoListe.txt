@@ -9,4 +9,3 @@
 - create plugin package
 
 - create plugin package for maya 2013
-
