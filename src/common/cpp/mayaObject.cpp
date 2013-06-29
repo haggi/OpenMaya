@@ -10,6 +10,11 @@
 
 static Logging logger;
 
+bool MayaObject::isInstanced()
+{
+	return this->dagPath.isInstanced();
+}
+
 bool MayaObject::isLight()
 {
 	return this->is_light;
@@ -76,7 +81,7 @@ bool  MayaObject::isVisiblityAnimated()
 bool  MayaObject::isObjVisible()
 {
 	MFnDagNode dagNode(this->mobject);
-	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(this->dagPath) || !IsPathVisible(this->dagPath))
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(this->dagPath) || !IsPathVisible(this->dagPath) || !IsLayerVisible(this->dagPath))
 		return false;
 	return true;
 }
@@ -106,15 +111,7 @@ bool MayaObject::shadowMapCastingLight()
 
 void MayaObject::updateObject()
 {
-	//this->transformMatrices.clear();
-	//this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
-
 	this->visible = isObjVisible();
-	//if( this->visible )
-	//	logger.debug(MString("Obj: ") + this->shortName + " is visible");
-	//if( !this->visible )
-	//	logger.debug(MString("Obj: ") + this->shortName + " is NOT visible");
-
 }
 
 MayaObject::MayaObject(MObject& mobject)
@@ -133,6 +130,7 @@ MayaObject::MayaObject(MObject& mobject)
 	this->fullNiceName = makeGoodString(fullPath);
 	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
 	this->instanceNumber = 0;
+	this->instancerParticleId = -1;
 	// check for light connection. If the geo is connected to a areaLight it is not supposed to be rendered
 	// but used as light geometry.
 	//checkLightConnection();
@@ -205,7 +203,7 @@ MayaObject::MayaObject(MDagPath& objPath)
 	this->hasInstancerConnection = false;
 	MDagPath dp;
 	dp = objPath;
-	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dp) || !IsPathVisible(dp))
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dp) || !IsPathVisible(dp) || !IsLayerVisible(this->dagPath))
 		this->visible = false;
 
 	// get instancer connection

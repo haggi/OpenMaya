@@ -106,6 +106,15 @@ bool IsPathVisible( MDagPath& dp )
    return true;
 }
 
+bool IsVisible(MDagPath& node)
+{
+	MFnDagNode dagNode(node.node());
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(node) || !IsPathVisible(node) || !IsLayerVisible(node))
+		return false;
+	return true;
+}
+
+
 bool IsVisible(MFnDagNode& node)
 {
 	MStatus stat;
@@ -147,6 +156,33 @@ bool IsTemplated(MFnDagNode& node)
 
    return false;
 }
+
+bool IsLayerVisible(MDagPath& dp)
+{
+   MStatus stat = MStatus::kSuccess;
+   MDagPath dagPath = dp;
+   while (stat == MStatus::kSuccess)
+   {
+      MFnDependencyNode node(dagPath.node());
+	  MPlug doPlug = node.findPlug("drawOverride", &stat);
+	  if( stat )
+	  {
+		  MObject layer = getOtherSideNode(doPlug);
+		  MFnDependencyNode layerNode(layer, &stat);
+		  if( stat )
+		  {
+			  MGlobal::displayInfo(MString("check layer ") + layerNode.name() + " for node " + dagPath.fullPathName());
+			  bool visibility = true;
+			  if(getBool("visibility", layerNode, visibility))
+				  if(!visibility)
+					  return false;
+		  }
+	  }
+      stat = dagPath.pop();
+   }
+   return true;
+}
+
 
 bool IsInRenderLayer(MDagPath& dagPath)
 {

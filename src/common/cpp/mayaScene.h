@@ -79,6 +79,7 @@ public:
 
 	void clearInstancerNodeList();
 	void clearObjList(std::vector<MayaObject *>& objList);
+	void clearObjList(std::vector<MayaObject *>& objList, MayaObject *notThisOne);
 	bool getShadingGroups();
 	void getLightLinking();
 	bool listContainsAllLights(MDagPathArray& linkedLights, MDagPathArray& excludedLights);

@@ -10,6 +10,8 @@
 
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value);
 
+bool getFloat(const char* plugName, MFnDependencyNode& dn, float& value);
+
 bool getFloat2(MString& plugName, MFnDependencyNode& dn, float2& value);
 
 bool getFloat2(MString& plugName, MFnDependencyNode& dn, MVector& value);
@@ -20,11 +22,17 @@ bool getString(MString& plugName, MFnDependencyNode& dn, MString& value);
 
 bool getInt(MString& plugName, MFnDependencyNode& dn, int& value);
 
+bool getInt(const char *plugName, MFnDependencyNode& dn, int& value);
+
 bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value);
+
+bool getBool(const char *plugName, MFnDependencyNode& dn, bool& value);
 
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value);
 
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value);
+
+bool getEnum(const char *plugName, MFnDependencyNode& dn, int& id, MString& value);
 
 bool getInt2(MString& plugName, MFnDependencyNode& dn, int2& value);
 

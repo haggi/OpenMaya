@@ -380,226 +380,228 @@ bool MayaScene::parseScene(ParseType ptype)
 
 bool MayaScene::parseSceneNormal()
 {
-	logger.debug(MString("parseScene"));
+	logger.debug(MString("parseScene normal not supported any more."));
 	
-	instancerDagPathList.clear();
-	parentList.clear();
+	return false;
 
-	MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
-	MDagPath dagPath;
-	
-	for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
-	{
-		if (!dagIterator.getPath(dagPath))
-		{
-			logger.error(MString("parseScene ERROR: Could not get path for DAG iterator."));
-			return false;
-		}
-		logger.debug(MString("Parse Object: ") + getObjectName(dagPath.node()));		
-		
-		MFnDagNode node(dagPath.node());
-		MObject obj = node.object();
-		bool hasChildren = dagPath.childCount() > 0;
+	//instancerDagPathList.clear();
+	//parentList.clear();
 
-		// here only base objects, instances will be exported later directly
-		int instanceNumber = dagPath.instanceNumber();
-
-		if( instanceNumber > 0 )
-			continue;
-
-		//if (dagPath.apiType() == MFn::kWorld)
-		//	continue;
-
-		if (obj.hasFn(MFn::kCamera))
-		{
-			MFnCamera cam(obj);
-			bool renderable = false;
-			
-			// ignore all cameras that are not renderable
-			if(!getBool(MString("renderable"), cam, renderable))
-				continue;
-
-			if( renderable )
-			{
-				MayaObject *mo = this->mayaObjectCreator(obj);
-				if(hasChildren)	parentList.push_back(mo);
-				mo->visible = true;
-				mo->scenePtr = this;
-				mo->instanceNumber = 0;
-				this->camList.push_back(mo);
-				mo->index = (int)(this->camList.size() - 1);
-				continue;
-			}		
-		}
-
-		if (obj.hasFn(MFn::kLight))
-		{
-
-			if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
-				continue;
-			else{
-				MayaObject *mo = this->mayaObjectCreator(obj);
-				if(hasChildren)	parentList.push_back(mo);
-				mo->visible = true;
-				mo->instanceNumber = 0;
-				mo->scenePtr = this;
-				//mo->findObject = &this->getObject;
-				this->lightList.push_back(mo);
-				mo->index = (int)(this->lightList.size() - 1);
-				continue;
-			}
-		}
-
-		if (dagPath.apiType() == MFn::kInstancer)
-		{
-			this->instancerDagPathList.push_back(dagPath);
-		}
-		
-		MFnDependencyNode depFn(obj);
-		uint nodeId = depFn.typeId().id();
-		for( uint lId = 0; lId < this->lightIdentifier.size(); lId++)
-		{
-			bool nodeFound = false;
-			if( nodeId == this->lightIdentifier[lId])
-			{
-				nodeFound = true;
-				logger.debug("Found external light node.");
-				if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
-				{	
-					continue;
-				}else{
-					MayaObject *mo = this->mayaObjectCreator(obj);
-					if(hasChildren)	parentList.push_back(mo);
-					mo->visible = true;
-					mo->instanceNumber = 0;
-					mo->scenePtr = this;
-					//mo->findObject = &this->getObject;
-					this->lightList.push_back(mo);
-					mo->index = (int)(this->lightList.size() - 1);
-					continue;
-				}
-			}
-			if( nodeFound )
-				continue;
-		}
-		
-		bool visible = true;
-		if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
-		{			
-			int numi = dagIterator.instanceCount(true);
-			if( numi > 1 )
-			{
-				logger.info(MString("Object ") + node.name() + " has instances but is not visible. Set it to invisble but export geo");
-				
-				// okay I am an original object of an instance, now check if any of my instanced objects is visible				
-				MDagPathArray instPathArray;
-				dagIterator.getAllPaths(instPathArray);
-				bool visibleInstFound = false;
-				for( uint iId = 0; iId < instPathArray.length(); iId++)
-				{
-					MFnDagNode inode(instPathArray[iId].node()); 
-					if (IsVisible(inode) || !IsTemplated(inode) || IsInRenderLayer(instPathArray[iId]) || IsPathVisible(instPathArray[iId]))
-					{
-						logger.info(MString("Found a visible instance for object: ") + inode.name());
-						visibleInstFound = true;
-						break;
-					}
-				}
-				if( !visibleInstFound)
-					continue;
-				visible = false;				
-			}else{
-				continue;
-			}
-		}
-		
-		MayaObject *mo = this->mayaObjectCreator(node.object());
-		if(hasChildren)	parentList.push_back(mo);
-		mo->scenePtr = this;
-		//mo->findObject = &this->getObject;
-		mo->visible = visible;
-		mo->instanceNumber = instanceNumber;
-		this->objectList.push_back(mo);
-		mo->index = (int)(this->objectList.size() - 1);
-	}
-
-	int numobjects = (int)this->objectList.size();
-	if( numobjects == 0)
-	{
-		logger.error(MString("Scene parse: No renderable object found"));
-		this->good = false;
-		return false;
-	}
-
-	// get instances
-	// the idea is, simply to copy the original object and set the necessary values only.
-	// I have to access the original MayaObject to be able to get the HierarchyNameList for mb data.
-
-	int numObjects = (int)this->objectList.size();
-	for( int objId = 0; objId < numobjects; objId++)
-	{
-		MDagPathArray instArray;
-		MayaObject *mo = this->objectList[objId];
-		mo->dagPath.getAllPathsTo(mo->mobject, instArray);
-		int numPaths = instArray.length();
-		if( numPaths > 1)
-		{
-			logger.debug( MString("Found ") + (numPaths - 1) + " instances for " + mo->shortName);
-			for( uint iId = 1; iId < instArray.length(); iId++)
-			{
-				MFnDagNode node(instArray[iId].node());
-				MDagPath dagPath = instArray[iId];
-				//logger.debug(MString("Inst node: ") + node.name());
-				//logger.debug(MString("Full path name: ") + instArray[iId].fullPathName());
-				MMatrix m0 = instArray[iId].inclusiveMatrix();
-
-				if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(instArray[iId]) || !IsPathVisible(instArray[iId]))
-					continue;
-				MayaObject *newObj = this->mayaObjectCreator(node.object());
-				*newObj = *mo;
-				//logger.debug(MString("new Object Full path name: ") + newObj->dagPath.fullPathName());
-				//logger.debug(MString("new instArray[iId] path name: ") + dagPath.fullPathName());
-				newObj->dagPath = dagPath;
-				newObj->visible = true;
-				newObj->supported = true;
-				newObj->origObject = mo;
-				newObj->instanceNumber = iId;
-				newObj->transformMatrices.clear();
-				//MMatrix m = newObj->dagPath.inclusiveMatrix();
-				newObj->transformMatrices.push_back(newObj->dagPath.inclusiveMatrix());
-				//MObject parent = node.parent(0);
-				//MFnDagNode pNode(parent);
-				//logger.debug(MString("Full parent path name: ") + pNode.fullPathName());
-				//newObj->transformMatrices.push_back(pNode.dagPath().inclusiveMatrix());
-				//MMatrix m1 = pNode.dagPath().inclusiveMatrix();
-				
-				this->objectList.push_back(newObj);
-				newObj->index = (int)(this->objectList.size() - 1);
-			}
-		}
-	}
-	
-	this->parseInstancer(); 
-
-	this->getLightLinking();
-
-	//if( MGlobal::mayaState() != MGlobal::kBatch )
+	//MItDag   dagIterator(MItDag::kDepthFirst, MFn::kInvalid);
+	//MDagPath dagPath;
+	//
+	//for (dagIterator.reset(); (!dagIterator.isDone()); dagIterator.next())
 	//{
-	//	// clear cameras and use only the active one
-	//	this->clearObjList(this->camList);
-	//	// if we are in UI rendering state, try to get the current camera
-	//	M3dView curView = M3dView::active3dView();
-	//	MDagPath camDagPath;
-	//	curView.getCamera( camDagPath );
-	//	MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
-	//	mo->visible = true;
+	//	if (!dagIterator.getPath(dagPath))
+	//	{
+	//		logger.error(MString("parseScene ERROR: Could not get path for DAG iterator."));
+	//		return false;
+	//	}
+	//	logger.debug(MString("Parse Object: ") + getObjectName(dagPath.node()));		
+	//	
+	//	MFnDagNode node(dagPath.node());
+	//	MObject obj = node.object();
+	//	bool hasChildren = dagPath.childCount() > 0;
+
+	//	// here only base objects, instances will be exported later directly
+	//	int instanceNumber = dagPath.instanceNumber();
+
+	//	if( instanceNumber > 0 )
+	//		continue;
+
+	//	//if (dagPath.apiType() == MFn::kWorld)
+	//	//	continue;
+
+	//	if (obj.hasFn(MFn::kCamera))
+	//	{
+	//		MFnCamera cam(obj);
+	//		bool renderable = false;
+	//		
+	//		// ignore all cameras that are not renderable
+	//		if(!getBool(MString("renderable"), cam, renderable))
+	//			continue;
+
+	//		if( renderable )
+	//		{
+	//			MayaObject *mo = this->mayaObjectCreator(obj);
+	//			if(hasChildren)	parentList.push_back(mo);
+	//			mo->visible = true;
+	//			mo->scenePtr = this;
+	//			mo->instanceNumber = 0;
+	//			this->camList.push_back(mo);
+	//			mo->index = (int)(this->camList.size() - 1);
+	//			continue;
+	//		}		
+	//	}
+
+	//	if (obj.hasFn(MFn::kLight))
+	//	{
+
+	//		if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
+	//			continue;
+	//		else{
+	//			MayaObject *mo = this->mayaObjectCreator(obj);
+	//			if(hasChildren)	parentList.push_back(mo);
+	//			mo->visible = true;
+	//			mo->instanceNumber = 0;
+	//			mo->scenePtr = this;
+	//			//mo->findObject = &this->getObject;
+	//			this->lightList.push_back(mo);
+	//			mo->index = (int)(this->lightList.size() - 1);
+	//			continue;
+	//		}
+	//	}
+
+	//	if (dagPath.apiType() == MFn::kInstancer)
+	//	{
+	//		this->instancerDagPathList.push_back(dagPath);
+	//	}
+	//	
+	//	MFnDependencyNode depFn(obj);
+	//	uint nodeId = depFn.typeId().id();
+	//	for( uint lId = 0; lId < this->lightIdentifier.size(); lId++)
+	//	{
+	//		bool nodeFound = false;
+	//		if( nodeId == this->lightIdentifier[lId])
+	//		{
+	//			nodeFound = true;
+	//			logger.debug("Found external light node.");
+	//			if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
+	//			{	
+	//				continue;
+	//			}else{
+	//				MayaObject *mo = this->mayaObjectCreator(obj);
+	//				if(hasChildren)	parentList.push_back(mo);
+	//				mo->visible = true;
+	//				mo->instanceNumber = 0;
+	//				mo->scenePtr = this;
+	//				//mo->findObject = &this->getObject;
+	//				this->lightList.push_back(mo);
+	//				mo->index = (int)(this->lightList.size() - 1);
+	//				continue;
+	//			}
+	//		}
+	//		if( nodeFound )
+	//			continue;
+	//	}
+	//	
+	//	bool visible = true;
+	//	if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(dagPath) || !IsPathVisible(dagPath))
+	//	{			
+	//		int numi = dagIterator.instanceCount(true);
+	//		if( numi > 1 )
+	//		{
+	//			logger.info(MString("Object ") + node.name() + " has instances but is not visible. Set it to invisble but export geo");
+	//			
+	//			// okay I am an original object of an instance, now check if any of my instanced objects is visible				
+	//			MDagPathArray instPathArray;
+	//			dagIterator.getAllPaths(instPathArray);
+	//			bool visibleInstFound = false;
+	//			for( uint iId = 0; iId < instPathArray.length(); iId++)
+	//			{
+	//				MFnDagNode inode(instPathArray[iId].node()); 
+	//				if (IsVisible(inode) || !IsTemplated(inode) || IsInRenderLayer(instPathArray[iId]) || IsPathVisible(instPathArray[iId]))
+	//				{
+	//					logger.info(MString("Found a visible instance for object: ") + inode.name());
+	//					visibleInstFound = true;
+	//					break;
+	//				}
+	//			}
+	//			if( !visibleInstFound)
+	//				continue;
+	//			visible = false;				
+	//		}else{
+	//			continue;
+	//		}
+	//	}
+	//	
+	//	MayaObject *mo = this->mayaObjectCreator(node.object());
+	//	if(hasChildren)	parentList.push_back(mo);
 	//	mo->scenePtr = this;
-	//	mo->instanceNumber = 0;
-	//	this->camList.push_back(mo);
-	//	mo->index = (int)(this->camList.size() - 1);
+	//	//mo->findObject = &this->getObject;
+	//	mo->visible = visible;
+	//	mo->instanceNumber = instanceNumber;
+	//	this->objectList.push_back(mo);
+	//	mo->index = (int)(this->objectList.size() - 1);
 	//}
 
-	this->good = true;
+	//int numobjects = (int)this->objectList.size();
+	//if( numobjects == 0)
+	//{
+	//	logger.error(MString("Scene parse: No renderable object found"));
+	//	this->good = false;
+	//	return false;
+	//}
+
+	//// get instances
+	//// the idea is, simply to copy the original object and set the necessary values only.
+	//// I have to access the original MayaObject to be able to get the HierarchyNameList for mb data.
+
+	//int numObjects = (int)this->objectList.size();
+	//for( int objId = 0; objId < numobjects; objId++)
+	//{
+	//	MDagPathArray instArray;
+	//	MayaObject *mo = this->objectList[objId];
+	//	mo->dagPath.getAllPathsTo(mo->mobject, instArray);
+	//	int numPaths = instArray.length();
+	//	if( numPaths > 1)
+	//	{
+	//		logger.debug( MString("Found ") + (numPaths - 1) + " instances for " + mo->shortName);
+	//		for( uint iId = 1; iId < instArray.length(); iId++)
+	//		{
+	//			MFnDagNode node(instArray[iId].node());
+	//			MDagPath dagPath = instArray[iId];
+	//			//logger.debug(MString("Inst node: ") + node.name());
+	//			//logger.debug(MString("Full path name: ") + instArray[iId].fullPathName());
+	//			MMatrix m0 = instArray[iId].inclusiveMatrix();
+
+	//			if (!IsVisible(node) || IsTemplated(node) || !IsInRenderLayer(instArray[iId]) || !IsPathVisible(instArray[iId]))
+	//				continue;
+	//			MayaObject *newObj = this->mayaObjectCreator(node.object());
+	//			*newObj = *mo;
+	//			//logger.debug(MString("new Object Full path name: ") + newObj->dagPath.fullPathName());
+	//			//logger.debug(MString("new instArray[iId] path name: ") + dagPath.fullPathName());
+	//			newObj->dagPath = dagPath;
+	//			newObj->visible = true;
+	//			newObj->supported = true;
+	//			newObj->origObject = mo;
+	//			newObj->instanceNumber = iId;
+	//			newObj->transformMatrices.clear();
+	//			//MMatrix m = newObj->dagPath.inclusiveMatrix();
+	//			newObj->transformMatrices.push_back(newObj->dagPath.inclusiveMatrix());
+	//			//MObject parent = node.parent(0);
+	//			//MFnDagNode pNode(parent);
+	//			//logger.debug(MString("Full parent path name: ") + pNode.fullPathName());
+	//			//newObj->transformMatrices.push_back(pNode.dagPath().inclusiveMatrix());
+	//			//MMatrix m1 = pNode.dagPath().inclusiveMatrix();
+	//			
+	//			this->objectList.push_back(newObj);
+	//			newObj->index = (int)(this->objectList.size() - 1);
+	//		}
+	//	}
+	//}
+	//
+	//this->parseInstancer(); 
+
+	//this->getLightLinking();
+
+	////if( MGlobal::mayaState() != MGlobal::kBatch )
+	////{
+	////	// clear cameras and use only the active one
+	////	this->clearObjList(this->camList);
+	////	// if we are in UI rendering state, try to get the current camera
+	////	M3dView curView = M3dView::active3dView();
+	////	MDagPath camDagPath;
+	////	curView.getCamera( camDagPath );
+	////	MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
+	////	mo->visible = true;
+	////	mo->scenePtr = this;
+	////	mo->instanceNumber = 0;
+	////	this->camList.push_back(mo);
+	////	mo->index = (int)(this->camList.size() - 1);
+	////}
+
+	//this->good = true;
 	return true;
 
 }
@@ -607,14 +609,21 @@ bool MayaScene::parseSceneNormal()
 // the camera from the UI is set via render command
 void MayaScene::setCurrentCamera(MDagPath camDagPath)
 {
-	this->clearObjList(this->camList);
 	// if we are in UI rendering state, try to get the current camera
-	MayaObject *mo = this->mayaObjectCreator(camDagPath.node());
-	mo->visible = true;
-	mo->scenePtr = this;
-	mo->instanceNumber = 0;
-	this->camList.push_back(mo);
-	mo->index = (int)(this->camList.size() - 1);
+
+	MayaObject *mayaCam = NULL;
+	std::vector<MayaObject *>::iterator mIter = this->camList.begin();
+	for(;mIter!=this->camList.end(); mIter++)
+	{
+		MayaObject *cam = *mIter;
+		if( cam->dagPath == camDagPath )
+			mayaCam = cam;
+	}
+
+	if( mayaCam != NULL )
+	{
+		this->clearObjList(this->camList, mayaCam);
+	}
 }
 
 bool MayaScene::updateScene()
@@ -697,6 +706,20 @@ void MayaScene::clearObjList(std::vector<MayaObject *>& objList)
 	for( size_t i = 0; i < numElements; i++)
 		this->mayaObjectDeleter(objList[i]);
 	objList.clear();
+}
+
+void MayaScene::clearObjList(std::vector<MayaObject *>& objList, MayaObject *notThisOne)
+{
+	size_t numElements = objList.size();
+
+	for( size_t i = 0; i < numElements; i++)
+	{
+		if( objList[i] != notThisOne)
+			this->mayaObjectDeleter(objList[i]);
+	}
+	objList.clear();
+	objList.push_back(notThisOne);
+	notThisOne->index = 0;
 }
 
 void MayaScene::clearInstancerNodeList()
@@ -789,7 +812,6 @@ bool MayaScene::parseInstancerNew()
 				MDagPath curPath = allPaths[curPathIndex];
 				
 				MayaObject *particleMObject =  this->mayaObjectCreator(curPath);
-				currentAttributes = particleMObject->getObjectAttributes(currentAttributes);
 				MFnDependencyNode pOrigNode(particleMObject->mobject);
 				MObject pOrigObject = pOrigNode.object();
 
@@ -810,8 +832,8 @@ bool MayaScene::parseInstancerNew()
 					logger.debug(MString("Orig particle instancer obj not found."));
 					continue;
 				}
+				currentAttributes = particleMObject->getObjectAttributes(origObj->attributes);
 				particleMObject->origObject = origObj;
-
 				particleMObject->isInstancerObject = true;
 				particleMObject->supported = true;
 				particleMObject->visible = true;

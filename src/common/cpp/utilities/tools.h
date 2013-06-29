@@ -33,9 +33,13 @@ MString getPlugName(MString& longPlugname);
 
 bool IsVisible(MFnDagNode& node);
 
+bool IsVisible(MDagPath& node);
+
 bool IsTemplated(MFnDagNode& node);
 
 bool IsInRenderLayer(MDagPath& dagPath);
+
+bool IsLayerVisible(MDagPath& dagPath);
 
 bool IsPathVisible( MDagPath& dagPath );
 

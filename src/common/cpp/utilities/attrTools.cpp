@@ -18,6 +18,11 @@ bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value)
 	return result;
 }
 
+bool getFloat(const char* plugName, MFnDependencyNode& dn, float& value)
+{
+	return getFloat(MString(plugName), dn, value);
+}
+
 bool getFloat2(MString& plugName, MFnDependencyNode& dn, float2& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;
@@ -117,6 +122,10 @@ bool getInt(MString& plugName, MFnDependencyNode& dn, int& value)
 		return true;
 	return result;
 }
+bool getInt(const char *plugName, MFnDependencyNode& dn, int& value)
+{
+	return getInt(MString(plugName), dn, value);
+}
 
 bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value)
 {
@@ -130,6 +139,11 @@ bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value)
 	if(stat)
 		return true;
 	return result;
+}
+
+bool getBool(const char *plugName, MFnDependencyNode& dn, bool& value)
+{
+	return getBool(MString(plugName), dn, value);
 }
 
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value)
@@ -164,6 +178,11 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value)
 	if(!stat)
 		return false;
 	return true;
+}
+
+bool getEnum(const char *plugName, MFnDependencyNode& dn, int& id, MString& value)
+{
+	return getEnum(MString(plugName), dn, id, value);
 }
 
 bool getInt2(MString& plugName, MFnDependencyNode& dn, int2& value)
