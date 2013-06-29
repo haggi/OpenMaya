@@ -179,8 +179,11 @@
     <ClCompile Include="..\src\binmeshcreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\standinLocatorNode.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_standinLocator.cpp">
+      <Filter>mtap_common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,8 +304,11 @@
     <ClInclude Include="..\src\binmeshcreator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\standinLocatorNode.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_common\mtap_standinLocator.h">
+      <Filter>mtap_common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

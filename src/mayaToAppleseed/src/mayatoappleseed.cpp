@@ -88,12 +88,14 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 	if( !mayaScene->good )
 	{
 		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
+		delete mayaScene;
 		return MS::kFailure;
 	}
 
 	if( !mayaScene->parseScene(MayaScene::HIERARCHYPARSE) )
 	{
 		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
+		delete mayaScene;
 		return MS::kFailure;
 	}	
 
@@ -117,9 +119,14 @@ MStatus MayaToAppleseed::doIt( const MArgList& args)
 	if(!mayaScene->renderScene())
 	{
 		logger.error("Problems have occurred during rendering of the scene. Sorry cannot proceed.\n\n");
+		delete mayaScene;
 		return MS::kFailure;
 	}	
 
+	if( rtype != MayaScene::IPR)
+	{
+		delete mayaScene;
+	}
 	MGlobal::displayInfo("mayatoappleseed rendering done.\n");
 	return MStatus::kSuccess;
 }

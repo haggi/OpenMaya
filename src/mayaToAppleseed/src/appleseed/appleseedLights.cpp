@@ -13,6 +13,19 @@ static Logging logger;
 
 using namespace AppleRender;
 
+bool AppleseedRenderer::isSunLightTransform(mtap_MayaObject *obj)
+{
+	if(obj->dagPath.node().hasFn(MFn::kTransform))
+	{
+		MDagPath dp = obj->dagPath;
+		dp.extendToShape();
+		if(dp.node().hasFn(MFn::kDirectionalLight))
+		{
+		}
+	}
+	return false;
+}
+
 // it is a directional sunlight if it is connected to appleseedGlobals node
 bool AppleseedRenderer::isSunLight(mtap_MayaObject *obj)
 {
@@ -21,7 +34,10 @@ bool AppleseedRenderer::isSunLight(mtap_MayaObject *obj)
 
 	MStatus stat;
 	MDagPath dp = obj->dagPath;
-	dp.pop(1); // go one element up
+	
+	// we need a transform node to check for message connections, so if we have a light shape, we have to go one level up
+	if( !obj->mobject.hasFn(MFn::kTransform))
+		dp.pop(1); // go one element up
 	MFnDependencyNode depFn(dp.node(), &stat);
 	
 	if( stat )
@@ -30,28 +46,30 @@ bool AppleseedRenderer::isSunLight(mtap_MayaObject *obj)
 		if( stat )
 		{
 			if( !msgPlug.isConnected())
+			{
 				return false;
+			}
 			MPlugArray plugArray;
 			msgPlug.connectedTo(plugArray, 0, 1, &stat);
 			if( stat )
 			{
 				MPlug destPlug = plugArray[0];
-				logger.debug(MString("AppleseedRenderer::isSunLight found destPlug: ") + destPlug.name());
+				//logger.debug(MString("AppleseedRenderer::isSunLight found destPlug: ") + destPlug.name());
 				if(pystring::endswith(destPlug.name().asChar(), ".physicalSunConnection"))
 				{
-					logger.debug(MString("AppleseedRenderer::isSunLight found a physicalSunConnection, this is a sun light."));
+					//logger.debug(MString("AppleseedRenderer::isSunLight found a physicalSunConnection, this is a sun light."));
 					return true;
 				}
 			}else{
-				logger.debug(MString("AppleseedRenderer::isSunLight Problem message connections "));
+				//logger.debug(MString("AppleseedRenderer::isSunLight Problem message connections "));
 				return false;
 			}
 		}else{
-			logger.debug(MString("AppleseedRenderer::isSunLight Problem getting msg plug of node: ") + depFn.name());
+			//logger.debug(MString("AppleseedRenderer::isSunLight Problem getting msg plug of node: ") + depFn.name());
 			return false;
 		}
 	}else{
-		logger.debug(MString("AppleseedRenderer::isSunLight Problem getting dep node from dagpath: ") + dp.fullPathName());
+		//logger.debug(MString("AppleseedRenderer::isSunLight Problem getting dep node from dagpath: ") + dp.fullPathName());
 		return false;
 	}
 	return false;
@@ -454,10 +472,10 @@ void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 		{
 
 		}else{
-			logger.error("LightAssemblyInstance not found, something's wrong.");
+			//logger.error("LightAssemblyInstance not found, something's wrong.");
 		}
 		// update instance
 	}else{
-		logger.debug("LightAssembly not found, something's wrong.");
+		//logger.debug("LightAssembly not found, something's wrong.");
 	}
 }

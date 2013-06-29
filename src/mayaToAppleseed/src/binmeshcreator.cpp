@@ -180,6 +180,13 @@ size_t MeshWalker::get_face_material(const size_t face_index) const
 	return 0;
 }
 
+//MeshWriter::MeshWriter(const std::string& filename) : asf::BinaryMeshFileWriter(filename)
+//{
+//}
+//
+//void MeshWriter::write(const asf::IMeshWalker& walker)
+//{
+//}
 
 void* AppleseedBinMeshWriterCmd::creator()
 {
@@ -210,7 +217,10 @@ void AppleseedBinMeshWriterCmd::printUsage()
 bool AppleseedBinMeshWriterCmd::exportBinMesh(MObject meshObject)
 {
 
-	
+	MeshWalker walker(meshObject);
+	asf::BinaryMeshFileWriter writer(this->path.asChar());
+	//MeshWriter writer(this->path.asChar());
+	writer.write(walker);
 
 	return true;
 }

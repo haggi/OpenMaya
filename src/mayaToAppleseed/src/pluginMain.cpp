@@ -12,6 +12,7 @@
 #include "shaders/mtap_diagnosticShader.h"
 #include "shaders/mtap_fastSSSShader.h"
 #include "shaders/mtap_smokeShader.h"
+#include "mtap_common/mtap_standinLocator.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
@@ -30,11 +31,11 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	//status = plugin.registerCommand("meshToBinaraymesh", AppleseedBinMeshWriterCmd::creator, AppleseedBinMeshWriterCmd::newSyntax );
-	//if (!status) {
-	//	status.perror("cannot register command: AppleseedBinMeshWriterCmd");
-	//	return status;
-	//}
+	status = plugin.registerCommand("meshToBinarymesh", AppleseedBinMeshWriterCmd::creator, AppleseedBinMeshWriterCmd::newSyntax );
+	if (!status) {
+		status.perror("cannot register command: AppleseedBinMeshWriterCmd");
+		return status;
+	}
 
 	status = plugin.registerNode(MayaToAppleseedGlobalsName, MayaToAppleseedGlobals::id, MayaToAppleseedGlobals::creator, MayaToAppleseedGlobals::initialize );
 	if (!status) {
@@ -129,12 +130,12 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
 
-	//std::cout << "deregister meshToBinaraymesh cmd\n";
-	//status = plugin.deregisterCommand( "meshToBinaraymesh" );
-	//if (!status) {
-	//	status.perror("cannot deregister command: meshToBinaraymesh");
-	//	return status;
-	//}
+	std::cout << "deregister meshToBinaraymesh cmd\n";
+	status = plugin.deregisterCommand( "meshToBinarymesh" );
+	if (!status) {
+		status.perror("cannot deregister command: meshToBinaraymesh");
+		return status;
+	}
 
 	std::cout << "deregister mtap globals\n";
 	status = plugin.deregisterNode( MayaToAppleseedGlobals::id );

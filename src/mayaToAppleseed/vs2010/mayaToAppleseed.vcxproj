@@ -198,7 +198,7 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\devkit\appleseed_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;WINDOWS_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -304,6 +304,7 @@
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
@@ -333,6 +334,7 @@
     <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_standinLocator.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoShader.cpp" />
@@ -343,7 +345,6 @@
     <ClCompile Include="..\src\shaders\mtap_pysicalSurfaceShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_smokeShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_wireframeShader.cpp" />
-    <ClCompile Include="..\src\standinLocatorNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -351,6 +352,7 @@
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h" />
     <ClInclude Include="..\..\common\cpp\mayaScene.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
@@ -376,6 +378,7 @@
     <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_standinLocator.h" />
     <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\mtap_aoShader.h" />
     <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h" />
@@ -385,7 +388,6 @@
     <ClInclude Include="..\src\shaders\mtap_physicalSurfaceShader.h" />
     <ClInclude Include="..\src\shaders\mtap_smokeShader.h" />
     <ClInclude Include="..\src\shaders\mtap_wireframeShader.h" />
-    <ClInclude Include="..\src\standinLocatorNode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtap_devmodule\ressources\codedata.txt" />

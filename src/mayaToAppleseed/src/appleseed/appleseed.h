@@ -96,6 +96,7 @@ public:
 	void defineLight(mtap_MayaObject *obj);
 	void defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bool update = false);
 	bool isSunLight(mtap_MayaObject *obj);
+	bool isSunLightTransform(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
 	void definePreRender();

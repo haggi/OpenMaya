@@ -799,12 +799,11 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 		if( assemblyInst == NULL)
 		{
-			logger.debug(MString("updateTransform: could not find assembly instance with name : ") + obj->getAssemblyInstName());
+			//logger.debug(MString("updateTransform: could not find assembly instance with name : ") + obj->getAssemblyInstName());
 			return;
 		}
 		
 		int mbsamples = this->renderGlobals->xftimesamples;
-		//logger.debug(MString("updateTransform: mbsamples : ") + mbsamples);
 
 		// if no motionblur or no animation or this is the motionblur start step, then clear the transform list
 		if( !this->renderGlobals->doMb || !obj->isObjAnimated() || this->renderGlobals->isMbStartStep)
@@ -814,10 +813,15 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		float time = 0.0f;
 		if( mbsamples > 1)
 			time = (float)numTransforms/((float)mbsamples - 1.0f);
-		//logger.debug(MString("updateTransform: numtransforms : ") + (int)numTransforms + " transform time " + time);
 
 		asf::Matrix4d appMatrix;
 		MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
+
+		logger.debug(MString("check for sun light ") + obj->shortName);
+		if( isSunLight(obj) )
+		{
+			colMatrix.setToIdentity();
+		}
 
 		if( obj->attributes != NULL)
 		{
@@ -828,28 +832,6 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				MDagPathArray dagPathArray;
 				MMatrix matrix;
 				instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, colMatrix); 
-				//logger.debug(MString("dagPathArray len ") + dagPathArray.length());
-				//for( int dpi = 0; dpi < dagPathArray.length(); dpi++)
-				//{
-				//	if( obj->dagPath == dagPathArray[dpi])
-				//	{
-				//		colMatrix = obj->dagPath.inclusiveMatrix();
-				//		//logger.debug(MString("Found particleInstancer mobject dpath: ") + dagPathArray[dpi].fullPathName() + " mo " + ie->fullName);
-				//	}
-				//}
-
-				//for( uint ine = 0; ine < this->mtap_scene->instancerNodeElements.size(); ine++)
-				//{
-				//	for( int dpi = 0; dpi < dagPathArray.length(); dpi++)
-				//	{
-				//		mtap_MayaObject *ie = (mtap_MayaObject *)this->mtap_scene->instancerNodeElements[ine];
-				//		logger.debug(MString("particle id: ") + ie->instancerParticleId + " obj pid " + obj->instancerParticleId);
-				//		if( ie->dagPath == dagPathArray[dpi])
-				//		{
-				//			logger.debug(MString("Found particleInstancer mobject dpath: ") + dagPathArray[dpi].fullPathName() + " mo " + ie->fullName);
-				//		}
-				//	}
-				//}
 			}
 		}
 

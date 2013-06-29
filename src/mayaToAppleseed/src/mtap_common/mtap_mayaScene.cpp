@@ -597,6 +597,10 @@ bool mtap_MayaScene::postParseCallback()
 }
 
 
+asr::Assembly *mtap_MayaScene::getAssembly(mtap_MayaObject *obj)
+{
+	return this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
+}
 
 asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 {
@@ -605,6 +609,7 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
 	
 	asr::Assembly *assemblyPtr = NULL;
+	asr::Assembly *parentAssembly = NULL;
 
 	// in ipr mode we create hierarchies
 	// that means we put the assembly into the parent assembly->assemblies()
@@ -613,7 +618,8 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 		if( obj->parent != NULL)
 		{
 			mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
-			if( parent->objectAssembly != NULL)
+			parentAssembly = this->getAssembly(parent);
+			if( parentAssembly != NULL)
 			{
 				logger.debug(MString("Insert assembly ") + obj->shortName + " into parent " + parent->shortName);
 				parent->objectAssembly->assemblies().insert(assembly);
