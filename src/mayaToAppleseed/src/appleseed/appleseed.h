@@ -49,14 +49,14 @@
 
 // shaderdefs
 
-#define PHYSICAL_SURFACE_SHADER 0x00106EF4
-#define AO_SHADER				0x00106EF5
+#define PHYSICAL_SURFACE_SHADER 0x0011CF46
+#define AO_SHADER				0x0011CF41
 #define WIREFRAME_SHADER		0x00106EF6
-#define AOVOXEL_SHADER			0x00106EF7
-#define FASTSSS_SHADER			0x00106EF8
-#define CONST_SHADER			0x00106EF9
-#define DIAGNOSTIC_SHADER		0x00106EFB
-#define SMOKE_SHADER			0x00106EFC
+#define AOVOXEL_SHADER			0x0011CF42
+#define FASTSSS_SHADER			0x0011CF45
+#define CONST_SHADER			0x0011CF43
+#define DIAGNOSTIC_SHADER		0x0011CF44
+#define SMOKE_SHADER			0x0011CF47
 
 class mtap_MayaScene;
 class mtap_RenderGlobals;
@@ -118,6 +118,7 @@ public:
 	void updateTransform(mtap_MayaObject *obj);
 	void updateShape(mtap_MayaObject *obj);
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
+	asr::AssemblyInstance *getAssemblyInstFromMayaObject(mtap_MayaObject *obj);
 	void updateCamera(bool shape = true);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();

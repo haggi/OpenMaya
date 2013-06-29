@@ -435,6 +435,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue=False)
+        pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_method", attributeType="enum", enumName="none:normal:incoming_direction:outgoing_direction", defaultValue=0)
+        pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_distance", attributeType="float", defaultValue=0.0)
 
         # 
         
@@ -519,6 +521,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
+
+    def afterGlobalsNodeReplacement(self):
+        log.debug("afterGlobalsNodeReplacement")        
+        self.rendererTabUiDict = {}
 
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)

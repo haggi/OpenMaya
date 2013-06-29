@@ -31,6 +31,22 @@ mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
 	}
 };
 
+MString mtap_MayaObject::getAssemblyInstName()
+{
+	if( this->instancerParticleId > -1 )
+		return this->fullName + "assemblyInstance";
+	else
+		return this->dagPath.fullPathName() + "assemblyInstance";
+}
+
+// after the creation of an attribute node, ALL objects have a assemblyObject, either the parent one or the object itself.
+mtap_MayaObject *mtap_MayaObject::getAssemblyObject()
+{
+	if( this->attributes != NULL )
+		return ((mtap_ObjectAttributes *)this->attributes)->assemblyObject;
+	return NULL; // only happens if obj is world
+}
+
 asr::Assembly *mtap_MayaObject::getObjectAssembly()
 {
 	if( this->attributes != NULL )
@@ -63,6 +79,14 @@ mtap_MayaObject::~mtap_MayaObject()
 	if( this->attributes != NULL)
 		delete (mtap_ObjectAttributes *)this->attributes;
 }
+
+void mtap_MayaObject::getMaterials()
+{
+	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
+	{
+	}
+}
+
 
 bool mtap_MayaObject::geometryShapeSupported()
 {
@@ -97,7 +121,7 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 	if( this->isGeo())
 	{
 	}
-
+	
 	if( this->isTransform())
 	{
 		MFnDagNode objNode(this->mobject);
@@ -151,9 +175,7 @@ bool mtap_MayaObject::needsAssembly()
 		return true;
 	}
 
-	MFnDagNode dagFn(this->mobject);
-
-	if( dagFn.parentCount() > 1)
+	if( this->isInstanced() )
 	{
 		logger.debug(MString("obj has more than 1 parent -> needs assembly."));
 		return true;

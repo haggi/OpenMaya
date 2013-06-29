@@ -1,0 +1,120 @@
+
+How does the whole assembly thingy work in mayaToAppleseed?
+
+Assemblies are containers in appleseed which can represent parts of the scene.
+An assembly by itself is not visible, it is a definition only. To make it visible, it is necessary to create
+an assmemblyInstance. And assemblyInstance places the assembly in the world or inside the parent assembly.
+
+Because assemblies are quite expensive to handle, the useless creation of assemblies should be avoided.
+
+Assemblies can contain other assemblies, their assemblyInstances, shaders, colors, textures, lights, meshes, meshinstances and so on.
+Objects from one assembly are not visible outside the assembly. So if you create a geometry inside an assembly, you cannot access it
+from another assembly.
+
+True instances can be only created with assemblyInstances. You have objectInstances as well but these create geometry copies, no real instances.
+
+An assembly looks more or less like this:
+
+Assembly:
+	Assembly
+	AssemblyInstances
+	Lights
+	Objects
+	ObjectInstances
+
+
+The simplest way to tranlate a maya hierarchy to appleseed would be to see an assembly as a shape node and assemblyInstances as transform nodes.
+For example a simple hierarchy like this:
+
+pCube1 (TransformNode)
+	pCubeShape1 (shapeNode)
+	
+Would be translated into:
+
+	Assembly "pCubeShape1"
+		Geometry: contains pCubeShape1
+		GeometryInstance: contains identity matrix
+
+	AssemblyInstance "pCube1" "pCubeShape1"
+
+Lets have a look at a more complex hierarchy:
+	
+	geoT (Transform)		
+		geoT1 (Transform)
+			geoT2 (Transform)
+				geoS (Shape)
+				
+This can be translated to:
+
+	Assembly "geoT"
+		Assembly "geoT1"
+			Assembly "geoT2"
+				Geometry geoS
+			AssemblyInstance "geoT2Instance" "geoT2"
+		AssemblyInstance "geoT1Instance" "geoT1"			
+	
+	AssemblyInstance "geoTInstance" "geoT"	
+
+Very nice. So what will happen if we have a real instance of our shape node in maya this way?
+
+	geoT (Transform)		
+		geoT1 (Transform)
+			geoT2 (Transform)
+				geoS (Shape)
+
+	geoTInstanceFromgeoS -> geoS
+
+As mentioned, geometry and other elements are not visible outside the current assembly. But we need to access it for the definition of our assemblyInstance:
+
+	Assembly "geoT"
+		Assembly "geoT1"
+			Assembly "geoT2"
+				Geometry geoS
+			AssemblyInstance "geoT2Instance" "geoT2"
+		AssemblyInstance "geoT1Instance" "geoT1"			
+	
+	AssemblyInstance "geoTInstance" "geoT"	
+	AssemblyInstance "geoT2RealInstance" "geoT2"	
+
+Well it simply will not work this way because we try to access the "geoT2" assembly from outside the hierarchy.
+
+So what can we do?
+My solution looks as follows:
+
+1 ) check if a geometry or transform node its own assembly
+		own assembly is needed if:
+					- we have motionblur and animated transforms
+					- we have true instances
+					- the object is a light which can be animated and have motionblur
+2 ) create an assembly for all these nodes
+
+3 ) put all geometry below this node into the corresponding assembly unless we discover another node below which needs an assembly
+
+This leads to a quite flat hierarchy:
+	The maya hierarchy above:
+
+		geoT (Transform)		
+			geoT1 (Transform)
+				geoT2 (Transform)
+					geoS (Shape)
+
+		geoTInstanceFromgeoS -> geoS
+
+	Will be translated to:
+	
+		assembly "geoT2"
+			geometry "geoS"
+			
+		assemblyInstance "geoT2"
+		assemblyInstance "geoT2RealInstance" "geoT2"
+
+4 ) All lights will have their own assembly in the top level assembly
+
+
+During the scene translation first all objects are scanned and during creation they get an attribute to see if they need their own assembly.
+If they do not need an assembly, the objects will get a link to their parent assembly.
+
+Then in a second stage after scene parsing, all assemblies are created. 
+After assembly creation the assembly instances are created, simply create an instance for all assemblies.
+
+Next we have the scene update stage where all geometry/instances are updated and the instances will receive their transformation matrix.

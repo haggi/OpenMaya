@@ -108,6 +108,10 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\</IntDir>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.mll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">.mll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -214,22 +218,31 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
-      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\devkit\appleseed_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayatoappleseed.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Release/mayatoappleseed.pdb</ProgramDatabaseFile>
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <NoEntryPoint>false</NoEntryPoint>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014release.mll</Command>
@@ -256,7 +269,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalOptions>/GR /GS /EHsc /I "."  /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;..\..\common\cpp;.;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\devkit\appleseed_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -264,14 +276,23 @@
       <PrecompiledHeaderOutputFile>Release/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/subsystem:windows /incremental:no /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Release\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayatoappleseed.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Release/mayatoappleseed.pdb</ProgramDatabaseFile>
       <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
       <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013release.mll</Command>
@@ -306,11 +327,13 @@
     <ClCompile Include="..\src\appleseed\appleseedUtils.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp" />
+    <ClCompile Include="..\src\binmeshcreator.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoVoxelShader.cpp" />
@@ -320,6 +343,7 @@
     <ClCompile Include="..\src\shaders\mtap_pysicalSurfaceShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_smokeShader.cpp" />
     <ClCompile Include="..\src\shaders\mtap_wireframeShader.cpp" />
+    <ClCompile Include="..\src\standinLocatorNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
@@ -346,11 +370,13 @@
     <ClInclude Include="..\src\appleseed\appleseed.h" />
     <ClInclude Include="..\src\appleseed\mtap_rendererController.h" />
     <ClInclude Include="..\src\appleseed\mtap_tileCallback.h" />
+    <ClInclude Include="..\src\binmeshcreator.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
     <ClInclude Include="..\src\mtap_common\mtap_MayaObject.h" />
     <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\mtap_aoShader.h" />
     <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h" />
     <ClInclude Include="..\src\shaders\mtap_constantShader.h" />
@@ -359,6 +385,7 @@
     <ClInclude Include="..\src\shaders\mtap_physicalSurfaceShader.h" />
     <ClInclude Include="..\src\shaders\mtap_smokeShader.h" />
     <ClInclude Include="..\src\shaders\mtap_wireframeShader.h" />
+    <ClInclude Include="..\src\standinLocatorNode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtap_devmodule\ressources\codedata.txt" />

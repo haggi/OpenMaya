@@ -43,6 +43,9 @@ protected:
    static MObject  roughness;
    static MObject  fresnelMultiplier;
    static MObject  mdf_parameter;
+   static MObject  translucency;
+   static MObject  front_lighting_samples;
+   static MObject  back_lighting_samples;
    
    // BTDF
    static MObject  transmittance;
@@ -53,6 +56,8 @@ protected:
    static MObject  shininess_v;
    // EDF
    static MObject  emitLight;
+   static MObject  emitLightType;
+   static MObject  coneEdfAngle;
    static MObject  exitance;
 
    // Diffuse Reflectivity

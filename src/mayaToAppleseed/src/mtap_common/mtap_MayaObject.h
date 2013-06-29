@@ -32,7 +32,10 @@ public:
 
 	virtual bool geometryShapeSupported();
 	virtual mtap_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual void getMaterials();
 	asr::Assembly *getObjectAssembly();
+	mtap_MayaObject *getAssemblyObject();
+	MString getAssemblyInstName();
 	bool needsAssembly();
 	bool isTransform();
 	bool isGeo();

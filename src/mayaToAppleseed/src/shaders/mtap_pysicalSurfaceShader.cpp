@@ -92,9 +92,14 @@ MObject  mtap_surfaceShader::toIor;
 MObject  mtap_surfaceShader::shininess_u;
 MObject  mtap_surfaceShader::shininess_v;
 MObject  mtap_surfaceShader::fresnelMultiplier;
+MObject  mtap_surfaceShader::translucency;
+MObject  mtap_surfaceShader::front_lighting_samples;
+MObject  mtap_surfaceShader::back_lighting_samples;
 
 MObject  mtap_surfaceShader::exitance;
 MObject  mtap_surfaceShader::emitLight;
+MObject  mtap_surfaceShader::emitLightType;
+MObject  mtap_surfaceShader::coneEdfAngle;
 MObject  mtap_surfaceShader::mdf;
 MObject  mtap_surfaceShader::mdf_parameter;
 
@@ -160,6 +165,20 @@ MStatus mtap_surfaceShader::initialize()
 	specularReflectanceMultiplier = nAttr.create("specular_reflectance_multiplier", "specular_reflectance_multiplier", MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( specularReflectanceMultiplier ));	
 	
+	translucency = nAttr.create("translucency", "translucency", MFnNumericData::kFloat, 0.0f);
+	nAttr.setMin(0.0f);
+	nAttr.setSoftMax(1.0f);
+	CHECK_MSTATUS(addAttribute( translucency ));	
+
+	front_lighting_samples = nAttr.create("front_lighting_samples", "front_lighting_samples", MFnNumericData::kInt, 1);
+	nAttr.setMin(1);
+	CHECK_MSTATUS(addAttribute( front_lighting_samples ));	
+
+	back_lighting_samples = nAttr.create("back_lighting_samples", "back_lighting_samples", MFnNumericData::kInt, 1);
+	nAttr.setMin(1);
+	CHECK_MSTATUS(addAttribute( back_lighting_samples ));	
+
+
 	roughness = nAttr.create("roughness", "roughness", MFnNumericData::kFloat, 0.3f);
 	CHECK_MSTATUS(addAttribute( roughness ));	
 	
@@ -186,6 +205,14 @@ MStatus mtap_surfaceShader::initialize()
 
 	emitLight = nAttr.create("emitLight", "emitLight", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emitLight ));	
+
+	emitLightType = eAttr.create( "emitLightType", "emitLightType", 0, &stat);
+	stat = eAttr.addField( "diffuse", 0 );
+	stat = eAttr.addField( "cone", 1 );
+	CHECK_MSTATUS(addAttribute( emitLightType ));
+
+	coneEdfAngle = nAttr.create("coneEdfAngle", "coneEdfAngle", MFnNumericData::kFloat, 90.0f);
+	CHECK_MSTATUS(addAttribute( coneEdfAngle ));
 
 	exitance = nAttr.createColor("exitance", "exitance");
 	nAttr.setDefault(1.0, 1.0, 1.0);

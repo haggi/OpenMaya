@@ -1,6 +1,7 @@
 #include "appleseed.h"
 
 #include "renderer/api/edf.h"
+#include "renderer/modeling/edf/coneedf.h"
 #include "renderer/api/texture.h"
 #include "renderer/modeling/surfaceshader/fastsubsurfacescatteringsurfaceshader.h"
 
@@ -549,7 +550,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 		// Create a new EDF.
 		edf_name = shaderNode.name() + "_incandescence_edf";
 		asr::ParamArray params;
-		params.insert("exitance", incandName.asChar());
+		params.insert("radiance", incandName.asChar());
 		assembly->edfs().insert(
 			asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
 	}
@@ -626,7 +627,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 		// Create a new EDF.
 		edf_name = shaderNode.name() + "_incandescence_edf";
 		asr::ParamArray params;
-		params.insert("exitance", incandName.asChar());
+		params.insert("radiance", incandName.asChar());
 		assembly->edfs().insert(
 			asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
 	}
@@ -908,18 +909,70 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 		defineTexture(shaderNode, MString("exitance"), exitanceName);
 		edfName = shaderNode.name() + "_exitance_edf";
 		asr::ParamArray params;
-		params.insert("exitance", exitanceName.asChar());
+		params.insert("radiance", exitanceName.asChar());
 		edfName = shaderNode.name() + "_edf";
-			
-		assembly->edfs().insert(
-			asr::DiffuseEDFFactory().create(edfName.asChar(), params));
+
+		MString edfType = "diffuse";
+		int id = 0;
+		getEnum("emitLightType", shaderNode, id, edfType);
+		if( edfType == "cone")
+		{
+			float angle = 90.0f;
+			getFloat("angle", shaderNode, angle);
+			params.insert("angle", angle);
+			assembly->edfs().insert(
+				asr::ConeEDFFactory().create(edfName.asChar(), params));
+		}else{
+			assembly->edfs().insert(
+				asr::DiffuseEDFFactory().create(edfName.asChar(), params));
+		}
+
 	}		
 
 	MString surfaceShaderName = shaderName + "phys_surf";
 	asf::auto_release_ptr<asr::SurfaceShader> physSurfaceShader;
+
+	asr::ParamArray physSurfaceParams;
+	float tranclucency = 0.0f;
+	getFloat(MString("translucency"), shaderNode, tranclucency);
+	if( tranclucency > 0.0f)
+		physSurfaceParams.insert("translucency", tranclucency);
+	{
+		bool useAerialPerspective = false;
+		getBool("useAerialPerspective", shaderNode, useAerialPerspective);
+		float aerial_persp_distance = 1000.0f;
+		getFloat("aerial_persp_distance", shaderNode, aerial_persp_distance); 
+		float aerial_persp_intensity = 0.001f;
+		getFloat("aerial_persp_intensity", shaderNode, aerial_persp_intensity); 
+		MString aerial_persp_mode = "none";
+		int id = 0;
+		getEnum("aerial_persp_mode", shaderNode, id, aerial_persp_mode); 
+		if(useAerialPerspective)
+		{
+			physSurfaceParams.insert("aerial_persp_distance", aerial_persp_distance);
+			physSurfaceParams.insert("aerial_persp_intensity", aerial_persp_intensity);
+			physSurfaceParams.insert("aerial_persp_mode", aerial_persp_mode.asChar());
+		}
+	}
+	float alpha_multiplier = 1.0f;
+	getFloat("alpha_multiplier", shaderNode, alpha_multiplier); 
+	physSurfaceParams.insert("alpha_multiplier", alpha_multiplier);
+
+	float color_multiplier = 1.0f;
+	getFloat("color_multiplier", shaderNode, color_multiplier); 
+	physSurfaceParams.insert("color_multiplier", color_multiplier);
+
+	int front_lighting_samples = 1;
+	getInt("front_lighting_samples", shaderNode, front_lighting_samples);
+	physSurfaceParams.insert("front_lighting_samples", front_lighting_samples);
+
+	int back_lighting_samples = 1;
+	getInt("back_lighting_samples", shaderNode, back_lighting_samples);
+	physSurfaceParams.insert("back_lighting_samples", back_lighting_samples);
+
 	physSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
 			surfaceShaderName.asChar(),
-			asr::ParamArray());
+			physSurfaceParams);
 	assembly->surface_shaders().insert(physSurfaceShader);
 
 	if(this->defineAOVShaders(assembly, surfaceShaderName))
@@ -1104,19 +1157,69 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 		defineTexture(shaderNode, MString("exitance"), exitanceName);
 		edfName = shaderNode.name() + "_exitance_edf";
 		asr::ParamArray params;
-		params.insert("exitance", exitanceName.asChar());
+		params.insert("radiance", exitanceName.asChar());
 		edfName = shaderNode.name() + "_edf";
-			
-		assembly->edfs().insert(
-			asr::DiffuseEDFFactory().create(edfName.asChar(), params));
+
+		MString edfType = "diffuse";
+		int id = 0;
+		getEnum("emitLightType", shaderNode, id, edfType);
+		if( edfType == "cone")
+		{
+			float angle = 90.0f;
+			getFloat("angle", shaderNode, angle);
+			params.insert("angle", angle);
+			assembly->edfs().insert(
+				asr::ConeEDFFactory().create(edfName.asChar(), params));
+		}else{
+			assembly->edfs().insert(
+				asr::DiffuseEDFFactory().create(edfName.asChar(), params));
+		}
 	}		
 
 	MString surfaceShaderNode = shaderName + "phys_surf";
 
 	asf::auto_release_ptr<asr::SurfaceShader> physSurfaceShader;
+	asr::ParamArray physSurfaceParams;
+	float tranclucency = 0.0f;
+	getFloat(MString("translucency"), shaderNode, tranclucency);
+	if( tranclucency > 0.0f)
+		physSurfaceParams.insert("translucency", tranclucency);
+	{
+		bool useAerialPerspective = false;
+		getBool("useAerialPerspective", shaderNode, useAerialPerspective);
+		float aerial_persp_distance = 1000.0f;
+		getFloat("aerial_persp_distance", shaderNode, aerial_persp_distance); 
+		float aerial_persp_intensity = 0.001f;
+		getFloat("aerial_persp_intensity", shaderNode, aerial_persp_intensity); 
+		MString aerial_persp_mode = "none";
+		int id = 0;
+		getEnum("aerial_persp_mode", shaderNode, id, aerial_persp_mode); 
+		if(useAerialPerspective)
+		{
+			physSurfaceParams.insert("aerial_persp_distance", aerial_persp_distance);
+			physSurfaceParams.insert("aerial_persp_intensity", aerial_persp_intensity);
+			physSurfaceParams.insert("aerial_persp_mode", aerial_persp_mode.asChar());
+		}
+	}
+	float alpha_multiplier = 1.0f;
+	getFloat("alpha_multiplier", shaderNode, alpha_multiplier); 
+	physSurfaceParams.insert("alpha_multiplier", alpha_multiplier);
+
+	float color_multiplier = 1.0f;
+	getFloat("color_multiplier", shaderNode, color_multiplier); 
+	physSurfaceParams.insert("color_multiplier", color_multiplier);
+
+	int front_lighting_samples = 1;
+	getInt("front_lighting_samples", shaderNode, front_lighting_samples);
+	physSurfaceParams.insert("front_lighting_samples", front_lighting_samples);
+
+	int back_lighting_samples = 1;
+	getInt("back_lighting_samples", shaderNode, back_lighting_samples);
+	physSurfaceParams.insert("back_lighting_samples", back_lighting_samples);
+
 	physSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
 			surfaceShaderNode.asChar(),
-			asr::ParamArray());
+			physSurfaceParams);
 	assembly->surface_shaders().insert(physSurfaceShader);
 }
 

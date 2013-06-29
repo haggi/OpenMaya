@@ -91,7 +91,10 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
             
         self.dimControl(self.thisNode, "emitLight", False)
         self.dimControl(self.thisNode, "exitance", False)
-            
+        
+        self.dimControl(self.thisNode, "coneEdfAngle", True)
+        if self.thisNode.emitLightType.get() == 1:
+            self.dimControl(self.thisNode, "coneEdfAngle", False)
         
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
@@ -104,6 +107,9 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.addControl("mdf_parameter", label="Microfacet Parameter")
         self.addControl("matte_reflectance", label="Matte Reflectance")
         self.addControl("matte_reflectance_multiplier", label="Matte Refl Multiplier")
+        self.addControl("translucency", label="Translucency")
+        self.addControl("front_lighting_samples", label="Front Lighting Samples")
+        self.addControl("back_lighting_samples", label="Back Lighting Samples")
         self.addSeparator()
         self.addControl("specular_reflectance", label="Specular Reflectance")
         self.addControl("specular_reflectance_multiplier", label="Spec Refl Multiplier")
@@ -120,8 +126,10 @@ class AEappleseedSurfaceShaderTemplate(BaseTemplate):
         self.addControl("to_ior", label="To Ior")        
         self.endLayout()
         self.beginLayout("EDF" , collapse=0)
-        self.addControl("emitLight", label="emitLight")        
-        self.addControl("exitance", label="Exitance")        
+        self.addControl("emitLight", label="Emit Light")        
+        self.addControl("emitLightType", label="Emission Type", changeCommand=self.updateUi)   
+        self.addControl("coneEdfAngle", label="Cone Angle")        
+        self.addControl("exitance", label="Radiance")        
         self.endLayout()
 
         self.updateUi()

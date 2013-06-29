@@ -173,6 +173,15 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp">
+      <Filter>mtap_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\binmeshcreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\standinLocatorNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -285,6 +294,15 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
       <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h">
+      <Filter>mtap_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\binmeshcreator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\standinLocatorNode.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

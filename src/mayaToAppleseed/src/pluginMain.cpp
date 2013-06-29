@@ -1,6 +1,8 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
 
+#include "binmeshcreator.h"
+
 #include "mayatoappleseed.h"
 #include "mtap_common/mtap_renderGlobalsNode.h"
 #include "shaders/mtap_physicalSurfaceShader.h"
@@ -27,6 +29,12 @@ MStatus initializePlugin( MObject obj )
 		status.perror("cannot register command: mayatoappleseed");
 		return status;
 	}
+
+	//status = plugin.registerCommand("meshToBinaraymesh", AppleseedBinMeshWriterCmd::creator, AppleseedBinMeshWriterCmd::newSyntax );
+	//if (!status) {
+	//	status.perror("cannot register command: AppleseedBinMeshWriterCmd");
+	//	return status;
+	//}
 
 	status = plugin.registerNode(MayaToAppleseedGlobalsName, MayaToAppleseedGlobals::id, MayaToAppleseedGlobals::creator, MayaToAppleseedGlobals::initialize );
 	if (!status) {
@@ -120,6 +128,13 @@ MStatus uninitializePlugin( MObject obj)
 		status.perror("cannot deregister command: MayaToAppleseedCmd");
 		return status;
 	}
+
+	//std::cout << "deregister meshToBinaraymesh cmd\n";
+	//status = plugin.deregisterCommand( "meshToBinaraymesh" );
+	//if (!status) {
+	//	status.perror("cannot deregister command: meshToBinaraymesh");
+	//	return status;
+	//}
 
 	std::cout << "deregister mtap globals\n";
 	status = plugin.deregisterNode( MayaToAppleseedGlobals::id );

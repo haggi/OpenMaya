@@ -200,7 +200,9 @@ void AppleseedRenderer::defineOutput()
 }
 
 
-
+// 
+// If the object has an assembly itself, there should be an assembly with the object name in the database.
+// If the object does not have an assembly, the objAttributes should contain the parent assembly node.
 
 asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj)
 {
@@ -217,20 +219,33 @@ asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj
 		}
 	}else{
 		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-		mtap_MayaObject *assObject = att->assemblyObject;
+		if( att == NULL)
+			logger.debug("Error");
+		if( att->needsOwnAssembly )
+			return obj->objectAssembly;
 
-		MString assemblyName = "assembly";
-		if( assObject != NULL)
-			assemblyName = assObject->fullName;
-		assembly = this->scenePtr->assemblies().get_by_name(assemblyName.asChar());	
+		return att->assemblyObject->objectAssembly;
 	}
 	return assembly;
 }
 
+
+// we have a very flat hierarchy, what means we do not have hierarchies of assemblies.
+// all assemblies are placed in the world, as well as all assemblyInstances
+asr::AssemblyInstance *AppleseedRenderer::getAssemblyInstFromMayaObject(mtap_MayaObject *obj)
+{
+	asr::AssemblyInstance *assemblyInst = NULL;
+	MString assInstName = obj->getAssemblyInstName();
+	logger.debug(MString("Searching assembly instance in world: ") + assInstName);
+	assemblyInst = this->masterAssembly->assembly_instances().get_by_name(assInstName.asChar());
+	return assemblyInst;
+}
+
+
 void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 {	
 	MString assemblyName = obj->fullName;
-	MString assemblyInstName = (obj->fullName + "assembly_inst");
+	MString assemblyInstName = obj->dagPath.fullPathName();
 	asr::AssemblyInstance *assemblyInstance = NULL;
 	
 	//asr::Assembly *parentAssembly = (asr::Assembly *)obj->objectAssembly->get_parent();
@@ -298,14 +313,14 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envName));
+				.insert("radiance", envName));
 		break;
 	case 1:
 		environmentEDF = asr::GradientEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("horizon_exitance", gradHorizName)
-				.insert("zenith_exitance", gradZenitName)
+				.insert("horizon_radiance", gradHorizName)
+				.insert("zenith_radiance", gradZenitName)
 				);
 		break;
 	case 2:
@@ -314,8 +329,8 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	    environmentEDF = asr::LatLongMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar())
-				.insert("exitance_multiplier", renderGlobals->environmentIntensity)
+				.insert("radiance", envMapName.asChar())
+				.insert("radiance_multiplier", renderGlobals->environmentIntensity)
 				.insert("horizontal_shift", renderGlobals->latlongHoShift)
 				.insert("vertical_shift", renderGlobals->latlongVeShift)
 				);
@@ -324,8 +339,8 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 		environmentEDF = asr::MirrorBallMapEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envMapName.asChar())
-				.insert("exitance_multiplier", renderGlobals->environmentIntensity));
+				.insert("radiance", envMapName.asChar())
+				.insert("radiance_multiplier", renderGlobals->environmentIntensity));
 		break;
 	case 4: // physical sky
 		{
@@ -401,7 +416,7 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	    environmentEDF = asr::ConstantEnvironmentEDFFactory().create(
 	            "sky_edf",
 	            asr::ParamArray()
-				.insert("exitance", envName));
+				.insert("radiance", envName));
 	}
 
 	this->scenePtr->environment_edfs().insert(environmentEDF);
@@ -443,11 +458,6 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 void AppleseedRenderer::defineMasterAssembly()
 {
 	this->masterAssembly = this->scenePtr->assemblies().get_by_name("world");
-	//asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create(
-	//		"master",
-	//		asr::ParamArray());	
-	//this->scenePtr->assemblies().insert(assembly);
-	//this->masterAssembly = this->scenePtr->assemblies().get_by_name("master");
 }
 
 void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList, std::vector<MayaObject *>& instancerList)
@@ -754,7 +764,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		{
 			if( obj->objectAssembly->get_parent() != NULL)
 			{
-				MString assemblyInstName = obj->dagPath.fullPathName() + "assembly_inst";
+				MString assemblyInstName = obj->getAssemblyInstName();
 				asr::Assembly *parentAssembly = (asr::Assembly *)obj->objectAssembly->get_parent();
 				asr::AssemblyInstance *assemblyInstance = parentAssembly->assembly_instances().get_by_name(assemblyInstName.asChar());
 				if( assemblyInstance != NULL)
@@ -785,29 +795,11 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 			return;
 		}
 
-		if( obj->objectAssembly == NULL)
-		{
-			return;
-		}
+		asr::AssemblyInstance *assemblyInst = getAssemblyInstFromMayaObject(obj);
 
-		MString assemblyInstName = obj->fullName + "assembly_inst";
-		
-		//logger.debug(MString("Obj: ") + " name " + obj->fullName + " dpfpname " + obj->dagPath.fullPathName());
-		if( obj->attributes != NULL)
+		if( assemblyInst == NULL)
 		{
-			if( obj->attributes->hasInstancerConnection )
-			{
-				assemblyInstName = obj->fullName + "assembly_inst";
-			}
-		}
-
-		// all assemblies except world are placed in the world - assembly
-		asr::Assembly *worldAss = this->scenePtr->assemblies().get_by_name("world");
-		asr::AssemblyInstance *assInst = worldAss->assembly_instances().get_by_name(assemblyInstName.asChar());
-		//asr::AssemblyInstance *assInst = this->scenePtr->assembly_instances().get_by_name(assemblyInstName.asChar());
-		if( assInst == NULL)
-		{
-			logger.debug(MString("updateTransform: could not find assembly with name : ") + assemblyInstName);
+			logger.debug(MString("updateTransform: could not find assembly instance with name : ") + obj->getAssemblyInstName());
 			return;
 		}
 		
@@ -816,9 +808,9 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 
 		// if no motionblur or no animation or this is the motionblur start step, then clear the transform list
 		if( !this->renderGlobals->doMb || !obj->isObjAnimated() || this->renderGlobals->isMbStartStep)
-			assInst->transform_sequence().clear();
+			assemblyInst->transform_sequence().clear();
 
-		size_t numTransforms = assInst->transform_sequence().size();
+		size_t numTransforms = assemblyInst->transform_sequence().size();
 		float time = 0.0f;
 		if( mbsamples > 1)
 			time = (float)numTransforms/((float)mbsamples - 1.0f);
@@ -836,15 +828,34 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 				MDagPathArray dagPathArray;
 				MMatrix matrix;
 				instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, colMatrix); 
+				//logger.debug(MString("dagPathArray len ") + dagPathArray.length());
+				//for( int dpi = 0; dpi < dagPathArray.length(); dpi++)
+				//{
+				//	if( obj->dagPath == dagPathArray[dpi])
+				//	{
+				//		colMatrix = obj->dagPath.inclusiveMatrix();
+				//		//logger.debug(MString("Found particleInstancer mobject dpath: ") + dagPathArray[dpi].fullPathName() + " mo " + ie->fullName);
+				//	}
+				//}
+
+				//for( uint ine = 0; ine < this->mtap_scene->instancerNodeElements.size(); ine++)
+				//{
+				//	for( int dpi = 0; dpi < dagPathArray.length(); dpi++)
+				//	{
+				//		mtap_MayaObject *ie = (mtap_MayaObject *)this->mtap_scene->instancerNodeElements[ine];
+				//		logger.debug(MString("particle id: ") + ie->instancerParticleId + " obj pid " + obj->instancerParticleId);
+				//		if( ie->dagPath == dagPathArray[dpi])
+				//		{
+				//			logger.debug(MString("Found particleInstancer mobject dpath: ") + dagPathArray[dpi].fullPathName() + " mo " + ie->fullName);
+				//		}
+				//	}
+				//}
 			}
 		}
 
-		if( isLightTransform(obj->dagPath))
-			colMatrix.setToIdentity();
-		
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
 		
-		assInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
+		assemblyInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
 
 		// temporary solution: if object is invisible, scale it to 0.0 if possible
 		if( !obj->visible && obj->isVisiblityAnimated() && !this->renderGlobals->isMbStartStep)
@@ -854,8 +865,8 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 			zeroMatrix.setToIdentity();
 			zeroMatrix[0][0] = zeroMatrix[1][1] = zeroMatrix[2][2] = 0.00001;
 			this->MMatrixToAMatrix(zeroMatrix, appMatrix);
-			assInst->transform_sequence().clear();
-			assInst->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
+			assemblyInst->transform_sequence().clear();
+			assemblyInst->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
 			logger.debug(MString("Scaling invisible object to zero : ") + obj->shortName);
 			return;
 		}
@@ -918,9 +929,10 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 
 		if( assembly == NULL)
 		{
-			logger.debug(MString("deformUpdateCallback: Assembly not found."));
+			logger.debug(MString("deformUpdateCallback: Assembly not found for object: ") + obj->fullName);
 			return;
 		}
+
 		MMatrix matrix = att->objectMatrix;
 
 		if( obj->mobject.hasFn(MFn::kMesh))
@@ -1131,6 +1143,19 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	MFnDependencyNode depFn(obj->mobject);
 	getBool(MString("doubleSided"), depFn, doubleSided);
 
+	asr::ParamArray meshInstanceParams;
+
+	MString ray_bias_method = "none";
+	int id;
+	getEnum("mtap_ray_bias_method", depFn, id, ray_bias_method);
+	if( ray_bias_method != "none")
+	{
+		float ray_bias_distance = 0.0f;
+		getFloat("mtap_ray_bias_distance", depFn, ray_bias_distance);
+		meshInstanceParams.insert("ray_bias_method", ray_bias_method.asChar());
+		meshInstanceParams.insert("mtap_ray_bias_distance", ray_bias_distance);
+	}
+
 	if(doubleSided)
 	{
 		if( matBackDict.size() == 0)
@@ -1139,7 +1164,7 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 		assembly->object_instances().insert(
 				asr::ObjectInstanceFactory::create(
 				(meshName + "_inst").asChar(),
-				asr::ParamArray(),
+				meshInstanceParams,
 				meshObject->get_name(),
 				asf::Transformd::from_local_to_parent(tmatrix),
 				matDict,

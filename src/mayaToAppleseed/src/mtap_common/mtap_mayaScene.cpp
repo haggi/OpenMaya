@@ -78,13 +78,13 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 
 //
 //	will be called for every geometry deform step
-//	the very first time it will create an assembly and fill it with data
 //
 void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
 	logger.debug(MString("mtap_MayaScene::shapeUpdateCallback"));
 
+	// we write only the original geometry, not its instances
 	if( obj->instanceNumber > 0)
 		return;
 
@@ -93,51 +93,55 @@ void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 
 	if( !obj->visible && !obj->isCamera() )
 	{
-		if( !obj->attributes->hasInstancerConnection )
+		if( !obj->isInstanced() )
 		{
-			if( obj->mobject.hasFn(MFn::kMesh))
+			if( !obj->attributes->hasInstancerConnection )
 			{
-				if( !obj->isVisiblityAnimated() )
+				if( obj->mobject.hasFn(MFn::kMesh))
 				{
-					return;
-				}else{
-					logger.debug(MString("Obj ") + obj->shortName + " is not visible, but visibility is animated.");						
-					// objects visibility is animated and object is not visible, well, that means 
-					// that it could be the case that it was visible and is not visible any more. 
-					// In this case we want to remove it because we don't want to waste time and memory for
-					// an completly invisible object.
-					MFnMesh meshFn(obj->mobject);
-					MString meshFullName = makeGoodString(meshFn.fullPathName());
-					MString meshInstName = meshFullName + "_inst";
-
-					asr::Assembly *objAssembly = obj->getObjectAssembly();
-					if( objAssembly )
+					if( !obj->isVisiblityAnimated())
 					{
-						logger.debug(MString("Found assembly for this object, searching for mesh instance name: ") + meshInstName);						
-						asr::ObjectInstance *oi = objAssembly->object_instances().get_by_name(meshInstName.asChar());
-						if( oi )
-						{
-							logger.debug(MString("Found mesh instance : ") + meshInstName + " removing");		
-							objAssembly->object_instances().remove(oi);
-						}else{
-							logger.debug(MString("Found no mesh instance : ") + meshInstName);		
-						}
-						asr::Object *mo = objAssembly->objects().get_by_name(meshFullName.asChar());
-						if( mo )
-						{
-							logger.debug(MString("Found mesh object : ") + meshFullName + " removing");		
-							objAssembly->objects().remove(mo);
-						}else{
-							logger.debug(MString("Found no mesh objct : ") + meshFullName);		
-						}
-
-						//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
-						//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
-						objAssembly->bump_version_id();
-						return; // no further shape update needed because shape/geo is removed.
-					}else{
-						logger.debug(MString("Found no assembly for this object."));						
 						return;
+					}else{
+						logger.debug(MString("Obj ") + obj->shortName + " is not visible, but visibility is animated.");						
+
+						// objects visibility is animated and object is not visible, well, that means 
+						// that it could be the case that it was visible and is not visible any more. 
+						// In this case we want to remove it because we don't want to waste time and memory for
+						// an completly invisible object.
+						MFnMesh meshFn(obj->mobject);
+						MString meshFullName = makeGoodString(meshFn.fullPathName());
+						MString meshInstName = meshFullName + "_inst";
+
+						asr::Assembly *objAssembly = obj->getObjectAssembly();
+						if( objAssembly )
+						{
+							logger.debug(MString("Found assembly for this object, searching for mesh instance name: ") + meshInstName);						
+							asr::ObjectInstance *oi = objAssembly->object_instances().get_by_name(meshInstName.asChar());
+							if( oi )
+							{
+								logger.debug(MString("Found mesh instance : ") + meshInstName + " removing");		
+								objAssembly->object_instances().remove(oi);
+							}else{
+								logger.debug(MString("Found no mesh instance : ") + meshInstName);		
+							}
+							asr::Object *mo = objAssembly->objects().get_by_name(meshFullName.asChar());
+							if( mo )
+							{
+								logger.debug(MString("Found mesh object : ") + meshFullName + " removing");		
+								objAssembly->objects().remove(mo);
+							}else{
+								logger.debug(MString("Found no mesh objct : ") + meshFullName);		
+							}
+
+							//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
+							//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
+							objAssembly->bump_version_id();
+							return; // no further shape update needed because shape/geo is removed.
+						}else{
+							logger.debug(MString("Found no assembly for this object."));						
+							return;
+						}
 					}
 				}
 			}
@@ -448,19 +452,20 @@ bool mtap_MayaScene::parseScene(ParseType ptype)
 	postParseCallback();
 	return true;
 }
+
 //
-//	here we build the assemblies and add them to the scene
+//	Here we build the assemblies and add them to the scene
 //  Because all assemblies will need an assembly instance, the 
 //	instances are defined as well.
-//
-
+// 
 void mtap_MayaScene::createObjAssembly(mtap_MayaObject *obj)
 {
 	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
-	if( !obj->visible && !obj->isVisiblityAnimated() )
-		if( !att->hasInstancerConnection)
-			return;
+	if( !obj->visible )
+		if( !obj->isVisiblityAnimated() && (!obj->isInstanced()) )
+			if( !att->hasInstancerConnection)
+				return;
 
 	if( att->needsOwnAssembly)
 		obj->objectAssembly = createAssembly(obj);
@@ -470,13 +475,14 @@ void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
 {
 	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
+	// instances will be added below only for the original object
 	if( obj->instanceNumber > 0)
 		return;
 
 	if( obj->objectAssembly == NULL)
 		return;
 
-	if( !obj->visible && !obj->isVisiblityAnimated())
+	if( !obj->visible && !obj->isVisiblityAnimated() && !obj->isInstanced())
 		return;
 
 	// simply add instances for all paths
@@ -488,12 +494,17 @@ void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
 
 	for( uint pId = 0; pId < pathArray.length(); pId++)
 	{
-		// find mayaObject...
+		// if the object itself is not visible and the path is the one of the original shape, ignore it
+		// this way we can hide the original geometry and make only the instances visible
+		if( (!obj->visible) && (pId == 0))
+			continue;
 		MDagPath currentPath = pathArray[pId];
-		MString assemlbyInstName = obj->fullName + "assembly_inst";
-		logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemlbyInstName );		    
+		if(!IsVisible(currentPath))
+			continue;
+		MString assemblyInstName = currentPath.fullPathName() + "assemblyInstance";
+		logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemblyInstName );		    
 		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-		assemlbyInstName.asChar(),
+		assemblyInstName.asChar(),
 		asr::ParamArray(),
 		obj->objectAssembly->get_name());
 
@@ -533,7 +544,6 @@ void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
 			this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 		}
 	}
-
 }
 
 bool mtap_MayaScene::postParseCallback()
@@ -548,7 +558,7 @@ bool mtap_MayaScene::postParseCallback()
 	}
 
 	// after the definition of all assemblies, there is a least one "world" assembly, this will be our master assembly
-	// where all the lights and other elements will be placed
+	// where all the lights and other elements will be placed in
 	this->mtap_renderer.defineMasterAssembly();
 
 	// all assemblies need their own assembly instance because assemblies are only created where instances are necessary.
@@ -559,6 +569,7 @@ bool mtap_MayaScene::postParseCallback()
 		createObjAssemblyInstances(obj);		
 	}
 	
+	int count = 0;
 	mIter  = this->instancerNodeElements.begin();
 	for(;mIter!=this->instancerNodeElements.end(); mIter++)
 	{
@@ -573,13 +584,12 @@ bool mtap_MayaScene::postParseCallback()
 		if( ((mtap_MayaObject *)(obj->origObject))->objectAssembly == NULL)
 			continue;
 
-		logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + obj->fullName);
-
+		logger.debug(MString("instancer node element: ") + obj->shortName + " path " + obj->fullName);
+		MString instancerElementName = obj->fullName + "assemblyInstance";
 		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-		(obj->fullName + "assembly_inst").asChar(),
+		instancerElementName.asChar(),
 		asr::ParamArray(),
 		((mtap_MayaObject *)(obj->origObject))->objectAssembly->get_name());
-		//this->mtap_renderer.scene->assembly_instances().insert(ai);
 		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 	}
 
@@ -621,23 +631,14 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 		assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
 	}
 
-	//// for testing, can be removed later
+	//this way we can be sure that there is always a default material in case unknown material are assigned
 	this->mtap_renderer.addDefaultMaterial(assemblyPtr);
 
 	if( this->renderGlobals->assemblySBVH )
 	{
 		if( obj->animated || obj->isShapeConnected() )
 			assemblyPtr->get_parameters().insert_path("acceleration_structure.algorithm", "sbvh");
- //<assembly name="some_assembly">
- //       <parameters name="acceleration_structure">
- //           <parameter name="algorithm" value="sbvh" />
- //       </parameters>
- //       ...
- //   </assembly>
-
-
 	}
 
-	//return assembly.get();
 	return assemblyPtr;
 }
