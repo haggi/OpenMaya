@@ -1,5 +1,3 @@
-- find and eliminate memory leak
-
 - implmement spot light texturing
 
 - start test driven development with render and diff tests

@@ -1,19 +1,6 @@
-#include "binmeshcreator.h"
+#include "appleseedMeshWalker.h"
 
-#include "foundation/math/vector.h"
-#include "foundation/mesh/imeshbuilder.h"
-
-#include <maya/MGlobal.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MArgList.h>
-#include <maya/MSelectionList.h>
 #include <maya/MItMeshPolygon.h>
-#include <maya/MDagPath.h>
-
-
-#include "utilities/logging.h"
-
-static Logging logger;
 
 
 MeshWalker::MeshWalker(MObject meshMObject)
@@ -178,95 +165,4 @@ size_t MeshWalker::get_face_tex_coords(const size_t face_index, const size_t ver
 size_t MeshWalker::get_face_material(const size_t face_index) const 
 {
 	return 0;
-}
-
-//MeshWriter::MeshWriter(const std::string& filename) : asf::BinaryMeshFileWriter(filename)
-//{
-//}
-//
-//void MeshWriter::write(const asf::IMeshWalker& walker)
-//{
-//}
-
-void* AppleseedBinMeshWriterCmd::creator()
-{
-	return new AppleseedBinMeshWriterCmd();
-}
-
-AppleseedBinMeshWriterCmd::AppleseedBinMeshWriterCmd() {}
-AppleseedBinMeshWriterCmd::~AppleseedBinMeshWriterCmd() {}
-
-MSyntax AppleseedBinMeshWriterCmd::newSyntax()
-{
-	MSyntax syntax;
-	MStatus stat;
-
-	stat = syntax.addFlag( "-p", "-path", MSyntax::kString);
-	stat = syntax.addFlag( "-m", "-mesh", MSyntax::kString);
-	
-	return syntax;
-}
-
-void AppleseedBinMeshWriterCmd::printUsage()
-{
-	MGlobal::displayInfo("meshToBinaraymesh usage: ");
-	MGlobal::displayInfo("meshToBinaraymesh -p exportPath -m mesh");
-	MGlobal::displayInfo("e.g. meshToBinaraymesh -p c:/data/binmeshdir/mesh.binarymesh -m bodyShape");
-}
-
-bool AppleseedBinMeshWriterCmd::exportBinMesh(MObject meshObject)
-{
-
-	MeshWalker walker(meshObject);
-	asf::BinaryMeshFileWriter writer(this->path.asChar());
-	//MeshWriter writer(this->path.asChar());
-	writer.write(walker);
-
-	return true;
-}
-
-MStatus AppleseedBinMeshWriterCmd::doIt( const MArgList& args)
-{
-	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing AppleseedBinMeshWriterCmd...");
-	logger.setLogLevel(Logging::Debug);
-	
-	MArgDatabase argData(syntax(), args);
-	
-	path = "";
-	if( argData.isFlagSet("-path", &stat))
-	{
-		argData.getFlagArgument("-path", 0, path);
-		logger.debug(MString("path: ") + path);
-	}
-
-	meshName = "";
-	if( argData.isFlagSet("-mesh", &stat))
-	{
-		argData.getFlagArgument("-mesh", 0, meshName);
-		logger.debug(MString("mesh: ") + meshName);
-	}
-
-	if( (path == "") || (meshName == ""))
-	{
-		MGlobal::displayError("meshToBinaraymesh failed.\n");
-		printUsage();
-		return  MStatus::kFailure;
-	}
-
-	MSelectionList selectionList;
-	selectionList.add(meshName);
-	MDagPath dagPath;
-	stat = selectionList.getDagPath(0, dagPath);
-	if( !stat )
-	{
-		MGlobal::displayError(MString("meshToBinaraymesh: could not get dagPath from mesh: ") + meshName);
-		printUsage();
-		return  MStatus::kFailure;
-	}
-
-	exportBinMesh(dagPath.node());
-	
-	MGlobal::displayInfo("AppleseedBinMeshWriterCmd done.\n");
-	return MStatus::kSuccess;
 }

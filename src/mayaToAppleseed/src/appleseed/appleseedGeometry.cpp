@@ -10,6 +10,8 @@
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
 
+#include "renderer/modeling/object/meshobjectreader.h"
+
 static Logging logger;
 
 using namespace AppleRender;
@@ -26,6 +28,52 @@ void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
 
 void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
 {}
+
+	
+asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj)
+{
+	asr::MeshObjectReader reader;
+	asf::SearchPaths searchPaths;
+	searchPaths.push_back("global_obj_paths");
+	MString objName = obj->fullNiceName;
+	asr::MeshObjectArray meshArray;
+	asr::ParamArray params;
+	reader.read(searchPaths, objName.asChar(), params, meshArray);
+	//asf::auto_release_ptr<asr::MeshObject> mo = 
+	//meshArray[0];
+	asf::auto_release_ptr<asr::MeshObject> mo(meshArray[0]);
+	return mo;
+
+    //asr::MeshObjectArray objects;
+    //asr::MeshObjectReader::read(
+    //    project->get_search_paths(),
+    //    "cube",
+    //    asr::ParamArray()
+    //        .insert("filename", "scene.obj"),
+    //    objects);
+
+    //// Insert all the objects into the assembly.
+    //for (size_t i = 0; i < objects.size(); ++i)
+    //{
+    //    // Insert this object into the scene.
+    //    asr::MeshObject* object = objects[i];
+    //    assembly->objects().insert(asf::auto_release_ptr<asr::Object>(object));
+
+    //    // Create an instance of this object and insert it into the assembly.
+    //    const std::string instance_name = std::string(object->get_name()) + "_inst";
+    //    assembly->object_instances().insert(
+    //        asr::ObjectInstanceFactory::create(
+    //            instance_name.c_str(),
+    //            asr::ParamArray(),
+    //            object->get_name(),
+    //            asf::Transformd::identity(),
+    //            asf::StringDictionary()
+    //                .insert("default", "gray_material")
+    //                .insert("default2", "gray_material")));
+    //}
+
+
+}
 
 asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaObject *obj)
 {

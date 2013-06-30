@@ -176,14 +176,17 @@
     <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp">
       <Filter>mtap_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\binmeshcreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
       <Filter>common\mayarendernodes</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mtap_common\mtap_standinLocator.cpp">
       <Filter>mtap_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\binmeshcreatorCmd.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,14 +304,17 @@
     <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h">
       <Filter>mtap_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\binmeshcreator.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h">
       <Filter>common\mayarendernodes</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mtap_common\mtap_standinLocator.h">
       <Filter>mtap_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h">
+      <Filter>Source Files\appleseed</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\binmeshcreatorCmd.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

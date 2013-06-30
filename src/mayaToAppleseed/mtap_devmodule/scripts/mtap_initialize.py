@@ -437,6 +437,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue=False)
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_method", attributeType="enum", enumName="none:normal:incoming_direction:outgoing_direction", defaultValue=0)
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_distance", attributeType="float", defaultValue=0.0)
+        pm.addExtension(nodeType="mesh", longName="mtap_standin_path", dataType="string", usedAsFilename=True)
 
         # 
         

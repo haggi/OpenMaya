@@ -10,11 +10,12 @@ SSSShader:				0x0011CF45
 PhysicalSurfaceS:	0x0011CF46
 SmokeShader:			0x0011CF47
 WireframeShader:	0x0011CF48
+StandinLocator:		0x0011CF7A
 
 Lux:
 RenderGlobals:		0x0011CF49
 Lux Shaders 			0x0011CF4D - 0x0011CF5F
-Lux Txtures 			0x0011CF60 - 0x0011CF79
+Lux Textures 			0x0011CF60 - 0x0011CF79
 
 KRay:
 RenderGlobals:		0x0011CF4A
@@ -25,3 +26,6 @@ RenderGlobals:		0x0011CF4C
 
 Mitsuba:
 RenderGlobals:		
+
+
+Last used:	0x0011CF7A

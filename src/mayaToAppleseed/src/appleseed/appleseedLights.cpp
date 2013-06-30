@@ -456,7 +456,12 @@ void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
 	if( ass != NULL )
 	{
 		logger.debug("Found LightAssembly, search for light...");
-		asr::Light *light = ass->lights().get_by_name(obj->shortName.asChar());
+
+		asr::Light *light = NULL;
+		light = ass->lights().get_by_name(obj->shortName.asChar());
+		if( isSunLight(obj))
+			light = ass->lights().get_by_name("sunLight");
+
 		if( light == NULL )
 		{
 			logger.debug("Light not found in lightAssembly, creating one...");

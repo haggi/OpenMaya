@@ -124,6 +124,7 @@ public:
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
+	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj);
 	void render();
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;

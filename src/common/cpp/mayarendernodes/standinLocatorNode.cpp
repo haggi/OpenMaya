@@ -36,6 +36,7 @@ MStatus StandinLocatorNode::initialize()
 
 	proxyFile = tAttr.create( "proxyFile", "proxyFile", MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( proxyFile ));
 
 	displayType = eAttr.create("displayType", "displayType", 0, &stat);
 	stat = eAttr.addField( "BBox", 0 );
@@ -146,7 +147,7 @@ MBoundingBox StandinLocatorNode::boundingBox() const
 	MPoint corner1( -0.5, -0.5, -0.5 );
 	MPoint corner2( 0.5, 0.5, 0.5 );
 
-	return MBoundingBox( bboxmin, bboxmax );
+	return MBoundingBox( corner1, corner2 );
 }
 
 

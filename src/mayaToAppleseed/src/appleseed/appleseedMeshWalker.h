@@ -1,22 +1,18 @@
-#ifndef BIN_MESH_WRITER_H
-#define BIN_MESH_WRITER_H
+#ifndef MESH_WALKER_H
+#define MESH_WALKER_H
 
 #include "foundation/mesh/imeshwalker.h"
-#include "foundation/mesh/binarymeshfilewriter.h"
 
-#include <string.h>
-#include <maya/MPxCommand.h>
-#include <maya/MSyntax.h>
-#include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MFnMesh.h>
+
 #include <maya/MPointArray.h>
 #include <maya/MFloatVectorArray.h>
 #include <maya/MFloatArray.h>
 #include <maya/MIntArray.h>
+#include <maya/MFnMesh.h>
+#include <maya/MObject.h>
 
+#include <string.h>
 #include <vector>
-
 
 namespace asf = foundation;
 
@@ -73,27 +69,5 @@ public:
     virtual size_t get_face_material(const size_t face_index) const;
 };
 
-//class MeshWriter : public asf::BinaryMeshFileWriter
-//{
-////public:
-////    MeshWriter(const std::string& filename);
-////    void write(const asf::IMeshWalker& walker);
-//};
-
-class  AppleseedBinMeshWriterCmd: public MPxCommand
-{
-public:
-					AppleseedBinMeshWriterCmd();
-	virtual			~AppleseedBinMeshWriterCmd(); 
-	static MSyntax	newSyntax();
-
-	MStatus     	doIt( const MArgList& args );
-	static void*	creator();
-	void			printUsage();
-	bool			exportBinMesh(MObject meshObject);
-private:
-	MString			path;
-	MString			meshName;
-};
 
 #endif
