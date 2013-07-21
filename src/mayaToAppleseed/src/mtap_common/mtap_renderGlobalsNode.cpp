@@ -32,6 +32,7 @@ MObject MayaToAppleseedGlobals::bsdfSamples;
 MObject MayaToAppleseedGlobals::next_event_estimation;
 MObject MayaToAppleseedGlobals::rr_min_path_length;
 MObject MayaToAppleseedGlobals::max_path_length;
+MObject MayaToAppleseedGlobals::max_ray_intensity;
 MObject MayaToAppleseedGlobals::assemblySBVH;
 
 
@@ -143,6 +144,9 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	max_path_length = nAttr.create("max_path_length", "max_path_length",  MFnNumericData::kFloat, 0.0f);
 	CHECK_MSTATUS(addAttribute( max_path_length ));
+
+	max_ray_intensity = nAttr.create("max_ray_intensity", "max_ray_intensity",  MFnNumericData::kFloat, 0.0f);
+	CHECK_MSTATUS(addAttribute( max_ray_intensity ));
 
 	exportXMLFile = nAttr.create("exportXMLFile", "exportXMLFile",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportXMLFile ));

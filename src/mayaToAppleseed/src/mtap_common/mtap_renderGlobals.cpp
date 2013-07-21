@@ -246,6 +246,8 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getBool(MString("adaptiveSampling"), appleseedGlobals, this->adaptiveSampling))
 			throw("problem reading appleseedGlobals.adaptiveSampling");
 
+		if(!getFloat(MString("max_ray_intensity"), appleseedGlobals, this->max_ray_intensity))
+			throw("problem reading appleseedGlobals.max_ray_intensity");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

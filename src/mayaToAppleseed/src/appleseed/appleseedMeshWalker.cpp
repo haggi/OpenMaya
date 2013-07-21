@@ -1,12 +1,32 @@
 #include "appleseedMeshWalker.h"
 
 #include <maya/MItMeshPolygon.h>
+#include "utilities/tools.h"
+#include "shadingTools/shadingUtils.h"
+#include <maya/MBoundingBox.h>
+#include <maya/MDagPath.h>
 
-
-MeshWalker::MeshWalker(MObject meshMObject)
+/*
+	The mesh walker is used by the binary mesh writer to export data.
+	I implement a possibility to write a proxy file for the same object.
+	If proxy is turned on, a file with extension .proxyMesh will be saved.
+	The proxyMesh does not need ( at the moment ) any complicated data structures, it is for 
+	preview only. So I simply store plain triangle points. This is an array of points, 3 for every triangle.
+	Later in the mtap_standinMeshNode.cpp this triangle file is read and the triangles are recreated.
+	Of course there is a bit overhead because we have no shared points, but because the proxymesh will be reduced,
+	there will be much less connected vertices than in a normal mesh, so the overhead should be acceptable.
+*/
+MeshWalker::MeshWalker(MDagPath& dagPath, bool proxy, int nthFace, float percentage)
 {
 	MStatus stat;
+	MObject meshMObject = dagPath.node();
 	meshFn.setObject(meshMObject);
+	
+	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups);
+
+	this->nthFace = nthFace;
+	this->percentage = percentage;
+	this->doProxy = proxy;
 
 	MItMeshPolygon faceIt(meshMObject, &stat);
 	CHECK_MSTATUS(stat);
@@ -20,6 +40,10 @@ MeshWalker::MeshWalker(MObject meshMObject)
 	MIntArray faceVtxIds;
 	MIntArray faceNormalIds;
 	
+	int triCount = 0;
+
+	proxyPoints.append(meshFn.boundingBox().min());
+	proxyPoints.append(meshFn.boundingBox().max());
 
 	for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
 	{
@@ -43,6 +67,29 @@ MeshWalker::MeshWalker(MObject meshMObject)
 		{
 			int faceRelIds[3];
 			faceIt.getTriangle(triId, triPoints, triVtxIds);
+
+			if( proxy )
+			{
+				if( nthFace > 0 )
+				{
+					if( (triCount % nthFace) == 0 )
+					{
+						proxyPoints.append(triPoints[0]);
+						proxyPoints.append(triPoints[1]);
+						proxyPoints.append(triPoints[2]);
+					}
+				}
+				if( percentage > 0 )
+				{
+					float r = rnd();
+					if( r < percentage )
+					{
+						proxyPoints.append(triPoints[0]);
+						proxyPoints.append(triPoints[1]);
+						proxyPoints.append(triPoints[2]);
+					}
+				}
+			}
 
 			for( uint triVtxId = 0; triVtxId < 3; triVtxId++)
 			{
@@ -77,6 +124,8 @@ MeshWalker::MeshWalker(MObject meshMObject)
 			f.uvIds.append(uvId1);
 			f.uvIds.append(uvId2);
 			faceList.push_back(f);
+
+			triCount++;
 		}		
 	}
 
@@ -125,12 +174,13 @@ asf::Vector2d MeshWalker::get_tex_coords(const size_t i) const
 // Return material slots.
 size_t MeshWalker::get_material_slot_count() const
 {
-	return 1;
+	return this->shadingGroups.length();
 }
 
 const char* MeshWalker::get_material_slot(const size_t i) const
 {
-	return "defaultMaterial";
+	MString shadingGroupName = getObjectName(shadingGroups[i]);
+	return shadingGroupName.asChar();
 }
 
 // Return the number of faces.
@@ -164,5 +214,5 @@ size_t MeshWalker::get_face_tex_coords(const size_t face_index, const size_t ver
 // Return the material assigned to a given face.
 size_t MeshWalker::get_face_material(const size_t face_index) const 
 {
-	return 0;
+	return this->perFaceAssignments[face_index];
 }

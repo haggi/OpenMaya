@@ -125,6 +125,7 @@ public:
 	void defineMasterAssembly();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
 	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj);
+	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj, MString fileName);
 	void render();
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;

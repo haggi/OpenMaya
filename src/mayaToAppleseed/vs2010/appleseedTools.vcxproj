@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\toolsBinMesh.cpp" />
+    <ClCompile Include="..\src\appleseedTools\toolsPluginMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\toolsBinMesh.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{4C88C360-4A4F-4F1F-8F68-79A08943FA85}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetExt>.mll</TargetExt>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;NT_PLUGIN;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;REQUIRE_IOSTREAM;AW_NEW_IOSTREAMS;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderOutputFile>$(Configuration)\appleseedTools.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(Configuration)\appleseedTools.mll</OutputFile>
+      <ImportLibrary>$(Configuration)\appleseedTools.lib</ImportLibrary>
+      <ProgramDatabaseFile>$(Configuration)\appleseedTools.pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\appleseedTools.mll ..\mtap_devmodule\plug-ins\appleseedTools_maya2014.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(Configuration)\</OutDir>
+    <TargetExt>.mll</TargetExt>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_USRDLL;NT_PLUGIN;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;REQUIRE_IOSTREAM;AW_NEW_IOSTREAMS;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderOutputFile>$(Configuration)\appleseedTools.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(Configuration)\appleseedTools.mll</OutputFile>
+      <ImportLibrary>$(Configuration)\appleseedTools.lib</ImportLibrary>
+      <ProgramDatabaseFile>$(Configuration)\appleseedTools.pdb</ProgramDatabaseFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\appleseedTools.mll ..\mtap_devmodule\plug-ins\appleseedTools_maya2014Release.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

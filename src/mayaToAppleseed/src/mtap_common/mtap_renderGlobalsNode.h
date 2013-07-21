@@ -31,6 +31,7 @@ private:
 	static	  MObject next_event_estimation;
 	static	  MObject rr_min_path_length;
 	static	  MObject max_path_length;
+	static	  MObject max_ray_intensity;
 	static	  MObject assemblySBVH;
 
 	static    MObject filtertype;

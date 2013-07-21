@@ -28,6 +28,7 @@ public:
 	bool next_event_estimation;
 	float rr_min_path_length;
 	float max_path_length;
+	float max_ray_intensity;
 	bool assemblySBVH;
 
 	bool exportXMLFile;

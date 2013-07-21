@@ -336,6 +336,7 @@
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_standinLocator.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_standinMeshNode.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\mtap_aoShader.cpp" />
@@ -381,6 +382,7 @@
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtap_common\mtap_standinLocator.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_standinMeshNode.h" />
     <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\mtap_aoShader.h" />
     <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h" />

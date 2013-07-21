@@ -9,7 +9,9 @@
 #include <maya/MFloatArray.h>
 #include <maya/MIntArray.h>
 #include <maya/MFnMesh.h>
+#include <maya/MDagPath.h>
 #include <maya/MObject.h>
+#include <maya/MObjectArray.h>
 
 #include <string.h>
 #include <vector>
@@ -25,7 +27,7 @@ struct Face{
 class MeshWalker : public asf::IMeshWalker
 {
 public:
-	MeshWalker(MObject meshMObject);
+	MeshWalker(MDagPath& dagPath, bool proxy = false, int nthFace = 0, float percentage = 0.0f);
 	MFnMesh			meshFn;
 	
 	// mesh data
@@ -33,6 +35,12 @@ public:
 	MPointArray		points;
 	MFloatVectorArray normals;
 
+	float	percentage;
+	int		nthFace;
+	bool	doProxy;
+	MPointArray proxyPoints;
+	MObjectArray shadingGroups;
+	MIntArray perFaceAssignments;
 	std::vector<Face> faceList;
 
     // Return the name of the mesh.

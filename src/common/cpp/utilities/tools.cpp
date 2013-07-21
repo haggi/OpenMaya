@@ -12,6 +12,20 @@
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
 
+float rnd()
+{
+	float rm = (float)RAND_MAX;
+	float r  = (float)rand();
+	return( r/rm );
+}
+
+float srnd()
+{
+	float rm = (float)RAND_MAX;
+	float r  = (float)rand();
+	return( ((r/rm) - 0.5f) * 2.0f );
+}
+
 
 void rowToColumn(MMatrix& from, MMatrix& to)
 {
@@ -406,6 +420,15 @@ bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& other
 }
 
 MString getObjectName(MObject& mobject)
+{
+	if( mobject == MObject::kNullObj)
+		return "";
+
+	MFnDependencyNode depFn(mobject);
+	return depFn.name();
+}
+
+MString getObjectName(const MObject& mobject)
 {
 	if( mobject == MObject::kNullObj)
 		return "";

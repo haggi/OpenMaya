@@ -29,58 +29,89 @@ void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
 void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
 {}
 
+asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, MString fileName)
+{
+	asr::MeshObjectReader reader;
+	asf::SearchPaths searchPaths;
 	
+	MString objName = obj->fullNiceName;
+	asr::MeshObjectArray meshArray;
+	asr::ParamArray params;
+	params.insert("filename", fileName.asChar());
+	reader.read(searchPaths, objName.asChar(), params, meshArray);
+	asf::auto_release_ptr<asr::MeshObject> mo(meshArray[0]);
+	return mo;
+}
+
 asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj)
 {
 	asr::MeshObjectReader reader;
 	asf::SearchPaths searchPaths;
-	searchPaths.push_back("global_obj_paths");
+	
+	MFnDependencyNode depFn(obj->mobject);
+	MString proxyFile("");	
+	getString(MString("mtap_standin_path"), depFn, proxyFile);
 	MString objName = obj->fullNiceName;
 	asr::MeshObjectArray meshArray;
 	asr::ParamArray params;
+	params.insert("filename", proxyFile.asChar());
 	reader.read(searchPaths, objName.asChar(), params, meshArray);
-	//asf::auto_release_ptr<asr::MeshObject> mo = 
-	//meshArray[0];
 	asf::auto_release_ptr<asr::MeshObject> mo(meshArray[0]);
 	return mo;
-
-    //asr::MeshObjectArray objects;
-    //asr::MeshObjectReader::read(
-    //    project->get_search_paths(),
-    //    "cube",
-    //    asr::ParamArray()
-    //        .insert("filename", "scene.obj"),
-    //    objects);
-
-    //// Insert all the objects into the assembly.
-    //for (size_t i = 0; i < objects.size(); ++i)
-    //{
-    //    // Insert this object into the scene.
-    //    asr::MeshObject* object = objects[i];
-    //    assembly->objects().insert(asf::auto_release_ptr<asr::Object>(object));
-
-    //    // Create an instance of this object and insert it into the assembly.
-    //    const std::string instance_name = std::string(object->get_name()) + "_inst";
-    //    assembly->object_instances().insert(
-    //        asr::ObjectInstanceFactory::create(
-    //            instance_name.c_str(),
-    //            asr::ParamArray(),
-    //            object->get_name(),
-    //            asf::Transformd::identity(),
-    //            asf::StringDictionary()
-    //                .insert("default", "gray_material")
-    //                .insert("default2", "gray_material")));
-    //}
-
-
 }
 
 asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaObject *obj)
 {
+
+	// If the mesh has an attribute called "mtap_standin_path" and it contains a valid entry, then try to read the
+	// content from the path. 
+	// The other way is to have a standInMeshNode which is connected to the inMesh of the mesh node.
+	// In this case, get the standin node, read the path of the binmesh file and load it.
+
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);
+
+	// check for standin_path attribute
+	MString proxyFile("");	
+	if( getString(MString("mtap_standin_path"), meshFn, proxyFile))
+	{
+		// we need at least .obj == 4 chars
+		if( proxyFile.length() > 4 )
+		{
+			asf::auto_release_ptr<asr::MeshObject> mesh = createMeshFromFile(obj, proxyFile);
+			if( mesh.get() != NULL )
+			{
+				return mesh;
+			}
+		}
+	}
+
+	// check for standInNode connection
+	MPlug inMeshPlug = meshFn.findPlug(MString("inMesh"), &stat);
+	if( stat )
+	{
+		MObject inMeshObj = getOtherSideNode(inMeshPlug);
+		if( inMeshObj != MObject::kNullObj)
+		{
+			MFnDependencyNode depFn(inMeshObj);
+			uint nodeId = depFn.typeId().id();
+			if( nodeId == 0x0011CF7B)
+			{
+				logger.debug(MString("Found mtap_standinMeshNode"));
+				if(getString(MString("binMeshFile"), depFn, proxyFile))
+				{
+					asf::auto_release_ptr<asr::MeshObject> mesh = createMeshFromFile(obj, proxyFile);
+					if( mesh.get() != NULL )
+					{
+						return mesh;
+					}
+				}
+			}
+		}
+	}
+
 	MItMeshPolygon faceIt(meshObject, &stat);
 	CHECK_MSTATUS(stat);
 

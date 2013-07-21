@@ -6,6 +6,7 @@ import sys
 import os
 import optimizeTextures
 import Appleseed.aeNodeTemplates as aet
+import Appleseed.appleseedMenu as appleseedMenu
 import path
 
 reload(Renderer)
@@ -42,7 +43,16 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
         self.aovShaders = ["mtap_aoShader", "mtap_aoVoxelShader", "mtap_diagnosticShader", "mtap_fastSSSShader", "appleseedSurfaceShader"]
+        self.rendererMenu = None
         
+    def createRendererMenu(self):
+        self.rendererMenu = appleseedMenu.AppleseedMenu()
+
+    def removeRendererMenu(self):
+        if self.rendererMenu is not None:
+            pm.deleteUI(self.rendererMenu)
+        self.rendererMenu = None
+            
     def getEnumList(self, attr):
         return [(i, v) for i, v in enumerate(attr.getEnums().keys())]
 
@@ -558,11 +568,13 @@ def initRenderer():
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
         loadAETemplates()
+        theRenderer().createRendererMenu()
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")
         
 def unregister():
+    theRenderer().removeRendererMenu()
     theRenderer().unRegisterRenderer()
     log.debug("Unregister done")
 

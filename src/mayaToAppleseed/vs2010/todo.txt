@@ -7,3 +7,5 @@
 - implement binaray mesh files
 
 - eleminate duplicate shader creation methods
+
+- increase triangles size for reduced proxy creation

@@ -69,6 +69,8 @@ bool hasPlug(MObject& thisObject, MString& plugName);
 
 MString getObjectName(MObject& mobject);
 
+MString getObjectName(const MObject& mobject);
+
 MString pointToUnderscore(MString& string);
 
 void writeTMatrixList( std::ofstream& outFile, std::vector<MMatrix>& transformMatrices, bool inverse = false, float scaleFactor = 1.0);
@@ -98,5 +100,10 @@ bool isLightTransform(MDagPath& dagPath);
 bool isCameraTransform(MDagPath& dagPath);
 
 void makeUniqueArray( MObjectArray& );
+
+float rnd();
+
+float srnd();
+
 #endif
 

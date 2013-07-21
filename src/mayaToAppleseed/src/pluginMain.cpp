@@ -2,7 +2,8 @@
 #include <maya/MFnPlugin.h>
 
 #include "binmeshcreatorCmd.h"
-#include "mtap_common/mtap_standinLocator.h"
+//#include "mtap_common/mtap_standinLocator.h"
+#include "mtap_common/mtap_standinMeshNode.h"
 #include "mayatoappleseed.h"
 #include "mtap_common/mtap_renderGlobalsNode.h"
 #include "shaders/mtap_physicalSurfaceShader.h"
@@ -15,7 +16,7 @@
 #include "mtap_common/mtap_standinLocator.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.2"
+#define VERSION "0.3"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -37,9 +38,15 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	status = plugin.registerNode( STANDIN_LOCATOR_NODE_NAME, mtap_StandinLocator::id, mtap_StandinLocator::creator, mtap_StandinLocator::initialize, MPxNode::kLocatorNode);
+	//status = plugin.registerNode( STANDIN_LOCATOR_NODE_NAME, mtap_StandinLocator::id, mtap_StandinLocator::creator, mtap_StandinLocator::initialize, MPxNode::kLocatorNode);
+	//if (!status) {
+	//	status.perror("cannot register node: mtap_StandinLocator");
+	//	return status;
+	//}
+
+	status = plugin.registerNode( STANDIN_MESH_NODE_NAME, mtap_standinMeshNode::id, mtap_standinMeshNode::creator, mtap_standinMeshNode::initialize);
 	if (!status) {
-		status.perror("cannot register node: mtap_StandinLocator");
+		status.perror("cannot register node: mtap_standinMeshNode");
 		return status;
 	}
 
@@ -143,10 +150,17 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
 
-	std::cout << "deregister mtap standinLocator\n";
-	status = plugin.deregisterNode( mtap_StandinLocator::id );
+	//std::cout << "deregister mtap standinLocator\n";
+	//status = plugin.deregisterNode( mtap_StandinLocator::id );
+	//if (!status) {
+	//	status.perror("cannot deregister node: mtap standinLocator");
+	//	return status;
+	//}
+
+	std::cout << "deregister mtap standinMeshNode\n";
+	status = plugin.deregisterNode( mtap_standinMeshNode::id );
 	if (!status) {
-		status.perror("cannot deregister node: mtap standinLocator");
+		status.perror("cannot deregister node: mtap_standinMeshNode");
 		return status;
 	}
 

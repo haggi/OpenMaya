@@ -45,6 +45,7 @@ class AEappleseedNodeTemplate(BaseTemplate):
             self.addControl("mtap_mesh_useassembly", label="Use seperate Assembly")                        
             self.addControl("mtap_ray_bias_method", label="Ray Bias Method", changeCommand=self.updateUI)                       
             self.addControl("mtap_ray_bias_distance", label="Ray Bias Distance") 
+            self.addControl("mtap_standin_path", label="Proxy File") 
             self.endLayout()
                                    
     def buildBody(self, nodeName):
