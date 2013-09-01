@@ -14,8 +14,8 @@
 # Compiled Python scripts
 *.pyc
 Debug/
-Debug2014/
-Release/
+Debug*
+Release*
 x64/
 ipch/
 *.sdf

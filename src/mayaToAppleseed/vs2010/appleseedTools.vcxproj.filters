@@ -37,9 +37,6 @@
     <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.cpp">
       <Filter>Source Files\binMeshTools</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshTranslatorCmd.cpp">
-      <Filter>Source Files\binMeshTools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\utilities\logging.cpp">
       <Filter>Source Files\common\utilities</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
     <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.cpp">
       <Filter>Source Files\binMeshTools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshWriterCmd.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\utilities\tools.h">
@@ -70,9 +70,6 @@
       <Filter>Source Files\common\utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.h">
-      <Filter>Source Files\binMeshTools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshTranslatorCmd.h">
       <Filter>Source Files\binMeshTools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\logging.h">
@@ -91,6 +88,9 @@
       <Filter>Source Files\binMeshTools</Filter>
     </ClInclude>
     <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshWriterCmd.h">
       <Filter>Source Files\binMeshTools</Filter>
     </ClInclude>
   </ItemGroup>
