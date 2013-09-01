@@ -45,6 +45,9 @@
     <Filter Include="common\rendering">
       <UniqueIdentifier>{c1321075-f141-478e-bd26-f9286a239cdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\translators">
+      <UniqueIdentifier>{2a28f46a-b40f-4722-b926-505c84b0ed12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -161,6 +164,21 @@
     <ClCompile Include="..\src\%40\%40Camera.cpp">
       <Filter>Source Files\%40</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mt%40_common\mt%40_swatchRenderer.cpp">
+      <Filter>mt%40_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\translators\meshTranslator.cpp">
+      <Filter>common\translators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -255,6 +273,21 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\materialBaseOverride.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mt%40_common\mt%40_swatchRenderer.h">
+      <Filter>mt%40_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinMeshNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
+      <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\translators\meshTranslator.h">
+      <Filter>common\translators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

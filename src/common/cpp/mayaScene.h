@@ -44,7 +44,6 @@ public:
 	boost::thread rendererThread;
 	
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
-	bool parseSceneNormal(); // pase whole scene and save/analyze objects
 	bool parseScene(ParseType ptype = NORMALPARSE);
 
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
@@ -61,6 +60,7 @@ public:
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
 	virtual bool translateShapes(int timeStep) = 0; // overwrite this in your definition
+	virtual void addExternalIdentifier();
 
 	bool renderScene();
 	virtual bool doPreRenderJobs() = 0;  // overwrite this in your definition

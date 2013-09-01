@@ -27,7 +27,7 @@ struct Face{
 class MeshWalker : public asf::IMeshWalker
 {
 public:
-	MeshWalker(MDagPath& dagPath, bool proxy = false, int nthFace = 0, float percentage = 0.0f);
+	MeshWalker(MDagPath& dagPath, bool useTransform);
 	MFnMesh			meshFn;
 	
 	// mesh data
@@ -35,10 +35,6 @@ public:
 	MPointArray		points;
 	MFloatVectorArray normals;
 
-	float	percentage;
-	int		nthFace;
-	bool	doProxy;
-	MPointArray proxyPoints;
 	MObjectArray shadingGroups;
 	MIntArray perFaceAssignments;
 	std::vector<Face> faceList;

@@ -2,15 +2,6 @@ import shutil
 import path
 
 import logging
-import logging.handlers
-
-
-## Set up a specific logger with our desired output level
-#log = logging.getLogger('MyLogger')
-#log.setLevel(logging.DEBUG)
-#
-#class MyGlogging.Handler()
-#log.addHandler(hdlr)
 
 log = logging
 
@@ -54,29 +45,31 @@ def createNewProject(rendererName=None, shortCut=None):
     
     destDirBase = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + rendererName.capitalize())
     
-    def recursiveFiles(directory):
+    def recursiveFiles(directory, tab = ""):
         files = directory.listdir()
         for f in files:
-            print f
+            print tab + "Checking File:", f
             destElement = f.replace(sourceDirBase, destDirBase)
             destElement = replaceString(destElement, rendererName, shortCut)
             destElement = path.path(destElement)
             if f.isfile():
                 if not destElement.exists():
-                    print "Copy file", destElement
+                    print tab + "Copy file", f, "to", destElement
                     shutil.copy(f, destElement)
                     replaceStringInFile(destElement, rendererName, shortCut)
+                else:
+                    print tab + "File", destElement, "already exists, skipping."
             if f.isdir():
                 #print "Is Dir"
                 if not destElement.exists():
-                    print "Making dir", destElement
+                    print tab + "Making dir", destElement
                     destElement.makedirs()
-                    recursiveFiles(f)
+                    recursiveFiles(f, tab + "\t")
     
     recursiveFiles(sourceDirBase)
     
 if __name__ == "__main__":
-    createNewProject(rendererName="Lux", shortCut="mtlu")
+    createNewProject(rendererName="Fuji", shortCut="mtfu")
         
     
     

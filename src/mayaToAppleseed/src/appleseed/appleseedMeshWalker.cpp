@@ -5,6 +5,7 @@
 #include "shadingTools/shadingUtils.h"
 #include <maya/MBoundingBox.h>
 #include <maya/MDagPath.h>
+#include <maya/MMatrix.h>
 
 /*
 	The mesh walker is used by the binary mesh writer to export data.
@@ -16,17 +17,13 @@
 	Of course there is a bit overhead because we have no shared points, but because the proxymesh will be reduced,
 	there will be much less connected vertices than in a normal mesh, so the overhead should be acceptable.
 */
-MeshWalker::MeshWalker(MDagPath& dagPath, bool proxy, int nthFace, float percentage)
+MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 {
 	MStatus stat;
 	MObject meshMObject = dagPath.node();
 	meshFn.setObject(meshMObject);
 	
 	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups);
-
-	this->nthFace = nthFace;
-	this->percentage = percentage;
-	this->doProxy = proxy;
 
 	MItMeshPolygon faceIt(meshMObject, &stat);
 	CHECK_MSTATUS(stat);
@@ -42,8 +39,12 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool proxy, int nthFace, float percent
 	
 	int triCount = 0;
 
-	proxyPoints.append(meshFn.boundingBox().min());
-	proxyPoints.append(meshFn.boundingBox().max());
+	if( useTransform )
+	{
+		MMatrix matrix = dagPath.inclusiveMatrix();
+		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+			points[vtxId] *= matrix;
+	}
 
 	for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
 	{
@@ -67,29 +68,6 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool proxy, int nthFace, float percent
 		{
 			int faceRelIds[3];
 			faceIt.getTriangle(triId, triPoints, triVtxIds);
-
-			if( proxy )
-			{
-				if( nthFace > 0 )
-				{
-					if( (triCount % nthFace) == 0 )
-					{
-						proxyPoints.append(triPoints[0]);
-						proxyPoints.append(triPoints[1]);
-						proxyPoints.append(triPoints[2]);
-					}
-				}
-				if( percentage > 0 )
-				{
-					float r = rnd();
-					if( r < percentage )
-					{
-						proxyPoints.append(triPoints[0]);
-						proxyPoints.append(triPoints[1]);
-						proxyPoints.append(triPoints[2]);
-					}
-				}
-			}
 
 			for( uint triVtxId = 0; triVtxId < 3; triVtxId++)
 			{

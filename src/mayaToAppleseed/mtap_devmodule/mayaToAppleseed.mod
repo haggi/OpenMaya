@@ -5,3 +5,4 @@ MAYA_RENDER_DESC_PATH+:=ressources
 PATH+:=bin
 MAYA_SCRIPT_PATH+:=scripts/AETemplates
 PYTHONPATH+:=scripts/AETemplates
+MAYA_PLUG_IN_PATH+:=scripts

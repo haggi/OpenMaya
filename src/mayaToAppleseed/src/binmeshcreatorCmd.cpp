@@ -48,7 +48,7 @@ bool AppleseedBinMeshWriterCmd::exportBinMesh(MDagPath dagPath)
 {
 	MObject meshObject = dagPath.node();
 	asf::GenericMeshFileWriter writer(this->path.asChar());
-	MeshWalker walker(meshObject, doProxy, nthPoly, percentage);
+	MeshWalker walker(dagPath, doProxy, nthPoly, percentage);
 	writer.write(walker);
 	
 	if( this->doProxy )

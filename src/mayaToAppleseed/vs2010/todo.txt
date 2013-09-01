@@ -4,8 +4,8 @@
 
 - implement alembic
 
-- implement binaray mesh files
-
 - eleminate duplicate shader creation methods
 
 - increase triangles size for reduced proxy creation
+
+- external appleseed tools plugin for file translation

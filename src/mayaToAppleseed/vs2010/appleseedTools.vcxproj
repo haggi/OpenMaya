@@ -11,17 +11,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
-    <ClCompile Include="..\src\appleseedTools\binMeshTools\toolsBinMesh.cpp" />
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.cpp" />
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.cpp" />
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshTranslatorCmd.cpp" />
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\proxyMesh.cpp" />
     <ClCompile Include="..\src\appleseedTools\toolsPluginMain.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
     <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
-    <ClInclude Include="..\src\appleseedTools\binMeshTools\toolsBinMesh.h" />
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.h" />
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.h" />
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshTranslatorCmd.h" />
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\proxyMesh.h" />
+    <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
@@ -55,7 +69,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;_USRDLL;NT_PLUGIN;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;REQUIRE_IOSTREAM;AW_NEW_IOSTREAMS;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;WINDOWS_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -67,16 +81,16 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\src\appleseed;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(Configuration)\appleseedTools.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin  /dll /debug %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(Configuration)\appleseedTools.mll</OutputFile>
       <ImportLibrary>$(Configuration)\appleseedTools.lib</ImportLibrary>
       <ProgramDatabaseFile>$(Configuration)\appleseedTools.pdb</ProgramDatabaseFile>

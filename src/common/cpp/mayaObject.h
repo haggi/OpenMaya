@@ -15,7 +15,6 @@
 class MayaScene;
 class Material;
 
-
 class ObjectAttributes
 {
 public:
@@ -34,6 +33,7 @@ public:
 	MDagPath dagPath;
 	ObjectAttributes *attributes;
 	MayaScene *scenePtr;
+
 	std::vector<MDagPath> linkedLights; // for objects - light linking
 	bool lightExcludeList; // if true the linkedLights list contains excluded lights, else included lights
 	std::vector<MDagPath> shadowObjects; // for lights - shadow linking
@@ -56,18 +56,18 @@ public:
 	int instancerParticleId; 
 	MObject instancerMObj;
 	MDagPath instancerDagPath;
-	bool is_light;
 
 	bool supported;
 	bool animated;
 	bool hasInstancerConnection; // if yes, then the objects below can be visible via instancer even if the original object is not
-	bool shapeConnected; // if shape connected, it can be used to determine if it has to be exported for every frame or not
-	bool visible; // important for instances: orig object can be invisible but must be exported
-	uint instanceNumber;
-	int perObjectMbSteps; // default 1 can be overridden vor some renderers
-	bool motionBlurred; // possibility to turn off motionblur for this object
-	bool geometryMotionblur; // if object has vertex velocity informations, there is no need for real deformation blur
-	bool shadowMapCastingLight(); // to know if I have to add a light to render passes
+	bool shapeConnected;		 // if shape connected, it can be used to determine if it has to be exported for every frame or not
+	bool visible;				 // important for instances: orig object can be invisible but must be exported
+	uint instanceNumber;		 // number of instance
+	int	 perObjectTransformSteps;// number of xform steps. Some renderers can use different xform/deform steps  
+	int	 perObjectDeformSteps;   // number of deform steps. 
+	bool motionBlurred;			 // possibility to turn off motionblur for this object
+	bool geometryMotionblur;	 // if object has vertex velocity informations, there is no need for real deformation blur
+	bool shadowMapCastingLight();// to know if I have to add a light to render passes
 	bool isObjAnimated();
 	bool isShapeConnected();
 	bool isObjVisible();
@@ -86,7 +86,11 @@ public:
 	MayaObject(MObject& mobject);
 	MayaObject(MDagPath& objPath);
 	~MayaObject();
+	void initialize();
 	void updateObject();
 };
+
+void addLightIdentifier(int id);
+void addObjectIdentifier(int id);
 
 #endif

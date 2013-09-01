@@ -2,6 +2,8 @@
 #define TOOLS_BINMESH_H
 
 #include <maya/MPxFileTranslator.h>
+#include <maya/MDagPath.h>
+#include <maya/MObjectArray.h>
 
 class polyWriter;
 class MDagPath;
@@ -30,6 +32,9 @@ class BinMeshTranslator:public MPxFileTranslator {
 	protected:	
 		MStatus					exportAll();
 		MStatus					exportSelection();
+		MStatus					getMeshObjectInHierarchy(MDagPath, MObjectArray&);
+		MString					fileName;
+		MString					options;
 };
 
 #endif

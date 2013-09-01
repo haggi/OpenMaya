@@ -1,19 +1,89 @@
-#include "toolsBinMesh.h"
+#include "binMeshTranslator.h"
 
 #include <maya/MStatus.h>
 #include <maya/MString.h>
 #include <maya/MObject.h>
+#include <maya/MObjectArray.h>
 #include <maya/MGlobal.h>
 #include <maya/MItDag.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MItSelectionList.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MPlug.h>
 
 #include <maya/MIOStream.h>
 #include <maya/MFStream.h>
 
 #include "utilities/tools.h"
+
+
+MStatus BinMeshTranslator::getMeshObjectInHierarchy(MDagPath currentPath, MObjectArray& objectArray)
+{
+	if( currentPath.node().hasFn(MFn::kMesh))
+		objectArray.append(currentPath.node());
+
+	uint numChilds = currentPath.childCount();
+	for( uint chId = 0; chId < numChilds; chId++)
+	{
+		MDagPath childPath = currentPath;
+		MStatus stat = childPath.push(currentPath.child(chId));
+		if( !stat )
+		{
+			continue;
+		}
+		MString childName = childPath.fullPathName();
+		getMeshObjectInHierarchy(childPath, objectArray);
+	}
+
+	return MStatus::kSuccess;
+}
+
+//bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes, MayaObject *parentObject)
+//{
+//	logger.debug(MString("parse: ") + currentPath.fullPathName(), level);
+//	MayaObject *mo = mayaObjectCreator(currentPath);
+//	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
+//	mo->parent = parentObject;
+//	classifyMayaObject(mo);
+//
+//	// 
+//	//	find the original mayaObject for instanced objects. Can be useful later.
+//	//
+//
+//	if( currentPath.instanceNumber() == 0)
+//		origObjects.push_back(mo);
+//	else{
+//		MFnDagNode node(currentPath.node());
+//		for( size_t iId = 0; iId < origObjects.size(); iId++)
+//		{
+//			MFnDagNode onode(origObjects[iId]->mobject);
+//			if( onode.object() == node.object() )
+//			{
+//				logger.debug(MString("Orig Node found:") + onode.fullPathName(), level);
+//				mo->origObject = origObjects[iId];
+//				break;
+//			}
+//		}
+//	}
+//
+//	uint numChilds = currentPath.childCount();
+//	for( uint chId = 0; chId < numChilds; chId++)
+//	{
+//		MDagPath childPath = currentPath;
+//		MStatus stat = childPath.push(currentPath.child(chId));
+//		if( !stat )
+//		{
+//			logger.debug(MString("Child path problem: parent: ") + currentPath.fullPathName() + " child id " + chId + " type " + currentPath.child(chId).apiTypeStr());
+//			continue;
+//		}
+//		MString childName = childPath.fullPathName();
+//		parseSceneHierarchy(childPath, level + 1, currentAttributes, mo);
+//	}
+//
+//	return true;
+//}
+
 
 BinMeshTranslator::BinMeshTranslator()
 {
@@ -35,7 +105,7 @@ void* BinMeshTranslator::creator()
 }
 
 MStatus BinMeshTranslator::writer(const MFileObject& file,
-							 const MString& /*options*/,
+							 const MString& opts,
 							 MPxFileTranslator::FileAccessMode mode) 
 //Summary:	saves a file of a type supported by this translator by traversing
 //			the all or selected objects (depending on mode) in the current
@@ -47,14 +117,26 @@ MStatus BinMeshTranslator::writer(const MFileObject& file,
 //Returns:	MStatus::kSuccess if the export was successful;
 //			MStatus::kFailure otherwise
 {
+	options = opts;
 	#if defined (OSMac_)
 		char nameBuffer[MAXPATHLEN];
 		strcpy (nameBuffer, file.fullName().asChar());
-		const MString fileName(nameBuffer);
+		fileName(nameBuffer);
 	#else
-		const MString fileName = file.fullName();
+		fileName = file.fullName();
 	#endif
+	
+	if (MPxFileTranslator::kExportAccessMode == mode) 
+	{
+		MGlobal::displayInfo("writer - export all.");
+		exportAll();
+	}
 
+	if (MPxFileTranslator::kExportActiveAccessMode == mode) 
+	{
+		MGlobal::displayInfo("writer - export selected.");
+		exportSelection();
+	}
 
 	MGlobal::displayInfo("Export to " + fileName + " successful!");
 	return MS::kSuccess;
@@ -62,7 +144,7 @@ MStatus BinMeshTranslator::writer(const MFileObject& file,
 
 
 MStatus BinMeshTranslator::reader(const MFileObject& file,
-							 const MString& /*options*/,
+							 const MString& options,
 							 MPxFileTranslator::FileAccessMode mode) 
 {
 	#if defined (OSMac_)
@@ -72,7 +154,8 @@ MStatus BinMeshTranslator::reader(const MFileObject& file,
 	#else
 		const MString fileName = file.fullName();
 	#endif
-
+	
+	MGlobal::displayInfo("Options " + options);
 
 	MGlobal::displayInfo("Read from " + fileName + " successful!");
 	return MS::kSuccess;
@@ -108,6 +191,8 @@ bool BinMeshTranslator::canBeOpened() const
 MStatus BinMeshTranslator::exportAll() 
 {
 	MStatus status;
+
+
 
 	//create an iterator for only the mesh components of the DAG
 	MItDag itDag(MItDag::kDepthFirst, MFn::kMesh, &status);
@@ -147,6 +232,11 @@ MStatus BinMeshTranslator::exportSelection()
 //			MStatus::kFailure if the method fails
 {
 	MStatus status;
+	MString cmd = MString("python(\"import binMeshTranslator; binMeshTranslator.binMeshTranslatorWrite(");
+	cmd += "\"" + fileName + "\",";
+	cmd += "\"" + options + "\",";
+	cmd += ",\"selection\")";
+	
 
 	//create an iterator for the selected mesh components of the DAG
 	//
@@ -162,20 +252,32 @@ MStatus BinMeshTranslator::exportSelection()
 	{
 		return MStatus::kFailure;
 	}
+	
+	MObjectArray objectArray;
 
 	for (itSelectionList.reset(); !itSelectionList.isDone(); itSelectionList.next()) 
 	{
 		MDagPath dagPath;
 
-		//get the current dag path and process the poly mesh on it
-		//
 		if (MStatus::kFailure == itSelectionList.getDagPath(dagPath)) 
 		{
 			MGlobal::displayError("MItSelectionList::getDagPath");
-			return MStatus::kFailure;
+			continue;
 		}
+
+		MGlobal::displayInfo(MString("Translator: Object - ") + dagPath.fullPathName());
+		getMeshObjectInHierarchy(dagPath, objectArray);
+
 		// add to mesh walker
 	}
+
+	for( uint i = 0; i < objectArray.length(); i++)
+	{
+		MFnDependencyNode depFn(objectArray[i]);
+		MGlobal::displayInfo(MString("Translator: Object - ") + depFn.name());
+	}
+
+
 	return MStatus::kSuccess;
 }
 

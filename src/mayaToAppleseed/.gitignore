@@ -10,9 +10,11 @@
 *.lai
 *.la
 *.a
+*.dll
+*.pdb
 
 # appleseed devkit files
-*devkit.zip
-*devkit_win64*
+devkit
+deplyment
 
 data

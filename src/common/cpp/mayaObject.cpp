@@ -10,6 +10,19 @@
 
 static Logging logger;
 
+static std::vector<int> lightIdentifier; // plugids for detecting new lighttypes
+static std::vector<int> objectIdentifier; // plugids for detecting new objTypes
+
+void addLightIdentifier(int id)
+{
+	lightIdentifier.push_back(id);
+}
+
+void addObjectIdentifier(int id)
+{
+	objectIdentifier.push_back(id);
+}
+
 bool MayaObject::isInstanced()
 {
 	return this->dagPath.isInstanced();
@@ -17,7 +30,19 @@ bool MayaObject::isInstanced()
 
 bool MayaObject::isLight()
 {
-	return this->is_light;
+	if( this->mobject.hasFn(MFn::kLight))
+		return true;
+	MFnDependencyNode depFn(this->mobject);
+	uint nodeId = depFn.typeId().id();
+	for( uint lId = 0; lId < lightIdentifier.size(); lId++)
+	{
+		if( nodeId == lightIdentifier[lId])
+		{
+			logger.debug(MString("Found external lighttype: ") + depFn.name());
+			return true;
+		}
+	}
+	return false;
 }
 
 bool MayaObject::isCamera()
@@ -29,10 +54,30 @@ bool MayaObject::isCamera()
 
 bool MayaObject::isGeo()
 {
+
 	if( this->mobject.hasFn(MFn::kMesh))
 		return true;
-	if( this->isLight())
+	if( this->mobject.hasFn(MFn::kNurbsSurface))
 		return true;
+	if( this->mobject.hasFn(MFn::kParticle))
+		return true;
+	if( this->mobject.hasFn(MFn::kSubSurface))
+		return true;
+	if( this->mobject.hasFn(MFn::kNurbsCurve))
+		return true;
+	if( this->mobject.hasFn(MFn::kHairSystem))
+		return true;
+
+	MFnDependencyNode depFn(this->mobject);
+	uint nodeId = depFn.typeId().id();
+	for( uint lId = 0; lId < objectIdentifier.size(); lId++)
+	{
+		if( nodeId == objectIdentifier[lId])
+		{
+			logger.debug(MString("Found external geotype: ") + depFn.name());
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -114,83 +159,27 @@ void MayaObject::updateObject()
 	this->visible = isObjVisible();
 }
 
-MayaObject::MayaObject(MObject& mobject)
+void MayaObject::initialize()
 {
-	this->is_light = false;
-	this->isInstancerObject = false;
-	this->origObject = NULL;
-	this->mobject = mobject;
-	this->supported = false;
-	this->shortName = getObjectName(mobject);
-	MFnDagNode dagNode(mobject);
-	dagNode.getPath(this->dagPath);
-	MString fullPath = dagNode.fullPathName();
-	logger.debug(MString("fullpath: ") + fullPath);
-	this->fullName = fullPath;
-	this->fullNiceName = makeGoodString(fullPath);
-	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
-	this->instanceNumber = 0;
-	this->instancerParticleId = -1;
-	// check for light connection. If the geo is connected to a areaLight it is not supposed to be rendered
-	// but used as light geometry.
-	//checkLightConnection();
-
-	//getObjectShadingGroups(this->dagPath);
-	MFnDependencyNode depFn(mobject);
-	this->motionBlurred = true;
-	this->geometryMotionblur = false;
-
-	bool mb = true;
-	if( getBool(MString("motionBlur"), depFn, mb) )
-		this->motionBlurred = mb;
-
-	// by default the camera has a motionBlur attribute but it cannot be set in the UI
-	// so we turn it on by default and maybe modify it from the renderer UI with something like (cameraMotionBlur)
-	if( this->mobject.hasFn(MFn::kCamera))
-		this->motionBlurred = true;
-
-	this->getShadingGroups();
-
-	this->perObjectMbSteps = 1;
-	this->index = -1;
-	this->scenePtr = NULL;
-	this->shapeConnected = false;
-	this->lightExcludeList = true; // In most cases only a few lights are ignored, so the list is shorter with excluded lights
-	this->shadowExcludeList = true; // in most cases only a few objects ignore shadows, so the list is shorter with ignoring objects
-	this->animated = this->isObjAnimated();
-	this->shapeConnected = this->isShapeConnected();
-	this->parent = NULL;
-	this->visible = true;
-	this->attributes = NULL;
-	this->supported = this->geometryShapeSupported();
-}
-
-MayaObject::MayaObject(MDagPath& objPath)
-{
-	this->is_light = false;
 	this->isInstancerObject = false;
 	this->instancerParticleId = -1;
 	this->instanceNumber = 0;
 	this->attributes = NULL;
 	this->origObject = NULL;
-	this->mobject = objPath.node();
 	this->supported = false;
 	this->shortName = getObjectName(mobject);
-	MFnDagNode dagNode(mobject);
-	MString fullPath = objPath.fullPathName();
-	this->dagPath = objPath;
-	this->fullName = fullPath;
-	this->fullNiceName = makeGoodString(fullPath);
+	this->fullName = this->dagPath.fullPathName();
+	this->fullNiceName = makeGoodString(this->fullName);
 	this->transformMatrices.push_back(this->dagPath.inclusiveMatrix());
 	this->instanceNumber = dagPath.instanceNumber();
 	MFnDependencyNode depFn(mobject);
 	this->motionBlurred = true;
 	this->geometryMotionblur = false;
-
 	bool mb = true;
 	if( getBool(MString("motionBlur"), depFn, mb) )
 		this->motionBlurred = mb;
-	this->perObjectMbSteps = 1;
+	this->perObjectTransformSteps = 1;
+	this->perObjectDeformSteps = 1;
 	this->index = -1;
 	this->scenePtr = NULL;
 	this->shapeConnected = false;
@@ -202,7 +191,8 @@ MayaObject::MayaObject(MDagPath& objPath)
 	this->visible = true;
 	this->hasInstancerConnection = false;
 	MDagPath dp;
-	dp = objPath;
+	dp = dagPath;
+	MFnDagNode dagNode(this->mobject);
 	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(dp) || !IsPathVisible(dp) || !IsLayerVisible(this->dagPath))
 		this->visible = false;
 
@@ -238,7 +228,21 @@ MayaObject::MayaObject(MDagPath& objPath)
 	}
 
 	this->getShadingGroups();
+}
 
+MayaObject::MayaObject(MObject& mobject)
+{
+	this->mobject = mobject;
+	MFnDagNode dagNode(mobject);
+	dagNode.getPath(this->dagPath);
+	this->initialize();
+}
+
+MayaObject::MayaObject(MDagPath& objPath)
+{
+	this->mobject = objPath.node();
+	this->dagPath = objPath;
+	this->initialize();
 }
 
 // to check if an object is animated, we need to check e.g. its transform inputs
