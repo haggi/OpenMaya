@@ -20,5 +20,6 @@
 *.pyc
 
 *pydevproject
-src/mayaToNox
-src/mayaToFluid
+src/mayaToNox/
+src/mayaToFluid/
+src/mayaToMitsuba/

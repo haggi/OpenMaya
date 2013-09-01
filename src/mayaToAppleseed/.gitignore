@@ -14,7 +14,7 @@
 *.pdb
 
 # appleseed devkit files
-devkit
-deplyment
-
+devkit/
+deployment/
+mtap_devmodule/bin/
 data
