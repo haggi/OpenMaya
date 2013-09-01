@@ -17,78 +17,9 @@
 
 #include "utilities/tools.h"
 
-
-MStatus BinMeshTranslator::getMeshObjectInHierarchy(MDagPath currentPath, MObjectArray& objectArray)
-{
-	if( currentPath.node().hasFn(MFn::kMesh))
-		objectArray.append(currentPath.node());
-
-	uint numChilds = currentPath.childCount();
-	for( uint chId = 0; chId < numChilds; chId++)
-	{
-		MDagPath childPath = currentPath;
-		MStatus stat = childPath.push(currentPath.child(chId));
-		if( !stat )
-		{
-			continue;
-		}
-		MString childName = childPath.fullPathName();
-		getMeshObjectInHierarchy(childPath, objectArray);
-	}
-
-	return MStatus::kSuccess;
-}
-
-//bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes, MayaObject *parentObject)
-//{
-//	logger.debug(MString("parse: ") + currentPath.fullPathName(), level);
-//	MayaObject *mo = mayaObjectCreator(currentPath);
-//	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
-//	mo->parent = parentObject;
-//	classifyMayaObject(mo);
-//
-//	// 
-//	//	find the original mayaObject for instanced objects. Can be useful later.
-//	//
-//
-//	if( currentPath.instanceNumber() == 0)
-//		origObjects.push_back(mo);
-//	else{
-//		MFnDagNode node(currentPath.node());
-//		for( size_t iId = 0; iId < origObjects.size(); iId++)
-//		{
-//			MFnDagNode onode(origObjects[iId]->mobject);
-//			if( onode.object() == node.object() )
-//			{
-//				logger.debug(MString("Orig Node found:") + onode.fullPathName(), level);
-//				mo->origObject = origObjects[iId];
-//				break;
-//			}
-//		}
-//	}
-//
-//	uint numChilds = currentPath.childCount();
-//	for( uint chId = 0; chId < numChilds; chId++)
-//	{
-//		MDagPath childPath = currentPath;
-//		MStatus stat = childPath.push(currentPath.child(chId));
-//		if( !stat )
-//		{
-//			logger.debug(MString("Child path problem: parent: ") + currentPath.fullPathName() + " child id " + chId + " type " + currentPath.child(chId).apiTypeStr());
-//			continue;
-//		}
-//		MString childName = childPath.fullPathName();
-//		parseSceneHierarchy(childPath, level + 1, currentAttributes, mo);
-//	}
-//
-//	return true;
-//}
-
-
 BinMeshTranslator::BinMeshTranslator()
 {
 }
-
 
 BinMeshTranslator::~BinMeshTranslator() 
 { 
@@ -125,40 +56,39 @@ MStatus BinMeshTranslator::writer(const MFileObject& file,
 	#else
 		fileName = file.fullName();
 	#endif
-	
+
 	if (MPxFileTranslator::kExportAccessMode == mode) 
 	{
 		MGlobal::displayInfo("writer - export all.");
-		exportAll();
+		return exportObjects("all");
 	}
 
 	if (MPxFileTranslator::kExportActiveAccessMode == mode) 
 	{
 		MGlobal::displayInfo("writer - export selected.");
-		exportSelection();
+		return exportObjects("selected");
 	}
 
-	MGlobal::displayInfo("Export to " + fileName + " successful!");
 	return MS::kSuccess;
 }
 
 
 MStatus BinMeshTranslator::reader(const MFileObject& file,
-							 const MString& options,
+							 const MString& opts,
 							 MPxFileTranslator::FileAccessMode mode) 
 {
+	options = opts;
 	#if defined (OSMac_)
 		char nameBuffer[MAXPATHLEN];
 		strcpy (nameBuffer, file.fullName().asChar());
-		const MString fileName(nameBuffer);
+		fileName(nameBuffer);
 	#else
-		const MString fileName = file.fullName();
+		fileName = file.fullName();
 	#endif
 	
 	MGlobal::displayInfo("Options " + options);
-
-	MGlobal::displayInfo("Read from " + fileName + " successful!");
-	return MS::kSuccess;
+	
+	return this->importObjects();
 }
 
 bool BinMeshTranslator::haveWriteMethod() const 
@@ -188,97 +118,33 @@ bool BinMeshTranslator::canBeOpened() const
 }
 
 
-MStatus BinMeshTranslator::exportAll() 
+MStatus BinMeshTranslator::importObjects() 
 {
 	MStatus status;
+	MString cmd = MString("import binMeshTranslator; binMeshTranslator.binMeshTranslatorRead(");
+	cmd += "'" + fileName + "',";
+	cmd += "'" + options + "',";
+	cmd += "'read')";
 
-
-
-	//create an iterator for only the mesh components of the DAG
-	MItDag itDag(MItDag::kDepthFirst, MFn::kMesh, &status);
-
-	if (MStatus::kFailure == status) 
-	{
-		MGlobal::displayError("MItDag::MItDag");
-		return MStatus::kFailure;
-	}
-
-	for(;!itDag.isDone();itDag.next()) 
-	{
-		MDagPath dagPath;
-		if (MStatus::kFailure == itDag.getPath(dagPath)) 
-		{
-			MGlobal::displayError("MDagPath::getPath");
-			return MStatus::kFailure;
-		}
-
-		MFnDagNode visTester(dagPath);
-
-		//if this node is visible, then process the poly mesh it represents
-		//
-		if(IsVisible(visTester) && MStatus::kSuccess == status) 
-		{
-			// add to mesh walker
-		}
-	}
-	return MStatus::kSuccess;
+	MGlobal::displayInfo(MString("translator cmd: ") + cmd);
+	return MGlobal::executePythonCommand(cmd, true);
 }
 
 
-MStatus BinMeshTranslator::exportSelection() 
+MStatus BinMeshTranslator::exportObjects(MString mode) 
 //Summary:	finds and outputs all selected polygonal meshes in the DAG
 //Args   :	os - an output stream to write to
 //Returns:  MStatus::kSuccess if the method succeeds
 //			MStatus::kFailure if the method fails
 {
 	MStatus status;
-	MString cmd = MString("python(\"import binMeshTranslator; binMeshTranslator.binMeshTranslatorWrite(");
-	cmd += "\"" + fileName + "\",";
-	cmd += "\"" + options + "\",";
-	cmd += ",\"selection\")";
+	MString cmd = MString("import binMeshTranslator; binMeshTranslator.binMeshTranslatorWrite(");
+	cmd += "'" + fileName + "',";
+	cmd += "'" + options + "',";
+	cmd += "'" + mode + "')";
 	
-
-	//create an iterator for the selected mesh components of the DAG
-	//
-	MSelectionList selectionList;
-	if (MStatus::kFailure == MGlobal::getActiveSelectionList(selectionList)) 
-	{
-		MGlobal::displayError("MGlobal::getActiveSelectionList");
-		return MStatus::kFailure;
-	}
-
-	MItSelectionList itSelectionList(selectionList, MFn::kMesh, &status);	
-	if (MStatus::kFailure == status) 
-	{
-		return MStatus::kFailure;
-	}
-	
-	MObjectArray objectArray;
-
-	for (itSelectionList.reset(); !itSelectionList.isDone(); itSelectionList.next()) 
-	{
-		MDagPath dagPath;
-
-		if (MStatus::kFailure == itSelectionList.getDagPath(dagPath)) 
-		{
-			MGlobal::displayError("MItSelectionList::getDagPath");
-			continue;
-		}
-
-		MGlobal::displayInfo(MString("Translator: Object - ") + dagPath.fullPathName());
-		getMeshObjectInHierarchy(dagPath, objectArray);
-
-		// add to mesh walker
-	}
-
-	for( uint i = 0; i < objectArray.length(); i++)
-	{
-		MFnDependencyNode depFn(objectArray[i]);
-		MGlobal::displayInfo(MString("Translator: Object - ") + depFn.name());
-	}
-
-
-	return MStatus::kSuccess;
+	MGlobal::displayInfo(MString("translator cmd: ") + cmd);
+	return MGlobal::executePythonCommand(cmd, true);
 }
 
 

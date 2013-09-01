@@ -12,11 +12,11 @@
 #include <maya/MDagPathArray.h>
 #include <fstream>
 
-class  BinMeshTranslatorCmd: public MPxCommand
+class  BinMeshWriterCmd: public MPxCommand
 {
 public:
-					BinMeshTranslatorCmd();
-	virtual			~BinMeshTranslatorCmd(); 
+					BinMeshWriterCmd();
+	virtual			~BinMeshWriterCmd(); 
 	static MSyntax	newSyntax();
 
 	MStatus     	doIt( const MArgList& args );

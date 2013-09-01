@@ -1,4 +1,4 @@
-#include "binMeshTranslatorCmd.h"
+#include "binMeshWriterCmd.h"
 
 #include "foundation/mesh/genericmeshfilewriter.h"
 #include "appleseedMeshWalker.h"
@@ -21,15 +21,15 @@ static Logging logger;
 #include "proxyMesh.h"
 
 
-void* BinMeshTranslatorCmd::creator()
+void* BinMeshWriterCmd::creator()
 {
-	return new BinMeshTranslatorCmd();
+	return new BinMeshWriterCmd();
 }
 
-BinMeshTranslatorCmd::BinMeshTranslatorCmd() {}
-BinMeshTranslatorCmd::~BinMeshTranslatorCmd() {}
+BinMeshWriterCmd::BinMeshWriterCmd() {}
+BinMeshWriterCmd::~BinMeshWriterCmd() {}
 
-MSyntax BinMeshTranslatorCmd::newSyntax()
+MSyntax BinMeshWriterCmd::newSyntax()
 {
 	MSyntax syntax;
 	MStatus stat;
@@ -46,12 +46,12 @@ MSyntax BinMeshTranslatorCmd::newSyntax()
 	return syntax;
 }
 
-void BinMeshTranslatorCmd::printUsage()
+void BinMeshWriterCmd::printUsage()
 {
-	MGlobal::displayInfo("BinMeshTranslatorCmd usage: ... ");
+	MGlobal::displayInfo("BinMeshWriterCmd usage: ... ");
 }
 
-bool BinMeshTranslatorCmd::exportBinMeshes()
+bool BinMeshWriterCmd::exportBinMeshes()
 {
 	asf::GenericMeshFileWriter globalWriter(this->path.asChar());
 
@@ -68,7 +68,7 @@ bool BinMeshTranslatorCmd::exportBinMeshes()
 			// replace filename.binaraymesh with filename_objname.binarymesh
 			MString perFileMeshPath = pystring::replace(this->path.asChar(), ".binarymesh", "").c_str();
 			perFileMeshPath += makeGoodString(this->exportObjects[dagPathId].partialPathName()) + ".binarymesh";
-			logger.debug(MString("BinMeshTranslatorCmd::exportBinMeshes - exporting ") + this->exportObjects[dagPathId].partialPathName() + " to  " + perFileMeshPath);
+			logger.debug(MString("BinMeshWriterCmd::exportBinMeshes - exporting ") + this->exportObjects[dagPathId].partialPathName() + " to  " + perFileMeshPath);
 			asf::GenericMeshFileWriter writer(perFileMeshPath.asChar());
 			writer.write(walker);
 			if( this->doProxy )
@@ -93,10 +93,10 @@ bool BinMeshTranslatorCmd::exportBinMeshes()
 	return true;
 }
 
-MStatus BinMeshTranslatorCmd::doIt( const MArgList& args)
+MStatus BinMeshWriterCmd::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing BinMeshTranslatorCmd...");
+	MGlobal::displayInfo("Executing BinMeshWriterCmd...");
 	logger.setLogLevel(Logging::Debug);
 	
 	MArgDatabase argData(syntax(), args);
@@ -171,11 +171,11 @@ MStatus BinMeshTranslatorCmd::doIt( const MArgList& args)
 
 	exportBinMeshes();
 	
-	MGlobal::displayInfo("BinMeshTranslatorCmd done.\n");
+	MGlobal::displayInfo("BinMeshWriterCmd done.\n");
 	return MStatus::kSuccess;
 }
 
-void BinMeshTranslatorCmd::getObjectsForExport(const MArgList& args)
+void BinMeshWriterCmd::getObjectsForExport(const MArgList& args)
 {
 	MStatus status;
 

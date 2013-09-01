@@ -30,9 +30,8 @@ class BinMeshTranslator:public MPxFileTranslator {
 
 
 	protected:	
-		MStatus					exportAll();
-		MStatus					exportSelection();
-		MStatus					getMeshObjectInHierarchy(MDagPath, MObjectArray&);
+		MStatus					exportObjects(MString mode);
+		MStatus					importObjects();
 		MString					fileName;
 		MString					options;
 };
