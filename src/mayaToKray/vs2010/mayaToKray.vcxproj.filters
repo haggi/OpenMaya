@@ -146,6 +146,9 @@
     <ClCompile Include="..\src\shaders\krayMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -234,6 +237,9 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\krayMaterial.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
+      <Filter>common\shadingTools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

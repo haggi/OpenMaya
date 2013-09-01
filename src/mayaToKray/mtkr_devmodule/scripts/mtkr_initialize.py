@@ -626,6 +626,10 @@ class KrayRenderer(Renderer.MayaToRenderer):
         pass
 #        optimizeTextures.postRenderOptimizeTextures()
 
+    def afterGlobalsNodeReplacement(self):
+        log.debug("afterGlobalsNodeReplacement")        
+        self.rendererTabUiDict = {}
+
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 
 Normally if you load pymel, it automatically loads the templates but only the ones it finds in the
@@ -633,15 +637,16 @@ very first AETemplates directory. If you have several OpenMaya renderers loaded 
 AETemplates directory, the automatic loading will not work. So I replace it with this procedure.
 """
 
-def loadAETemplates():    
-    aeDir = path.path(__file__).dirname() + "/AETemplate/"
+def loadAETemplates():   
+    rendererName = "Kray" 
+    aeDir = path.path(__file__).dirname() + "/" + rendererName +"/AETemplate/"
     for d in aeDir.listdir("*.py"):
         if d.endswith("Template.py"):
             templateName = d.basename().replace(".py", "")
-            pythonCommand = "import AETemplate.{0}".format(templateName)
+            pythonCommand = "import {1}.AETemplate.{0}".format(templateName, rendererName)
             melCommand = 'python("{0}");'.format(pythonCommand)
+            #log.debug("load aeTemplate: " + templateName + " : " + melCommand)
             pm.mel.eval(melCommand)
-            log.debug("load aeTemplate: " + templateName)
 
 
 def theRenderer():

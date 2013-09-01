@@ -41,6 +41,9 @@ mtkr_MayaObject::~mtkr_MayaObject()
 		delete (mtkr_ObjectAttributes *)this->attributes;
 }
 
+void mtkr_MayaObject::getMaterials()
+{}
+
 bool mtkr_MayaObject::geometryShapeSupported()
 {
 	MFn::Type type = this->mobject.apiType();

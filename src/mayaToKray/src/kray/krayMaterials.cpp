@@ -1,5 +1,6 @@
 #include "maya/MObjectArray.h"
-#include "shadingtools/material.h"
+#include "shadingTools/material.h"
+#include "shadingTools/shadingUtils.h"
 #include "../mtkr_common/mtkr_mayaObject.h"
 #include "utilities/logging.h"
 #include "utilities/pystring.h"
@@ -17,6 +18,7 @@ namespace krayRender{
 	{
 		// get shading groups and per face assignments
 		getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+
 
 		MObject shadingGroup;
 

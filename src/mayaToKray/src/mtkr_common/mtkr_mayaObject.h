@@ -27,6 +27,8 @@ public:
 
 	virtual bool geometryShapeSupported();
 	virtual mtkr_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual void getMaterials();
+
 
 	std::vector<Kray::Symbol *> krayMaterialList; 
 	//Kray::Symbol *getKrayMaterial(MString materialName);
