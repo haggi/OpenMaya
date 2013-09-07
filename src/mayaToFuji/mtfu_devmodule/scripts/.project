@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>mayaToBase</name>
+	<name>mayaToFuji</name>
 	<comment></comment>
 	<projects>
+		<project>mayaToBase</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

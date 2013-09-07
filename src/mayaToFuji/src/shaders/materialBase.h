@@ -2,7 +2,7 @@
 #include <maya/MTypeId.h>
 
 #ifdef HAS_OVERRIDE
-#include "materialBaseMaterialOverride.h"
+#include "materialBaseOverride.h"
 #endif
 
 // Plugin MaterialBase Shader Class //

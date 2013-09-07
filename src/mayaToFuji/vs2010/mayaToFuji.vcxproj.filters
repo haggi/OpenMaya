@@ -158,15 +158,6 @@
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="%40Environment.cpp">
-      <Filter>Source Files\%40</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\%40\%40Camera.cpp">
-      <Filter>Source Files\%40</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mt%40_common\mt%40_swatchRenderer.cpp">
-      <Filter>mt%40_common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
       <Filter>common\mayarendernodes</Filter>
     </ClCompile>
@@ -178,6 +169,15 @@
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\translators\meshTranslator.cpp">
       <Filter>common\translators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Fuji\FujiCamera.cpp">
+      <Filter>Source Files\Fuji</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Fuji\FujiEnvironment.cpp">
+      <Filter>Source Files\Fuji</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtfu_common\mtfu_swatchRenderer.cpp">
+      <Filter>mtfu_common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -274,9 +274,6 @@
     <ClInclude Include="..\src\shaders\materialBaseOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mt%40_common\mt%40_swatchRenderer.h">
-      <Filter>mt%40_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinMeshNode.h">
       <Filter>common\mayarendernodes</Filter>
     </ClInclude>
@@ -288,6 +285,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\translators\meshTranslator.h">
       <Filter>common\translators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtfu_common\mtfu_swatchRenderer.h">
+      <Filter>mtfu_common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

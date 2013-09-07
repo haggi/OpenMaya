@@ -12,6 +12,8 @@ public:
 	mtfu_RenderGlobals();
 	
 //	------------- automatically created attributes start ----------- // 
+	int imageFormat;
+	int pixelFilter;
 //	------------- automatically created attributes end ----------- // 
 
 

@@ -58,6 +58,12 @@ bool mtfu_RenderGlobals::getMtFujiGlobals()
 		}
 
 //	------------- automatically created attributes start ----------- // 
+		if(!getEnum(MString("imageFormat"), FujiGlobals, this->imageFormat))
+			throw("problem reading fujiGlobals.imageFormat");
+
+		if(!getEnum(MString("pixelFilter"), FujiGlobals, this->pixelFilter))
+			throw("problem reading fujiGlobals.pixelFilter");
+
 //	------------- automatically created attributes end ----------- // 
 		
 		if(!getFloat(MString("filtersize"), FujiGlobals, this->filterSize))

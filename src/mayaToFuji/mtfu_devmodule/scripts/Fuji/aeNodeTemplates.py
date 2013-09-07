@@ -25,6 +25,13 @@ class AEFujiNodeTemplate(BaseTemplate):
         if self.thisNode.type() == "camera":
             log.debug("AEFujiNodeTemplate:build camera AE")            
             self.beginLayout("Fuji" ,collapse=1)
+            self.addControl("someFancyCameraAttribute", label="A very cool Camera Attribute")
+            self.endLayout()
+
+        if self.thisNode.type() == "mesh":
+            log.debug("AEFujiNodeTemplate:build mesh AE")            
+            self.beginLayout("Fuji" ,collapse=1)
+            self.addControl("someFancyMeshAttribute", label="A very cool Mesh Attribute")
             self.endLayout()
     
     def buildBody(self, nodeName):

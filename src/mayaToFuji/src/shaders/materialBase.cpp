@@ -1,4 +1,4 @@
-#include "materialBaseMaterial.h"
+#include "materialBase.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>

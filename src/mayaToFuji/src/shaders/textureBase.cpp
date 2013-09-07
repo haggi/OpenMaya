@@ -1,4 +1,4 @@
-#include "textureBaseTexture.h"
+#include "textureBase.h"
 #include <math.h>
 #include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
