@@ -8,7 +8,9 @@
 // ===========================================================================
 //+
 
-#include "materialBaseMaterialOverride.h"
+#ifdef HAS_OVERRIDE
+
+#include "materialBaseOverride.h"
 
 MHWRender::MPxSurfaceShadingNodeOverride* MaterialBaseOverride::creator(const MObject& obj)
 {
@@ -69,3 +71,5 @@ MString MaterialBaseOverride::bumpAttribute() const
 	// Use the "normalCamera" attribute to recognize bump connections
 	return "normalCamera";
 }
+
+#endif

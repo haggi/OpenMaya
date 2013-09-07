@@ -6,6 +6,7 @@ import sys
 import os
 import optimizeTextures
 import @.aeNodeTemplates as aet
+import path
 
 reload(Renderer)
 
@@ -318,8 +319,11 @@ class @Renderer(Renderer.MayaToRenderer):
         
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
-        aet.aeNodeTemplates.AE@NodeTemplate(nodeName)
+        aet.AE@NodeTemplate(nodeName)
         
+    def afterGlobalsNodeReplacement(self):
+        log.debug("afterGlobalsNodeReplacement")        
+        self.rendererTabUiDict = {}        
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

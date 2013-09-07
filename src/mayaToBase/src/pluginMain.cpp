@@ -65,14 +65,7 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
    
-	//std::cout << "deregister mt@ shader\n";
-	//status = plugin.deregisterNode( mt@_surfaceShader::id);
-	//if (!status) {
-	//	status.perror("cannot deregister node: mt@_surfaceShader");
-	//	return status;
-	//}
-
-	std::cout << "update mtco shader ui\n";
+	std::cout << "update mt@ shader ui\n";
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
 	command += "\");}\n";

@@ -41,6 +41,13 @@ mt@_MayaObject::~mt@_MayaObject()
 		delete (mt@_ObjectAttributes *)this->attributes;
 }
 
+void mt@_MayaObject::getMaterials()
+{
+	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
+	{
+	}
+}
+
 bool mt@_MayaObject::geometryShapeSupported()
 {
 	MFn::Type type = this->mobject.apiType();
