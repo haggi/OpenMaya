@@ -18,7 +18,10 @@ def replaceStringInFile(fileName, rendererName, shortCut):
         string = string.replace(r'mt@_', shortCut + "_")    
         string = string.replace(r'@.', rendererName + ".")
         string = string.replace(r'mayaTo@.', "mayaTo" + rendererName.capitalize())
-        string = string.replace(r'@', rendererName)
+        if "MayaTo@GlobalsName" in string:
+            string = string.replace(r'@', rendererName.lower())
+        else:
+            string = string.replace(r'@', rendererName)
         content[index] = string   
 
     fh = open(fileName, "w")
@@ -48,6 +51,8 @@ def createNewProject(rendererName=None, shortCut=None):
     def recursiveFiles(directory, tab = ""):
         files = directory.listdir()
         for f in files:
+            if f.endswith(".opensdf"):
+                continue
             print tab + "Checking File:", f
             destElement = f.replace(sourceDirBase, destDirBase)
             destElement = replaceString(destElement, rendererName, shortCut)

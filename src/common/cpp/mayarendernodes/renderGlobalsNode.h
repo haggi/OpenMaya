@@ -20,6 +20,7 @@ public:
 
 	static	MTypeId		id;
 	MStringArray	imageFormatList;
+	MStringArray	filterTypeList;
 
 private:
 
@@ -43,7 +44,7 @@ private:
 	static    MObject detectShapeDeform;
 
 	// pixel filtering
-	// filtertype is renderer specific. It will be defined in subclass
+	static    MObject filtertype;
 	static    MObject filtersize;
 	static    MObject tilesize;
 
@@ -60,7 +61,7 @@ private:
 	static	  MObject exportSceneFile;
 	static	  MObject exportSceneFileName;
 	static	  MObject sceneScale;
-	//static	  MObject imageFormat;
+	static	  MObject imageFormat;
 	static	  MObject optimizedTexturePath;
 
 public:

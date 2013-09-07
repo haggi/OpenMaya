@@ -595,7 +595,6 @@ bool MayaScene::parseInstancerNew()
 				currentAttributes = particleMObject->getObjectAttributes(origObj->attributes);
 				particleMObject->origObject = origObj;
 				particleMObject->isInstancerObject = true;
-				particleMObject->supported = true;
 				particleMObject->visible = true;
 				particleMObject->instancerParticleId = p;
 				particleMObject->instanceNumber = p;
@@ -715,7 +714,6 @@ bool MayaScene::parseInstancer()
 				newObj->instancerMatrix = finalMatrixForPath;
 				newObj->transformMatrices.clear();
 				newObj->transformMatrices.push_back(finalMatrixForPath);
-				newObj->supported = true;
 				newObj->visible = true;
 				newObj->instancerParticleId = p;
 				newObj->instanceNumber = p;

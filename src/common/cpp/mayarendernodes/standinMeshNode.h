@@ -1,5 +1,5 @@
-#ifndef mt@_STANDIN_MESH_H
-#define mt@_STANDIN_MESH_H
+#ifndef STANDIN_MESH_H
+#define STANDIN_MESH_H
 
 #include <maya/MPxNode.h>
 #include <maya/MObject.h>
@@ -7,13 +7,13 @@
 #include <maya/MIntArray.h>
 #include <fstream>
 
-#define STANDIN_MESH_NODE_NAME "mt@_standinMeshNode"
+#define STANDIN_MESH_NODE_NAME "standinMeshNode"
 
-class mt@_standinMeshNode : public MPxNode
+class standinMeshNode : public MPxNode
 {
 public:
-					mt@_standinMeshNode() {};
-	virtual 		~mt@_standinMeshNode() {};
+					standinMeshNode() {};
+	virtual 		~standinMeshNode() {};
 	virtual MStatus compute(const MPlug& plug, MDataBlock& data);
 	static  void*	creator();
 	static  MStatus initialize();

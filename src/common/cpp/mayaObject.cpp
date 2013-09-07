@@ -93,7 +93,7 @@ void MayaObject::getShadingGroups()
 {
 	// get shading groups only for allowed shapes
 
-	if( this->supported )
+	if( this->geometryShapeSupported() )
 	{
 		logger.debug(MString("getShadingGroups::Supported geo ") + this->shortName);
 		// only makes sense if we have a geometry shape.
@@ -166,7 +166,6 @@ void MayaObject::initialize()
 	this->instanceNumber = 0;
 	this->attributes = NULL;
 	this->origObject = NULL;
-	this->supported = false;
 	this->shortName = getObjectName(mobject);
 	this->fullName = this->dagPath.fullPathName();
 	this->fullNiceName = makeGoodString(this->fullName);
@@ -218,8 +217,6 @@ void MayaObject::initialize()
 			}
 		}	
 	}
-
-	this->supported = this->geometryShapeSupported();
 
 	// special case "world"
 	if( this->mobject.hasFn(MFn::kWorld))

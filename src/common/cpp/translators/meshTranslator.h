@@ -8,6 +8,7 @@
 #include <maya/MIntArray.h>
 #include <maya/MPointArray.h>
 #include <maya/MObject.h>
+#include <vector>
 
 #define CHECK_MSTATUS_AND_RETURNONLY(_status)		\
 { 														\
@@ -35,9 +36,9 @@ struct Face{
 class MeshTranslator
 {
 public:
-	MeshTranslator(){};
+	MeshTranslator();
 	MeshTranslator(MObject meshMObject);
-	~MeshTranslator(){}; 
+	~MeshTranslator(); 
 	bool isGood();
 
 	std::vector<Triangle> triangleArray;

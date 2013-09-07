@@ -1,4 +1,4 @@
-#include "mt@_standinMeshNode.h"
+#include "standinMeshNode.h"
 
 #include <maya/MTime.h>
 #include <maya/MFnMesh.h>
@@ -33,20 +33,20 @@ MStatus returnStatus;
 	}
 
 
-MTypeId mt@_standinMeshNode::id( 0x0011CF7B );
+MTypeId standinMeshNode::id( 0x0011CF7B );
 
-MObject mt@_standinMeshNode::time;
-MObject mt@_standinMeshNode::outputMesh;
-MObject mt@_standinMeshNode::binMeshFile;	
-MObject mt@_standinMeshNode::percentDisplay;	
-MObject mt@_standinMeshNode::polySizeMultiplier;
+MObject standinMeshNode::time;
+MObject standinMeshNode::outputMesh;
+MObject standinMeshNode::binMeshFile;	
+MObject standinMeshNode::percentDisplay;	
+MObject standinMeshNode::polySizeMultiplier;
 
-void* mt@_standinMeshNode::creator()
+void* standinMeshNode::creator()
 {
-	return new mt@_standinMeshNode;
+	return new standinMeshNode;
 }
 
-MStatus mt@_standinMeshNode::initialize()
+MStatus standinMeshNode::initialize()
 {
 	MFnUnitAttribute unitAttr;
 	MFnTypedAttribute tAttr;
@@ -88,7 +88,7 @@ MStatus mt@_standinMeshNode::initialize()
 	return MS::kSuccess;
 }
 
-MObject mt@_standinMeshNode::createMesh(const MTime& time,
+MObject standinMeshNode::createMesh(const MTime& time,
 							  MObject& outData,
 							  MStatus& stat)
 
@@ -153,7 +153,7 @@ MObject mt@_standinMeshNode::createMesh(const MTime& time,
 	return newMesh;
 }
 
-bool mt@_standinMeshNode::checkMeshFileName(MString meshFileName)
+bool standinMeshNode::checkMeshFileName(MString meshFileName)
 {
 	// do we have content
 	// we need at least .binarymesh == 11 characters  
@@ -166,7 +166,7 @@ bool mt@_standinMeshNode::checkMeshFileName(MString meshFileName)
 	return true;
 }
 
-MStatus mt@_standinMeshNode::compute(const MPlug& plug, MDataBlock& data)
+MStatus standinMeshNode::compute(const MPlug& plug, MDataBlock& data)
 
 {
 	MStatus returnStatus;

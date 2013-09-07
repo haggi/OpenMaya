@@ -43,15 +43,28 @@ MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
 MObject MayaRenderGlobalsNode::sceneScale;
 MObject MayaRenderGlobalsNode::optimizedTexturePath;
-//MObject MayaRenderGlobalsNode::imageFormat;
+MObject MayaRenderGlobalsNode::imageFormat;
+MObject MayaRenderGlobalsNode::filtertype;
 
 void MayaRenderGlobalsNode::postConstructor()
 {
 	MObject thisObj = thisMObject();
 	MPlug tileSize(thisObj, tilesize);
 	tileSize.setInt(this->tilesizeDV);
-	
-	// add image format list
+
+	MPlug imgFormatPlug(thisObj, imageFormat);
+	MFnEnumAttribute imgFormatAttribute(imgFormatPlug.attribute());
+	for( uint i = 0; i < imageFormatList.length(); i++)
+	{
+		imgFormatAttribute.addField(imageFormatList[i], i);
+	}
+
+	MPlug filtertypePlug(thisObj, filtertype);
+	MFnEnumAttribute filtertypeAttribute(filtertypePlug.attribute());
+	for( uint i = 0; i < filterTypeList.length(); i++)
+	{
+		filtertypeAttribute.addField(filterTypeList[i], i);
+	}
 }
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
@@ -109,6 +122,12 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
 	MStatus stat = MStatus::kSuccess;
+
+	filtertype = eAttr.create("filtertype", "filtertype", 0, &stat);
+	CHECK_MSTATUS(addAttribute( filtertype ));
+
+	imageFormat = eAttr.create("imageFormat", "imageFormat", 0, &stat);
+	CHECK_MSTATUS(addAttribute( imageFormat ));
 
 	sceneScale = nAttr.create("sceneScale", "sceneScale",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( sceneScale ));

@@ -57,7 +57,6 @@ public:
 	MObject instancerMObj;
 	MDagPath instancerDagPath;
 
-	bool supported;
 	bool animated;
 	bool hasInstancerConnection; // if yes, then the objects below can be visible via instancer even if the original object is not
 	bool shapeConnected;		 // if shape connected, it can be used to determine if it has to be exported for every frame or not
@@ -78,7 +77,7 @@ public:
 	bool isVisiblityAnimated();
 	bool isInstanced();
 	void getShadingGroups();
-	virtual bool geometryShapeSupported() = 0;
+	virtual bool geometryShapeSupported();
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
 	virtual void getMaterials() = 0;
 	MayaObject *parent;
