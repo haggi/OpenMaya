@@ -559,6 +559,16 @@ def loadAETemplates():
             #log.debug("load aeTemplate: " + templateName + " : " + melCommand)
             pm.mel.eval(melCommand)
 
+def loadPlugins():
+    try:
+        log.debug("Loading Appleseed maya plugins")
+        #TODO: check names
+        if not pm.pluginInfo("appleseedTools_maya2014", query=True, loaded=True):
+            pm.loadPlugin("appleseedTools")
+    except:
+        traceback.print_exc(file=sys.__stderr__)
+        log.error("Load plugins Appleseed FAILED")
+    
         
 def theRenderer():
     return AppleseedRenderer.theRenderer()
@@ -569,6 +579,7 @@ def initRenderer():
         theRenderer().registerRenderer()
         loadAETemplates()
         theRenderer().createRendererMenu()
+        
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Appleseed FAILED")

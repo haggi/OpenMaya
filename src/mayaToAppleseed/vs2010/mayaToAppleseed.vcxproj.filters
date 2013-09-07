@@ -185,9 +185,6 @@
     <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp">
       <Filter>Source Files\appleseed</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\binmeshcreatorCmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mtap_common\mtap_standinMeshNode.cpp">
       <Filter>mtap_common</Filter>
     </ClCompile>
@@ -315,9 +312,6 @@
     </ClInclude>
     <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h">
       <Filter>Source Files\appleseed</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\binmeshcreatorCmd.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mtap_common\mtap_standinMeshNode.h">
       <Filter>mtap_common</Filter>

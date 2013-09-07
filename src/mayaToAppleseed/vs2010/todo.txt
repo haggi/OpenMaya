@@ -6,6 +6,26 @@
 
 - eleminate duplicate shader creation methods
 
-- increase triangles size for reduced proxy creation
+- implement new external binmesh tools into proxy generation
 
-- external appleseed tools plugin for file translation
+- fix sun light
+
+- alpha 19 ------------
+
+- implement new blend bsdf shader node
+
+- update physical sky
+
+- implement cast_indirect_light for edf/lights
+
+- max ray intensity complete implement
+
+- add per light/edf importance multiplier
+
+- crop window check
+
+- microfacet update 
+
+-------------------------
+
+- implement IPR all entities color/shader/light/env

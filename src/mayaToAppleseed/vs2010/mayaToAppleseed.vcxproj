@@ -614,7 +614,6 @@
     <ClCompile Include="..\src\appleseed\appleseedUtils.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp" />
-    <ClCompile Include="..\src\binmeshcreatorCmd.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
@@ -660,7 +659,6 @@
     <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h" />
     <ClInclude Include="..\src\appleseed\mtap_rendererController.h" />
     <ClInclude Include="..\src\appleseed\mtap_tileCallback.h" />
-    <ClInclude Include="..\src\binmeshcreatorCmd.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
     <ClInclude Include="..\src\mtap_common\mtap_MayaObject.h" />
     <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />

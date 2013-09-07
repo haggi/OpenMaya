@@ -19,11 +19,9 @@ public:
 	mtap_RenderGlobals *renderGlobals;
 	MayaObject *defaultCamera; // needed for motionblur calculation
 	
-	//std::map<MayaObject *, MObject> mayaObjMObjMap;
 	MiniMap<MObject, MayaObject *> mayaObjMObjMap;
 
 	virtual void transformUpdateCallback(MayaObject *);
-	//virtual void deformUpdateCallback(MayaObject *);
 	virtual void shapeUpdateCallback(MayaObject *);
 	virtual bool translateShaders(int timeStep);
 	virtual bool translateShapes(int timeStep);

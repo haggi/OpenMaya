@@ -1,7 +1,6 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
 
-#include "binmeshcreatorCmd.h"
 //#include "mtap_common/mtap_standinLocator.h"
 #include "mtap_common/mtap_standinMeshNode.h"
 #include "mayatoappleseed.h"
@@ -29,12 +28,6 @@ MStatus initializePlugin( MObject obj )
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToAppleseed::creator, MayaToAppleseed::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: mayatoappleseed");
-		return status;
-	}
-
-	status = plugin.registerCommand("meshToBinarymesh", AppleseedBinMeshWriterCmd::creator, AppleseedBinMeshWriterCmd::newSyntax );
-	if (!status) {
-		status.perror("cannot register command: AppleseedBinMeshWriterCmd");
 		return status;
 	}
 
@@ -140,13 +133,6 @@ MStatus uninitializePlugin( MObject obj)
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
 		status.perror("cannot deregister command: MayaToAppleseedCmd");
-		return status;
-	}
-
-	std::cout << "deregister meshToBinaraymesh cmd\n";
-	status = plugin.deregisterCommand( "meshToBinarymesh" );
-	if (!status) {
-		status.perror("cannot deregister command: meshToBinaraymesh");
 		return status;
 	}
 

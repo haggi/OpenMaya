@@ -37,7 +37,7 @@ def binMeshTranslatorOpts(parent, action, initialSettings, resultCallback):
             pm.checkBox("MSH_OPTS_ONEFILE", label = "One File Per Mesh", v=oneFilePerMesh)
             pm.checkBox("MSH_OPTS_DOPROX", label = "Create ProxyFiles", v=createProxies)
             pm.floatFieldGrp("MSH_OPTS_PROXPERC", label="Proxy Resolution", v1 = proxyRes)
-            pm.textFieldGrp("MSH_OPTS_PATH", label="ExportDir:", text=exportDir) 
+            #pm.textFieldGrp("MSH_OPTS_PATH", label="ExportDir:", text=exportDir) 
         
     if action == "query":
         resultOptions = ""
@@ -48,8 +48,8 @@ def binMeshTranslatorOpts(parent, action, initialSettings, resultCallback):
         resultOptions += ";createProxies={0}".format(int(doProx))
         proxyRes = pm.floatFieldGrp("MSH_OPTS_PROXPERC", query=True, v1 = True)
         resultOptions += ";proxyRes={0}".format(proxyRes)
-        exportDir = pm.textFieldGrp("MSH_OPTS_PATH", query=True, text = True)
-        resultOptions += ";exportDir='{0}'".format(exportDir)
+        #exportDir = pm.textFieldGrp("MSH_OPTS_PATH", query=True, text = True)
+        #resultOptions += ";exportDir='{0}'".format(exportDir)
         doTransform = pm.checkBox("MSH_OPTS_DOTRANSFORM", query=True, v=True)
         resultOptions += ";useTransform={0}".format(int(doTransform))
         
@@ -94,11 +94,11 @@ def binMeshTranslatorWrite(fileName, optionString, accessMode):
         if len(selection) == 0:
             print "Fehler: No mesh objects found in selection."
             raise
-        pm.binMeshTranslatorCmd(selection, path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, oneFilePerMesh=oneFilePerMesh)
+        pm.binMeshWriterCmd(selection, path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, oneFilePerMesh=oneFilePerMesh)
 
     if accessMode == "all":
         print "binMeshTranslatorWrite all"
-        pm.binMeshTranslatorCmd(path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, all=True, oneFilePerMesh=oneFilePerMesh)
+        pm.binMeshWriterCmd(path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, all=True, oneFilePerMesh=oneFilePerMesh)
     
     return True
 
@@ -123,80 +123,75 @@ def binMeshTranslatorRead(fileName, optionString, accessMode):
         except:
             pass
         
-    if accessMode == "selected":
-        pass
-        #pm.binMeshTranslatorCmd(selection, path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, oneFilePerMesh=oneFilePerMesh)
-
-    if accessMode == "all":
-        pass
-        #pm.binMeshTranslatorCmd(path=exportPath, doProxy=createProxies, percentage=proxyRes, doTransform=useTransform, all=True, oneFilePerMesh=oneFilePerMesh)
+    pm.binMeshReaderCmd(path=importPath)
     
     return True
 
-BinMeshTranslatorName = "appleseedBinaryMesh"
-
-# Node definition
-class BinMeshTranslator(OpenMayaMPx.MPxFileTranslator):
-    def __init__(self):
-        OpenMayaMPx.MPxFileTranslator.__init__(self)
-        
-    def haveWriteMethod(self):
-        return True
-    
-    def haveReadMethod(self):
-        return True
-
-    def filter(self):
-        return "*.binarymesh"
-    
-    def defaultExtension(self):
-        return "binarymesh"
-
-    def writer( self, fileObject, optionString, accessMode ):
-        print "BinMeshTranslator:Writer"
-        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportActiveAccessMode:
-            binMeshTranslatorWrite(fileObject.fullName(), optionString, "selected")
-        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportAccessMode:
-            binMeshTranslatorWrite(fileObject.fullName(), optionString, "all")
-
-    def reader( self, fileObject, optionString, accessMode ):
-        print "BinMeshTranslator:Reader"
-        binMeshTranslatorRead(fileObject.fullName(), optionString, accessMode)
-
-def translatorCreator():
-    return OpenMayaMPx.asMPxPtr( BinMeshTranslator() )
-
-def initializePlugin(mobject):
-    mplugin = OpenMayaMPx.MFnPlugin(mobject)
-    try:
-        mplugin.registerFileTranslator( BinMeshTranslatorName, None, translatorCreator, "binMeshTranslatorOpts", "", True)
-        melToPythonCmd = """global proc binMeshTranslatorOpts(string $a, string $b, string $c, string $d)\n
-{
-    python(\"import binMeshTranslator; binMeshTranslator.binMeshTranslatorOpts('\" + $a + \"','\" + $b + \"','\" + $c + \"','\" + $d + \"')\");
-}"""
-        print "melToPythonCmd", melToPythonCmd
-        pm.mel.eval(melToPythonCmd)
-    
-        toolsName = "appleseedTools_maya2014"
-        if not pm.pluginInfo(toolsName, query=True, loaded=True):
-            try:
-                pm.loadPlugin(toolsName)
-            except:
-                sys.stderr.write( "Failed to load appleseed tools: %s" % toolsName )
-                raise
-                
-    except:
-        sys.stderr.write( "Failed to register translator: %s" % BinMeshTranslatorName )
-        raise
-    
-    
-
-def uninitializePlugin(mobject):
-    mplugin = OpenMayaMPx.MFnPlugin(mobject)
-    try:
-        mplugin.deregisterFileTranslator( BinMeshTranslatorName )
-    except:
-        sys.stderr.write( "Failed to deregister translator: %s" % BinMeshTranslatorName )
-        raise
+#BinMeshTranslatorName = "appleseedBinaryMesh"
+#
+## Node definition
+#class BinMeshTranslator(OpenMayaMPx.MPxFileTranslator):
+#    def __init__(self):
+#        OpenMayaMPx.MPxFileTranslator.__init__(self)
+#        
+#    def haveWriteMethod(self):
+#        return True
+#    
+#    def haveReadMethod(self):
+#        return True
+#
+#    def filter(self):
+#        return "*.binarymesh"
+#    
+#    def defaultExtension(self):
+#        return "binarymesh"
+#
+#    def writer( self, fileObject, optionString, accessMode ):
+#        print "BinMeshTranslator:Writer"
+#        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportActiveAccessMode:
+#            binMeshTranslatorWrite(fileObject.fullName(), optionString, "selected")
+#        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportAccessMode:
+#            binMeshTranslatorWrite(fileObject.fullName(), optionString, "all")
+#
+#    def reader( self, fileObject, optionString, accessMode ):
+#        print "BinMeshTranslator:Reader"
+#        if accessMode == OpenMayaMPx.MPxFileTranslator.kImportAccessMode:
+#            binMeshTranslatorRead(fileObject.fullName(), optionString, "read")
+#
+#def translatorCreator():
+#    return OpenMayaMPx.asMPxPtr( BinMeshTranslator() )
+#
+#def initializePlugin(mobject):
+#    mplugin = OpenMayaMPx.MFnPlugin(mobject)
+#    try:
+#        mplugin.registerFileTranslator( BinMeshTranslatorName, None, translatorCreator, "binMeshTranslatorOpts", "", True)
+#        melToPythonCmd = """global proc binMeshTranslatorOpts(string $a, string $b, string $c, string $d)\n
+#{
+#    python(\"import binMeshTranslator; binMeshTranslator.binMeshTranslatorOpts('\" + $a + \"','\" + $b + \"','\" + $c + \"','\" + $d + \"')\");
+#}"""
+#        print "melToPythonCmd", melToPythonCmd
+#        pm.mel.eval(melToPythonCmd)
+#    
+#        toolsName = "appleseedTools_maya2014"
+#        if not pm.pluginInfo(toolsName, query=True, loaded=True):
+#            try:
+#                pm.loadPlugin(toolsName)
+#            except:
+#                sys.stderr.write( "Failed to load appleseed tools: %s" % toolsName )
+#                raise
+#                
+#    except:
+#        sys.stderr.write( "Failed to register translator: %s" % BinMeshTranslatorName )
+#        raise
+#    
+#    
+#
+#def uninitializePlugin(mobject):
+#    mplugin = OpenMayaMPx.MFnPlugin(mobject)
+#    try:
+#        mplugin.deregisterFileTranslator( BinMeshTranslatorName )
+#    except:
+#        sys.stderr.write( "Failed to deregister translator: %s" % BinMeshTranslatorName )
+#        raise
     
 

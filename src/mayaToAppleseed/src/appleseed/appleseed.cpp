@@ -140,10 +140,28 @@ void AppleseedRenderer::defineConfig()
 		.insert_path((lightingEngine + ".max_ray_intensity").asChar(), this->renderGlobals->max_ray_intensity)
 		;
 
+	this->project->configurations()
+        .get_by_name("interactive")->get_parameters()
+		.insert_path("generic_tile_renderer.min_samples", minSamples.asChar())
+        .insert_path("generic_tile_renderer.max_samples", maxSamples.asChar())
+		.insert_path("generic_tile_renderer.quality", maxError)
+		.insert_path("generic_tile_renderer.enable_ibl", "true")
+		.insert_path("generic_tile_renderer.ibl_bsdf_samples", this->renderGlobals->bsdfSamples)
+		.insert_path("generic_tile_renderer.ibl_env_samples", this->renderGlobals->environmentSamples)
+		.insert_path("generic_frame_renderer.rendering_threads", numThreads.asChar())
+		.insert_path("lighting_engine", lightingEngine.asChar())
+		.insert_path((lightingEngine + ".max_path_length").asChar(), maxTraceDepth.asChar())
+		.insert_path((lightingEngine + ".max_ray_intensity").asChar(), this->renderGlobals->max_ray_intensity)
+		;
+
+
 	if( this->renderGlobals->adaptiveSampling )
 	{
 		this->project->configurations()
 			.get_by_name("final")->get_parameters()
+			.insert_path("generic_tile_renderer.sampler", "adaptive");
+		this->project->configurations()
+			.get_by_name("interactive")->get_parameters()
 			.insert_path("generic_tile_renderer.sampler", "adaptive");
 	}
 
@@ -165,8 +183,10 @@ void AppleseedRenderer::defineConfig()
 	{
 		this->project->configurations()
         .get_by_name("final")->get_parameters()
-		.insert_path((lightingEngine + ".dl_light_samples").asChar(), renderGlobals->directLightSamples)
-		;
+		.insert_path((lightingEngine + ".dl_light_samples").asChar(), renderGlobals->directLightSamples);
+		this->project->configurations()
+        .get_by_name("interactive")->get_parameters()
+		.insert_path((lightingEngine + ".dl_light_samples").asChar(), renderGlobals->directLightSamples);
 	}
 
 	if( !renderGlobals->caustics )
@@ -174,10 +194,17 @@ void AppleseedRenderer::defineConfig()
 		this->project->configurations()
         .get_by_name("final")->get_parameters()
 		.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
+		this->project->configurations()
+        .get_by_name("interactive")->get_parameters()
+		.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
 	}
 
 	this->project->configurations()
     .get_by_name("final")->get_parameters()
+	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
+	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
+	this->project->configurations()
+    .get_by_name("interactive")->get_parameters()
 	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
 	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
 }
@@ -1091,6 +1118,7 @@ void AppleseedRenderer::render()
 			&mtap_controller,
 			this->tileCallbackFac.get());
 	}
+
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
 		masterRenderer = new asr::MasterRenderer(
@@ -1109,6 +1137,7 @@ void AppleseedRenderer::render()
 	asr::global_logger().add_target(m_log_target.get());
 
 	logger.debug("------------- start rendering ----------------------");
+
 	masterRenderer->render();
 
 	//asr::global_logger().remove_target(log_target.get());
