@@ -188,6 +188,18 @@
     <ClCompile Include="..\src\mtap_common\mtap_standinMeshNode.cpp">
       <Filter>mtap_common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedEnvironment.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedCamera.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedConfig.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedUpdateElements.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

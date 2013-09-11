@@ -87,6 +87,7 @@ void RenderQueueWorker::addCallbacks()
 	sceneCallbackId0 = MSceneMessage::addCallback(MSceneMessage::kBeforeNew, RenderQueueWorker::sceneCallback, NULL, &stat);
 	sceneCallbackId1 = MSceneMessage::addCallback(MSceneMessage::kBeforeOpen, RenderQueueWorker::sceneCallback, NULL, &stat);
 	pluginCallbackId = MSceneMessage::addCallback(MSceneMessage::kBeforePluginUnload, RenderQueueWorker::sceneCallback, NULL, &stat);	
+	
 }
 
 void RenderQueueWorker::pluginUnloadCallback(void *)
@@ -114,7 +115,7 @@ void RenderQueueWorker::reAddCallbacks()
 {
 	MStatus stat;
 	std::vector<MObject>::iterator iter;
-	logger.debug("readd callbacks after idle.");
+	logger.debug("reAdd callbacks after idle.");
 	for( iter = modifiedObjList.begin(); iter != modifiedObjList.end(); iter++)
 	{
 		MObject node = *iter;
@@ -152,7 +153,7 @@ void RenderQueueWorker::renderQueueWorkerIdleCallback(float time, float lastTime
 	for( iter = modifiedObjList.begin(); iter != modifiedObjList.end(); iter++)
 	{
 		MObject obj = *iter;
-		logger.debug(MString(" Found object ") + getObjectName(obj) + " in update list");		
+		logger.debug(MString("renderQueueWorkerIdleCallback::Found object ") + getObjectName(obj) + " in update list");		
 	}
 	
 	interactiveUpdateList = modifiedObjList;

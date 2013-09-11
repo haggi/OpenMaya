@@ -10,7 +10,7 @@ MTypeId	MayaToAppleseedGlobals::id(0x0011CF40);
 
 MObject MayaToAppleseedGlobals::bitdepth;
 MObject MayaToAppleseedGlobals::colorSpace;
-MObject MayaToAppleseedGlobals::filtertype;
+//MObject MayaToAppleseedGlobals::filtertype;
 MObject MayaToAppleseedGlobals::lightingEngine;
 MObject MayaToAppleseedGlobals::clamping;
 MObject MayaToAppleseedGlobals::maxError;
@@ -36,7 +36,7 @@ MObject MayaToAppleseedGlobals::max_ray_intensity;
 MObject MayaToAppleseedGlobals::assemblySBVH;
 
 
-MObject MayaToAppleseedGlobals::imageFormat;
+//MObject MayaToAppleseedGlobals::imageFormat;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
 MObject MayaToAppleseedGlobals::latlongHoShift;
@@ -62,6 +62,16 @@ MObject MayaToAppleseedGlobals::sunExitanceMultiplier;
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {
 	tilesizeDV = 64; // override default of 32
+
+	imageFormatList.append("Png");
+	imageFormatList.append("Exr");
+
+	filterTypeList.append("Box");
+	filterTypeList.append("Mitchell");
+	filterTypeList.append("Gauss");
+	filterTypeList.append("Triangle");
+	filterTypeList.append("Catmull-Rom");
+
 }
 
 MayaToAppleseedGlobals::~MayaToAppleseedGlobals()
@@ -92,14 +102,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "32bit Float", 4 );
 	stat = eAttr.addField( "64bit Double", 5 );
 	CHECK_MSTATUS(addAttribute( bitdepth ));
-
-	filtertype = eAttr.create( "filtertype", "filtertype", 0, &stat);
-	stat = eAttr.addField( "Box", 0 );
-	stat = eAttr.addField( "Mitchell", 1 );
-	stat = eAttr.addField( "Gauss", 2 );
-	stat = eAttr.addField( "Triangle", 3 );
-	stat = eAttr.addField( "Catmull-Rom", 4 );
-	CHECK_MSTATUS(addAttribute( filtertype ));
 
 	colorSpace = eAttr.create( "colorSpace", "colorSpace", 0, &stat);
 	stat = eAttr.addField( "linear_rgb", 0 );
@@ -199,11 +201,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	directLightSamples = nAttr.create("directLightSamples", "directLightSamples",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( directLightSamples ));
-
-	imageFormat = eAttr.create( "imageFormat", "imageFormat", 1, &stat);
-	stat = eAttr.addField( "Png", 0 );
-	stat = eAttr.addField( "Exr", 1 );
-	CHECK_MSTATUS(addAttribute( imageFormat ));
 
 	latlongHoShift = nAttr.create("latlongHoShift", "latlongHoShift",  MFnNumericData::kFloat, .0f);
 	CHECK_MSTATUS(addAttribute( latlongHoShift ));

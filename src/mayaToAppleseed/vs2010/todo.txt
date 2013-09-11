@@ -1,5 +1,3 @@
-- implmement spot light texturing
-
 - start test driven development with render and diff tests
 
 - implement alembic
@@ -14,8 +12,6 @@
 
 - implement new blend bsdf shader node
 
-- update physical sky
-
 - implement cast_indirect_light for edf/lights
 
 - max ray intensity complete implement
@@ -29,3 +25,5 @@
 -------------------------
 
 - implement IPR all entities color/shader/light/env
+
+- add high detail debug mode

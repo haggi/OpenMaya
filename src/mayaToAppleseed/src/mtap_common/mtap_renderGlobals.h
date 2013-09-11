@@ -70,9 +70,9 @@ public:
 	virtual MString getImageExt();
 
 	MObject getRenderGlobalsNode();
+	bool getMtapGlobals();
 
 private:
-	bool getMtapGlobals();
 };
 
 #endif

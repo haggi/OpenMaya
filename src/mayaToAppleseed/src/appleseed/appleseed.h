@@ -49,6 +49,7 @@
 
 // shaderdefs
 
+#define RENDERGLOBALS_NODE		0x0011CF40
 #define PHYSICAL_SURFACE_SHADER 0x0011CF46
 #define AO_SHADER				0x0011CF41
 #define WIREFRAME_SHADER		0x00106EF6
@@ -60,6 +61,8 @@
 
 class mtap_MayaScene;
 class mtap_RenderGlobals;
+
+#define isBlack(x) ((x.r + x.g + x.b) <= 0.0f)
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -85,15 +88,19 @@ public:
 	void defineProject();
 	void defineConfig();
 	void defineOutput();
-	void defineColor(MString& name, MColor& color, float intensity = 1.0f);
+	void defineColor(MString& name, MColor& color, float intensity = 1.0f, MString colorSpace = "srgb");
 	void addDefaultMaterial(asr::Assembly *assembly);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, MObjectArray shadingGroups, asf::StringArray& materialNames); 
 	void defineObjectMaterials(mtap_MayaObject *obj);
-	void defineTexture(MFnDependencyNode& shader, MString& attributeName, MString& textureDefinition);
+	MString defineTexture(MFnDependencyNode& shader, MString& attributeName);
+	MString defineColor(MFnDependencyNode& shader, MString& attributeName, MString colorSpace, float intensity);
+	MString defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName);
+	MString defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName, float intensity);
+	MString defineScalarAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName);
 	void defineDefaultLight();
-	void defineLights();
-	void defineLight(mtap_MayaObject *obj);
+	//void defineLights();
+	//void defineLight(mtap_MayaObject *obj);
 	void defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bool update = false);
 	bool isSunLight(mtap_MayaObject *obj);
 	bool isSunLightTransform(mtap_MayaObject *obj);
@@ -123,6 +130,8 @@ public:
 	void updateCamera(bool shape = true);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
+	void addShaderAssemblyAssignment(MObject shadingNode, MObject shadingEngine, asr::Assembly *assembly);
+	void clearShaderAssemblyAssignments();
 	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
 	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj);
 	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj, MString fileName);
@@ -136,31 +145,37 @@ public:
 	
 	// shaders
 	void defineBumpMap(asr::ParamArray& materialParams, MObject& surfaceShader);
-	void definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void definePhysSurfShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	void definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup, bool update);
+	//void definePhysSurfShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineAoShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineAoShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineAoShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineAoVoxelShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineAoVoxelShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineAoVoxelShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineConstantShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineConstantShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineConstantShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineDiagnosticShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineDiagnosticShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineDiagnosticShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineFastSSSShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineFastSSSShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineFastSSSShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineSmokeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineSmokeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineWireframeShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineWireframeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineWireframeShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineMayaLambertShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineMayaLambertShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup);
-	void defineMayaPhongShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
+	//void defineMayaPhongShader(asr::Assembly *assembly, MObject& surfaceShader, MString& shaderName);
 	void defineCollectionShader(asr::Assembly *assembly, MObject& shadingGroup);
 	bool defineAOVShaders(asr::Assembly *assembly, MString& aovShader);
 	asr::Assembly *masterAssembly;
 
 	void MMatrixToAMatrix(MMatrix&, asf::Matrix4d&);
+
+	// simple utils
+	void mayaColorToFloat(MColor& col, float *floatCol, float *alpha);
+	void removeColorEntityIfItExists(MString& colorName);
+	void removeTextureEntityIfItExists(MString& textureName);
+	MString getTextureColorProfile(MFnDependencyNode& fileTextureNode);
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

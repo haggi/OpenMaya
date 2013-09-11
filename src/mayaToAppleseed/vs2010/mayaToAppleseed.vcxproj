@@ -607,10 +607,14 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\appleseed\appleseed.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedCamera.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedConfig.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedEnvironment.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedLights.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedShaders.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedUpdateElements.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedUtils.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp" />
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp" />

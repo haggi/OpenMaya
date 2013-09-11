@@ -34,7 +34,7 @@ private:
 	static	  MObject max_ray_intensity;
 	static	  MObject assemblySBVH;
 
-	static    MObject filtertype;
+	//static    MObject filtertype;
 	static	  MObject lightingEngine;
 	static	  MObject exportXMLFile;
 	static	  MObject exportXMLFileName;
@@ -68,7 +68,7 @@ private:
 	static	  MObject sunExitanceMultiplier;
 //	static	  MObject sunExitance;
 
-	static	  MObject imageFormat;
+//	static	  MObject imageFormat;
 
 	static	  MObject AOVs;
 };

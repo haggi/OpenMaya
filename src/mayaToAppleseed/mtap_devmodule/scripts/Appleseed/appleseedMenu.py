@@ -1,5 +1,6 @@
 import pymel.core as pm
 import logging
+import os
 
 log = logging.getLogger("mtapLogger")
 
@@ -9,9 +10,14 @@ class StandinOptions(pm.ui.Window):
         self.title = "Standin Options"
         self.rtf = True
         self.pathUI = None
+        self.prefixUI = None
         self.createProxyUI = None
         self.nthPolyUI = None
         self.percentageUI = None
+        self.createStdInUI = None
+        self.oneFilePerMeshUI = None
+        self.doTransformUI = None
+        
         self.initUI()
         self.show()
 
@@ -22,51 +28,67 @@ class StandinOptions(pm.ui.Window):
         shadingGroups = mesh.outputs(type="shadingEngine")
         return shadingGroups
     
-    def perform(self, *args):
-        #get selected meshes
-        selection = pm.ls(sl=True)
-        meshes = []
-        for s in selection:
-            allChildren = s.getChildren(ad=True)
-            for child in allChildren:
-                if child.type() == "mesh":
-                    meshes.append(child)
-        
-        print "Found", len(meshes), "meshes"
-        path = pm.textFieldButtonGrp(self.pathUI, query=True, text=True)
-        doProxy = pm.checkBoxGrp(self.createProxyUI, query=True, value1=True)
-        nthPoly = pm.intFieldGrp(self.nthPolyUI, query=True, value1=True)
-        percentage = pm.floatFieldGrp(self.percentageUI, query=True, value1=True)
-        
-        for mesh in meshes:
-            bpath = path + "/" + str(mesh) + ".binarymesh"
-#TODO: convert namespace to clean name
-            #print  "pm.meshToBinarymesh(pa=",bpath,", m=",mesh,", p=",percentage,", n=",nthPoly,")"
-            pm.meshToBinarymesh(pa=bpath, m=mesh, p=percentage, n=nthPoly)
+    def perform(self, *args):        
+        selection = []
+        for object in pm.ls(sl=True):
+            selection.extend(object.getChildren(ad=True, type="mesh"))
             
-            if pm.checkBoxGrp(self.createStdInUI, query=True, value1=True):
-                print "creating stind node"
-                standInMesh = pm.createNode("mesh")
-                standInMesh.getParent().rename(str(mesh) + "_standIn")
-                standInMeshNode = pm.createNode("mtap_standinMeshNode")
-                standInMeshNode.rename(str(mesh) + "_standInCreator")
-                standInMeshNode.binMeshFile.set(bpath)
-                standInMeshNode.outputMesh >> standInMesh.inMesh
+        if len(selection) == 0:
+            log.error("Export standins: No meshes selected.")
+            return
+
+        
+        path = pm.textFieldButtonGrp(self.pathUI, query=True, text=True)
+        prefix = pm.textFieldGrp(self.prefixUI, query=True, text=True)
+        doProxy = pm.checkBoxGrp(self.createProxyUI, query=True, value1=True)
+        percentage = pm.floatFieldGrp(self.percentageUI, query=True, value1=True)
+        createStdin = pm.checkBoxGrp(self.createStdInUI, query=True, value1=True)
+        oneFilePerMesh = pm.checkBoxGrp(self.oneFilePerMeshUI, query=True, value1=True)
+        useTransform = pm.checkBoxGrp(self.doTransformUI, query=True, value1=True)
                 
-                # get input shading groups
-                shadingGroups = self.getShadingGroups(mesh)
-                pm.sets(shadingGroups[0], forceElement=standInMesh)
-                numGroups = len(shadingGroups)
-                numFaces = mesh.numFaces()
-                selectFaces = numFaces / numGroups
+        pm.optionVar['mtap_binMeshExportPath'] = path
+        pm.optionVar['mtap_binMeshExportPathPrefix'] = prefix
+        pm.optionVar['mtap_binMeshCreateProxy'] = doProxy
+        pm.optionVar['mtap_binMeshPercentage'] = percentage
+        pm.optionVar['mtap_binMeshCreateStandin'] = createStdin
+        pm.optionVar['mtap_binMeshOneFilePerMesh'] = oneFilePerMesh
+        pm.optionVar['mtap_binMeshUseTransform'] = useTransform
+
                 
-                for sgId in range(1, len(shadingGroups)):
-                    startF = selectFaces * sgId
-                    endF = selectFaces * (sgId + 1)
-                    if endF > numFaces:
-                        endF = numFaces
-                    faceSelect = mesh.f[startF : endF]
-                    pm.sets(shadingGroups[sgId], forceElement=faceSelect)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        
+        bpath = path + "/" + prefix  + ".binarymesh"
+#TODO: convert namespace to clean name
+        print "pm.binMeshWriterCmd({0}, doProxy = {1}, path={2}, doTransform = {3}, percentage={4}, oneFilePerMesh={5})".format(selection, doProxy, bpath, useTransform, percentage, oneFilePerMesh)
+
+        pm.binMeshWriterCmd(selection, doProxy = doProxy, path=bpath, doTransform = useTransform, percentage=percentage, oneFilePerMesh=oneFilePerMesh)
+        
+        for mesh in selection:
+            pass
+#            if pm.checkBoxGrp(self.createStdInUI, query=True, value1=True):
+#                print "creating stdin node"
+#                standInMesh = pm.createNode("mesh")
+#                standInMesh.getParent().rename(str(mesh) + "_standIn")
+#                standInMeshNode = pm.createNode("mtap_standinMeshNode")
+#                standInMeshNode.rename(str(mesh) + "_standInCreator")
+#                standInMeshNode.binMeshFile.set(bpath)
+#                standInMeshNode.outputMesh >> standInMesh.inMesh
+#                
+#                # get input shading groups
+#                shadingGroups = self.getShadingGroups(mesh)
+#                pm.sets(shadingGroups[0], forceElement=standInMesh)
+#                numGroups = len(shadingGroups)
+#                numFaces = mesh.numFaces()
+#                selectFaces = numFaces / numGroups
+#                
+#                for sgId in range(1, len(shadingGroups)):
+#                    startF = selectFaces * sgId
+#                    endF = selectFaces * (sgId + 1)
+#                    if endF > numFaces:
+#                        endF = numFaces
+#                    faceSelect = mesh.f[startF : endF]
+#                    pm.sets(shadingGroups[sgId], forceElement=faceSelect)
                     
         self.cancel()
         
@@ -75,25 +97,37 @@ class StandinOptions(pm.ui.Window):
         
     def fileBrowser(self, *args):
         erg = pm.fileDialog2(dialogStyle=2, fileMode=2)
-        print erg
+        print "Result", erg
         if len(erg) > 0:
             if len(erg[0]) > 0:
-                pm.textFieldButtonGrp(self.pathUI, edit=True, text=erg[0])
+                exportPath = erg[0]
+                pm.textFieldButtonGrp(self.pathUI, edit=True, text=exportPath)
+            
         
     def initUI(self):
         pm.setUITemplate("DefaultTemplate", pushTemplate=True)
         form = pm.formLayout()
 
+        binMeshExportPath = pm.optionVar.get('mtap_binMeshExportPath', pm.workspace.path + "/geo/export.binarymesh")
+        prefix = pm.optionVar.get('mtap_binMeshExportPathPrefix', "prefix")
+        createProxy = pm.optionVar.get('mtap_binMeshCreateProxy', True)
+        percentage = pm.optionVar.get('mtap_binMeshPercentage', 0.1)
+        createStandin = pm.optionVar.get('mtap_binMeshCreateStandin', True)
+        oneFilePerMesh = pm.optionVar.get('mtap_binMeshOneFilePerMesh', False)
+        useTransform = pm.optionVar.get('mtap_binMeshUseTransform', False)
+
         with pm.columnLayout('StandinLayout') as StandinLayout:
             with pm.frameLayout('StandinLayout', label="Standin export options", collapsable=False):
                 with pm.columnLayout('StandinColumnLayout'):
-                    self.pathUI = pm.textFieldButtonGrp(label="Standin path", text='', buttonLabel="File", buttonCommand=self.fileBrowser)
-                    self.createProxyUI = pm.checkBoxGrp(label="Create proxy", value1=True)
-                    self.nthPolyUI = pm.intFieldGrp(label="nthPolygon", value1=100)
-                    self.percentageUI = pm.floatFieldGrp(label="Percentage", value1=0.1)
-                    self.createStdInUI = pm.checkBoxGrp(label="Create StandIn", value1=True)
+                    self.pathUI = pm.textFieldButtonGrp(label="Standin directory", text=binMeshExportPath, buttonLabel="File", buttonCommand=self.fileBrowser)
+                    self.prefixUI = pm.textFieldGrp(label="Prefix", text=prefix)
+                    self.createProxyUI = pm.checkBoxGrp(label="Create proxy", value1=createProxy)
+                    self.percentageUI = pm.floatFieldGrp(label="Percentage", value1=percentage)
+                    self.createStdInUI = pm.checkBoxGrp(label="Create StandIn", value1=createStandin)
+                    self.oneFilePerMeshUI = pm.checkBoxGrp(label="One File Per Mesh", value1=oneFilePerMesh)
+                    self.doTransformUI = pm.checkBoxGrp(label="Use Transform", value1=useTransform)
             with pm.rowColumnLayout(numberOfColumns=2):
-                pm.button(label="Create Standin", c=self.perform)
+                pm.button(label="Create BinaryMesh", c=self.perform)
                 pm.button(label="Cancel", c=self.cancel)
             
         pm.formLayout(form, edit=True, attachForm=[(StandinLayout, 'top', 5), (StandinLayout, 'bottom', 5), (StandinLayout, 'right', 5), (StandinLayout, 'left', 5)])

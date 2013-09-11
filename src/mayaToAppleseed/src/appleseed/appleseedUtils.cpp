@@ -1,6 +1,11 @@
 #include "appleseed.h"
+
+#include "renderer/api/texture.h"
+
 #include <maya/MColor.h>
+#include <maya/MPlugArray.h>
 #include "../mtap_common/mtap_mayaScene.h"
+#include "utilities/pystring.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
@@ -9,42 +14,237 @@ static Logging logger;
 
 using namespace AppleRender;
 
+// 
+// If the object has an assembly itself, there should be an assembly with the object name in the database.
+// If the object does not have an assembly, the objAttributes should contain the parent assembly node.
+
+asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj)
+{
+	asr::Assembly *assembly = NULL;
+
+	// in ipr mode, the geometry is always placed into the assembly of the parent transform node
+	if( this->mtap_scene->renderType == MayaScene::IPR)
+	{
+		if( obj->parent != NULL)
+		{
+			mtap_MayaObject *parentObject = (mtap_MayaObject *)obj->parent;
+			if( parentObject->objectAssembly != NULL)
+				assembly = parentObject->objectAssembly;
+		}
+	}else{
+		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+		if( att == NULL)
+			logger.debug("Error");
+		if( att->needsOwnAssembly )
+			return obj->objectAssembly;
+
+		return att->assemblyObject->objectAssembly;
+	}
+	return assembly;
+}
+
+
+// we have a very flat hierarchy, what means we do not have hierarchies of assemblies.
+// all assemblies are placed in the world, as well as all assemblyInstances
+asr::AssemblyInstance *AppleseedRenderer::getAssemblyInstFromMayaObject(mtap_MayaObject *obj)
+{
+	asr::AssemblyInstance *assemblyInst = NULL;
+	MString assInstName = obj->getAssemblyInstName();
+	logger.debug(MString("Searching assembly instance in world: ") + assInstName);
+	assemblyInst = this->masterAssembly->assembly_instances().get_by_name(assInstName.asChar());
+	return assemblyInst;
+}
+
+
 //
 // colors are defined in the scene scope, makes handling easier
 //
 
-
-void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensity)
+void AppleseedRenderer::mayaColorToFloat(MColor& col, float *floatCol, float *alpha)
 {
-	float colorDef[3];
-	colorDef[0] = color.r;
-	colorDef[1] = color.g;
-	colorDef[2] = color.b;
-	float alpha = color.a;
+	floatCol[0] = col.r;
+	floatCol[1] = col.g;
+	floatCol[2] = col.b;
+	*alpha = col.a;
+}
 
-	asf::auto_release_ptr<asr::ColorEntity> colorEntity;
-	
-	asr::ColorEntity *entity = this->scenePtr->colors().get_by_name(name.asChar());
+void AppleseedRenderer::removeColorEntityIfItExists(MString& colorName)
+{
+	asr::ColorEntity *entity = this->scenePtr->colors().get_by_name(colorName.asChar());
 	if( entity != NULL)
 	{
 		this->scenePtr->colors().remove(entity);
-		//logger.debug(MString("Found color: ") + name);
-		//asr::ColorValueArray cva = entity->get_values();
-		//cva[0] = colorDef[0];
-		//cva[1] = colorDef[1];
-		//cva[2] = colorDef[2];
-		//return;
 	}
-	MString intensityString = MString("") + intensity;
-	colorEntity = asr::ColorEntityFactory::create(
+}
+
+void AppleseedRenderer::defineColor(MString& name, MColor& color, float intensity, MString colorSpace)
+{
+	float colorDef[3];
+	float alpha = color.a;
+	mayaColorToFloat(color, colorDef, &alpha);
+	removeColorEntityIfItExists(name);
+
+	asf::auto_release_ptr<asr::ColorEntity> colorEntity = asr::ColorEntityFactory::create(
 				name.asChar(),
 				asr::ParamArray()
-					.insert("color_space", "srgb")
-					.insert("multiplier", intensityString.asChar()),
+					.insert("color_space", colorSpace.asChar())
+					.insert("multiplier", intensity),
 				asr::ColorValueArray(3, colorDef),
 				asr::ColorValueArray(1, &alpha));
 
 	this->scenePtr->colors().insert(colorEntity);
+}
+
+MString AppleseedRenderer::defineColor(MFnDependencyNode& shader, MString& attributeName, MString colorSpace = "srgb", float intensity = 1.0f)
+{
+	MColor col(0,0,0);
+	if(!getColor(attributeName, shader, col))
+	{
+		logger.error(MString("Unable to get color values from node: ") + shader.name());
+		return "";
+	}
+	MString colorName = shader.name() + "_" + attributeName;
+	defineColor(colorName, col, intensity, colorSpace);
+	return colorName;
+}
+
+//
+// if a connection exists at the other side of the attribute name then:
+//		- read the texture fileName
+//		- if it is not a exr file convert it(?) 
+//		- create a texture definition and
+//		- put the textureFileDefintion string into textureDefinition string
+//	the textureDefinition contains the current color definition, if no texture is found, the string remains unchanged
+//  otherwise it will receive the texture definition and will used instead of the color
+//
+
+void AppleseedRenderer::removeTextureEntityIfItExists(MString& textureName)
+{
+	MString textureInstanceName = textureName + "_texInst";
+	asr::Texture *texture = this->scenePtr->textures().get_by_name(textureName.asChar());
+	if( texture != NULL)
+		this->scenePtr->textures().remove(texture);
+
+	asr::TextureInstance *textureInstance = this->scenePtr->texture_instances().get_by_name(textureInstanceName.asChar());
+	if( textureInstance != NULL)
+		this->scenePtr->texture_instances().remove(textureInstance);
+}
+
+MString AppleseedRenderer::getTextureColorProfile(MFnDependencyNode& fileTextureNode)
+{
+	MString colorProfileName;
+	int profileId = 0;
+	getEnum(MString("colorProfile"), fileTextureNode, profileId);
+	logger.debug(MString("Color profile from fileNode: ") + profileId);
+	
+	MStringArray colorProfiles;
+	colorProfiles.append("srgb"); //0 == none == default == sRGB
+	colorProfiles.append("srgb"); //1 == undefined == default == sRGB
+	colorProfiles.append("linear_rgb"); //2 == linear_rgb
+	colorProfiles.append("srgb"); //3 == sRGB
+	colorProfiles.append("linear_rgb"); //4 == linear_rec_709
+	colorProfiles.append("linear_rgb"); //5 == hdtv_rec_709
+	return colorProfiles[profileId];
+}
+
+MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attributeName)
+{
+	MStatus stat;
+	MString textureDefinition("");
+
+	MPlug plug = shader.findPlug(attributeName, &stat);	
+	if( stat != MStatus::kSuccess)
+		return textureDefinition;
+	if( !plug.isConnected() )
+		return textureDefinition;
+
+	MPlugArray plugArray;
+	plug.connectedTo(plugArray, 1, 0, &stat);
+	if( stat != MStatus::kSuccess) 
+		return textureDefinition;
+
+	if( plugArray.length() == 0)
+		return textureDefinition;
+
+	MPlug otherSidePlug = plugArray[0];
+	MObject inputNode = otherSidePlug.node();
+	
+	if( !inputNode.hasFn(MFn::kFileTexture))
+		return textureDefinition;
+
+	MFnDependencyNode fileTextureNode(inputNode, &stat);
+	MString textureName = fileTextureNode.name() + "_texture";
+
+	logger.info(MString("Found fileTextureNode: ") + fileTextureNode.name());
+	MString fileTextureName = "";
+	getString(MString("fileTextureName"), fileTextureNode, fileTextureName);
+	logger.info(MString("Found filename: ") + fileTextureName);
+	if( !pystring::endswith(fileTextureName.asChar(), ".exr") || (fileTextureName.length() == 0))
+	{
+		if( fileTextureName.length() == 0)
+			logger.warning(MString("FileTextureName has no content."));
+		else
+			logger.warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
+		return textureDefinition;
+	}
+
+	removeTextureEntityIfItExists(textureName);
+
+	MString colorProfile = getTextureColorProfile(fileTextureNode);
+	
+	asr::ParamArray params;
+	logger.debug(MString("Now inserting file name: ") + fileTextureName);
+	params.insert("filename", fileTextureName.asChar());      // OpenEXR only for now. The param is called filename but it can be a path
+	params.insert("color_space", colorProfile.asChar());
+	
+    asf::auto_release_ptr<asr::Texture> textureElement(
+        asr::DiskTexture2dFactory().create(
+	    textureName.asChar(),
+            params,
+            this->project->get_search_paths()));    // the project holds a set of search paths to find textures and other assets
+	this->scenePtr->textures().insert(textureElement);
+
+	bool alphaIsLuminance = false;
+	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
+	asr::ParamArray tInstParams;
+	tInstParams.insert("addressing_mode", "clamp");
+	//tInstParams.insert("addressing_mode", "wrap");
+	tInstParams.insert("filtering_mode", "bilinear");
+	if( alphaIsLuminance )
+		tInstParams.insert("alpha_mode", "luminance");
+
+	MString textureInstanceName = textureName + "_texInst";
+	asf::auto_release_ptr<asr::TextureInstance> tinst = asr::TextureInstanceFactory().create(
+	   textureInstanceName.asChar(),
+	   tInstParams,
+	   textureName.asChar());
+	
+	this->scenePtr->texture_instances().insert(tinst);
+
+	return textureInstanceName;
+
+}
+
+
+MString AppleseedRenderer::defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName)
+{
+	MString definition = defineTexture(shaderNode, attributeName);
+	if( definition.length() == 0)
+		definition = defineColor(shaderNode, attributeName);
+	return definition;
+}
+
+MString AppleseedRenderer::defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName, float intensity = 1.0f)
+{
+	MString definition = defineTexture(shaderNode, attributeName);
+	if( definition.length() == 0)
+		definition = defineColor(shaderNode, attributeName, "srgb", intensity);
+	return definition;
+}
+
+MString AppleseedRenderer::defineScalarAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName)
+{
+	return defineTexture(shaderNode, attributeName);
 }
 
 
