@@ -9,6 +9,8 @@
 #define VENDOR "haggis vfx & animation"
 #define VERSION "1.0"
 #define TRANSLATORNAME "appleseedBinaryMesh"
+#define WRITERNAME "binMeshWriterCmd"
+#define READERNAME "binMeshReaderCmd"
 
 MStatus initializePlugin(MObject obj)
 {
@@ -40,13 +42,13 @@ MStatus initializePlugin(MObject obj)
 		return status;
 	}
 
-	status = plugin.registerCommand("binMeshWriterCmd", BinMeshWriterCmd::creator, BinMeshWriterCmd::newSyntax );
+	status = plugin.registerCommand(WRITERNAME, BinMeshWriterCmd::creator, BinMeshWriterCmd::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: binMeshWriterCmd");
 		return status;
 	}
 
-	status = plugin.registerCommand("binMeshReaderCmd", BinMeshReaderCmd::creator, BinMeshReaderCmd::newSyntax );
+	status = plugin.registerCommand(READERNAME, BinMeshReaderCmd::creator, BinMeshReaderCmd::newSyntax );
 	if (!status) {
 		status.perror("cannot register command: BinMeshReaderCmd");
 		return status;
@@ -68,13 +70,13 @@ MStatus uninitializePlugin(MObject obj)
 		return status;
 	}
 
-	status = plugin.deregisterCommand( "binMeshTranslatorCmd" );
+	status = plugin.deregisterCommand(WRITERNAME);
 	if (!status) {
-		status.perror("cannot deregister command: binMeshTranslatorCmd");
+		status.perror("cannot deregister command: binMeshWriterCmd");
 		return status;
 	}
 
-	status = plugin.deregisterCommand( "binMeshReaderCmd" );
+	status = plugin.deregisterCommand( READERNAME );
 	if (!status) {
 		status.perror("cannot deregister command: binMeshReaderCmd");
 		return status;

@@ -1,6 +1,9 @@
 import pymel.core as pm
 import maya.OpenMayaMPx as OpenMayaMPx
 import sys
+import logging
+
+log = logging.getLogger("mtapLogger")
 
 def binMeshTranslatorOpts(parent, action, initialSettings, resultCallback):
     print "Parent", parent
@@ -127,71 +130,76 @@ def binMeshTranslatorRead(fileName, optionString, accessMode):
     
     return True
 
-#BinMeshTranslatorName = "appleseedBinaryMesh"
-#
-## Node definition
-#class BinMeshTranslator(OpenMayaMPx.MPxFileTranslator):
-#    def __init__(self):
-#        OpenMayaMPx.MPxFileTranslator.__init__(self)
-#        
-#    def haveWriteMethod(self):
-#        return True
-#    
-#    def haveReadMethod(self):
-#        return True
-#
-#    def filter(self):
-#        return "*.binarymesh"
-#    
-#    def defaultExtension(self):
-#        return "binarymesh"
-#
-#    def writer( self, fileObject, optionString, accessMode ):
-#        print "BinMeshTranslator:Writer"
-#        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportActiveAccessMode:
-#            binMeshTranslatorWrite(fileObject.fullName(), optionString, "selected")
-#        if accessMode == OpenMayaMPx.MPxFileTranslator.kExportAccessMode:
-#            binMeshTranslatorWrite(fileObject.fullName(), optionString, "all")
-#
-#    def reader( self, fileObject, optionString, accessMode ):
-#        print "BinMeshTranslator:Reader"
-#        if accessMode == OpenMayaMPx.MPxFileTranslator.kImportAccessMode:
-#            binMeshTranslatorRead(fileObject.fullName(), optionString, "read")
-#
-#def translatorCreator():
-#    return OpenMayaMPx.asMPxPtr( BinMeshTranslator() )
-#
-#def initializePlugin(mobject):
-#    mplugin = OpenMayaMPx.MFnPlugin(mobject)
-#    try:
-#        mplugin.registerFileTranslator( BinMeshTranslatorName, None, translatorCreator, "binMeshTranslatorOpts", "", True)
-#        melToPythonCmd = """global proc binMeshTranslatorOpts(string $a, string $b, string $c, string $d)\n
-#{
-#    python(\"import binMeshTranslator; binMeshTranslator.binMeshTranslatorOpts('\" + $a + \"','\" + $b + \"','\" + $c + \"','\" + $d + \"')\");
-#}"""
-#        print "melToPythonCmd", melToPythonCmd
-#        pm.mel.eval(melToPythonCmd)
-#    
-#        toolsName = "appleseedTools_maya2014"
-#        if not pm.pluginInfo(toolsName, query=True, loaded=True):
-#            try:
-#                pm.loadPlugin(toolsName)
-#            except:
-#                sys.stderr.write( "Failed to load appleseed tools: %s" % toolsName )
-#                raise
-#                
-#    except:
-#        sys.stderr.write( "Failed to register translator: %s" % BinMeshTranslatorName )
-#        raise
-#    
-#    
-#
-#def uninitializePlugin(mobject):
-#    mplugin = OpenMayaMPx.MFnPlugin(mobject)
-#    try:
-#        mplugin.deregisterFileTranslator( BinMeshTranslatorName )
-#    except:
-#        sys.stderr.write( "Failed to deregister translator: %s" % BinMeshTranslatorName )
-#        raise
-    
+def binMeshCheckAndCreateShadingGroup(shadingGroup):
+    try:
+        print "check ", shadingGroup
+        shadingGroup = pm.PyNode(shadingGroup)
+    except:
+        log.debug("Shading group {0} does not exist, creating one.".format(shadingGroup)) 
+        shader = pm.shadingNode("appleseedSurfaceShader", asShader=True)
+        shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name=shadingGroup)
+        shader.outColor >> shadingGroup.surfaceShader
 
+# I'd prefer to use the connected polyshape directly, but because of the connections in a multi shader assignenment
+# I do not get a directo connection from the creator node to the polymesh but it goes to some groupId nodes what makes
+# it a bit complicated to search for the first connected mesh in the API. So I simply call the script with the creator node
+# and let the python script search for the mesh.
+
+def listConnections(node, allList, meshList):
+    for con in node.outputs(sh=True):
+        if not con in allList:
+            log.debug("Check {0}".format(con))
+            allList.append(con)
+            if con.type() == 'mesh':
+                meshList.append(con)
+            else:
+                listConnections(con, allList, meshList)
+        else:
+            log.debug("Found existing shape, skipping.")
+            
+def getConnectedPolyShape(creatorShape):
+    try:
+        creatorShape = pm.PyNode(creatorShape)
+    except:
+        return None
+    
+    meshList = []
+    allList = []
+    listConnections(creatorShape, allList, meshList)
+
+    return meshList
+    
+        
+# perFaceAssingments contains a double list, one face id list for every shading group        
+def binMeshAssignShader(creatorShape = None, shadingGroupList=[], perFaceAssingments=[]):
+    if not creatorShape:
+        log.error("binMeshAssignShader: No creator shape")
+        return
+    
+    if pm.PyNode(creatorShape).type() != "mtap_standinMeshNode":
+        log.error("binMeshAssignShader: Node {0} is not a creator shape".format(creatorShape))
+        return
+
+    log.debug("binMeshAssignShader: creatorShape {0}".format(creatorShape))        
+    polyShapeList = getConnectedPolyShape(creatorShape)
+        
+    for polyShape in polyShapeList:    
+        log.debug("binMeshAssignShader: polyShape {0}".format(polyShape))        
+        for index, shadingGroup in enumerate(shadingGroupList):
+            binMeshCheckAndCreateShadingGroup(shadingGroup)
+            
+            assignments = perFaceAssingments[index]
+            print assignments
+            faceSelection = []
+            
+            for polyId in assignments:
+                faceSelection.append(polyId)
+            
+            print "meshShape has", polyShape.numFaces(), "faces. Edeff."
+            fs = polyShape.f[faceSelection]
+            print "pm.sets('{0}', e=True, forceElement={1})".format(shadingGroup,str(fs))
+            pm.sets(shadingGroup, e=True, forceElement=str(fs))
+        
+        
+        
+        

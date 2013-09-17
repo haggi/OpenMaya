@@ -25,6 +25,14 @@
       <Configuration>Debug2014</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug2015|Win32">
+      <Configuration>Debug2015</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug2015|x64">
+      <Configuration>Debug2015</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -55,6 +63,14 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release2014|x64">
       <Configuration>Release2014</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2015|Win32">
+      <Configuration>Release2015</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2015|x64">
+      <Configuration>Release2015</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -91,10 +107,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|Win32'" Label="Configuration">
@@ -109,10 +131,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'" Label="Configuration">
@@ -142,10 +170,16 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|Win32'" Label="PropertySheets">
@@ -160,10 +194,16 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'" Label="PropertySheets">
@@ -175,26 +215,34 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2013SAP|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2015|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2015|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|Win32'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2013SAP|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|x64'">Debug\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">Release\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2013SAP|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2015|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2015|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|Win32'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2013SAP|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|x64'">Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">Release\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">Release\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">Release\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2013SAP|Win32'">Release\</OutDir>
@@ -209,8 +257,10 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release2013SAP|x64'">false</LinkIncremental>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">.mll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">.mll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">.mll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -270,6 +320,25 @@
       <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayatoappleseed.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayatoappleseed.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|Win32'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
@@ -290,6 +359,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2013\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /incremental:yes /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaRender.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayatoappleseed.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayatoappleseed.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|Win32'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
@@ -370,7 +458,7 @@
       <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013SAP.mll</Command>
+      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013.5.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
@@ -396,6 +484,29 @@
       <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\devkit\appleseed_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;WINDOWS_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Debug/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Debug\mayatoappleseed.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2015\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Debug/mayatoappleseed.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2015.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014SAP|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
@@ -416,7 +527,7 @@
       <ImportLibrary>Debug/mayatoappleseed.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014SAP.mll</Command>
+      <Command>copy Debug\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.5.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
@@ -451,6 +562,38 @@
       <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;..\devkit\appleseed_devkit_win64\include\appleseed;..\devkit\appleseed_devkit_win64\include\appleseed.shared;..\devkit\appleseed_devkit_win64\include\openexr;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>Release/mayatoappleseed.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.lib;..\devkit\appleseed_devkit_win64\lib\Debug\appleseed.shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\mayatoappleseed.mll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2015\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>Release/mayatoappleseed.pdb</ProgramDatabaseFile>
+      <ImportLibrary>Release/mayatoappleseed.lib</ImportLibrary>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <NoEntryPoint>false</NoEntryPoint>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2015release.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -480,7 +623,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014SAPrelease.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.5release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -580,7 +723,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013SAPrelease.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013.5release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

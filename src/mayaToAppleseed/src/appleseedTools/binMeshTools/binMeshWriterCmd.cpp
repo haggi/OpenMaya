@@ -85,10 +85,10 @@ bool BinMeshWriterCmd::exportBinMeshes()
 		}
 	}	
 
-	if( this->doProxy)
+	if( this->doProxy && (!this->oneFilePerMesh))
 	{
 		MString proxyFileName = pystring::replace(this->path.asChar(), ".binarymesh" , ".proxymesh").c_str();
-		globalProxyMesh.write(proxyFileName);
+		globalProxyMesh.writeFile(proxyFileName);
 	}
 	return true;
 }

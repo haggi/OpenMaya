@@ -37,6 +37,7 @@ public:
 
 	MObjectArray shadingGroups;
 	MIntArray perFaceAssignments;
+	MIntArray perTriangleAssignments;
 	std::vector<Face> faceList;
 
     // Return the name of the mesh.

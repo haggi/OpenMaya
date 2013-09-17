@@ -5,9 +5,19 @@
 #include <maya/MObject.h>
 #include <maya/MPointArray.h>
 #include <maya/MIntArray.h>
+#include <maya/MStringArray.h>
 #include <fstream>
+#include <vector>
 
 #define STANDIN_MESH_NODE_NAME "mtap_standinMeshNode"
+#define IDList std::vector<int>
+
+struct PolyMaterialAssignments
+{
+	MStringArray shadingGroupsNames;
+	std::vector<IDList> assignments;
+};
+
 
 class mtap_standinMeshNode : public MPxNode
 {
@@ -23,8 +33,11 @@ public:
 	static MObject	binMeshFile;	
 	static MObject	percentDisplay;
 	static MObject	polySizeMultiplier;
+	MIntArray polyShaderIds;
+	MStringArray shadingEngineNames;
 
 	std::fstream	pFile;
+	PolyMaterialAssignments pma;
 
 	static MTypeId	id;
 
@@ -47,7 +60,17 @@ public:
 	inline void read(int& value) 
 	{
 		pFile.read(reinterpret_cast<char *>(&value), sizeof(int));
-		cerr << "read int " << value;
+		cerr << "read int " << value << "\n";
+	}
+	inline void read(MString& value) 
+	{
+		int numChar = 0;
+		this->read(numChar);
+		char characters[2018];
+		pFile.read(characters, numChar);
+		characters[numChar] = '\0';
+		value = characters;
+		cerr << "read string " << value << "\n";
 	}
 
 
@@ -61,6 +84,8 @@ private:
 	MPointArray points;
 	MIntArray		 numFaces;
 	MIntArray		 faceConnects;
+
+	void	createMaterialAssignments();
 
 protected:
 	MObject createMesh(const MTime& time, MObject& outData, MStatus& stat);

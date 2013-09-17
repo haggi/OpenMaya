@@ -238,6 +238,33 @@ MString matrixToString(MMatrix& matrix)
 	return matString;
 }
 
+
+MObject getUpstreamMesh(MString& outputPlugName, MObject thisObject)
+{
+	MStatus stat;
+	MObject result = MObject::kNullObj;
+	//MFnDependencyNode depFn(thisObject, &stat);	
+	//if( stat != MStatus::kSuccess) return result;
+
+	//int count = 0;
+	//while( !(result.hasFn(MFn::kMesh)) && (count < 20))
+	//{
+	//	MPlug plug = depFn.findPlug(outputPlugName, &stat);	
+	//	if( stat != MStatus::kSuccess) 
+	//		return result;
+	//	MPlugArray plugArray;
+	//	plug.connectedTo(plugArray, 0, 1, &stat);
+	//	if( stat != MStatus::kSuccess) 
+	//		return result;
+	//	count++;
+	//}
+	//if( plugArray.length() == 0)
+	//	return result;
+	//MPlug otherSidePlug = plugArray[0];
+	//result = otherSidePlug.node();
+	return result;
+}
+
 //
 // simply get the node wich is connected to the named plug.
 // If we have no connection, a kNullObject is returned.
@@ -678,4 +705,74 @@ void makeUniqueArray( MObjectArray& oa)
 			tmpArray.append(oa[i]);
 	}
 	oa = tmpArray;
+}
+
+bool isObjectInList(MObject obj, MObjectArray& objectArray)
+{
+	for( uint oId = 0; oId < objectArray.length(); oId++)
+	{
+		if( objectArray[oId] == obj)
+			return true;
+	}
+	return false;
+}
+
+bool isPlugInList(MObject obj, MPlugArray& plugArray)
+{		
+	for( uint oId = 0; oId < plugArray.length(); oId++)
+	{
+		if( plugArray[oId] == obj)
+			return true;
+	}
+	return false;
+}
+
+void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connectedElements, MPlugArray& completeList, bool upstream)
+{
+
+	MGlobal::displayInfo(MString("thisNode: ") + getObjectName(thisObject));
+	MFnDependencyNode depFn(thisObject);
+	if(depFn.typeId().id() == nodeId)
+	{
+		connectedElements.append(thisObject);
+		MGlobal::displayInfo(MString("found object with correct id: ") + depFn.name());
+		return;
+	}
+
+	bool downstream = !upstream;
+
+	MPlugArray plugArray;
+	depFn.getConnections(plugArray);
+
+	for( uint plugId = 0; plugId < plugArray.length(); plugId++)
+	{
+		MPlug plug = plugArray[plugId];
+		if( isPlugInList(plug, completeList))
+			continue;
+
+		MString pn = plug.name();
+		if( upstream && plug.isDestination())
+			continue;
+		if( downstream && plug.isSource())
+			continue;
+		
+		MPlugArray otherSidePlugs;
+		bool asDest = plug.isDestination();
+		bool asSrc = plug.isSource();
+		MGlobal::displayInfo(MString("findConnectedNodeTypes: checking plug ") + plug.name());
+		plug.connectedTo(otherSidePlugs, asDest, asSrc);
+		for( uint cplugId = 0; cplugId < otherSidePlugs.length(); cplugId++)
+		{
+			findConnectedNodeTypes(nodeId, otherSidePlugs[cplugId].node(), connectedElements, completeList, upstream);
+		}		
+		completeList.append(plug);
+	}
+
+}
+
+
+void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connecedElements, bool upstream)
+{
+	MPlugArray completeList;
+	findConnectedNodeTypes(nodeId, thisObject, connecedElements, completeList, upstream);
 }

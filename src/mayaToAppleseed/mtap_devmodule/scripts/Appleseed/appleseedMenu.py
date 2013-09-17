@@ -63,32 +63,22 @@ class StandinOptions(pm.ui.Window):
         print "pm.binMeshWriterCmd({0}, doProxy = {1}, path={2}, doTransform = {3}, percentage={4}, oneFilePerMesh={5})".format(selection, doProxy, bpath, useTransform, percentage, oneFilePerMesh)
 
         pm.binMeshWriterCmd(selection, doProxy = doProxy, path=bpath, doTransform = useTransform, percentage=percentage, oneFilePerMesh=oneFilePerMesh)
-        
+
+        if not doProxy:
+            log.debug("No proxy creation.")
+            return
+
+        # we we write multiple meshes into one file, we should create one standin mesh only
+        if not oneFilePerMesh and len(selection) > 1:
+            selection = [bpath]
         for mesh in selection:
-            pass
-#            if pm.checkBoxGrp(self.createStdInUI, query=True, value1=True):
-#                print "creating stdin node"
-#                standInMesh = pm.createNode("mesh")
-#                standInMesh.getParent().rename(str(mesh) + "_standIn")
-#                standInMeshNode = pm.createNode("mtap_standinMeshNode")
-#                standInMeshNode.rename(str(mesh) + "_standInCreator")
-#                standInMeshNode.binMeshFile.set(bpath)
-#                standInMeshNode.outputMesh >> standInMesh.inMesh
-#                
-#                # get input shading groups
-#                shadingGroups = self.getShadingGroups(mesh)
-#                pm.sets(shadingGroups[0], forceElement=standInMesh)
-#                numGroups = len(shadingGroups)
-#                numFaces = mesh.numFaces()
-#                selectFaces = numFaces / numGroups
-#                
-#                for sgId in range(1, len(shadingGroups)):
-#                    startF = selectFaces * sgId
-#                    endF = selectFaces * (sgId + 1)
-#                    if endF > numFaces:
-#                        endF = numFaces
-#                    faceSelect = mesh.f[startF : endF]
-#                    pm.sets(shadingGroups[sgId], forceElement=faceSelect)
+            print "creating stdin node for mesh", mesh
+            standInMesh = pm.createNode("mesh")
+            standInMesh.getParent().rename(str(mesh) + "_standIn")
+            standInMeshNode = pm.createNode("mtap_standinMeshNode")
+            standInMeshNode.rename(str(mesh) + "_standInCreator")
+            standInMeshNode.binMeshFile.set(bpath)
+            standInMeshNode.outputMesh >> standInMesh.inMesh
                     
         self.cancel()
         

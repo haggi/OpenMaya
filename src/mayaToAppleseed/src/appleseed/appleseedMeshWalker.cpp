@@ -1,6 +1,7 @@
 #include "appleseedMeshWalker.h"
 
 #include <maya/MItMeshPolygon.h>
+#include <maya/MGlobal.h>
 #include "utilities/tools.h"
 #include "shadingTools/shadingUtils.h"
 #include <maya/MBoundingBox.h>
@@ -51,7 +52,7 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 		int faceId = faceIt.index();
 		int numTris;
 		faceIt.numTriangles(numTris);
-		faceIt.getVertices(faceVtxIds);
+		faceIt.getVertices(faceVtxIds); 
 
 		MIntArray faceUVIndices;
 
@@ -68,6 +69,7 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 		{
 			int faceRelIds[3];
 			faceIt.getTriangle(triId, triPoints, triVtxIds);
+			this->perTriangleAssignments.append(this->perFaceAssignments[faceId]);
 
 			for( uint triVtxId = 0; triVtxId < 3; triVtxId++)
 			{
@@ -106,8 +108,6 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 			triCount++;
 		}		
 	}
-
-
 }
 	
 // Return the name of the mesh.
@@ -192,5 +192,5 @@ size_t MeshWalker::get_face_tex_coords(const size_t face_index, const size_t ver
 // Return the material assigned to a given face.
 size_t MeshWalker::get_face_material(const size_t face_index) const 
 {
-	return this->perFaceAssignments[face_index];
+	return this->perTriangleAssignments[face_index];
 }

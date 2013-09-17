@@ -16,6 +16,8 @@ static Logging logger;
 
 using namespace AppleRender;
 
+#define MTAP_MESH_STANDIN_ID 0x0011CF7B
+
 void AppleseedRenderer::defineMesh(mtap_MayaObject *obj)
 {}
 void AppleseedRenderer::defineNurbsSurface(mtap_MayaObject *obj)
@@ -29,38 +31,27 @@ void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
 void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
 {}
 
-asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, MString fileName)
+void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, MString fileName, asr::MeshObjectArray& meshArray)
 {
 	asr::MeshObjectReader reader;
 	asf::SearchPaths searchPaths;
 	
 	MString objName = obj->fullNiceName;
-	asr::MeshObjectArray meshArray;
 	asr::ParamArray params;
 	params.insert("filename", fileName.asChar());
 	reader.read(searchPaths, objName.asChar(), params, meshArray);
-	asf::auto_release_ptr<asr::MeshObject> mo(meshArray[0]);
-	return mo;
 }
 
-asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj)
-{
-	asr::MeshObjectReader reader;
-	asf::SearchPaths searchPaths;
-	
+void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray)
+{	
 	MFnDependencyNode depFn(obj->mobject);
-	MString proxyFile("");	
+	MString proxyFile("");
 	getString(MString("mtap_standin_path"), depFn, proxyFile);
-	MString objName = obj->fullNiceName;
-	asr::MeshObjectArray meshArray;
-	asr::ParamArray params;
-	params.insert("filename", proxyFile.asChar());
-	reader.read(searchPaths, objName.asChar(), params, meshArray);
-	asf::auto_release_ptr<asr::MeshObject> mo(meshArray[0]);
-	return mo;
+	createMeshFromFile(obj, proxyFile, meshArray);
 }
 
-asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaObject *obj)
+
+void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray)
 {
 
 	// If the mesh has an attribute called "mtap_standin_path" and it contains a valid entry, then try to read the
@@ -77,41 +68,42 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaOb
 	MString proxyFile("");	
 	if( getString(MString("mtap_standin_path"), meshFn, proxyFile))
 	{
-		// we need at least .obj == 4 chars
+		// we need at least .obj == 4 chars - maybe replace by a useful file check
 		if( proxyFile.length() > 4 )
 		{
-			asf::auto_release_ptr<asr::MeshObject> mesh = createMeshFromFile(obj, proxyFile);
-			if( mesh.get() != NULL )
-			{
-				return mesh;
-			}
+			createMeshFromFile(obj, proxyFile, meshArray);
+			return;
 		}
 	}
+
 
 	// check for standInNode connection
-	MPlug inMeshPlug = meshFn.findPlug(MString("inMesh"), &stat);
-	if( stat )
+	MObjectArray connectedElements;
+	findConnectedNodeTypes(MTAP_MESH_STANDIN_ID, meshObject, connectedElements, false);
+
+	if( connectedElements.length() > 0)
 	{
-		MObject inMeshObj = getOtherSideNode(inMeshPlug);
-		if( inMeshObj != MObject::kNullObj)
+
+		if( connectedElements.length() > 1)
 		{
-			MFnDependencyNode depFn(inMeshObj);
-			uint nodeId = depFn.typeId().id();
-			if( nodeId == 0x0011CF7B)
+			logger.warning(MString("Found more than 1 standin elements:"));
+			for( uint i = 0; i < connectedElements.length(); i++)
 			{
-				logger.debug(MString("Found mtap_standinMeshNode"));
-				if(getString(MString("binMeshFile"), depFn, proxyFile))
-				{
-					asf::auto_release_ptr<asr::MeshObject> mesh = createMeshFromFile(obj, proxyFile);
-					if( mesh.get() != NULL )
-					{
-						return mesh;
-					}
-				}
+				logger.warning(MString("Standin element: ") + getObjectName(connectedElements[i]));
 			}
+			logger.warning(MString("Using element: ") + getObjectName(connectedElements[0]));
+		}
+		MFnDependencyNode depFn(connectedElements[0]);
+		if(getString(MString("binMeshFile"), depFn, proxyFile))
+		{
+			logger.debug(MString("Reading binaraymesh from file: ") + proxyFile);
+			createMeshFromFile(obj, proxyFile, meshArray);
+			return;
 		}
 	}
 
+
+	// no standin --- we have a normal mesh here
 	MItMeshPolygon faceIt(meshObject, &stat);
 	CHECK_MSTATUS(stat);
 
@@ -125,8 +117,9 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaOb
 	logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
     // Create a new mesh object.
-	asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
-
+	//asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
+	meshArray.push_back(asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray()).get());
+	asr::MeshObject *mesh = meshArray[0];
 	// add vertices
     // Vertices.
     //object->push_vertex(GVector3(552.8f, 0.0f,   0.0f));
@@ -219,7 +212,6 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::createMesh(mtap_MayaOb
 			mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, perFaceShadingGroup));
 		}		
 	}
-
-	return mesh;
+	//meshArray.push_back(mesh.get());
 }
 

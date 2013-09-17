@@ -1,4 +1,5 @@
 0x0011CF40 : 0x0011CF7F
+0x0011EF40 : 0x0011EF7F
 
 Appleseed:
 RenderGlobals:		0x0011CF40
@@ -28,5 +29,7 @@ RenderGlobals:		0x0011CF4C
 Mitsuba:
 RenderGlobals:		
 
+Fujiyama:
+RenderGlobals			0x0011CF7C
 
-Last used:	0x0011CF7A
+Last used:	0x0011CF7C

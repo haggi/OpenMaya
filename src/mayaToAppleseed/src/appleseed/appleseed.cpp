@@ -204,76 +204,84 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	// here the mesh per face assignments are read and placed into the obj->perFaceAssignments
 	this->defineObjectMaterial(renderGlobals, obj, material_names);
 
-	asf::auto_release_ptr<asr::MeshObject> mesh = this->createMesh(obj);
-	MString meshName = mesh->get_name();
-	assembly->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
-	asr::Object *meshObject = assembly->objects().get_by_name(meshName.asChar());
+	asr::MeshObjectArray meshArray;
+	this->createMesh(obj, meshArray);
 
-	asf::Matrix4d tmatrix = asf::Matrix4d::identity();
-	this->MMatrixToAMatrix(matrix, tmatrix);
+	logger.debug(MString("Found ") + meshArray.size() + " meshes.");
 
-	asf::StringDictionary matDict = asf::StringDictionary();
-	asf::StringDictionary matBackDict = asf::StringDictionary();
-
-	// if no material is attached, use a default material
-	if( material_names.size() == 0)
+	for( size_t meshId = 0; meshId < meshArray.size(); meshId++)
 	{
-		material_names.push_back("gray_material");
-		matDict.insert("default", "gray_material");
-		matBackDict.insert("default", "gray_material");
-	}else{
-		int counterFront = 0;
-		int counterBack = 0;
-		for( size_t i = 0; i < material_names.size(); i++)
-		{	
-			if( pystring::endswith(material_names[i], "_back") )
-				matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
-			else
-				matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);
+		MString meshName = meshArray[meshId]->get_name();
+		logger.debug(MString("checking mesh ") + meshName);
+		assembly->objects().insert(asf::auto_release_ptr<asr::Object>(meshArray[meshId]));
+		asr::Object *meshObject = assembly->objects().get_by_name(meshName.asChar());
+	
+		asf::Matrix4d tmatrix = asf::Matrix4d::identity();
+		this->MMatrixToAMatrix(matrix, tmatrix);
+
+		asf::StringDictionary matDict = asf::StringDictionary();
+		asf::StringDictionary matBackDict = asf::StringDictionary();
+
+		// if no material is attached, use a default material
+		if( material_names.size() == 0)
+		{
+			material_names.push_back("gray_material");
+			matDict.insert("default", "gray_material");
+			matBackDict.insert("default", "gray_material");
+		}else{
+			int counterFront = 0;
+			int counterBack = 0;
+			for( size_t i = 0; i < material_names.size(); i++)
+			{	
+				if( pystring::endswith(material_names[i], "_back") )
+					matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
+				else
+					matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);
 			
+			}
 		}
+
+		bool doubleSided = true;
+		MFnDependencyNode depFn(obj->mobject);
+		getBool(MString("doubleSided"), depFn, doubleSided);
+
+		asr::ParamArray meshInstanceParams;
+
+		MString ray_bias_method = "none";
+		int id;
+		getEnum("mtap_ray_bias_method", depFn, id, ray_bias_method);
+		if( ray_bias_method != "none")
+		{
+			float ray_bias_distance = 0.0f;
+			getFloat("mtap_ray_bias_distance", depFn, ray_bias_distance);
+			meshInstanceParams.insert("ray_bias_method", ray_bias_method.asChar());
+			meshInstanceParams.insert("mtap_ray_bias_distance", ray_bias_distance);
+		}
+
+		if(doubleSided)
+		{
+			if( matBackDict.size() == 0)
+				matBackDict = matDict;
+
+			assembly->object_instances().insert(
+					asr::ObjectInstanceFactory::create(
+					(meshName + "_inst").asChar(),
+					meshInstanceParams,
+					meshObject->get_name(),
+					asf::Transformd::from_local_to_parent(tmatrix),
+					matDict,
+					matBackDict
+					));
+		}else
+			assembly->object_instances().insert(
+					asr::ObjectInstanceFactory::create(
+					(meshName + "_inst").asChar(),
+					asr::ParamArray(),
+					meshObject->get_name(),
+					asf::Transformd::from_local_to_parent(tmatrix),
+					matDict
+					));
 	}
-
-	bool doubleSided = true;
-	MFnDependencyNode depFn(obj->mobject);
-	getBool(MString("doubleSided"), depFn, doubleSided);
-
-	asr::ParamArray meshInstanceParams;
-
-	MString ray_bias_method = "none";
-	int id;
-	getEnum("mtap_ray_bias_method", depFn, id, ray_bias_method);
-	if( ray_bias_method != "none")
-	{
-		float ray_bias_distance = 0.0f;
-		getFloat("mtap_ray_bias_distance", depFn, ray_bias_distance);
-		meshInstanceParams.insert("ray_bias_method", ray_bias_method.asChar());
-		meshInstanceParams.insert("mtap_ray_bias_distance", ray_bias_distance);
-	}
-
-	if(doubleSided)
-	{
-		if( matBackDict.size() == 0)
-			matBackDict = matDict;
-
-		assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				(meshName + "_inst").asChar(),
-				meshInstanceParams,
-				meshObject->get_name(),
-				asf::Transformd::from_local_to_parent(tmatrix),
-				matDict,
-				matBackDict
-				));
-	}else
-		assembly->object_instances().insert(
-				asr::ObjectInstanceFactory::create(
-				(meshName + "_inst").asChar(),
-				asr::ParamArray(),
-				meshObject->get_name(),
-				asf::Transformd::from_local_to_parent(tmatrix),
-				matDict
-				));
 }
 	
 

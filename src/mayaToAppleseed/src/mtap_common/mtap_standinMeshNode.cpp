@@ -5,13 +5,14 @@
 #include <maya/MPoint.h>
 #include <maya/MFloatPoint.h>
 #include <maya/MFloatPointArray.h>
-#include <maya/MIntArray.h>
 #include <maya/MDoubleArray.h>
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MGlobal.h>
-
+#include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MFnMeshData.h>
@@ -19,12 +20,15 @@
 #include <maya/MIOStream.h>
 #include <maya/MBoundingBox.h>
 
+#include <vector>
+
 #include "renderer/api/object.h"
 #include "renderer/modeling/object/meshobjectreader.h"
 #include "foundation/utility/searchpaths.h"
 
 #include "utilities/pystring.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
 
 static Logging logger;
 
@@ -41,6 +45,7 @@ MStatus returnStatus;
 
 
 MTypeId mtap_standinMeshNode::id( 0x0011CF7B );
+								  
 
 MObject mtap_standinMeshNode::time;
 MObject mtap_standinMeshNode::outputMesh;
@@ -89,11 +94,9 @@ MStatus mtap_standinMeshNode::initialize()
 	returnStatus = attributeAffects(binMeshFile, outputMesh);
 	CHECK_MSTATUS(returnStatus);
 
-	//returnStatus = attributeAffects(percentDisplay, outputMesh);
-	//CHECK_MSTATUS(returnStatus);
-
 	return MS::kSuccess;
 }
+
 
 MObject mtap_standinMeshNode::createMesh(const MTime& time,
 							  MObject& outData,
@@ -114,15 +117,47 @@ MObject mtap_standinMeshNode::createMesh(const MTime& time,
 
 	MObject newMesh;
 
-
 	if( pFile.good() )
 	{
 		int numPoints = 0;
 		MBoundingBox box;
 		MPoint min, max;
+		int numShaders = 0;
+		MStringArray shaderNames;
+		MString shaderName;
+		int numFaces;
+
+		read(numShaders);
+		MGlobal::displayInfo(MString("Object has: ") + numShaders + " shading groups.");
+		for( int i = 0; i < numShaders; i++)
+		{
+			read(shaderName);
+			MGlobal::displayInfo(MString("Read shader name from file: ") + shaderName);
+			std::vector<int> shaderAssingments;
+			pma.assignments.push_back(shaderAssingments);
+			pma.shadingGroupsNames.append(shaderName);
+			shadingEngineNames.append(shaderName);
+		}
+
+		read(numFaces);
+		MGlobal::displayInfo(MString("Object has: ") + numFaces + " shading ids.");
+		for( int i = 0; i < numFaces; i++)
+		{
+			int shaderId = 0;
+			read(shaderId);
+			polyShaderIds.append(shaderId);
+			if( shaderId >= numShaders)
+			{
+				MGlobal::displayInfo(MString("Shader Id not in shader list: Face: ") + i + " shader id " + shaderId);
+				pma.assignments[shaderId].push_back(0);
+			}
+			else
+				pma.assignments[shaderId].push_back(i);
+		}
+
 		read(numPoints);
 		numVertices = numPoints;
-		int numFaces = numPoints / 3;
+		numFaces = numPoints / 3;
 		read(min);
 		read(max);
 		MGlobal::displayInfo(MString("File successfully opended. File contains: ") + numPoints + " points what means " + numFaces + " triangles");
@@ -154,10 +189,47 @@ MObject mtap_standinMeshNode::createMesh(const MTime& time,
 			faceConnects[i] = i;
 		newMesh = meshFS.create(numVertices, numFaces, points, faceCounts, faceConnects, outData, &stat);
 		if( !stat )
-			MGlobal::displayError("Mesh creation failure.");
+			MGlobal::displayError("Mesh creation failure.");		
 	}
 
 	return newMesh;
+}
+
+void mtap_standinMeshNode::createMaterialAssignments()
+{
+	MString idListString = "[";
+	for( size_t i = 0; i < pma.assignments.size(); i++)
+	{
+		MGlobal::displayInfo(MString("Shading Group: ") + pma.shadingGroupsNames[i] + " is connected to: " + pma.assignments[i].size() + " polygons.");
+		idListString += "[";
+		IDList ids = pma.assignments[i];
+		for( size_t k = 0; k < ids.size(); k++)
+		{
+			idListString += ids[k];
+			if( k < (ids.size() - 1))
+				idListString += ",";
+		}			
+		idListString += "]";
+		if( i < (pma.assignments.size() - 1))
+			idListString += ",";
+	}
+	idListString += "]";
+
+	MString thisObjectName = getObjectName(this->thisMObject());
+	MString shadingEngineList = "[";		
+	for( uint seId = 0; seId < shadingEngineNames.length(); seId++)
+	{
+		shadingEngineList += "'" + shadingEngineNames[seId] + "'";
+		if( seId < (shadingEngineNames.length() - 1))
+			shadingEngineList += ",";
+	}
+	shadingEngineList += "]";
+
+	//def binMeshAssignShader(polyShape = None, shadingGroupList=[], perFaceAssingments=[]):
+	MString pythonCmd = MString("import binMeshTranslator as bmt; bmt.binMeshAssignShader( creatorShape = '")  + thisObjectName + "', shadingGroupList = " +  shadingEngineList + ", perFaceAssingments = " + idListString + ")";
+	MGlobal::displayInfo(pythonCmd);
+	//MGlobal::executePythonCommand(pythonCmd);
+	MGlobal::executePythonCommandOnIdle(pythonCmd);
 }
 
 bool mtap_standinMeshNode::checkMeshFileName(MString meshFileName)
@@ -212,6 +284,9 @@ MStatus mtap_standinMeshNode::compute(const MPlug& plug, MDataBlock& data)
 
 		outputHandle.set(newOutputData);
 		data.setClean( plug );
+
+		createMaterialAssignments();
+
 	} else
 		return MS::kUnknownParameter;
 

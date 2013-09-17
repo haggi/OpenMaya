@@ -105,5 +105,11 @@ float rnd();
 
 float srnd();
 
+bool isObjectInList(MObject obj, MObjectArray& objectArray);
+bool isPlugInList(MObject obj, MPlugArray& plugArray);
+
+void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connecedElements, bool upstream);
+void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connecedElements, MPlugArray& completeList, bool upstream);
+
 #endif
 

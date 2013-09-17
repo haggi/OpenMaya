@@ -17,9 +17,14 @@
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.3"
 
+static const MString mtapSurfaceShaderName("appleseedSurfaceShader");
+static const MString mtapSurfaceShaderNameDrawDBClassification("drawdb/shader/surface/appleseed/mattetranslucent");
+static const MString mtapSurfaceShaderNameFullClassification("appleseed/material:shader/surface:" + mtapSurfaceShaderNameDrawDBClassification);
+
 MStatus initializePlugin( MObject obj )
 {
 	const MString	UserClassify( "shader/surface" );
+
 
 	MGlobal::displayInfo(MString("Loading plugin MayaToAppleseed version: ") + MString(VERSION));
 	MStatus   status;
@@ -49,9 +54,10 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	status = plugin.registerNode( mtap_surfaceShaderName, mtap_surfaceShader::id, 
-			mtap_surfaceShader::creator, mtap_surfaceShader::initialize, MPxNode::kDependNode,
-			&UserClassify);
+#ifdef HAS_OVERRIDE
+	//CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( mattetranslucentsDrawDBClassification, mattetranslucentsRegistrantId,mattetranslucentOverride::creator));
+#endif
+	CHECK_MSTATUS( plugin.registerNode( mtap_surfaceShaderName, mtap_surfaceShader::id, mtap_surfaceShader::creator, mtap_surfaceShader::initialize, MPxNode::kDependNode, &mtapSurfaceShaderNameFullClassification));
 	if (!status) {
 		status.perror("cannot register node: appleseedSurfaceShader");
 		return status;

@@ -132,9 +132,9 @@ public:
 	void defineMasterAssembly();
 	void addShaderAssemblyAssignment(MObject shadingNode, MObject shadingEngine, asr::Assembly *assembly);
 	void clearShaderAssemblyAssignments();
-	asf::auto_release_ptr<asr::MeshObject> createMesh(mtap_MayaObject *obj);
-	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj);
-	asf::auto_release_ptr<asr::MeshObject> createMeshFromFile(mtap_MayaObject *obj, MString fileName);
+	void createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray);
+	void createMeshFromFile(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray);
+	void createMeshFromFile(mtap_MayaObject *obj, MString fileName, asr::MeshObjectArray& meshArray);
 	void render();
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
