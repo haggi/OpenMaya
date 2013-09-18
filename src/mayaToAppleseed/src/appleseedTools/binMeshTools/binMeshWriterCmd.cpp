@@ -76,7 +76,7 @@ bool BinMeshWriterCmd::exportBinMeshes()
 				ProxyMesh proxyMesh(this->percentage);
 				proxyMesh.addMesh(walker);
 				MString proxyFileName = pystring::replace(perFileMeshPath.asChar(), ".binarymesh" , ".proxymesh").c_str();
-				proxyMesh.write(proxyFileName);
+				proxyMesh.writeFile(proxyFileName);
 			}
 		}else{
 			globalWriter.write(walker);

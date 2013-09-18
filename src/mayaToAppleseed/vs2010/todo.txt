@@ -4,10 +4,6 @@
 
 - eleminate duplicate shader creation methods
 
-- implement new external binmesh tools into proxy generation
-
-- fix sun light
-
 - alpha 19 ------------
 
 - implement new blend bsdf shader node

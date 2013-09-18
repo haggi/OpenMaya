@@ -31,7 +31,6 @@ public:
 	static MObject	time;
 	static MObject	outputMesh;
 	static MObject	binMeshFile;	
-	static MObject	percentDisplay;
 	static MObject	polySizeMultiplier;
 	MIntArray polyShaderIds;
 	MStringArray shadingEngineNames;
@@ -60,7 +59,6 @@ public:
 	inline void read(int& value) 
 	{
 		pFile.read(reinterpret_cast<char *>(&value), sizeof(int));
-		cerr << "read int " << value << "\n";
 	}
 	inline void read(MString& value) 
 	{
@@ -70,7 +68,6 @@ public:
 		pFile.read(characters, numChar);
 		characters[numChar] = '\0';
 		value = characters;
-		cerr << "read string " << value << "\n";
 	}
 
 

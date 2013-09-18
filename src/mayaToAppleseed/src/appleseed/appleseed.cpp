@@ -205,7 +205,8 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	this->defineObjectMaterial(renderGlobals, obj, material_names);
 
 	asr::MeshObjectArray meshArray;
-	this->createMesh(obj, meshArray);
+	bool isProxy = false;
+	this->createMesh(obj, meshArray, isProxy);
 
 	logger.debug(MString("Found ") + meshArray.size() + " meshes.");
 
@@ -231,13 +232,23 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 		}else{
 			int counterFront = 0;
 			int counterBack = 0;
-			for( size_t i = 0; i < material_names.size(); i++)
-			{	
-				if( pystring::endswith(material_names[i], "_back") )
-					matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
-				else
-					matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);
-			
+			if( isProxy )
+			{
+				logger.debug(MString("mesh is proxy, getting material names from mesh."));
+				size_t numMat = meshObject->get_material_slot_count();
+				for( size_t i = 0; i < numMat; i++)
+				{						
+					matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), meshObject->get_material_slot(i));
+					matDict.insert(MString(MString("slot_") + counterFront++).asChar(), meshObject->get_material_slot(i));			
+				}
+			}else{
+				for( size_t i = 0; i < material_names.size(); i++)
+				{	
+					if( pystring::endswith(material_names[i], "_back") )
+						matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
+					else
+						matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);			
+				}
 			}
 		}
 

@@ -559,7 +559,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014release.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014Release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
@@ -591,7 +591,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2015release.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2015Release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014SAP|x64'">
@@ -623,7 +623,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.5release.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2014.5Release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -692,7 +692,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013release.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013Release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2013SAP|x64'">
@@ -723,7 +723,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013.5release.mll</Command>
+      <Command>copy Release\mayatoappleseed.mll ..\mtap_devmodule\plug-ins\mayatoappleseed_maya2013.5Release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

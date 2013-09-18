@@ -60,6 +60,8 @@ void ProxyMesh::addMesh(asf::IMeshWalker& walker)
 	size_t numMaterials = walker.get_material_slot_count();
 	size_t materialBaseId = this->shadingGroupNames.length();
 
+	objectShaderStartId.append(this->shadingGroupNames.length());
+
 	for( size_t matId = 0; matId < numMaterials; matId++)
 		this->shadingGroupNames.append(walker.get_material_slot(matId));
 
@@ -125,7 +127,6 @@ void ProxyMesh::writeFile(MString fileName)
 		for( size_t pId = 0; pId < this->polyShaderIds.length(); pId++)
 		{
 			this->write( this->polyShaderIds[pId]);
-			MGlobal::displayInfo(MString("write shader id: ") + this->polyShaderIds[pId]);
 		}
 		MGlobal::displayInfo(MString("Written num polyShaderIds: ") + this->polyShaderIds.length() + " faces " + ((points.length() - 2)/3));
 
@@ -144,7 +145,7 @@ void ProxyMesh::writeFile(MString fileName)
 ProxyMesh::ProxyMesh(float percentage)
 {
 	this->percentage = percentage;
-	polySizeMultiplier = 1.0f/percentage * 0.8;
+	polySizeMultiplier = 1.0f/percentage * 0.5;
 	min = MPoint(1000000.0,1000000.0,1000000.0);
 	max = MPoint(-1000000.0,-1000000.0,-1000000.0);	
 }

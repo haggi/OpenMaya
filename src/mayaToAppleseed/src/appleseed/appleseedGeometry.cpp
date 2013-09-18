@@ -51,7 +51,7 @@ void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, asr::MeshObject
 }
 
 
-void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray)
+void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
 {
 
 	// If the mesh has an attribute called "mtap_standin_path" and it contains a valid entry, then try to read the
@@ -71,6 +71,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 		// we need at least .obj == 4 chars - maybe replace by a useful file check
 		if( proxyFile.length() > 4 )
 		{
+			isProxyArray = true;
 			createMeshFromFile(obj, proxyFile, meshArray);
 			return;
 		}
@@ -96,12 +97,14 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 		MFnDependencyNode depFn(connectedElements[0]);
 		if(getString(MString("binMeshFile"), depFn, proxyFile))
 		{
-			logger.debug(MString("Reading binaraymesh from file: ") + proxyFile);
+			logger.debug(MString("Reading binarymesh from file: ") + proxyFile);
+			isProxyArray = true;
 			createMeshFromFile(obj, proxyFile, meshArray);
 			return;
 		}
 	}
 
+	isProxyArray = false;
 
 	// no standin --- we have a normal mesh here
 	MItMeshPolygon faceIt(meshObject, &stat);
@@ -118,7 +121,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
     // Create a new mesh object.
 	//asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
-	meshArray.push_back(asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray()).get());
+	meshArray.push_back(asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray()).release());
 	asr::MeshObject *mesh = meshArray[0];
 	// add vertices
     // Vertices.

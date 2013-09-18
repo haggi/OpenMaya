@@ -50,7 +50,6 @@ MTypeId mtap_standinMeshNode::id( 0x0011CF7B );
 MObject mtap_standinMeshNode::time;
 MObject mtap_standinMeshNode::outputMesh;
 MObject mtap_standinMeshNode::binMeshFile;	
-MObject mtap_standinMeshNode::percentDisplay;	
 MObject mtap_standinMeshNode::polySizeMultiplier;
 
 void* mtap_standinMeshNode::creator()
@@ -76,11 +75,6 @@ MStatus mtap_standinMeshNode::initialize()
 	binMeshFile = tAttr.create( "binMeshFile", "binMeshFile", MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( binMeshFile ));
-
-	percentDisplay = nAttr.create( "percentDisplay", "percentDisplay", MFnNumericData::kFloat, 0.1f);
-	nAttr.setMin(0.01);
-	nAttr.setSoftMax(1.0);
-	CHECK_MSTATUS(addAttribute( percentDisplay ));
 
 	polySizeMultiplier = nAttr.create( "polySizeMultiplier", "polySizeMultiplier", MFnNumericData::kFloat, 1.0f);
 	nAttr.setMin(0.01);

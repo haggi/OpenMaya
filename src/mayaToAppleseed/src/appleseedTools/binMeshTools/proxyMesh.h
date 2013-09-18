@@ -22,6 +22,7 @@ public:
 	std::fstream proxyFile;
 	MStringArray shadingGroupNames;
 	MIntArray polyShaderIds;
+	MIntArray objectShaderStartId;
 
 	inline void write(double value) 
 	{

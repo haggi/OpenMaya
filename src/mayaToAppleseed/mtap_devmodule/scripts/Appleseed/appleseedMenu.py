@@ -4,6 +4,30 @@ import os
 
 log = logging.getLogger("mtapLogger")
 
+class BinaryMesh(object):
+    def __init__(self, meshList = None):
+        self.meshList = meshList
+        self.path = pm.optionVar.get('mtap_binMeshExportPath', pm.workspace.path + "/geo/export.binarymesh")
+        self.prefix = pm.optionVar.get('mtap_binMeshExportPathPrefix', "prefix")
+        self.doProxy = pm.optionVar.get('mtap_binMeshCreateProxy', True)
+        self.percentage = pm.optionVar.get('mtap_binMeshPercentage', 0.1)
+        self.createStandin = pm.optionVar.get('mtap_binMeshCreateStandin', True)
+        self.oneFilePerMesh = pm.optionVar.get('mtap_binMeshOneFilePerMesh', False)
+        self.useTransform = pm.optionVar.get('mtap_binMeshUseTransform', False)
+    
+    def loadStandins(self):
+        meshName = self.path.split("/")[-1].replace(".binarymesh", "")
+        print "creating stdin node for mesh", meshName
+        standInMesh = pm.createNode("mesh")
+        standInMesh.getParent().rename(meshName + "_standIn")
+        standInMeshNode = pm.createNode("mtap_standinMeshNode")
+        standInMeshNode.rename(meshName + "_standInCreator")
+        print "Setting binmesh path to", self.path
+        standInMeshNode.binMeshFile.set(self.path)
+        standInMeshNode.outputMesh >> standInMesh.inMesh
+
+    def writeStandins(self):
+        pass
 
 class StandinOptions(pm.ui.Window):
     def __init__(self):
@@ -19,7 +43,6 @@ class StandinOptions(pm.ui.Window):
         self.doTransformUI = None
         
         self.initUI()
-        self.show()
 
     def updateUI(self):
         pass
@@ -27,17 +50,12 @@ class StandinOptions(pm.ui.Window):
     def getShadingGroups(self, mesh):
         shadingGroups = mesh.outputs(type="shadingEngine")
         return shadingGroups
-    
-    def perform(self, *args):        
-        selection = []
-        for object in pm.ls(sl=True):
-            selection.extend(object.getChildren(ad=True, type="mesh"))
-            
-        if len(selection) == 0:
-            log.error("Export standins: No meshes selected.")
-            return
 
+    def doit(self, *args):        
+        self.getData()
+        self.perform()
         
+    def getData(self, *args):        
         path = pm.textFieldButtonGrp(self.pathUI, query=True, text=True)
         prefix = pm.textFieldGrp(self.prefixUI, query=True, text=True)
         doProxy = pm.checkBoxGrp(self.createProxyUI, query=True, value1=True)
@@ -53,7 +71,23 @@ class StandinOptions(pm.ui.Window):
         pm.optionVar['mtap_binMeshCreateStandin'] = createStdin
         pm.optionVar['mtap_binMeshOneFilePerMesh'] = oneFilePerMesh
         pm.optionVar['mtap_binMeshUseTransform'] = useTransform
+    
+    def perform(self, *args):        
+        selection = []
+        for object in pm.ls(sl=True):
+            selection.extend(object.getChildren(ad=True, type="mesh"))
+            
+        if len(selection) == 0:
+            log.error("Export standins: No meshes selected.")
+            return
 
+        path = pm.optionVar.get('mtap_binMeshExportPath', pm.workspace.path + "/geo/export.binarymesh")
+        prefix = pm.optionVar.get('mtap_binMeshExportPathPrefix', "prefix")
+        doProxy = pm.optionVar.get('mtap_binMeshCreateProxy', True)
+        percentage = pm.optionVar.get('mtap_binMeshPercentage', 0.1)
+        createStandin = pm.optionVar.get('mtap_binMeshCreateStandin', True)
+        oneFilePerMesh = pm.optionVar.get('mtap_binMeshOneFilePerMesh', False)
+        useTransform = pm.optionVar.get('mtap_binMeshUseTransform', False)
                 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -72,11 +106,14 @@ class StandinOptions(pm.ui.Window):
         if not oneFilePerMesh and len(selection) > 1:
             selection = [bpath]
         for mesh in selection:
-            print "creating stdin node for mesh", mesh
+            meshName = mesh.split("/")[-1].replace(".binarymesh", "")
+            print "creating stdin node for mesh", meshName
             standInMesh = pm.createNode("mesh")
-            standInMesh.getParent().rename(str(mesh) + "_standIn")
+            standInMesh.getParent().rename(meshName + "_standIn")
             standInMeshNode = pm.createNode("mtap_standinMeshNode")
-            standInMeshNode.rename(str(mesh) + "_standInCreator")
+            standInMeshNode.rename(meshName + "_standInCreator")
+            bpath = path + "/" + prefix + meshName  + ".binarymesh"
+            print "Setting binmesh path to", bpath
             standInMeshNode.binMeshFile.set(bpath)
             standInMeshNode.outputMesh >> standInMesh.inMesh
                     
@@ -117,7 +154,7 @@ class StandinOptions(pm.ui.Window):
                     self.oneFilePerMeshUI = pm.checkBoxGrp(label="One File Per Mesh", value1=oneFilePerMesh)
                     self.doTransformUI = pm.checkBoxGrp(label="Use Transform", value1=useTransform)
             with pm.rowColumnLayout(numberOfColumns=2):
-                pm.button(label="Create BinaryMesh", c=self.perform)
+                pm.button(label="Create BinaryMesh", c=self.doit)
                 pm.button(label="Cancel", c=self.cancel)
             
         pm.formLayout(form, edit=True, attachForm=[(StandinLayout, 'top', 5), (StandinLayout, 'bottom', 5), (StandinLayout, 'right', 5), (StandinLayout, 'left', 5)])
@@ -125,42 +162,23 @@ class StandinOptions(pm.ui.Window):
             
 def createStandin(*args):
     print "create standin", args
-    
+    sio = StandinOptions()
+    sio.perform()
 
 def createStandinOptions(*args):
     print "create standin options", args
-    StandinOptions()
-    
-    
-#class StandinOptions(pm.ui.OptionBox):
-#    commandName = "createStandin"
-#    options = []
-#    factorySettings = []
-#    apply = staticmethod(createStandin)
-#
-#    @classmethod
-#    def getFlags(cls):
-#        pass
-#    
-#    def initUI(self):
-#        self.modeCtrl = pm.radioButtonGrp(label="Mode:", nrb=3, la3=["Reference", "Import", "Export"])
-#        self.setUIControl("Mode", self.modeCtrl, "select", 1)
-#        pm.separator()
-#        with pm.columnLayout() as self.importLayout:
-#            self.setUIControl("Shot", AbFieldGrp(), "path")
-#            self.setUIControl("KeepExisting", pm.checkBoxGrp(label="Keep existing camera:"), "value1")
-#            self.setUIControl("dummy", pm.checkBoxGrp(label="", manage=0), "value1") # was "useGate"
-#            self.setUIControl("SetTime", pm.checkBoxGrp(label="Set timeline to shot range:"), "value1")
-#        pm.separator()
-#        with pm.columnLayout() as self.exportLayout:
-#            self.setUIControl("Comment", pm.textFieldGrp(label="Check-in comment:"), "text")
-#            self.setUIControl("Selected", pm.checkBoxGrp(label="Export selected:"), "value1")
-#            self.setUIControl("Reference", pm.checkBoxGrp(label="Create reference:"), "value1")
-#        self.modeCtrl.changeCommand = self.postSetup
-#
-#    def postSetup(self, *args):
-#        self.importLayout.enable = (self.modeCtrl.select != 3)
-#        self.exportLayout.enable = (self.modeCtrl.select == 3)
+    sio = StandinOptions()
+    sio.show()
+
+def readStandin(*args):
+    log.debug("read standin")
+    ff = "*.binarymesh"
+    filename = pm.fileDialog2(fileMode=1, caption="Select binarymesh", fileFilter = ff)
+    if len(filename) > 0:
+        print "Reading binarymesh", filename
+        bm = BinaryMesh()
+        bm.path = filename[0]
+        bm.loadStandins()
 
 
 class AppleseedMenu(pm.ui.Menu):
@@ -177,5 +195,6 @@ class AppleseedMenu(pm.ui.Menu):
         with pm.menuItem(label="Standins", subMenu=True, tearOff=True):
             pm.menuItem(label="Create Standin", annotation="Standin creation", command=createStandin, stp="python")
             pm.menuItem(optionBox=True, label="Create Standin Options", command=createStandinOptions, stp="python")
+            pm.menuItem(label="Read Standin", annotation="Standin creation", command=readStandin, stp="python")
 
         

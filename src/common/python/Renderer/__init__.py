@@ -290,6 +290,7 @@ global proc updateMayaImageFormatControl()
         pass
     
     def createGlobalsNode(self):      
+        selection = pm.ls(sl=True)
         if not self.renderGlobalsNode: 
             # maybe the node has been replaced by replaced by a new loaded node, check this
             if len(pm.ls(self.renderGlobalsNodeName)) > 0:
@@ -307,7 +308,8 @@ global proc updateMayaImageFormatControl()
                 self.afterGlobalsNodeReplacement()
         else:
             log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
-
+        pm.select(selection)
+        
     def registerNodeExtensions(self):
         pass
 

@@ -562,7 +562,7 @@ def loadAETemplates():
 def loadPlugins():
     try:
         log.debug("Loading Appleseed maya plugins")
-        version = pm.about(v=True)
+        version = pm.about(v=True).split(" ")[0]
         pluginName = "appleseedTools_maya{0}".format(version)
         log.debug("Trying to load appleseedTools: {0}".format(pluginName))
         if not pm.pluginInfo(pluginName, query=True, loaded=True):

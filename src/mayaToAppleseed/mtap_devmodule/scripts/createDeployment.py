@@ -4,6 +4,106 @@ import path
 import zipfile
 import sys
 
+class Deployment:
+    rendererDict = {'appleseed': {'shortcut':'mtap', 'hasTools' : True},
+                    'lux' : {'shortcut':'mtlu', 'hasTools' : False},
+                    'fuji' : {'shortcut':'mtfu', 'hasTools' : False},
+                    'kray' : {'shortcut':'mtkr', 'hasTools' : False},
+                    'centi' : {'shortcut':'mtce', 'hasTools' : False},
+                    'corona' : {'shortcut':'mtco', 'hasTools' : False},
+                    'fluid' : {'shortcut':'mtfl', 'hasTools' : False},
+                    'mitsuba' : {'shortcut':'mtmi', 'hasTools' : False}}
+    
+    mayaToBaseDir = "C:/Users/haggi/coding/OpenMaya/src"
+    mayaToPythonBaseDir = "C:/Users/haggi/coding/OpenMaya/src/common/python"
+    
+    ignoreFileTypes = ['pyc', 'gitignore', 'project', 'pydevproject']
+    
+    def __init__(self):
+        self.renderer = None
+        self.shortCut = None
+        self.mayaReleases = None
+        
+    def setRenderer(self, renderer):
+        self.renderer = renderer
+        self.shortCut = Deployment.rendererDict[renderer]['shortcut']
+        self.sourceBaseDir = path.path("{0}/mayaTo{1}/{2}_devmodule".format(Deployment.mayaToBaseDir, self.renderer, self.shortCut)) 
+        self.destBaseDir = path.path("{0}/mayaTo{1}/deployment/mayaTo{1}".format(Deployment.mayaToBaseDir, self.renderer.capitalize())) 
+        print self.sourceBaseDir, self.destBaseDir
+        
+        if self.destBaseDir.exists():
+            shutil.rmtree(self.destBaseDir, ignore_errors=True)
+            
+        if not self.destBaseDir.exists():
+            self.destBaseDir.makedirs()
+                
+    def setVersions(self, versions):
+        self.mayaReleases = versions
+
+    def fileOkay(self, fileName):
+        if path.path(fileName).basename().startswith("."):
+            return False
+        if fileName.startswith("."):
+            return False
+        if fileName.split(".")[-1] in Deployment.ignoreFileTypes:
+            return False
+        if fileName.endswith(".mll"):
+            if not "Release" in fileName:
+                return False
+        return True
+
+    def filterFileNames(self, fileName):
+        newName = fileName
+        if "Release.mll" in newName:
+            newName = newName.replace("Release.mll", ".mll") 
+        return newName
+
+    def filterFileContents(self, fileToCheck):
+        if fileToCheck.endswith(".mod"):
+            fh = open(fileToCheck, "r")
+            content = fh.readlines()
+            fh.close()
+            fh = open(fileToCheck, "w")
+            for line in content:
+                newLine = line
+                devmod = "../{0}_devmodule".format(self.shortCut)
+                if devmod in newLine:
+                    newLine = "+ LOCALE:en_US mayaTo{0} 0.1.0 ../mayaTo{0}\n".format(self.renderer.capitalize())
+                fh.write(newLine)
+            fh.close()
+
+    def copyDir(self, directory, destDirExtension = None):
+        for element in path.path(directory).listdir():
+            if not self.fileOkay(element):
+                continue            
+            if element.isdir():
+                self.copyDir(element, destDirExtension)
+            else:
+                sourceFile = element.realpath().replace("\\", "/")
+                destDir = self.destBaseDir
+                if destDirExtension is not None:
+                    destDir += "/" + destDirExtension
+                destFile = sourceFile.replace(self.sourceBaseDir, destDir)
+                destFile = destFile.replace(Deployment.mayaToPythonBaseDir, destDir)
+                destDir = path.path(destFile).dirname()
+                if not destDir.exists():
+                    destDir.makedirs()
+                destFile = self.filterFileNames(destFile)
+                shutil.copy2(sourceFile, destFile)
+                self.filterFileContents(destFile)
+    
+    def createTools(self):
+        toolsDir = self.destBaseDir.parent + "/" + self.renderer + "Tools"
+        shutil.copytree(self.destBaseDir, toolsDir)
+
+    def createDeployment(self):
+        self.copyDir(self.sourceBaseDir)
+        self.copyDir(Deployment.mayaToPythonBaseDir, destDirExtension = "scripts" )
+        if Deployment.rendererDict[self.renderer]['hasTools']:
+            print "create tools"
+            self.createTools()
+            
+    
 def zip_folder(folder_path, output_path):
     """Zip the contents of an entire folder (with that folder included
     in the archive). Empty subfolders will be included in the archive
@@ -57,7 +157,7 @@ def zipdir(p, zipf):
 #                ed.append(dd)
 #    print "empty dirs", ed
     pass
-
+    
 def createDeployment(renderer, shortCut, mayaRelease):
     
     if os.name == 'nt':
@@ -94,8 +194,10 @@ def createDeployment(renderer, shortCut, mayaRelease):
     mfh.close()
     
     #mll
-    print "copy ", sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll"
-    shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll", destDir + "/plug-ins/mayato" + renderer + ".mll")
+    sourceLib = "{0}/plug-ins/mayato{1}_maya{2}release.mll".format(sourceDir, renderer, mayaRelease)
+    destLib = "{0}/plug-ins/mayato{1}_maya{2}.mll".format(destDir, renderer, mayaRelease)
+    print "copy ", sourceLib, "to", destLib
+    shutil.copy(sourceLib, destLib)
 
     #bin
     if renderer == "appleseed":
@@ -133,31 +235,11 @@ def createDeployment(renderer, shortCut, mayaRelease):
                 dst = dd.replace(sourceDir, destDir)
                 print "mkdir", dst
                 os.makedirs(dst)
-                
-#    scDir = path.path(sourceDir + "/scripts/")
-#    for f in scDir.listdir("*.py"):
-#        try:
-#            shutil.copytree(f, destDir + "/scripts/")
-#        except:
-#            pass
-#    scDir = path.path(sourceDir + "/scripts/AETemplates")
-#    for f in scDir.listdir("*.py"):
-#        try:
-#            shutil.copytree(f, destDir + "/scripts/AETemplates")
-#        except:
-#            pass
-#    print "chdir", destDir.parent    
-#    os.chdir(destDir.parent)        
-#    zippedFileName = "mayato" + renderer.lower() + ".zip"
-#    print "Creating zip file:", zippedFileName
-#    zip = zipfile.ZipFile(zippedFileName, 'w')
-#    zipdir("mayato" + renderer.lower(), zip)
-#    zip.close() 
-#    zip_folder(destDir, zippedFileName)
-
-#    for f in files:
-#        print "remove", f
-        #shutil.rmtree(f)
+    
     
 if __name__ == "__main__":
-    createDeployment("appleseed", "mtap", "2013")
+    #createDeployment("appleseed", "mtap", "2013")
+    d = Deployment()
+    d.setRenderer('appleseed')
+    d.setVersions(['2013', '2013.5', '2014'])
+    d.createDeployment()

@@ -132,7 +132,7 @@ public:
 	void defineMasterAssembly();
 	void addShaderAssemblyAssignment(MObject shadingNode, MObject shadingEngine, asr::Assembly *assembly);
 	void clearShaderAssemblyAssignments();
-	void createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray);
+	void createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray, bool& isProxyArray);
 	void createMeshFromFile(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray);
 	void createMeshFromFile(mtap_MayaObject *obj, MString fileName, asr::MeshObjectArray& meshArray);
 	void render();
