@@ -18,9 +18,10 @@
 	Of course there is a bit overhead because we have no shared points, but because the proxymesh will be reduced,
 	there will be much less connected vertices than in a normal mesh, so the overhead should be acceptable.
 */
-MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
+MeshWalker::MeshWalker(MDagPath& dagPath)
 {
 	MStatus stat;
+	meshDagPath = dagPath;
 	MObject meshMObject = dagPath.node();
 	meshFn.setObject(meshMObject);
 	
@@ -39,13 +40,6 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 	MIntArray faceNormalIds;
 	
 	int triCount = 0;
-
-	if( useTransform )
-	{
-		MMatrix matrix = dagPath.inclusiveMatrix();
-		for( uint vtxId = 0; vtxId < points.length(); vtxId++)
-			points[vtxId] *= matrix;
-	}
 
 	for(faceIt.reset(); !faceIt.isDone(); faceIt.next())
 	{
@@ -109,7 +103,14 @@ MeshWalker::MeshWalker(MDagPath& dagPath, bool useTransform)
 		}		
 	}
 }
-	
+
+void MeshWalker::setTransform()
+{
+	MMatrix matrix = meshDagPath.inclusiveMatrix();
+	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+		points[vtxId] *= matrix;
+}
+
 // Return the name of the mesh.
 const char* MeshWalker::get_name() const
 {

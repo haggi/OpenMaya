@@ -27,9 +27,10 @@ struct Face{
 class MeshWalker : public asf::IMeshWalker
 {
 public:
-	MeshWalker(MDagPath& dagPath, bool useTransform);
+	MeshWalker(MDagPath& dagPath);
 	MFnMesh			meshFn;
 	
+	MDagPath meshDagPath;
 	// mesh data
 	MFloatArray		u,v;
 	MPointArray		points;
@@ -40,6 +41,7 @@ public:
 	MIntArray perTriangleAssignments;
 	std::vector<Face> faceList;
 
+	void setTransform();
     // Return the name of the mesh.
     virtual const char* get_name() const;
 

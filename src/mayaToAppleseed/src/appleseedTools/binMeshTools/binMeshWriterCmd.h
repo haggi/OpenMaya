@@ -24,6 +24,8 @@ public:
 	void			printUsage();
 	bool			exportBinMeshes();
 	void			getObjectsForExport(const MArgList& args);
+	bool			checkSmoothMesh(MDagPath& dagPath);
+	void			removeSmoothMesh(MDagPath& dagPath);
 
 	std::fstream	pFile;
 
@@ -47,7 +49,6 @@ public:
 	}
 
 
-
 private:
 	bool			doProxy;
 	float			percentage;
@@ -58,6 +59,7 @@ private:
 	bool			oneFilePerMesh;
 	bool			doTransform;
 	bool			exportAll;
+	bool			useSmoothPreview;
 	
 };
 

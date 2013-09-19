@@ -10,11 +10,13 @@
 #include <maya/MItSelectionList.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MDagPath.h>
+#include <maya/MFnDagNode.h>
 #include <maya/MItDag.h>
 
 #include "utilities/pystring.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 
 static Logging logger;
 
@@ -40,6 +42,7 @@ MSyntax BinMeshWriterCmd::newSyntax()
 	stat = syntax.addFlag( "-all", "-exportAll", MSyntax::kBoolean);
 	stat = syntax.addFlag( "-fpm", "-oneFilePerMesh", MSyntax::kBoolean);
 	stat = syntax.addFlag( "-dt", "-doTransform", MSyntax::kBoolean);
+	stat = syntax.addFlag( "-sp", "-useSmoothPreview", MSyntax::kBoolean);
 	syntax.setObjectType(MSyntax::kSelectionList);
 	syntax.useSelectionAsDefault(true);
 	
@@ -49,6 +52,86 @@ MSyntax BinMeshWriterCmd::newSyntax()
 void BinMeshWriterCmd::printUsage()
 {
 	MGlobal::displayInfo("BinMeshWriterCmd usage: ... ");
+}
+
+bool BinMeshWriterCmd::checkSmoothMesh(MDagPath& dagPath)
+{
+	MStatus stat;
+	MFnMesh mesh(dagPath, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("checkSmoothMesh : could not get mesh from ") + dagPath.fullPathName());
+		return false;
+	}
+
+	bool displaySmoothMesh = false;
+	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
+	{
+		if( !displaySmoothMesh )
+			return false;
+	}else{
+		MGlobal::displayError(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
+		return false;
+	}
+	
+	MDagPath parent = dagPath;
+	parent.pop();
+	MGlobal::displayInfo(MString("generateSmoothMesh : trying to parent smooth mesh under ") + parent.fullPathName());
+
+	MObject smoothMesh = mesh.generateSmoothMesh(parent.node(), &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : failed with parent ") + parent.fullPathName());
+		return false;
+	}
+	
+	MFnMesh smoothMeshDn(smoothMesh, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : could not create smoothMesh from ") + getObjectName(smoothMesh));
+		return false;
+	}
+	
+	dagPath.set(smoothMeshDn.dagPath());
+
+	MPointArray points;
+	stat = smoothMeshDn.getPoints(points);
+	if( !stat )
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : could not get points"));
+	}
+	MGlobal::displayInfo(MString("generateSmoothMesh : numPoints: ") + points.length());
+
+	MFnDagNode dnode(smoothMesh, &stat);
+	if( !stat )
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : unable to get dagNode from dag path: ") + stat.errorString());
+	}
+	
+	MDagPath dp = dnode.dagPath(&stat);
+	if( !stat )
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : unable to get dp from dagnode: ") + stat.errorString());
+	}
+
+	MFnMesh tstMesh(dnode.dagPath(), &stat);
+	if( !stat )
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : unable to get mesh from dag path: ") + stat.errorString());
+	}
+	
+
+	//dagPath = smoothMeshDn.dagPath();
+	return true;
+}
+
+void BinMeshWriterCmd::removeSmoothMesh(MDagPath& dagPath)
+{
+	MStatus stat = MGlobal::deleteNode(dagPath.node());
+	if( !stat )
+	{
+		MGlobal::displayError(MString("removeSmoothMesh : could not delete smooth node: ") + dagPath.fullPathName());
+	}
 }
 
 bool BinMeshWriterCmd::exportBinMeshes()
@@ -62,13 +145,30 @@ bool BinMeshWriterCmd::exportBinMeshes()
 	
 	for( uint dagPathId = 0; dagPathId < this->exportObjects.length(); dagPathId++)
 	{
-		MeshWalker walker(this->exportObjects[dagPathId], this->doTransform);
+		MDagPath dagPath = this->exportObjects[dagPathId];
+		MString partialPathName = dagPath.partialPathName();
+
+		MDagPath origMeshPath = dagPath;
+
+		bool hasSmoothMesh = false;
+		if( this->useSmoothPreview )
+			hasSmoothMesh = checkSmoothMesh(dagPath);
+
+		MeshWalker walker(dagPath);
+
+		if( this->doTransform )
+			walker.setTransform();
+
+		if(hasSmoothMesh)
+			removeSmoothMesh(dagPath);
+
+
 		if( this->oneFilePerMesh )
 		{
 			// replace filename.binaraymesh with filename_objname.binarymesh
 			MString perFileMeshPath = pystring::replace(this->path.asChar(), ".binarymesh", "").c_str();
-			perFileMeshPath += makeGoodString(this->exportObjects[dagPathId].partialPathName()) + ".binarymesh";
-			logger.debug(MString("BinMeshWriterCmd::exportBinMeshes - exporting ") + this->exportObjects[dagPathId].partialPathName() + " to  " + perFileMeshPath);
+			perFileMeshPath += makeGoodString(partialPathName) + ".binarymesh";
+			logger.debug(MString("BinMeshWriterCmd::exportBinMeshes - exporting ") + partialPathName + " to  " + perFileMeshPath);
 			asf::GenericMeshFileWriter writer(perFileMeshPath.asChar());
 			writer.write(walker);
 			if( this->doProxy )
@@ -159,6 +259,13 @@ MStatus BinMeshWriterCmd::doIt( const MArgList& args)
 	{
 		logger.error("No mesh objects for export found.");
 		return MStatus::kFailure;
+	}
+
+	this->useSmoothPreview = false;
+	if( argData.isFlagSet("-useSmoothPreview", &stat))
+	{
+		argData.getFlagArgument("-useSmoothPreview", 0, this->useSmoothPreview);
+		logger.debug(MString("Use smooth preview: ") + this->useSmoothPreview);
 	}
 
 	// if we write all objects into one file, is is not useful to ignore the transformation, so we turn it on.
