@@ -253,7 +253,6 @@ bool RenderGlobals::getDefaultGlobals()
 	getString(MString("preRenderLayerMel"), fnRenderGlobals, this->preRenderLayerScript);
 	getString(MString("postRenderLayerMel"), fnRenderGlobals, this->postRenderLayerScript);
 
-
 	this->good = true;
 	return true;
 }

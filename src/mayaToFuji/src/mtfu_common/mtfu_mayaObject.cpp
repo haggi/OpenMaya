@@ -28,11 +28,14 @@ mtfu_ObjectAttributes::mtfu_ObjectAttributes(mtfu_ObjectAttributes *other)
 
 mtfu_MayaObject::mtfu_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
+	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	this->objectID = SI_BADID;
 }
 
 mtfu_MayaObject::mtfu_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	this->objectID = SI_BADID;
 }
 
 mtfu_MayaObject::~mtfu_MayaObject()

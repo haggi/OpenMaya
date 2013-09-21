@@ -11,6 +11,7 @@
 #include "../Fuji/Fuji.h"
 #include "utilities/MiniMap.h"
 
+using namespace FujiRender;
 
 class mtfu_MayaScene : public MayaScene
 {

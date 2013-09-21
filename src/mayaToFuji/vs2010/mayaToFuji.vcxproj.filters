@@ -143,12 +143,6 @@
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp">
       <Filter>common\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Fuji\FujiRendererController.cpp">
-      <Filter>Source Files\Fuji</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Fuji\FujiTileCallback.cpp">
-      <Filter>Source Files\Fuji</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\materialBase.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
@@ -178,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="..\src\mtfu_common\mtfu_swatchRenderer.cpp">
       <Filter>mtfu_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Fuji\FujiCallbacks.cpp">
+      <Filter>Source Files\Fuji</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,12 +256,6 @@
     <ClInclude Include="..\src\mtfu_common\mtfu_mayaObject.h">
       <Filter>mtfu_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Fuji\FujiRendererController.h">
-      <Filter>Source Files\Fuji</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Fuji\FujiTileCallback.h">
-      <Filter>Source Files\Fuji</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\materialBase.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
@@ -289,9 +280,12 @@
     <ClInclude Include="..\src\mtfu_common\mtfu_swatchRenderer.h">
       <Filter>mtfu_common</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Fuji\FujiCallbacks.h">
+      <Filter>Source Files\Fuji</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sourceCodeDocs\assemblyWorkflow.txt">
+    <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

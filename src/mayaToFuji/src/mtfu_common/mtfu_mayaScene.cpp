@@ -312,11 +312,6 @@ bool mtfu_MayaScene::renderImage()
 
 	this->renderGlobals->getImageName();
 
-	//this->mtfu_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
-
-	//if( this->renderGlobals->exportXMLFile)
-	//	this->mtfu_renderer.writeXML();
-
 	this->mtfu_renderer.render();
 
 	return true;

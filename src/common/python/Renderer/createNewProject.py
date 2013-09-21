@@ -14,9 +14,11 @@ def replaceStringInFile(fileName, rendererName, shortCut):
     for index, string in enumerate(content):
         if "@staticmethod" in string:
             continue
+
         string = string.replace(r'@Renderer', rendererName.capitalize()+"Renderer")
         string = string.replace(r'mt@_', shortCut + "_")    
         string = string.replace(r'@.', rendererName + ".")
+        string = string.replace(r'"@Globals"', '"' + rendererName.lower() + 'Globals"')
         string = string.replace(r'mayaTo@.', "mayaTo" + rendererName.capitalize())
         if "MayaTo@GlobalsName" in string:
             string = string.replace(r'@', rendererName.lower())

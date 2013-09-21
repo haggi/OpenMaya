@@ -763,9 +763,8 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\src\Fuji\FujiCallbacks.cpp" />
     <ClCompile Include="..\src\Fuji\FujiCamera.cpp" />
-    <ClCompile Include="..\src\Fuji\FujiRendererController.cpp" />
-    <ClCompile Include="..\src\Fuji\FujiTileCallback.cpp" />
     <ClCompile Include="..\src\Fuji\Fuji.cpp" />
     <ClCompile Include="..\src\Fuji\FujiGeometry.cpp" />
     <ClCompile Include="..\src\Fuji\FujiLights.cpp" />
@@ -808,9 +807,8 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
-    <ClInclude Include="..\src\Fuji\FujiRendererController.h" />
-    <ClInclude Include="..\src\Fuji\FujiTileCallback.h" />
     <ClInclude Include="..\src\Fuji\Fuji.h" />
+    <ClInclude Include="..\src\Fuji\FujiCallbacks.h" />
     <ClInclude Include="..\src\mayaToFuji.h" />
     <ClInclude Include="..\src\mtfu_common\mtfu_swatchRenderer.h" />
     <ClInclude Include="..\src\mtfu_common\mtfu_mayaObject.h" />
@@ -822,7 +820,7 @@
     <ClInclude Include="..\src\shaders\textureBase.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
+    <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

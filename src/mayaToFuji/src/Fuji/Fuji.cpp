@@ -1,140 +1,49 @@
 #include "Fuji.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
 
 #include "../mtfu_common/mtfu_renderGlobals.h"
+#include "../mtfu_common/mtfu_mayaObject.h"
+#include "../mtfu_common/mtfu_mayaScene.h"
+
 #include "src/SceneInterface.h"
+#include "FujiCallbacks.h"
 #include <stdio.h>
+
+#include <maya/MTransformationMatrix.h>
 
 static Logging logger;
 
-struct FrameBuffer {
-  float *buf;
-  int width;
-  int height;
-  int nchannels;
-};
-
+using namespace FujiRender;
 
 FujiRenderer::FujiRenderer()
-{}
+{
+	// define scene
+	SiOpenScene();
+}
 
 FujiRenderer::~FujiRenderer()
 {}
 
-static Interrupt frame_start(void *data, const struct FrameInfo *info)
+void FujiRenderer::setTransform(mtfu_MayaObject *obj)
 {
-  printf("# Callback Sample -- Frame Start\n");
-  return CALLBACK_CONTINUE;
-}
-static Interrupt frame_done(void *data, const struct FrameInfo *info)
-{
-	printf("# Callback Sample -- Frame Done\n");
-
-	int width = info->framebuffer->width;
-	int height = info->framebuffer->height;
-	int xmin = 0;
-	int xmax = width - 1;
-	int ymin = 0;
-	int ymax = height - 1;
-	
-	int numPixels = width * height;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-	float *buf = info->framebuffer->buf;
-
-	for( size_t yy = 0; yy < height; yy++)
+	if( obj->objectID == SI_BADID)
 	{
-		int ypos = yy * width * info->framebuffer->nchannels;
-
-		for( size_t xx = 0; xx < width; xx++)
-		{
-			int fbPos = ypos + xx * info->framebuffer->nchannels;
-			size_t pixelId = yy * width + xx;
-			
-			pixels[pixelId].r = buf[fbPos] * 255.0f; 
-			pixels[pixelId].g = buf[fbPos + 1] * 255.0f; 
-			pixels[pixelId].b = buf[fbPos + 2] * 255.0f; 
-			pixels[pixelId].a = buf[fbPos + 3] * 255.0f; 
-		}
+		logger.error(MString("Object ") + obj->shortName + " has bad ID");
+		return;
 	}
-	
-	EventQueue::Event e;
-	e.data = pixels;
-	e.type = EventQueue::Event::TILEDONE;
-	e.tile_xmin = xmin;
-	e.tile_xmax = xmax;
-	e.tile_ymin = ymin;
-	e.tile_ymax = ymax;
-	theRenderEventQueue()->push(e);
 
-
-	return CALLBACK_CONTINUE;
-}
-
-static int N = 0;
-static Interrupt tile_start(void *data, const struct TileInfo *info)
-{
-  printf("#   Callback Sample -- Tile Start\n");
-  return CALLBACK_CONTINUE;
-}
-static Interrupt interrupt_in_the_middle(void *data)
-{
-  //int *n = (int *) data;
-  //if (*n == 320 * 240 * 3 * 3 / 2)
-  //  return CALLBACK_INTERRUPT;
-  //(*n)++;
-  return CALLBACK_CONTINUE;
-}
-
-static Interrupt tile_done(void *data, const struct TileInfo *info)
-{
-	printf("#   Callback Sample -- Tile Done\n");
-	logger.debug(MString("Tile info - region: xmin: ") + info->tile_region.xmin + " xmax: " + info->tile_region.xmax + " ymin: " + info->tile_region.ymin + " ymax: " + info->tile_region.ymax);
-
-	int xmin = info->tile_region.xmin;
-	int xmax = info->tile_region.xmax;
-	int ymin = info->tile_region.ymin;
-	int ymax = info->tile_region.ymax;
-
-	int tileSizeX = xmax - xmin, tileSizeY = ymax - ymin;
-	int numPixels = tileSizeX * tileSizeY;
-
-	FrameBuffer *fb = (FrameBuffer *)info->framebuffer;
-	float *buf = fb->buf;
-	logger.debug(MString("Framebuffer: width: ") + fb->width + " height: " + fb->height + " buf: " + (long)fb->buf + " nchannels: " + fb->nchannels);
-	
-	int ystart = info->tile_region.ymin * fb->width * fb->nchannels;
-
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-	for( size_t yy = 0; yy < tileSizeY; yy++)
-	{
-		int ypos = ystart + yy * fb->width * fb->nchannels + xmin * fb->nchannels;
-		for( size_t xx = 0; xx < tileSizeX; xx++)
-		{
-			int fbPos = ypos + xx * fb->nchannels;
-			size_t pixelId = yy * tileSizeX + xx;
-			
-			pixels[pixelId].r = buf[fbPos] * 255.0f; 
-			pixels[pixelId].g = buf[fbPos + 1] * 255.0f; 
-			pixels[pixelId].b = buf[fbPos + 2] * 255.0f; 
-			pixels[pixelId].a = buf[fbPos + 3] * 255.0f; 
-			//pixels[pixelId].r = 255.0f; 
-			//pixels[pixelId].g = 255.0f; 
-			//pixels[pixelId].b = 0.0f; 
-			//pixels[pixelId].a = 0.0f; 
-		}
-	}
-	
-	EventQueue::Event e;
-	e.data = pixels;
-	e.type = EventQueue::Event::TILEDONE;
-	e.tile_xmin = xmin;
-	e.tile_xmax = xmax - 1;
-	e.tile_ymin = ymin;
-	e.tile_ymax = ymax - 1;
-	theRenderEventQueue()->push(e);
-
-  return CALLBACK_CONTINUE;
+	MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
+	double rot[3];
+	double scale[3];
+	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+	objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
+	MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
+	objTMatrix.getScale(scale, MSpace::kWorld);
+	SiSetProperty3(obj->objectID, "translate", pos[0], pos[1], pos[2]);
+	SiSetProperty3(obj->objectID, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
+	SiSetProperty3(obj->objectID, "scale", scale[0], scale[1], scale[2]);
 }
 
 void FujiRenderer::render()
@@ -148,84 +57,134 @@ void FujiRenderer::render()
 	ID object;
 	ID shader;
 	ID light;
-	ID mesh;
+
+	logger.info("------- Starting fujiyama rendering --------");
 
 	try{
-		SiOpenScene();
-	  /* Plugin */
-	  if (SiOpenPlugin("PlasticShader")) {
-		/* TODO error handling */
-		/*
-		fprintf(stderr, "Could not open shader: %s\n", SiGetErrorMessage(SiGetErrorNo()));
-		*/
-	  }
+		//SiOpenScene();
 
-	  /* Camera */
-	  camera = SiNewCamera("PerspectiveCamera");
-	  if (camera == SI_BADID) {
-		fprintf(stderr, "Could not allocate camera\n");
-		throw("Could not allocate camera");
-	  }
-	  SiSetProperty3(camera, "translate", 3, 3, 3);
-	  SiSetProperty3(camera, "rotate", -35.264389682754654, 45, 0);
+		/* Plugin */
+		if (SiOpenPlugin("PlasticShader")) 
+		{
+			/* TODO error handling */
+			/*
+			fprintf(stderr, "Could not open shader: %s\n", SiGetErrorMessage(SiGetErrorNo()));
+			*/
+		}
 
-	  /* Light */
-	  light = SiNewLight(SI_POINT_LIGHT);
-	  if (light  == SI_BADID) {
-		fprintf(stderr, "Could not allocate light\n");
-		throw("Could not allocate light");
-	  }
-	  SiSetProperty3(light, "translate", 1, 12, 3);
+		/* Camera */
+		camera = SiNewCamera("PerspectiveCamera");
+		if (camera == SI_BADID) 
+		{
+			fprintf(stderr, "Could not allocate camera\n");
+			throw("Could not allocate camera");
+		}
+		// get the first renderable camera
+		MTransformationMatrix objTMatrix(this->mtfu_scene->camList[0]->dagPath.inclusiveMatrix());
+		double rot[3];
+		MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+		objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
+		MVector campos = objTMatrix.getTranslation(MSpace::kWorld);
+		SiSetProperty3(camera, "translate", campos[0], campos[1], campos[2]);
+		SiSetProperty3(camera, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
 
-	  /* Shader */
-	  shader = SiNewShader("PlasticShader");
-	  if (shader == SI_BADID) {
-		fprintf(stderr, "Could not create shader: PlasticShader\n");
-		throw("Could not create shader: PlasticShader");
-	  }
+		/* Light */
+		if( this->mtfu_scene->lightList.size() == 0)
+		{
+			logger.warning(MString("No light in scene, creating a default light."));
+			light = SiNewLight(SI_POINT_LIGHT);
+			if (light  == SI_BADID) 
+			{
+				fprintf(stderr, "Could not allocate light\n");
+				throw("Could not allocate light");
+			}
+			SiSetProperty3(light, "translate", campos[0] - 4, campos[1] + 4, campos[2]);
+		}else{
+			defineLights();
+		}
 
-	  /* Mesh and Accelerator */
-	  mesh = SiNewMesh("C:/Users/haggi/coding/fujiyama/visual_studio/express_2012/Fujiyama-Renderer-for-Win/x64/Debug/cube.mesh");
-	  if (mesh == SI_BADID) {
-		/* TODO error handling */
-		printf("Could not create mesh:\n");
-		throw("Could not create mesh");
-	  }
+		/* Shader */
+		shader = SiNewShader("PlasticShader");
+		if (shader == SI_BADID) 
+		{
+			fprintf(stderr, "Could not create shader: PlasticShader\n");
+			throw("Could not create shader: PlasticShader");
+		}
 
-	  /* ObjectInstance */
-	  object = SiNewObjectInstance(mesh);
-	  if (object == SI_BADID) {
-		fprintf(stderr, "Could not create object instance\n");
-		throw("Could not create object instance");
-	  }
-	  SiSetProperty3(object, "rotate", 0, 10, 0);
-	  SiAssignShader(object, shader);
+		for( uint objId = 0; objId < this->mtfu_scene->objectList.size(); objId++)
+		{
+			mtfu_MayaObject *obj = (mtfu_MayaObject *)this->mtfu_scene->objectList[objId];
+			ID mesh = SI_BADID;
+			if( obj->exportFileNames.size() > 0)
+			{
 
-	  /* FrameBuffer */
-	  framebuffer = SiNewFrameBuffer("rgba");
-	  if (framebuffer == SI_BADID) {
-		fprintf(stderr, "Could not allocate framebuffer\n");
-		throw("Could not allocate framebuffer");
-	  }
+				mesh = SiNewMesh(obj->exportFileNames[0].asChar());
+				if (mesh == SI_BADID) 
+				{
+					logger.error(MString("Could not create mesh from file: ") + obj->exportFileNames[0]);
+					continue;
+				}
 
-	  /* Renderer */
-	  renderer = SiNewRenderer();
-	  if (renderer == SI_BADID) {
+				if( mesh == SI_BADID)
+					continue;
+				obj->objectID = mesh;
+			}else{
+				if( obj->origObject != NULL )
+				{
+					mtfu_MayaObject *origObj = (mtfu_MayaObject *)obj->origObject;
+					mesh = origObj->objectID;
+					if( mesh == SI_BADID)
+						continue;					
+				}else{
+					continue;
+				}
+			};
+
+			object = SiNewObjectInstance(mesh);
+			if (object == SI_BADID) 
+			{
+				throw("Could not create object instance");
+			}
+
+			MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
+			double rot[3];
+			double scale[3];
+			MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+			objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
+			MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
+			objTMatrix.getScale(scale, MSpace::kWorld);
+			SiSetProperty3(object, "translate", pos[0], pos[1], pos[2]);
+			SiSetProperty3(object, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
+			SiSetProperty3(object, "scale", scale[0], scale[1], scale[2]);
+			SiAssignShader(object, shader);
+		}
+		/* FrameBuffer */
+
+		framebuffer = SiNewFrameBuffer("rgba");
+		if (framebuffer == SI_BADID) 
+		{
+			fprintf(stderr, "Could not allocate framebuffer\n");
+			throw("Could not allocate framebuffer");
+		}
+
+		/* Renderer */
+		renderer = SiNewRenderer();
+		if (renderer == SI_BADID) {
 		fprintf(stderr, "Could not allocate renderer\n");
 		throw("Could not allocate renderer");
-	  }
-	  SiSetProperty2(renderer, "resolution", W, H);
-	  SiAssignCamera(renderer, camera);
-	  SiAssignFrameBuffer(renderer, framebuffer);
+		}
 
-	  SiSetTileReportCallback(renderer, &N, tile_start, interrupt_in_the_middle, tile_done);
-	  SiSetFrameReportCallback(renderer, NULL, frame_start, frame_done);
-	  /* Render scene */
-	  SiRenderScene(renderer);
-	  SiSaveFrameBuffer(framebuffer, "cube.fb");
-	  SiCloseScene();
+		SiSetProperty2(renderer, "resolution", W, H);
+		SiAssignCamera(renderer, camera);
+		SiAssignFrameBuffer(renderer, framebuffer);
 
-		logger.info("------- Starting fujiyama rendering --------");
+		callbacks.setCallbacks(renderer);
+
+		/* Render scene */
+		SiRenderScene(renderer);
+		SiSaveFrameBuffer(framebuffer, "cube.fb");
+		SiCloseScene();
+
 	}catch(char *errorMsg){
 		logger.error(errorMsg);
 	}
@@ -237,9 +196,19 @@ void FujiRenderer::render()
 }
 
 void FujiRenderer::initializeRenderer()
-{}
+{
+
+}
+
 void FujiRenderer::updateShape(MayaObject *obj)
-{}
+{
+	if( !obj->geometryShapeSupported())
+		return;
+	
+	if( obj->mobject.hasFn(MFn::kMesh ))
+		this->updateGeometry(obj);
+}
+
 void FujiRenderer::updateTransform(MayaObject *obj)
 {}
 void FujiRenderer::IPRUpdateEntities()
@@ -247,5 +216,8 @@ void FujiRenderer::IPRUpdateEntities()
 void FujiRenderer::reinitializeIPRRendering()
 {}
 void FujiRenderer::abortRendering()
-{}
+{
+	logger.info("User interrupt reuqested.");
+	callbacks.stopRendering();
+}
 

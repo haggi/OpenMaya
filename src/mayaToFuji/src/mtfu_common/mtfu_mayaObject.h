@@ -2,6 +2,7 @@
 #define mtfu_MAYA_OBJECT_H
 
 #include <maya/MMatrix.h>
+#include "src/SceneInterface.h"
 
 #include "mayaObject.h"
 
@@ -23,6 +24,8 @@ public:
 	mtfu_MayaObject(MObject&);
 	mtfu_MayaObject(MDagPath&);
 	~mtfu_MayaObject();
+
+	ID objectID;
 
 	virtual bool geometryShapeSupported();
 	virtual mtfu_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);

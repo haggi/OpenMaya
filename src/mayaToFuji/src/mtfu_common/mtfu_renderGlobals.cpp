@@ -19,10 +19,10 @@ MString mtfu_RenderGlobals::getImageExt()
 
 bool mtfu_RenderGlobals::getMtFujiGlobals()
 {
-	logger.debug("mtfu_RenderGlobals::getMtFujiGlobals");
+	logger.debug("mtfu_RenderGlobals::getFujiGlobals");
 
 	MSelectionList FujiGlobalsList;
-	FujiGlobalsList.add("FujiGlobals");
+	FujiGlobalsList.add("fujiGlobals");
 
 	if( FujiGlobalsList.length() == 0 )
 	{
@@ -84,11 +84,11 @@ bool mtfu_RenderGlobals::getMtFujiGlobals()
 		if(!getInt(MString("maxSamples"), FujiGlobals, this->maxSamples))
 			throw("problem reading FujiGlobals.maxSamples");
 
-		if(!getInt(MString("mbtype"), FujiGlobals, this->mbtype))
-			throw("problem reading FujiGlobals.mbtype");
+		//if(!getInt(MString("mbtype"), FujiGlobals, this->mbtype))
+		//	throw("problem reading FujiGlobals.mbtype");
 
-		if(!getInt(MString("bitdepth"), FujiGlobals, this->bitdepth))
-			throw("problem reading FujiGlobals.bitdepth");
+		//if(!getInt(MString("bitdepth"), FujiGlobals, this->bitdepth))
+		//	throw("problem reading FujiGlobals.bitdepth");
 	
 		if(!getInt(MString("translatorVerbosity"), FujiGlobals, this->translatorVerbosity))
 			throw("problem reading FujiGlobals.translatorVerbosity");
@@ -102,20 +102,17 @@ bool mtfu_RenderGlobals::getMtFujiGlobals()
 		if(!getInt(MString("threads"), FujiGlobals, this->threads))
 			throw("problem reading FujiGlobals.threads");
 
-		if(!getInt(MString("geotimesamples"), FujiGlobals, this->geotimesamples))
-			throw("problem reading FujiGlobals.geotimesamples");
+		//if(!getInt(MString("geotimesamples"), FujiGlobals, this->geotimesamples))
+		//	throw("problem reading FujiGlobals.geotimesamples");
 
-		if(!getInt(MString("geotimesamples"), FujiGlobals, this->geotimesamples))
-			throw("problem reading FujiGlobals.geotimesamples");
-
-		if(!getInt(MString("xftimesamples"), FujiGlobals, this->xftimesamples))
-			throw("problem reading FujiGlobals.xftimesamples");
+		//if(!getInt(MString("xftimesamples"), FujiGlobals, this->xftimesamples))
+		//	throw("problem reading FujiGlobals.xftimesamples");
 
 		if(!getInt(MString("maxTraceDepth"), FujiGlobals, this->maxTraceDepth))
 			throw("problem reading FujiGlobals.maxTraceDepth");
 
-		if(!getBool(MString("createDefaultLight"), FujiGlobals, this->createDefaultLight))
-			throw("problem reading FujiGlobals.createDefaultLight");
+		//if(!getBool(MString("createDefaultLight"), FujiGlobals, this->createDefaultLight))
+		//	throw("problem reading FujiGlobals.createDefaultLight");
 
 		if(!getBool(MString("detectShapeDeform"), FujiGlobals, this->detectShapeDeform))
 			throw("problem reading FujiGlobals.detectShapeDeform");
@@ -138,8 +135,8 @@ bool mtfu_RenderGlobals::getMtFujiGlobals()
 		if(!getString(MString("imageName"), FujiGlobals, this->imageName))
 			throw("problem reading FujiGlobals.imageName");
 
-		if(!getBool(MString("adaptiveSampling"), FujiGlobals, this->adaptiveSampling))
-			throw("problem reading FujiGlobals.adaptiveSampling");
+		//if(!getBool(MString("adaptiveSampling"), FujiGlobals, this->adaptiveSampling))
+		//	throw("problem reading FujiGlobals.adaptiveSampling");
 
 		if(!getBool(MString("doMotionBlur"), FujiGlobals, this->doMb))
 			throw("problem reading FujiGlobals.doMotionBlur");
