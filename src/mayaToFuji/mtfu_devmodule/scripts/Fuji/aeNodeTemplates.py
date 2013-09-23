@@ -33,6 +33,13 @@ class AEFujiNodeTemplate(BaseTemplate):
             self.beginLayout("Fuji" ,collapse=1)
             self.addControl("someFancyMeshAttribute", label="A very cool Mesh Attribute")
             self.endLayout()
+
+        if self.thisNode.type() == "areaLight":
+            log.debug("AEFujiNodeTemplate:build areaLight AE")            
+            self.beginLayout("Fuji" ,collapse=1)
+            self.addControl("sample_count", label="Sample Count")
+            self.addControl("double_sided", label="Double Sided")
+            self.endLayout()
     
     def buildBody(self, nodeName):
         self.buildFujiTemplates(nodeName)

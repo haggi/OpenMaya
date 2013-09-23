@@ -176,6 +176,9 @@
     <ClCompile Include="..\src\Fuji\FujiCallbacks.cpp">
       <Filter>Source Files\Fuji</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Fuji\FujiImgTools.cpp">
+      <Filter>Source Files\Fuji</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -281,6 +284,9 @@
       <Filter>mtfu_common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Fuji\FujiCallbacks.h">
+      <Filter>Source Files\Fuji</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Fuji\FujiImgTools.h">
       <Filter>Source Files\Fuji</Filter>
     </ClInclude>
   </ItemGroup>

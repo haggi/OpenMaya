@@ -487,6 +487,7 @@ global proc updateMayaImageFormatControl()
         return self.imageFormatCtrl
 
     def updateImageFormatControls(self):
+                
         log.debug("updateImageFormatControls()")
         self.createGlobalsNode()   
         selectedItem = self.renderGlobalsNode.imageFormat.get()

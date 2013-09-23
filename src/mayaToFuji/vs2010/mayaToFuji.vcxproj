@@ -767,6 +767,7 @@
     <ClCompile Include="..\src\Fuji\FujiCamera.cpp" />
     <ClCompile Include="..\src\Fuji\Fuji.cpp" />
     <ClCompile Include="..\src\Fuji\FujiGeometry.cpp" />
+    <ClCompile Include="..\src\Fuji\FujiImgTools.cpp" />
     <ClCompile Include="..\src\Fuji\FujiLights.cpp" />
     <ClCompile Include="..\src\Fuji\FujiShaders.cpp" />
     <ClCompile Include="..\src\Fuji\FujiUtils.cpp" />
@@ -809,6 +810,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\src\Fuji\Fuji.h" />
     <ClInclude Include="..\src\Fuji\FujiCallbacks.h" />
+    <ClInclude Include="..\src\Fuji\FujiImgTools.h" />
     <ClInclude Include="..\src\mayaToFuji.h" />
     <ClInclude Include="..\src\mtfu_common\mtfu_swatchRenderer.h" />
     <ClInclude Include="..\src\mtfu_common\mtfu_mayaObject.h" />

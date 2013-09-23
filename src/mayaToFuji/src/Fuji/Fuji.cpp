@@ -2,6 +2,7 @@
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "utilities/pystring.h"
 
 #include "../mtfu_common/mtfu_renderGlobals.h"
 #include "../mtfu_common/mtfu_mayaObject.h"
@@ -12,6 +13,9 @@
 #include <stdio.h>
 
 #include <maya/MTransformationMatrix.h>
+#include <maya/MEulerRotation.h>
+
+#include "FujiImgTools.h"
 
 static Logging logger;
 
@@ -34,9 +38,25 @@ void FujiRenderer::setTransform(mtfu_MayaObject *obj)
 		return;
 	}
 
-	MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
+
+	MMatrix rotMatrix;
+	rotMatrix.setToIdentity();
+
+	if( obj->mobject.hasFn(MFn::kAreaLight))
+	{
+		MTransformationMatrix tm(rotMatrix);
+		double areaScale[3] = {2,2,2};
+		tm.setScale(areaScale, MSpace::kWorld);
+		MEulerRotation e(-90.0, 0.0, 0.0);
+		tm.rotateBy(e, MSpace::kWorld);
+		rotMatrix = tm.asMatrix();
+	}
+	
+	MMatrix transformMatrix = rotMatrix * obj->dagPath.inclusiveMatrix();
+	MTransformationMatrix objTMatrix(transformMatrix);
 	double rot[3];
 	double scale[3];
+
 	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
 	objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
 	MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
@@ -181,8 +201,12 @@ void FujiRenderer::render()
 		callbacks.setCallbacks(renderer);
 
 		/* Render scene */
+		MString imageOutputFile = this->mtfu_renderGlobals->imageOutputFile;
+		FujiImgTools::ImgTools imgTools;
+		MString fbFile = imageOutputFile + ".fb";
 		SiRenderScene(renderer);
-		SiSaveFrameBuffer(framebuffer, "cube.fb");
+		SiSaveFrameBuffer(framebuffer, fbFile.asChar());
+		imgTools.FrameBufferToExr(fbFile);
 		SiCloseScene();
 
 	}catch(char *errorMsg){

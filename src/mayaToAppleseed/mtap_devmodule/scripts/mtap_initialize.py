@@ -8,6 +8,7 @@ import optimizeTextures
 import Appleseed.aeNodeTemplates as aet
 import Appleseed.appleseedMenu as appleseedMenu
 import path
+import tempfile
 
 reload(Renderer)
 
@@ -453,7 +454,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
-        self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
+        try:
+            self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
+        except:
+            self.renderGlobalsNode.imagePath.set(pm.workspace.path + 'images')
+            
         imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
         # check for mayabatch name like sceneName_number 
         numberPart = imageName.split("__")[-1]
@@ -522,7 +527,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
         if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
-            optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+            try:
+                optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+            except:
+                optimizedPath = path.path(tempfile.gettempdir()) / "optimizedTextures"
             if not os.path.exists(optimizedPath):
                 optimizedPath.makedirs()
             self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))

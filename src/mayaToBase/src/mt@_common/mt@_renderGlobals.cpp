@@ -19,7 +19,7 @@ MString mt@_RenderGlobals::getImageExt()
 
 bool mt@_RenderGlobals::getMt@Globals()
 {
-	logger.debug("mt@_RenderGlobals::getMt@Globals");
+	logger.debug("mt@_RenderGlobals::get@Globals");
 
 	MSelectionList @GlobalsList;
 	@GlobalsList.add("@Globals");

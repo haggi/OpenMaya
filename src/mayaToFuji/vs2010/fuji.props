@@ -3,20 +3,25 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <FUJIYAMA_ROOT>C:\Users\haggi\coding\fujiyama</FUJIYAMA_ROOT>
+    <ILM_ROOT>C:\Users\haggi\coding\OpenExr\Deploy</ILM_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);$(ILM_ROOT)/include;$(ILM_ROOT)/include/config.windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)/visual_studio\express_2012\Fujiyama-Renderer-for-Win\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libscene.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)/visual_studio\express_2012\Fujiyama-Renderer-for-Win\x64\Debug;$(ILM_ROOT)\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libscene.lib;IlmImf.lib;Half.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="FUJIYAMA_ROOT">
       <Value>$(FUJIYAMA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILM_ROOT">
+      <Value>$(ILM_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

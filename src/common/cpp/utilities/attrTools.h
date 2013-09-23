@@ -42,6 +42,10 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MColor& value);
 
 bool getColor(MString& plugName, MFnDependencyNode& dn, MString& value);
 
+bool getColor(const char *plugName, MFnDependencyNode& dn, MColor& value);
+
+bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value);
+
 bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);

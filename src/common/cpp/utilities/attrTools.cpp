@@ -225,6 +225,11 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MColor& value)
 	return result;
 }
 
+bool getColor(const char *plugName, MFnDependencyNode& dn, MColor& value)
+{
+	return getColor(MString(plugName), dn, value);
+}
+
 bool getColor(MString& plugName, MFnDependencyNode& dn, MString& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;
@@ -240,9 +245,14 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MString& value)
 	plug = dn.findPlug(plugName + "B", &stat);
 	if( !stat ) return false;
 	b = plug.asFloat(ctx, &stat);
-	value  = MString("") + r + " " + g + " " + b;
+	value = MString("") + r + " " + g + " " + b;
 	result = true;
 	return result;
+}
+
+bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value)
+{
+	return getColor(MString(plugName), dn, value);
 }
 
 bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value)

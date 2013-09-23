@@ -197,7 +197,9 @@ class FujiRenderer(Renderer.MayaToRenderer):
         # mesh
         pm.addExtension(nodeType="mesh", longName="someFancyMeshAttribute", attributeType="bool", defaultValue = False)
 
-        # 
+        # lights
+        pm.addExtension(nodeType="areaLight", longName="sample_count", attributeType="long", defaultValue = 8)
+        pm.addExtension(nodeType="areaLight", longName="double_sided", attributeType="bool", defaultValue = False)
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)

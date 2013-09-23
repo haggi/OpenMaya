@@ -426,6 +426,7 @@ void mtap_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 
 void mtap_MayaScene::stopRendering()
 {
+	logger.debug(MString("mtap_MayaScene::stopRendering()"));
 	this->mtap_renderer.mtap_controller.status = asr::IRendererController::AbortRendering;
 }
 

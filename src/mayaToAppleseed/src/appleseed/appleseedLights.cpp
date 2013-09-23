@@ -96,7 +96,7 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 	float intensity = 1.0f;
 	getFloat(MString("intensity"), lightFn, intensity);
 	intensity *= 100 * this->renderGlobals->sceneScale;
-		
+
 	// multiplier 30 was the default value in the example
 	MString colorAttribute = this->defineColor(lightFn, MString("color"), "srgb", 1.0f);
 
@@ -114,15 +114,6 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 		penumbraAngle = (float)RadToDeg(penumbraAngle);
 		float inner_angle = coneAngle;
 		float outer_angle = coneAngle + penumbraAngle;
-			
-		// spot light is pointing in -z, appleseeds spot light is pointing in y, at least until next update...
-		// I create a rotation matrix for this case.
-		//MMatrix rotMatrix;
-		//rotMatrix.setToIdentity();
-		//MTransformationMatrix tm(rotMatrix);
-		//MEulerRotation e(-90.0, 0.0, 0.0);
-		//tm.rotateBy(e, MSpace::kWorld);
-		//rotMatrix = tm.asMatrix();
 
 		if( !update )
 		{
