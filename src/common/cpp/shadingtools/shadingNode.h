@@ -2,66 +2,22 @@
 #define MT_SHADING_TOOLS_SHADINGNODE_H
 
 #include <maya/MObject.h>
-#include <maya/MString.h>
 #include <maya/MPlug.h>
-#include <maya/MColor.h>
-
+#include <maya/MObjectArray.h>
+#include <maya/MString.h>
+#include <string>
 #include <vector>
 
-class ColorEntryElement
+struct ShaderAttribute
 {
-public:
-	double position;
-	MColor color;
-	MString colorString;
-
-	// these are for sorting the mb steps
-	bool operator>(const ColorEntryElement& other) const 
+	ShaderAttribute()
 	{
-		return ( position > other.position );
-	};
-	bool operator<(const ColorEntryElement& other) const 
-	{
-		return( position < other.position );
-	};
-	ColorEntryElement(void){};
-};
-
-class RampEntryElement
-{
-public:
-	double position;
-	MColor colorValue;
-	float floatValue;
-	MString positionString;
-	MString colorValueString;
-	MString floatValueString;
-
-	// these are for sorting the mb steps
-	bool operator>(const RampEntryElement& other) const 
-	{
-		return ( position > other.position );
-	};
-	bool operator<(const RampEntryElement& other) const 
-	{
-		return( position < other.position );
-	};
-	RampEntryElement(void){};
-};
-
-class ShadingNode;
-
-class ShadingPlug
-{
-public:
-	MString name; // color1, blend, diffuseColor...
-	MPlug mplug;
-	MString plugType; // int, colorEntryList, float
-	ShadingNode *parentNode;
-	ShadingPlug();
-	ShadingPlug(MString& name);
-	ShadingPlug(MString& name, MString& type);
-	~ShadingPlug();
+		connected = false;
+	}
+	std::string name;
+	std::string type;
+	bool connected;
+	MObject connectedMObject;
 };
 
 #define SPLUG_LIST std::vector<ShadingPlug>
@@ -69,32 +25,28 @@ public:
 class ShadingNode
 {
 public:
-	bool hasConnections;
-	MString typeName; //kLambert, kMultiplyDivide
+	enum STATE{
+		NONE = 0,
+		INVALID = 1,
+		VALID =2
+	};
+
+	MString typeName; //Lambert, MultiplyDivide
 	MString fullName; //myLambert1, mdivi_number_123
-	MString internalName; // Lambert, MultiplyDivide
-
-	//std::vector<ShadingNode *> outShadingNodes;
-	//void *userPointer;
-
-	//SPLUG_LIST externalPlugs;
-	//SPLUG_LIST geoPlugs;
-	//SPLUG_LIST inPlugs;
-	//SPLUG_LIST outPlugs;
+	MObject mobject;
+	STATE nodeState;
+	std::vector<ShaderAttribute> inputAttributes;
+	std::vector<ShaderAttribute> outputAttributes;
 
 	ShadingNode(MObject& object);
-	ShadingNode(ShadingNode& other);
+	ShadingNode(const ShadingNode &other);
 	ShadingNode();
 	~ShadingNode();
 
+	void setMObject(MObject object);
 	void init(void);
-	//void addInPlug(MString plugName, MString plugType);
-	//void addGeoPlug(MString plugName, MString plugType);
-	//void addOutPlug(MString plugName, MString plugType);
-	//void updateData();
-	virtual bool supported(){return true;};
-
-	MObject mobject;
+	void getConnectedInputObjects(MObjectArray& objectArray);
+	void getConnectedOutputObjects(MObjectArray& objectArray);
 private:
 };
 

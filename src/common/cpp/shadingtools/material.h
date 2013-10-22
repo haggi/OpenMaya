@@ -10,6 +10,7 @@
 		- volume shader
 		- shadow shader
 		- ...
+
 	The main purpose of a material is the organisation and collection of shader nodes and 
 	the possiblity to translate them in another form, may it be an text shader source file for
 	Renderman or for mantra or into a shading node network for an node based renderer.
@@ -19,14 +20,62 @@
 	of shadings nodes.
 
 	As soon as a Material node is defined, it parses the connected shaders based on the maya shading group connections.
+	During the parsing of the network care is taken that already existing nodes are reused. This makes sure that we will have no
+	infinite loops. Sometimes we have such loops in shading networks and these would cause an endless loop.
 
-	Every Shader could need some external attributes. An external attribute comes from an connection to a non supported 
-	node type. e.g. if the color is connected to a non supported animcurve, this attribute is placed in the shader parameter list
-	and can be updated every time the shader is exported. The rest does not need to be exported for every frame.
+	Nodes can have a lot of connections, some of them can be useful others not. e.g. a color can be animated and has a connection to a anim curve.
+	Not all nodes and connections are valid for all renderers. e.g. some renderers can map a color, but not the single components. This means a
+	connection in maya to a single component will not be valid and instead of converting the whole graph, the current value of the color is used.
+	This connection can be time dependent and because we can have a lot of these connections, it is recommended to translate the whole shading network 
+	for every frame, or at least update the elements and translated nodes.
 
-	Every shader can use some geometric attributes. e.g. the "uv" coordinates. If a shading node has an geoinput attribute, this will
-	be placed in the geometryParamsList so it can be exposed in the shader definition. Same with perParticle attributes like rgbPP or
-	opacityPP. These are defined in the particle geometry. If the parameter is connected in the particleSampler, the attribute will be exposed.
+	In general we have two possibilities of the shading workflow: A monolithic shader or a node based shading network.
+
+	Monolithic shaders are shaders generated of a maya material and are compiled into one final shading node.
+
+	Shading networks consist of multiple nodes which will be connected via API (or exported scene file) during translation.
+
+	Both methods can have pros and cons. I prefer the node based approach because it is easier to implement and no external compiler has to be used.
+	Either workflow will work with the parsed shader list. The result of the shader list is a MObject or a ShaderNode array. This array is exported,
+	the very last nodes first.
+
+	Let have a look at the following simple shading network:
+
+			   place2dF \
+						 \
+						 fileNode --> lambert.color --> surfaceShader	
+						 / 
+	place2dR -->ramp    /
+
+	It will be translated into this list:
+
+	place2dF
+	place3dR
+	ramp
+	fileNode
+	lambert
+	
+	If a system does not support a ramp the result will look like this because the list creation is cancelled as soon as the ramp is reached:
+
+	place2dF
+	fileNode
+	lambert
+
+	In a node based system the single nodes will be translated to their equivalent nodes in the renderer API. This is very renderer specific and should
+	take place in a derived class.
+
+	In a monolithic approach, every nodes will be translated in its source code and will be included into the final shader source code. It is a bit complicated,
+	but much more flexible.
+
+	To be able to know which connections and nodes are supported by the renderers, every renderer needs its own list of shaders and connections. This list will be
+	parsed by the validConnection() and validNode() methods.
+
+	Of course the amount of connections is high and we have a lot of nodes. Not all nodes are supported by a 3rd party renderer and not all connections on supported
+	nodes are valid. To check if a node or a connection is supported, I read an external shader definition file. These are defined in the shaderDefs.h header file.
+	One reason why we use an external file instead of e.g. a builtin header file, is that in case of a monolitic approach, where all shaders are defined via code snippets
+	and will be compiled by a shader compiler, it can be done completly without recompiling the whole pluign. You only have to extend the shader definitions file, the 
+	corresponding shading code and it will work automatically.
+
 */
 
 #include <maya/MDagPath.h>
@@ -37,7 +86,7 @@
 #include <vector>
 #include "shadingNode.h"
 
-#define SNODE_LIST std::vector<ShadingNode *>
+#define SNODE_LIST std::vector<ShadingNode>
 
 class Material;
 static std::vector<Material *> ShadingGroups;
@@ -46,8 +95,6 @@ class ShadingNetwork
 {
 public:
 	SNODE_LIST shaderList;
-	SPLUG_LIST externalPlugList;
-	SPLUG_LIST geometryParamsList;
 };
 
 class Material
@@ -60,24 +107,25 @@ public:
 	ShadingNetwork shadowShaderNet;
 	ShadingNetwork lightShaderNet;
 	MObject shadingEngineNode;
-
 	MString materialName;
-	void printNodes(ShadingNetwork& network);
-	bool isLight(MObject& obj);	
+
 	Material();
 	Material(MObject& shadingEngine);
 	~Material();
+
+	void printNodes(ShadingNetwork& network);
+	bool isLight(MObject& obj);	
 	void parseNetworks();
 	
 private:
 
-	void parseNetwork(MObject& shaderNode, ShadingNetwork& network, ShadingNode **sn);
-	bool alreadyDefined(ShadingNode *sn, ShadingNetwork& network);
-	void checkNode(ShadingNode *sn);
-	void checkNodeList(ShadingNetwork& network);
-	virtual bool shadingNodeSupported(MObject& snode) = 0;
-	virtual ShadingNode *shadingNodeCreator() = 0;
-	virtual ShadingNode *shadingNodeCreator(MObject& snode) = 0;
+	void parseNetwork(MObject& shaderNode, ShadingNetwork& network);
+	bool alreadyDefined(ShadingNode& sn, ShadingNetwork& network);
+	void checkNodeList(MObjectArray& nodeList);
+	bool hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest);
+	//virtual bool shadingNodeSupported(MObject& snode) = 0;
+	//virtual ShadingNode *shadingNodeCreator() = 0;
+	//virtual ShadingNode *shadingNodeCreator(MObject& snode) = 0;
 };
 
 #endif

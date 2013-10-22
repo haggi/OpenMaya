@@ -7,6 +7,7 @@ import os
 import optimizeTextures
 import Appleseed.aeNodeTemplates as aet
 import Appleseed.appleseedMenu as appleseedMenu
+import Appleseed.appleseedShaderTools as shaderTools
 import path
 import tempfile
 
@@ -449,6 +450,20 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_method", attributeType="enum", enumName="none:normal:incoming_direction:outgoing_direction", defaultValue=0)
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_distance", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="mesh", longName="mtap_standin_path", dataType="string", usedAsFilename=True)
+        
+        # shading group
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_bsdf", attributeType="message")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_surfaceShader", attributeType="message")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_edf", attributeType="message")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_alphaMap", usedAsColor=True, attributeType="float3")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_alphaMapR",attributeType = "float", parent="mtap_mat_alphaMap")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_alphaMapG",attributeType = "float", parent="mtap_mat_alphaMap")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_alphaMapB",attributeType = "float", parent="mtap_mat_alphaMap")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_normalMap", usedAsColor=True, attributeType="float3")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_normalMapR",attributeType = "float", parent="mtap_mat_normalMap")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_normalMapG",attributeType = "float", parent="mtap_mat_normalMap")
+#        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_normalMapB",attributeType = "float", parent="mtap_mat_normalMap")
+
 
         # 
         
@@ -537,9 +552,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
         #craete optimized exr textures
         optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
-
+        shaderTools.createAutoShaderNodes()
+        
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()
+        shaderTools.removeAutoShaderNodes()
 
     def afterGlobalsNodeReplacement(self):
         log.debug("afterGlobalsNodeReplacement")        

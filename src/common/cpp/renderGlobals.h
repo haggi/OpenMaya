@@ -6,6 +6,7 @@
 #include <maya/MMatrix.h>
 #include <vector>
 
+
 // Render pass definition goes into the global framework because most of the known passses are
 // the same in all renderers, like shadowmap, photonmap, caustics, bake...
 

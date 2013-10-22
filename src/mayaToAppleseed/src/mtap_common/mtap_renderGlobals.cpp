@@ -64,6 +64,12 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		case 4:
 			logger.setLogLevel(Logging::Debug);
 			break;
+		case 5:
+			logger.setLogLevel(Logging::Detail);
+			break;
+		case 6:
+			logger.setLogLevel(Logging::Feature);
+			break;
 		}
 
 		if(!getInt(MString("rendererVerbosity"), appleseedGlobals, this->rendererVerbosity))

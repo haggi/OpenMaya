@@ -16,10 +16,26 @@
 
 #include <vector>
 
+static MString RendererName;
+static MString RendererShortCut;
+static MString RendererHome;
+
 //degrees * ( M_PI/ 180.0 );
 //radians * (180.0/M_PI);
 #define DegToRad(x) (M_PI/ 180.0 * x)
 #define RadToDeg(x) (180.0/M_PI * x)
+
+void setRendererName(MString rname);
+
+void setRendererShortCutName(MString rname);
+
+void setRendererHome(MString home);
+
+MString getRendererName();
+
+MString getRendererShortCutName();
+
+MString getRendererHome();
 
 bool checkDirectory( MString& path);
 
@@ -65,11 +81,17 @@ bool getConnectedOutPlugs(MObject& thisObject, MPlugArray& outPlugs);
 
 void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList);
 
+void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList);
+
 bool hasPlug(MObject& thisObject, MString& plugName);
 
 MString getObjectName(MObject& mobject);
 
 MString getObjectName(const MObject& mobject);
+
+//MString getDepNodeTypeName(const MObject& mobject);
+
+MString getDepNodeTypeName(MObject mobject);
 
 MString pointToUnderscore(MString& string);
 
@@ -110,6 +132,10 @@ bool isPlugInList(MObject obj, MPlugArray& plugArray);
 
 void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connecedElements, bool upstream);
 void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& connecedElements, MPlugArray& completeList, bool upstream);
+
+MString getAttributeNameFromPlug(MPlug& plug);
+
+MObject getConnectedShadingEngine(MObject node);
 
 #endif
 

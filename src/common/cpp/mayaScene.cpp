@@ -263,10 +263,10 @@ bool MayaScene::isCamera(MObject obj)
 {
 	if( obj.hasFn(MFn::kCamera))
 	{
-		MFnDependencyNode camFn(obj);
-		bool renderable = true;
-		getBool(MString("renderable"), camFn, renderable);
-		if( renderable )
+		//MFnDependencyNode camFn(obj);
+		//bool renderable = true;
+		//getBool(MString("renderable"), camFn, renderable);
+		//if( renderable )
 			return true;
 	}
 	return false;
@@ -370,13 +370,12 @@ bool MayaScene::parseScene(ParseType ptype)
 void MayaScene::setCurrentCamera(MDagPath camDagPath)
 {
 	// if we are in UI rendering state, try to get the current camera
-
 	MayaObject *mayaCam = NULL;
 	std::vector<MayaObject *>::iterator mIter = this->camList.begin();
 	for(;mIter!=this->camList.end(); mIter++)
 	{
 		MayaObject *cam = *mIter;
-		if( cam->dagPath == camDagPath )
+		if( cam->dagPath.node() == camDagPath.node() )
 			mayaCam = cam;
 	}
 
@@ -758,7 +757,19 @@ void MayaScene::getPasses()
 	for( int objId = 0; objId < numcams; objId++)
 	{
 		MayaObject *obj = this->camList[objId];
-		rp->objectList.push_back(obj);
+
+		// the renderable check is moved here because it will disable
+		// rendering from the UI with a normally not renderable camera.
+		if( MGlobal::mayaState() == MGlobal::kBatch )
+		{
+			bool renderable = false;
+			MFnDependencyNode camFn(obj->mobject);
+			getBool("renderable", camFn, renderable);
+			if( renderable )
+				rp->objectList.push_back(obj);
+		}else{
+			rp->objectList.push_back(obj);
+		}
 	}	
 	
 	this->renderGlobals->renderPasses.push_back(rp);

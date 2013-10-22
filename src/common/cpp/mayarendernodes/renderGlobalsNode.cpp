@@ -167,7 +167,9 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	stat = eAttr.addField( "Warning", 2 );
 	stat = eAttr.addField( "Progress", 3 );
 	stat = eAttr.addField( "Debug", 4 );
-	stat = eAttr.addField( "None", 5 );
+	stat = eAttr.addField( "Deatil", 5 );
+	stat = eAttr.addField( "Feature", 6 );
+	stat = eAttr.addField( "None", 7 );
 	CHECK_MSTATUS(addAttribute( translatorVerbosity ));
 
 	rendererVerbosity = nAttr.create("rendererVerbosity", "rendererVerbosity", MFnNumericData::kInt, 2);

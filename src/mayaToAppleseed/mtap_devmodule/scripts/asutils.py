@@ -348,18 +348,7 @@ class aov:
         win.show()
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
 
-#function PolarToCartesian(polar:Vector2):Vector3
-#{
-#
-#    //an origin vector, representing lat,lon of 0,0. 
-#
-#    var origin=Vector3(0,0,1);
-#    //build a quaternion using euler angles for lat,lon
-#    var rotation = Quaternion.Euler(polar.x,polar.y,0);
-#    //transform our reference vector by the rotation. Easy-peasy!
-#    var point:Vector3=rotation*origin;
-#
-#    return point;
-#}        
-            
+
+
+
 

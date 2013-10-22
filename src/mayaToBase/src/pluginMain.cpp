@@ -3,6 +3,7 @@
 
 #include "mayato@.h"
 #include "mt@_common/mt@_renderGlobalsNode.h"
+#include "utilities/tools.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
@@ -31,6 +32,10 @@ MStatus initializePlugin( MObject obj )
 		status.perror("cannot register node: MayaTo@Globals");
 		return status;
 	}
+
+	setRendererName("@");
+	setRendererShortCutName("mt@");
+	setRendererHome(getenv("MT@_HOME"));
 
 	MString cmd = MString("import mt@_initialize as minit; minit.initRenderer()");
 	MGlobal::displayInfo("try to register...");

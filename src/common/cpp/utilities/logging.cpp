@@ -14,6 +14,10 @@ void Logging::setLogLevel( Logging::LogLevel level)
 		MGlobal::displayInfo("Set logging level to ERROR");
 	if( level == Logging::Progress)
 		MGlobal::displayInfo("Set logging level to PROGRESS");
+	if( level == Logging::Detail)
+		MGlobal::displayInfo("Set logging level to DETAIL");
+	if( level == Logging::Feature)
+		MGlobal::displayInfo("Set logging level to FEATURE");
 	log_level = level;
 }
 
@@ -61,7 +65,7 @@ void Logging::error(MString logString, int level)
 void Logging::debug(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + makeSpace(level) + logString;
-	if( log_level >= Logging::Debug )
+	if( log_level <= Logging::Debug )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -71,7 +75,27 @@ void Logging::debug(MString logString, int level)
 void Logging::progress(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB PROG: " + makeSpace(level) + logString;
-	if( log_level >= Logging::Progress )
+	if( log_level <= Logging::Progress )
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
+}
+
+void Logging::detail(MString logString, int level)
+{
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DET: " + makeSpace(level) + logString;
+	if( log_level <= Logging::Detail )
+		if( log_outtype == Logging::ScriptEditor)
+			MGlobal::displayInfo(outString);
+		else
+			trace(outString);
+}
+
+void Logging::feature(MString logString, int level)
+{
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB FEA: " + makeSpace(level) + logString;
+	if( log_level >= Logging::Feature )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else

@@ -61,6 +61,7 @@
 
 class mtap_MayaScene;
 class mtap_RenderGlobals;
+class ShadingNode;
 
 #define isBlack(x) ((x.r + x.g + x.b) <= 0.0f)
 
@@ -93,7 +94,13 @@ public:
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames);
 	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, MObjectArray shadingGroups, asf::StringArray& materialNames); 
 	void defineObjectMaterials(mtap_MayaObject *obj);
+	void defineShadingNodes(mtap_MayaObject *obj);
+	void defineColor(MString colorName, MObject& mobject);
+	void createAppleseedShadingNode(ShadingNode& sn, asr::Assembly* localAssembly);
+	void createMayaShadingNode(ShadingNode& sn, asr::Assembly* localAssembly);
+	void addNodeParameters(ShadingNode& sn, asr::ParamArray& pa);
 	MString defineTexture(MFnDependencyNode& shader, MString& attributeName);
+	void defineTexture(MObject& fileTextureObj);
 	MString defineColor(MFnDependencyNode& shader, MString& attributeName, MString colorSpace, float intensity);
 	MString defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName);
 	MString defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName, float intensity);
@@ -136,6 +143,9 @@ public:
 	void createMeshFromFile(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray);
 	void createMeshFromFile(mtap_MayaObject *obj, MString fileName, asr::MeshObjectArray& meshArray);
 	void render();
+
+	void defineMaterial(MObject shadingGroup);
+
 	asr::MasterRenderer *masterRenderer;
 	mtap_IRendererController mtap_controller;
 

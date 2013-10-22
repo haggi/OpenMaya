@@ -11,7 +11,9 @@ public:
 	Warning,
 	Info,
 	Progress,
-	Debug
+	Debug,
+	Detail,
+	Feature
 	};
 	enum OutputType{
 	ScriptEditor,
@@ -25,6 +27,8 @@ public:
 	void error(MString logString, int level = 0);
 	void debug(MString logString, int level = 0);
 	void progress(MString logString, int level = 0);
+	void detail(MString logString, int level = 0);
+	void feature(MString logString, int level = 0);
 	void trace(MString logString, int level = 0);
 };
 

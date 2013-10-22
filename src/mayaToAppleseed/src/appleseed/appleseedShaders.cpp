@@ -11,6 +11,8 @@
 #include <maya/MItMeshPolygon.h>
 
 #include "shadingtools/shadingUtils.h"
+#include "shadingtools/material.h"
+//#include "../mtap_common/mtap_shadingNode.h"
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
 #include "utilities/pystring.h"
@@ -29,6 +31,10 @@ struct ShaderAssemblyAssignment
 };
 
 static std::vector<ShaderAssemblyAssignment> ShaderAssemblyAssignments;
+
+void AppleseedRenderer::defineMaterial(MObject shadingGroup)
+{
+}
 
 void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
@@ -70,206 +76,31 @@ void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 
 void AppleseedRenderer::defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	logger.debug(MString("SmokeShader: ") + getObjectName(shadingGroup) + " not yet implmented.");
 }
 
 void AppleseedRenderer::defineAoShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating aoShader: ") + shaderNode.name());
-
-	std::vector<MString> samplingTypes;
-	samplingTypes.push_back("uniform");
-	samplingTypes.push_back("cosine");
-	int samples = 16;
-	float max_dist = 1.0f;
-	int samplingMethod = 0;
-	getInt(MString("samples"), shaderNode, samples);
-	getFloat(MString("maxDistance"), shaderNode, max_dist);
-	getEnum(MString("samplingMethod"), shaderNode, samplingMethod);
-
-	asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader;
-	asrSurfaceShader = asr::AOSurfaceShaderFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray()
-		.insert("sampling_method", samplingTypes[samplingMethod].asChar())
-		.insert("samples", (MString("") + samples).asChar())
-			.insert("max_distance", (MString("") + max_dist).asChar()));
-
-	assembly->surface_shaders().insert(asrSurfaceShader);
-
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", shaderName.asChar());
-
-	assembly->materials().insert(
-			asr::MaterialFactory::create(
-			materialName.asChar(),
-			materialParams));
 }
 
 void AppleseedRenderer::defineAoVoxelShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating aoVoxelShader: ") + shaderNode.name());
-
-	asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader;
-	asrSurfaceShader = asr::VoxelAOSurfaceShaderFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray());
-	assembly->surface_shaders().insert(asrSurfaceShader);
-
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", shaderName.asChar());
-
-	assembly->materials().insert(
-			asr::MaterialFactory::create(
-			materialName.asChar(),
-			materialParams));
-
 }
 
 void AppleseedRenderer::defineConstantShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating constantShader: ") + shaderNode.name());
-
-	MString colorDefinitionName = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
-	asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader;
-	asrSurfaceShader = asr::ConstantSurfaceShaderFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray()
-		.insert("color", colorDefinitionName.asChar())
-		);
-	assembly->surface_shaders().insert(asrSurfaceShader);
-
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", shaderName.asChar());
-
-	assembly->materials().insert(
-			asr::MaterialFactory::create(
-			materialName.asChar(),
-			materialParams));
-
 }
 
 void AppleseedRenderer::defineCollectionShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-
-	//MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	//MFnDependencyNode shadingGroupNode(shadingGroup);
-	//MString materialName = shadingGroupNode.name();
-	//MFnDependencyNode shaderNode(surfaceShader);
-	//MString shaderName = shaderNode.name();
-	//logger.debug(MString("Translating constantShader: ") + shaderNode.name());
 }
 
 void AppleseedRenderer::defineDiagnosticShader(asr::Assembly *assembly, MObject& shadingGroup)
 {	
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating diagnosticShader: ") + shaderNode.name());
-	
-	int mode = 0;
-	getEnum(MString("mode"), shaderNode, mode);
-	std::vector<MString> diagnosticModeNames;
-	diagnosticModeNames.push_back("ambient_occlusion");
-	diagnosticModeNames.push_back("assembly_instances");
-	diagnosticModeNames.push_back("barycentric");
-	diagnosticModeNames.push_back("bitangent");
-	diagnosticModeNames.push_back("coverage");
-	diagnosticModeNames.push_back("depth");
-	diagnosticModeNames.push_back("geometric_normal");
-	diagnosticModeNames.push_back("materials");
-	diagnosticModeNames.push_back("object_instances");
-	diagnosticModeNames.push_back("original_shading_normal");
-	diagnosticModeNames.push_back("regions");
-	diagnosticModeNames.push_back("shading_normal");
-	diagnosticModeNames.push_back("sides");
-	diagnosticModeNames.push_back("tangent");
-	diagnosticModeNames.push_back("triangles");
-	diagnosticModeNames.push_back("uv");
-	diagnosticModeNames.push_back("wireframe");
-
-	asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader = asr::DiagnosticSurfaceShaderFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray()
-		.insert("mode", diagnosticModeNames[mode].asChar()));
-	assembly->surface_shaders().insert(asrSurfaceShader);
-
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", shaderName.asChar());
-
-	assembly->materials().insert(
-			asr::MaterialFactory::create(
-			materialName.asChar(),
-			materialParams));
 }
 
 
 void AppleseedRenderer::defineFastSSSShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating diagnosticShader: ") + shaderNode.name());
-
-		logger.debug(MString("Translating fastSSSShader: ") + shaderNode.name());
-		int light_samples = 1, occlusion_samples = 1;
-		float scale = 1.0f, ambient_sss, view_dep_sss, diffuse, power, distortion;
-		MColor albedo;
-		getInt(MString("light_samples"), shaderNode, light_samples);
-		getInt(MString("occlusion_samples"), shaderNode, occlusion_samples);
-		getFloat(MString("scale"), shaderNode, scale);
-		getFloat(MString("ambient_sss"), shaderNode, ambient_sss);
-		getFloat(MString("view_dep_sss"), shaderNode, view_dep_sss);
-		getFloat(MString("diffuse"), shaderNode, diffuse);
-		getFloat(MString("power"), shaderNode, power);
-		getFloat(MString("distortion"), shaderNode, distortion);
-		getColor(MString("albedo"), shaderNode, albedo);
-		MString albedoName = shaderNode.name() + "_albedo";
-		this->defineColor(albedoName, albedo);
-
-		asf::auto_release_ptr<asr::SurfaceShader> asrSurfaceShader;
-		asrSurfaceShader = asr::FastSubSurfaceScatteringSurfaceShaderFactory().create(
-			shaderName.asChar(),
-			asr::ParamArray()
-			.insert("light_samples", (MString("") + light_samples).asChar())
-			.insert("occlusion_samples", (MString("") + occlusion_samples).asChar())
-			.insert("scale", (MString("") + scale).asChar())
-			.insert("ambient_sss", (MString("") + ambient_sss).asChar())
-			.insert("view_dep_sss", (MString("") + view_dep_sss).asChar())
-			.insert("diffuse", (MString("") + diffuse).asChar())
-			.insert("power", (MString("") + power).asChar())
-			.insert("distortion", (MString("") + distortion).asChar())
-			.insert("albedo", albedoName.asChar())
-			);
-		assembly->surface_shaders().insert(asrSurfaceShader);
-
-		asr::ParamArray materialParams;
-		materialParams.insert("surface_shader", shaderName.asChar());
-
-		assembly->materials().insert(
-				asr::MaterialFactory::create(
-				materialName.asChar(),
-				materialParams));
-
 }
 
 
@@ -892,9 +723,13 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 
 	MObject shadingGroup;
 
+	defineShadingNodes(obj);
+
 	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{
 		shadingGroup = obj->shadingGroups[sgId];
+
+		//this->defineMaterial(obj->shadingGroups[sgId]);
 
 		MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), shadingGroup);
 		if( surfaceShaderNode == MObject::kNullObj)

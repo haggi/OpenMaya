@@ -7,10 +7,41 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MSelectionList.h>
 #include <maya/MTransformationMatrix.h>
+#include <maya/MFnAttribute.h>
 
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
+
+void setRendererName(MString rname)
+{
+	RendererName = rname;
+}
+
+void setRendererShortCutName(MString rname)
+{
+	RendererShortCut = rname;
+}
+
+void setRendererHome(MString home)
+{
+	RendererHome = home;
+}
+
+MString getRendererName()
+{
+	return RendererName;
+}
+
+MString getRendererShortCutName()
+{
+	return RendererShortCut;
+}
+MString getRendererHome()
+{
+	return RendererHome;
+}
+
 
 float rnd()
 {
@@ -342,6 +373,20 @@ void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList)
 	//return (numConnections > 0);
 }
 
+void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList)
+{
+	MPlugArray connectedPlugs;
+	plug.connectedTo(connectedPlugs, true, false);
+	int numConnections = connectedPlugs.length();
+	
+	for( int i = 0; i <  numConnections; i++)
+	{
+		MObject plugObject = getOtherSideNode(plug);
+		if( plugObject != MObject::kNullObj)
+			nodeList.append(plugObject);
+	}
+}
+
 MObject getOtherSideNode(MPlug& plug)
 {
 	MStatus stat;
@@ -462,6 +507,18 @@ MString getObjectName(const MObject& mobject)
 
 	MFnDependencyNode depFn(mobject);
 	return depFn.name();
+}
+
+//MString getDepNodeTypeName(const MObject& mobject)
+//{
+//	MFnDependencyNode depFn(mobject);
+//	return depFn.typeName();
+//}
+
+MString getDepNodeTypeName(MObject mobject)
+{
+	MFnDependencyNode depFn(mobject);
+	return depFn.typeName();
 }
 
 MString pointToUnderscore(MString& inString)
@@ -775,4 +832,37 @@ void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& conne
 {
 	MPlugArray completeList;
 	findConnectedNodeTypes(nodeId, thisObject, connecedElements, completeList, upstream);
+}
+
+MString getAttributeNameFromPlug(MPlug& plug)
+{
+	MFnAttribute att(plug.attribute());
+	return att.name();
+}
+
+
+MObject getConnectedShadingEngine(MObject node)
+{
+	MObject se = MObject::kNullObj;
+
+	MFnDependencyNode depFn(node);
+	MPlugArray plugArray;
+	depFn.getConnections(plugArray);
+	for( uint i = 0; i < plugArray.length(); i++)
+	{
+		if( plugArray[i].isSource() )
+		{
+			MPlugArray desArray;
+			plugArray[i].connectedTo(desArray, false, true);
+			for(uint k = 0; k < desArray.length(); k++)
+			{
+				if( desArray[k].node().hasFn(MFn::kShadingEngine))
+				{
+					se = desArray[k].node();
+				}
+			}
+		}
+	}
+
+	return se;
 }

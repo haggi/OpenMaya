@@ -48,6 +48,15 @@ class AEappleseedNodeTemplate(BaseTemplate):
             self.addControl("mtap_standin_path", label="Proxy File") 
             self.endLayout()
                                    
+#        if self.thisNode.type() == "shadingEngine":
+#            self.beginLayout("AppleSeed" ,collapse=1)
+#            self.addControl("mtap_mat_bsdf", label="Bsdf")                                    
+#            self.addControl("mtap_mat_edf", label="Edf")                                    
+#            self.addControl("mtap_mat_surfaceShader", label="Surface Shader")                                    
+#            self.addControl("mtap_mat_alphaMap", label="Alpha Map")                                    
+#            self.addControl("mtap_mat_normalMap", label="Normal Map")                                    
+#            self.endLayout()
+
     def buildBody(self, nodeName):
         self.buildAppleSeedTemplates(nodeName)
         self.updateUI(nodeName)

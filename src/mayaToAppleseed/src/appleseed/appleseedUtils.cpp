@@ -147,6 +147,59 @@ MString AppleseedRenderer::getTextureColorProfile(MFnDependencyNode& fileTexture
 	return colorProfiles[profileId];
 }
 
+void AppleseedRenderer::defineTexture(MObject& fileTextureObj)
+{
+	MStatus stat;
+	MString textureDefinition("");
+
+	MFnDependencyNode fileTextureNode(fileTextureObj, &stat);
+	MString textureName = fileTextureNode.name() + "_diskTexture";
+	MString fileTextureName = "";
+	getString(MString("fileTextureName"), fileTextureNode, fileTextureName);
+	if((!pystring::endswith(fileTextureName.asChar(), ".exr") && (!pystring::endswith(fileTextureName.asChar(), ".png"))) || (fileTextureName.length() == 0))
+	{
+		if( fileTextureName.length() == 0)
+			logger.warning(MString("FileTextureName has no content."));
+		else
+			logger.warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
+		return;
+	}
+
+	removeTextureEntityIfItExists(textureName);
+
+	MString colorProfile = getTextureColorProfile(fileTextureNode);
+	
+	asr::ParamArray params;
+	logger.detail(MString("Now inserting file name: ") + fileTextureName);
+	params.insert("filename", fileTextureName.asChar()); 
+	params.insert("color_space", colorProfile.asChar());
+	
+    asf::auto_release_ptr<asr::Texture> textureElement(
+        asr::DiskTexture2dFactory().create(
+	    textureName.asChar(),
+            params,
+            this->project->get_search_paths()));    // the project holds a set of search paths to find textures and other assets
+	this->scenePtr->textures().insert(textureElement);
+
+	bool alphaIsLuminance = false;
+	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
+	asr::ParamArray tInstParams;
+	tInstParams.insert("addressing_mode", "clamp");
+	//tInstParams.insert("addressing_mode", "wrap");
+	tInstParams.insert("filtering_mode", "bilinear");
+	if( alphaIsLuminance )
+		tInstParams.insert("alpha_mode", "luminance");
+
+	MString textureInstanceName = fileTextureNode.name() ;
+	asf::auto_release_ptr<asr::TextureInstance> tinst = asr::TextureInstanceFactory().create(
+	   textureInstanceName.asChar(),
+	   tInstParams,
+	   textureName.asChar());
+	
+	this->scenePtr->texture_instances().insert(tinst);
+
+}
+
 MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& attributeName)
 {
 	MStatus stat;
@@ -222,7 +275,6 @@ MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& att
 	this->scenePtr->texture_instances().insert(tinst);
 
 	return textureInstanceName;
-
 }
 
 

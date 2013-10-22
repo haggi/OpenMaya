@@ -9,7 +9,7 @@ log = logging
 START_ID = "automatically created attributes start"
 END_ID = "automatically created attributes end"
 
-START_NODE_ID = 0x0011CF4D
+START_NODE_ID = 0x0011CF7C
 
 COMPILER_VERSION = "vs2010"
 baseDestPath = None
@@ -23,6 +23,8 @@ baseSourcePath = None
 # bgColor, color, Background Color, 0.4:0.5:0.7
 
 def makeEnum(att):
+    if not str(att[3]).isdigit():
+        att[3] = att[4].split(":").index(att[3])
     string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &status);\n".format(att[0], att[3])
     for index, v in enumerate(att[4].split(":")):
         string += "\tstatus = eAttr.addField( \"{0}\", {1} );\n".format(v, index) 
@@ -80,28 +82,43 @@ def pluginLoaders(attDict, renderer):
         if key == "all":
             continue    
         print '#include "shaders/{0}Material.h"'.format(key)
-        
+
     for key in attDict.keys():
         if key == "all":
             continue    
         print 'static const MString {0}sRegistrantId("{0}Plugin");'.format(key)
         print 'static const MString {0}sDrawDBClassification("drawdb/shader/surface/{0}");'.format(key)
-        print 'static const MString {0}sFullClassification("shader/surface:" + {0}sDrawDBClassification);'.format(key)
-        
+        print 'static const MString {0}sFullClassification("appleseed/material:shader/surface:" + {0}sDrawDBClassification);'.format(key)
+                
+    registerOver = []        
+    registerNormal = []        
     for key in attDict.keys():
         if key == "all":
             continue    
-        print 'CHECK_MSTATUS( plugin.registerNode( "{1}{2}", {0}::id, {0}::creator, {0}::initialize, MPxNode::kDependNode, &{0}sFullClassification ));'.format(key, renderer.lower(), key.capitalize())
-        print 'CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( {0}sDrawDBClassification, {0}sRegistrantId,{0}Override::creator));'.format(key)
-        print "\n"
+        registerNormal.append('CHECK_MSTATUS( plugin.registerNode( "{0}", {0}::id, {0}::creator, {0}::initialize, MPxNode::kDependNode, &{0}sFullClassification ));'.format(key, renderer.lower(), key.capitalize()))
+        registerOver.append('CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( {0}sDrawDBClassification, {0}sRegistrantId,{0}Override::creator));'.format(key))
 
+    deregisterOver = []        
+    deregisterNormal = []        
     for key in attDict.keys():
         if key == "all":
             continue    
-        print 'CHECK_MSTATUS( plugin.deregisterNode( {0}::id ) );'.format(key)
-        print 'CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator({0}sDrawDBClassification, {0}sRegistrantId));'.format(key)
-        print "\n"
+        deregisterNormal.append('CHECK_MSTATUS( plugin.deregisterNode( {0}::id ) );'.format(key))
+        deregisterOver.append('CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator({0}sDrawDBClassification, {0}sRegistrantId));'.format(key))
     
+    print "#ifdef HAS_OVERRIDE"
+    for i in registerOver:
+        print "\t"+i
+    print "#endif\n"
+    for i in registerNormal:
+        print "\t"+i
+
+    print "\n#ifdef HAS_OVERRIDE"
+    for i in deregisterOver:
+        print "\t"+i
+    print "#endif\n"
+    for i in deregisterNormal:
+        print "\t"+i
 
 def createNode(sourceFile, destFile, materialName):
     print "Creating shader file for shader", materialName
@@ -118,6 +135,8 @@ def createNode(sourceFile, destFile, materialName):
     
     destH = open(destFile, "w")
     for line in source:
+        
+        line = line.replace('#include "materialBase.h"', '#include "'+materialName + 'Material.h"')
         line = line.replace("MaterialBase", materialName)
         line = line.replace("materialBase", materialName)
         
@@ -190,9 +209,21 @@ def insertAttributes(destFileName, attDict, nodeName):
                 attString = makeInt(att)
             if att[1] == "float":
                 attString = makeFloat(att)
+            if att[1] == "varying_float":
+                attString = makeFloat(att)
+            if att[1] == "uniform_float":
+                attString = makeFloat(att)
+            if att[1] == "varying_scalar":
+                attString = makeFloat(att)
+            if att[1] == "uniform_scalar":
+                attString = makeFloat(att)
             if att[1] == "bool":
                 attString = makeBool(att)
             if att[1] == "color":
+                attString = makeColor(att)
+            if att[1] == "varying_color":
+                attString = makeColor(att)
+            if att[1] == "uniform_color":
                 attString = makeColor(att)
             if att[1] == "message":
                 attString = makeMessage(att)
@@ -346,7 +377,7 @@ def aeTemplateCreator(attDict, renderer, shortCut):
     for key in attDict.keys():
         newContent = []
         
-        aeFileName = "AE" + renderer.lower() + key.capitalize() + "Template.py"
+        aeFileName = "AE" + key + "Template.py"
         destAEFile = path.path(destAEPath + aeFileName)
         #print "create AE for", key, destAEFile
         if destAEFile.exists():
@@ -363,7 +394,7 @@ def aeTemplateCreator(attDict, renderer, shortCut):
         endIndex = 0
         for index, line in enumerate(content):
             if "AE@shaderTemplate" in line:
-                content[index] = line.replace("AE@shaderTemplate", "AE" + renderer.lower() + key.capitalize() + "Template")                
+                content[index] = line.replace("AE@shaderTemplate", "AE" + key + "Template")                
             if "#autoAddBegin" in line:
                 print "Start new content"
                 startIndex = index
@@ -385,6 +416,7 @@ def aeTemplateCreator(attDict, renderer, shortCut):
         finalContent.extend(allContent) 
         finalContent.extend(content[endIndex:])    
         #print finalContent
+        print "Write AETemplate file", destAEFile
         destHandle = open(destAEFile, "w")
         destHandle.writelines(finalContent)
         destHandle.close()
@@ -484,7 +516,57 @@ def pyRGCreator(pypath, attArray):
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', data='{4}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3],att[4])
             else:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
+
+def createShaderDefinitionFile(attDict):
+    destDefPath = path.path(r"C:\Users\haggi\coding\OpenMaya\src\mayaToAppleseed\mtap_devmodule\ressources\ShaderDefinitions.txt")
+    fh = open(destDefPath, "r")
+    content = fh.readlines()
+    fh.close()
     
+    startIndex = 0
+    endIndex = 0
+    for index, line in enumerate(content):
+        if "automatically created attributes start" in line:
+            print "Start new content"
+            startIndex = index
+        if "automatically created attributes end" in line:
+            print "End new content"
+            endIndex = index
+
+    allContent = []
+        
+    newContent = []
+    for key in attDict.keys():
+        
+        if key.lower() == "all":
+            continue
+        
+        attrs = attDict[key]
+        
+#        shader_start:lambert
+#            inatt:color:color
+#            inatt:transparency:color
+#            outatt:outColor:color
+#        shader_end        
+        print key, attrs
+        cls = "shader_start:{0}\n".format(key)
+        for param in attrs.keys():
+            cls += "\tinatt:{0}:{1}\n".format(param, attrs[param][0])
+        cls += "\toutatt:{0}:{1}\n".format("outColor", "color")
+        cls += "shader_end\n\n"
+        newContent.append(cls)
+        
+    finalContent = []
+    finalContent.extend(content[:startIndex+1])   
+    finalContent.extend(allContent) 
+    finalContent.extend(newContent)    
+    finalContent.extend(content[endIndex:])    
+
+    print "Writing data to file", destDefPath
+    fh = open(destDefPath, "w")
+    content = fh.writelines(finalContent)
+    fh.close()
+
     
 def shaderCreator(renderer, shortCut):
     log.debug("shaderCreator " + renderer)
@@ -533,14 +615,14 @@ def shaderCreator(renderer, shortCut):
             if newDict is not None:
                 newDict[att[0]] = att[1:]
     
-    #print attrDict
     fillNodes(attrDict)
-    #pluginLoaders(attrDict, renderer)    
+    pluginLoaders(attrDict, renderer)    
     #pyRGCreator(pyGlobals, attArray)
-    #aeTemplateCreator(attrDict, renderer, shortCut)
+    aeTemplateCreator(attrDict, renderer, shortCut)
     #attrIncludeCreator(attrDict, renderer, shortCut)
+    createShaderDefinitionFile(attrDict)
     
 if __name__ == "__main__":
-    shaderCreator("lux", "mtlu")
+    shaderCreator("Appleseed", "mtap")
     #global START_NODE_ID
     #print "ID: --> 0x%08X" % START_NODE_ID

@@ -1,3 +1,5 @@
+- check message attribute connection
+
 - start test driven development with render and diff tests
 
 - implement alembic

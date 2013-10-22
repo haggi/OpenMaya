@@ -9,177 +9,123 @@
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include "utilities/logging.h"
-//#include "readShaderDefs.h"
+#include "shadingTools/shaderDefs.h"
 
 static Logging logger;
 
-// This procedure checks if a node from the parsed maya hypeshade is available in the shader 
-// definitions list and sets all necessary data.
-void Material::checkNode(ShadingNode *sn)
+void Material::checkNodeList(MObjectArray& nodeList)
 {
-	//ShadingNode *sNode = findShaderNodeByTypeName(sn->typeName);
-	//if( sNode != NULL)
-	//{
-	//	//logger.debug(MString("Found node ") + sn->typeName + " in shader definitions");
-	//	ShadingNode sTmp = *sNode;
-	//	sTmp.mobject = sn->mobject;
-	//	sTmp.internalName = sn->internalName;
-	//	sTmp.typeName = sn->typeName;
-	//	sTmp.mayaName = sn->mayaName;
-	//	sTmp.outShadingNodes = sn->outShadingNodes;
-	//	*sn = sTmp;
-	//	sn->updateData();
-	//}else{
-	//	sn->supported = false;
-	//}
+	MObjectArray cleanArray;
+	for( uint oId = 0; oId < nodeList.length(); oId++)
+	{
+		ShadingNode sn = findShadingNode(nodeList[oId]);
+		if( sn.nodeState == ShadingNode::VALID)
+			cleanArray.append(nodeList[oId]);
+	}
+	nodeList = cleanArray;
 }
 
-// here the nodes are checked if they are defined in the shaderDefinions file
-// They will receive their correct plugs and duble nodes will be removed
-void Material::checkNodeList(ShadingNetwork& network)
-{
-	//for( int i = 0; i < (int)network.shaderList.size(); i++)
-	//{
-	//	checkNode(network.shaderList[i]);
-
-	//	for( uint k = 0; k < network.shaderList[i]->geoPlugs.size(); k++)
-	//	{
-	//		ShadingPlug plug = network.shaderList[i]->geoPlugs[k];
-	//		bool found = false;
-	//		for( uint l = 0; l < network.geometryParamsList.size(); l++)
-	//		{
-	//			if( network.geometryParamsList[l].name == plug.name)
-	//			{
-	//				found = true;
-	//			}
-	//		}
-	//		if(!found)
-	//			network.geometryParamsList.push_back(plug);
-	//	}
-	//}
-	//// remove double nodes, serach from back
-	//std::vector<ShadingNode *> cleanList;
-	//int numShaders = (int)network.shaderList.size();
-	//for( int i = (numShaders-1); i >= 0; i--)
-	//{
-	//	ShadingNode *sn = network.shaderList[i];
-	//	bool found = false;
-	//	for( int k = 0; k < (int)cleanList.size(); k++)
-	//	{
-	//		if( sn->mayaName == cleanList[k]->mayaName)
-	//		{
-	//			found = true;
-	//			for( int osn = 0; osn < sn->outShadingNodes.size(); osn++)
-	//			{
-	//				cleanList[k]->outShadingNodes.push_back(sn->outShadingNodes[osn]);
-	//			}
-	//			break;
-	//		}
-	//	}
-	//	if(!found)
-	//	{
-	//		cleanList.push_back(sn);
-	//	}
-	//}
-	//numShaders = (int)cleanList.size();
-	//network.shaderList.clear();
-	//for( int i = (numShaders-1); i >= 0; i--)
-	//{
-	//	network.shaderList.push_back(cleanList[i]);
-	//}
-
-	//numShaders = (int)network.shaderList.size();
-	//for( uint i = 0; i < numShaders; i++)
-	//{
-	//	std::vector<ShadingNode *> tmpOutList;
-	//	ShadingNode *sn = network.shaderList[i];
-	//	int outLen = (int)sn->outShadingNodes.size();
-	//	for( int k = 0; k < outLen; k++)
-	//	{
-	//		ShadingNode *outsn = sn->outShadingNodes[k];
-	//		bool found = false;
-	//		for( int l = 0; l < tmpOutList.size(); l++)
-	//		{
-	//			if( outsn->mayaName == tmpOutList[l]->mayaName)
-	//			{
-	//				found = true;
-	//				break;
-	//			}
-	//		}
-	//		if( !found)
-	//			tmpOutList.push_back(outsn);
-	//	}
-	//	sn->outShadingNodes = tmpOutList;
-	//	tmpOutList.clear();
-	//}
-}
-
-bool Material::alreadyDefined(ShadingNode *sn, ShadingNetwork& network)
+bool Material::alreadyDefined(ShadingNode& sn, ShadingNetwork& network)
 {
 	for( int i = 0; i < (int)network.shaderList.size(); i++)
 	{
-		if( network.shaderList[i]->mobject == sn->mobject)
+		if( network.shaderList[i].mobject == sn.mobject)
 		{
-			//logger.debug("shading node already defined");
 			return true;
 		}
 	}
 	return false;
 }
 
-// beginning with the start shaderNode the whole network is parsed and the nodes
-// are placed in the shadingNodeList. Sometimes it can be necessary to know how the nodes
-// are connected, e.g. in a rman/mantra environment with a projection node. For this reason
-// the network puts the new shading node in all conncted nodes outputs.
-// The ** pointer to a pointer is needed because I want to assign the pointer a pointer
-void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network, ShadingNode **sNode)
+// source is the node which is connected to the inputs of dest
+bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest)
 {
-	(*sNode) = NULL;
-	ShadingNode *sn = shadingNodeCreator(shaderNode);
-	
-	// if NULL, then this shading node is not supported and useless.
-	// Any shader chain translation will stop here.
-	if( sn == NULL )
-		return;
+	MPlugArray connectedOutPlugs;
+	MStatus stat;
+	MFnDependencyNode destFn(dest.mobject);
+	MObjectArray objectList;
+	int connCount = 0;
 
-	// modify this to detect cycles
-	//if( alreadyDefined(sn, network))
-	//{
-	//	logger.debug("Node is already defined, stopping recoursion here...");
-	//	delete sn;
-	//	return;
-	//}
-	
-	network.shaderList.push_back(sn);
-	
-	// read incoming connections
-	MObjectArray connectedNodeList;
-	getConnectedNodes(shaderNode, connectedNodeList);
-	if( connectedNodeList.length() > 0)
+	for( size_t inAttrId = 0; inAttrId < dest.inputAttributes.size(); inAttrId++)
 	{
-		logger.debug(MString("Node ") + sn->fullName + " has " + connectedNodeList.length() + " input connections.");
-	}else{
-		logger.debug(MString("Node ") + sn->fullName + " has no input connections.");
+		ShaderAttribute att = dest.inputAttributes[inAttrId];
+		//logger.debug(MString("Check in attribute of des: ") + dest.fullName + "." + att.name.c_str());
+		MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);
+		if( stat )
+		{
+			inPlug.connectedTo(connectedOutPlugs, true, false);
+			for( uint outPlugId = 0; outPlugId < connectedOutPlugs.length(); outPlugId++)
+			{
+				//logger.debug(MString("Check output plug: ") + source.fullName + " - " + connectedOutPlugs[outPlugId].name());
+				if( connectedOutPlugs[outPlugId].node() == source.mobject)
+				{
+					logger.debug(MString("Source node is correct"));
+					MString plugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId]);
+					//logger.debug(MString("Check name of plug: ") + plugName);
+					for( size_t outAttrId = 0; outAttrId < source.outputAttributes.size(); outAttrId++)
+					{
+						//logger.debug(MString("Compare: ") + plugName + " attname " + source.outputAttributes[outAttrId].name.c_str());
+						if( plugName == source.outputAttributes[outAttrId].name.c_str())
+						{
+							dest.inputAttributes[inAttrId].connected = true;
+							dest.inputAttributes[inAttrId].connectedMObject = connectedOutPlugs[outPlugId].node();
+							connCount++;
+						}
+					}
+				}
+			}
+		}else{
+			logger.debug(MString("Failed to get plug: ") + att.name.c_str());
+		}
 	}
 
-	// a shading node can have multiple inputs from the same node, e.g. 
-	// nodea.r -> nodeb.a, nodea.g -> nodeb.r
-	// in this case the node appears multiple times, we clean this here.
-	makeUniqueArray(connectedNodeList);
+	if( connCount > 0)
+		return true;
+	else
+		return false;
+}
+
+void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
+{
+	ShadingNode sn = findShadingNode(shaderNode);
+
+	if( sn.nodeState == ShadingNode::INVALID)
+	{
+		logger.feature(MString("Node is not supported (INVALID): ") + getObjectName(shaderNode));
+		return;
+	}
+
+	// to avoid any dag node cycles
+	if(alreadyDefined(sn, network))
+	{
+		logger.debug("Node is already defined, skipping.");
+		return;
+	}
+	
+	MObjectArray connectedNodeList;
+	sn.getConnectedInputObjects(connectedNodeList);
+	this->checkNodeList(connectedNodeList);
+
+	if( connectedNodeList.length() > 0)
+	{
+		logger.debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
+	}else{
+		logger.debug(MString("Node ") + sn.fullName + " has no input connections.");
+	}
 
 	for(uint i = 0; i < connectedNodeList.length(); i++)
 	{
-		ShadingNode *upNode = NULL;
-		this->parseNetwork(connectedNodeList[i], network, &upNode);
-		//logger.info(MString("---->> parsed node ") + sn->mayaName);
-		//if( upNode != NULL)
-		//{
-			//logger.info(MString("---->> found up node ") + upNode->mayaName + " addr " + (int)upNode);
-		//	upNode->outShadingNodes.push_back(sn);
-			//logger.info(MString("Node: ") + upNode->mayaName + " has now " + upNode->outShadingNodes.size() + " outputs");
-		//}
+
+		MString connectedNode = getObjectName(connectedNodeList[i]);
+		//logger.debug(MString("connectedNode: ") + connectedNode);
+		ShadingNode source = findShadingNode(connectedNodeList[i]);
+		if( hasValidShadingNodeConnections(source, sn))
+		{
+			parseNetwork(source.mobject, network);
+		}
 	}
-	//(*sNode) = sn;
+
+	network.shaderList.push_back(sn);
 }
 
 void Material::printNodes(ShadingNetwork& network)
@@ -187,9 +133,9 @@ void Material::printNodes(ShadingNetwork& network)
 	int numNodes = (int)network.shaderList.size();
 	for(int i = numNodes - 1; i >= 0 ; i--)
 	{
-		ShadingNode *sn = network.shaderList[i];
-		logger.info(MString("Material::Node id ") + (double)i + " typename " + sn->typeName);
-		logger.info(MString("Material::Node id ") + (double)i + " mayaname " + sn->fullName);
+		ShadingNode sn = network.shaderList[i];
+		logger.info(MString("Material::Node id ") + (double)i + " typename " + sn.typeName);
+		logger.info(MString("Material::Node id ") + (double)i + " mayaname " + sn.fullName);
 	}
 }
 
@@ -215,8 +161,7 @@ void Material::parseNetworks()
 			surfaceShaderNode = miMaterialShaderNode;
 		
 		ShadingNode *sn = NULL;
-		this->parseNetwork(surfaceShaderNode, this->surfaceShaderNet, &sn);
-		this->checkNodeList(this->surfaceShaderNet);
+		this->parseNetwork(surfaceShaderNode, this->surfaceShaderNet);
 	}
 
 	// read volume shader hierarchy
@@ -226,8 +171,7 @@ void Material::parseNetworks()
 		if(miVolumeShaderNode != MObject::kNullObj)
 			volumeShaderNode = miVolumeShaderNode;
 		ShadingNode *sn = NULL;
-		this->parseNetwork(miVolumeShaderNode, this->volumeShaderNet, &sn);
-		this->checkNodeList(this->volumeShaderNet);
+		this->parseNetwork(miVolumeShaderNode, this->volumeShaderNet);
 	}
 
 	// read displacement shader hierarchy
@@ -238,16 +182,14 @@ void Material::parseNetworks()
 			displacementShaderNode = miDisplacementShaderNode;
 
 		ShadingNode *sn = NULL;
-		this->parseNetwork(displacementShaderNode, this->displacementShaderNet, &sn);
-		this->checkNodeList(this->displacementShaderNet);
+		this->parseNetwork(displacementShaderNode, this->displacementShaderNet);
 	}
 
 	// read light shader hierarchy
 	if( (this->shadingEngineNode != MObject::kNullObj) && (this->shadingEngineNode.hasFn(MFn::kLight)) )
 	{
 		ShadingNode *sn = NULL;
-		this->parseNetwork(this->shadingEngineNode, this->lightShaderNet, &sn);
-		this->checkNodeList(this->lightShaderNet);
+		this->parseNetwork(this->shadingEngineNode, this->lightShaderNet);
 	}
 }
 
@@ -255,6 +197,8 @@ Material::Material(MObject &shadingEngine)
 {
 	this->shadingEngineNode = shadingEngine;
 	this->materialName = getObjectName(this->shadingEngineNode);
+	this->parseNetworks();
+	this->printNodes(this->surfaceShaderNet);
 }
 
 Material::Material()
