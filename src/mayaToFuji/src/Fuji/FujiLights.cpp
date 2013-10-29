@@ -1,5 +1,5 @@
 #include "Fuji.h"
-#include "src/SceneInterface.h"
+#include "src/fj_scene_interface.h"
 #include "../mtfu_common/mtfu_mayaScene.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -12,6 +12,22 @@ using namespace FujiRender;
 
 void FujiRenderer::defineLights()
 {
+
+		/* Light */
+	if( this->mtfu_scene->lightList.size() == 0)
+	{
+		logger.warning(MString("No light in scene, creating a default light."));
+		ID light = SiNewLight(SI_POINT_LIGHT);
+		if (light  == SI_BADID) 
+		{
+			fprintf(stderr, "Could not allocate light\n");
+			throw("Could not allocate light");
+		}
+		MPoint rot, pos, scale;
+		getMatrixComponents(this->mtfu_scene->camList[0]->dagPath.inclusiveMatrix(), pos, rot, scale);
+		SiSetProperty3(light, "translate", pos.x - 4, pos.y + 4, pos.z);
+	}
+
 	for( uint objId = 0; objId < this->mtfu_scene->lightList.size(); objId++)
 	{
 		mtfu_MayaObject *obj = (mtfu_MayaObject *)this->mtfu_scene->lightList[objId];

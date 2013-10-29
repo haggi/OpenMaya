@@ -8,7 +8,7 @@
 #include "../mtfu_common/mtfu_mayaObject.h"
 #include "../mtfu_common/mtfu_mayaScene.h"
 
-#include "src/SceneInterface.h"
+#include "src/fj_scene_interface.h"
 #include "FujiCallbacks.h"
 #include <stdio.h>
 
@@ -24,11 +24,13 @@ using namespace FujiRender;
 FujiRenderer::FujiRenderer()
 {
 	// define scene
-	SiOpenScene();
+	//SiOpenScene();
 }
 
 FujiRenderer::~FujiRenderer()
-{}
+{
+	//SiCloseScene();
+}
 
 void FujiRenderer::setTransform(mtfu_MayaObject *obj)
 {
@@ -57,31 +59,40 @@ void FujiRenderer::setTransform(mtfu_MayaObject *obj)
 	double rot[3];
 	double scale[3];
 
-	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::kXYZ;
 	objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
 	MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
 	objTMatrix.getScale(scale, MSpace::kWorld);
 	SiSetProperty3(obj->objectID, "translate", pos[0], pos[1], pos[2]);
 	SiSetProperty3(obj->objectID, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
 	SiSetProperty3(obj->objectID, "scale", scale[0], scale[1], scale[2]);
+
+	logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
+	logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
+
 }
 
 void FujiRenderer::render()
 {
 	const int W = this->mtfu_renderGlobals->imgWidth;
 	const int H = this->mtfu_renderGlobals->imgHeight;
-
-	ID framebuffer;
-	ID renderer;
-	ID camera;
+	
 	ID object;
 	ID shader;
-	ID light;
 
 	logger.info("------- Starting fujiyama rendering --------");
 
+	// Display pre render infos
+
 	try{
-		//SiOpenScene();
+		SiOpenScene();
+		/* Renderer */
+		renderer = SiNewRenderer();
+		if (renderer == SI_BADID) 
+		{
+			fprintf(stderr, "Could not allocate renderer\n");
+			throw("Could not allocate renderer");
+		}
 
 		/* Plugin */
 		if (SiOpenPlugin("PlasticShader")) 
@@ -91,37 +102,25 @@ void FujiRenderer::render()
 			fprintf(stderr, "Could not open shader: %s\n", SiGetErrorMessage(SiGetErrorNo()));
 			*/
 		}
-
+		
+		this->defineCamera();
 		/* Camera */
-		camera = SiNewCamera("PerspectiveCamera");
-		if (camera == SI_BADID) 
-		{
-			fprintf(stderr, "Could not allocate camera\n");
-			throw("Could not allocate camera");
-		}
-		// get the first renderable camera
-		MTransformationMatrix objTMatrix(this->mtfu_scene->camList[0]->dagPath.inclusiveMatrix());
-		double rot[3];
-		MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
-		objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
-		MVector campos = objTMatrix.getTranslation(MSpace::kWorld);
-		SiSetProperty3(camera, "translate", campos[0], campos[1], campos[2]);
-		SiSetProperty3(camera, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
+		//camera = SiNewCamera("PerspectiveCamera");
+		//if (camera == SI_BADID) 
+		//{
+		//	fprintf(stderr, "Could not allocate camera\n");
+		//	throw("Could not allocate camera");
+		//}
+		//// get the first renderable camera
+		//MTransformationMatrix objTMatrix(this->mtfu_scene->camList[0]->dagPath.inclusiveMatrix());
+		//double rot[3];
+		//MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+		//objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
+		//MVector campos = objTMatrix.getTranslation(MSpace::kWorld);
+		//SiSetProperty3(camera, "translate", campos[0], campos[1], campos[2]);
+		//SiSetProperty3(camera, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
 
-		/* Light */
-		if( this->mtfu_scene->lightList.size() == 0)
-		{
-			logger.warning(MString("No light in scene, creating a default light."));
-			light = SiNewLight(SI_POINT_LIGHT);
-			if (light  == SI_BADID) 
-			{
-				fprintf(stderr, "Could not allocate light\n");
-				throw("Could not allocate light");
-			}
-			SiSetProperty3(light, "translate", campos[0] - 4, campos[1] + 4, campos[2]);
-		}else{
-			defineLights();
-		}
+		defineLights();
 
 		/* Shader */
 		shader = SiNewShader("PlasticShader");
@@ -169,13 +168,16 @@ void FujiRenderer::render()
 			MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
 			double rot[3];
 			double scale[3];
-			MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+			MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::kXYZ;
 			objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
 			MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
 			objTMatrix.getScale(scale, MSpace::kWorld);
 			SiSetProperty3(object, "translate", pos[0], pos[1], pos[2]);
 			SiSetProperty3(object, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
 			SiSetProperty3(object, "scale", scale[0], scale[1], scale[2]);
+			logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
+			logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
+
 			SiAssignShader(object, shader);
 		}
 		/* FrameBuffer */
@@ -187,16 +189,13 @@ void FujiRenderer::render()
 			throw("Could not allocate framebuffer");
 		}
 
-		/* Renderer */
-		renderer = SiNewRenderer();
-		if (renderer == SI_BADID) {
-		fprintf(stderr, "Could not allocate renderer\n");
-		throw("Could not allocate renderer");
-		}
 
 		SiSetProperty2(renderer, "resolution", W, H);
-		SiAssignCamera(renderer, camera);
 		SiAssignFrameBuffer(renderer, framebuffer);
+		SiSetProperty1(renderer, "threads", this->mtfu_renderGlobals->threads);
+		SiSetProperty2(renderer, "pixelsamples", this->mtfu_renderGlobals->samplesX, this->mtfu_renderGlobals->samplesY);
+		SiSetProperty1(renderer, "use_max_thread", 0);
+		//SiSetProperty1(renderer, "thread_count", 1);
 
 		callbacks.setCallbacks(renderer);
 
@@ -204,7 +203,13 @@ void FujiRenderer::render()
 		MString imageOutputFile = this->mtfu_renderGlobals->imageOutputFile;
 		FujiImgTools::ImgTools imgTools;
 		MString fbFile = imageOutputFile + ".fb";
-		SiRenderScene(renderer);
+		Status result = SiRenderScene(renderer);
+		if( result == SI_BADID )
+		{
+			logger.error("Renderer exited with error.");
+			SiCloseScene();
+			return;
+		}
 		SiSaveFrameBuffer(framebuffer, fbFile.asChar());
 		imgTools.FrameBufferToExr(fbFile);
 		SiCloseScene();

@@ -12,8 +12,17 @@ public:
 	mtfu_RenderGlobals();
 	
 //	------------- automatically created attributes start ----------- // 
-	int imageFormat;
-	int pixelFilter;
+	float sampleJitter;
+	bool cast_shadow;
+	int max_reflect_depth;
+	int max_refract_depth;
+	float raymarch_step;
+	float raymarch_shadow_step;
+	float raymarch_reflect_ste;
+	float raymarch_refract_ste;
+	float sample_time_range_min;
+	float sample_time_range_max;
+	bool use_max_thread;
 //	------------- automatically created attributes end ----------- // 
 
 

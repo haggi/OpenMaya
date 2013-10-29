@@ -1,11 +1,11 @@
 #include "Fuji.h"
 #include "../mtfu_common/mtfu_mayaObject.h"
 #include "../mtfu_common/mtfu_renderGlobals.h"
-#include "src/MeshIO.h"
-#include "src/Mesh.h"
-#include "src/Array.h"
-#include "src/Vector.h"
-#include "src/TexCoord.h"
+#include "src/fj_mesh_io.h"
+#include "src/fj_mesh.h"
+#include "src/fj_array.h"
+#include "src/fj_vector.h"
+#include "src/fj_tex_coord.h"
 #include "maya/MFnMesh.h"
 #include "maya/MItMeshPolygon.h"
 #include <maya/MPointArray.h>
@@ -162,8 +162,9 @@ void FujiRenderer::writeMesh(MayaObject *o)
 		}		
 	}
 
-	MString fileName = this->mtfu_renderGlobals->basePath + "/" + obj->shortName + ".mesh";
-	fileName = "c:/daten/" + obj->shortName + ".mesh";
+	
+	MString fileName = this->mtfu_renderGlobals->basePath + "/" + makeGoodString(obj->shortName) + ".mesh";
+	fileName = "c:/daten/" +  makeGoodString(obj->shortName) + ".mesh";
 	MeshOutput *out = MshOpenOutputFile(fileName.asChar());
 	if( out == NULL )
 	{

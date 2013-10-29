@@ -413,10 +413,28 @@ bool MayaScene::updateScene()
 			this->shapeUpdateCallback(obj);
 	}
 
-	mIter = this->camList.begin();
-	for(;mIter!=this->camList.end(); mIter++)
+	//mIter = this->camList.begin();
+	//for(;mIter!=this->camList.end(); mIter++)
+	//{
+	//	MayaObject *obj = *mIter;
+	//	obj->updateObject();
+
+	//	if( !this->renderGlobals->isMbStartStep )
+	//		if( !obj->motionBlurred )
+	//			continue;
+	//	
+	//	if( this->renderGlobals->isTransformStep() )
+	//	{
+	//		if( this->renderGlobals->isMbStartStep )
+	//			obj->transformMatrices.clear();
+	//		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
+	//		this->transformUpdateCallback(obj);
+	//	}
+	//}
+
+	for(size_t camId = 0; camId < this->camList.size(); camId++)
 	{
-		MayaObject *obj = *mIter;
+		MayaObject *obj = this->camList[camId];
 		obj->updateObject();
 
 		if( !this->renderGlobals->isMbStartStep )
@@ -431,6 +449,8 @@ bool MayaScene::updateScene()
 			this->transformUpdateCallback(obj);
 		}
 	}
+
+
 
 	mIter = this->lightList.begin();
 	for(;mIter!=this->lightList.end(); mIter++)
@@ -766,7 +786,10 @@ void MayaScene::getPasses()
 			MFnDependencyNode camFn(obj->mobject);
 			getBool("renderable", camFn, renderable);
 			if( renderable )
+			{
 				rp->objectList.push_back(obj);
+				logger.debug(MString("Adding camera ") + camFn.name() + " to render cam list.");
+			}
 		}else{
 			rp->objectList.push_back(obj);
 		}

@@ -866,3 +866,24 @@ MObject getConnectedShadingEngine(MObject node)
 
 	return se;
 }
+
+
+void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scale)
+{
+	MTransformationMatrix objTMatrix(matrix);
+	double rotation[3];
+	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
+	objTMatrix.getRotation(rotation, rotOrder, MSpace::kWorld);
+	MVector position = objTMatrix.getTranslation(MSpace::kWorld);
+	double scal[3];
+	objTMatrix.getScale(scal, MSpace::kWorld);
+	rot.x = rotation[0];
+	rot.y = rotation[1];
+	rot.z = rotation[2];
+	pos.x = position.x;
+	pos.y = position.y;
+	pos.z = position.z;
+	scale.x = scal[0]; 
+	scale.y = scal[1]; 
+	scale.z = scal[2];
+}

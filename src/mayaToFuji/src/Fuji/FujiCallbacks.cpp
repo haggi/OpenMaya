@@ -1,7 +1,7 @@
 #include "FujiCallbacks.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
-#include "src/Color.h"
+#include "src/fj_color.h"
 
 static Logging logger;
 
@@ -65,7 +65,6 @@ namespace FujiRender
 		e.tile_ymin = ymin;
 		e.tile_ymax = ymax;
 		theRenderEventQueue()->push(e);
-
 
 		return FujiCallbacks::state;
 	}

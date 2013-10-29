@@ -48,7 +48,10 @@ bool MayaObject::isLight()
 bool MayaObject::isCamera()
 {
 	if( this->mobject.hasFn(MFn::kCamera))
+	{
+		this->motionBlurred = true;
 		return true;
+	}
 	return false;
 }
 
@@ -177,6 +180,10 @@ void MayaObject::initialize()
 	bool mb = true;
 	if( getBool(MString("motionBlur"), depFn, mb) )
 		this->motionBlurred = mb;
+	// cameras have motionBlur attribute but it is set to false by default and it is not accessible via UI
+	// but we want to have a blurred camera by default. 
+	if( this->mobject.hasFn(MFn::kCamera))
+		this->motionBlurred = true;
 	this->perObjectTransformSteps = 1;
 	this->perObjectDeformSteps = 1;
 	this->index = -1;

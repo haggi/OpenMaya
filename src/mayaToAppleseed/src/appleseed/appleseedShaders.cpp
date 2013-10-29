@@ -38,40 +38,40 @@ void AppleseedRenderer::defineMaterial(MObject shadingGroup)
 
 void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
-    // Create a color called "gray" and insert it into the assembly.
-    static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	if( this->scenePtr->colors().get_by_name("gray") == NULL)
-	{
-		this->scenePtr->colors().insert(
-			asr::ColorEntityFactory::create(
-				"gray",
-				asr::ParamArray()
-					.insert("color_space", "srgb"),
-				asr::ColorValueArray(3, GrayReflectance)));
-	}
-	if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
-	{
-		// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
-		assembly->bsdfs().insert(
-			asr::LambertianBRDFFactory().create(
-				"diffuse_gray_brdf",
-				asr::ParamArray()
-					.insert("reflectance", "gray")));
+ //   // Create a color called "gray" and insert it into the assembly.
+ //   static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
+	//if( this->scenePtr->colors().get_by_name("gray") == NULL)
+	//{
+	//	this->scenePtr->colors().insert(
+	//		asr::ColorEntityFactory::create(
+	//			"gray",
+	//			asr::ParamArray()
+	//				.insert("color_space", "srgb"),
+	//			asr::ColorValueArray(3, GrayReflectance)));
+	//}
+	//if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
+	//{
+	//	// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
+	//	assembly->bsdfs().insert(
+	//		asr::LambertianBRDFFactory().create(
+	//			"diffuse_gray_brdf",
+	//			asr::ParamArray()
+	//				.insert("reflectance", "gray")));
 
-		// Create a physical surface shader and insert it into the assembly.
-		assembly->surface_shaders().insert(
-			asr::PhysicalSurfaceShaderFactory().create(
-				"physical_surface_shader",
-				asr::ParamArray()));
+	//	// Create a physical surface shader and insert it into the assembly.
+	//	assembly->surface_shaders().insert(
+	//		asr::PhysicalSurfaceShaderFactory().create(
+	//			"physical_surface_shader",
+	//			asr::ParamArray()));
 
-		// Create a material called "gray_material" and insert it into the assembly.
-		assembly->materials().insert(
-			asr::MaterialFactory::create(
-				"gray_material",
-				asr::ParamArray()
-					.insert("surface_shader", "physical_surface_shader")
-					.insert("bsdf", "diffuse_gray_brdf")));
-	}
+	//	// Create a material called "gray_material" and insert it into the assembly.
+	//	assembly->materials().insert(
+	//		asr::MaterialFactory::create(
+	//			"gray_material",
+	//			asr::ParamArray()
+	//				.insert("surface_shader", "physical_surface_shader")
+	//				.insert("bsdf", "diffuse_gray_brdf")));
+	//}
 }
 
 void AppleseedRenderer::defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup)
@@ -111,453 +111,452 @@ void AppleseedRenderer::defineWireframeShader(asr::Assembly *assembly, MObject& 
 
 void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
+	//MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
+	//MFnDependencyNode shadingGroupNode(shadingGroup);
+	//MString materialName = shadingGroupNode.name();
+	//MFnDependencyNode shaderNode(surfaceShader);
+	//MString shaderName = shaderNode.name();
+	//logger.debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
 
-	MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
-	MString incandescenceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("incandescence"));
-	MColor incandescence;
-	getColor(MString("incandescence"), shaderNode, incandescence);
+	//MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
+	//MString incandescenceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("incandescence"));
+	//MColor incandescence;
+	//getColor(MString("incandescence"), shaderNode, incandescence);
 
-	MString edf_name = "";
-	// if incandescence is not black we think this is a self illuminated materials, we we create an edf
-	if( !isBlack(incandescence))
-	{		
-		edf_name = shaderNode.name() + "_incandescence_edf";
-		asr::ParamArray params;
-		params.insert("radiance", incandescenceAttributeDefinition.asChar());
-		assembly->edfs().insert(
-			asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
-	}
+	//MString edf_name = "";
+	//// if incandescence is not black we think this is a self illuminated materials, we we create an edf
+	//if( !isBlack(incandescence))
+	//{		
+	//	edf_name = shaderNode.name() + "_incandescence_edf";
+	//	asr::ParamArray params;
+	//	params.insert("radiance", incandescenceAttributeDefinition.asChar());
+	//	assembly->edfs().insert(
+	//		asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
+	//}
 
-	asf::auto_release_ptr<asr::BSDF> lambertShader;
-		
-	asr::Entity *entity = assembly->bsdfs().get_by_name(shaderName.asChar());
-	if( entity != NULL)
-		assembly->bsdfs().remove(entity);
+	//asf::auto_release_ptr<asr::BSDF> lambertShader;
+	//	
+	//asr::Entity *entity = assembly->bsdfs().get_by_name(shaderName.asChar());
+	//if( entity != NULL)
+	//	assembly->bsdfs().remove(entity);
 
-	lambertShader = asr::LambertianBRDFFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray()
-			.insert("reflectance", colorAttributeDefinition.asChar()));
-		
-	assembly->bsdfs().insert(lambertShader);
+	//lambertShader = asr::LambertianBRDFFactory().create(
+	//	shaderName.asChar(),
+	//	asr::ParamArray()
+	//		.insert("reflectance", colorAttributeDefinition.asChar()));
+	//	
+	//assembly->bsdfs().insert(lambertShader);
 
-	MString surfaceShaderNode = shaderName + "phys_surf";
-	entity = assembly->surface_shaders().get_by_name(surfaceShaderNode.asChar());
-	if( entity != NULL)
-		assembly->surface_shaders().remove(entity);
+	//MString surfaceShaderNode = shaderName + "phys_surf";
+	//entity = assembly->surface_shaders().get_by_name(surfaceShaderNode.asChar());
+	//if( entity != NULL)
+	//	assembly->surface_shaders().remove(entity);
 
-	asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
-	lambertSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
-			surfaceShaderNode.asChar(),
-			asr::ParamArray()
-			.insert("alpha_source", "material"));
+	//asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
+	//lambertSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
+	//		surfaceShaderNode.asChar(),
+	//		asr::ParamArray()
+	//		.insert("alpha_source", "material"));
 
-	assembly->surface_shaders().insert(lambertSurfaceShader);
+	//assembly->surface_shaders().insert(lambertSurfaceShader);
 
-	entity = assembly->materials().get_by_name(materialName.asChar());
-	if( entity != NULL)
-		assembly->materials().remove(entity);
+	//entity = assembly->materials().get_by_name(materialName.asChar());
+	//if( entity != NULL)
+	//	assembly->materials().remove(entity);
 
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", surfaceShaderNode.asChar());
-	materialParams.insert("bsdf", shaderName.asChar());
-	if( edf_name.length() > 0)
-		materialParams.insert("edf", edf_name.asChar());
+	//asr::ParamArray materialParams;
+	//materialParams.insert("surface_shader", surfaceShaderNode.asChar());
+	//materialParams.insert("bsdf", shaderName.asChar());
+	//if( edf_name.length() > 0)
+	//	materialParams.insert("edf", edf_name.asChar());
 
-	materialParams.insert("alpha_map", colorAttributeDefinition.asChar());
+	//materialParams.insert("alpha_map", colorAttributeDefinition.asChar());
 
-	assembly->materials().insert(
-		asr::MaterialFactory::create(
-				materialName.asChar(),
-				materialParams));
+	//assembly->materials().insert(
+	//	asr::MaterialFactory::create(
+	//			materialName.asChar(),
+	//			materialParams));
 
-	addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
+	//addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
 }
 
 
 void AppleseedRenderer::defineMayaPhongShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating mayaPhongShader: ") + shaderNode.name());
+	//MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
+	//MFnDependencyNode shadingGroupNode(shadingGroup);
+	//MString materialName = shadingGroupNode.name();
+	//MFnDependencyNode shaderNode(surfaceShader);
+	//MString shaderName = shaderNode.name();
+	//logger.debug(MString("Translating mayaPhongShader: ") + shaderNode.name());
 
-	MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
+	//MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
 
-	asf::auto_release_ptr<asr::BSDF> phongShader;
-	phongShader = asr::SpecularBRDFFactory().create(
-		shaderName.asChar(),
-		asr::ParamArray()
-			.insert("reflectance", colorAttributeDefinition.asChar()));
+	//asf::auto_release_ptr<asr::BSDF> phongShader;
+	//phongShader = asr::SpecularBRDFFactory().create(
+	//	shaderName.asChar(),
+	//	asr::ParamArray()
+	//		.insert("reflectance", colorAttributeDefinition.asChar()));
 
-	assembly->bsdfs().insert(phongShader);
+	//assembly->bsdfs().insert(phongShader);
 
-	MString surfaceShaderName = shaderName + "phys_surf";
-	asf::auto_release_ptr<asr::SurfaceShader> phongSurfaceShader;
-	phongSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
-			surfaceShaderName.asChar(),
-			asr::ParamArray());
+	//MString surfaceShaderName = shaderName + "phys_surf";
+	//asf::auto_release_ptr<asr::SurfaceShader> phongSurfaceShader;
+	//phongSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
+	//		surfaceShaderName.asChar(),
+	//		asr::ParamArray());
 
-	assembly->surface_shaders().insert(phongSurfaceShader);
+	//assembly->surface_shaders().insert(phongSurfaceShader);
 
-	assembly->materials().insert(
-		asr::MaterialFactory::create(
-			materialName.asChar(),
-			asr::ParamArray()
-				.insert("surface_shader", surfaceShaderName.asChar())
-				.insert("bsdf", shaderName.asChar())));
+	//assembly->materials().insert(
+	//	asr::MaterialFactory::create(
+	//		materialName.asChar(),
+	//		asr::ParamArray()
+	//			.insert("surface_shader", surfaceShaderName.asChar())
+	//			.insert("bsdf", shaderName.asChar())));
 }
 
 
 void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& shadingGroup, bool update = false)
 {
+	//MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
+	//MFnDependencyNode shadingGroupNode(shadingGroup);
+	//MString materialName = shadingGroupNode.name();
+	//MFnDependencyNode shaderNode(surfaceShader);
+	//MString shaderName = shaderNode.name();
+	//logger.debug(MString("Translating physicalSurfaceShader: ") + shaderNode.name());
 
-	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	MFnDependencyNode shadingGroupNode(shadingGroup);
-	MString materialName = shadingGroupNode.name();
-	MFnDependencyNode shaderNode(surfaceShader);
-	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating physicalSurfaceShader: ") + shaderNode.name());
+	//MString matteReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("matte_reflectance"));
+	//MString specReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("specular_reflectance"));
 
-	MString matteReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("matte_reflectance"));
-	MString specReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("specular_reflectance"));
+	//float specular_reflectance_multiplier = 1.0f;
+	//getFloat(MString("specular_reflectance_multiplier"), shaderNode, specular_reflectance_multiplier);
 
-	float specular_reflectance_multiplier = 1.0f;
-	getFloat(MString("specular_reflectance_multiplier"), shaderNode, specular_reflectance_multiplier);
+	//float shinyU = 1000.0f;
+	//float shinyV = 1000.0f;
+	//getFloat(MString("shininess_u"), shaderNode, shinyU);
+	//getFloat(MString("shininess_v"), shaderNode, shinyV);
 
-	float shinyU = 1000.0f;
-	float shinyV = 1000.0f;
-	getFloat(MString("shininess_u"), shaderNode, shinyU);
-	getFloat(MString("shininess_v"), shaderNode, shinyV);
+	//float matte_reflectance_multiplier = 1.0f;
+	//getFloat(MString("matte_reflectance_multiplier"), shaderNode, matte_reflectance_multiplier);
+	//
+	//float fresnel_multiplier = 1.0f;
+	//getFloat(MString("fresnel_multiplier"), shaderNode, fresnel_multiplier);
 
-	float matte_reflectance_multiplier = 1.0f;
-	getFloat(MString("matte_reflectance_multiplier"), shaderNode, matte_reflectance_multiplier);
-	
-	float fresnel_multiplier = 1.0f;
-	getFloat(MString("fresnel_multiplier"), shaderNode, fresnel_multiplier);
+	//float roughness = .5f;
+	//getFloat(MString("roughness"), shaderNode, roughness);
 
-	float roughness = .5f;
-	getFloat(MString("roughness"), shaderNode, roughness);
+	//int shaderType = 0;
+	//getInt(MString("bsdf"), shaderNode, shaderType);		
+	//float transmittanceMultiplier = 1.0f;
+	//float from_ior = 1.0f;
+	//float to_ior = 1.0f;
+	//MColor transmittance(1.0f,1.0f,1.0f);
+	//bool doubleSided = false;
 
-	int shaderType = 0;
-	getInt(MString("bsdf"), shaderNode, shaderType);		
-	float transmittanceMultiplier = 1.0f;
-	float from_ior = 1.0f;
-	float to_ior = 1.0f;
-	MColor transmittance(1.0f,1.0f,1.0f);
-	bool doubleSided = false;
+	//asf::auto_release_ptr<asr::BSDF> bsdf;
+	//asf::auto_release_ptr<asr::BSDF> bsdfBack;
 
-	asf::auto_release_ptr<asr::BSDF> bsdf;
-	asf::auto_release_ptr<asr::BSDF> bsdfBack;
+	//switch(shaderType)
+	//{
+	//case 0: // lambert
+	//	if( update )
+	//	{
+	//		assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//				.insert("reflectance", matteReflAttributeDefinition.asChar())
+	//				.insert("reflectance_multiplier", matte_reflectance_multiplier);
+	//		return;
+	//	}else{
+	//		bsdf = asr::LambertianBRDFFactory().create(
+	//			shaderName.asChar(),
+	//			asr::ParamArray()
+	//				.insert("reflectance", matteReflAttributeDefinition.asChar())
+	//				.insert("reflectance_multiplier", matte_reflectance_multiplier)
+	//				);
+	//	}
+	//	break;
+	//case 1: // Ashikhmin
+	//	if( update )
+	//	{
+	//		assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//				.insert("diffuse_reflectance", matteReflAttributeDefinition.asChar())
+	//				.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
+	//				.insert("glossy_reflectance", specReflAttributeDefinition.asChar())
+	//				.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
+	//				.insert("shininess_u", shinyU)
+	//				.insert("shininess_v", shinyV)
+	//				.insert("fresnel_multiplier", fresnel_multiplier)
+	//				;
+	//		return;
+	//	}else{
+	//		bsdf = asr::AshikhminBRDFFactory().create(
+	//			shaderName.asChar(),
+	//			asr::ParamArray()
+	//				.insert("diffuse_reflectance", matteReflAttributeDefinition.asChar())
+	//				.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
+	//				.insert("glossy_reflectance", specReflAttributeDefinition.asChar())
+	//				.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
+	//				.insert("shininess_u", shinyU)
+	//				.insert("shininess_v", shinyV)
+	//				.insert("fresnel_multiplier", fresnel_multiplier)
+	//				);
+	//	}
+	//	break;
+	//case 2: // Kelemen
+	//	if( update )
+	//	{
+	//		assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//			.insert("matte_reflectance", matteReflAttributeDefinition.asChar())
+	//			.insert("matte_reflectance_multiplier", matte_reflectance_multiplier)				
+	//			.insert("specular_reflectance", specReflAttributeDefinition.asChar())
+	//			.insert("specular_reflectance_multiplier", specular_reflectance_multiplier)
+	//			.insert("roughness", roughness)
+	//			;
+	//		return;
+	//	}else{
+	//		bsdf = asr::KelemenBRDFFactory().create(
+	//		shaderName.asChar(),
+	//		asr::ParamArray()
+	//			.insert("matte_reflectance", matteReflAttributeDefinition.asChar())
+	//			.insert("matte_reflectance_multiplier", matte_reflectance_multiplier)				
+	//			.insert("specular_reflectance", specReflAttributeDefinition.asChar())
+	//			.insert("specular_reflectance_multiplier", specular_reflectance_multiplier)
+	//			.insert("roughness", roughness)
+	//			);
+	//	}
+	//	break;
+	//case 3: // Specular		
+	//	{
+	//		MString transmittanceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("transmittance"));
+	//		getFloat(MString("transmittance_multiplier"), shaderNode, transmittanceMultiplier);
+	//		getFloat(MString("from_ior"), shaderNode, from_ior);
+	//		getFloat(MString("to_ior"), shaderNode, to_ior);
+	//		// if transmittance > 0 then create a specular_btdf, else a specular brdf
+	//		bool isTransparent = (transmittance.r + transmittance.g + transmittance.b) > 0.0f;
+	//		doubleSided = true;
+	//		if( isTransparent )
+	//		{
+	//			if( update )
+	//			{
+	//				assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//						.insert("reflectance",  specReflAttributeDefinition.asChar())
+	//						.insert("reflectance_multiplier",specular_reflectance_multiplier)
+	//						.insert("from_ior", (MString("") + from_ior).asChar())
+	//						.insert("to_ior", (MString("") + to_ior).asChar())
+	//						.insert("transmittance", transmittanceAttributeDefinition.asChar())
+	//						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+	//					;
+	//				assembly->bsdfs().get_by_name((shaderName + "_back").asChar())->get_parameters()			
+	//						.insert("reflectance",  specReflAttributeDefinition.asChar())
+	//						.insert("reflectance_multiplier",specular_reflectance_multiplier)
+	//						.insert("from_ior", (MString("") + to_ior).asChar())
+	//						.insert("to_ior", (MString("") + from_ior).asChar())
+	//						.insert("transmittance", transmittanceAttributeDefinition.asChar())
+	//						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+	//					;
+	//				return;
+	//			}else{
+	//				bsdf = asr::SpecularBTDFFactory().create(
+	//					(shaderName).asChar(),
+	//					asr::ParamArray()
+	//						.insert("reflectance",  specReflAttributeDefinition.asChar())
+	//						.insert("reflectance_multiplier",specular_reflectance_multiplier)
+	//						.insert("from_ior", (MString("") + from_ior).asChar())
+	//						.insert("to_ior", (MString("") + to_ior).asChar())
+	//						.insert("transmittance", transmittanceAttributeDefinition.asChar())
+	//						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+	//						);
+	//				bsdfBack = asr::SpecularBTDFFactory().create(
+	//					(shaderName + "_back").asChar(),
+	//					asr::ParamArray()
+	//						.insert("reflectance", specReflAttributeDefinition.asChar())
+	//						.insert("reflectance_multiplier", specular_reflectance_multiplier)
+	//						.insert("from_ior", (MString("") + to_ior).asChar())
+	//						.insert("to_ior", (MString("") + from_ior).asChar())
+	//						.insert("transmittance", transmittanceAttributeDefinition.asChar())
+	//						.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
+	//						);
+	//			}
+	//		}else{
+	//			if( update )
+	//			{
+	//				assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//						.insert("reflectance", specReflAttributeDefinition.asChar())
+	//					;
+	//				return;
+	//			}else{
+	//				bsdf = asr::SpecularBRDFFactory().create(
+	//					shaderName.asChar(),
+	//					asr::ParamArray()
+	//						.insert("reflectance", specReflAttributeDefinition.asChar())
+	//						);
+	//			}
+	//		}
+	//	}
+	//	break;
+	//case 4: // Phong
+	//	if( update )
+	//	{
+	//		assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//				.insert("reflectance", specReflAttributeDefinition.asChar());
+	//			;
+	//		return;
+	//	}else{
+	//		bsdf = asr::SpecularBRDFFactory().create(
+	//			shaderName.asChar(),
+	//			asr::ParamArray()
+	//				.insert("reflectance", specReflAttributeDefinition.asChar()));
+	//	}
+	//	break;
+	//case 5: // microfacet
+	//	{
+	//		float mdf_param = 1.0f;
+	//		getFloat(MString("mdf_parameter"), shaderNode, mdf_param);
+	//		int id = 0;
+	//		MString mdf("blinn");
+	//		getEnum(MString("mdf"), shaderNode, id, mdf);
+	//		mdf = pystring::lower(mdf.asChar()).c_str();
+	//		if( update )
+	//		{
+	//			assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
+	//					.insert("mdf", mdf.asChar())
+	//					.insert("mdf_parameter", mdf_param)
+	//					.insert("reflectance", specReflAttributeDefinition.asChar())
+	//					.insert("reflectance_multiplier", specular_reflectance_multiplier)
+	//					.insert("fresnel_multiplier",fresnel_multiplier)
+	//				;
+	//			return;
+	//		}else{
+	//			bsdf = asr::MicrofacetBRDFFactory().create(
+	//				shaderName.asChar(),
+	//				asr::ParamArray()
+	//					.insert("mdf", mdf.asChar())
+	//					.insert("mdf_parameter", mdf_param)
+	//					.insert("reflectance", specReflAttributeDefinition.asChar())
+	//					.insert("reflectance_multiplier", specular_reflectance_multiplier)
+	//					.insert("fresnel_multiplier",fresnel_multiplier)
+	//					);
+	//		}
+	//	}
+	//	break;
+	//}
 
-	switch(shaderType)
-	{
-	case 0: // lambert
-		if( update )
-		{
-			assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-					.insert("reflectance", matteReflAttributeDefinition.asChar())
-					.insert("reflectance_multiplier", matte_reflectance_multiplier);
-			return;
-		}else{
-			bsdf = asr::LambertianBRDFFactory().create(
-				shaderName.asChar(),
-				asr::ParamArray()
-					.insert("reflectance", matteReflAttributeDefinition.asChar())
-					.insert("reflectance_multiplier", matte_reflectance_multiplier)
-					);
-		}
-		break;
-	case 1: // Ashikhmin
-		if( update )
-		{
-			assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-					.insert("diffuse_reflectance", matteReflAttributeDefinition.asChar())
-					.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
-					.insert("glossy_reflectance", specReflAttributeDefinition.asChar())
-					.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
-					.insert("shininess_u", shinyU)
-					.insert("shininess_v", shinyV)
-					.insert("fresnel_multiplier", fresnel_multiplier)
-					;
-			return;
-		}else{
-			bsdf = asr::AshikhminBRDFFactory().create(
-				shaderName.asChar(),
-				asr::ParamArray()
-					.insert("diffuse_reflectance", matteReflAttributeDefinition.asChar())
-					.insert("diffuse_reflectance_multiplier", matte_reflectance_multiplier)
-					.insert("glossy_reflectance", specReflAttributeDefinition.asChar())
-					.insert("glossy_reflectance_multiplier", specular_reflectance_multiplier)
-					.insert("shininess_u", shinyU)
-					.insert("shininess_v", shinyV)
-					.insert("fresnel_multiplier", fresnel_multiplier)
-					);
-		}
-		break;
-	case 2: // Kelemen
-		if( update )
-		{
-			assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-				.insert("matte_reflectance", matteReflAttributeDefinition.asChar())
-				.insert("matte_reflectance_multiplier", matte_reflectance_multiplier)				
-				.insert("specular_reflectance", specReflAttributeDefinition.asChar())
-				.insert("specular_reflectance_multiplier", specular_reflectance_multiplier)
-				.insert("roughness", roughness)
-				;
-			return;
-		}else{
-			bsdf = asr::KelemenBRDFFactory().create(
-			shaderName.asChar(),
-			asr::ParamArray()
-				.insert("matte_reflectance", matteReflAttributeDefinition.asChar())
-				.insert("matte_reflectance_multiplier", matte_reflectance_multiplier)				
-				.insert("specular_reflectance", specReflAttributeDefinition.asChar())
-				.insert("specular_reflectance_multiplier", specular_reflectance_multiplier)
-				.insert("roughness", roughness)
-				);
-		}
-		break;
-	case 3: // Specular		
-		{
-			MString transmittanceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("transmittance"));
-			getFloat(MString("transmittance_multiplier"), shaderNode, transmittanceMultiplier);
-			getFloat(MString("from_ior"), shaderNode, from_ior);
-			getFloat(MString("to_ior"), shaderNode, to_ior);
-			// if transmittance > 0 then create a specular_btdf, else a specular brdf
-			bool isTransparent = (transmittance.r + transmittance.g + transmittance.b) > 0.0f;
-			doubleSided = true;
-			if( isTransparent )
-			{
-				if( update )
-				{
-					assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-							.insert("reflectance",  specReflAttributeDefinition.asChar())
-							.insert("reflectance_multiplier",specular_reflectance_multiplier)
-							.insert("from_ior", (MString("") + from_ior).asChar())
-							.insert("to_ior", (MString("") + to_ior).asChar())
-							.insert("transmittance", transmittanceAttributeDefinition.asChar())
-							.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-						;
-					assembly->bsdfs().get_by_name((shaderName + "_back").asChar())->get_parameters()			
-							.insert("reflectance",  specReflAttributeDefinition.asChar())
-							.insert("reflectance_multiplier",specular_reflectance_multiplier)
-							.insert("from_ior", (MString("") + to_ior).asChar())
-							.insert("to_ior", (MString("") + from_ior).asChar())
-							.insert("transmittance", transmittanceAttributeDefinition.asChar())
-							.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-						;
-					return;
-				}else{
-					bsdf = asr::SpecularBTDFFactory().create(
-						(shaderName).asChar(),
-						asr::ParamArray()
-							.insert("reflectance",  specReflAttributeDefinition.asChar())
-							.insert("reflectance_multiplier",specular_reflectance_multiplier)
-							.insert("from_ior", (MString("") + from_ior).asChar())
-							.insert("to_ior", (MString("") + to_ior).asChar())
-							.insert("transmittance", transmittanceAttributeDefinition.asChar())
-							.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-							);
-					bsdfBack = asr::SpecularBTDFFactory().create(
-						(shaderName + "_back").asChar(),
-						asr::ParamArray()
-							.insert("reflectance", specReflAttributeDefinition.asChar())
-							.insert("reflectance_multiplier", specular_reflectance_multiplier)
-							.insert("from_ior", (MString("") + to_ior).asChar())
-							.insert("to_ior", (MString("") + from_ior).asChar())
-							.insert("transmittance", transmittanceAttributeDefinition.asChar())
-							.insert("transmittance_multiplier", (MString("") + transmittanceMultiplier).asChar())
-							);
-				}
-			}else{
-				if( update )
-				{
-					assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-							.insert("reflectance", specReflAttributeDefinition.asChar())
-						;
-					return;
-				}else{
-					bsdf = asr::SpecularBRDFFactory().create(
-						shaderName.asChar(),
-						asr::ParamArray()
-							.insert("reflectance", specReflAttributeDefinition.asChar())
-							);
-				}
-			}
-		}
-		break;
-	case 4: // Phong
-		if( update )
-		{
-			assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-					.insert("reflectance", specReflAttributeDefinition.asChar());
-				;
-			return;
-		}else{
-			bsdf = asr::SpecularBRDFFactory().create(
-				shaderName.asChar(),
-				asr::ParamArray()
-					.insert("reflectance", specReflAttributeDefinition.asChar()));
-		}
-		break;
-	case 5: // microfacet
-		{
-			float mdf_param = 1.0f;
-			getFloat(MString("mdf_parameter"), shaderNode, mdf_param);
-			int id = 0;
-			MString mdf("blinn");
-			getEnum(MString("mdf"), shaderNode, id, mdf);
-			mdf = pystring::lower(mdf.asChar()).c_str();
-			if( update )
-			{
-				assembly->bsdfs().get_by_name(shaderName.asChar())->get_parameters()			
-						.insert("mdf", mdf.asChar())
-						.insert("mdf_parameter", mdf_param)
-						.insert("reflectance", specReflAttributeDefinition.asChar())
-						.insert("reflectance_multiplier", specular_reflectance_multiplier)
-						.insert("fresnel_multiplier",fresnel_multiplier)
-					;
-				return;
-			}else{
-				bsdf = asr::MicrofacetBRDFFactory().create(
-					shaderName.asChar(),
-					asr::ParamArray()
-						.insert("mdf", mdf.asChar())
-						.insert("mdf_parameter", mdf_param)
-						.insert("reflectance", specReflAttributeDefinition.asChar())
-						.insert("reflectance_multiplier", specular_reflectance_multiplier)
-						.insert("fresnel_multiplier",fresnel_multiplier)
-						);
-			}
-		}
-		break;
-	}
+	//assembly->bsdfs().insert(bsdf);
+	//	
+	//// we have a front/back side shading
+	//if( doubleSided )
+	//{
+	//	assembly->bsdfs().insert(bsdfBack);
+	//}
 
-	assembly->bsdfs().insert(bsdf);
-		
-	// we have a front/back side shading
-	if( doubleSided )
-	{
-		assembly->bsdfs().insert(bsdfBack);
-	}
+	//// EDF
+	//bool emitLight = false;
+	//getBool(MString("emitLight"), shaderNode, emitLight);
+	//MString edfName = "";
+	//if( emitLight )
+	//{
+	//	MString exitanceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("transmittance"));
+	//	edfName = shaderNode.name() + "_exitance_edf";
+	//	asr::ParamArray params;
+	//	params.insert("radiance", exitanceAttributeDefinition.asChar());
+	//	edfName = shaderNode.name() + "_edf";
 
-	// EDF
-	bool emitLight = false;
-	getBool(MString("emitLight"), shaderNode, emitLight);
-	MString edfName = "";
-	if( emitLight )
-	{
-		MString exitanceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("transmittance"));
-		edfName = shaderNode.name() + "_exitance_edf";
-		asr::ParamArray params;
-		params.insert("radiance", exitanceAttributeDefinition.asChar());
-		edfName = shaderNode.name() + "_edf";
+	//	MString edfType = "diffuse";
+	//	int id = 0;
+	//	getEnum("emitLightType", shaderNode, id, edfType);
+	//	if( edfType == "cone")
+	//	{
+	//		float angle = 90.0f;
+	//		getFloat("angle", shaderNode, angle);
+	//		params.insert("angle", angle);
+	//		assembly->edfs().insert(
+	//			asr::ConeEDFFactory().create(edfName.asChar(), params));
+	//	}else{
+	//		assembly->edfs().insert(
+	//			asr::DiffuseEDFFactory().create(edfName.asChar(), params));
+	//	}
 
-		MString edfType = "diffuse";
-		int id = 0;
-		getEnum("emitLightType", shaderNode, id, edfType);
-		if( edfType == "cone")
-		{
-			float angle = 90.0f;
-			getFloat("angle", shaderNode, angle);
-			params.insert("angle", angle);
-			assembly->edfs().insert(
-				asr::ConeEDFFactory().create(edfName.asChar(), params));
-		}else{
-			assembly->edfs().insert(
-				asr::DiffuseEDFFactory().create(edfName.asChar(), params));
-		}
+	//}		
 
-	}		
+	//MString surfaceShaderName = shaderName + "phys_surf";
+	//asf::auto_release_ptr<asr::SurfaceShader> physSurfaceShader;
 
-	MString surfaceShaderName = shaderName + "phys_surf";
-	asf::auto_release_ptr<asr::SurfaceShader> physSurfaceShader;
+	//asr::ParamArray physSurfaceParams;
+	//float tranclucency = 0.0f;
+	//getFloat(MString("translucency"), shaderNode, tranclucency);
+	//if( tranclucency > 0.0f)
+	//	physSurfaceParams.insert("translucency", tranclucency);
+	//{
+	//	bool useAerialPerspective = false;
+	//	getBool("useAerialPerspective", shaderNode, useAerialPerspective);
+	//	float aerial_persp_distance = 1000.0f;
+	//	getFloat("aerial_persp_distance", shaderNode, aerial_persp_distance); 
+	//	float aerial_persp_intensity = 0.001f;
+	//	getFloat("aerial_persp_intensity", shaderNode, aerial_persp_intensity); 
+	//	MString aerial_persp_mode = "none";
+	//	int id = 0;
+	//	getEnum("aerial_persp_mode", shaderNode, id, aerial_persp_mode); 
+	//	if(useAerialPerspective)
+	//	{
+	//		physSurfaceParams.insert("aerial_persp_distance", aerial_persp_distance);
+	//		physSurfaceParams.insert("aerial_persp_intensity", aerial_persp_intensity);
+	//		physSurfaceParams.insert("aerial_persp_mode", aerial_persp_mode.asChar());
+	//	}
+	//}
+	//float alpha_multiplier = 1.0f;
+	//getFloat("alpha_multiplier", shaderNode, alpha_multiplier); 
+	//physSurfaceParams.insert("alpha_multiplier", alpha_multiplier);
 
-	asr::ParamArray physSurfaceParams;
-	float tranclucency = 0.0f;
-	getFloat(MString("translucency"), shaderNode, tranclucency);
-	if( tranclucency > 0.0f)
-		physSurfaceParams.insert("translucency", tranclucency);
-	{
-		bool useAerialPerspective = false;
-		getBool("useAerialPerspective", shaderNode, useAerialPerspective);
-		float aerial_persp_distance = 1000.0f;
-		getFloat("aerial_persp_distance", shaderNode, aerial_persp_distance); 
-		float aerial_persp_intensity = 0.001f;
-		getFloat("aerial_persp_intensity", shaderNode, aerial_persp_intensity); 
-		MString aerial_persp_mode = "none";
-		int id = 0;
-		getEnum("aerial_persp_mode", shaderNode, id, aerial_persp_mode); 
-		if(useAerialPerspective)
-		{
-			physSurfaceParams.insert("aerial_persp_distance", aerial_persp_distance);
-			physSurfaceParams.insert("aerial_persp_intensity", aerial_persp_intensity);
-			physSurfaceParams.insert("aerial_persp_mode", aerial_persp_mode.asChar());
-		}
-	}
-	float alpha_multiplier = 1.0f;
-	getFloat("alpha_multiplier", shaderNode, alpha_multiplier); 
-	physSurfaceParams.insert("alpha_multiplier", alpha_multiplier);
+	//float color_multiplier = 1.0f;
+	//getFloat("color_multiplier", shaderNode, color_multiplier); 
+	//physSurfaceParams.insert("color_multiplier", color_multiplier);
 
-	float color_multiplier = 1.0f;
-	getFloat("color_multiplier", shaderNode, color_multiplier); 
-	physSurfaceParams.insert("color_multiplier", color_multiplier);
+	//int front_lighting_samples = 1;
+	//getInt("front_lighting_samples", shaderNode, front_lighting_samples);
+	//physSurfaceParams.insert("front_lighting_samples", front_lighting_samples);
 
-	int front_lighting_samples = 1;
-	getInt("front_lighting_samples", shaderNode, front_lighting_samples);
-	physSurfaceParams.insert("front_lighting_samples", front_lighting_samples);
+	//int back_lighting_samples = 1;
+	//getInt("back_lighting_samples", shaderNode, back_lighting_samples);
+	//physSurfaceParams.insert("back_lighting_samples", back_lighting_samples);
 
-	int back_lighting_samples = 1;
-	getInt("back_lighting_samples", shaderNode, back_lighting_samples);
-	physSurfaceParams.insert("back_lighting_samples", back_lighting_samples);
+	//physSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
+	//		surfaceShaderName.asChar(),
+	//		physSurfaceParams);
+	//assembly->surface_shaders().insert(physSurfaceShader);
 
-	physSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
-			surfaceShaderName.asChar(),
-			physSurfaceParams);
-	assembly->surface_shaders().insert(physSurfaceShader);
+	//if(this->defineAOVShaders(assembly, surfaceShaderName))
+	//{
+	//	logger.debug(MString("Successfully created an aov shader called: ") + surfaceShaderName);
+	//}
 
-	if(this->defineAOVShaders(assembly, surfaceShaderName))
-	{
-		logger.debug(MString("Successfully created an aov shader called: ") + surfaceShaderName);
-	}
+	//asr::ParamArray materialParams;
+	//materialParams.insert("surface_shader", surfaceShaderName.asChar());
+	//materialParams.insert("bsdf", shaderName.asChar());
+	//if( edfName != "")
+	//	materialParams.insert("edf", edfName.asChar());
 
-	asr::ParamArray materialParams;
-	materialParams.insert("surface_shader", surfaceShaderName.asChar());
-	materialParams.insert("bsdf", shaderName.asChar());
-	if( edfName != "")
-		materialParams.insert("edf", edfName.asChar());
+	//defineBumpMap(materialParams, surfaceShader);
 
-	defineBumpMap(materialParams, surfaceShader);
+	//assembly->materials().insert(
+	//		asr::MaterialFactory::create(
+	//		materialName.asChar(),
+	//		materialParams));
 
-	assembly->materials().insert(
-			asr::MaterialFactory::create(
-			materialName.asChar(),
-			materialParams));
+	//// this is not a good way to implement the double sided shading, have to find a better one
+	//if( doubleSided )
+	//{
+	//	asr::ParamArray materialParams;
+	//	materialParams.insert("surface_shader", surfaceShaderName.asChar());
+	//	materialParams.insert("bsdf", (shaderName + "_back").asChar());
+	//	if( edfName != "")
+	//		materialParams.insert("edf", edfName.asChar());
+	//	assembly->materials().insert(
+	//			asr::MaterialFactory::create(
+	//			(materialName + "_back").asChar(),
+	//			materialParams));
+	//}
 
-	// this is not a good way to implement the double sided shading, have to find a better one
-	if( doubleSided )
-	{
-		asr::ParamArray materialParams;
-		materialParams.insert("surface_shader", surfaceShaderName.asChar());
-		materialParams.insert("bsdf", (shaderName + "_back").asChar());
-		if( edfName != "")
-			materialParams.insert("edf", edfName.asChar());
-		assembly->materials().insert(
-				asr::MaterialFactory::create(
-				(materialName + "_back").asChar(),
-				materialParams));
-	}
-
-	addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
+	//addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
 }
 
 
@@ -704,15 +703,6 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 	return true;
 }
 
-//<material name="white_material" model="generic_material">
-//        <parameter name="bsdf" value="white_material_brdf" />
-//        <parameter name="bump_amplitude" value="0.1" />
-//        <parameter name="displacement_map" value="bump_inst" />
-//        <parameter name="displacement_method" value="bump" />
-//        <parameter name="surface_shader" value="physical_shader" />
-//    </material>
-//
-
 // translate shaders here, will be seperated later if we have a real shading language
 void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
 {
@@ -729,8 +719,6 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 	{
 		shadingGroup = obj->shadingGroups[sgId];
 
-		//this->defineMaterial(obj->shadingGroups[sgId]);
-
 		MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), shadingGroup);
 		if( surfaceShaderNode == MObject::kNullObj)
 			return;
@@ -744,60 +732,6 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 			materialNames.push_back(materialName.asChar());
 			return;		
 		}
-
-		MFn::Type shaderType = surfaceShaderNode.apiType();
-		MFnDependencyNode depFn(surfaceShaderNode);
-
-		MFnDependencyNode shaderNode(surfaceShaderNode);
-		MString shaderName = shaderNode.name();
-
-		asf::auto_release_ptr<asr::BSDF> bsdf, bsdfFront, bsdfBack;
-
-		int type_id = depFn.typeId().id();
-		if( type_id ==  SMOKE_SHADER)
-		{
-			this->defineSmokeShader(assembly, shadingGroup);
-		}
-		if( type_id ==  DIAGNOSTIC_SHADER)
-		{
-			this->defineDiagnosticShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( type_id ==  CONST_SHADER)
-		{
-			this->defineConstantShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( type_id ==  FASTSSS_SHADER)
-		{
-			this->defineFastSSSShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( type_id ==  AOVOXEL_SHADER)
-		{		
-			this->defineAoVoxelShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( type_id ==  AO_SHADER)
-		{
-			this->defineAoShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( type_id ==  PHYSICAL_SURFACE_SHADER)
-		{
-			this->definePhysSurfShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( shaderType == MFn::kLambert)
-		{
-			this->defineMayaLambertShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}
-		if( shaderType == MFn::kPhong)
-		{
-			this->defineMayaPhongShader(assembly, shadingGroup);
-			materialNames.push_back(materialName.asChar());
-		}	
 
 		// if we have double sided shading, we have a xx_back material 
 		if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)

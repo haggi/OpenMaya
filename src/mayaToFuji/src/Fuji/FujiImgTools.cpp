@@ -4,8 +4,8 @@ See LICENSE and README
 */
 
 #include "FujiImgTools.h"
-#include "src/FrameBufferIO.h"
-#include "src/FrameBuffer.h"
+#include "src/fj_framebuffer_io.h"
+#include "src/fj_framebuffer.h"
 #include <ImfChannelList.h>
 #include <ImfOutputFile.h>
 #include <ImfRgbaFile.h>
@@ -35,7 +35,7 @@ void ImgTools::FrameBufferToExr(MString fileName)
 		logger.error(MString("Could not open framebuffer input: ") + fileName);
 		return;
 	}
-	MString outputFileName = pystring::replace(fileName.asChar(), ".fb", ".exr").c_str();
+	MString outputFileName = pystring::replace(fileName.asChar(), ".fb", "").c_str();
 	logger.info(MString("Trying to write framebuffer to: ") + outputFileName);
 
 	if (FbReadHeader(in)) 
@@ -65,6 +65,12 @@ void ImgTools::FrameBufferToExr(MString fileName)
 	const int width = FbGetWidth(fb);
 	const int height = FbGetHeight(fb);
 	const int nchannels = FbGetChannelCount(fb);
+
+	if( (width < 1) || (height < 1))
+	{
+		logger.error(MString("ImgTools::FrameBufferToExr::Heavy error, width or height == 0."));
+		return;
+	}
 
 	std::vector<Imf::Rgba> rgba(width * height);
 	const float *px = FbGetReadOnly(fb, 0, 0, 0);

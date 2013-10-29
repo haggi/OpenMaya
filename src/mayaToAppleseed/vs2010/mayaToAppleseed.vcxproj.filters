@@ -68,9 +68,6 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp">
-      <Filter>common\shadingTools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
@@ -109,30 +106,6 @@
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp">
       <Filter>common\utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_aoShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_aoVoxelShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_constantShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_diagnosticShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_fastSSSShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_pysicalSurfaceShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_smokeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\mtap_wireframeShader.cpp">
-      <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseed.cpp">
       <Filter>Source Files\appleseed</Filter>
@@ -200,6 +173,126 @@
     <ClCompile Include="..\src\appleseed\appleseedUpdateElements.cpp">
       <Filter>Source Files\appleseed</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_material.cpp">
+      <Filter>mtap_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_shadingNode.cpp">
+      <Filter>mtap_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedShadingNodes.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_blendMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_blendMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_mixMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_mixMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asCone_edfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asCone_edfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMaterialMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMaterialMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -222,9 +315,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\tools.h">
       <Filter>common\utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h">
-      <Filter>common\shadingTools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h">
       <Filter>common\shadingTools</Filter>
@@ -258,30 +348,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h">
       <Filter>common\utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_aoShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_aoVoxelShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_constantShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_diagnosticShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_fastSSSShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_physicalSurfaceShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_smokeShader.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\mtap_wireframeShader.h">
-      <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\appleseed\appleseed.h">
       <Filter>Source Files\appleseed</Filter>
@@ -328,6 +394,126 @@
     <ClInclude Include="..\src\mtap_common\mtap_standinMeshNode.h">
       <Filter>mtap_common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
+      <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_common\mtap_material.h">
+      <Filter>mtap_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_common\mtp_shadingNode.h">
+      <Filter>mtap_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtap_common\mtap_shadingNode.h">
+      <Filter>mtap_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_blendMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_blendMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_mixMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_mixMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asCone_edfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asCone_edfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMaterialMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMaterialMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
@@ -337,6 +523,15 @@
       <Filter>ressources</Filter>
     </None>
     <None Include="todo.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="..\releaseNotes.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="..\mtap_devmodule\ressources\shaderDefinitions.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\Materials.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

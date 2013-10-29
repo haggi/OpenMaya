@@ -2,7 +2,7 @@
 #define mtfu_MAYA_OBJECT_H
 
 #include <maya/MMatrix.h>
-#include "src/SceneInterface.h"
+#include "src/fj_scene_interface.h"
 
 #include "mayaObject.h"
 

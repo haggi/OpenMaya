@@ -2,13 +2,14 @@
 #frame Renderer
 sampleJitter, float, SampleJitter, 1.0
 cast_shadow, bool, Cast Shadows, true
-max_reflect_depth, int, Max Reflection Depth, 4
-max_refract_depth, int, Max Refraction Depth, 4
-raymarch_step, float, Raymarching Stepsize, 0.1
-raymarch_shadow_step, float, Raymarching Shadow Stepsize, 1.0
-raymarch_reflect_ste, float, Raymarching Reflection Stepsize, 10.0
-raymarch_refract_ste, float, Raymarching Refraction Stepsize, 10.0
+max_reflect_depth, int, Max Reflection Depth, 3
+max_refract_depth, int, Max Refraction Depth, 3
+raymarch_step, float, Raymarching Stepsize, 0.05
+raymarch_shadow_step, float, Raymarching Shadow Stepsize, 0.1
+raymarch_reflect_ste, float, Raymarching Reflection Stepsize, 0.1
+raymarch_refract_ste, float, Raymarching Refraction Stepsize, 0.1
 sample_time_range_min, float, Sample Time Range Min, 0.0
 sample_time_range_max, float, Sample Time Range Max, 1.0
+use_max_thread, bool, Use Max Threads, true
 
  	

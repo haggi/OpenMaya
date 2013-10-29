@@ -20,8 +20,8 @@ def removeAutoShaderNodes():
         except:
             log.debug("Reconnecting of orig node " + origName + " failed.")
             
-#    if len(nodes) > 0:
-#        pm.delete(nodes)
+    if len(nodes) > 0:
+        pm.delete(nodes)
 
 def createAsMaterialNode(shadingNode):
     mat = pm.createNode("asMaterial")

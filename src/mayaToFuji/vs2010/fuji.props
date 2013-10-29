@@ -3,16 +3,17 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <FUJIYAMA_ROOT>C:\Users\haggi\coding\fujiyama</FUJIYAMA_ROOT>
-    <ILM_ROOT>C:\Users\haggi\coding\OpenExr\Deploy</ILM_ROOT>
+    <BOOST_ROOT>C:\Users\haggi\coding\C++Libraries\Boost147_2010</BOOST_ROOT>
+    <OPENEXR_ROOT>C:\Users\haggi\coding\OpenExr\OpenEXR1.7Deploy</OPENEXR_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);$(ILM_ROOT)/include;$(ILM_ROOT)/include/config.windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)/visual_studio\express_2012\Fujiyama-Renderer-for-Win\x64\Debug;$(ILM_ROOT)\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libscene.lib;IlmImf.lib;Half.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)/visual_studio\express_2012\Fujiyama-Renderer-for-Win\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libscene.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -20,8 +21,12 @@
       <Value>$(FUJIYAMA_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
-    <BuildMacro Include="ILM_ROOT">
-      <Value>$(ILM_ROOT)</Value>
+    <BuildMacro Include="BOOST_ROOT">
+      <Value>$(BOOST_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXR_ROOT">
+      <Value>$(OPENEXR_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

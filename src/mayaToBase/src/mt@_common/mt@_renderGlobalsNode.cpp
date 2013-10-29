@@ -13,7 +13,9 @@ MTypeId	MayaTo@Globals::id(0x00106EF3);
 
 
 MayaTo@Globals::MayaTo@Globals()
-{}
+{
+	imageFormatList.append("Exr");
+}
 
 MayaTo@Globals::~MayaTo@Globals()
 {}

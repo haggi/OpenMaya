@@ -41,32 +41,37 @@ class FujiRenderer(Renderer.MayaToRenderer):
         parentForm = pm.setParent(query = True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
+
+        if self.rendererTabUiDict.has_key('common'):
+            self.rendererTabUiDict.pop('common')
+        
+        parentForm = pm.setParent(query = True)
+        uiDict = {}
+        self.rendererTabUiDict['common'] = uiDict
+        
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Adaptive Sampling:", value1 = False, cc = self.FujiRendererUpdateTab)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".adaptiveSampling", index = 2)
-                    self.rendererTabUiDict['minSamples'] = pm.intFieldGrp(label="Samples min:", value1 = 2, numberOfFields = 1)
-                    pm.connectControl(self.rendererTabUiDict['minSamples'], self.renderGlobalsNodeName + ".minSamples", index = 2 )
-                    ui = pm.intFieldGrp(label="Samples max:", value1 = 16, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".maxSamples", index = 2 )
-                    self.rendererTabUiDict['maxError'] = pm.floatFieldGrp(label="Max Error:", value1 = 0.01, numberOfFields = 1)
-                    pm.connectControl(self.rendererTabUiDict['maxError'], self.renderGlobalsNodeName + ".maxError", index = 2 )
+                with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):                
+                    self.addRenderGlobalsUIElement(attName = 'sampleJitter', uiType = 'float', displayName = 'SampleJitter', default='1.0', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'sample_time_range_min', uiType = 'float', displayName = 'Sample Time Range Min', default='0.0', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'sample_time_range_max', uiType = 'float', displayName = 'Sample Time Range Max', default='1.0', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'samplesX', uiType = 'int', displayName = 'Pixel Samples x', default=3, uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'samplesY', uiType = 'int', displayName = 'Pixel Samples y', default=3, uiDict=uiDict)
                     pm.separator()
-                    ui = pm.checkBoxGrp(label="Motionblur:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index = 2 )
-                    ui = pm.checkBoxGrp(label="Depth Of Field:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index = 2 )
+                    self.addRenderGlobalsUIElement(attName = 'cast_shadow', uiType = 'bool', displayName = 'Cast Shadows', default='true', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'max_reflect_depth', uiType = 'int', displayName = 'Max Reflection Depth', default='3', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'max_refract_depth', uiType = 'int', displayName = 'Max Refraction Depth', default='3', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'raymarch_step', uiType = 'float', displayName = 'Raymarching Stepsize', default='0.05', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'raymarch_shadow_step', uiType = 'float', displayName = 'Raymarching Shadow Stepsize', default='0.1', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'raymarch_reflect_ste', uiType = 'float', displayName = 'Raymarching Reflection Stepsize', default='0.1', uiDict=uiDict)                    
+                    self.addRenderGlobalsUIElement(attName = 'raymarch_refract_ste', uiType = 'float', displayName = 'Raymarching Refraction Stepsize', default='0.1', uiDict=uiDict)                                        
+                    pm.separator()
+                    self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motionblur:', default=False, uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth of Field:', default=False, uiDict=uiDict)
                     
                 with pm.frameLayout(label="Output", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
                     ui = pm.attrEnumOptionMenuGrp(label = "Image Format", at=self.renderGlobalsNodeName + ".imageFormat", ei = self.getEnumList(attr)) 
-                    #attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
-                    #ui = pm.attrEnumOptionMenuGrp(label = "Bit Depth", at=self.renderGlobalsNodeName + ".bitdepth", ei = self.getEnumList(attr)) 
-                    #attr = pm.Attribute(self.renderGlobalsNodeName + ".colorSpace")
-                    #ui = pm.attrEnumOptionMenuGrp(label = "Color Space", at=self.renderGlobalsNodeName + ".colorSpace", ei = self.getEnumList(attr)) 
-                    #ui = pm.checkBoxGrp(label="Clamping:", value1 = False)
-                    #pm.connectControl(ui, self.renderGlobalsNodeName + ".clamping", index = 2 )
                     
                 with pm.frameLayout(label="Filtering", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
@@ -74,49 +79,12 @@ class FujiRenderer(Renderer.MayaToRenderer):
                     ui = pm.intFieldGrp(label="Filter Size:", numberOfFields = 1)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".filtersize", index = 2 )
 
-#                with pm.frameLayout(label="Lighting", collapsable = True, collapse=False):
-#                    attr = pm.Attribute(self.renderGlobalsNodeName + ".lightingEngine")
-#                    ui = pm.attrEnumOptionMenuGrp(label = "Lighting Engine", at=self.renderGlobalsNodeName + ".lightingEngine", ei = self.getEnumList(attr)) 
-#                    ui = pm.intFieldGrp(label="Max Trace Depth:", value1 = 4, numberOfFields = 1)
-#                    pm.connectControl(ui, self.renderGlobalsNodeName + ".maxTraceDepth", index = 2 )
-#                    ui = pm.checkBoxGrp(label="Caustics:", value1 = False)
-#                    pm.connectControl(ui, self.renderGlobalsNodeName + ".caustics", index = 2 )
-#                    with pm.frameLayout(label="Advanced Lighting", collapsable = True, collapse=True):
-#                        ui = pm.intFieldGrp(label="Diffuse Depth:", value1 = 4, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".diffuseDepth", index = 2 )
-#                        ui = pm.intFieldGrp(label="Glossy Depth:", value1 = 4, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".glossyDepth", index = 2 )
-#                        ui = pm.intFieldGrp(label="Direct Light Samples:", value1 = 4, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".directLightSamples", index = 2 )
-#                    with pm.frameLayout(label="Environment Lighting", collapsable = True, collapse=True):
-#                        envDict = {}
-#                        self.rendererTabUiDict['environment'] = envDict
-#                        attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
-#                        ui = pm.attrEnumOptionMenu(label = "Environemnt Type", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
-#                        ui = pm.floatFieldGrp(label="Environemnt Intensity:", value1 = 1.0, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".environmentIntensity", index = 2 )
-#                        
-#                        envDict['environmentColor'] = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
-#                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentColor")
-#                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
-#                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientHorizon")
-#                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
-#                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
-#                        envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
-#                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
-#                        ui = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
-#                        ui = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
-#                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
-
-                    
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
-                    ui = pm.intFieldGrp(label="Threads:", numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".threads", index = 2 )
+                    self.addRenderGlobalsUIElement(attName = 'use_max_thread', uiType = 'bool', displayName = 'Use Max Threads', default='true', uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
                     ui = pm.intFieldGrp(label="Verbosity:", numberOfFields = 1)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".rendererVerbosity", index = 2 )
-                    ui = pm.intFieldGrp(label="Tile Size:", value1 = 32, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".tilesize", index = 2 )
                     
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
@@ -126,7 +94,12 @@ class FujiRenderer(Renderer.MayaToRenderer):
     def FujiRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
         log.debug("FujiRendererUpdateTab()")
-
+        uiDict = self.rendererTabUiDict['common']
+        
+        uiDict['threads'].setEnable(False)
+        if not self.renderGlobalsNode.use_max_thread.get():
+            uiDict['threads'].setEnable(True)
+            
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
         filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")

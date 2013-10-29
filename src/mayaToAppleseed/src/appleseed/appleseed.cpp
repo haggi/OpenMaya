@@ -223,32 +223,24 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 		asf::StringDictionary matDict = asf::StringDictionary();
 		asf::StringDictionary matBackDict = asf::StringDictionary();
 
-		// if no material is attached, use a default material
-		if( material_names.size() == 0)
+		int counterFront = 0;
+		int counterBack = 0;
+		if( isProxy )
 		{
-			material_names.push_back("gray_material");
-			matDict.insert("default", "gray_material");
-			matBackDict.insert("default", "gray_material");
+			logger.debug(MString("mesh is proxy, getting material names from mesh."));
+			size_t numMat = meshObject->get_material_slot_count();
+			for( size_t i = 0; i < numMat; i++)
+			{						
+				matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), meshObject->get_material_slot(i));
+				matDict.insert(MString(MString("slot_") + counterFront++).asChar(), meshObject->get_material_slot(i));			
+			}
 		}else{
-			int counterFront = 0;
-			int counterBack = 0;
-			if( isProxy )
-			{
-				logger.debug(MString("mesh is proxy, getting material names from mesh."));
-				size_t numMat = meshObject->get_material_slot_count();
-				for( size_t i = 0; i < numMat; i++)
-				{						
-					matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), meshObject->get_material_slot(i));
-					matDict.insert(MString(MString("slot_") + counterFront++).asChar(), meshObject->get_material_slot(i));			
-				}
-			}else{
-				for( size_t i = 0; i < material_names.size(); i++)
-				{	
-					if( pystring::endswith(material_names[i], "_back") )
-						matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
-					else
-						matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);			
-				}
+			for( size_t i = 0; i < material_names.size(); i++)
+			{	
+				if( pystring::endswith(material_names[i], "_back") )
+					matBackDict.insert(MString(MString("slot_") + counterBack++).asChar(), material_names[i]);
+				else
+					matDict.insert(MString(MString("slot_") + counterFront++).asChar(), material_names[i]);			
 			}
 		}
 

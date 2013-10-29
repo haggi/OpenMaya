@@ -14,7 +14,7 @@ mtfu_RenderGlobals::mtfu_RenderGlobals()
 
 MString mtfu_RenderGlobals::getImageExt()
 {
-	return MString("ext");
+	return this->imageFormatString;
 }
 
 bool mtfu_RenderGlobals::getMtFujiGlobals()
@@ -58,14 +58,44 @@ bool mtfu_RenderGlobals::getMtFujiGlobals()
 		}
 
 //	------------- automatically created attributes start ----------- // 
-		if(!getEnum(MString("imageFormat"), FujiGlobals, this->imageFormat))
-			throw("problem reading fujiGlobals.imageFormat");
+		if(!getFloat(MString("sampleJitter"), FujiGlobals, this->sampleJitter))
+			throw("problem reading fujiGlobals.sampleJitter");
 
-		if(!getEnum(MString("pixelFilter"), FujiGlobals, this->pixelFilter))
-			throw("problem reading fujiGlobals.pixelFilter");
+		if(!getBool(MString("cast_shadow"), FujiGlobals, this->cast_shadow))
+			throw("problem reading fujiGlobals.cast_shadow");
+
+		if(!getInt(MString("max_reflect_depth"), FujiGlobals, this->max_reflect_depth))
+			throw("problem reading fujiGlobals.max_reflect_depth");
+
+		if(!getInt(MString("max_refract_depth"), FujiGlobals, this->max_refract_depth))
+			throw("problem reading fujiGlobals.max_refract_depth");
+
+		if(!getFloat(MString("raymarch_step"), FujiGlobals, this->raymarch_step))
+			throw("problem reading fujiGlobals.raymarch_step");
+
+		if(!getFloat(MString("raymarch_shadow_step"), FujiGlobals, this->raymarch_shadow_step))
+			throw("problem reading fujiGlobals.raymarch_shadow_step");
+
+		if(!getFloat(MString("raymarch_reflect_ste"), FujiGlobals, this->raymarch_reflect_ste))
+			throw("problem reading fujiGlobals.raymarch_reflect_ste");
+
+		if(!getFloat(MString("raymarch_refract_ste"), FujiGlobals, this->raymarch_refract_ste))
+			throw("problem reading fujiGlobals.raymarch_refract_ste");
+
+		if(!getFloat(MString("sample_time_range_min"), FujiGlobals, this->sample_time_range_min))
+			throw("problem reading fujiGlobals.sample_time_range_min");
+
+		if(!getFloat(MString("sample_time_range_max"), FujiGlobals, this->sample_time_range_max))
+			throw("problem reading fujiGlobals.sample_time_range_max");
+
+		if(!getBool(MString("use_max_thread"), FujiGlobals, this->use_max_thread))
+			throw("problem reading fujiGlobals.use_max_thread");
 
 //	------------- automatically created attributes end ----------- // 
-		
+
+		if(!getEnum(MString("imageFormat"), FujiGlobals, this->imageFormatId, this->imageFormatString))
+			throw("problem reading FujiGlobals.imageFormat");
+
 		if(!getFloat(MString("filtersize"), FujiGlobals, this->filterSize))
 			throw("problem reading FujiGlobals.filtersize");
 

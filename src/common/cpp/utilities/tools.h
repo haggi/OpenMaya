@@ -137,5 +137,8 @@ MString getAttributeNameFromPlug(MPlug& plug);
 
 MObject getConnectedShadingEngine(MObject node);
 
+void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scale);
+
+
 #endif
 

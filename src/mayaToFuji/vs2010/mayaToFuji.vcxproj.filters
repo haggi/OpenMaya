@@ -71,9 +71,6 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp">
-      <Filter>common\shadingTools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
@@ -179,6 +176,9 @@
     <ClCompile Include="..\src\Fuji\FujiImgTools.cpp">
       <Filter>Source Files\Fuji</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -201,9 +201,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\tools.h">
       <Filter>common\utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h">
-      <Filter>common\shadingTools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h">
       <Filter>common\shadingTools</Filter>
@@ -288,6 +285,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Fuji\FujiImgTools.h">
       <Filter>Source Files\Fuji</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
+      <Filter>common\shadingTools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

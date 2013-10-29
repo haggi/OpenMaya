@@ -39,26 +39,6 @@ class @Renderer(Renderer.MayaToRenderer):
         envDict = self.rendererTabUiDict['environment']
         envType = self.renderGlobalsNode.environmentType.get()
         #Constant
-        if envType == 0:
-            envDict['environmentColor'].setEnable(True)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(False)
-        if envType == 1:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(True)
-            envDict['gradientZenit'].setEnable(True)
-            envDict['environmentMap'].setEnable(False)
-        if envType == 2:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(True)
-        if envType == 3:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(True)
             
     def @RendererCreateTab(self):
         log.debug("@RendererCreateTab()")
@@ -66,82 +46,20 @@ class @Renderer(Renderer.MayaToRenderer):
         parentForm = pm.setParent(query = True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
         scLo = self.rendererName + "ScrollLayout"
+        if self.rendererTabUiDict.has_key('common'):
+            self.rendererTabUiDict.pop('common')        
+        uiDict = {}
+        self.rendererTabUiDict['common'] = uiDict
+        
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
                 with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Adaptive Sampling:", value1 = False, cc = self.@RendererUpdateTab)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".adaptiveSampling", index = 2)
-                    self.rendererTabUiDict['minSamples'] = pm.intFieldGrp(label="Samples min:", value1 = 2, numberOfFields = 1)
-                    pm.connectControl(self.rendererTabUiDict['minSamples'], self.renderGlobalsNodeName + ".minSamples", index = 2 )
-                    ui = pm.intFieldGrp(label="Samples max:", value1 = 16, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".maxSamples", index = 2 )
-                    self.rendererTabUiDict['maxError'] = pm.floatFieldGrp(label="Max Error:", value1 = 0.01, numberOfFields = 1)
-                    pm.connectControl(self.rendererTabUiDict['maxError'], self.renderGlobalsNodeName + ".maxError", index = 2 )
-                    pm.separator()
-                    ui = pm.checkBoxGrp(label="Motionblur:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index = 2 )
-                    ui = pm.checkBoxGrp(label="Depth Of Field:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index = 2 )
-                    
-                with pm.frameLayout(label="Output", collapsable = True, collapse=False):
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Image Format", at=self.renderGlobalsNodeName + ".imageFormat", ei = self.getEnumList(attr)) 
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Bit Depth", at=self.renderGlobalsNodeName + ".bitdepth", ei = self.getEnumList(attr)) 
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".colorSpace")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Color Space", at=self.renderGlobalsNodeName + ".colorSpace", ei = self.getEnumList(attr)) 
-                    ui = pm.checkBoxGrp(label="Clamping:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".clamping", index = 2 )
-                    
-                with pm.frameLayout(label="Filtering", collapsable = True, collapse=False):
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Filter Type", at=self.renderGlobalsNodeName + ".filtertype", ei = self.getEnumList(attr)) 
-                    ui = pm.intFieldGrp(label="Filter Size:", numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".filtersize", index = 2 )
-
-                with pm.frameLayout(label="Lighting", collapsable = True, collapse=False):
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".lightingEngine")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Lighting Engine", at=self.renderGlobalsNodeName + ".lightingEngine", ei = self.getEnumList(attr)) 
-                    ui = pm.intFieldGrp(label="Max Trace Depth:", value1 = 4, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".maxTraceDepth", index = 2 )
-                    ui = pm.checkBoxGrp(label="Caustics:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".caustics", index = 2 )
-                    with pm.frameLayout(label="Advanced Lighting", collapsable = True, collapse=True):
-                        ui = pm.intFieldGrp(label="Diffuse Depth:", value1 = 4, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".diffuseDepth", index = 2 )
-                        ui = pm.intFieldGrp(label="Glossy Depth:", value1 = 4, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".glossyDepth", index = 2 )
-                        ui = pm.intFieldGrp(label="Direct Light Samples:", value1 = 4, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".directLightSamples", index = 2 )
-                    with pm.frameLayout(label="Environment Lighting", collapsable = True, collapse=True):
-                        envDict = {}
-                        self.rendererTabUiDict['environment'] = envDict
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentType")
-                        ui = pm.attrEnumOptionMenu(label = "Environemnt Type", cc=self.updateEnvironment, at=self.renderGlobalsNodeName + ".environmentType", ei = self.getEnumList(attr)) 
-                        ui = pm.floatFieldGrp(label="Environemnt Intensity:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".environmentIntensity", index = 2 )
-                        
-                        envDict['environmentColor'] = pm.attrColorSliderGrp(label = "Environment Color", at=self.renderGlobalsNodeName + ".environmentColor")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentColor")
-                        envDict['gradientHorizon'] = pm.attrColorSliderGrp(label = "Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientHorizon")
-                        envDict['gradientZenit'] = pm.attrColorSliderGrp(label = "Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".gradientZenit")
-                        envDict['environmentMap'] = pm.attrColorSliderGrp(label = "Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".environmentMap")
-                        ui = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongHoShift", index = 2 )
-                        ui = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1 = 1.0, numberOfFields = 1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".latlongVeShift", index = 2 )
+                    self.addRenderGlobalsUIElement(attName = 'adaptiveSampling', uiType = 'bool', displayName = 'Adaptive Sampling:', default='True', uiDict=uiDict)
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
-                    ui = pm.intFieldGrp(label="Threads:", numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".threads", index = 2 )
-                    ui = pm.intFieldGrp(label="Verbosity:", numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".rendererVerbosity", index = 2 )
-                    ui = pm.intFieldGrp(label="Tile Size:", value1 = 32, numberOfFields = 1)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".tilesize", index = 2 )
+                    self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
                     
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
@@ -184,8 +102,6 @@ class @Renderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
-                    attr = pm.Attribute(self.renderGlobalsNodeName + ".assemblyExportType")
-                    ui = pm.attrEnumOptionMenuGrp(label = "Assembly Export Type", at=self.renderGlobalsNodeName + ".assemblyExportType", ei = self.getEnumList(attr))                     
                 with pm.frameLayout(label="@ XML export", collapsable = True, collapse=False):
                     ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )

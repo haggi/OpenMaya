@@ -1,7 +1,7 @@
 #ifndef MTFU_RENDER_H
 #define MTFU_RENDER_H
 
-#include "src/SceneInterface.h"
+#include "src/fj_scene_interface.h"
 #include "rendering/renderer.h"
 #include "FujiCallbacks.h"
 #include <maya/MObject.h>
@@ -23,6 +23,9 @@ public:
 	FujiCallbacks callbacks;
 	std::vector<mtfu_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
+
+	ID framebuffer;
+	ID renderer;
 
 	FujiRenderer();
 	~FujiRenderer();

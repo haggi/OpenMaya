@@ -1,8 +1,8 @@
 #ifndef MTFU_CALLBACKS_H
 #define MTFU_CALLBACKS_H
 
-#include "src/SceneInterface.h"
-#include "src/Framebuffer.h"
+#include "src/fj_scene_interface.h"
+#include "src/fj_framebuffer.h"
 
 namespace FujiRender
 {

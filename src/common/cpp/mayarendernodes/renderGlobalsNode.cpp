@@ -69,34 +69,12 @@ void MayaRenderGlobalsNode::postConstructor()
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
-	//adaptiveSamplingDV = true;
-	//int minSamplesDV;
-	//int maxSamplesDV;
-
-	//// sampling raster based
-	//int samplesXDV;
-	//int samplesYDV;
-
-	//bool doMotionBlurDV;
-	//bool doDofDV;
-
-	//// 
-	//int threadsDV;
-	//int translatorVerbosityDV;
-	//int rendererVerbosityDV;
-
-	// detectShapeDeformDV;
-
 	// pixel filtering
 	// filtertype is renderer specific. It will be defined in subclass
 	filtersizeDV = 3.0f;
 	tilesizeDV = 32;
 
 	gammaDV = 1.0f;
-
-	//MString basePathDV;
-	//MString imagePathDV;
-	//MString imageNameDV;
 
 	maxTraceDepthDV = 4;
 

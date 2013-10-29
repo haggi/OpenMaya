@@ -150,6 +150,8 @@ public:
 	MString imagePath;
 	MString imageName;
 	MString imageOutputFile; // complete path to current image file
+	int		imageFormatId;
+	MString imageFormatString;
 
 	MString preFrameScript;
 	MString postFrameScript;
