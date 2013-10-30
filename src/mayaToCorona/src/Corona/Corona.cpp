@@ -8,6 +8,7 @@ CoronaRenderer::CoronaRenderer()
 {}
 CoronaRenderer::~CoronaRenderer()
 {}
+
 void CoronaRenderer::render()
 {
 	EventQueue::Event e;
@@ -15,6 +16,7 @@ void CoronaRenderer::render()
 	e.type = EventQueue::Event::FRAMEDONE;
 	theRenderEventQueue()->push(e);
 }
+
 void CoronaRenderer::initializeRenderer()
 {}
 void CoronaRenderer::updateShape(MayaObject *obj)

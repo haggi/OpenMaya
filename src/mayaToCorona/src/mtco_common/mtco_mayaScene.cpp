@@ -12,7 +12,6 @@ static Logging logger;
 mtco_MayaScene::mtco_MayaScene():MayaScene(MayaScene::NORMAL)
 {
 	getRenderGlobals();
-	this->cando_ipr = false;
 	this->mtco_renderer.mtco_scene = this;
 	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
 	//this->mtco_renderer.definePreRender();
@@ -21,7 +20,6 @@ mtco_MayaScene::mtco_MayaScene():MayaScene(MayaScene::NORMAL)
 mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 {
 	getRenderGlobals();
-	this->cando_ipr = false;
 	this->mtco_renderer.mtco_scene = this;
 	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
 	//this->mtco_renderer.definePreRender();

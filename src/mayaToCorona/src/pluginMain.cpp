@@ -3,6 +3,7 @@
 
 #include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
+#include "utilities/tools.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
@@ -26,11 +27,15 @@ MStatus initializePlugin( MObject obj )
 	command += "\");}\n";
 	MGlobal::executeCommand( command );
 
-	status = plugin.registerNode(MayaToCoronaGlobalsName, MayaToCoronaGlobals::id, MayaToCoronaGlobals::creator, MayaToCoronaGlobals::initialize );
+	status = plugin.registerNode(MayaTocoronaGlobalsName, MayaTocoronaGlobals::id, MayaTocoronaGlobals::creator, MayaTocoronaGlobals::initialize );
 	if (!status) {
 		status.perror("cannot register node: MayaToCoronaGlobals");
 		return status;
 	}
+
+	setRendererName("Corona");
+	setRendererShortCutName("mtCorona");
+	setRendererHome(getenv("MTCorona_HOME"));
 
 	MString cmd = MString("import mtco_initialize as minit; minit.initRenderer()");
 	MGlobal::displayInfo("try to register...");
@@ -65,14 +70,7 @@ MStatus uninitializePlugin( MObject obj)
 		return status;
 	}
    
-	//std::cout << "deregister mtCorona shader\n";
-	//status = plugin.deregisterNode( mtco_surfaceShader::id);
-	//if (!status) {
-	//	status.perror("cannot deregister node: mtco_surfaceShader");
-	//	return status;
-	//}
-
-	std::cout << "update mtco shader ui\n";
+	std::cout << "update mtCorona shader ui\n";
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
 	command += "\");}\n";

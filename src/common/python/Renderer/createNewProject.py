@@ -76,7 +76,7 @@ def createNewProject(rendererName=None, shortCut=None):
     recursiveFiles(sourceDirBase)
     
 if __name__ == "__main__":
-    createNewProject(rendererName="Indigo", shortCut="mtin")
+    createNewProject(rendererName="Corona", shortCut="mtco")
         
     
     

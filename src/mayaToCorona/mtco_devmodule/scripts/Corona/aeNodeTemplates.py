@@ -12,18 +12,18 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
 
 
-class AEcoronaNodeTemplate(BaseTemplate):
+class AECoronaNodeTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         self.buildBody(nodeName)
-        log.debug("AEcoronaNodeTemplate")
+        log.debug("AECoronaNodeTemplate")
         
     def buildCoronaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         if self.thisNode.type() == "camera":
-            log.debug("AEcoronaNodeTemplate:build camera AE")            
+            log.debug("AECoronaNodeTemplate:build camera AE")            
             self.beginLayout("Corona" ,collapse=1)
             self.endLayout()
     

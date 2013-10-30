@@ -45,6 +45,9 @@
     <Filter Include="common\rendering">
       <UniqueIdentifier>{c1321075-f141-478e-bd26-f9286a239cdc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\translators">
+      <UniqueIdentifier>{2a28f46a-b40f-4722-b926-505c84b0ed12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -146,6 +149,36 @@
     <ClCompile Include="..\src\Corona\CoronaTileCallback.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\materialBase.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\textureBase.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\materialBaseOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\translators\meshTranslator.cpp">
+      <Filter>common\translators</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaCamera.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -231,6 +264,30 @@
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaTileCallback.h">
       <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\materialBase.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\textureBase.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\materialBaseOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinMeshNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
+      <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\translators\meshTranslator.h">
+      <Filter>common\translators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h">
+      <Filter>mtco_common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

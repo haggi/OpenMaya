@@ -18,7 +18,13 @@ public:
 
 	CoronaRenderer();
 	~CoronaRenderer();
+	virtual void defineCamera();
+	virtual void defineEnvironment();
+	virtual void defineGeometry();
+	virtual void defineLights();
+
 	virtual void render();
+
 	virtual void initializeRenderer();
 	virtual void updateShape(MayaObject *obj);
 	virtual void updateTransform(MayaObject *obj);

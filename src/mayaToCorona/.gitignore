@@ -10,9 +10,10 @@
 *.lai
 *.la
 *.a
+*.dll
+*.pdb
 
-# appleseed devkit files
-*devkit.zip
-*devkit_win64*
-
-data
+# corona devkit files
+devkit/
+deployment/
+mtap_devmodule/bin/
