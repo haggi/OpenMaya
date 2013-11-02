@@ -2,9 +2,11 @@
 #include <maya/MSelectionList.h>
 #include <maya/MFnDagNode.h>
 
-#include "mtco_mayaScene.h"
+#include "mtco_renderGlobals.h"
+#include "mtco_MayaObject.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "mtco_mayaScene.h"
 
 static Logging logger;
 
@@ -14,7 +16,8 @@ mtco_MayaScene::mtco_MayaScene():MayaScene(MayaScene::NORMAL)
 	getRenderGlobals();
 	this->mtco_renderer.mtco_scene = this;
 	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
-	//this->mtco_renderer.definePreRender();
+	this->userThreadUpdateInterval = 200;
+	this->needsUserThread = true;
 }
 
 mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
@@ -24,6 +27,8 @@ mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
 	//this->mtco_renderer.definePreRender();
 	this->renderType = rtype;
+	this->userThreadUpdateInterval = 200;
+	this->needsUserThread = true;
 }
 
 mtco_MayaScene::~mtco_MayaScene()
@@ -302,7 +307,14 @@ void mtco_MayaScene::updateInteraciveRenderScene(std::vector<MObject> mobjList)
 
 void mtco_MayaScene::stopRendering()
 {
+	this->mtco_renderer.context.isCancelled = true;
 	this->mtco_renderer.abortRendering();
+}
+
+void mtco_MayaScene::userThreadProcedure()
+{
+	//logger.debug(MString("executing userThreadProcedure"));
+	this->mtco_renderer.framebufferCallback();	
 }
 
 bool mtco_MayaScene::renderImage()

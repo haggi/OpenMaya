@@ -203,7 +203,7 @@ void RenderQueueWorker::computationEventThread( void *dummy)
 			break;
 		}
 	}
-	logger.debug("computationEventThread finished.");
+	logger.detail("computationEventThread finished.");
 }
 
  void RenderQueueWorker::uiUpdateEventThread(void *dummy)
@@ -215,8 +215,24 @@ void RenderQueueWorker::computationEventThread( void *dummy)
 		e.type = EventQueue::Event::UPDATEUI;
 		theRenderEventQueue()->push(e);
 	}
-	logger.debug("uiUpdateEventThread finished.");
+	logger.detail("uiUpdateEventThread finished.");
  }
+
+ void RenderQueueWorker::userThread(void *dummy)
+ {
+	while(isRendering)
+	{
+		int updateInterval = 50;
+		if (mayaScenePtr != NULL)
+		{
+			updateInterval = mayaScenePtr->userThreadUpdateInterval;
+			mayaScenePtr->userThreadProcedure();
+		}
+		boost::this_thread::sleep(boost::posix_time::milliseconds(updateInterval));
+	}
+	logger.detail("userThread finished.");
+ }
+
 
 void RenderQueueWorker::startRenderQueueWorker()
 {
@@ -283,6 +299,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 				{
 					boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
 					boost::thread(RenderQueueWorker::uiUpdateEventThread, (void *)NULL);
+					if( mayaScenePtr->needsUserThread)
+						boost::thread(RenderQueueWorker::userThread, (void *)NULL);
 					renderComputation.beginComputation();
 				}
 

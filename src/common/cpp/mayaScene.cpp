@@ -23,16 +23,22 @@ static Logging logger;
 
 MayaScene::MayaScene(RenderType rtype)
 {
-	this->cando_ipr = false;
-	this->good = true;
+	this->init();
 	this->renderType = rtype;
 }
 
 MayaScene::MayaScene()
 {
+	this->init();
+}
+
+void MayaScene::init()
+{
 	this->cando_ipr = false;
 	this->good = true;
+	this->userThreadUpdateInterval = 50;
 	this->renderType = NORMAL;
+	this->needsUserThread = false;
 }
 
 bool MayaScene::canDoIPR()

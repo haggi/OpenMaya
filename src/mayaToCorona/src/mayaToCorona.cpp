@@ -6,6 +6,7 @@
 #include "mtco_common/mtco_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "mtco_common/mtco_renderGlobals.h"
 
 static Logging logger;
 

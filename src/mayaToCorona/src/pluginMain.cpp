@@ -27,7 +27,7 @@ MStatus initializePlugin( MObject obj )
 	command += "\");}\n";
 	MGlobal::executeCommand( command );
 
-	status = plugin.registerNode(MayaTocoronaGlobalsName, MayaTocoronaGlobals::id, MayaTocoronaGlobals::creator, MayaTocoronaGlobals::initialize );
+	status = plugin.registerNode(MayaToCoronaGlobalsName, MayaToCoronaGlobals::id, MayaToCoronaGlobals::creator, MayaToCoronaGlobals::initialize );
 	if (!status) {
 		status.perror("cannot register node: MayaToCoronaGlobals");
 		return status;

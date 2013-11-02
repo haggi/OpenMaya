@@ -1,10 +1,10 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "mtco_MayaObject.h"
-#include "mtco_mayaScene.h"
-
 #include <maya/MPlugArray.h>
 #include <maya/MFnDagNode.h>
+#include "mtco_mayaScene.h"
+
 
 static Logging logger;
 

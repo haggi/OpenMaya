@@ -177,7 +177,7 @@ public:
 	int currentRenderPassElementId;
 
 	RenderGlobals();
-	~RenderGlobals();
+	virtual ~RenderGlobals();
 	bool getDefaultGlobals();
 	bool getMbSteps( MObject& camera);
 	bool isTransformStep();

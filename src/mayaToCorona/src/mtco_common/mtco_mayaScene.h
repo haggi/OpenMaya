@@ -6,11 +6,13 @@
 #include <map>
 
 #include "mayaScene.h"
-#include "mtco_renderGlobals.h"
-#include "mtco_MayaObject.h"
-#include "../Corona/Corona.h"
 #include "utilities/MiniMap.h"
 
+#include "../Corona/Corona.h"
+
+
+class mtco_RenderGlobals;
+class mtco_MayaObject;
 
 class mtco_MayaScene : public MayaScene
 {
@@ -42,9 +44,10 @@ public:
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtco_MayaObject *getMayaObjectFromMap(MObject& mobj);
 	bool parseScene(ParseType ptype = NORMALPARSE);
+	virtual void userThreadProcedure();
 	mtco_MayaScene();
 	mtco_MayaScene(RenderType rtype);
-	~mtco_MayaScene();
+	virtual ~mtco_MayaScene();
 };
 
 

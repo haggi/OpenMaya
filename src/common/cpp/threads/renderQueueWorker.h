@@ -25,6 +25,7 @@ public:
 	static void pluginUnloadCallback(void *);
 	static void computationEventThread(void *);
 	static void uiUpdateEventThread(void *);
+	static void userThread(void *);
 private:
 };
 

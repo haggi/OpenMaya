@@ -67,6 +67,10 @@ public:
 	static void theRenderThread( MayaScene *mScene);
 	void startRenderThread();
 	virtual void stopRendering() = 0;
+	
+	int userThreadUpdateInterval;
+	bool needsUserThread;
+	virtual void userThreadProcedure() = 0; // this one can start an arbitrary thread which can be abused by the user
 
 	// the renderImage method is expected to fire of a render process somehow.
 	virtual bool renderImage() = 0; // the actual render job
@@ -100,9 +104,10 @@ public:
 
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);
+	void init();
 	MayaScene();
 	MayaScene(RenderType rtype);
-	~MayaScene();
+	virtual ~MayaScene();
 };
 
 #endif

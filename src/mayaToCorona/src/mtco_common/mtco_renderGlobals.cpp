@@ -12,6 +12,10 @@ mtco_RenderGlobals::mtco_RenderGlobals()
 	this->getMtCoronaGlobals();
 }
 
+mtco_RenderGlobals::~mtco_RenderGlobals()
+{
+}
+
 MString mtco_RenderGlobals::getImageExt()
 {
 	return MString("ext");

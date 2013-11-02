@@ -71,9 +71,6 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
       <Filter>common\utilities</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp">
-      <Filter>common\shadingTools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
@@ -146,9 +143,6 @@
     <ClCompile Include="..\src\Corona\CoronaRendererController.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaTileCallback.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\materialBase.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
@@ -179,6 +173,12 @@
     <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -201,9 +201,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\tools.h">
       <Filter>common\utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\shadingtools\readShaderDefs.h">
-      <Filter>common\shadingTools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h">
       <Filter>common\shadingTools</Filter>
@@ -262,9 +259,6 @@
     <ClInclude Include="..\src\Corona\CoronaRendererController.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaTileCallback.h">
-      <Filter>Source Files\Corona</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\materialBase.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
@@ -288,6 +282,15 @@
     </ClInclude>
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h">
       <Filter>mtco_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
+      <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\MyClasses.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaCallbacks.h">
+      <Filter>Source Files\Corona</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

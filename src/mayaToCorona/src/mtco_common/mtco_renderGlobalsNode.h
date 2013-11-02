@@ -3,7 +3,7 @@
 
 #include "mayarendernodes/renderGlobalsNode.h"
 
-const MString MayaTocoronaGlobalsName = "coronaGlobals";
+const MString MayaToCoronaGlobalsName = "coronaGlobals";
 
 class MayaToCoronaGlobals : public MayaRenderGlobalsNode
 {

@@ -10,7 +10,8 @@ class mtco_RenderGlobals : public RenderGlobals
 {
 public:
 	mtco_RenderGlobals();
-	
+	virtual ~mtco_RenderGlobals();
+		
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
 

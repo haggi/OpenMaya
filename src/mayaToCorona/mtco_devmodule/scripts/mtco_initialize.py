@@ -36,9 +36,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def updateEnvironment(self, dummy=None):
-        envDict = self.rendererTabUiDict['environment']
-        envType = self.renderGlobalsNode.environmentType.get()
-        #Constant
+        pass
             
     def CoronaRendererCreateTab(self):
         log.debug("CoronaRendererCreateTab()")
