@@ -20,6 +20,7 @@ void CoronaRenderer::framebufferCallback()
 
 	Corona::Pixel p = this->context.fb->getImageSize();
 
+
 	int width = p.x;
 	int height = p.y;
 	size_t numPixels = width * height;

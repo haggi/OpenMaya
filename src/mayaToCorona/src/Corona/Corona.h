@@ -7,6 +7,7 @@
 
 #include "CoronaCore/api/Api.h"
 
+
 class mtco_MayaScene;
 class mtco_RenderGlobals;
 class mtco_MayaObject;

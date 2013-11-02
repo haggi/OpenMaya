@@ -32,6 +32,7 @@ public:
     }
 };
 
+
 // A sample texture, that just maps the world position to a red-blue grid
 class MyCheckerMap : public Corona::Abstract::Map {
 public:

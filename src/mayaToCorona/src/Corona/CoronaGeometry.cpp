@@ -150,6 +150,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		geom->addPrimitive(sphere);
 	}
 
+
 }
 
 void CoronaRenderer::defineGeometry()

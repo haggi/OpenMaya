@@ -13,10 +13,7 @@ void CoronaRenderer::defineCamera()
 {
     //this->context.scene->getCamera().createPerspective(Corona::Pos(100, 100, 100), Corona::Pos::ZERO, Corona::Dir::UNIT_Z, DegToRad(45.f), 100.f);
 
-    // initialize the camera for a perspective view. 
-    // If we would use DOF, we would need to initialize additonal members
 
-	// get the first renderable camera
 	MPoint rot, pos, scale;
 	for( size_t camId = 0; camId < this->mtco_renderGlobals->currentRenderPass->objectList.size(); camId++)
 	{
@@ -35,7 +32,5 @@ void CoronaRenderer::defineCamera()
 		bool ir = cpos.isReal();
 		this->context.scene->getCamera().createPerspective(cpos, Corona::Pos::ZERO, Corona::Dir::UNIT_Z, DegToRad(45.0f), 100.f);
 	}
-
-	//this->context.scene->getCamera().createPerspective(Pos(100, 100, 100), Pos::ZERO, Dir::UNIT_Z, DEG_TO_RAD(45.f), 100.f);
 
 }
