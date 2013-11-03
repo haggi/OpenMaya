@@ -6,7 +6,7 @@
 
 #include "mtco_renderGlobalsNode.h"
 
-MTypeId	MayaToCoronaGlobals::id(0x00106EF3);
+MTypeId	MayaToCoronaGlobals::id(0x0011CF4C);
 
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
@@ -15,6 +15,7 @@ MTypeId	MayaToCoronaGlobals::id(0x00106EF3);
 MayaToCoronaGlobals::MayaToCoronaGlobals()
 {
 	imageFormatList.append("Exr");
+	imageFormatList.append("Png");
 }
 
 MayaToCoronaGlobals::~MayaToCoronaGlobals()

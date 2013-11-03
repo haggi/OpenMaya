@@ -4,9 +4,6 @@
 #include "CoronaCore/api/Api.h"
 #include <map>
 
-//using namespace Corona;
-
-// generates single floating point random number between 0 and 1
 float FLT_RAND() {
     return float(rand())/RAND_MAX;
 }

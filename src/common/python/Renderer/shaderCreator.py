@@ -615,14 +615,14 @@ def shaderCreator(renderer, shortCut):
             if newDict is not None:
                 newDict[att[0]] = att[1:]
     
-    fillNodes(attrDict)
-    pluginLoaders(attrDict, renderer)    
+    #fillNodes(attrDict)
+    #pluginLoaders(attrDict, renderer)    
     #pyRGCreator(pyGlobals, attArray)
     aeTemplateCreator(attrDict, renderer, shortCut)
     #attrIncludeCreator(attrDict, renderer, shortCut)
-    createShaderDefinitionFile(attrDict)
+    #createShaderDefinitionFile(attrDict)
     
 if __name__ == "__main__":
-    shaderCreator("Appleseed", "mtap")
+    shaderCreator("Corona", "mtco")
     #global START_NODE_ID
     #print "ID: --> 0x%08X" % START_NODE_ID

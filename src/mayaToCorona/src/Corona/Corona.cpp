@@ -31,6 +31,7 @@ CoronaRenderer::~CoronaRenderer()
 
 using namespace Corona;
 
+
 // creates a new native material with a random diffuse color
 IMaterial* getNativeMtl(Abstract::Settings* settings) 
 {
@@ -43,54 +44,29 @@ IMaterial* getNativeMtl(Abstract::Settings* settings)
     return data.createMtl(settings);
 }
 
+void CoronaRenderer::saveImage()
+{
+	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
+    Corona::Bitmap<float, false> alpha(this->context.fb->getImageSize());
+
+    for(int i = 0; i < bitmap.getHeight(); ++i) 
+	{
+        const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
+        this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, true, true, &bitmap[pixel], &alpha[pixel]);
+    }
+
+    //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
+    //// in linear space (the "false" argument)
+	Corona::String filename = this->mtco_renderGlobals->imageOutputFile.asChar();
+    Corona::Wx::saveImage(filename+".png", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+    Corona::Wx::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+}
+
 void CoronaRenderer::createScene()
 {
-    // set the background for all types of rays
-    //this->context.scene->setBackground(ColorOrMap(Rgb::WHITE));
-
 	this->defineCamera();
 	this->defineGeometry();
-
-    //// create the single geometry group we will use
-    //IGeometryGroup* geom = this->context.scene->addGeomGroup();
-    //
-    //// vertices, normal, and single mapping coordinate for the triangle
-    //geom->getVertices().push(Pos(-50, 0, 0));
-    //geom->getVertices().push(Pos(-50, 30, 0));
-    //geom->getVertices().push(Pos(-50, 30, 30));
-    //geom->getNormals().push(Dir(0, 1, 0));
-    //geom->getMapCoords().push(Pos(0, 0, 0));
-    //geom->getMapCoordIndices().push(0);
-
-    //// first instance with two materials
-    //IInstance* instance = geom->addInstance(AffineTm::IDENTITY);
-    //instance->addMaterial(IMaterialSet(getNativeMtl(this->context.settings)));
-    //instance->addMaterial(IMaterialSet(getNativeMtl(this->context.settings)));
-    //
-
-    //// second instance with different scale, translation, and two different materials
-    //AffineTm tm2 = AffineTm::IDENTITY;
-    //tm2.scale(Dir(0.2f));
-    //tm2.translate(Dir(40, 40, 0));
-    //instance = geom->addInstance(tm2);
-    //instance->addMaterial(IMaterialSet(getNativeMtl(this->context.settings)));
-    //instance->addMaterial(IMaterialSet(getNativeMtl(this->context.settings)));
-
-    //// create the objects - a triangle and a sphere
-    //SphereData sphere;
-    //sphere.materialId = 0;
-    //sphere.tm() = AffineTm::IDENTITY;
-    //sphere.tm().scale(2);
-    //geom->addPrimitive(sphere);
-
-    //// triangle takes indices into the vertices/normals/mapcoords arrays as parameters
-    //TriangleData tri;
-    //tri.v = AnimatedPosI3(0, 1, 2);
-    //tri.n = AnimatedDirI3(0, 0, 0);
-    //tri.t[0] = tri.t[1] = tri.t[2] = 0;
-    //tri.materialId = 1;
-    //geom->addPrimitive(tri);
-
+	this->defineLights();
 }
 
 
@@ -171,6 +147,9 @@ void CoronaRenderer::render()
 	context.isCancelled = true;
     context.core->endSession();
     
+	this->mtco_renderGlobals->getImageName();
+	logger.debug(MString("Writing image: ") + this->mtco_renderGlobals->imageOutputFile);
+	this->saveImage();
 
     // delete what we have created and call deallocation functions for objects the core has created
     delete context.logger;

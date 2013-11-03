@@ -18,7 +18,7 @@ mtco_RenderGlobals::~mtco_RenderGlobals()
 
 MString mtco_RenderGlobals::getImageExt()
 {
-	return MString("ext");
+	return this->imageFormatString;
 }
 
 bool mtco_RenderGlobals::getMtCoronaGlobals()
@@ -82,11 +82,11 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getInt(MString("maxSamples"), CoronaGlobals, this->maxSamples))
 			throw("problem reading CoronaGlobals.maxSamples");
 
-		if(!getInt(MString("mbtype"), CoronaGlobals, this->mbtype))
-			throw("problem reading CoronaGlobals.mbtype");
+		//if(!getInt(MString("mbtype"), CoronaGlobals, this->mbtype))
+		//	throw("problem reading CoronaGlobals.mbtype");
 
-		if(!getInt(MString("bitdepth"), CoronaGlobals, this->bitdepth))
-			throw("problem reading CoronaGlobals.bitdepth");
+		//if(!getInt(MString("bitdepth"), CoronaGlobals, this->bitdepth))
+		//	throw("problem reading CoronaGlobals.bitdepth");
 	
 		if(!getInt(MString("translatorVerbosity"), CoronaGlobals, this->translatorVerbosity))
 			throw("problem reading CoronaGlobals.translatorVerbosity");
@@ -100,20 +100,17 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getInt(MString("threads"), CoronaGlobals, this->threads))
 			throw("problem reading CoronaGlobals.threads");
 
-		if(!getInt(MString("geotimesamples"), CoronaGlobals, this->geotimesamples))
-			throw("problem reading CoronaGlobals.geotimesamples");
+		//if(!getInt(MString("geotimesamples"), CoronaGlobals, this->geotimesamples))
+		//	throw("problem reading CoronaGlobals.geotimesamples");
 
-		if(!getInt(MString("geotimesamples"), CoronaGlobals, this->geotimesamples))
-			throw("problem reading CoronaGlobals.geotimesamples");
+		//if(!getInt(MString("xftimesamples"), CoronaGlobals, this->xftimesamples))
+		//	throw("problem reading CoronaGlobals.xftimesamples");
 
-		if(!getInt(MString("xftimesamples"), CoronaGlobals, this->xftimesamples))
-			throw("problem reading CoronaGlobals.xftimesamples");
+		//if(!getInt(MString("maxTraceDepth"), CoronaGlobals, this->maxTraceDepth))
+		//	throw("problem reading CoronaGlobals.maxTraceDepth");
 
-		if(!getInt(MString("maxTraceDepth"), CoronaGlobals, this->maxTraceDepth))
-			throw("problem reading CoronaGlobals.maxTraceDepth");
-
-		if(!getBool(MString("createDefaultLight"), CoronaGlobals, this->createDefaultLight))
-			throw("problem reading CoronaGlobals.createDefaultLight");
+		//if(!getBool(MString("createDefaultLight"), CoronaGlobals, this->createDefaultLight))
+		//	throw("problem reading CoronaGlobals.createDefaultLight");
 
 		if(!getBool(MString("detectShapeDeform"), CoronaGlobals, this->detectShapeDeform))
 			throw("problem reading CoronaGlobals.detectShapeDeform");

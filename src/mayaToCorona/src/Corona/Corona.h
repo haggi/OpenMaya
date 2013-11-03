@@ -69,6 +69,9 @@ public:
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
 
+	void saveImage();
+	// utils
+	void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
 	// temp
 	void createScene();
 

@@ -11,6 +11,7 @@
 #include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
+#include "shadingtools/shadingUtils.h"
 
 static Logging logger;
 
@@ -36,8 +37,16 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 
 	Corona::TriangleData td;
 	
-	Corona::IGeometryGroup* geom = this->context.scene->addGeomGroup();
+	Corona::IGeometryGroup* geom = NULL;
 	
+	if( obj->geom != NULL )
+	{
+		geom = obj->geom;
+	}else{
+		geom = this->context.scene->addGeomGroup();
+		obj->geom = geom;
+	}
+
 	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 	{
 		geom->getVertices().push(Corona::Pos(points[vtxId].x,points[vtxId].y,points[vtxId].z));
@@ -106,51 +115,17 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 			uint uvId2 = faceUVIndices[faceRelIds[2]];
 
 
-		 //   Corona::TriangleData tri;
-		 //   tri.v = Corona::AnimatedPosI3(vtxId0, vtxId1, vtxId2);
-		 //   tri.n = Corona::AnimatedDirI3(normalId0, normalId1, normalId2);
-			//tri.t[0] = uvId0;
-			//tri.t[1] = uvId1;
-			//tri.t[2] = uvId2;
-			////tri.materialId = 1;
-			//geom->addPrimitive(tri);
+		    Corona::TriangleData tri;
+		    tri.v = Corona::AnimatedPosI3(vtxId0, vtxId1, vtxId2);
+		    tri.n = Corona::AnimatedDirI3(normalId0, normalId1, normalId2);
+			tri.t[0] = uvId0;
+			tri.t[1] = uvId1;
+			tri.t[2] = uvId2;
+			tri.materialId = 0;
+			geom->addPrimitive(tri);
 
 		}		
 	}
-
-	Corona::AffineTm tm;
-
-	MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
-	MPoint pos = objTMatrix.getTranslation(MSpace::kWorld);
-	tm.translate(Corona::Dir(pos.x, pos.y, pos.z));
-	double rot[3];
-	double scale[3];
-	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
-	objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
-	tm.rotateX(rot[0]);
-	tm.rotateY(rot[1]);
-	tm.rotateZ(rot[2]);
-	objTMatrix.getScale(scale, MSpace::kWorld);
-	tm.scale(Corona::Dir(scale[0],scale[1],scale[2]));
-
-    Corona::IInstance* instance = geom->addInstance(tm);
-    Corona::NativeMtlData data;
-    data.components.diffuse.setColor(Corona::Rgb(rnd(), rnd(), rnd()));
-	Corona::IMaterial *mat = data.createMtl(this->context.settings);
-	instance->addMaterial(Corona::IMaterialSet(mat));
-
-	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
-	{
-		Corona::SphereData sphere;
-		Corona::Dir ppos(points[vtxId].x, points[vtxId].y, points[vtxId].z);
-		tm.translate(ppos);
-		sphere.materialId = 0;
-		tm.scale(Corona::Dir(3.0f));
-		sphere.tm() = tm;
-		geom->addPrimitive(sphere);
-	}
-
-
 }
 
 void CoronaRenderer::defineGeometry()
@@ -163,7 +138,37 @@ void CoronaRenderer::defineGeometry()
 			continue;
 
 		logger.debug(MString("Translating mesh ") + obj->shortName );
-		this->defineMesh(obj);
+
+		Corona::IGeometryGroup* geom = NULL;
+		mtco_MayaObject *iobj = obj;
+
+		if( obj->isInstanced() && (obj->origObject != NULL))
+		{
+			iobj = (mtco_MayaObject *)obj->origObject;
+			if( iobj->geom != NULL )
+				geom = iobj->geom;
+		}else{
+			this->defineMesh(obj);
+			if( obj->geom != NULL )
+				geom = obj->geom;
+		}
+		if( geom == NULL )
+		{
+			logger.debug(MString("Geo pointer is NULL"));
+			return;
+		}
+
+		Corona::AffineTm tm = Corona::AffineTm::IDENTITY;
+		setTransformationMatrix(tm, obj);
+		
+		obj->instance = geom->addInstance(tm);
+		Corona::NativeMtlData data;
+		data.components.diffuse.setColor(Corona::Rgb(rnd(), rnd(), rnd()));
+		Corona::IMaterial *mat = data.createMtl(this->context.settings);
+		obj->instance->addMaterial(Corona::IMaterialSet(mat));
+
+		getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+
 	}
 
     //// first instance with two materials

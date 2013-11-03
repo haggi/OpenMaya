@@ -29,7 +29,7 @@ void CoronaRenderer::framebufferCallback()
 	//logger.debug(MString("Corona img width: ") + p.x + " height " + p.y);
 	uint numPixelsInRow = width;
 	bool doToneMapping = false;
-	bool showRenderStamp = true;
+	bool showRenderStamp = false;
 	Corona::Pixel firstPixelInRow(0,0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];
@@ -44,9 +44,9 @@ void CoronaRenderer::framebufferCallback()
 		uint rowPos = rowId * numPixelsInRow;
 		for( int x = 0; x < numPixelsInRow; x++)
 		{
-			pixels[rowPos + x].r = outColors[x].r() * 100.0;
-			pixels[rowPos + x].g = outColors[x].g() * 100.0;
-			pixels[rowPos + x].b = outColors[x].b() * 100.0;
+			pixels[rowPos + x].r = outColors[x].r() * 256.0;
+			pixels[rowPos + x].g = outColors[x].g() * 256.0;
+			pixels[rowPos + x].b = outColors[x].b() * 256.0;
 			pixels[rowPos + x].a = outAlpha[x];
 		}
 	}

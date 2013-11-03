@@ -30,7 +30,19 @@ void CoronaRenderer::defineCamera()
 		
 		Corona::Pos cpos(pos.x, pos.y, pos.z);
 		bool ir = cpos.isReal();
-		this->context.scene->getCamera().createPerspective(cpos, Corona::Pos::ZERO, Corona::Dir::UNIT_Z, DegToRad(45.0f), 100.f);
+		Corona::AffineTm tm = Corona::AffineTm::IDENTITY;
+		//tm.scale(Corona::Dir(scale.x, scale.y, scale.z));
+		tm.translate(Corona::Dir(pos.x, pos.y, pos.z));
+		tm.rotateX(rot.x);
+		tm.rotateY(rot.y);
+		tm.rotateZ(rot.z);
+
+		Corona::AnimatedAffineTm atm(tm);
+		float fieldOfView = 45.0f;
+
+		//this->context.scene->getCamera().createPerspective(atm, Corona::AnimatedFloat(Corona::DEG_TO_RAD(fieldOfView)));
+
+		this->context.scene->getCamera().createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(Corona::Pos::ZERO), Corona::AnimatedDir(Corona::Dir::UNIT_Y), Corona::AnimatedFloat(Corona::DEG_TO_RAD(45.f)));
 	}
 
 }

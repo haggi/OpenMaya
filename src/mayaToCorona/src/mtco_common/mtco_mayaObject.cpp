@@ -28,11 +28,15 @@ mtco_ObjectAttributes::mtco_ObjectAttributes(mtco_ObjectAttributes *other)
 
 mtco_MayaObject::mtco_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
+	this->geom = NULL;
+	this->instance = NULL;
 }
 
 mtco_MayaObject::mtco_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	this->geom = NULL;
+	this->instance = NULL;
 }
 
 mtco_MayaObject::~mtco_MayaObject()

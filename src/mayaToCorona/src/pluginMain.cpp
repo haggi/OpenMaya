@@ -5,6 +5,12 @@
 #include "mtco_common/mtco_renderGlobalsNode.h"
 #include "utilities/tools.h"
 
+#include "shaders/CoronaSurfaceMaterial.h"
+
+static const MString CoronaSurfacesRegistrantId("CoronaSurfacePlugin");
+static const MString CoronaSurfacesDrawDBClassification("drawdb/shader/surface/CoronaSurface");
+static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
+
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
 
@@ -15,6 +21,12 @@ MStatus initializePlugin( MObject obj )
 	MGlobal::displayInfo(MString("Loading plugin MayaToCorona version: ") + MString(VERSION));
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
+
+#ifdef HAS_OVERRIDE
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId,CoronaSurfaceOverride::creator));
+#endif
+	CHECK_MSTATUS( plugin.registerNode( "CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification ));
+
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToCorona::creator, MayaToCorona::newSyntax );
 	if (!status) {
@@ -56,6 +68,11 @@ MStatus uninitializePlugin( MObject obj)
 
 	const MString UserClassify( "shader/surface" );
 	
+#ifdef HAS_OVERRIDE
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId));
+#endif
+	CHECK_MSTATUS( plugin.deregisterNode( CoronaSurface::id ) );
+
 	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
