@@ -6,6 +6,17 @@
 
 void CoronaRenderer::setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj)
 {
+	//Corona::AnimatedAffineTm atm;
+	//int seg = obj->transformMatrices.size();
+	//int segmentsCount = (seg > 1) ? seg : 0;
+	//atm.setSegments(segmentsCount);
+	//for(int i = 0; i <= atm.getSegmentsCount(); ++i) 
+	//{
+	//    atm[i] = Corona::AffineTm::IDENTITY;
+	//	
+	//	
+	//}
+
 	tm = Corona::AffineTm::IDENTITY;
 	MPoint pos, rot, scale;
 	getMatrixComponents(obj->transformMatrices[0], pos, rot, scale);

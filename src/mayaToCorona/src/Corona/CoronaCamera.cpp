@@ -37,7 +37,8 @@ void CoronaRenderer::defineCamera()
 		tm.rotateY(rot.y);
 		tm.rotateZ(rot.z);
 
-		Corona::AnimatedAffineTm atm(tm);
+		Corona::AnimatedAffineTm atm(0);
+		atm[0] = tm;
 		float fieldOfView = 45.0f;
 
 		//this->context.scene->getCamera().createPerspective(atm, Corona::AnimatedFloat(Corona::DEG_TO_RAD(fieldOfView)));
