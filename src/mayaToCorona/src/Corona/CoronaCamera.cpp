@@ -38,12 +38,17 @@ void CoronaRenderer::defineCamera()
 		tm.rotateZ(rot.z);
 
 		Corona::AnimatedAffineTm atm(0);
-		atm[0] = tm;
+		atm[0] = Corona::AffineTm::IDENTITY;
+		atm[0].translate(Corona::Dir(pos.x, pos.y, pos.z));
+		atm[0].rotateX(rot.x);
+		atm[0].rotateY(rot.y);
+		atm[0].rotateZ(rot.z);
+
 		float fieldOfView = 45.0f;
 
-		//this->context.scene->getCamera().createPerspective(atm, Corona::AnimatedFloat(Corona::DEG_TO_RAD(fieldOfView)));
+		this->context.scene->getCamera().createPerspective(atm, Corona::AnimatedFloat(Corona::DEG_TO_RAD(fieldOfView)));
 
-		this->context.scene->getCamera().createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(Corona::Pos::ZERO), Corona::AnimatedDir(Corona::Dir::UNIT_Y), Corona::AnimatedFloat(Corona::DEG_TO_RAD(45.f)));
+		//this->context.scene->getCamera().createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(Corona::Pos::ZERO), Corona::AnimatedDir(Corona::Dir::UNIT_Y), Corona::AnimatedFloat(Corona::DEG_TO_RAD(45.f)));
 	}
 
 }
