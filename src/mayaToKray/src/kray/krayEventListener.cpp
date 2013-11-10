@@ -46,7 +46,7 @@ namespace krayRender
 	void* EventListener::createWindow()
 	{
 		std::cout << " EventListener::createWindow\n" << std::flush;
-		return 0;
+		return (void *)1;
 	}
 	
 	void EventListener::destroyWindow(void* windowHandle)

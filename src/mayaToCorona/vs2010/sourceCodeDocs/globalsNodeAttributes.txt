@@ -1,118 +1,114 @@
-#commonTab
-
-#frame Bucket
-subdivAA, int, Antialias Subdivs, 1
-adaptiveSteps, int, Adaptive Steps, 2
-adaptiveThreshold, float, Adaptive Threshold, 0.03
-AASampler, enum, Sampler, 0, Adaptive:None
-
-accStruct, enum, Acceleration Structure, 2, None:BVH full SAH:Embree BVH2:Embree BVH Spatial:Embree BVH4:Embree BVH4 Spatial
-embreeTris, enum, Embree Triangles, 0, Fast:Precise:Low Memory
-minInstSaving, int, Min. Inst Saving, 50000
-maxDepth, int, Max Depth, 25
-exitColor, color, Ray Exit Color, 0:0:0
-maxNormalDiff, float, Max Normal Diff, 0.55
-
-#frame Depth of Field/MotionBlur
-sensorWidth, float, Sensor Width, 35.0
-bokehUse, bool, Use Bokeh, false
-bokehBlades, int, Blades, 6
-bokehRot, float, Rotation, 0.0
-bokehCustomShape, message, Custom Shape, -
-bokehCustomShapeRes, int, Custom Shape Resolution, 500
-mbXform, bool, Transformation Blur, false
-mbDeform, bool, Deformation Blur, false
-mbDuration, float, Duration, 1.0
-mbFrameOffset, float, Frame Offset, 0.0
-mbTransformSegments, int, Transform Segments, 16
-mbDeformSegments, int, Deform Segments, 5
-
-#frame Displacement
-mode, enum, Subiv Mode, 0, World:Camera
-edgeLen, float, Edge Length, 1.0
-
-#Renderer progressive
-timeH, int, Hours, 0
-timeM, int, Minutes, 0
-timeS, int, Seconds, 0
-numberOfPasses, int, Number of Passes, 0
-adaptivity, float, Adaptivity, 0.0
-realcENP, int, Recalc Each N Pass, 999
-
-#vfb
-showVfb, bool, Use Corona Frame Buffer, false
-
-#frame Pixel Filter
-pixelFilter, enum, Pixel Filter, 1, None:Box:Tent:Cone:Gauss
-filterSize, float, Filer Size, 2.0
-blurSize, float, Blur Size, 0.5
-
-infoStamp, string, Info Stamp, Time %t
-
-#settings
-multiThreading, bool, Use Multi Threading, true
-lowThreadPrio, bool, Low Thread Prio, true
-exportSceneOnly, bool, Export Scene Only, false
-overrideMaterial, string, Override Material, ""
-allObjectsHaveSolidAlpha, bool, All Solid Alpha, false
-doShading, bool, Do Shading, true
-filterTexture, bool, Filter Textures, true
-renderer, enum, Renderer, 0, Progressive:LightTracer:Bucket
-
-#GITab
-primatrySolver, enum, Primary Solver, 0, IrradianceCache:PathTracing:PhotonMapping:HD Cache
-secondarySolver, enum, Secondary Solver, 2, PathTracing:PhotonMapping:HD Cache
-pathTracingSamples, int, Path Tracing Samples, 16
-maxSampleIntensity, float, Max Sample Intensity, 10.0
-loadSecondaryGI, bool, Load Secondary GI, false
-saveSecondaryGI, bool, Save Secondary GI, false
-secondaryGIFile, string, Secondary GI File, ""
-
-#primary GI irradiance caching
-interpolation, enum, Interpolation, 0,Tabellion&Larmorette:Ward et. al.
-maxGeoError, float, Max Geometric Error, 0.6
-smoothing, float, Smoothing, 1.8
-colorThreshold, float, ColorThreshold, 10.0
-maxInterpSamples, int, Max Interpolation Samples, 2
-gradientRot, bool, Gradient Rotation, true
-gradientTrans, bool, Gradient Translation, true
-relaxedInterp, bool, Relaxed Interpolation, true
-#records
-hemisphericalSubd, int, Hemispherical Subdivs, 7
-validityMin, float, Validity Min, 1.0
-validityMax, float, Validity Max, 20.0
-#precomputation
-finalRes, int, Final Resolution, -1
-iterations, int, Iterations, 5
-usePathTraceCorners, bool, Use Path Tracing Corners, true
-incrementalBuild, bool, Incremental Build, false
-previz, enum, Previz, 0, Indirect Lighting:Dots:Off
-serachStruct, enum, Seracrh Struct, 0, MultiRef Octree:MultiRef KD Tree:BVH
-storeDirectLight, bool, Store Direct Lighting, false
-#sec GI
-emittedPhotons, int, Emitted Photons, 5000
-lookUpCount, int, Lookup Count, 50
-photonStoreDirectLight, bool, Photon Store Direct, true
-
-#lightsTab
-lightSolver, enum, Light Solver, 3, Simple:Globally Adaptive:Locally Adaptive:Combined
-lightSamplingMode, enum, Light SamplingMode, 0, MIS Both:BSDF Sampling:Off
-lightSamplesMultiplier, float, Light Samples Multiplier, 2.0
-lightSubdivThreshold, float, Light Subdiv Threshold, 0.0
-lightTextureRes, float, Light Texture Resolution, 1.0
-lightSpotThresh, float, Light Spot Threshold, 100.0
-
-#envTab
-useCorona, bool, Use Corona, false
-directVisibleOverride, color, Direct Visible Override, 0:0:0
-reflectionsOverride, color, Reflections Override, 0:0:0
-refractionsOverride, color, Refractions Override, 0:0:0
-#postTab
-sceneWhitepoint, float, Scene Whitepoint[K], 6500.0
-displayWhitepoint, float, Display Whitepoint[K], 6500.0
-catColorSpace, enum, Cat Color Space, 0, RGB:None
-colorChannelOutput, color, ColorChannelOutput, 1:1:1
-intensityMult, float, Intensity Multiplier, 1.0
-highLightBurn, float, Hightlight Burn, 1.0
-gamma, float, Gamma, 2.2
-contrast, float, Contrast, 1.0
+#Common
+exportOnly, bool, Exportonly, false
+gi_saveSecondary, bool, Gi_savesecondary, false
+gi_loadSecondary, bool, Gi_loadsecondary, false
+lowThreadPriority, bool, Lowthreadpriority, true
+vfb_showBucketOrder, bool, Vfb_showbucketorder, false
+doShading, bool, Doshading, true
+doAa, bool, Doaa, true
+renderer, enum, Renderer, Progressive ,Progressive:Bucket:Ppm
+accelerationStructure, enum, Accelerationstructure, Embree_bvh4_spatial ,None:Embree_bvh4_spatial
+gi_primarySolver, enum, Gi_primarysolver, Pathtracing ,Pathtracing:None:Irradiance_cache
+gi_secondarySolver, enum, Gi_secondarysolver, Pathtracing ,Pathtracing:None:Vpl
+imageFilter, enum, Imagefilter, None , None:Tent
+lights_solver, enum, Lights_solver, Combined ,Combined:Photon
+enviroSolver, enum, Envirosolver, Fast ,Fast:Fast_compensate
+embree_triangles, enum, Triangles, Fast ,Fast:Avx
+random_sampler, enum, Random_Sampler, 5d_highd ,5d_highd:Shared:Maximal_value
+progressive_maxPasses, int, Progressive_maxpasses, 0 ,minmax:0:9999
+progressive_timeLimit, int, Progressive_timelimit, 60
+lights_areaSamplesMult, float, Lights Areasamples Mult, 1.0 ,minmax:0.0001:100.0
+lights_env_resolution, int, Lights_env_resolution, 1000 ,minmax:1:100000
+pathtracingSamples, int, Pathtracingsamples, 16 ,minmax:1:100
+lights_areaMethod, enum, Lights Areamethod, Reproject ,Simple:Reproject
+raycaster_maxDepth, int, Raycaster Maxdepth, 25 ,minmax:1:25
+raycaster_minDepth, int, Raycaster Mindepth, 0 ,minmax:0:25
+buffer_updateInterval, int, Buffer_updateinterval, 1000 ,minmax:0:36000
+gi_primaryFile, string, Gi_primaryfile, "c:/primarygi.dat"
+gi_secondaryFile, string, Gi_secondaryfile, "c:/secondarygi.dat"
+image_bucketSize, int, Image_bucketsize, 32 ,minmax:1:1024
+color_exit, color, Exit Color, 0.0:0.0:1.0
+fb_internalResolutionMult, int, Fb_internalresolutionmult, 1 ,minmax:1:10
+imagefilter_width, float, Imagefilter_width, 1.5 ,minmax:1.0:64
+imagefilter_blurring, float, Imagefilter_blurring, 0.5 ,minmax:0.0:1.0
+system_maxNormalDev, float, System_maxnormaldev, 0.55 ,minmax:0.001:2.0
+progressive_recalculateEvery, int, Progressive_recalculateevery, 0 ,minmax:0:999
+progressive_adaptivity, float, Progressive_adaptivity, 0.0 ,minmax:0.0:99.0
+maxPtSampleIntensity, float, Maxptsampleintensity, 0.0 ,minmax:0.0:99999.0
+subdivEnviroThreshold, float, Subdivenvirothreshold, 0.005 ,minmax:0.0:1.0
+lights_texturedResolution, float, Lights_texturedresolution, 0.3 ,minmax:0.0001:99.0
+random_seed, int, Random_seed, 1234 ,minmax:Int_min:Int_max
+numThreads, int, Numthreads, 0 ,minmax:0:128
+lightSolver_localFrac, float, Lightsolver_localfrac, 0.33 ,minmax:0.0:1.0
+lightSolver_globalFrac, float, Lightsolver_globalfrac, 0.33 ,minmax:0.0:1.0
+portals_sampleAmount, float, Portals_sampleamount, 0.75 ,minmax:0.0:1.0
+shadowBias, float, Shadowbias, -6.07 ,-8.0:-2.0
+resumeRendering, bool, Resumerendering, false
+instance_minSize, int, Instance_minsize, 1 ,minmax:1:999999
+gi_ic_incrementalBuild, bool, Gi_ic_incrementalbuild, false
+gi_ic_incrementalFilename, string, Gi_ic_incrementalfilename, "incrementalic.dat"
+gi_ic_hemisphereSubdiv, int, Gi_ic_hemispheresubdiv, 7 ,minmax:1:100
+gi_ic_precompAmount, float, Gi_ic_precompamount, 1.0 ,minmax:0.0:99.0
+gi_ic_pathtracingCorners, bool, Gi_ic_pathtracingcorners, true
+gi_ic_maxGeomError, float, Gi_ic_maxgeomerror, 0.6 ,minmax:0.01:10.0
+gi_ic_smoothing, float, Gi_ic_smoothing, 1.8 ,minmax:1.0:10.0
+gi_ic_colorThreshold, float, Gi_ic_colorthreshold, 10.0 ,minmax:0.01:10.0
+gi_ic_recordSpacingMin, float, Gi_ic_recordspacingmin, 1.0 ,minmax:0.01:500.0
+gi_ic_recordSpacingMax, float, Gi_ic_recordspacingmax, 20.0 ,minmax:0.1:500.0
+gi_ic_useRotationGradient, bool, Gi_ic_userotationgradient, true
+gi_ic_useTranslationGradient, bool, Gi_ic_usetranslationgradient, true
+gi_ic_interpolationSchema, enum, Gi_ic_interpolationschema, Tabellion ,Ward:Tabellion
+gi_ic_searchStructure, enum, Gi_ic_searchstructure, Multiple_octree ,Multiple_octree:Bvh
+gi_ic_relaxedInterpolation, bool, Gi_ic_relaxedinterpolation, true
+gi_ic_vizualization, enum, Gi_ic_vizualization, Indirect ,Off:Indirect
+gi_ic_minInterpSamples, int, Gi_ic_mininterpsamples, 2 ,minmax:1:20
+gi_hdCache_precompMult, float, Gi_hdcache_precompmult, 1.0 ,minmax:0.0:99.0
+gi_hdCache_interpolationCount, int, Gi_hdcache_interpolationcount, 3 ,1:64
+gi_hdCache_dirSensitivity, float, Gi_hdcache_dirsensitivity, 2.0 ,minmax:0.001:100.0
+gi_hdCache_posSensitivity, float, Gi_hdcache_possensitivity, 20.0 ,minmax:0.0:100.0
+gi_hdCache_normalSensitivity, float, Gi_hdcache_normalsensitivity, 3.0 ,minmax:0.0:10.0
+gi_hdCache_ptSamples, int, Gi_hdcache_ptsamples, 256 ,minmax:1:4096
+gi_hdCache_smoothing, float, Gi_hdcache_smoothing, 2.0 ,minmax:1.0:10.0
+gi_hdCache_glossyThreshold, float, Gi_hdcache_glossythreshold, 0.9 ,minmax:0.0:1.0
+gi_hdCache_maxRecords, int, Gi_hdcache_maxrecords, 100000 ,minmax:1000:999000
+gi_hdCache_writePasses, int, Gi_hdcache_writepasses, 0 ,minmax:0:9999999
+gi_photons_emitted, int, Gi_photons_emitted, 5000000 ,minmax:1000:100000000
+gi_photons_storeDirect, bool, Gi_photons_storedirect, true
+gi_photons_depth, int, Gi_photons_depth, -1 ,minmax:-1:100
+gi_photons_lookupCount, int, Gi_photons_lookupcount, 50 ,minmax:1:4096
+gi_photons_0ilter, enum, Gi_photons_filter, Linear ,Linear:Constant:Gaussian
+gi_vpl_emittedCount, int, Gi_vpl_emittedcount, 1000000 ,minmax:1:9999999
+gi_vpl_usedCount, int, Gi_vpl_usedcount, 150 ,minmax:1:9999
+gi_vpl_progressiveBatch, int, Gi_vpl_progressivebatch, 150 ,minmax:1:9999
+gi_vpl_clamping, float, Gi_vpl_clamping, 50.0 ,minmax:0.0:999.0
+gi_pathtracing_directMode, enum, Gi_pathtracing_directmode, Mis ,Sample_lights:Mis
+buckets_initialSamples, int, Buckets_initialsamples, 1 ,minmax:1:999
+buckets_adaptiveSteps, int, Buckets_adaptivesteps, 2 ,minmax:1:10
+buckets_adaptiveThreshold, float, Buckets Adaptive Threshold, 0.03 ,minmax:0.001:1.0
+bvh_cost_iteration, float, Bvh_cost_iteration, 1.0 ,minmax:0.01:1000.0
+bvh_cost_triangle, float, Bvh_cost_triangle, 1.0 ,minmax:0.01:1000.0
+bvh_leafSizeMin, int, Bvh_leafsizemin, 2 ,minmax:1:1000
+bvh_leafSizeMax, int, Bvh_leafsizemax, 6 ,minmax:2:1000
+colorMapping_exponent, float, Colormapping_exponent, 0.0 ,minmax:-100.0:100.0
+colorMapping_gamma, float, Colormapping_gamma, 2.2 ,minmax:0.1:10.0
+colorMapping_whiteMultiplier, float, Colormapping_whitemultiplier, 1.0 ,minmax:0.01:999.0
+colorMapping_displayTemperature, float, Colormapping_displaytemperature, 6500.0 ,minmax:1000.0:99999.0
+colorMapping_sceneTemperature, float, Colormapping_scenetemperature, 6500.0 ,minmax:1000.0:99999.0
+colorMapping_rBalance, float, Colormapping_rbalance, 1.0 ,minmax:0.0:999.0
+colorMapping_gBalance, float, Colormapping_gbalance, 1.0 ,minmax:0.0:999.0
+colorMapping_bBalance, float, Colormapping_bbalance, 1.0 ,minmax:0.0:999.0
+colorMapping_workingSpace, enum, Colormapping Workingspace, Rgb ,Lms:Rgb
+colorMapping_contrast, float, Colormapping_contrast, 1.0 ,minmax:1.0:99.0
+ppm_samplesPerIter, int, Ppm_samplesperiter, 1 ,minmax:1:50
+ppm_photonsPerIter, int, Ppm_photonsperiter, 5000000 ,minmax:1000:99000000
+ppm_alpha, float, Ppm_alpha, 0.666 ,minmax:0.01:1.0
+ppm_initialRadius, float, Ppm_initialradius, 2.0 ,minmax:0.0001:200.0
+bidir_doMis, bool, Bidir_domis, true
+vcm_mode, enum, Vcm_mode, Bidir ,Bidir:Pt:Vcm
+displace_useProjectionSize, bool, Displace_useprojectionsize, true
+displace_maxProjectSize, float, Displace_maxprojectsize, 2.0 ,minmax:0.01:100.0
+displace_maxWorldSize, float, Displace_maxworldsize, 1.0 ,minmax:0.00001:10000000
+displace_maxSubdiv, int, Displace_maxsubdiv, 100 ,minmax:1:9999
+renderstamp_use, bool, Renderstamp_use, true
+renderStamp, string, Renderstamp, "corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"
+bgColor, color, Background Color, 0.4:0.4:1.0

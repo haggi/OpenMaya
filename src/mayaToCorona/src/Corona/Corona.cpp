@@ -1,9 +1,13 @@
 #include "Corona.h"
 #include "../mtco_common/mtco_renderGlobals.h"
+#include "../mtco_common/mtco_mayaScene.h"
+#include "../mtco_common/mtco_mayaObject.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "utilities/tools.h"
 
 #include "MyClasses.h"
+#include "CoronaMap.h"
 
 static Logging logger;
 
@@ -18,7 +22,9 @@ CoronaRenderer::CoronaRenderer()
 }
 
 CoronaRenderer::~CoronaRenderer()
-{}
+{
+	Corona::ICore::shutdownLib();
+}
 
 
 #ifdef CORONA_RELEASE_ASSERTS
@@ -57,9 +63,15 @@ void CoronaRenderer::saveImage()
 
     //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
     //// in linear space (the "false" argument)
+	this->mtco_renderGlobals->getImageName();
 	Corona::String filename = this->mtco_renderGlobals->imageOutputFile.asChar();
-    Corona::Wx::saveImage(filename+".png", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
-    Corona::Wx::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+	logger.debug(MString("Saving image as ") +  this->mtco_renderGlobals->imageOutputFile);
+	
+	//if( this->mtco_renderGlobals->imageFormatString.toLowerCase() == "png")
+	//    Corona::Wx::saveImage(filename+".png", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+
+	//if( this->mtco_renderGlobals->imageFormatString.toLowerCase() == "exr")
+	Corona::Wx::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
 }
 
 void CoronaRenderer::createScene()
@@ -67,6 +79,28 @@ void CoronaRenderer::createScene()
 	this->defineCamera();
 	this->defineGeometry();
 	this->defineLights();
+
+	//std::map<Corona::String, Corona::Abstract::Map*> maps;
+	Corona::Rgb bgRgb(this->mtco_renderGlobals->bgColor.r,this->mtco_renderGlobals->bgColor.g,this->mtco_renderGlobals->bgColor.b);
+	MString texName;
+	if( getConnectedFileTexturePath(MString("bgColor"), MString("coronaGlobals"), texName) )
+	{
+		Corona::String fileName = texName.asChar();
+		logger.debug(MString("Found bg texture: ") + texName);
+		MapLoader loader;
+		//const Corona::String path = Corona::Str::getPath(this->filename, name);
+		Corona::Abstract::Map *texmap = loader.loadBitmap(fileName);
+		if(texmap == NULL) 
+		{
+			logger.error(MString("Unable to read bg file: ") + texName);
+		}else{
+			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
+		}
+	}else{
+		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb));
+	}
+
+
 }
 
 
@@ -98,6 +132,8 @@ void CoronaRenderer::render()
     context.settings->set(PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
     context.settings->set(PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
     context.settings->set(PARAM_PROGRESSIVE_MAX_PASSES, 20);
+    //context.settings->set(PARAM_EXPORT_ONLY, true);
+	
  
     // add a custom string to the render stamp
     String renderStamp = context.settings->get(PARAM_RENDERSTAMP);
@@ -140,15 +176,14 @@ void CoronaRenderer::render()
     context.core->sanityCheck(context.scene);
     context.core->sanityCheck(context.settings);
 
-    context.core->beginSession(context.scene, context.settings, context.fb, context.logger, "/");
+	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/renderData/").asChar();
+    context.core->beginSession(context.scene, context.settings, context.fb, context.logger, basePath);
     
     // run the rendering. This function blocks until it is done
     context.core->renderFrame();
 	context.isCancelled = true;
     context.core->endSession();
     
-	this->mtco_renderGlobals->getImageName();
-	logger.debug(MString("Writing image: ") + this->mtco_renderGlobals->imageOutputFile);
 	this->saveImage();
 
     // delete what we have created and call deallocation functions for objects the core has created
@@ -163,8 +198,22 @@ void CoronaRenderer::render()
     context.core->destroyScene(context.scene);
     context.core->destroyFb(context.fb);
     ICore::destroyInstance(context.core);
-    ICore::shutdownLib();
+    //ICore::shutdownLib();
 	context.core = NULL;
+	context.fb = NULL;
+	context.renderPasses.clear();
+	context.isCancelled = false;
+	context.scene = NULL;
+
+	// for sequence rendering, at the moment clean up pointers
+	// will be removed if I restructure the geo updates
+
+	for( size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
+	{
+		mtco_MayaObject *obj = (mtco_MayaObject *)this->mtco_scene->objectList[objId];
+		obj->geom = NULL;
+		obj->instance = NULL;
+	}
 
 	EventQueue::Event e;
 	e.data = NULL;

@@ -6,7 +6,7 @@
 #include "shaders/krayMaterial.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.1"
+#define VERSION "0.01"
 
 MStatus initializePlugin( MObject obj )
 {

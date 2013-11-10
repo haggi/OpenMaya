@@ -35,7 +35,7 @@ private:
 
 	static    MObject doMotionBlur;
 	static    MObject doDof;
-
+	static	  MObject xftimesamples;
 	// 
 	static    MObject threads;
 	static	  MObject translatorVerbosity;
@@ -63,6 +63,7 @@ private:
 	static	  MObject sceneScale;
 	static	  MObject imageFormat;
 	static	  MObject optimizedTexturePath;
+	static	  MObject useOptimizedTextures;
 
 public:
 	bool adaptiveSamplingDV;

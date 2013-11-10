@@ -171,6 +171,7 @@ public:
 	MMatrix sceneScaleMatrix;
 	float sceneScale;
 	MString optimizedTexturePath;
+	bool useOptimizedTextures;
 
 	std::vector<RenderPass *> renderPasses;
 	RenderPass *currentRenderPass;

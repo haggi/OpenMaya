@@ -9,7 +9,6 @@ MTypeId	MayaToKrayGlobals::id(0x0011CF4A);
 
 MObject MayaToKrayGlobals::bitdepth;
 MObject MayaToKrayGlobals::colorSpace;
-MObject MayaToKrayGlobals::filtertype;
 MObject MayaToKrayGlobals::lightingEngine;
 MObject MayaToKrayGlobals::clamping;
 MObject MayaToKrayGlobals::maxError;
@@ -24,7 +23,6 @@ MObject MayaToKrayGlobals::environmentIntensity;
 MObject MayaToKrayGlobals::gradientHorizon;
 MObject MayaToKrayGlobals::gradientZenit;
 MObject MayaToKrayGlobals::directLightSamples;
-MObject MayaToKrayGlobals::imageFormat;
 MObject MayaToKrayGlobals::environmentMap;
 MObject MayaToKrayGlobals::environmentMap2;
 MObject MayaToKrayGlobals::assemblyPolyTheshold;
@@ -144,10 +142,28 @@ MObject MayaToKrayGlobals::qOctreeDetail; // @"Very Low","Low","Normal","High"@
 MObject MayaToKrayGlobals::camSingleSided;
 
 MayaToKrayGlobals::MayaToKrayGlobals()
-{}
+{
+	imageFormatList.append("Jpg");
+	imageFormatList.append("Hdr");
+	imageFormatList.append("Png");
+	imageFormatList.append("Tif");
+	imageFormatList.append("Tga");
+	imageFormatList.append("Bmp");
+
+	filterTypeList.append("Box");
+	filterTypeList.append("Cone");
+	filterTypeList.append("Cubic");
+	filterTypeList.append("Lanczos");
+	filterTypeList.append("Spline");
+	filterTypeList.append("Mitchell");
+	filterTypeList.append("Gauss");
+	filterTypeList.append("Quadric");
+	filterTypeList.append("Catmull-Rom");
+}
 
 MayaToKrayGlobals::~MayaToKrayGlobals()
-{}
+{
+}
 
 
 void *MayaToKrayGlobals::creator()
@@ -263,18 +279,6 @@ MStatus	MayaToKrayGlobals::initialize()
 	//stat = eAttr.addField( "32bit Float", 4 );
 	//stat = eAttr.addField( "64bit Double", 5 );
 	CHECK_MSTATUS(addAttribute( bitdepth ));
-
-
-	filtertype = eAttr.create( "filtertype", "filtertype", 0, &stat);
-	stat = eAttr.addField( "Box", 0 );
-	stat = eAttr.addField( "Cone", 1 );
-	stat = eAttr.addField( "Cubic", 2 );
-	stat = eAttr.addField( "Lanczos", 3 );
-	stat = eAttr.addField( "Mitchell", 4 );
-	stat = eAttr.addField( "Spline", 5 );
-	stat = eAttr.addField( "Catmull-Rom", 6 );
-	stat = eAttr.addField( "Quadric", 7 );
-	CHECK_MSTATUS(addAttribute( filtertype ));
 
 	colorSpace = eAttr.create( "colorSpace", "colorSpace", 0, &stat);
 	stat = eAttr.addField( "linear_rgb", 0 );
@@ -421,14 +425,8 @@ MStatus	MayaToKrayGlobals::initialize()
 	//				"BMP BitMaP",
 	//				"BMP BitMaP +alpha"@;
 
-	imageFormat = eAttr.create( "imageFormat", "imageFormat", 1, &stat);
-	stat = eAttr.addField( "HDR", 0 );
-	stat = eAttr.addField( "JPG", 1 );
-	stat = eAttr.addField( "PNG", 2 ); // always use png+alpha
-	stat = eAttr.addField( "TIF", 3 ); // always use tif + alpha
-	stat = eAttr.addField( "TGA", 4 ); // always use tga + alpha
-	stat = eAttr.addField( "BMP", 5 ); // always use bmp + alpha
-	CHECK_MSTATUS(addAttribute( imageFormat ));
+	//imageFormat = eAttr.create( "imageFormat", "imageFormat", 1, &stat);
+	//CHECK_MSTATUS(addAttribute( imageFormat ));
 
 
 	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);

@@ -179,6 +179,15 @@
     <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaMap.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -292,9 +301,24 @@
     <ClInclude Include="..\src\Corona\CoronaCallbacks.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaMap.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

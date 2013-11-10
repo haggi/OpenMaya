@@ -27,7 +27,6 @@ private:
 	static	  MObject glossyDepth;
 	static	  MObject directLightSamples;
 
-	static    MObject filtertype;
 	static	  MObject lightingEngine;
 	static	  MObject optimizedTexturePath;
 
@@ -60,7 +59,6 @@ private:
 	//static	  MObject bitmapAz;
 	//static	  MObject bitmapAxes;
 
-	static	  MObject imageFormat;
 	static	  MObject jpgQuality;
 
 	static	  MObject samplingType;

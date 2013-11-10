@@ -20,6 +20,7 @@ MObject MayaRenderGlobalsNode::samplesY;
 
 MObject MayaRenderGlobalsNode::doMotionBlur;
 MObject MayaRenderGlobalsNode::doDof;
+MObject MayaRenderGlobalsNode::xftimesamples;
 
 MObject MayaRenderGlobalsNode::threads;
 
@@ -43,6 +44,7 @@ MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
 MObject MayaRenderGlobalsNode::sceneScale;
 MObject MayaRenderGlobalsNode::optimizedTexturePath;
+MObject MayaRenderGlobalsNode::useOptimizedTextures;
 MObject MayaRenderGlobalsNode::imageFormat;
 MObject MayaRenderGlobalsNode::filtertype;
 
@@ -133,6 +135,9 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	CHECK_MSTATUS(addAttribute( doMotionBlur ));
 	doDof = nAttr.create("doDof", "doDof", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( doDof ));
+	xftimesamples = nAttr.create("xftimesamples", "xftimesamples", MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( xftimesamples ));
+	
 
 	MString numCpu = getenv("NUMBER_OF_PROCESSORS");
 	int numberOfProcessors = numCpu.asInt();
@@ -183,6 +188,9 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	optimizedTexturePath = tAttr.create("optimizedTexturePath", "optimizedTexturePath",  MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( optimizedTexturePath ));
+
+	useOptimizedTextures = nAttr.create("useOptimizedTextures", "useOptimizedTextures", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( useOptimizedTextures ));
 
 	return MStatus::kSuccess;
 }

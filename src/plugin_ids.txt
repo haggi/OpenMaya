@@ -25,6 +25,7 @@ KRayMaterial:			0x0011CF4B
 
 Corona:
 RenderGlobals:		0x0011CF4C
+CoronaSurface:		0x0011CF7D
 
 Mitsuba:
 RenderGlobals:		
@@ -32,4 +33,4 @@ RenderGlobals:
 Fujiyama:
 RenderGlobals			0x0011CF7C
 
-Last used:	0x0011CF7C
+Last used:	0x0011CF7D

@@ -35,7 +35,6 @@ class AECoronaSurfaceTemplate(BaseTemplate):
 #        self.addControl("emissionExponent", label="Emission Exponent")
 #        self.addControl("attenuationColor", label="Attenuation Color")
 #        self.addControl("brdfType", label="BRDF Type")
-#        self.addControl("emissionColor", label="Emission Color")
 #        self.addControl("emissionSharpnessFake", label="Sharpness Fake")
 #        self.addControl("anisotropy", label="Anisotropy")
 #        self.addControl("attenuationDist", label="Attenuation Distance")
@@ -51,6 +50,7 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         self.addControl("diffuse", label="Diffuse Color")
 #        self.addControl("reflectionGlossiness", label="Glossiness")
         self.addSeparator()
+        self.addControl("emissionColor", label="Emission Color")
         #autoAddEnd
         self.endNoOptimize()
         self.endLayout()

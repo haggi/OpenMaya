@@ -57,7 +57,7 @@ void RenderGlobals::getImageName()
 	MCommonRenderSettingsData data;
 	MRenderUtil::getCommonRenderSettings(data);
 	MObject renderLayer = MFnRenderLayer::currentLayer();	
-	MString ext = this->getImageExt();
+	MString ext = this->getImageExt().toLowerCase();
 	ext = pystring::lower(ext.asChar()).c_str();
 	this->imageOutputFile = data.getImageName(data.kFullPathImage, fn, this->imageName, MString(""), ext, renderLayer);
 }

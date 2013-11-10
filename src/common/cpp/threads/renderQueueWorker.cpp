@@ -342,7 +342,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::FRAMEUPDATE:
-			logger.debug("Event::FRAMEUPDATE");
+			//logger.debug("Event::FRAMEUPDATE");
 			if( e.data != NULL)
 			{
 				if( MRenderView::doesRenderEditorExist() )

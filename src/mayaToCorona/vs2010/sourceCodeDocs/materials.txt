@@ -1,15 +1,23 @@
-#coronaSurface
-diffuseColor,
-reflectionColor,
-refractionColor,
-reflectionGlossiness,
-opacityColor,
-translucencyColor,
-emissionColor,
-anisotropy,
-anisotropyRotation,
-ior,
-fresnelIOR,
-bump,
-displacement,
-overriedes... 
+#CoronaSurface
+diffuse, color, Diffuse Color, 0.7:0.7:0.7
+translucency, float, Translucency, 0.0
+reflectivity, float, Reflectivity, 0.0
+refractivity, float, Refractivity, 0.0
+refractionGlossiness, float, Glossiness, 1.0
+refractionIndex, float, Refraction Index, 1.2
+attenuationColor, color, Attenuation Color, 0:0:0
+attenuationDist, floar, Attenuation Distance, 0.0
+glassMode, enum, Glas Mode, 0, OneSided:TwoSided:Hybrid
+reflectionGlossiness, float, Glossiness, 1.0
+anisotropy, float, Anisotropy, 0.5
+anisotropyRotation, float, Aniso Rotation, 0.0
+fresnelIor, float, Fresnel Value, 1.0
+brdfType, enum, BRDF Type, 0, Phong:Ward:Ashikmin:Fake Ward
+roundCornersRadius, float, Round Courner Radius, 0.0
+roundCornersSamples, int, Round Corners Samples, 10
+emissionColor, color, Emission Color, 0:0:0
+emissionExponent, float, Emission Exponent, 0.0
+emissionSharpnessFake, bool, Sharpness Fake, false
+emissionSharpnessFakePoint, vector, Sharpness Fake Point, 0:0:0
+emissionDisableSampling, bool, Disable Sampling, false
+

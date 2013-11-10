@@ -585,4 +585,23 @@ global proc updateMayaImageFormatControl()
     def uiCallback(self, *args):
         pass
     
+    def setImageName(self):
+        self.renderGlobalsNode.basePath.set(pm.workspace.path)
+        try:
+            self.renderGlobalsNode.imagePath.set(pm.workspace.path + pm.workspace.fileRules['images'])
+        except:
+            self.renderGlobalsNode.imagePath.set(pm.workspace.path + 'images')
+            
+        imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
+        # check for mayabatch name like sceneName_number 
+        numberPart = imageName.split("__")[-1]
+        try:
+            number = int(numberPart)
+            if number > 999:
+                imageName = imageName.replace("__" + numberPart, "")
+        except:
+            pass
+        self.renderGlobalsNode.imageName.set(imageName)        
+
+    
     

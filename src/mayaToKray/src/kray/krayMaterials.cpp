@@ -86,7 +86,7 @@ namespace krayRender{
 			case MFn::kPluginDependNode:
 				{
 					int type_id = shaderNode.typeId().id();
-					if( type_id == 0x00106EE0)
+					if( type_id == KRAY_MATERIAL_ID)
 					{
 						logger.debug(MString("Found KrayMaterial shader: ") + shaderName);
 						MColor color(0,0,0);

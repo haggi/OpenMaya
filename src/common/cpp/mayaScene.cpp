@@ -478,8 +478,19 @@ bool MayaScene::updateScene()
 		}
 	}
 
-	// new parse in animation to recognize particle deaths and births
-	this->updateInstancer();
+	// if we have a particle instancer we have to geparse it at the beginning of a transform step
+	// without, we would get only the movement of existing particles, not new ones. e.g. if we have zero
+	// particles at start frame all subsequent frames would have zero particles as well if we didnt parse it again.
+	if( this->renderGlobals->isTransformStep() )
+	{
+		if( this->renderGlobals->isMbStartStep )
+		{
+			this->parseInstancerNew();
+			this->updateInstancer();
+		}else{
+			this->updateInstancer();
+		}
+	}
 
 	return true;
 }
@@ -528,6 +539,13 @@ bool MayaScene::updateInstancer()
 	for( size_t i = 0; i < numElements; i++)
 	{
 		MayaObject *obj =  this->instancerNodeElements[i];
+		MMatrix origMatrix;
+		origMatrix.setToIdentity();
+		if( obj->origObject != NULL )
+		{
+			origMatrix = obj->origObject->dagPath.inclusiveMatrix();
+			origMatrix.inverse();
+		}
 		MFnInstancer instFn(obj->instancerDagPath);
 		MDagPathArray dagPathArray;
 		MMatrix matrix;
@@ -535,7 +553,13 @@ bool MayaScene::updateInstancer()
 		for( uint k = 0; k < dagPathArray.length(); k++)
 			logger.debug(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
 		// get matrix from current path?
-		obj->transformMatrices.push_back(matrix);
+		if( ! this->renderGlobals->doMb )
+			obj->transformMatrices.clear();
+		//logger.debug(MString("transf orig inv:") + origMatrix[3][0] + " " + origMatrix[3][1] + " "  + origMatrix[3][2]);
+		//logger.debug(MString("transf mat inv:") + matrix[3][0] + " " + matrix[3][1] + " "  + matrix[3][2]);
+		//MMatrix matrix1 = origMatrix * matrix;
+		//logger.debug(MString("transf mat mul:") + matrix1[3][0] + " " + matrix1[3][1] + " "  + matrix1[3][2]);
+		obj->transformMatrices.push_back(origMatrix * matrix);
 		this->transformUpdateCallback(obj);
 	}
 	return true;
@@ -554,6 +578,9 @@ bool MayaScene::parseInstancerNew()
 	MDagPath dagPath;
 	size_t numInstancers = instancerDagPathList.size();
 	size_t numobjects = this->objectList.size();
+
+	// if we have any previously defined instancer elements, delete it
+	this->clearInstancerNodeList();
 
 	for(int iId = 0; iId < numInstancers; iId++)
 	{

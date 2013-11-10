@@ -1,0 +1,41 @@
+# supported maya shaders
+shader_start:lambert
+	inatt:color:color
+	inatt:transparency:color
+	outatt:outColor:color
+shader_end
+
+# supported maya textures
+shader_start:file
+	outatt:outColor:color
+shader_end
+
+
+#--------------------------- automatically created attributes start ------------------------------------
+shader_start:CoronaSurface
+	inatt:refractivity:float
+	inatt:anisotropyRotation:float
+	inatt:emissionDisableSampling:bool
+	inatt:emissionExponent:float
+	inatt:attenuationColor:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:anisotropy:float
+	inatt:attenuationDist:floar
+	inatt:reflectivity:float
+	inatt:refractionIndex:float
+	inatt:roundCornersRadius:float
+	inatt:translucency:float
+	inatt:refractionGlossiness:float
+	inatt:roundCornersSamples:int
+	inatt:fresnelIor:float
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:diffuse:color
+	inatt:reflectionGlossiness:float
+	outatt:outColor:color
+shader_end
+
+#---------------------------- automatically created attributes end ------------------------------------
+#thats all

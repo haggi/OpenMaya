@@ -242,4 +242,9 @@
       <Filter>common\shadingTools</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="releaseNotes.txt">
+      <Filter>ressources</Filter>
+    </None>
+  </ItemGroup>
 </Project>

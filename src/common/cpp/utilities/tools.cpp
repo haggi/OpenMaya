@@ -58,11 +58,18 @@ float srnd()
 }
 
 
-void rowToColumn(MMatrix& from, MMatrix& to)
+void rowToColumn(MMatrix& from, MMatrix& to, bool transRev)
 {
 	for( int i = 0; i < 4; i++)
 		for( int k = 0; k < 4; k++)
 			to[k][i] = from[i][k];
+
+	if( transRev )
+	{
+		double t = to[3][0];
+		to[3][0] = to[3][2];
+		to[3][2] = t;
+	}
 }
 
 // replace :,| and . by _ ... the modern version

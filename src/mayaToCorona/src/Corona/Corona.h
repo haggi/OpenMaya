@@ -58,6 +58,8 @@ public:
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineMesh(mtco_MayaObject *obj);
+	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	virtual void defineLights();
 
 	virtual void render();
@@ -72,6 +74,7 @@ public:
 	void saveImage();
 	// utils
 	void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
+	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj);
 	// temp
 	void createScene();
 

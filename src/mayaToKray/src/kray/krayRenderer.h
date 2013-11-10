@@ -27,6 +27,7 @@ class mtkr_MayaScene;
 class mtkr_RenderGlobals;
 class MObject;
 
+#define KRAY_MATERIAL_ID 0x0011CF4B
 //namespace Kray{
 //	class DirectPrototyper;
 //	class Library;

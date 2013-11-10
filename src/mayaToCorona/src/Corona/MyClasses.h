@@ -34,7 +34,8 @@ public:
 class MyCheckerMap : public Corona::Abstract::Map {
 public:
     virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
-        const Corona::Pos pos = context.getPosition()/3;
+        //const Corona::Pos pos = context.getPosition()/3;
+		const Corona::Pos pos = context.getMapCoords(0);
         const int tmp = int(floor(pos.x()))+int(floor(pos.y()))+int(floor(pos.z()));
         outAlpha = 1.f;
         if(tmp%2) {

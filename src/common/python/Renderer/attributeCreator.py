@@ -16,7 +16,10 @@ END_ID = "automatically created attributes end"
 # bgColor, color, Background Color, 0.4:0.5:0.7
 
 def makeEnum(att):
-    string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &stat);\n".format(att[0], att[3])
+    default = att[3]
+    if not default.isdigit():
+        default = att[4].split(":").index(default)
+    string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &stat);\n".format(att[0], default)
     for index, v in enumerate(att[4].split(":")):
         string += "\tstat = eAttr.addField( \"{0}\", {1} );\n".format(v, index) 
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
@@ -24,11 +27,20 @@ def makeEnum(att):
 
 def makeInt(att):
     string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(att[0], att[3])
+    if len(att) > 4:
+        if "minmax" in att[4]:
+            string += "\tnAttr.setMin({0});\n".format(att[4].split(":")[1])
+            string += "\tnAttr.setMax({0});\n".format(att[4].split(":")[2])
+    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(att[0], att[3])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
     
 def makeFloat(att):
     string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(att[0], att[3])
+    if len(att) > 4:
+        if "minmax" in att[4]:
+            string += "\tnAttr.setMin({0});\n".format(att[4].split(":")[1])
+            string += "\tnAttr.setMax({0});\n".format(att[4].split(":")[2])
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -83,6 +95,7 @@ def fillNodeCPP(renderer, fileName, attArray):
             start_id_found = True
             newContent.append(value + "\n")
             for att in attArray:
+                print att
                 if att[0].startswith("#"):
                     continue
                 #MObject MayaToKrayGlobals::caustics;
@@ -337,5 +350,7 @@ def attributeCreator(renderer, shortCut):
 if __name__ == "__main__":
     #attributeCreator("lux", "mtlu")
     #attributeCreator("fuji", "mtfu")
-    attributeCreator("indigo", "mtin")
+    #attributeCreator("indigo", "mtin")
+    attributeCreator("corona", "mtco")
+    
     

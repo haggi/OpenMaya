@@ -481,7 +481,7 @@
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;CORONA_RELEASE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;CORONA_RELEASE_ASSERTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -764,6 +764,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\Corona\CoronaCamera.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaMap.cpp" />
     <ClCompile Include="..\src\Corona\CoronaRendererController.cpp" />
     <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp" />
     <ClCompile Include="..\src\Corona\Corona.cpp" />
@@ -778,6 +779,8 @@
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
+    <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
@@ -808,6 +811,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\src\Corona\CoronaMap.h" />
     <ClInclude Include="..\src\Corona\CoronaRendererController.h" />
     <ClInclude Include="..\src\Corona\CoronaCallbacks.h" />
     <ClInclude Include="..\src\Corona\Corona.h" />
@@ -818,12 +822,16 @@
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
+    <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\materialBase.h" />
     <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
     <ClInclude Include="..\src\shaders\textureBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt" />
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
+    <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -346,6 +346,9 @@
     <ClInclude Include="..\src\mtkr_common\mtkr_renderGlobalsNode.h" />
     <ClInclude Include="..\src\shaders\krayMaterial.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="releaseNotes.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

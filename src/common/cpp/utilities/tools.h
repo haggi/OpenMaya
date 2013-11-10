@@ -103,7 +103,7 @@ MString lightColorAsString(MFnDependencyNode& depFn);
 
 float shadowColorIntensity(MFnDependencyNode& depFn);
 
-void rowToColumn(MMatrix& from, MMatrix& to);
+void rowToColumn(MMatrix& from, MMatrix& to, bool transRev = false);
 
 MObject objectFromName(MString& name);
 
