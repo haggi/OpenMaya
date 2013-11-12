@@ -1,0 +1,36 @@
+#commonTab
+#frame Renderer
+bih_tri_threshold, int, BIH Threshold, 1100000
+metropolis, bool, Metropolis, true
+large_mutation_prob, float, Large Mutation Probability, 0.1
+max_change, float, Perturb Radius, .01
+max_num_consec_rejections, int, Number of Rejections, 1000
+logging, bool, Logging, true
+path_tracing, enum, Path Tracing, 0, bidirectional:backwards
+save_untonemapped_exr, bool, Untonemapped EXR, false
+save_tonemapped_exr, bool, Tonemapped EXR, true
+save_igi, bool, Save Indigo ImageFile, false,
+image_save_period, float, Img Save Period, 60
+halt_time, float, Halt Time, -1
+halt_samples_per_pixel, int, Max Samples PP, -1
+hybrid, bool, Hybrid Sampling, false
+#frame Threads
+auto_choose_num_threads, bool, Auto Choose Threads, true
+num_threads, bool, Num Threads, 1  
+super_sample_factor, int, Supersampling, 2
+watermark, bool, Watermark, false
+info_overlay, bool, Info Overlay, false
+cache_trees, bool, Cache Kd-Trees, true
+aperture_diffraction, bool, Aperture Diffraction, true
+post_process_diffraction, bool, Post Aperture Diffraction, true
+render_foreground_alpha, bool, Alpha Image, false
+splat_filter, enum, Splat Filter, 0, fastbox:radial:mn_cubic
+splat_filter_cubic_b, float, Cubic Splat B, 0.6
+splat_filter_cubic_ring, float, Cubic Splat Ring, 0.2
+downsize_filter, enum, Downsize Filter, 0, mn_cubic:gauss:sharp
+downsize_filter_cubic_radius, float, Cubic DS Radius, 2
+vignetting, bool, Vignetting, true
+gpu, bool, GPU Acceleration, false
+selected_gpu_device, enum, GPU Device, 0, CUDA:OPEN_CL
+glass_acceleration, bool, Glass Accerlation, false
+

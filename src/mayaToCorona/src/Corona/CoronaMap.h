@@ -1,7 +1,16 @@
 #ifndef CORONA_MAP_H
 #define CORONA_MAP_H
 
+#include <maya/MRenderUtil.h>
+#include <maya/MMatrix.h>
+#include <maya/MFloatMatrix.h>
+#include <maya/MFloatArray.h>
+#include <maya/MFloatVectorArray.h>
+#include <maya/MPointArray.h>
+#include <maya/MFloatPointArray.h>
+
 #include "CoronaCore/api/Api.h"
+
 
 // Utility class for loading bitmap textures from files. In future, various procedural textures should be also 
 // loaded using this class.
@@ -71,6 +80,46 @@ public:
         } else {
             return Corona::Rgb::BLUE;
         }
+    }
+
+    virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+        return evalColor(context, cache, outAlpha).grayValue();
+    }
+
+    virtual Corona::Dir evalBump(const Corona::IShadeContext&, Corona::TextureCache*) {
+        STOP; //currently not supported
+    }
+
+    virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
+        STOP; //currently not supported
+    }
+};
+
+// A sample texture, that just maps the world position to a red-blue grid
+class MayaMap : public Corona::Abstract::Map {
+public:
+    MString otherSidePlugName;
+	MayaMap(MString otherSidePlugName){otherSidePlugName = otherSidePlugName;};
+
+	virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) 
+	{
+		Corona::Dir normal = context.getGeometryNormal();
+        const Corona::Pos pos = context.getPosition();
+		const Corona::Pos uvw = context.getMapCoords(0);
+
+		MFloatMatrix camMatrix;
+		camMatrix.setToIdentity();
+		MFloatPointArray pointArray, refPoints;
+		MFloatArray uArray, vArray, filterSizes;
+		MFloatVectorArray normals, uTangents, vTangents, resultColors, resultTransparencies;
+		pointArray.append(pos.x(), pos.y(), pos.z());
+		uArray.append(uvw.x());
+		vArray.append(uvw.y());
+		normals.append(MFloatVector(normal.x(), normal.y(), normal.z()));
+		//MRenderUtil::sampleShadingNetwork(otherSidePlugName, numFollicles, false, true, matrix, NULL, &uCoords, &vCoords, NULL, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+
+		MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+		return Corona::Rgb(resultColors[0].x, resultColors[0].y, resultColors[0].z);
     }
 
     virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {

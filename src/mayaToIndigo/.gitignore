@@ -13,9 +13,9 @@
 *.dll
 *.pdb
 
-# appleseed devkit files
+# indigo devkit files
 devkit/
 deployment/
-mtap_devmodule/bin/
-mtap_devmodule/plug-ins/
-data
+mtin_devmodule/bin/
+mtin_devmodule/plug-ins/
+

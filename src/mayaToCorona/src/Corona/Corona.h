@@ -39,7 +39,7 @@ struct Context {
 	bool isCancelled;
 };
 
-class CoronaRenderer : public Renderer
+class CoronaRenderer : public MayaTo::Renderer
 {
 public:
 

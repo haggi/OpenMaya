@@ -10,12 +10,12 @@
 *.lai
 *.la
 *.a
-*.dll
-*.pdb
 
-# appleseed devkit files
-devkit/
-deployment/
-mtap_devmodule/bin/
-mtap_devmodule/plug-ins/
-data
+# Compiled Python scripts
+*.pyc
+Debug/
+Release/
+ipch/
+*.sdf
+*.suo
+*.opensdf

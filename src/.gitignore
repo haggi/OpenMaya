@@ -6,16 +6,12 @@
 # Compiled Dynamic libraries
 *.so
 
+# VS files
+*.suo
+
 # Compiled Static libraries
 *.lai
 *.la
 *.a
 *.dll
 *.pdb
-
-# appleseed devkit files
-devkit/
-deployment/
-mtap_devmodule/bin/
-mtap_devmodule/plug-ins/
-data
