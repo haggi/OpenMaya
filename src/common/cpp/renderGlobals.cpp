@@ -62,6 +62,12 @@ void RenderGlobals::getImageName()
 	this->imageOutputFile = data.getImageName(data.kFullPathImage, fn, this->imageName, MString(""), ext, renderLayer);
 }
 
+MString RenderGlobals::getImageOutputFile()
+{
+	this->getImageName();
+	return this->imageOutputFile;
+}
+
 bool RenderGlobals::isDeformStep()
 {
 	return ((this->currentMbElement.elementType == MbElement::Geo) || (this->currentMbElement.elementType == MbElement::Both));

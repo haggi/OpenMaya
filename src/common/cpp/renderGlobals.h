@@ -184,6 +184,7 @@ public:
 	bool isTransformStep();
 	bool isDeformStep();
 	void getImageName();
+	MString getImageOutputFile();
 	virtual MString getImageExt() = 0;
 };
 
