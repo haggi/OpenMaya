@@ -764,11 +764,13 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoCamera.cpp" />
+    <ClCompile Include="..\src\Indigo\IndigoParser.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoRendererController.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoCallbacks.cpp" />
     <ClCompile Include="..\src\Indigo\Indigo.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoGeometry.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoLights.cpp" />
+    <ClCompile Include="..\src\Indigo\IndigoRenderSettings.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoShaders.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoUtils.cpp" />
     <ClCompile Include="..\src\mayaToIndigo.cpp" />

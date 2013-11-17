@@ -16,7 +16,7 @@ mtin_MayaScene::mtin_MayaScene():MayaScene(MayaScene::NORMAL)
 	getRenderGlobals();
 	this->mtin_renderer.mtin_scene = this;
 	this->mtin_renderer.mtin_renderGlobals = this->renderGlobals;
-	this->userThreadUpdateInterval = 2000;
+	this->userThreadUpdateInterval = 200;
 	this->needsUserThread = true;
 }
 
@@ -26,7 +26,7 @@ mtin_MayaScene::mtin_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	this->mtin_renderer.mtin_scene = this;
 	this->mtin_renderer.mtin_renderGlobals = this->renderGlobals;
 	this->renderType = rtype;
-	this->userThreadUpdateInterval = 2000;
+	this->userThreadUpdateInterval = 200;
 	this->needsUserThread = true;
 }
 

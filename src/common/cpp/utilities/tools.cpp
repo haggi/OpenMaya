@@ -394,6 +394,14 @@ void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList)
 	}
 }
 
+void getConnectedInNodes(MString attribute, MObject& thisObject, MObjectArray& nodeList)
+{
+	MFnDependencyNode depFn(thisObject);
+	MPlug attrPlug = depFn.findPlug(attribute);
+	getConnectedInNodes(attrPlug, nodeList);
+}
+
+
 MObject getOtherSideNode(MPlug& plug)
 {
 	MStatus stat;

@@ -176,6 +176,12 @@
     <ClCompile Include="..\src\Indigo\IndigoCallbacks.cpp">
       <Filter>Source Files\Indigo</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Indigo\IndigoParser.cpp">
+      <Filter>Source Files\Indigo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Indigo\IndigoRenderSettings.cpp">
+      <Filter>Source Files\Indigo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

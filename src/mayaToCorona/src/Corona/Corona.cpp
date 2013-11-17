@@ -132,6 +132,7 @@ void CoronaRenderer::render()
     context.settings->set(PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
     context.settings->set(PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
     context.settings->set(PARAM_PROGRESSIVE_MAX_PASSES, 20);
+    context.settings->set(PARAM_NUM_THREADS, 3);
     //context.settings->set(PARAM_EXPORT_ONLY, true);
 	
  

@@ -2,6 +2,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnGenericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnMessageAttribute.h>
 
 #include <maya/MGlobal.h>
 #include <maya/MFnPluginData.h>
@@ -40,6 +41,9 @@ MObject MayaRenderGlobalsNode::basePath;
 MObject MayaRenderGlobalsNode::imagePath;
 
 MObject MayaRenderGlobalsNode::maxTraceDepth;
+
+MObject MayaRenderGlobalsNode::sunLightConnection;
+
 MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
 MObject MayaRenderGlobalsNode::sceneScale;
@@ -101,6 +105,7 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	MFnTypedAttribute tAttr;
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
+	MFnMessageAttribute mAttr;
 	MStatus stat = MStatus::kSuccess;
 
 	filtertype = eAttr.create("filtertype", "filtertype", 0, &stat);
@@ -181,6 +186,9 @@ MStatus	MayaRenderGlobalsNode::initialize()
 
 	maxTraceDepth = nAttr.create("maxTraceDepth", "maxTraceDepth", MFnNumericData::kInt, 4);
 	CHECK_MSTATUS(addAttribute( maxTraceDepth ));
+
+	sunLightConnection = mAttr.create("sunLightConnection", "sunLightConnection");
+	CHECK_MSTATUS(addAttribute( sunLightConnection ));
 
 	adaptiveSampling = nAttr.create("adaptiveSampling", "adaptiveSampling", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( adaptiveSampling ));

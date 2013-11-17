@@ -8,6 +8,7 @@
 #include <maya/MFloatVectorArray.h>
 #include <maya/MPointArray.h>
 #include <maya/MFloatPointArray.h>
+#include <maya/MGlobal.h>
 
 #include "CoronaCore/api/Api.h"
 
@@ -118,8 +119,25 @@ public:
 		normals.append(MFloatVector(normal.x(), normal.y(), normal.z()));
 		//MRenderUtil::sampleShadingNetwork(otherSidePlugName, numFollicles, false, true, matrix, NULL, &uCoords, &vCoords, NULL, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
 
-		MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
-		return Corona::Rgb(resultColors[0].x, resultColors[0].y, resultColors[0].z);
+		//MStatus s = MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+		//if( !s )
+		//	MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
+		//if( resultColors.length() > 0)
+		//{
+		//	MFloatVector c(resultColors[0].x, resultColors[0].y, resultColors[0].z);
+		//	if( s )
+		//		return Corona::Rgb(resultColors[0].x, resultColors[0].y, resultColors[0].z);
+		//	else{
+		//		MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
+		//		return Corona::Rgb(0,0,1);
+		//	}
+		//}else{
+		//	if( !s )
+		//		MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
+		//	return Corona::Rgb(0,0,1);
+		//}
+		outAlpha = 1.0f;
+		return Corona::Rgb(0,0,1);
     }
 
     virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {

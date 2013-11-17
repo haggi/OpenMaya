@@ -60,7 +60,7 @@ entry = {}
 entry['name'] = 'save_tonemapped_exr'
 entry['type'] = 'bool'
 entry['displayName'] = 'Tonemapped EXR'
-entry['default'] = 'True'
+entry['default'] = 'true'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'save_igi'
@@ -207,4 +207,26 @@ entry['name'] = 'glass_acceleration'
 entry['type'] = 'bool'
 entry['displayName'] = 'Glass Accerlation'
 entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'None'
+entry['type'] = 'frame'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'environmentType'
+entry['type'] = 'enum'
+entry['displayName'] = 'Environment Type'
+entry['default'] = '1'
+entry['addInfo'] = 'Off:Color/Map:Sun'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'environmentColor'
+entry['type'] = 'color'
+entry['displayName'] = 'Environment Color'
+entry['default'] = '0.4:0.4:1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'environmentSun'
+entry['type'] = 'message'
+entry['displayName'] = 'Environment Sun'
 tab['entries'].append(entry)

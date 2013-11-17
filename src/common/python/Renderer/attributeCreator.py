@@ -300,8 +300,10 @@ def pyRGCreator(pypath, attArray):
         else:
             if len(att) > 4:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', data='{4}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3],att[4])
-            else:
+            elif len(att) > 3:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
+            else:
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='', uiDict=uiDict)\n".format(att[0],att[1],att[2])
     
 def attributeCreator(renderer, shortCut):
     log.debug("attribute creator for renderer " + renderer)
@@ -350,7 +352,7 @@ def attributeCreator(renderer, shortCut):
 if __name__ == "__main__":
     #attributeCreator("lux", "mtlu")
     #attributeCreator("fuji", "mtfu")
-    #attributeCreator("indigo", "mtin")
-    attributeCreator("corona", "mtco")
+    attributeCreator("indigo", "mtin")
+    #attributeCreator("corona", "mtco")
     
     

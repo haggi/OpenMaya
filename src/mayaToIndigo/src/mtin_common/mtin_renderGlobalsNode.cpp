@@ -42,6 +42,9 @@ MObject MayaToIndigoGlobals::vignetting;
 MObject MayaToIndigoGlobals::gpu;
 MObject MayaToIndigoGlobals::selected_gpu_device;
 MObject MayaToIndigoGlobals::glass_acceleration;
+MObject MayaToIndigoGlobals::environmentType;
+MObject MayaToIndigoGlobals::environmentColor;
+MObject MayaToIndigoGlobals::environmentSun;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -178,6 +181,19 @@ MStatus	MayaToIndigoGlobals::initialize()
 
 	glass_acceleration = nAttr.create("glass_acceleration", "glass_acceleration",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( glass_acceleration ));
+
+	environmentType = eAttr.create("environmentType", "environmentType", 1, &stat);
+	stat = eAttr.addField( "Off", 0 );
+	stat = eAttr.addField( "Color/Map", 1 );
+	stat = eAttr.addField( "Sun", 2 );
+	CHECK_MSTATUS(addAttribute( environmentType ));
+
+	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
+	nAttr.setDefault(0.4,0.4,1.0);
+	CHECK_MSTATUS(addAttribute( environmentColor ));
+
+	environmentSun = mAttr.create("environmentSun", "environmentSun");
+	CHECK_MSTATUS(addAttribute( environmentSun ));
 
 //	------------- automatically created attributes end ----------- // 
 

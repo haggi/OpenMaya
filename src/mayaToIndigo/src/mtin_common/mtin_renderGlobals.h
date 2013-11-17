@@ -44,6 +44,8 @@ public:
 	bool gpu;
 	int selected_gpu_device;
 	bool glass_acceleration;
+	int environmentType;
+	MColor environmentColor;
 //	------------- automatically created attributes end ----------- // 
 
 

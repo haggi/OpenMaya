@@ -154,6 +154,12 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getBool(MString("glass_acceleration"), IndigoGlobals, this->glass_acceleration))
 			throw("problem reading indigoGlobals.glass_acceleration");
 
+		if(!getEnum(MString("environmentType"), IndigoGlobals, this->environmentType))
+			throw("problem reading indigoGlobals.environmentType");
+
+		if(!getColor(MString("environmentColor"), IndigoGlobals, this->environmentColor))
+			throw("problem reading indigoGlobals.environmentColor");
+
 //	------------- automatically created attributes end ----------- // 
 		
 		if(!getFloat(MString("filtersize"), IndigoGlobals, this->filterSize))

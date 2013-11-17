@@ -36,29 +36,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def updateEnvironment(self, dummy=None):
-        envDict = self.rendererTabUiDict['environment']
-        envType = self.renderGlobalsNode.environmentType.get()
-        #Constant
-        if envType == 0:
-            envDict['environmentColor'].setEnable(True)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(False)
-        if envType == 1:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(True)
-            envDict['gradientZenit'].setEnable(True)
-            envDict['environmentMap'].setEnable(False)
-        if envType == 2:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(True)
-        if envType == 3:
-            envDict['environmentColor'].setEnable(False)
-            envDict['gradientHorizon'].setEnable(False)
-            envDict['gradientZenit'].setEnable(False)
-            envDict['environmentMap'].setEnable(True)
+        pass
             
     def IndigoRendererCreateTab(self):
         log.debug("IndigoRendererCreateTab()")
@@ -73,39 +51,39 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label='Frame Buffer', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'super_sample_factor', uiType = 'int', displayName = 'Supersampling', default='2', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'splat_filter', uiType = 'enum', displayName = 'Splat Filter', default='0', data='fastbox:radial:mn_cubic', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'splat_filter_cubic_b', uiType = 'float', displayName = 'Cubic Splat B', default='0.6', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'splat_filter_cubic_ring', uiType = 'float', displayName = 'Cubic Splat Ring', default='0.2', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'downsize_filter', uiType = 'enum', displayName = 'Downsize Filter', default='0', data='mn_cubic:gauss:sharp', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'downsize_filter_cubic_radius', uiType = 'float', displayName = 'Cubic DS Radius', default='2', uiDict=uiDict)
-                        
-                with pm.frameLayout(label='Output', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'save_untonemapped_exr', uiType = 'bool', displayName = 'Untonemapped EXR', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'save_tonemapped_exr', uiType = 'bool', displayName = 'Tonemapped EXR', default='True', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'save_igi', uiType = 'bool', displayName = 'Save Indigo ImageFile', default='false', data='', uiDict=uiDict)
-
-                with pm.frameLayout(label='Renderer', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'bih_tri_threshold', uiType = 'int', displayName = 'BIH Threshold', default='1100000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'metropolis', uiType = 'bool', displayName = 'Metropolis', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'large_mutation_prob', uiType = 'float', displayName = 'Large Mutation Probability', default='0.1', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'max_change', uiType = 'float', displayName = 'Perturb Radius', default='.01', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'max_num_consec_rejections', uiType = 'int', displayName = 'Number of Rejections', default='1000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'path_tracing', uiType = 'enum', displayName = 'Path Tracing', default='0', data='bidirectional:backwards', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'hybrid', uiType = 'bool', displayName = 'Hybrid Sampling', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'glass_acceleration', uiType = 'bool', displayName = 'Glass Accerlation', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gpu', uiType = 'bool', displayName = 'GPU Acceleration', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'selected_gpu_device', uiType = 'enum', displayName = 'GPU Device', default='0', data='CUDA:OPEN_CL', uiDict=uiDict)
-
-                with pm.frameLayout(label='Misc', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'logging', uiType = 'bool', displayName = 'Logging', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'image_save_period', uiType = 'float', displayName = 'Img Save Period', default='60', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'cache_trees', uiType = 'bool', displayName = 'Cache Kd-Trees', default='true', uiDict=uiDict)
+#                with pm.frameLayout(label='Frame Buffer', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'super_sample_factor', uiType = 'int', displayName = 'Supersampling', default='2', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'splat_filter', uiType = 'enum', displayName = 'Splat Filter', default='0', data='fastbox:radial:mn_cubic', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'splat_filter_cubic_b', uiType = 'float', displayName = 'Cubic Splat B', default='0.6', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'splat_filter_cubic_ring', uiType = 'float', displayName = 'Cubic Splat Ring', default='0.2', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'downsize_filter', uiType = 'enum', displayName = 'Downsize Filter', default='0', data='mn_cubic:gauss:sharp', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'downsize_filter_cubic_radius', uiType = 'float', displayName = 'Cubic DS Radius', default='2', uiDict=uiDict)
+#                        
+#                with pm.frameLayout(label='Output', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'save_untonemapped_exr', uiType = 'bool', displayName = 'Untonemapped EXR', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'save_tonemapped_exr', uiType = 'bool', displayName = 'Tonemapped EXR', default='True', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'save_igi', uiType = 'bool', displayName = 'Save Indigo ImageFile', default='false', data='', uiDict=uiDict)
+#
+#                with pm.frameLayout(label='Renderer', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'bih_tri_threshold', uiType = 'int', displayName = 'BIH Threshold', default='1100000', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'metropolis', uiType = 'bool', displayName = 'Metropolis', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'large_mutation_prob', uiType = 'float', displayName = 'Large Mutation Probability', default='0.1', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'max_change', uiType = 'float', displayName = 'Perturb Radius', default='.01', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'max_num_consec_rejections', uiType = 'int', displayName = 'Number of Rejections', default='1000', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'path_tracing', uiType = 'enum', displayName = 'Path Tracing', default='0', data='bidirectional:backwards', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'hybrid', uiType = 'bool', displayName = 'Hybrid Sampling', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'glass_acceleration', uiType = 'bool', displayName = 'Glass Accerlation', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'gpu', uiType = 'bool', displayName = 'GPU Acceleration', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'selected_gpu_device', uiType = 'enum', displayName = 'GPU Device', default='0', data='CUDA:OPEN_CL', uiDict=uiDict)
+#
+#                with pm.frameLayout(label='Misc', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'logging', uiType = 'bool', displayName = 'Logging', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'image_save_period', uiType = 'float', displayName = 'Img Save Period', default='60', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'cache_trees', uiType = 'bool', displayName = 'Cache Kd-Trees', default='true', uiDict=uiDict)
 
                 with pm.frameLayout(label='Halt conditions', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
@@ -117,14 +95,20 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'auto_choose_num_threads', uiType = 'bool', displayName = 'Auto Choose Threads', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'num_threads', uiType = 'bool', displayName = 'Num Threads', default='1', uiDict=uiDict)
 
-                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
+#                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'aperture_diffraction', uiType = 'bool', displayName = 'Aperture Diffraction', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'post_process_diffraction', uiType = 'bool', displayName = 'Post Aperture Diffraction', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'render_foreground_alpha', uiType = 'bool', displayName = 'Alpha Image', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'vignetting', uiType = 'bool', displayName = 'Vignetting', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'watermark', uiType = 'bool', displayName = 'Watermark', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'info_overlay', uiType = 'bool', displayName = 'Info Overlay', default='false', uiDict=uiDict)
+                with pm.frameLayout(label='Environment', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'aperture_diffraction', uiType = 'bool', displayName = 'Aperture Diffraction', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'post_process_diffraction', uiType = 'bool', displayName = 'Post Aperture Diffraction', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'render_foreground_alpha', uiType = 'bool', displayName = 'Alpha Image', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'vignetting', uiType = 'bool', displayName = 'Vignetting', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'watermark', uiType = 'bool', displayName = 'Watermark', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'info_overlay', uiType = 'bool', displayName = 'Info Overlay', default='false', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentType', uiType = 'enum', displayName = 'Environment Type', default='0', data='Color/Map:Sun', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentColor', uiType = 'color', displayName = 'Environment Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentSun', uiType = 'message', displayName = 'Environment Sun', uiDict=uiDict)
+
                 
                     
                     
@@ -137,6 +121,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         self.createGlobalsNode()
         self.updateEnvironment()
         log.debug("IndigoRendererUpdateTab()")
+        
         if self.renderGlobalsNode.adaptiveSampling.get():
             self.rendererTabUiDict['minSamples'].setEnable(True)
             self.rendererTabUiDict['maxError'].setEnable(True)

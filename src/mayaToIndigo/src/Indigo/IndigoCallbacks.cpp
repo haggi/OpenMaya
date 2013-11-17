@@ -8,11 +8,14 @@ static Logging logger;
 
 void IndigoRenderer::framebufferCallback()
 {
-	logger.debug("framebufferCallback");
+	//logger.debug("framebufferCallback");
 
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
+		return;
+
+	if( !this->rendererStarted )
 		return;
 
 	if( this->toneMapperRef.isNull())
@@ -31,12 +34,13 @@ void IndigoRenderer::framebufferCallback()
 	size_t numPixels = width * height;
 	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
 
-	for( uint y = (height - 1); y >= 0 ; y--)
+	for( int y = (height - 1); y >= 0 ; y--)
 	{
-		for( uint x = 0; x < width; x++)
+		int indigoFbY = height - y - 1;
+		for( int x = 0; x < width; x++)
 		{
 			uint pixelIndex = y * width + x;
-			const float *indigoPixel = floatBufferRef->getPixel(x, y);
+			const float *indigoPixel = floatBufferRef->getPixel(x, indigoFbY);
 			pixels[pixelIndex].r = indigoPixel[0] * 255.9f;
 			pixels[pixelIndex].g = indigoPixel[1] * 255.9f;
 			pixels[pixelIndex].b = indigoPixel[2] * 255.9f;

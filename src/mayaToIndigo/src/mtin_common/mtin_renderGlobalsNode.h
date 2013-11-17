@@ -50,6 +50,9 @@ static    MObject vignetting;
 static    MObject gpu;
 static    MObject selected_gpu_device;
 static    MObject glass_acceleration;
+static    MObject environmentType;
+static    MObject environmentColor;
+static    MObject environmentSun;
 //	------------- automatically created attributes end ----------- // 
 
 };

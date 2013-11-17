@@ -176,6 +176,26 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 			{
 				getColor("diffuse", depFn, colorVal);
 				//data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
+				MString otherSidePlugName = "checker1.outColor";
+
+
+				MFloatMatrix camMatrix;
+				camMatrix.setToIdentity();
+				MFloatPointArray pointArray, refPoints;
+				MFloatArray uArray, vArray, filterSizes;
+				MFloatVectorArray normals, uTangents, vTangents, resultColors, resultTransparencies;
+				pointArray.append(0,0,0);
+				uArray.append(0.0);
+				vArray.append(0.0);
+				normals.append(MFloatVector(0,0,0));
+
+				//MStatus s = MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+				//if( !s )
+				//	MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
+
+				//MayaMap *mm = new MayaMap(otherSidePlugName);
+
+				//data.components.diffuse.setMap(mm);
 				data.components.diffuse.setMap(new CheckerMap);
 
 				getColor("emissionColor", depFn, colorVal);

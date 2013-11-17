@@ -83,6 +83,8 @@ void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList);
 
 void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList);
 
+void getConnectedInNodes(MString attribute, MObject& thisObject, MObjectArray& nodeList);
+
 bool hasPlug(MObject& thisObject, MString& plugName);
 
 MString getObjectName(MObject& mobject);

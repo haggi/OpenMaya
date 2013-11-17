@@ -33,4 +33,8 @@ vignetting, bool, Vignetting, true
 gpu, bool, GPU Acceleration, false
 selected_gpu_device, enum, GPU Device, 0, CUDA:OPEN_CL
 glass_acceleration, bool, Glass Accerlation, false
+#frame environment
+environmentType, enum, Environment Type, 1, Off:Color/Map:Sun
+environmentColor, color, Environment Color, 0.4:0.4:1.0
+environmentSun, message, Environment Sun
 

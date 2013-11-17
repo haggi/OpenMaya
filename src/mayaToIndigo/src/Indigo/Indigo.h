@@ -10,7 +10,13 @@ class mtin_RenderGlobals;
 class mtin_MayaObject;
 
 #include <IndigoToneMapper.h>
+#include <SceneNodeRoot.h>
 #include <Renderer.h>
+
+inline const std::string toStdString(const Indigo::String& s)
+{
+	return std::string(s.dataPtr(), s.length());
+}
 
 class IndigoRenderer : public MayaTo::Renderer
 {
@@ -25,25 +31,29 @@ public:
 	Indigo::RendererRef rendererRef;
 	Indigo::ToneMapperRef toneMapperRef;
 	Indigo::FloatBufferRef floatBufferRef;
+	Indigo::SceneNodeRootRef sceneRootRef;
+	bool rendererStarted;
 
-	Indigo::SceneNodeRootRef createSceneGraph();
+	void createSceneGraph();
 	IndigoRenderer();
 	~IndigoRenderer();
 	virtual void defineCamera();
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
+	void defineMesh(mtin_MayaObject *obj);
 	virtual void defineLights();
 
 	virtual void render();
-
+	
 	virtual void initializeRenderer();
 	virtual void updateShape(MayaObject *obj);
 	virtual void updateTransform(MayaObject *obj);
 	virtual void IPRUpdateEntities();
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
-
+	void parse();
 	void framebufferCallback();
+	void createRenderSettings();
 };
 
 #endif
