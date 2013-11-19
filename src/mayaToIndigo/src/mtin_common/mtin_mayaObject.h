@@ -3,6 +3,8 @@
 
 #include <maya/MMatrix.h>
 
+#include <Renderer.h>
+
 #include "mayaObject.h"
 
 class mtin_MayaObject;
@@ -23,6 +25,9 @@ public:
 	mtin_MayaObject(MObject&);
 	mtin_MayaObject(MDagPath&);
 	~mtin_MayaObject();
+
+	Indigo::SceneNodeMeshRef meshRef;
+	Indigo::SceneNodeMaterialRef matRef;
 
 	virtual bool geometryShapeSupported();
 	virtual mtin_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);

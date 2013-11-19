@@ -78,9 +78,6 @@ bool mt@_RenderGlobals::getMt@Globals()
 		if(!getInt(MString("maxSamples"), @Globals, this->maxSamples))
 			throw("problem reading @Globals.maxSamples");
 
-		if(!getInt(MString("mbtype"), @Globals, this->mbtype))
-			throw("problem reading @Globals.mbtype");
-
 		if(!getInt(MString("bitdepth"), @Globals, this->bitdepth))
 			throw("problem reading @Globals.bitdepth");
 	
@@ -95,9 +92,6 @@ bool mt@_RenderGlobals::getMt@Globals()
 
 		if(!getInt(MString("threads"), @Globals, this->threads))
 			throw("problem reading @Globals.threads");
-
-		if(!getInt(MString("geotimesamples"), @Globals, this->geotimesamples))
-			throw("problem reading @Globals.geotimesamples");
 
 		if(!getInt(MString("geotimesamples"), @Globals, this->geotimesamples))
 			throw("problem reading @Globals.geotimesamples");

@@ -33,6 +33,7 @@ public:
 	Indigo::FloatBufferRef floatBufferRef;
 	Indigo::SceneNodeRootRef sceneRootRef;
 	bool rendererStarted;
+	bool rendererAborted;
 
 	void createSceneGraph();
 	IndigoRenderer();

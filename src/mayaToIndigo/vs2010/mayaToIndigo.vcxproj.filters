@@ -140,15 +140,6 @@
     <ClCompile Include="..\src\Indigo\IndigoRendererController.cpp">
       <Filter>Source Files\Indigo</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\materialBase.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\textureBase.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\materialBaseOverride.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
       <Filter>common\mayarendernodes</Filter>
     </ClCompile>
@@ -181,6 +172,54 @@
     </ClCompile>
     <ClCompile Include="..\src\Indigo\IndigoRenderSettings.cpp">
       <Filter>Source Files\Indigo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inBlendMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inBlendMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inDiffuseMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inDiffuseMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inDiffuseTransmitterMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inDiffuseTransmitterMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inGlossyTransparentMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inGlossyTransparentMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inNullMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inNullMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inOrenNayarMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inOrenNayarMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inPhongMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inPhongMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inSpecularMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inSpecularMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,15 +301,6 @@
     <ClInclude Include="..\src\Indigo\IndigoRendererController.h">
       <Filter>Source Files\Indigo</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\materialBase.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\textureBase.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\materialBaseOverride.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinMeshNode.h">
       <Filter>common\mayarendernodes</Filter>
     </ClInclude>
@@ -289,12 +319,63 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
       <Filter>common\shadingTools</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\inBlendMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inBlendMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inDiffuseMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inDiffuseMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inDiffuseTransmitterMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inDiffuseTransmitterMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inGlossyTransparentMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inGlossyTransparentMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inNullMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inNullMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inOrenNayarMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inOrenNayarMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inPhongMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inPhongMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inSpecularMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inSpecularMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
       <Filter>ressources</Filter>
     </None>
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\materials.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

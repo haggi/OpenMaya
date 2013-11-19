@@ -13,6 +13,7 @@
 #include <IndigoTraceRayDoneMessageInterface.h>
 
 #include "utilities/logging.h"
+#include <iostream>
 
 static Logging logger;
 
@@ -22,9 +23,13 @@ void IndigoRenderer::parse()
 	while(keep_running)
 	{
 		Sleep(500);
-
 		logger.debug(MString("render time elapsed: ") + rendererRef->getRenderTimeElapsed() + " s  (samples/pixel: " + rendererRef->getSamplesPerPixel() + ")");
 
+		if( this->rendererAborted )
+		{
+			logger.debug(MString("Rendering aborted."));
+			keep_running = false;
+		}
 		// Poll for messages coming back from the Indigo DLL
 		Indigo::Vector<Indigo::Handle<Indigo::MessageInterface> > messages;
 		rendererRef->getMessages(messages);
@@ -40,15 +45,16 @@ void IndigoRenderer::parse()
 				case Indigo::MessageInterface::ERROR_MESSAGE: // The Indigo DLL ran into an error
 				{
 					MString msgString = toStdString(static_cast<Indigo::ErrorMessageInterface*>(message.getPointer())->getMessage()).c_str();
-					logger.error(MString("ERROR_MESSAGE: ") + msgString);
-					//std::cerr << "\tERROR: " << toStdString(static_cast<Indigo::ErrorMessageInterface*>(message.getPointer())->getMessage()) << std::flush;
+					//logger.error(MString("ERROR_MESSAGE: ") + msgString);
+					std::cerr << "\tERROR: " << msgString.asChar() << std::flush;
 					// Plugin authors could pop up a message box instead of exiting.
 					break;
 				}
 				case Indigo::MessageInterface::LOG_MESSAGE:
 				{
 					MString msgString = toStdString(static_cast<Indigo::LogMessageInterface*>(message.getPointer())->getMessage()).c_str();
-					logger.debug(MString("LOG_MESSAGE: ") + msgString);
+					std::cerr << "\tERROR: " << msgString.asChar() << std::flush;
+					//logger.debug(MString("LOG_MESSAGE: ") + msgString);
 					break;
 				}
 				case Indigo::MessageInterface::PROGRESS_MESSAGE:

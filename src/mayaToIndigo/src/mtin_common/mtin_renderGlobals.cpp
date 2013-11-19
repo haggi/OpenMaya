@@ -179,12 +179,6 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 
 		if(!getInt(MString("maxSamples"), IndigoGlobals, this->maxSamples))
 			throw("problem reading IndigoGlobals.maxSamples");
-
-		if(!getInt(MString("mbtype"), IndigoGlobals, this->mbtype))
-			throw("problem reading IndigoGlobals.mbtype");
-
-		if(!getInt(MString("bitdepth"), IndigoGlobals, this->bitdepth))
-			throw("problem reading IndigoGlobals.bitdepth");
 	
 		if(!getInt(MString("translatorVerbosity"), IndigoGlobals, this->translatorVerbosity))
 			throw("problem reading IndigoGlobals.translatorVerbosity");
@@ -198,20 +192,17 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getInt(MString("threads"), IndigoGlobals, this->threads))
 			throw("problem reading IndigoGlobals.threads");
 
-		if(!getInt(MString("geotimesamples"), IndigoGlobals, this->geotimesamples))
-			throw("problem reading IndigoGlobals.geotimesamples");
+		//if(!getInt(MString("geotimesamples"), IndigoGlobals, this->geotimesamples))
+		//	throw("problem reading IndigoGlobals.geotimesamples");
 
-		if(!getInt(MString("geotimesamples"), IndigoGlobals, this->geotimesamples))
-			throw("problem reading IndigoGlobals.geotimesamples");
-
-		if(!getInt(MString("xftimesamples"), IndigoGlobals, this->xftimesamples))
-			throw("problem reading IndigoGlobals.xftimesamples");
+		//if(!getInt(MString("xftimesamples"), IndigoGlobals, this->xftimesamples))
+		//	throw("problem reading IndigoGlobals.xftimesamples");
 
 		if(!getInt(MString("maxTraceDepth"), IndigoGlobals, this->maxTraceDepth))
 			throw("problem reading IndigoGlobals.maxTraceDepth");
 
-		if(!getBool(MString("createDefaultLight"), IndigoGlobals, this->createDefaultLight))
-			throw("problem reading IndigoGlobals.createDefaultLight");
+		//if(!getBool(MString("createDefaultLight"), IndigoGlobals, this->createDefaultLight))
+		//	throw("problem reading IndigoGlobals.createDefaultLight");
 
 		if(!getBool(MString("detectShapeDeform"), IndigoGlobals, this->detectShapeDeform))
 			throw("problem reading IndigoGlobals.detectShapeDeform");

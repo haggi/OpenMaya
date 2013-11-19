@@ -88,7 +88,7 @@ def pluginLoaders(attDict, renderer):
             continue    
         print 'static const MString {0}sRegistrantId("{0}Plugin");'.format(key)
         print 'static const MString {0}sDrawDBClassification("drawdb/shader/surface/{0}");'.format(key)
-        print 'static const MString {0}sFullClassification("appleseed/material:shader/surface:" + {0}sDrawDBClassification);'.format(key)
+        print 'static const MString {0}sFullClassification("{1}/material:shader/surface:" + {0}sDrawDBClassification);'.format(key, renderer.lower())
                 
     registerOver = []        
     registerNormal = []        
@@ -517,8 +517,8 @@ def pyRGCreator(pypath, attArray):
             else:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
 
-def createShaderDefinitionFile(attDict):
-    destDefPath = path.path(r"C:\Users\haggi\coding\OpenMaya\src\mayaToAppleseed\mtap_devmodule\ressources\ShaderDefinitions.txt")
+def createShaderDefinitionFile(attDict, renderer, shortcut):
+    destDefPath = path.path(r"C:\Users\haggi\coding\OpenMaya\src\mayaTo{0}\{1}_devmodule\ressources\ShaderDefinitions.txt".format(renderer, shortcut))
     fh = open(destDefPath, "r")
     content = fh.readlines()
     fh.close()
@@ -615,14 +615,15 @@ def shaderCreator(renderer, shortCut):
             if newDict is not None:
                 newDict[att[0]] = att[1:]
     
-    #fillNodes(attrDict)
-    #pluginLoaders(attrDict, renderer)    
+    fillNodes(attrDict)
+    pluginLoaders(attrDict, renderer)    
     #pyRGCreator(pyGlobals, attArray)
     aeTemplateCreator(attrDict, renderer, shortCut)
     #attrIncludeCreator(attrDict, renderer, shortCut)
-    #createShaderDefinitionFile(attrDict)
+    createShaderDefinitionFile(attrDict, renderer, shortCut)
     
 if __name__ == "__main__":
-    shaderCreator("Corona", "mtco")
+    #shaderCreator("Corona", "mtco")
+    shaderCreator("Indigo", "mtin")
     #global START_NODE_ID
     #print "ID: --> 0x%08X" % START_NODE_ID

@@ -56,7 +56,7 @@ void IndigoRenderer::defineEnvironment()
 				if(sunObj.hasFn(MFn::kTransform))
 				{
 					// we suppose what's connected here is a dir light transform
-					MVector lightDir(0,0,-1); // default dir light dir
+					MVector lightDir(0,0,1); // default dir light dir
 					MFnDagNode sunDagNode(sunObj);
 					lightDir *= sunDagNode.transformationMatrix();
 

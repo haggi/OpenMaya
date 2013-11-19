@@ -93,7 +93,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label='Threads', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                         self.addRenderGlobalsUIElement(attName = 'auto_choose_num_threads', uiType = 'bool', displayName = 'Auto Choose Threads', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'num_threads', uiType = 'bool', displayName = 'Num Threads', default='1', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'num_threads', uiType = 'int', displayName = 'Num Threads', default='0', uiDict=uiDict)
 
 #                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
@@ -122,13 +122,6 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         self.updateEnvironment()
         log.debug("IndigoRendererUpdateTab()")
         
-        if self.renderGlobalsNode.adaptiveSampling.get():
-            self.rendererTabUiDict['minSamples'].setEnable(True)
-            self.rendererTabUiDict['maxError'].setEnable(True)
-        else:
-            self.rendererTabUiDict['minSamples'].setEnable(False)
-            self.rendererTabUiDict['maxError'].setEnable(False)
-
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
         filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")

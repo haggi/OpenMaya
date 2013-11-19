@@ -28,11 +28,15 @@ mtin_ObjectAttributes::mtin_ObjectAttributes(mtin_ObjectAttributes *other)
 
 mtin_MayaObject::mtin_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
+	this->meshRef = NULL;
+	this->matRef = NULL;
 }
 
 mtin_MayaObject::mtin_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	this->meshRef = NULL;
+	this->matRef = NULL;
 }
 
 mtin_MayaObject::~mtin_MayaObject()

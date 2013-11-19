@@ -1,0 +1,96 @@
+# supported maya shaders
+shader_start:lambert
+        inatt:color:color
+        inatt:transparency:color
+        outatt:outColor:color
+shader_end
+
+# supported maya textures
+shader_start:file
+        outatt:outColor:color
+shader_end
+
+
+#--------------------------- automatically created attributes start ------------------------------------
+shader_start:inGlossyTransparent
+	inatt:layer:int
+	inatt:exponent:float
+	inatt:internal_medium_name:string
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:displacement:scalar
+	inatt:emission:color
+	outatt:outColor:color
+shader_end
+
+shader_start:inPhong
+	inatt:displacement:scalar
+	inatt:layer:int
+	inatt:exponent:float
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:ior:float
+	inatt:albedo:color
+	inatt:nk_data:enum
+	inatt:emission:color
+	inatt:specular_reflectivity:scalar
+	outatt:outColor:color
+shader_end
+
+shader_start:inDiffuse
+	inatt:layer:int
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:emission:color
+	inatt:displacement:scalar
+	inatt:albedo:color
+	outatt:outColor:color
+shader_end
+
+shader_start:inNull
+	outatt:outColor:color
+shader_end
+
+shader_start:inDiffuseTransmitter
+	inatt:layer:int
+	inatt:internal_medium_name:string
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:displacement:scalar
+	inatt:emission:color
+	inatt:albedo:color
+	outatt:outColor:color
+shader_end
+
+shader_start:inBlend
+	inatt:step_blend:bool
+	inatt:a_name:string
+	inatt:blend:float
+	inatt:b_name:string
+	outatt:outColor:color
+shader_end
+
+shader_start:inOrenNayar
+	inatt:layer:int
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:emission:color
+	inatt:displacement:scalar
+	inatt:sigma:float
+	inatt:albedo:color
+	outatt:outColor:color
+shader_end
+
+shader_start:inSpecular
+	inatt:layer:int
+	inatt:internal_medium_name:string
+	inatt:bump:scalar
+	inatt:base_emission:color
+	inatt:displacement:scalar
+	inatt:emission:color
+	inatt:transparent:bool
+	outatt:outColor:color
+shader_end
+
+#---------------------------- automatically created attributes end ------------------------------------
+#thats all

@@ -50,6 +50,7 @@ MObject MayaToIndigoGlobals::environmentSun;
 
 MayaToIndigoGlobals::MayaToIndigoGlobals()
 {
+	imageFormatList.append("Bmp");
 	imageFormatList.append("Exr");
 }
 

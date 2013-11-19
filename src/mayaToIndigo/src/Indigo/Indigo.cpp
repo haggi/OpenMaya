@@ -104,199 +104,6 @@ void IndigoRenderer::createSceneGraph()
 	sceneRootRef->addChildNode(tone_mapping);
 
 	this->defineEnvironment();
-
-	//////==================== Create sun/sky environment light ====================
-	//// This is an optional node.
-	//if(true)
-	//{
-	//	Indigo::SceneNodeBackgroundSettingsRef background_settings_node(new Indigo::SceneNodeBackgroundSettings());
-
-	//	Reference<Indigo::SunSkyMaterial> sun_sky_mat(new Indigo::SunSkyMaterial());
-	//	sun_sky_mat->model = "captured-simulation";
-	//	sun_sky_mat->sundir = Indigo::Vec3d(1,1,1); // Direction to sun.
-
-	//	background_settings_node->background_material = sun_sky_mat;
-
-	//	sceneRootRef->addChildNode(background_settings_node); // Add to scene graph
-	//}
-
-	//////==================== Create an environment map light ====================
-	//// This is an optional node.
-	//if(false)
-	//{
-	//	Indigo::SceneNodeBackgroundSettingsRef background_settings(new Indigo::SceneNodeBackgroundSettings());
-
-	//	Reference<Indigo::DiffuseMaterial> mat(new Indigo::DiffuseMaterial());
-
-	//	// Albedo should be zero.
-	//	mat->albedo = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(0))));
-
-	//	// Emission is a texture parameter that references our texture that we will create below.
-	//	mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
-
-	//	// Base emission is the emitted spectral radiance.
-	//	mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(35.0))));
-
-	//	Indigo::Texture texture;
-	//	texture.path = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/indigo_dll_example_vs2010/ColorChecker_sRGB_from_Ref.jpg"; // You will usually want to use a lat-long EXR environment map here
-	//	texture.exponent = 1; // Since we will usually use a HDR image, the exponent (gamma) should be set to one.
-	//	texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::SphericalTexCoordGenerator(Reference<Indigo::Rotation>(new Indigo::MatrixRotation())));
-
-	//	mat->textures.push_back(texture);
-
-	//	background_settings->background_material = mat;
-
-	//	sceneRootRef->addChildNode(background_settings);
-	//}
-
-
-	{
-		//==================== Create light geometry =========================
-		Indigo::SceneNodeMeshRef mesh_node(new Indigo::SceneNodeMesh());
-		mesh_node->mesh = Indigo::MeshRef(new Indigo::Mesh());
-		mesh_node->mesh->num_uv_mappings = 0;
-		
-		// Make a single quad
-		Indigo::Quad q;
-		
-		// Set the material index to the first material of the object.
-		q.mat_index = 0;
-
-		for(int i = 0; i < 4; ++i)
-		{
-			q.vertex_indices[i] = i;
-			q.uv_indices[i] = 0;
-		}
-
-		// Add it to mesh's quads
-		mesh_node->mesh->quads.push_back(q);
-
-		// Define the vertices
-		mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(0, 0, 2));
-		mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(0, 1, 2));
-		mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(1, 1, 2));
-		mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(1, 0, 2));
-
-		mesh_node->mesh->endOfModel(); // Build the mesh
-		
-		sceneRootRef->addChildNode(mesh_node);
-
-
-		//==================== Create an emitting material =========================
-		Indigo::SceneNodeMaterialRef mat(new Indigo::SceneNodeMaterial());
-
-		Reference<Indigo::DiffuseMaterial> diffuse = new Indigo::DiffuseMaterial();
-		diffuse->random_triangle_colours = false;
-		diffuse->layer = 0;
-		diffuse->base_emission = new Indigo::ConstantWavelengthDependentParam(new Indigo::UniformSpectrum(1.0e10));
-		diffuse->emission = new Indigo::ConstantWavelengthDependentParam(new Indigo::UniformSpectrum(1.0));
-		mat->material = diffuse;
-
-		sceneRootRef->addChildNode(mat);
-
-
-		//==================== Create the light object =========================
-		Indigo::SceneNodeModelRef model(new Indigo::SceneNodeModel());
-		model->setName("Light Object");
-		model->setGeometry(mesh_node);
-		model->keyframes.push_back(Indigo::KeyFrame());
-		model->rotation = new Indigo::MatrixRotation();
-		model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, mat));
-
-		sceneRootRef->addChildNode(model);
-	}
-
-	//{
-	//	//==================== Create ground geometry =========================
-	//	Indigo::SceneNodeMeshRef mesh_node(new Indigo::SceneNodeMesh());
-	//	mesh_node->setName("Ground Mesh");
-	//	mesh_node->mesh = Indigo::MeshRef(new Indigo::Mesh());
-
-	//	// Make a single quad
-	//	Indigo::Quad q;
-	//	q.mat_index = 0;
-	//	for(int i = 0; i < 4; ++i)
-	//		q.vertex_indices[i] = q.uv_indices[i] = i;
-	//	mesh_node->mesh->quads.push_back(q);
-
-	//	mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(-2, -2, 0));
-	//	mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(-2, 2, 0));
-	//	mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(2, 2, 0));
-	//	mesh_node->mesh->vert_positions.push_back(Indigo::Vec3f(2, -2, 0));
-
-	//	// Make a UV mapping for the quad
-	//	mesh_node->mesh->num_uv_mappings = 1;
-
-	//	mesh_node->mesh->uv_pairs.push_back(Indigo::Vec2f(0, 0));
-	//	mesh_node->mesh->uv_pairs.push_back(Indigo::Vec2f(0, 1));
-	//	mesh_node->mesh->uv_pairs.push_back(Indigo::Vec2f(1, 1));
-	//	mesh_node->mesh->uv_pairs.push_back(Indigo::Vec2f(1, 0));
-
-	//	mesh_node->mesh->endOfModel(); // Build the mesh
-
-	//	sceneRootRef->addChildNode(mesh_node);
-
-
-	//	//==================== Create the ground material =========================
-	//	Indigo::SceneNodeMaterialRef mat(new Indigo::SceneNodeMaterial());
-
-	//	Indigo::DiffuseMaterial* diffuse = new Indigo::DiffuseMaterial();
-	//	diffuse->random_triangle_colours = false;
-	//	diffuse->layer = 0;
-	//	diffuse->albedo = new Indigo::TextureWavelengthDependentParam(
-	//		0 // texture index
-	//	);
-
-	//	diffuse->textures.push_back(Indigo::Texture());
-	//	diffuse->textures.back().path = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/indigo_dll_example_vs2010/ColorChecker_sRGB_from_Ref.jpg";
-	//	diffuse->textures.back().tex_coord_generation = new Indigo::UVTexCoordGenerator();
-
-	//	mat->material = diffuse;
-	//	mat->setName("Ground diffuse material");
-
-	//	sceneRootRef->addChildNode(mat);
-
-	//	if(false)
-	//	{
-	//		// Example code to create a blend material instead:
-	//		Indigo::SceneNodeMaterialRef mat_a(new Indigo::SceneNodeMaterial());
-	//		Indigo::DiffuseMaterial* diffuse_a = new Indigo::DiffuseMaterial();
-	//		mat_a->material = diffuse_a;
-	//		mat_a->setName("Child mat A");
-	//		diffuse_a->albedo = new Indigo::ConstantWavelengthDependentParam(new Indigo::RGBSpectrum(Indigo::Vec3d(1,0,0), 2.2));
-	//		sceneRootRef->addChildNode(mat_a);
-
-	//		Indigo::SceneNodeMaterialRef mat_b(new Indigo::SceneNodeMaterial());
-	//		Indigo::DiffuseMaterial* diffuse_b = new Indigo::DiffuseMaterial();
-	//		mat_b->material = diffuse_b;
-	//		mat_b->setName("Child mat B");
-	//		diffuse_b->albedo = new Indigo::ConstantWavelengthDependentParam(new Indigo::RGBSpectrum(Indigo::Vec3d(0,1,0), 2.2));
-	//		sceneRootRef->addChildNode(mat_b);
-
-	//		Indigo::SceneNodeMaterialRef blend_node(new Indigo::SceneNodeMaterial());
-	//		Indigo::BlendMaterial* blend = new Indigo::BlendMaterial();
-	//		blend_node->setName("Blend mat");
-	//		blend_node->material = blend;
-	//		blend->blend = new Indigo::ConstantDisplacementParam(0.5);
-	//		blend->a_mat = mat_a;
-	//		blend->b_mat = mat_b;
-
-	//		sceneRootRef->addChildNode(blend_node);
-	//	}
-
-
-	//	//==================== Create the ground object =========================
-	//	Indigo::SceneNodeModelRef model(new Indigo::SceneNodeModel());
-	//	model->setName("Ground Object");
-	//	model->setGeometry(mesh_node);
-	//	model->keyframes.push_back(Indigo::KeyFrame());
-	//	model->rotation = new Indigo::MatrixRotation();
-	//	model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, mat));
-	//	
-	//	sceneRootRef->addChildNode(model); // Add node to scene graph.
-
-	//}
-
 	this->defineGeometry();
 }
 
@@ -398,6 +205,7 @@ void writeUInt8BufferToBMP(const Indigo::String& path, uint8* buffer, size_t w, 
 IndigoRenderer::IndigoRenderer()
 {
 	rendererStarted = false;
+	this->rendererAborted = false;
 }
 IndigoRenderer::~IndigoRenderer()
 {}
@@ -509,10 +317,18 @@ void IndigoRenderer::render()
 
 	// Write the tone-mapped image to disk.
 	MString imgName = this->mtin_renderGlobals->getImageOutputFile();
-	writeUInt8BufferToBMP((imgName + ".bmp").asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
-	writeFloatBufferToBMP((imgName + "fromFloat.bmp").asChar(), floatBufferRef->dataPtr(), floatBufferRef->width(), floatBufferRef->height());
+	if( this->mtin_renderGlobals->imageFormatString == "exr")
+	{
+		rendererRef->saveEXR((imgName).asChar());
+		logger.debug(MString("Saved image as: ") + imgName);
+	}
 
-	std::cout << "Render written to render.bmp." << std::endl;
+	//if( this->mtin_renderGlobals->imageFormatString == "bmp")
+	//{
+		writeUInt8BufferToBMP((imgName + ".bmp").asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
+		//writeFloatBufferToBMP((imgName + "fromFloat.bmp").asChar(), floatBufferRef->dataPtr(), floatBufferRef->width(), floatBufferRef->height());
+		logger.debug(MString("Saved image as: ") + imgName);
+	//}
 
 	EventQueue::Event e;
 	e.data = NULL;
@@ -534,4 +350,5 @@ void IndigoRenderer::abortRendering()
 {
 	logger.debug("User requested to abort rendering.");
 	rendererRef->stopRendering();
+	this->rendererAborted = true;
 }

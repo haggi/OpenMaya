@@ -5,8 +5,42 @@
 #include "mtin_common/mtin_renderGlobalsNode.h"
 #include "utilities/tools.h"
 
+#include "shaders/inGlossyTransparentMaterial.h"
+#include "shaders/inPhongMaterial.h"
+#include "shaders/inDiffuseMaterial.h"
+#include "shaders/inNullMaterial.h"
+#include "shaders/inDiffuseTransmitterMaterial.h"
+#include "shaders/inBlendMaterial.h"
+#include "shaders/inOrenNayarMaterial.h"
+#include "shaders/inSpecularMaterial.h"
+
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.2"
+#define VERSION "0.1"
+
+static const MString inGlossyTransparentsRegistrantId("inGlossyTransparentPlugin");
+static const MString inGlossyTransparentsDrawDBClassification("drawdb/shader/surface/inGlossyTransparent");
+static const MString inGlossyTransparentsFullClassification("indigo/material:shader/surface:" + inGlossyTransparentsDrawDBClassification);
+static const MString inPhongsRegistrantId("inPhongPlugin");
+static const MString inPhongsDrawDBClassification("drawdb/shader/surface/inPhong");
+static const MString inPhongsFullClassification("indigo/material:shader/surface:" + inPhongsDrawDBClassification);
+static const MString inDiffusesRegistrantId("inDiffusePlugin");
+static const MString inDiffusesDrawDBClassification("drawdb/shader/surface/inDiffuse");
+static const MString inDiffusesFullClassification("indigo/material/surface:shader/surface:" + inDiffusesDrawDBClassification);
+static const MString inNullsRegistrantId("inNullPlugin");
+static const MString inNullsDrawDBClassification("drawdb/shader/surface/inNull");
+static const MString inNullsFullClassification("indigo/material:shader/surface:" + inNullsDrawDBClassification);
+static const MString inDiffuseTransmittersRegistrantId("inDiffuseTransmitterPlugin");
+static const MString inDiffuseTransmittersDrawDBClassification("drawdb/shader/surface/inDiffuseTransmitter");
+static const MString inDiffuseTransmittersFullClassification("indigo/material:shader/surface:" + inDiffuseTransmittersDrawDBClassification);
+static const MString inBlendsRegistrantId("inBlendPlugin");
+static const MString inBlendsDrawDBClassification("drawdb/shader/surface/inBlend");
+static const MString inBlendsFullClassification("indigo/material:shader/surface:" + inBlendsDrawDBClassification);
+static const MString inOrenNayarsRegistrantId("inOrenNayarPlugin");
+static const MString inOrenNayarsDrawDBClassification("drawdb/shader/surface/inOrenNayar");
+static const MString inOrenNayarsFullClassification("indigo/material:shader/surface:" + inOrenNayarsDrawDBClassification);
+static const MString inSpecularsRegistrantId("inSpecularPlugin");
+static const MString inSpecularsDrawDBClassification("drawdb/shader/surface/inSpecular");
+static const MString inSpecularsFullClassification("indigo/material:shader/surface:" + inSpecularsDrawDBClassification);
 
 MStatus initializePlugin( MObject obj )
 {
@@ -15,6 +49,27 @@ MStatus initializePlugin( MObject obj )
 	MGlobal::displayInfo(MString("Loading plugin MayaToIndigo version: ") + MString(VERSION));
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
+
+#ifdef HAS_OVERRIDE
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inGlossyTransparentsDrawDBClassification, inGlossyTransparentsRegistrantId,inGlossyTransparentOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inPhongsDrawDBClassification, inPhongsRegistrantId,inPhongOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inDiffusesDrawDBClassification, inDiffusesRegistrantId,inDiffuseOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inNullsDrawDBClassification, inNullsRegistrantId,inNullOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inDiffuseTransmittersDrawDBClassification, inDiffuseTransmittersRegistrantId,inDiffuseTransmitterOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inBlendsDrawDBClassification, inBlendsRegistrantId,inBlendOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inOrenNayarsDrawDBClassification, inOrenNayarsRegistrantId,inOrenNayarOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inSpecularsDrawDBClassification, inSpecularsRegistrantId,inSpecularOverride::creator));
+#endif
+
+	CHECK_MSTATUS( plugin.registerNode( "inGlossyTransparent", inGlossyTransparent::id, inGlossyTransparent::creator, inGlossyTransparent::initialize, MPxNode::kDependNode, &inGlossyTransparentsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inPhong", inPhong::id, inPhong::creator, inPhong::initialize, MPxNode::kDependNode, &inPhongsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inDiffuse", inDiffuse::id, inDiffuse::creator, inDiffuse::initialize, MPxNode::kDependNode, &inDiffusesFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inNull", inNull::id, inNull::creator, inNull::initialize, MPxNode::kDependNode, &inNullsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inDiffuseTransmitter", inDiffuseTransmitter::id, inDiffuseTransmitter::creator, inDiffuseTransmitter::initialize, MPxNode::kDependNode, &inDiffuseTransmittersFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inBlend", inBlend::id, inBlend::creator, inBlend::initialize, MPxNode::kDependNode, &inBlendsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inOrenNayar", inOrenNayar::id, inOrenNayar::creator, inOrenNayar::initialize, MPxNode::kDependNode, &inOrenNayarsFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inSpecular", inSpecular::id, inSpecular::creator, inSpecular::initialize, MPxNode::kDependNode, &inSpecularsFullClassification ));
+
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToIndigo::creator, MayaToIndigo::newSyntax );
 	if (!status) {
@@ -56,6 +111,26 @@ MStatus uninitializePlugin( MObject obj)
 
 	const MString UserClassify( "shader/surface" );
 	
+#ifdef HAS_OVERRIDE
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inGlossyTransparentsDrawDBClassification, inGlossyTransparentsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inPhongsDrawDBClassification, inPhongsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inDiffusesDrawDBClassification, inDiffusesRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inNullsDrawDBClassification, inNullsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inDiffuseTransmittersDrawDBClassification, inDiffuseTransmittersRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inBlendsDrawDBClassification, inBlendsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inOrenNayarsDrawDBClassification, inOrenNayarsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inSpecularsDrawDBClassification, inSpecularsRegistrantId));
+#endif
+
+	CHECK_MSTATUS( plugin.deregisterNode( inGlossyTransparent::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inPhong::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inDiffuse::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inNull::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inDiffuseTransmitter::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inBlend::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inOrenNayar::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inSpecular::id ) );
+
 	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
