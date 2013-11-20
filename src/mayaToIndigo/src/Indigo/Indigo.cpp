@@ -226,10 +226,7 @@ void IndigoRenderer::render()
 #error Unknown MSVC version."
 #endif
 
-	if(sizeof(void*) == 8) // If this is a 64-bit executable:
-		indigo_dll_dir = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/binaries/vs2010_64_debug";
-	else 
-		indigo_dll_dir = "../binaries/vs" + msvc_version + "_32";
+	indigo_dll_dir = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/binaries/vs2010_64_debug";
 
 	// Path to the appdata directory. This is where the cache directories are written, where the log is written, and where the licence key is read from.
 	// An example appdata path would be 'C:\Users\nick\AppData\Roaming\Indigo Renderer'

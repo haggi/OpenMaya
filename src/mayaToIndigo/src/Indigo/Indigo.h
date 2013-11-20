@@ -8,6 +8,7 @@
 class mtin_MayaScene;
 class mtin_RenderGlobals;
 class mtin_MayaObject;
+class ShadingNode;
 
 #include <IndigoToneMapper.h>
 #include <SceneNodeRoot.h>
@@ -42,6 +43,7 @@ public:
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	void defineMesh(mtin_MayaObject *obj);
+	void addGeometry(mtin_MayaObject *obj);
 	virtual void defineLights();
 
 	virtual void render();
@@ -55,6 +57,11 @@ public:
 	void parse();
 	void framebufferCallback();
 	void createRenderSettings();
+
+	void defineShadingNodes(mtin_MayaObject *obj);
+	void createIndigoShadingNode(ShadingNode& snode);
+
+	void createTransform(Indigo::Vector<Indigo::KeyFrame>& keyFrames, mtin_MayaObject *obj);
 };
 
 #endif

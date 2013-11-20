@@ -52,7 +52,7 @@ public:
 
 	// instancer node attributes
 	MMatrix instancerMatrix; // matrix of instancer node and paricle node
-	bool isInstancerObject; // is this an instancer object
+	bool isInstancerObject; // is this an object created by an instancer node
 	int instancerParticleId; 
 	MObject instancerMObj;
 	MDagPath instancerDagPath;

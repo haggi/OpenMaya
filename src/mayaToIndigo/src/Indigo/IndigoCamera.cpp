@@ -15,17 +15,22 @@ void IndigoRenderer::defineCamera()
 	MVector camUp = camFn.upDirection(MSpace::kWorld);
 	MVector camView = camFn.viewDirection(MSpace::kWorld);
 	MPoint camPos = camFn.eyePoint(MSpace::kWorld);
-
+	double focusDistance = camFn.focusDistance();
+	double horizFilmAperture = camFn.horizontalFilmAperture();
+	double focalLen = camFn.focalLength();
 	//==================== Create camera node =========================
 	Indigo::SceneNodeCameraRef cam(new Indigo::SceneNodeCamera());
-	cam->lens_radius = 0.0001;
+	cam->lens_radius = 0.01;
 	cam->autofocus = false;
 	cam->exposure_duration = 1.0 / 30.0;
-	cam->focus_distance = 1.0;
-	cam->lens_sensor_dist = 0.03;
+	cam->focus_distance = focusDistance;
+	cam->lens_sensor_dist = 0.02;
 	cam->lens_shift_right_distance = 0;
 	cam->lens_shift_up_distance = 0;
-	cam->sensor_width = 0.035;
+	cam->sensor_width = horizFilmAperture * 2.54 * 0.01;
+	cam->camera_type = Indigo::SceneNodeCamera::CameraType_ThinLensPerspective;
+
+	
 
 	cam->forwards = Indigo::Vec3d(camView.x, camView.y, camView.z);
 	cam->up = Indigo::Vec3d(camUp.x, camUp.y, camUp.z);

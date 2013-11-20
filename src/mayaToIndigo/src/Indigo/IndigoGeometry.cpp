@@ -12,6 +12,8 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 
+#include "shadingtools/shadingUtils.h"
+#include "shadingtools/material.h"
 #include "../mtin_common/mtin_mayaObject.h"
 #include "../mtin_common/mtin_mayaScene.h"
 
@@ -211,6 +213,41 @@ void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
 
 		//sceneRootRef->addChildNode(model);
 
+void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
+{		
+	Indigo::SceneNodeMeshRef meshRef = obj->meshRef;
+	Indigo::SceneNodeMaterialRef matRef = obj->matRef;
+
+	if( (obj->isInstanced() || obj->isInstancerObject ) && (obj->origObject != 0))
+	{
+		mtin_MayaObject *origObj = (mtin_MayaObject *)obj->origObject;
+		meshRef = origObj->meshRef;
+		matRef = origObj->matRef;
+	}
+
+	if( meshRef.isNull())
+	{
+		logger.debug(MString("MeshRef for object ") + obj->shortName + " is null");
+		return;
+	}
+			
+	Indigo::SceneNodeModelRef model(new Indigo::SceneNodeModel());
+	model->setName((obj->fullNiceName + "_model").asChar());
+	model->setGeometry(meshRef);
+
+	//MPoint pos, scale, rot;
+	//getMatrixComponents(obj->transformMatrices[0], pos, rot, scale);
+	//Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
+	//MMatrix m = obj->transformMatrices[0];
+	//MTransformationMatrix tm;
+	//Indigo::MatrixRotation matRot(m[0][0],m[1][0],m[2][0], m[0][1],m[1][1],m[2][1] ,m[0][2],m[1][2],m[2][2]); 
+	//model->keyframes.push_back(posKf);
+	//model->rotation = new Indigo::MatrixRotation(matRot);
+	createTransform(model->keyframes, obj);
+	
+	model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, matRef));		
+	sceneRootRef->addChildNode(model); // Add node to scene graph.
+}
 
 void IndigoRenderer::defineGeometry()
 {
@@ -223,44 +260,21 @@ void IndigoRenderer::defineGeometry()
 		if( !obj->visible )
 			continue;
 		
+		getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+
 		if( obj->instanceNumber == 0 )
 			this->defineMesh(obj);
 
-		Indigo::SceneNodeMeshRef meshRef = obj->meshRef;
-		Indigo::SceneNodeMaterialRef matRef = obj->matRef;
-
-		if( obj->isInstanced() && (obj->instanceNumber > 0))
-		{
-			if( obj->origObject != NULL )
-			{
-				mtin_MayaObject *origObj = (mtin_MayaObject *)obj->origObject;
-				meshRef = origObj->meshRef;
-				matRef = origObj->matRef;
-			}else{
-				logger.error(MString("Error: Object ") + obj->shortName + " is instanced but has no origObject");
-				continue;
-			}
-		}
-			
-		Indigo::SceneNodeModelRef model(new Indigo::SceneNodeModel());
-		model->setName((obj->fullNiceName + "_model").asChar());
-		model->setGeometry(meshRef);
-
-		MPoint pos, scale, rot;
-		getMatrixComponents(obj->transformMatrices[0], pos, rot, scale);
-		Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
-		MMatrix m = obj->transformMatrices[0];
-		MTransformationMatrix tm;
-		//Indigo::MatrixRotation matRot(m[0][0],m[0][1],m[0][2], m[1][0],m[1][1],m[1][2] ,m[2][0],m[2][1],m[2][2]); 
-		Indigo::MatrixRotation matRot(m[0][0],m[1][0],m[2][0], m[0][1],m[1][1],m[2][1] ,m[0][2],m[1][2],m[2][2]); 
-		model->keyframes.push_back(posKf);
-		model->rotation = new Indigo::MatrixRotation(matRot);
-
-		model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, matRef));		
-		sceneRootRef->addChildNode(model); // Add node to scene graph.
-
+		this->addGeometry(obj);
 	}
 
+	for(size_t objId = 0; objId < this->mtin_scene->instancerNodeElements.size(); objId++)
+	{
+		mtin_MayaObject *obj = (mtin_MayaObject *)this->mtin_scene->instancerNodeElements[objId];
+		if( !obj->mobject.hasFn(MFn::kMesh))
+			continue;
+		this->addGeometry(obj);
+	}
 }
 
 

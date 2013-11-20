@@ -185,10 +185,10 @@ class IndigoRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Indigo specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        # we will have a thinlens camera only
-        #pm.addExtension(nodeType="camera", longName="mtin_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtin_diaphragm_blades", attributeType="long", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtin_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="camera", longName="mtin_lensRadius", attributeType="float", defaultValue = 0.1)
+        pm.addExtension(nodeType="camera", longName="mtin_autoFocus", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="camera", longName="mtin_whiteBalance", attributeType="enum", enumName = "D50:D55:D65")
+        pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="int", default = 5)
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_useassembly", attributeType="bool", defaultValue = False)
