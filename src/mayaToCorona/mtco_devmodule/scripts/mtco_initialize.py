@@ -56,11 +56,13 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth of Field:', default='True', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motion Blur:', default='True', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'xftimesamples', uiType = 'int', displayName = 'Mb Samples:', default='2', uiDict=uiDict)
+                    #self.addRenderGlobalsUIElement(attName = 'random_sampler', uiType = 'enum', displayName = 'Random_Sampler', default='5d_highd', data='5d_highd:Shared:Maximal_value', uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'progressive_maxPasses', uiType = 'int', displayName = 'Progressive_maxpasses', default='50', data='minmax:0:9999', uiDict=uiDict)
 
                     
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
                     self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
-                    self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
+                    #self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'bgColor', uiType = 'color', displayName = 'Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
 
 #self.addRenderGlobalsUIElement(attName = 'exportOnly', uiType = 'bool', displayName = 'Exportonly', default='false', uiDict=uiDict)
@@ -216,13 +218,13 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
-                with pm.frameLayout(label="Corona XML export", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
+                with pm.frameLayout(label="Corona export (no rendering)", collapsable = True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export scene file:", value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
                     with pm.rowColumnLayout(nc=3, width = 120):
-                        pm.text(label="XMLFileName:", width = 60, align="right")
+                        pm.text(label="ExportFileName:", width = 60, align="right")
                         defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
@@ -255,15 +257,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Corona specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        # we will have a thinlens camera only
-        #pm.addExtension(nodeType="camera", longName="mtco_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtco_diaphragm_blades", attributeType="long", defaultValue = 0)
+        pm.addExtension(nodeType="camera", longName="mtco_diaphragm_blades", attributeType="long", defaultValue = 5)
         pm.addExtension(nodeType="camera", longName="mtco_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
         
-        # mesh
-        pm.addExtension(nodeType="mesh", longName="mtco_mesh_useassembly", attributeType="bool", defaultValue = False)
-
-        # 
+        # exponent for sun light
+        pm.addExtension(nodeType="directionalLight", longName="mtco_sun_exponent", attributeType="float", defaultValue = 4.0)
+        
             
     def removeLogFile(self):
         logfile = pm.workspace.path + "/applelog.log"

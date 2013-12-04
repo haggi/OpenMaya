@@ -131,6 +131,8 @@ public:
 
 	bool getMtCoronaGlobals();
 	virtual MString getImageExt();
+	virtual void setRendererUnit();
+	virtual void setRendererAxis();
 
 private:
 };

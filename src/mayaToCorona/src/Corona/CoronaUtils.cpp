@@ -8,18 +8,6 @@
 
 static Logging logger;
 
-void CoronaRenderer::setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj)
-{
-	tm = Corona::AffineTm::IDENTITY;
-	MPoint pos, rot, scale;
-	getMatrixComponents(obj->transformMatrices[0], pos, rot, scale);
-	tm.translate(Corona::Dir(pos.x, pos.y, pos.z));
-	tm.rotateX(rot[0]);
-	tm.rotateY(rot[1]);
-	tm.rotateZ(rot[2]);
-	tm.scale(Corona::Dir(scale[0],scale[1],scale[2]));
-}
-
 void CoronaRenderer::setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj)
 {
 	MMatrix to, from;
@@ -30,12 +18,17 @@ void CoronaRenderer::setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& a
 
 	for( size_t mId = 0; mId < (numSegments + 1); mId++)
 	{
-		from = obj->transformMatrices[mId];
-		rowToColumn(from, to, true);
+		MMatrix c = this->mtco_renderGlobals->globalConversionMatrix;
+		logger.debug(MString("globalConv:"));
+		logger.debug(MString("") + c[0][0] + " "  + c[0][1] + " "  + c[0][2] + " "  + c[0][3]);
+		logger.debug(MString("") + c[1][0] + " "  + c[1][1] + " "  + c[1][2] + " "  + c[1][3]);
+		logger.debug(MString("") + c[2][0] + " "  + c[2][1] + " "  + c[2][2] + " "  + c[2][3]);
+		logger.debug(MString("") + c[3][0] + " "  + c[3][1] + " "  + c[3][2] + " "  + c[3][3]);
+		MMatrix t = (obj->transformMatrices[mId] * c).transpose();
 		Corona::AffineTm tm;
-		Corona::Float4 row1(to[0][0],to[0][1],to[0][2],to[0][3]);
-		Corona::Float4 row2(to[1][0],to[1][1],to[1][2],to[1][3]);
-		Corona::Float4 row3(to[2][0],to[2][1],to[2][2],to[2][3]);
+		Corona::Float4 row1(t[0][0],t[0][1],t[0][2],t[0][3]);
+		Corona::Float4 row2(t[1][0],t[1][1],t[1][2],t[1][3]);
+		Corona::Float4 row3(t[2][0],t[2][1],t[2][2],t[2][3]);
 		tm = Corona::AffineTm(row1, row2, row3);
 		atm[mId] = Corona::AffineTm::IDENTITY;
 		atm[mId] = tm;

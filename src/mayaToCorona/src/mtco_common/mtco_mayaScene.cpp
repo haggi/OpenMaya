@@ -33,6 +33,7 @@ mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 
 mtco_MayaScene::~mtco_MayaScene()
 {
+	logger.debug("mtco maya scene destructor.");
 }
 
 void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)

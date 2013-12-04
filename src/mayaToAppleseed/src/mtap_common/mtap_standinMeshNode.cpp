@@ -97,7 +97,7 @@ MObject mtap_standinMeshNode::createMesh(const MTime& time,
 							  MStatus& stat)
 
 {
-	int					numVertices, frame;
+	int					numVertices;
 	float				cubeSize;
 	MFloatPointArray	points;
 	MFnMesh				meshFS;
@@ -161,7 +161,7 @@ MObject mtap_standinMeshNode::createMesh(const MTime& time,
 
 		if( this->poly_size_multiplier != 1.0f)
 		{
-			for( uint f = 0; f < numFaces; f++)
+			for( int f = 0; f < numFaces; f++)
 			{
 				MPoint p0 = points[f * 3];
 				MPoint p1 = points[f * 3 + 1];

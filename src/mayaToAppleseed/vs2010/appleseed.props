@@ -2,22 +2,23 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <CORONA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToCorona\devkit\CoronaApi</CORONA_ROOT>
+    <APPLESEED_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToAppleseed\devkit\appleseed_devkit_win64</APPLESEED_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APPLESEED_ROOT)/include/appleseed;$(APPLESEED_ROOT)/include/appleseed.shared;$(APPLESEED_ROOT)/include/openexr;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib64-msvc-10.0</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)/lib64-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <BuildMacro Include="CORONA_ROOT">
-      <Value>$(CORONA_ROOT)</Value>
+    <BuildMacro Include="APPLESEED_ROOT">
+      <Value>$(APPLESEED_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="BOOST_ROOT">
       <Value>$(BOOST_ROOT)</Value>

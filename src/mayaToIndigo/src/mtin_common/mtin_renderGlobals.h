@@ -51,6 +51,8 @@ public:
 
 	bool getMtIndigoGlobals();
 	virtual MString getImageExt();
+	virtual void setRendererUnit();
+	virtual void setRendererAxis();
 
 private:
 };

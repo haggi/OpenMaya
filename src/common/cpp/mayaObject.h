@@ -8,6 +8,7 @@
 #include <maya/MBoundingBox.h>
 #include <maya/MString.h>
 #include <maya/MMatrix.h>
+#include <maya/MColor.h>
 #include <vector>
 
 //typedef void (*functionPointer)(void *, void *); 
@@ -19,6 +20,10 @@ class ObjectAttributes
 {
 public:
 	bool hasInstancerConnection;
+	// perParticleInfos - first try, need to find a intelligent way to find the correct values.
+	MColor colorOverride;
+	bool hasColorOverride;
+	float opacityOverride;
 private:
 };
 

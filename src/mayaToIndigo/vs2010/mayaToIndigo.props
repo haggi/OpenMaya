@@ -2,21 +2,26 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <INDIGO_ROOT>C:\Users\haggi\coding\OpenMaya\src\mayaToIndigo\devkit\IndigoSDK_3.6.24</INDIGO_ROOT>
+    <INDIGO_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToIndigo\devkit\IndigoSDK</INDIGO_ROOT>
+    <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(INDIGO_ROOT)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(INDIGO_ROOT)/include;$(BOOST_ROOT)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib;$(BOOST_ROOT)/lib64-msvc-10.0</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="INDIGO_ROOT">
       <Value>$(INDIGO_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_ROOT">
+      <Value>$(BOOST_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

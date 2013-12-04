@@ -73,7 +73,7 @@ public:
 
 	void saveImage();
 	// utils
-	void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
+	//void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj);
 	// temp
 	void createScene();

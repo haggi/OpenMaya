@@ -369,13 +369,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sourceCodeDocs\assemblyWorkflow.txt">
-      <Filter>ressources</Filter>
-    </None>
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
       <Filter>ressources</Filter>
     </None>
     <None Include="sourceCodeDocs\materials.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="..\mtin_devmodule\ressources\shaderDefinitions.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

@@ -17,6 +17,8 @@ public:
 
 	bool getMt@Globals();
 	virtual MString getImageExt();
+	virtual void setRendererUnit();
+	virtual void setRendererAxis();
 
 private:
 };

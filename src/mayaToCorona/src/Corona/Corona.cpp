@@ -37,19 +37,6 @@ CoronaRenderer::~CoronaRenderer()
 
 using namespace Corona;
 
-
-// creates a new native material with a random diffuse color
-IMaterial* getNativeMtl(Abstract::Settings* settings) 
-{
-    static int created = 0;
-    NativeMtlData data;
-    data.components.diffuse.setColor(Rgb(FLT_RAND(), FLT_RAND(), FLT_RAND()));
-    if(created++ == 0) {    // first material created gets a texture
-        data.components.diffuse.setMap(new MyCheckerMap);
-    }
-    return data.createMtl(settings);
-}
-
 void CoronaRenderer::saveImage()
 {
 	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
@@ -99,8 +86,6 @@ void CoronaRenderer::createScene()
 	}else{
 		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb));
 	}
-
-
 }
 
 
@@ -131,9 +116,9 @@ void CoronaRenderer::render()
 	context.settings->set(PARAM_IMAGE_HEIGHT, this->mtco_renderGlobals->imgHeight);
     context.settings->set(PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
     context.settings->set(PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
-    context.settings->set(PARAM_PROGRESSIVE_MAX_PASSES, 20);
-    context.settings->set(PARAM_NUM_THREADS, 3);
-    //context.settings->set(PARAM_EXPORT_ONLY, true);
+	context.settings->set(PARAM_PROGRESSIVE_MAX_PASSES, this->mtco_renderGlobals->progressive_maxPasses);
+	context.settings->set(PARAM_NUM_THREADS, this->mtco_renderGlobals->threads);
+	context.settings->set(PARAM_EXPORT_ONLY, this->mtco_renderGlobals->exportSceneFile);
 	
  
     // add a custom string to the render stamp

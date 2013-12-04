@@ -23,6 +23,7 @@ mtco_ObjectAttributes::mtco_ObjectAttributes(mtco_ObjectAttributes *other)
 		this->hasInstancerConnection = false;
 		objectMatrix.setToIdentity();
 	}
+	this->hasColorOverride = false;
 };
 
 

@@ -120,6 +120,13 @@ MStatus MayaTo@::doIt( const MArgList& args)
 		return MS::kFailure;
 	}	
 
+	if (rtype == MayaScene::IPR)
+	{
+		// maya scene ptr will be deleted as soon as the ipr is done
+	}else{
+		delete mayaScene;
+	}
+
 	MGlobal::displayInfo("mayato@ rendering done.\n");
 	return MStatus::kSuccess;
 }

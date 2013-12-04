@@ -319,6 +319,23 @@ void RenderQueueWorker::startRenderQueueWorker()
 			}
 			break;
 
+		case EventQueue::Event::RENDERERROR:
+			{
+				if( e.data != NULL)
+				{
+					delete[]  (RV_PIXEL *)e.data;
+				}
+				if( imageBuffer != NULL)
+				{
+					delete[] imageBuffer;
+					imageBuffer = NULL;
+				}
+
+				e.type = EventQueue::Event::FINISH;
+				theRenderEventQueue()->push(e);
+				isRendering = false;
+			}
+			break;
 		case EventQueue::Event::FRAMEDONE:
 			logger.debug("Event::FRAMEDONE");
 			if( e.data != NULL)

@@ -24,13 +24,11 @@ void IndigoRenderer::defineCamera()
 	cam->autofocus = false;
 	cam->exposure_duration = 1.0 / 30.0;
 	cam->focus_distance = focusDistance;
-	cam->lens_sensor_dist = 0.02;
+	cam->lens_sensor_dist = focalLen/1000.0;
 	cam->lens_shift_right_distance = 0;
 	cam->lens_shift_up_distance = 0;
-	cam->sensor_width = horizFilmAperture * 2.54 * 0.01;
+	cam->sensor_width = (horizFilmAperture * 2.54 * 10.0) / 1000.0;
 	cam->camera_type = Indigo::SceneNodeCamera::CameraType_ThinLensPerspective;
-
-	
 
 	cam->forwards = Indigo::Vec3d(camView.x, camView.y, camView.z);
 	cam->up = Indigo::Vec3d(camUp.x, camUp.y, camUp.z);

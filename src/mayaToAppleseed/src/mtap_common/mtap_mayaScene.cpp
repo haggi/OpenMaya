@@ -18,6 +18,8 @@ mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 	this->mtap_renderer.mtap_scene = this;
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
+	this->userThreadUpdateInterval= 1000;
+	this->needsUserThread = false;
 }
 
 mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
@@ -29,11 +31,17 @@ mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	this->mtap_renderer.renderGlobals = this->renderGlobals;
 	this->mtap_renderer.definePreRender();
 	this->renderType = rtype;
+	this->userThreadUpdateInterval= 1000;
+	this->needsUserThread = false;
+
 }
 
 mtap_MayaScene::~mtap_MayaScene()
 {
 }
+
+void mtap_MayaScene::userThreadProcedure()
+{}
 
 //
 // we only need to update the assembly instances, all other elements are static.

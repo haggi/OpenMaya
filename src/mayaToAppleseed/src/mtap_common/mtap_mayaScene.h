@@ -36,6 +36,7 @@ public:
 	virtual void getRenderGlobals();
 	virtual void stopRendering();
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
+	virtual void userThreadProcedure();
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
 	virtual bool postParseCallback();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access

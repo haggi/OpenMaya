@@ -4,8 +4,8 @@
 #include <maya/MObject.h>
 #include <maya/MString.h>
 #include <maya/MMatrix.h>
+#include <maya/MDistance.h>
 #include <vector>
-
 
 // Render pass definition goes into the global framework because most of the known passses are
 // the same in all renderers, like shadowmap, photonmap, caustics, bake...
@@ -85,7 +85,18 @@ struct RenderType{
 class RenderGlobals
 {
 public:
-	
+
+	enum RendererUpAxis{
+		XUp,
+		YUp,
+		ZUp
+	};
+
+	MDistance::Unit internalUnit;
+	MDistance::Unit rendererUnit;
+	RendererUpAxis internalAxis;
+	RendererUpAxis rendererAxis;
+
 	MObject renderGlobalsMobject;
 	bool good;
 	
@@ -165,10 +176,12 @@ public:
 	int		regionTop;
 
 	bool detectShapeDeform;
-
 	bool exportSceneFile;
 	MString exportSceneFileName;
-	MMatrix sceneScaleMatrix;
+
+	MMatrix globalConversionMatrix; // for default unit conversion e.g. centimeter to meter
+	MMatrix sceneScaleMatrix; // user defined scene scale
+
 	float sceneScale;
 	MString optimizedTexturePath;
 	bool useOptimizedTextures;
@@ -186,6 +199,9 @@ public:
 	void getImageName();
 	MString getImageOutputFile();
 	virtual MString getImageExt() = 0;
+	virtual void setRendererUnit() = 0;
+	virtual void setRendererAxis() = 0;
+	void defineGlobalConversionMatrix();
 };
 
 #endif

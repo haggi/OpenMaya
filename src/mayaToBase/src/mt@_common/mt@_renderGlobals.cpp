@@ -10,11 +10,25 @@ static Logging logger;
 mt@_RenderGlobals::mt@_RenderGlobals()
 {
 	this->getMt@Globals();
+
+	this->setRendererAxis();
+	this->setRendererUnit();
+	this->defineGlobalConversionMatrix();
 }
 
 MString mt@_RenderGlobals::getImageExt()
 {
 	return MString("ext");
+}
+
+void mt@_RenderGlobals::setRendererUnit()
+{
+	this->rendererUnit = MDistance::kMeters;
+}
+
+void mt@_RenderGlobals::setRendererAxis()
+{
+	this->rendererAxis = ZUp;
 }
 
 bool mt@_RenderGlobals::getMt@Globals()

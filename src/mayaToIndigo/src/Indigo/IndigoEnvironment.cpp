@@ -45,7 +45,6 @@ void IndigoRenderer::defineEnvironment()
 		}
 		case 2: // sun/sky
 		{
-
 			// first get the globals node and serach for a directional light connection
 			MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
 			MObjectArray nodeList;

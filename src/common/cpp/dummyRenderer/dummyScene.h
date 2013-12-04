@@ -1,8 +1,10 @@
 #ifndef DUMMY_SCENE_H
 #define DUMMY_SCENE_H
 #include <maya/MRenderView.h>
-
+#include "boost/thread.hpp"
 #include "dummyRenderer.h"
+
+#include "boost/interprocess/detail/atomic.hpp"
 
 struct RGlobal
 {

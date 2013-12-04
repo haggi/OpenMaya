@@ -227,7 +227,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	stat = eAttr.addField( "Maximal_value", 2 );
 	CHECK_MSTATUS(addAttribute( random_sampler ));
 
-	progressive_maxPasses = nAttr.create("progressive_maxPasses", "progressive_maxPasses",  MFnNumericData::kInt, 0);
+	progressive_maxPasses = nAttr.create("progressive_maxPasses", "progressive_maxPasses",  MFnNumericData::kInt, 20);
 	CHECK_MSTATUS(addAttribute( progressive_maxPasses ));
 
 	progressive_timeLimit = nAttr.create("progressive_timeLimit", "progressive_timeLimit",  MFnNumericData::kInt, 60);

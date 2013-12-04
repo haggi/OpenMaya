@@ -235,15 +235,22 @@ void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
 	model->setName((obj->fullNiceName + "_model").asChar());
 	model->setGeometry(meshRef);
 
-	//MPoint pos, scale, rot;
-	//getMatrixComponents(obj->transformMatrices[0], pos, rot, scale);
-	//Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
-	//MMatrix m = obj->transformMatrices[0];
-	//MTransformationMatrix tm;
-	//Indigo::MatrixRotation matRot(m[0][0],m[1][0],m[2][0], m[0][1],m[1][1],m[2][1] ,m[0][2],m[1][2],m[2][2]); 
-	//model->keyframes.push_back(posKf);
-	//model->rotation = new Indigo::MatrixRotation(matRot);
-	createTransform(model->keyframes, obj);
+    MPoint pos, scale, rot;
+    MMatrix m = obj->transformMatrices[0];
+    getMatrixComponents(m, pos, rot, scale);
+    MTransformationMatrix tm(m);
+	MMatrix im;
+	im.setToIdentity();
+    Indigo::MatrixRotation matRot(im[0][0],im[1][0],im[2][0], im[0][1],im[1][1],im[2][1] ,im[0][2],im[1][2],im[2][2]);
+    Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
+	double x, y, z, w;
+	tm.getRotationQuaternion(x, y, z, w, MSpace::kWorld);
+	Indigo::AxisAngle axis(Indigo::Vec3d(x, y, z), w);	
+	
+    //Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), axis);
+    model->keyframes.push_back(posKf);
+    model->rotation = new Indigo::MatrixRotation(matRot);
+	//createTransform(model->keyframes, obj);
 	
 	model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, matRef));		
 	sceneRootRef->addChildNode(model); // Add node to scene graph.

@@ -10,11 +10,25 @@ static Logging logger;
 mtin_RenderGlobals::mtin_RenderGlobals()
 {
 	this->getMtIndigoGlobals();
+	
+	this->setRendererAxis();
+	this->setRendererUnit();
+	this->defineGlobalConversionMatrix();
 }
 
 MString mtin_RenderGlobals::getImageExt()
 {
 	return MString("ext");
+}
+
+void mtin_RenderGlobals::setRendererUnit()
+{
+	this->rendererUnit = MDistance::kMeters;
+}
+
+void mtin_RenderGlobals::setRendererAxis()
+{
+	this->rendererAxis = ZUp;
 }
 
 bool mtin_RenderGlobals::getMtIndigoGlobals()

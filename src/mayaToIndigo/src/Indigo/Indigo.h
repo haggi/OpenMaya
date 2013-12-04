@@ -61,7 +61,7 @@ public:
 	void defineShadingNodes(mtin_MayaObject *obj);
 	void createIndigoShadingNode(ShadingNode& snode);
 
-	void createTransform(Indigo::Vector<Indigo::KeyFrame>& keyFrames, mtin_MayaObject *obj);
+	void createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj);
 };
 
 #endif

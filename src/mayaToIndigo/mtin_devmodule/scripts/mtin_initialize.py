@@ -188,7 +188,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtin_lensRadius", attributeType="float", defaultValue = 0.1)
         pm.addExtension(nodeType="camera", longName="mtin_autoFocus", attributeType="bool", defaultValue = False)
         pm.addExtension(nodeType="camera", longName="mtin_whiteBalance", attributeType="enum", enumName = "D50:D55:D65")
-        pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="int", default = 5)
+        pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="long", defaultValue = 5)
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_useassembly", attributeType="bool", defaultValue = False)

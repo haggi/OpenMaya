@@ -1,6 +1,7 @@
 #include "Indigo.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
 #include "../mtin_common/mtin_renderGlobals.h"
 #include "../mtin_common/mtin_mayaScene.h"
 
@@ -53,46 +54,7 @@ void IndigoRenderer::createSceneGraph()
 	sceneRootRef = Indigo::SceneNodeRootRef(new Indigo::SceneNodeRoot());
 
 	this->createRenderSettings();
-	//==================== Create renderer settings node =========================
-	//Indigo::SceneNodeRenderSettingsRef settings(Indigo::SceneNodeRenderSettings::getDefaults()); // Initialise it with the default values.
-	//// Override a few values for our example:
-	//settings->setBoolSetting("metropolis", false);
-	//settings->setBoolSetting("bidirectional", false);
-	//settings->setDoubleSetting("image_save_period", 10000000.0);
-	//settings->setIntSetting("width", this->mtin_renderGlobals->imgWidth);
-	//settings->setIntSetting("height", this->mtin_renderGlobals->imgHeight);
-	//settings->setBoolSetting("info_overlay", true);
-	//settings->setDoubleSetting("halt_time", this->mtin_renderGlobals->halt_time);
-
-	//sceneRootRef->addChildNode(settings); // Add the settings node to the scene graph.
-
 	this->defineCamera();
-
-	//mtin_MayaObject *icam = (mtin_MayaObject *)this->mtin_scene->camList[0];
-	//MFnCamera camFn(icam->dagPath);
-	//MVector camUp = camFn.upDirection(MSpace::kWorld);
-	//MVector camView = camFn.viewDirection(MSpace::kWorld);
-	//MPoint camPos = camFn.eyePoint(MSpace::kWorld);
-
-	////==================== Create camera node =========================
-	//Indigo::SceneNodeCameraRef cam(new Indigo::SceneNodeCamera());
-	//cam->lens_radius = 0.0001;
-	//cam->autofocus = false;
-	//cam->exposure_duration = 1.0 / 30.0;
-	//cam->focus_distance = 1.0;
-	//cam->lens_sensor_dist = 0.03;
-	//cam->lens_shift_right_distance = 0;
-	//cam->lens_shift_up_distance = 0;
-	//cam->sensor_width = 0.035;
-
-	//cam->forwards = Indigo::Vec3d(camView.x, camView.y, camView.z);
-	//cam->up = Indigo::Vec3d(camUp.x, camUp.y, camUp.z);
-	//cam->setPos(Indigo::Vec3d(camPos.x, camPos.y, camPos.z));
-
-	//cam->forwards = Indigo::Vec3d(0, 1, 0);
-	//cam->up = Indigo::Vec3d(0, 0, 1);
-	//cam->setPos(Indigo::Vec3d(0, -6, 0.3));
-
 
 	//==================== Create tone-mapping node (required) =========================
 	Indigo::SceneNodeTonemappingRef tone_mapping(new Indigo::SceneNodeTonemapping());
@@ -226,19 +188,27 @@ void IndigoRenderer::render()
 #error Unknown MSVC version."
 #endif
 
-	indigo_dll_dir = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/binaries/vs2010_64_debug";
+	//indigo_dll_dir = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/binaries/vs2010_64_debug";
+	MString rendererHome = getRendererHome();
+	logger.debug(MString("Homedir: ") + rendererHome);
+
+	indigo_dll_dir = (rendererHome + "/bin").asChar();
 
 	// Path to the appdata directory. This is where the cache directories are written, where the log is written, and where the licence key is read from.
 	// An example appdata path would be 'C:\Users\nick\AppData\Roaming\Indigo Renderer'
-	const Indigo::String indigo_appdata_path = "C:/daten/3dprojects/Indigo/data";
-
+	const Indigo::String indigo_appdata_path = (rendererHome + "/bin/data").asChar();
 	Indigo::IndigoContextRef context(new Indigo::IndigoContext());
-	// Call the initialise function for the renderer object. This must be called before any other methods on the renderer object are called.
 	Indigo::String error_string;
 	indResult result = context->initialise(indigo_dll_dir, indigo_appdata_path, error_string);
+
 	if(result != Indigo::INDIGO_SUCCESS)
 	{
 		std::cerr << "Failed to initialise Indigo context, error code: " << result << ", error description: " << toStdString(error_string) << std::endl;
+		EventQueue::Event e;
+		e.data = NULL;
+		e.type = EventQueue::Event::RENDERERROR;
+		theRenderEventQueue()->push(e);
+
 		return;
 	}
 
@@ -251,12 +221,16 @@ void IndigoRenderer::render()
 
 	// Save the scene graph to an IGS on disk so we can look at it in the Indigo GUI.
 	try
-	{
-		sceneRootRef->writeToXMLFileOnDisk("C:/daten/3dprojects/Indigo/example.igs", true, NULL);
+	{		
+		sceneRootRef->writeToXMLFileOnDisk("C:/daten/3dprojects/mayaToIndigo/example.igs", true, NULL);
 	}
-	catch(Indigo::IndigoException& e)
+	catch(Indigo::IndigoException& ex)
 	{
-		std::cerr << toStdString(e.what()) << std::endl;
+		std::cerr << toStdString(ex.what()) << std::endl;
+		EventQueue::Event e;
+		e.data = NULL;
+		e.type = EventQueue::Event::RENDERERROR;
+		theRenderEventQueue()->push(e);
 		return;
 	}
 

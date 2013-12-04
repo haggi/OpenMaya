@@ -44,13 +44,8 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	
 	Corona::IGeometryGroup* geom = NULL;
 	
-	if( obj->geom != NULL )
-	{
-		geom = obj->geom;
-	}else{
-		geom = this->context.scene->addGeomGroup();
-		obj->geom = geom;
-	}
+	geom = this->context.scene->addGeomGroup();
+	obj->geom = geom;
 
 	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 	{
@@ -174,32 +169,18 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 			MFnDependencyNode depFn(ss.mobject);
 			if( ss.typeName == "CoronaSurface")
 			{
+				MColor overrideColor(1,1,1);
+				if( obj->attributes != NULL)
+					if( obj->attributes->hasColorOverride)
+						overrideColor = obj->attributes->colorOverride;
+
 				getColor("diffuse", depFn, colorVal);
-				//data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-				MString otherSidePlugName = "checker1.outColor";
-
-
-				MFloatMatrix camMatrix;
-				camMatrix.setToIdentity();
-				MFloatPointArray pointArray, refPoints;
-				MFloatArray uArray, vArray, filterSizes;
-				MFloatVectorArray normals, uTangents, vTangents, resultColors, resultTransparencies;
-				pointArray.append(0,0,0);
-				uArray.append(0.0);
-				vArray.append(0.0);
-				normals.append(MFloatVector(0,0,0));
-
-				//MStatus s = MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
-				//if( !s )
-				//	MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
-
-				//MayaMap *mm = new MayaMap(otherSidePlugName);
-
-				//data.components.diffuse.setMap(mm);
-				data.components.diffuse.setMap(new CheckerMap);
-
+				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
+				//data.components.diffuse.setMap(new CheckerMap);
 				getColor("emissionColor", depFn, colorVal);
+				colorVal *= overrideColor;
 				data.emission.color.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
+				//data.emission.emissionExponent
 			}else if(ss.typeName == "lambert"){
 				getColor("color", depFn, colorVal);
 				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
@@ -216,7 +197,8 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
 	}
 		
-	Corona::IMaterial *mat = data.createMtl(this->context.settings);
+	//Corona::IMaterial *mat = data.createMtl(this->context.settings);
+	Corona::IMaterial *mat = data.createMaterial(this->context.settings);
 	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }
 

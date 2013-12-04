@@ -10,6 +10,10 @@ static Logging logger;
 mtco_RenderGlobals::mtco_RenderGlobals()
 {
 	this->getMtCoronaGlobals();
+
+	this->setRendererAxis();
+	this->setRendererUnit();
+	this->defineGlobalConversionMatrix();
 }
 
 mtco_RenderGlobals::~mtco_RenderGlobals()
@@ -19,6 +23,16 @@ mtco_RenderGlobals::~mtco_RenderGlobals()
 MString mtco_RenderGlobals::getImageExt()
 {
 	return this->imageFormatString;
+}
+
+void mtco_RenderGlobals::setRendererUnit()
+{
+	this->rendererUnit = MDistance::kMeters;
+}
+
+void mtco_RenderGlobals::setRendererAxis()
+{
+	this->rendererAxis = ZUp;
 }
 
 bool mtco_RenderGlobals::getMtCoronaGlobals()

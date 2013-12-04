@@ -5,6 +5,7 @@
 #include <maya/MFnCamera.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnInstancer.h>
+#include <maya/MFnParticleSystem.h>
 #include <maya/MMatrixArray.h>
 #include <maya/MIntArray.h>
 #include <maya/MLightLinks.h>
@@ -12,6 +13,7 @@
 #include <maya/MGlobal.h>
 #include <maya/M3dView.h>
 #include <maya/MRenderView.h>
+#include <maya/MVectorArray.h>
 
 #include "mayaScene.h"
 #include "utilities/logging.h"
@@ -573,6 +575,7 @@ std::vector<MayaObject *> InstDoneList;
 // of a particle
 bool MayaScene::parseInstancerNew()
 {
+	MStatus stat;
 	bool result = true;
 	logger.debug(MString("parseInstancerNew"));
 	MDagPath dagPath;
@@ -594,6 +597,29 @@ bool MayaScene::parseInstancerNew()
 		MMatrixArray allMatrices;
 		MIntArray pathIndices;
 		MIntArray pathStartIndices;
+		MObjectArray nodeList;
+		getConnectedInNodes(MString("inputPoints"), instPath.node(), nodeList);
+		bool hasParticleSystem = false;
+		MVectorArray rgbPP;
+		if( nodeList.length() > 0)
+		{
+			if( nodeList[0].hasFn(MFn::kParticle))
+			{
+				logger.debug(MString("Found a particle system called ") + getObjectName(nodeList[0]));
+				MFnParticleSystem pSystem(nodeList[0], &stat);
+				if( stat )
+				{
+					if( pSystem.hasRgb())
+					{
+						hasParticleSystem = true;
+						pSystem.rgb(rgbPP);
+					}
+				}else{
+					logger.debug(MString("Could nod get a particleSystem from node "));
+				}
+			}
+		}
+		//MFnParticleSystem
 		
 		// give me all instances in this instancer
 		instFn.allInstances( allPaths, allMatrices, pathStartIndices, pathIndices );
@@ -657,6 +683,14 @@ bool MayaScene::parseInstancerNew()
 				this->instancerNodeElements.push_back(particleMObject);
 				particleMObject->index = (int)(this->instancerNodeElements.size() - 1);
 				currentAttributes->hasInstancerConnection = true;
+				if( hasParticleSystem )
+				{
+					if( particleMObject->attributes != NULL )
+					{
+						particleMObject->attributes->hasColorOverride = true;
+						particleMObject->attributes->colorOverride = MColor(rgbPP[p].x,rgbPP[p].y,rgbPP[p].z);
+					}
+				}
 			}
 		}
 	}
