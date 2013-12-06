@@ -666,9 +666,12 @@ bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& 
 	if( !stat )
 		return false;
 	
+	MGlobal::displayInfo(MString("is plug connected: ") + plug.name());
 	if( !plug.isConnected())
+	{
+		MGlobal::displayInfo(MString("plug is NOT connected: ") + plug.name());
 		return false;
-
+	}
 	MPlugArray parray;
 	plug.connectedTo(parray, true, false, &stat);
 	if( !stat )

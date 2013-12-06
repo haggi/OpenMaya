@@ -57,6 +57,7 @@ public:
 	virtual void defineCamera();
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
+	virtual void defineSettings();
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);

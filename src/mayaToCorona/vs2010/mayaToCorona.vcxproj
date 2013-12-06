@@ -770,6 +770,7 @@
     <ClCompile Include="..\src\Corona\Corona.cpp" />
     <ClCompile Include="..\src\Corona\CoronaGeometry.cpp" />
     <ClCompile Include="..\src\Corona\CoronaLights.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaSettings.cpp" />
     <ClCompile Include="..\src\Corona\CoronaShaders.cpp" />
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp" />
     <ClCompile Include="..\src\mayaToCorona.cpp" />
@@ -785,7 +786,6 @@
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
     <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp" />
-    <ClCompile Include="CoronaSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />

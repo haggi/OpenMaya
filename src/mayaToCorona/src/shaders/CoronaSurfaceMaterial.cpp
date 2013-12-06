@@ -77,12 +77,12 @@ MObject  CoronaSurface::aLightBlindData;
 //---------------------------- automatically created attributes start ------------------------------------
 MObject CoronaSurface::refractivity;
 MObject CoronaSurface::anisotropyRotation;
-MObject CoronaSurface::emissionDisableSampling;
-MObject CoronaSurface::emissionExponent;
 MObject CoronaSurface::attenuationColor;
 MObject CoronaSurface::brdfType;
 MObject CoronaSurface::emissionColor;
 MObject CoronaSurface::emissionSharpnessFake;
+MObject CoronaSurface::emissionDisableSampling;
+MObject CoronaSurface::emissionExponent;
 MObject CoronaSurface::anisotropy;
 MObject CoronaSurface::attenuationDist;
 MObject CoronaSurface::reflectivity;
@@ -189,7 +189,8 @@ MStatus CoronaSurface::initialize()
 	roundCornersRadius = nAttr.create("roundCornersRadius", "roundCornersRadius",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( roundCornersRadius ));
 
-	translucency = nAttr.create("translucency", "translucency",  MFnNumericData::kFloat, 0.0);
+	translucency = nAttr.createColor("translucency", "translucency");
+	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( translucency ));
 
 	refractionGlossiness = nAttr.create("refractionGlossiness", "refractionGlossiness",  MFnNumericData::kFloat, 1.0);

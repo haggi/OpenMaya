@@ -66,26 +66,7 @@ void CoronaRenderer::createScene()
 	this->defineCamera();
 	this->defineGeometry();
 	this->defineLights();
-
-	//std::map<Corona::String, Corona::Abstract::Map*> maps;
-	Corona::Rgb bgRgb(this->mtco_renderGlobals->bgColor.r,this->mtco_renderGlobals->bgColor.g,this->mtco_renderGlobals->bgColor.b);
-	MString texName;
-	if( getConnectedFileTexturePath(MString("bgColor"), MString("coronaGlobals"), texName) )
-	{
-		Corona::String fileName = texName.asChar();
-		logger.debug(MString("Found bg texture: ") + texName);
-		MapLoader loader;
-		//const Corona::String path = Corona::Str::getPath(this->filename, name);
-		Corona::Abstract::Map *texmap = loader.loadBitmap(fileName);
-		if(texmap == NULL) 
-		{
-			logger.error(MString("Unable to read bg file: ") + texName);
-		}else{
-			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
-		}
-	}else{
-		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb));
-	}
+	this->defineEnvironment();
 }
 
 

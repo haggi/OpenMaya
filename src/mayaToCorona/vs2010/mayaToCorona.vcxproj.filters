@@ -188,7 +188,7 @@
     <ClCompile Include="..\src\Corona\CoronaMap.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
-    <ClCompile Include="CoronaSettings.cpp">
+    <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
   </ItemGroup>

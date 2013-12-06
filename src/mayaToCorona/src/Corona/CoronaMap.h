@@ -34,7 +34,6 @@ public:
                 shader.mapChannel = mapChannel;
             }
 
-
             virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
                 outAlpha = 1.f;
                 return shader.eval(context);

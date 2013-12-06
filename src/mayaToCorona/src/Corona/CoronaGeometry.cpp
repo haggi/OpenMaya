@@ -153,54 +153,6 @@ Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
 	return geom;
 }
 
-void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
-{
-	Corona::NativeMtlData data;
-	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
-		
-	if( obj->shadingGroups.length() > 0)
-	{
-		Material mat(obj->shadingGroups[0]);
-		if( mat.surfaceShaderNet.shaderList.size() > 0)
-		{
-			ShadingNode ss = mat.surfaceShaderNet.shaderList[0];
-			logger.debug(MString("Found surface shader ") + ss.fullName);
-			MColor colorVal;
-			MFnDependencyNode depFn(ss.mobject);
-			if( ss.typeName == "CoronaSurface")
-			{
-				MColor overrideColor(1,1,1);
-				if( obj->attributes != NULL)
-					if( obj->attributes->hasColorOverride)
-						overrideColor = obj->attributes->colorOverride;
-
-				getColor("diffuse", depFn, colorVal);
-				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-				//data.components.diffuse.setMap(new CheckerMap);
-				getColor("emissionColor", depFn, colorVal);
-				colorVal *= overrideColor;
-				data.emission.color.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-				//data.emission.emissionExponent
-			}else if(ss.typeName == "lambert"){
-				getColor("color", depFn, colorVal);
-				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-			}else{
-				data.components.diffuse.setColor(Corona::Rgb(.2, .2, 1.0));
-			}
-		}else{
-			data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
-		}
-
-		MFnDependencyNode sn;
-
-	}else{
-		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
-	}
-		
-	//Corona::IMaterial *mat = data.createMtl(this->context.settings);
-	Corona::IMaterial *mat = data.createMaterial(this->context.settings);
-	obj->instance->addMaterial(Corona::IMaterialSet(mat));
-}
 
 
 void CoronaRenderer::defineGeometry()
