@@ -2,10 +2,10 @@
 #include <maya/MTypeId.h>
 
 #ifdef HAS_OVERRIDE
-#include "materialBaseOverride.h"
+#include "inMediumDermisOverride.h"
 #endif
 
-// Plugin MaterialBase Shader Class //
+// Plugin inMediumDermis Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -13,11 +13,11 @@
 // type MPxNode
 //
 
-class MaterialBase : public MPxNode
+class inMediumDermis : public MPxNode
 {
 public:
-                    MaterialBase();
-    virtual         ~MaterialBase();
+                    inMediumDermis();
+    virtual         ~inMediumDermis();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -43,6 +43,7 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject precedence;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

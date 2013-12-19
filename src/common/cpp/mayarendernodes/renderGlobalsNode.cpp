@@ -147,6 +147,7 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	MString numCpu = getenv("NUMBER_OF_PROCESSORS");
 	int numberOfProcessors = numCpu.asInt();
 	threads = nAttr.create("threads", "threads", MFnNumericData::kInt, numberOfProcessors);
+	nAttr.setMin(1);
 	CHECK_MSTATUS(addAttribute( threads ));
 
 	translatorVerbosity = eAttr.create("translatorVerbosity", "translatorVerbosity", 2, &stat);

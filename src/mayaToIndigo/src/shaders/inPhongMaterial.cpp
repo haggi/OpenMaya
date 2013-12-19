@@ -76,6 +76,7 @@ MObject  inPhong::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject inPhong::displacement;
+MObject inPhong::backface_emit;
 MObject inPhong::layer;
 MObject inPhong::exponent;
 MObject inPhong::bump;
@@ -136,11 +137,20 @@ MStatus inPhong::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( displacement ));
+
+	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backface_emit ));
+
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
 
 	exponent = nAttr.create("exponent", "exponent",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( exponent ));
+
+	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( bump ));
 
 	base_emission = nAttr.createColor("base_emission", "base_emission");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -162,6 +172,10 @@ MStatus inPhong::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	specular_reflectivity = nAttr.createColor("specular_reflectivity", "specular_reflectivity");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( specular_reflectivity ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

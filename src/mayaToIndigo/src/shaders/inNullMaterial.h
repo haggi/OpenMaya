@@ -43,6 +43,7 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject backface_emit;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

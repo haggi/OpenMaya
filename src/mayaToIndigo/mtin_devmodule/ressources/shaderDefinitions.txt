@@ -13,50 +13,55 @@ shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
 shader_start:inGlossyTransparent
+	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:exponent:float
-	inatt:internal_medium_name:string
-	inatt:bump:scalar
+	inatt:internal_medium_name:message
+	inatt:bump:float
 	inatt:base_emission:color
-	inatt:displacement:scalar
+	inatt:displacement:float
 	inatt:emission:color
 	outatt:outColor:color
 shader_end
 
 shader_start:inPhong
-	inatt:displacement:scalar
+	inatt:displacement:float
+	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:exponent:float
-	inatt:bump:scalar
+	inatt:bump:float
 	inatt:base_emission:color
 	inatt:ior:float
 	inatt:albedo:color
 	inatt:nk_data:enum
 	inatt:emission:color
-	inatt:specular_reflectivity:scalar
+	inatt:specular_reflectivity:color
 	outatt:outColor:color
 shader_end
 
 shader_start:inDiffuse
+	inatt:backface_emit:bool
 	inatt:layer:int
-	inatt:bump:scalar
+	inatt:bump:float
 	inatt:base_emission:color
 	inatt:emission:color
-	inatt:displacement:scalar
+	inatt:displacement:float
 	inatt:albedo:color
 	outatt:outColor:color
 shader_end
 
 shader_start:inNull
+	inatt:backface_emit:bool
 	outatt:outColor:color
 shader_end
 
 shader_start:inDiffuseTransmitter
+	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:internal_medium_name:string
-	inatt:bump:scalar
+	inatt:bump:float
 	inatt:base_emission:color
-	inatt:displacement:scalar
+	inatt:displacement:float
 	inatt:emission:color
 	inatt:albedo:color
 	outatt:outColor:color
@@ -64,6 +69,7 @@ shader_end
 
 shader_start:inBlend
 	inatt:step_blend:bool
+	inatt:backface_emit:bool
 	inatt:a_name:string
 	inatt:blend:float
 	inatt:b_name:string
@@ -71,24 +77,48 @@ shader_start:inBlend
 shader_end
 
 shader_start:inOrenNayar
+	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:bump:scalar
 	inatt:base_emission:color
 	inatt:emission:color
-	inatt:displacement:scalar
+	inatt:displacement:float
 	inatt:sigma:float
 	inatt:albedo:color
 	outatt:outColor:color
 shader_end
 
 shader_start:inSpecular
+	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:internal_medium_name:string
-	inatt:bump:scalar
+	inatt:bump:float
 	inatt:base_emission:color
-	inatt:displacement:scalar
+	inatt:displacement:float
 	inatt:emission:color
 	inatt:transparent:bool
+	outatt:outColor:color
+shader_end
+
+shader_start:inMediumEpidermis
+	inatt:precedence:int
+	outatt:outColor:color
+shader_end
+
+shader_start:inMediumDermis
+	inatt:precedence:int
+	outatt:outColor:color
+shader_end
+
+shader_start:inMediumBasic
+	inatt:subsurface_scattering:bool
+	inatt:precedence:int
+	inatt:scattering_coefficient_spectrum:color
+	inatt:absorption_coefficient_spectrum:color
+	inatt:ior:float
+	inatt:phase_function_hgg:color
+	inatt:cauchy_b_coeff:float
+	inatt:phase_function:enum
 	outatt:outColor:color
 shader_end
 

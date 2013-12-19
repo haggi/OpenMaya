@@ -44,6 +44,7 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject displacement;
+	static    MObject backface_emit;
 	static    MObject layer;
 	static    MObject exponent;
 	static    MObject bump;

@@ -221,6 +221,24 @@
     <ClCompile Include="..\src\shaders\inSpecularMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumBasicMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumBasicMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumDermisMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumDermisMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumEpidermisMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\inMediumEpidermisMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -367,6 +385,24 @@
     <ClInclude Include="..\src\shaders\inSpecularMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumBasicMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumBasicMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumDermisMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumDermisMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumEpidermisMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inMediumEpidermisMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
@@ -376,6 +412,9 @@
       <Filter>ressources</Filter>
     </None>
     <None Include="..\mtin_devmodule\ressources\shaderDefinitions.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\volumes.txt">
       <Filter>ressources</Filter>
     </None>
   </ItemGroup>

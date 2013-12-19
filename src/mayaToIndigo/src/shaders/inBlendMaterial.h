@@ -44,6 +44,7 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject step_blend;
+	static    MObject backface_emit;
 	static    MObject a_name;
 	static    MObject blend;
 	static    MObject b_name;

@@ -25,7 +25,6 @@ MObject MayaToIndigoGlobals::halt_time;
 MObject MayaToIndigoGlobals::halt_samples_per_pixel;
 MObject MayaToIndigoGlobals::hybrid;
 MObject MayaToIndigoGlobals::auto_choose_num_threads;
-MObject MayaToIndigoGlobals::num_threads;
 MObject MayaToIndigoGlobals::super_sample_factor;
 MObject MayaToIndigoGlobals::watermark;
 MObject MayaToIndigoGlobals::info_overlay;
@@ -123,9 +122,6 @@ MStatus	MayaToIndigoGlobals::initialize()
 
 	auto_choose_num_threads = nAttr.create("auto_choose_num_threads", "auto_choose_num_threads",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( auto_choose_num_threads ));
-
-	num_threads = nAttr.create("num_threads", "num_threads",  MFnNumericData::kBoolean, 1);
-	CHECK_MSTATUS(addAttribute( num_threads ));
 
 	super_sample_factor = nAttr.create("super_sample_factor", "super_sample_factor",  MFnNumericData::kInt, 2);
 	CHECK_MSTATUS(addAttribute( super_sample_factor ));

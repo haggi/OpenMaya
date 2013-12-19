@@ -75,6 +75,7 @@ MObject  inSpecular::aPreShadowIntensity;
 MObject  inSpecular::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject inSpecular::backface_emit;
 MObject inSpecular::layer;
 MObject inSpecular::internal_medium_name;
 MObject inSpecular::bump;
@@ -133,15 +134,24 @@ MStatus inSpecular::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backface_emit ));
+
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
 
 	internal_medium_name = tAttr.create("internal_medium_name", "internal_medium_name",  MFnNumericData::kString);
 	CHECK_MSTATUS(addAttribute( internal_medium_name ));
 
+	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( bump ));
+
 	base_emission = nAttr.createColor("base_emission", "base_emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( base_emission ));
+
+	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( displacement ));
 
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);

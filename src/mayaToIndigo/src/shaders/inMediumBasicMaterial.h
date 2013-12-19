@@ -2,10 +2,10 @@
 #include <maya/MTypeId.h>
 
 #ifdef HAS_OVERRIDE
-#include "inDiffuseTransmitterOverride.h"
+#include "inMediumBasicOverride.h"
 #endif
 
-// Plugin inDiffuseTransmitter Shader Class //
+// Plugin inMediumBasic Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -13,11 +13,11 @@
 // type MPxNode
 //
 
-class inDiffuseTransmitter : public MPxNode
+class inMediumBasic : public MPxNode
 {
 public:
-                    inDiffuseTransmitter();
-    virtual         ~inDiffuseTransmitter();
+                    inMediumBasic();
+    virtual         ~inMediumBasic();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -43,14 +43,14 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject backface_emit;
-	static    MObject layer;
-	static    MObject internal_medium_name;
-	static    MObject bump;
-	static    MObject base_emission;
-	static    MObject displacement;
-	static    MObject emission;
-	static    MObject albedo;
+	static    MObject subsurface_scattering;
+	static    MObject precedence;
+	static    MObject scattering_coefficient_spectrum;
+	static    MObject absorption_coefficient_spectrum;
+	static    MObject ior;
+	static    MObject phase_function_hgg;
+	static    MObject cauchy_b_coeff;
+	static    MObject phase_function;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

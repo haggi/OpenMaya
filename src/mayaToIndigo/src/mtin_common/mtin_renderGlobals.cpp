@@ -117,9 +117,6 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getBool(MString("auto_choose_num_threads"), IndigoGlobals, this->auto_choose_num_threads))
 			throw("problem reading indigoGlobals.auto_choose_num_threads");
 
-		if(!getBool(MString("num_threads"), IndigoGlobals, this->num_threads))
-			throw("problem reading indigoGlobals.num_threads");
-
 		if(!getInt(MString("super_sample_factor"), IndigoGlobals, this->super_sample_factor))
 			throw("problem reading indigoGlobals.super_sample_factor");
 

@@ -48,12 +48,13 @@ void IndigoRenderer::parse()
 					//logger.error(MString("ERROR_MESSAGE: ") + msgString);
 					std::cerr << "\tERROR: " << msgString.asChar() << std::flush;
 					// Plugin authors could pop up a message box instead of exiting.
+					this->rendererAborted = true;
 					break;
 				}
 				case Indigo::MessageInterface::LOG_MESSAGE:
 				{
 					MString msgString = toStdString(static_cast<Indigo::LogMessageInterface*>(message.getPointer())->getMessage()).c_str();
-					std::cerr << "\tERROR: " << msgString.asChar() << std::flush;
+					std::cerr << "\tLOG_MESSAGE: " << msgString.asChar() << std::flush;
 					//logger.debug(MString("LOG_MESSAGE: ") + msgString);
 					break;
 				}

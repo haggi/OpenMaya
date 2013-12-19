@@ -13,6 +13,9 @@
 #include "shaders/inBlendMaterial.h"
 #include "shaders/inOrenNayarMaterial.h"
 #include "shaders/inSpecularMaterial.h"
+#include "shaders/inMediumEpidermisMaterial.h"
+#include "shaders/inMediumDermisMaterial.h"
+#include "shaders/inMediumBasicMaterial.h"
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.1"
@@ -41,6 +44,16 @@ static const MString inOrenNayarsFullClassification("indigo/material:shader/surf
 static const MString inSpecularsRegistrantId("inSpecularPlugin");
 static const MString inSpecularsDrawDBClassification("drawdb/shader/surface/inSpecular");
 static const MString inSpecularsFullClassification("indigo/material:shader/surface:" + inSpecularsDrawDBClassification);
+static const MString inMediumEpidermissRegistrantId("inMediumEpidermisPlugin");
+static const MString inMediumEpidermissDrawDBClassification("drawdb/shader/surface/inMediumEpidermis");
+static const MString inMediumEpidermissFullClassification("indigo/material:shader/surface:" + inMediumEpidermissDrawDBClassification);
+static const MString inMediumDermissRegistrantId("inMediumDermisPlugin");
+static const MString inMediumDermissDrawDBClassification("drawdb/shader/surface/inMediumDermis");
+static const MString inMediumDermissFullClassification("indigo/material:shader/surface:" + inMediumDermissDrawDBClassification);
+static const MString inMediumBasicsRegistrantId("inMediumBasicPlugin");
+static const MString inMediumBasicsDrawDBClassification("drawdb/shader/surface/inMediumBasic");
+static const MString inMediumBasicsFullClassification("indigo/material:shader/surface:" + inMediumBasicsDrawDBClassification);
+
 
 MStatus initializePlugin( MObject obj )
 {
@@ -59,6 +72,9 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inBlendsDrawDBClassification, inBlendsRegistrantId,inBlendOverride::creator));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inOrenNayarsDrawDBClassification, inOrenNayarsRegistrantId,inOrenNayarOverride::creator));
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inSpecularsDrawDBClassification, inSpecularsRegistrantId,inSpecularOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inMediumEpidermissDrawDBClassification, inMediumEpidermissRegistrantId,inMediumEpidermisOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inMediumDermissDrawDBClassification, inMediumDermissRegistrantId,inMediumDermisOverride::creator));
+	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inMediumBasicsDrawDBClassification, inMediumBasicsRegistrantId,inMediumBasicOverride::creator));
 #endif
 
 	CHECK_MSTATUS( plugin.registerNode( "inGlossyTransparent", inGlossyTransparent::id, inGlossyTransparent::creator, inGlossyTransparent::initialize, MPxNode::kDependNode, &inGlossyTransparentsFullClassification ));
@@ -69,6 +85,9 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( plugin.registerNode( "inBlend", inBlend::id, inBlend::creator, inBlend::initialize, MPxNode::kDependNode, &inBlendsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "inOrenNayar", inOrenNayar::id, inOrenNayar::creator, inOrenNayar::initialize, MPxNode::kDependNode, &inOrenNayarsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "inSpecular", inSpecular::id, inSpecular::creator, inSpecular::initialize, MPxNode::kDependNode, &inSpecularsFullClassification ));
+	//CHECK_MSTATUS( plugin.registerNode( "inMediumEpidermis", inMediumEpidermis::id, inMediumEpidermis::creator, inMediumEpidermis::initialize, MPxNode::kDependNode, &inMediumEpidermissFullClassification ));
+	//CHECK_MSTATUS( plugin.registerNode( "inMediumDermis", inMediumDermis::id, inMediumDermis::creator, inMediumDermis::initialize, MPxNode::kDependNode, &inMediumDermissFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "inMediumBasic", inMediumBasic::id, inMediumBasic::creator, inMediumBasic::initialize, MPxNode::kDependNode, &inMediumBasicsFullClassification ));
 
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToIndigo::creator, MayaToIndigo::newSyntax );
@@ -120,6 +139,9 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inBlendsDrawDBClassification, inBlendsRegistrantId));
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inOrenNayarsDrawDBClassification, inOrenNayarsRegistrantId));
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inSpecularsDrawDBClassification, inSpecularsRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inMediumEpidermissDrawDBClassification, inMediumEpidermissRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inMediumDermissDrawDBClassification, inMediumDermissRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inMediumBasicsDrawDBClassification, inMediumBasicsRegistrantId));
 #endif
 
 	CHECK_MSTATUS( plugin.deregisterNode( inGlossyTransparent::id ) );
@@ -130,6 +152,9 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS( plugin.deregisterNode( inBlend::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( inOrenNayar::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( inSpecular::id ) );
+	//CHECK_MSTATUS( plugin.deregisterNode( inMediumEpidermis::id ) );
+	//CHECK_MSTATUS( plugin.deregisterNode( inMediumDermis::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( inMediumBasic::id ) );
 
 	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );

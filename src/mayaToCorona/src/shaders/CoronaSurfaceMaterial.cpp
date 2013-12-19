@@ -147,21 +147,25 @@ MStatus CoronaSurface::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	refractivity = nAttr.create("refractivity", "refractivity",  MFnNumericData::kFloat, 0.0);
+	refractivity = nAttr.createColor("refractivity", "refractivity");
 	CHECK_MSTATUS(addAttribute( refractivity ));
 
-	anisotropyRotation = nAttr.create("anisotropyRotation", "anisotropyRotation",  MFnNumericData::kFloat, 0.0);
+	anisotropyRotation = nAttr.create("anisotropicRotation", "anisotropicRotation",  MFnNumericData::kFloat, 0.0);
+	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( anisotropyRotation ));
 
 	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));
 
-	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 0.0);
+	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( emissionExponent ));
 
 	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
 	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( attenuationColor ));
+
+	attenuationDist = nAttr.create("attenuationDist", "attenuationDist",  MFnNumericData::kFloat, 1.0f);
+	CHECK_MSTATUS(addAttribute( attenuationDist ));
 
 	brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
 	status = eAttr.addField( "Phong", 0 );
@@ -177,10 +181,14 @@ MStatus CoronaSurface::initialize()
 	emissionSharpnessFake = nAttr.create("emissionSharpnessFake", "emissionSharpnessFake",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionSharpnessFake ));
 
+	emissionSharpnessFakePoint = nAttr.createPoint("emissionSharpnessFakePoint", "emissionSharpnessFakePoint");
+	CHECK_MSTATUS(addAttribute( emissionSharpnessFakePoint ));
+
 	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.5);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
 
-	reflectivity = nAttr.create("reflectivity", "reflectivity",  MFnNumericData::kFloat, 0.0);
+	reflectivity = nAttr.createColor("reflectivity", "reflectivity");
+	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( reflectivity ));
 
 	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.2);
@@ -194,6 +202,8 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( translucency ));
 
 	refractionGlossiness = nAttr.create("refractionGlossiness", "refractionGlossiness",  MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
 	CHECK_MSTATUS(addAttribute( refractionGlossiness ));
 
 	roundCornersSamples = nAttr.create("roundCornersSamples", "roundCornersSamples",  MFnNumericData::kInt, 10);
@@ -213,6 +223,8 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( diffuse ));
 
 	reflectionGlossiness = nAttr.create("reflectionGlossiness", "reflectionGlossiness",  MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
 	CHECK_MSTATUS(addAttribute( reflectionGlossiness ));
 
 //---------------------------- automatically created attributes end ------------------------------------

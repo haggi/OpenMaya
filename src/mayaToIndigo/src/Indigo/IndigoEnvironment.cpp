@@ -1,6 +1,7 @@
 #include "Indigo.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 #include "../mtin_common/mtin_renderGlobals.h"
 #include "../mtin_common/mtin_mayaScene.h"
 #include "../mtin_common/mtin_mayaObject.h"
@@ -18,6 +19,25 @@ void IndigoRenderer::defineEnvironment()
 		}
 		case 1: // environment light map
 		{
+			MString texName;
+			bool useTexture = false;
+			Indigo::String texturePath = "";
+			if( getConnectedFileTexturePath(MString("environmentColor"), MString("indigoGlobals"), texName) )
+			{
+				useTexture = true;
+				texturePath = texName.asChar();
+			}
+			MColor bgColor(1,1,1);
+			MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
+			MFnDependencyNode globalsNode(indigoGlobals);
+			getColor("environmentColor", globalsNode, bgColor);
+			if( (bgColor.r + bgColor.g + bgColor.b) <= 0.0)
+			{
+				logger.warning("BGColor is black, setting to red.");
+				bgColor.r = 1.0f;
+				bgColor.g = bgColor.b = 0.0f;
+			}
+
 			Indigo::SceneNodeBackgroundSettingsRef background_settings(new Indigo::SceneNodeBackgroundSettings());
 
 			Reference<Indigo::DiffuseMaterial> mat(new Indigo::DiffuseMaterial());
@@ -25,18 +45,23 @@ void IndigoRenderer::defineEnvironment()
 			// Albedo should be zero.
 			mat->albedo = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(0))));
 
-			// Emission is a texture parameter that references our texture that we will create below.
-			mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
-
-			// Base emission is the emitted spectral radiance.
-			mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(35.0))));
 
 			Indigo::Texture texture;
-			texture.path = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/indigo_dll_example_vs2010/ColorChecker_sRGB_from_Ref.jpg"; // You will usually want to use a lat-long EXR environment map here
-			texture.exponent = 1; // Since we will usually use a HDR image, the exponent (gamma) should be set to one.
-			texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::SphericalTexCoordGenerator(Reference<Indigo::Rotation>(new Indigo::MatrixRotation())));
-
-			mat->textures.push_back(texture);
+			// Emission is a texture parameter that references our texture that we will create below.
+			//mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
+			if( useTexture )
+			{
+				texture.path = texturePath;
+				texture.exponent = 1; // Since we will usually use a HDR image, the exponent (gamma) should be set to one.
+				texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::SphericalTexCoordGenerator(Reference<Indigo::Rotation>(new Indigo::MatrixRotation())));
+				mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
+				mat->textures.push_back(texture);
+			}else{
+				Indigo::RGBSpectrum *iBgColor = new Indigo::RGBSpectrum(Indigo::Vec3d(bgColor.r,bgColor.g,bgColor.b), 2.2);
+				mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iBgColor)));
+			}
+			// Base emission is the emitted spectral radiance. No effect here?
+			mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(1.0e10))));
 
 			background_settings->background_material = mat;
 
@@ -57,7 +82,8 @@ void IndigoRenderer::defineEnvironment()
 					// we suppose what's connected here is a dir light transform
 					MVector lightDir(0,0,1); // default dir light dir
 					MFnDagNode sunDagNode(sunObj);
-					lightDir *= sunDagNode.transformationMatrix();
+					lightDir *= sunDagNode.transformationMatrix() * this->mtin_renderGlobals->globalConversionMatrix;
+					lightDir.normalize();
 
 					Indigo::SceneNodeBackgroundSettingsRef background_settings_node(new Indigo::SceneNodeBackgroundSettings());
 					Reference<Indigo::SunSkyMaterial> sun_sky_mat(new Indigo::SunSkyMaterial());

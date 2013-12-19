@@ -10,35 +10,35 @@
 
 #ifdef HAS_OVERRIDE
 
-#include "materialBaseOverride.h"
+#include "inMediumDermisOverride.h"
 
-MHWRender::MPxSurfaceShadingNodeOverride* MaterialBaseOverride::creator(const MObject& obj)
+MHWRender::MPxSurfaceShadingNodeOverride* inMediumDermisOverride::creator(const MObject& obj)
 {
-	return new MaterialBaseOverride(obj);
+	return new inMediumDermisOverride(obj);
 }
 
-MaterialBaseOverride::MaterialBaseOverride(const MObject& obj)
+inMediumDermisOverride::inMediumDermisOverride(const MObject& obj)
 : MPxSurfaceShadingNodeOverride(obj)
 {
 }
 
-MaterialBaseOverride::~MaterialBaseOverride()
+inMediumDermisOverride::~inMediumDermisOverride()
 {
 }
 
-MHWRender::DrawAPI MaterialBaseOverride::supportedDrawAPIs() const
+MHWRender::DrawAPI inMediumDermisOverride::supportedDrawAPIs() const
 {
 	// works in both gl and dx
 	return MHWRender::kOpenGL | MHWRender::kDirectX11;
 }
 
-MString MaterialBaseOverride::fragmentName() const
+MString inMediumDermisOverride::fragmentName() const
 {
 	// Just reuse Maya's lambert surface shader
 	return "mayaLambertSurface";
 }
 
-void MaterialBaseOverride::getCustomMappings(
+void inMediumDermisOverride::getCustomMappings(
 	MHWRender::MAttributeParameterMappingList& mappings)
 {
 	// The "color", "transparency" and "incandescence" attributes are all
@@ -54,19 +54,19 @@ void MaterialBaseOverride::getCustomMappings(
 	mappings.append(translucenceMapping);
 }
 
-MString MaterialBaseOverride::primaryColorParameter() const
+MString inMediumDermisOverride::primaryColorParameter() const
 {
 	// Use the color parameter from the lambert fragment as the primary color
 	return "color";
 }
 
-MString MaterialBaseOverride::transparencyParameter() const
+MString inMediumDermisOverride::transparencyParameter() const
 {
 	// Use the "transparency" parameter from the lambert fragment for transparency
 	return "transparency";
 }
 
-MString MaterialBaseOverride::bumpAttribute() const
+MString inMediumDermisOverride::bumpAttribute() const
 {
 	// Use the "normalCamera" attribute to recognize bump connections
 	return "normalCamera";

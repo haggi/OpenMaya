@@ -117,6 +117,10 @@ void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot, MVector& sc
 
 bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value);
 
+MString getConnectedFileTexturePath(MString& plugName, MFnDependencyNode& node);
+
+MObject getConnectedFileTextureObject(MString& plugName, MFnDependencyNode& depFn);
+
 bool findCamera(MDagPath& dagPath);
 
 bool isLightTransform(MDagPath& dagPath);

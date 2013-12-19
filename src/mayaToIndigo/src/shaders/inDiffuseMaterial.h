@@ -43,6 +43,7 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject backface_emit;
 	static    MObject layer;
 	static    MObject bump;
 	static    MObject base_emission;

@@ -24,7 +24,7 @@ public:
     Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
         Corona::Bitmap<Corona::Rgb> data;
         Corona::Wx::loadImage(filename, data);
-
+		
         class TextureMap : public Corona::Abstract::Map {
         protected:
             Corona::TextureShader shader;

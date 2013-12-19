@@ -33,7 +33,6 @@ static    MObject halt_time;
 static    MObject halt_samples_per_pixel;
 static    MObject hybrid;
 static    MObject auto_choose_num_threads;
-static    MObject num_threads;
 static    MObject super_sample_factor;
 static    MObject watermark;
 static    MObject info_overlay;

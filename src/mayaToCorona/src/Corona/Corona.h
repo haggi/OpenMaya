@@ -11,6 +11,8 @@
 class mtco_MayaScene;
 class mtco_RenderGlobals;
 class mtco_MayaObject;
+class MFnDependencyNode;
+class MString;
 
 // simple implementation of the Logger class from the API. Simply outputs all messages to the standard output.
 class mtco_Logger : public Corona::Abstract::Logger 
@@ -60,6 +62,8 @@ public:
 	virtual void defineSettings();
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
+	void defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	virtual void defineLights();
 

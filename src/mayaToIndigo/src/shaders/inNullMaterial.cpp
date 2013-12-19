@@ -75,6 +75,7 @@ MObject  inNull::aPreShadowIntensity;
 MObject  inNull::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject inNull::backface_emit;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -126,6 +127,9 @@ MStatus inNull::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backface_emit ));
+
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes

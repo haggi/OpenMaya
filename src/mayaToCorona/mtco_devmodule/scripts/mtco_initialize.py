@@ -205,7 +205,25 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         dirname = pm.fileDialog2(fileMode=3, caption="Select dir")
         if len(dirname) > 0:
             self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
-        
+
+    def CoronaEnvironmentCreateTab(self):
+        log.debug("CoronaEnvironmentCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
+        scLo = self.rendererName + "EnvScrollLayout"
+        envDict = {}
+        self.rendererTabUiDict['environment'] = envDict
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                with pm.frameLayout(label="Environment Lighting", collapsable=False):
+                    pass
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+
+    def CoronaEnvironmentUpdateTab(self):
+        pass
+    
     def CoronaTranslatorCreateTab(self):
         log.debug("CoronaTranslatorCreateTab()")
         self.createGlobalsNode()
@@ -252,6 +270,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             iList = self.renderGlobalsNode.imageFormat.getEnums()
             self.imageFormats = []
             self.imageFormats.extend(iList)
+
+    def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
 
 
     def registerNodeExtensions(self):

@@ -3,12 +3,14 @@
 
 #include "rendering/renderer.h"
 #include <maya/MObject.h>
+#include <maya/MString.h>
 #include <vector>
 
 class mtin_MayaScene;
 class mtin_RenderGlobals;
 class mtin_MayaObject;
 class ShadingNode;
+class MFnDependencyNode;
 
 #include <IndigoToneMapper.h>
 #include <SceneNodeRoot.h>
@@ -33,6 +35,9 @@ public:
 	Indigo::ToneMapperRef toneMapperRef;
 	Indigo::FloatBufferRef floatBufferRef;
 	Indigo::SceneNodeRootRef sceneRootRef;
+	Indigo::SceneNodeMaterialRef currentSceneNodeMaterialRef;
+	Indigo::Material *currentMaterial;
+
 	bool rendererStarted;
 	bool rendererAborted;
 
@@ -60,6 +65,13 @@ public:
 
 	void defineShadingNodes(mtin_MayaObject *obj);
 	void createIndigoShadingNode(ShadingNode& snode);
+	//void createIndigoMaterial(ShadingNode& snode);
+	//bool isIndigoMaterial(MString& shadingNodeName);
+	//
+	//void createIndigoMaterial(mtin_MayaObject *obj);
+	void createIndigoDefaultMaterial();
+	void setIndependentParameter(Reference<Indigo::WavelengthIndependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
+	void setDependentParameter(Reference<Indigo::WavelengthDependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
 
 	void createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj);
 };

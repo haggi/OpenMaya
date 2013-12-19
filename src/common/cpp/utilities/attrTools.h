@@ -8,6 +8,7 @@
 #include <maya/MVector.h>
 #include <maya/Mpoint.h>
 
+
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value);
 
 bool getFloat(const char* plugName, MFnDependencyNode& dn, float& value);
@@ -23,6 +24,8 @@ bool getString(MString& plugName, MFnDependencyNode& dn, MString& value);
 bool getInt(MString& plugName, MFnDependencyNode& dn, int& value);
 
 bool getInt(const char *plugName, MFnDependencyNode& dn, int& value);
+
+bool getUInt(const char *plugName, MFnDependencyNode& dn, uint& value);
 
 bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value);
 
@@ -51,5 +54,7 @@ bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
+
+bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value);
 
 #endif

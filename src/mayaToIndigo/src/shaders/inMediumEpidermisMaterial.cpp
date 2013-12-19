@@ -1,4 +1,4 @@
-#include "inBlendMaterial.h"
+#include "inMediumEpidermisMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -27,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inBlend::id( 0x0011CF82 );
+MTypeId	inMediumEpidermis::id( 0x0011CF85 );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void inBlend::postConstructor( )
+void inMediumEpidermis::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -47,39 +47,35 @@ void inBlend::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  inBlend::aTranslucenceCoeff;
-MObject  inBlend::aDiffuseReflectivity;
-MObject  inBlend::aInTransparency;
-MObject  inBlend::aColor;
-MObject  inBlend::aIncandescence;
-MObject  inBlend::aOutColor;
-MObject  inBlend::aOutTransparency;
-MObject  inBlend::aNormalCamera;
-MObject  inBlend::aNormalCameraX;
-MObject  inBlend::aNormalCameraY;
-MObject  inBlend::aNormalCameraZ;
-MObject  inBlend::aLightData;
-MObject  inBlend::aLightDirection;
-MObject  inBlend::aLightDirectionX;
-MObject  inBlend::aLightDirectionY;
-MObject  inBlend::aLightDirectionZ;
-MObject  inBlend::aLightIntensity;
-MObject  inBlend::aLightIntensityR;
-MObject  inBlend::aLightIntensityG;
-MObject  inBlend::aLightIntensityB;
-MObject  inBlend::aLightAmbient;
-MObject  inBlend::aLightDiffuse;
-MObject  inBlend::aLightSpecular;
-MObject  inBlend::aLightShadowFraction;
-MObject  inBlend::aPreShadowIntensity;
-MObject  inBlend::aLightBlindData;
+MObject  inMediumEpidermis::aTranslucenceCoeff;
+MObject  inMediumEpidermis::aDiffuseReflectivity;
+MObject  inMediumEpidermis::aInTransparency;
+MObject  inMediumEpidermis::aColor;
+MObject  inMediumEpidermis::aIncandescence;
+MObject  inMediumEpidermis::aOutColor;
+MObject  inMediumEpidermis::aOutTransparency;
+MObject  inMediumEpidermis::aNormalCamera;
+MObject  inMediumEpidermis::aNormalCameraX;
+MObject  inMediumEpidermis::aNormalCameraY;
+MObject  inMediumEpidermis::aNormalCameraZ;
+MObject  inMediumEpidermis::aLightData;
+MObject  inMediumEpidermis::aLightDirection;
+MObject  inMediumEpidermis::aLightDirectionX;
+MObject  inMediumEpidermis::aLightDirectionY;
+MObject  inMediumEpidermis::aLightDirectionZ;
+MObject  inMediumEpidermis::aLightIntensity;
+MObject  inMediumEpidermis::aLightIntensityR;
+MObject  inMediumEpidermis::aLightIntensityG;
+MObject  inMediumEpidermis::aLightIntensityB;
+MObject  inMediumEpidermis::aLightAmbient;
+MObject  inMediumEpidermis::aLightDiffuse;
+MObject  inMediumEpidermis::aLightSpecular;
+MObject  inMediumEpidermis::aLightShadowFraction;
+MObject  inMediumEpidermis::aPreShadowIntensity;
+MObject  inMediumEpidermis::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject inBlend::step_blend;
-MObject inBlend::backface_emit;
-MObject inBlend::a_name;
-MObject inBlend::blend;
-MObject inBlend::b_name;
+MObject inMediumEpidermis::precedence;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -87,8 +83,8 @@ MObject inBlend::b_name;
 // destruction
 //
 
-inBlend::inBlend() { }
-inBlend::~inBlend() { }
+inMediumEpidermis::inMediumEpidermis() { }
+inMediumEpidermis::~inMediumEpidermis() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -96,12 +92,12 @@ inBlend::~inBlend() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new inBlend object.
+// In this case creator simply returns a new inMediumEpidermis object.
 //
 
-void* inBlend::creator()
+void* inMediumEpidermis::creator()
 {
-    return new inBlend();
+    return new inMediumEpidermis();
 }
 
 
@@ -111,7 +107,7 @@ void* inBlend::creator()
 // want to connect to.
 //
 
-MStatus inBlend::initialize()
+MStatus inMediumEpidermis::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -131,20 +127,8 @@ MStatus inBlend::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	step_blend = nAttr.create("step_blend", "step_blend",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( step_blend ));
-
-	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( backface_emit ));
-
-	a_name = tAttr.create("a_name", "a_name",  MFnNumericData::kString);
-	CHECK_MSTATUS(addAttribute( a_name ));
-
-	blend = nAttr.create("blend", "blend",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( blend ));
-
-	b_name = tAttr.create("b_name", "b_name",  MFnNumericData::kString);
-	CHECK_MSTATUS(addAttribute( b_name ));
+	precedence = nAttr.create("precedence", "precedence",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( precedence ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -428,7 +412,7 @@ MStatus inBlend::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus inBlend::compute( const MPlug& plug, MDataBlock& block )
+MStatus inMediumEpidermis::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.

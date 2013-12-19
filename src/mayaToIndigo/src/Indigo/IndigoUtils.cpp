@@ -32,7 +32,8 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 			if( mId > 0)
 				time = (double)mId/((double)(obj->transformMatrices.size() - 1));
 
-			MMatrix m = obj->transformMatrices[mId];
+			MMatrix m = obj->transformMatrices[0];
+			m = m * this->mtin_renderGlobals->globalConversionMatrix;
 			getMatrixComponents(m, pos, rot, scale);
 			MMatrix scale;
 			scale.setToIdentity();
@@ -58,6 +59,7 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 	}else{
 		MPoint pos, scale, rot;
 		MMatrix m = obj->transformMatrices[0];
+		m = m * this->mtin_renderGlobals->globalConversionMatrix;
 		getMatrixComponents(m, pos, rot, scale);
 		Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
 		model->keyframes.push_back(posKf);

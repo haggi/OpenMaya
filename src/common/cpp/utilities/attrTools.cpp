@@ -1,6 +1,7 @@
 #include <maya/MStatus.h>
 #include <maya/MDGContext.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MPlugArray.h>
 
 #include "attrTools.h"
 
@@ -125,6 +126,14 @@ bool getInt(MString& plugName, MFnDependencyNode& dn, int& value)
 bool getInt(const char *plugName, MFnDependencyNode& dn, int& value)
 {
 	return getInt(MString(plugName), dn, value);
+}
+
+bool getUInt(const char *plugName, MFnDependencyNode& dn, uint& value)
+{
+	int val = value;
+	bool ret = getInt(MString(plugName), dn, val);
+	value = val;
+	return ret;
 }
 
 bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value)
@@ -315,5 +324,25 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value)
 	value.z = Zplug.asDouble(ctx, &stat);
 	if( !stat )
 		return false;
+	return true;
+}
+
+bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value)
+{
+	value = MObject::kNullObj;
+
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return false;
+	if(!plug.isConnected())
+		return false;
+	MPlugArray inConnections;
+	plug.connectedTo(inConnections, true, false, &stat);
+	if( !stat )
+		return false;
+	value = inConnections[0].node();
 	return true;
 }

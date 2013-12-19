@@ -75,6 +75,7 @@ MObject  inDiffuse::aPreShadowIntensity;
 MObject  inDiffuse::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject inDiffuse::backface_emit;
 MObject inDiffuse::layer;
 MObject inDiffuse::bump;
 MObject inDiffuse::base_emission;
@@ -132,8 +133,14 @@ MStatus inDiffuse::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backface_emit ));
+
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
+
+	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( bump ));
 
 	base_emission = nAttr.createColor("base_emission", "base_emission");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -142,6 +149,9 @@ MStatus inDiffuse::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( displacement ));
 
 	albedo = nAttr.createColor("albedo", "albedo");
 	nAttr.setDefault(0.5,0.5,0.8);

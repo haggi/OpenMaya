@@ -1,63 +1,75 @@
 #inDiffuse
 albedo, color, Albedo, 0.5:0.5:0.8
-bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+bump, float, Bump, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
 
 #inSpecular
 internal_medium_name, string, Internal Medium, ""
 transparent, bool, Transparent, false
-bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+bump, float, Bump, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
 
 #inPhong
 albedo, color, Albedo, 0.5:0.5:0.8
 ior, float, IOR, 1.2, minmax:1.0:10.0
 exponent, float, Exponent, 1.0, minmax:1.0:100.0
 nk_data, enum, NK Data, 0, al:au:alas
-specular_reflectivity, scalar, Reflectivity, 0.4
-bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+specular_reflectivity, color, Reflectivity, 0:0:0
+bump, float, Bump, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
 
 #inGlossyTransparent
-internal_medium_name, string, Internal Medium, ""
+internal_medium_name, message, Internal Medium
 exponent, float, Exponent, 1.0, minmax:1.0:100.0
-bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+bump, float, Bump, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
 
 #inDiffuseTransmitter
 internal_medium_name, string, Internal Medium, ""
 albedo, color, Albedo, 0.5:0.5:0.8
-bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+bump, float, Bump, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
 
 #inBlend
 blend, float, Blend, 0.0, minmax:0:1
 step_blend, bool, Step Blend, false
-a_name, string, Material A, ""
-b_name, string, Material B, ""
+a_name, message, Material A
+b_name, message, Material B
+backface_emit, bool, Backface Emit, false
 
 #inNull
+backface_emit, bool, Backface Emit, false
 
 #inOrenNayar
 sigma, float, Sigma, 0.0
 albedo, color, Albedo, 0.5:0.5:0.8
 bump, scalar, Bump, 0.0
-displacement, scalar, Displacement, 0.0
+displacement, float, Displacement, 0.0
 base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
+
+#CoatingMaterial
+
+#DoubleSidedThinMaterial

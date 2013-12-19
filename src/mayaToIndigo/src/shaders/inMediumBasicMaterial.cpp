@@ -1,4 +1,4 @@
-#include "materialBase.h"
+#include "inMediumBasicMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -27,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	MaterialBase::id( 0x00000 );
+MTypeId	inMediumBasic::id( 0x0011CF87 );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void MaterialBase::postConstructor( )
+void inMediumBasic::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -47,34 +47,42 @@ void MaterialBase::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  MaterialBase::aTranslucenceCoeff;
-MObject  MaterialBase::aDiffuseReflectivity;
-MObject  MaterialBase::aInTransparency;
-MObject  MaterialBase::aColor;
-MObject  MaterialBase::aIncandescence;
-MObject  MaterialBase::aOutColor;
-MObject  MaterialBase::aOutTransparency;
-MObject  MaterialBase::aNormalCamera;
-MObject  MaterialBase::aNormalCameraX;
-MObject  MaterialBase::aNormalCameraY;
-MObject  MaterialBase::aNormalCameraZ;
-MObject  MaterialBase::aLightData;
-MObject  MaterialBase::aLightDirection;
-MObject  MaterialBase::aLightDirectionX;
-MObject  MaterialBase::aLightDirectionY;
-MObject  MaterialBase::aLightDirectionZ;
-MObject  MaterialBase::aLightIntensity;
-MObject  MaterialBase::aLightIntensityR;
-MObject  MaterialBase::aLightIntensityG;
-MObject  MaterialBase::aLightIntensityB;
-MObject  MaterialBase::aLightAmbient;
-MObject  MaterialBase::aLightDiffuse;
-MObject  MaterialBase::aLightSpecular;
-MObject  MaterialBase::aLightShadowFraction;
-MObject  MaterialBase::aPreShadowIntensity;
-MObject  MaterialBase::aLightBlindData;
+MObject  inMediumBasic::aTranslucenceCoeff;
+MObject  inMediumBasic::aDiffuseReflectivity;
+MObject  inMediumBasic::aInTransparency;
+MObject  inMediumBasic::aColor;
+MObject  inMediumBasic::aIncandescence;
+MObject  inMediumBasic::aOutColor;
+MObject  inMediumBasic::aOutTransparency;
+MObject  inMediumBasic::aNormalCamera;
+MObject  inMediumBasic::aNormalCameraX;
+MObject  inMediumBasic::aNormalCameraY;
+MObject  inMediumBasic::aNormalCameraZ;
+MObject  inMediumBasic::aLightData;
+MObject  inMediumBasic::aLightDirection;
+MObject  inMediumBasic::aLightDirectionX;
+MObject  inMediumBasic::aLightDirectionY;
+MObject  inMediumBasic::aLightDirectionZ;
+MObject  inMediumBasic::aLightIntensity;
+MObject  inMediumBasic::aLightIntensityR;
+MObject  inMediumBasic::aLightIntensityG;
+MObject  inMediumBasic::aLightIntensityB;
+MObject  inMediumBasic::aLightAmbient;
+MObject  inMediumBasic::aLightDiffuse;
+MObject  inMediumBasic::aLightSpecular;
+MObject  inMediumBasic::aLightShadowFraction;
+MObject  inMediumBasic::aPreShadowIntensity;
+MObject  inMediumBasic::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject inMediumBasic::subsurface_scattering;
+MObject inMediumBasic::precedence;
+MObject inMediumBasic::scattering_coefficient_spectrum;
+MObject inMediumBasic::absorption_coefficient_spectrum;
+MObject inMediumBasic::ior;
+MObject inMediumBasic::phase_function_hgg;
+MObject inMediumBasic::cauchy_b_coeff;
+MObject inMediumBasic::phase_function;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -82,8 +90,8 @@ MObject  MaterialBase::aLightBlindData;
 // destruction
 //
 
-MaterialBase::MaterialBase() { }
-MaterialBase::~MaterialBase() { }
+inMediumBasic::inMediumBasic() { }
+inMediumBasic::~inMediumBasic() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -91,12 +99,12 @@ MaterialBase::~MaterialBase() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new MaterialBase object.
+// In this case creator simply returns a new inMediumBasic object.
 //
 
-void* MaterialBase::creator()
+void* inMediumBasic::creator()
 {
-    return new MaterialBase();
+    return new inMediumBasic();
 }
 
 
@@ -106,7 +114,7 @@ void* MaterialBase::creator()
 // want to connect to.
 //
 
-MStatus MaterialBase::initialize()
+MStatus inMediumBasic::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -126,6 +134,35 @@ MStatus MaterialBase::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	subsurface_scattering = nAttr.create("subsurface_scattering", "subsurface_scattering",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( subsurface_scattering ));
+
+	precedence = nAttr.create("precedence", "precedence",  MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute( precedence ));
+
+	scattering_coefficient_spectrum = nAttr.createColor("scattering_coefficient_spectrum", "scattering_coefficient_spectrum");
+	nAttr.setDefault(0,0,1);
+	CHECK_MSTATUS(addAttribute( scattering_coefficient_spectrum ));
+
+	absorption_coefficient_spectrum = nAttr.createColor("absorption_coefficient_spectrum", "absorption_coefficient_spectrum");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( absorption_coefficient_spectrum ));
+
+	ior = nAttr.create("ior", "ior",  MFnNumericData::kFloat, 1.33);
+	CHECK_MSTATUS(addAttribute( ior ));
+
+	phase_function_hgg = nAttr.createColor("phase_function_hgg", "phase_function_hgg");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( phase_function_hgg ));
+
+	cauchy_b_coeff = nAttr.create("cauchy_b_coeff", "cauchy_b_coeff",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( cauchy_b_coeff ));
+
+	phase_function = eAttr.create("phase_function", "phase_function", 0, &status);
+	status = eAttr.addField( "uniform", 0 );
+	status = eAttr.addField( "henyey_greenstein", 1 );
+	CHECK_MSTATUS(addAttribute( phase_function ));
+
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes
@@ -408,7 +445,7 @@ MStatus MaterialBase::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus MaterialBase::compute( const MPlug& plug, MDataBlock& block )
+MStatus inMediumBasic::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.

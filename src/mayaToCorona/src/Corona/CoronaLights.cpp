@@ -29,7 +29,7 @@ void CoronaRenderer::defineLights()
 			Corona::Sun sun;
 			sun.active = true;
 			sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
-			sun.color = Corona::Rgb(10000,10000,10000);
+			sun.color = Corona::Rgb(40000,40000,40000);
 			sun.visibleDirect = true;
 			sun.visibleReflect = true;
 			sun.visibleRefract = true;

@@ -654,6 +654,72 @@ void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot, MVector& sc
 	scl.z = scaling[2];
 }
 
+MObject getConnectedFileTextureObject(MString& plugName, MFnDependencyNode& depFn)
+{
+	MStatus stat;
+	MString path = "";
+	MPlug plug = depFn.findPlug(plugName, &stat);
+	if( !stat )
+		return MObject::kNullObj;
+	if( plug.isConnected())
+	{
+		MPlugArray parray;
+		plug.connectedTo(parray, true, false, &stat);
+		if( !stat )
+			return MObject::kNullObj;
+
+		if( parray.length() == 0 )
+			return MObject::kNullObj;
+
+		MPlug destPlug = parray[0];
+		MObject fileNode = destPlug.node();	
+		if( !fileNode.hasFn(MFn::kFileTexture) )
+		{
+			return MObject::kNullObj;
+		}else{
+			return fileNode;
+		}
+
+	}
+	return MObject::kNullObj;
+}
+
+MString getConnectedFileTexturePath(MString& plugName, MFnDependencyNode& depFn)
+{
+	MStatus stat;
+	MString path = "";
+	MPlug plug = depFn.findPlug(plugName, &stat);
+	if( !stat )
+		return path;
+	if( plug.isConnected())
+	{
+		MPlugArray parray;
+		plug.connectedTo(parray, true, false, &stat);
+		if( !stat )
+			return path;
+
+		if( parray.length() == 0 )
+			return path;
+
+		MPlug destPlug = parray[0];
+		MObject fileNode = destPlug.node();	
+		if( !fileNode.hasFn(MFn::kFileTexture) )
+		{
+			return path;
+		}
+
+		MFnDependencyNode fileDepFn(fileNode);
+		MPlug ftn = fileDepFn.findPlug("fileTextureName", &stat);
+
+		if(!stat)
+		{
+			return path;
+		}
+		path = ftn.asString();
+	}
+	return path;
+}
+
 bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value)
 {
 	MStatus stat;
@@ -666,10 +732,10 @@ bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& 
 	if( !stat )
 		return false;
 	
-	MGlobal::displayInfo(MString("is plug connected: ") + plug.name());
+	//MGlobal::displayInfo(MString("is plug connected: ") + plug.name());
 	if( !plug.isConnected())
 	{
-		MGlobal::displayInfo(MString("plug is NOT connected: ") + plug.name());
+		//MGlobal::displayInfo(MString("plug is NOT connected: ") + plug.name());
 		return false;
 	}
 	MPlugArray parray;

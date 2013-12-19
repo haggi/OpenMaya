@@ -43,6 +43,7 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject backface_emit;
 	static    MObject layer;
 	static    MObject exponent;
 	static    MObject internal_medium_name;

@@ -73,6 +73,8 @@ void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
 	// at the moment only one uv map
 	mesh_node->mesh->num_uv_mappings = 1;
 
+	mesh_node->normal_smoothing = true;
+
 	for( uint tId = 0; tId < uArray.length(); tId++)
 	{
 		mesh_node->mesh->uv_pairs.push_back(Indigo::Vec2f(uArray[tId], vArray[tId]));
@@ -137,27 +139,34 @@ void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
 			t.uv_indices[0] = uvId0;
 			t.uv_indices[1] = uvId1;
 			t.uv_indices[2] = uvId2;
-			mesh_node->mesh->triangles.push_back(t);
 
+			mesh_node->mesh->triangles.push_back(t);
 		}		
 	}
-
 	mesh_node->mesh->endOfModel();
+
+	bool useSubdiv = false;
+	getBool("mtin_mesh_subdivUse", meshFn, useSubdiv);
+	if( useSubdiv )
+	{
+		getInt("mtin_mesh_subdivMaxSubdiv", meshFn, mesh_node->max_num_subdivisions);
+		getBool("mtin_mesh_subdivSmooth", meshFn, mesh_node->subdivision_smoothing);
+		getDouble(MString("mtin_mesh_subdivCurvatureThreshold"), meshFn, mesh_node->subdivide_curvature_threshold);
+		getDouble(MString("mtin_mesh_subdivErrorThreshold"), meshFn, mesh_node->displacement_error_threshold);
+		getBool("mtin_mesh_subdivViewDependent", meshFn, mesh_node->view_dependent_subdivision);
+		getDouble(MString("mtin_mesh_subdivPixelThreshold"), meshFn, mesh_node->subdivide_pixel_threshold);
+	}
+
 	sceneRootRef->addChildNode(mesh_node);
 
 	obj->meshRef = mesh_node;
 
-	//standerd material for all
-	Indigo::SceneNodeMaterialRef mat(new Indigo::SceneNodeMaterial());
-	Indigo::DiffuseMaterial* diffuse = new Indigo::DiffuseMaterial();
-	diffuse->random_triangle_colours = false;
-	diffuse->layer = 0;
-	diffuse->albedo = new Indigo::ConstantWavelengthDependentParam(new Indigo::RGBSpectrum(Indigo::Vec3d(.9,.8,.5), 2.2));
-	mat->material = diffuse;
-	mat->setName((meshFullName + "_mat").asChar());
-	sceneRootRef->addChildNode(mat);
-	obj->matRef = mat;
+	//createIndigoMaterial(obj);
+
+	this->defineShadingNodes(obj);
+
 }
+
 
 		////==================== Create light geometry =========================
 		//Indigo::SceneNodeMeshRef mesh_node(new Indigo::SceneNodeMesh());
@@ -235,22 +244,22 @@ void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
 	model->setName((obj->fullNiceName + "_model").asChar());
 	model->setGeometry(meshRef);
 
-    MPoint pos, scale, rot;
-    MMatrix m = obj->transformMatrices[0];
-    getMatrixComponents(m, pos, rot, scale);
-    MTransformationMatrix tm(m);
-	MMatrix im;
-	im.setToIdentity();
-    Indigo::MatrixRotation matRot(im[0][0],im[1][0],im[2][0], im[0][1],im[1][1],im[2][1] ,im[0][2],im[1][2],im[2][2]);
-    Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
-	double x, y, z, w;
-	tm.getRotationQuaternion(x, y, z, w, MSpace::kWorld);
-	Indigo::AxisAngle axis(Indigo::Vec3d(x, y, z), w);	
+ //   MPoint pos, scale, rot;
+ //   MMatrix m = obj->transformMatrices[0];
+ //   getMatrixComponents(m, pos, rot, scale);
+ //   MTransformationMatrix tm(m);
+	//MMatrix im;
+	//im.setToIdentity();
+ //   Indigo::MatrixRotation matRot(im[0][0],im[1][0],im[2][0], im[0][1],im[1][1],im[2][1] ,im[0][2],im[1][2],im[2][2]);
+ //   Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
+	//double x, y, z, w;
+	//tm.getRotationQuaternion(x, y, z, w, MSpace::kWorld);
+	//Indigo::AxisAngle axis(Indigo::Vec3d(x, y, z), w);	
 	
     //Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), axis);
-    model->keyframes.push_back(posKf);
-    model->rotation = new Indigo::MatrixRotation(matRot);
-	//createTransform(model->keyframes, obj);
+    //model->keyframes.push_back(posKf);
+    //model->rotation = new Indigo::MatrixRotation(matRot);
+	createTransform(model, obj);
 	
 	model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, matRef));		
 	sceneRootRef->addChildNode(model); // Add node to scene graph.

@@ -1,5 +1,5 @@
-#ifndef MaterialBaseOverride_H
-#define MaterialBaseOverride_H
+#ifndef inMediumDermisOverride_H
+#define inMediumDermisOverride_H
 
 //-
 // ===========================================================================
@@ -13,18 +13,18 @@
 
 //
 // This is the MPxSurfaceShadingNodeOverride implementation to go along with
-// the node defined in MaterialBase.cpp. This provides draw support in
+// the node defined in inMediumDermis.cpp. This provides draw support in
 // Viewport 2.0.
 //
 
 #include <maya/MPxSurfaceShadingNodeOverride.h>
 
-class MaterialBaseOverride : public MHWRender::MPxSurfaceShadingNodeOverride
+class inMediumDermisOverride : public MHWRender::MPxSurfaceShadingNodeOverride
 {
 public:
 	static MHWRender::MPxSurfaceShadingNodeOverride* creator(const MObject& obj);
 
-	virtual ~MaterialBaseOverride();
+	virtual ~inMediumDermisOverride();
 
 	virtual MHWRender::DrawAPI supportedDrawAPIs() const;
 
@@ -37,7 +37,7 @@ public:
 	virtual MString bumpAttribute() const;
 
 private:
-	MaterialBaseOverride(const MObject& obj);
+	inMediumDermisOverride(const MObject& obj);
 };
 
-#endif // _MaterialBaseOverride
+#endif // _inMediumDermisOverride

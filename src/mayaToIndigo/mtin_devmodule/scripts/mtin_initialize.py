@@ -93,7 +93,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label='Threads', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                         self.addRenderGlobalsUIElement(attName = 'auto_choose_num_threads', uiType = 'bool', displayName = 'Auto Choose Threads', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'num_threads', uiType = 'int', displayName = 'Num Threads', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Num Threads', default='0', uiDict=uiDict)
 
 #                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
@@ -191,7 +191,13 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="long", defaultValue = 5)
         
         # mesh
-        pm.addExtension(nodeType="mesh", longName="mtin_mesh_useassembly", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivUse", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivMaxSubdiv", attributeType="long", defaultValue = 0)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivViewDependent", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivSmooth", attributeType="bool", defaultValue = True)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivPixelThreshold", attributeType="float", defaultValue = 0.4)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivCurvatureThreshold", attributeType="float", defaultValue = 0.1)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivErrorThreshold", attributeType="float", defaultValue = 0.1)
 
         # 
         
@@ -272,7 +278,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
             self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
 
         #craete optimized exr textures
-        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
+        #optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
 
     def postRenderProcedure(self):
         optimizeTextures.postRenderOptimizeTextures()

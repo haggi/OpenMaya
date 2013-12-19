@@ -75,6 +75,7 @@ MObject  inOrenNayar::aPreShadowIntensity;
 MObject  inOrenNayar::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject inOrenNayar::backface_emit;
 MObject inOrenNayar::layer;
 MObject inOrenNayar::bump;
 MObject inOrenNayar::base_emission;
@@ -133,6 +134,9 @@ MStatus inOrenNayar::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backface_emit ));
+
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
 
@@ -143,6 +147,9 @@ MStatus inOrenNayar::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( displacement ));
 
 	sigma = nAttr.create("sigma", "sigma",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( sigma ));

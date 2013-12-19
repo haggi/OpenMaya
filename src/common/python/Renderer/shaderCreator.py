@@ -15,6 +15,8 @@ COMPILER_VERSION = "vs2010"
 baseDestPath = None
 baseSourcePath = None
 
+CODINGROOT = "H:/userDatenHaggi/documents/coding/"
+
 # an automatic attibute is defined as follows:
 # attributeName, type, displayName, defaultValue, options
 # e.g.
@@ -517,14 +519,15 @@ def pyRGCreator(pypath, attArray):
             else:
                 print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
 
-def createShaderDefinitionFile(attDict, renderer, shortcut):
-    destDefPath = path.path(r"C:\Users\haggi\coding\OpenMaya\src\mayaTo{0}\{1}_devmodule\ressources\ShaderDefinitions.txt".format(renderer, shortcut))
+def createShaderDefinitionFile(attDict, renderer, shortcut, append):
+    destDefPath = path.path(r"{2}OpenMaya\src\mayaTo{0}\{1}_devmodule\ressources\ShaderDefinitions.txt".format(renderer, shortcut, CODINGROOT))
     fh = open(destDefPath, "r")
     content = fh.readlines()
     fh.close()
     
-    startIndex = 0
-    endIndex = 0
+    startIndex = -1
+    endIndex = -1
+    oldContent = []
     for index, line in enumerate(content):
         if "automatically created attributes start" in line:
             print "Start new content"
@@ -532,7 +535,12 @@ def createShaderDefinitionFile(attDict, renderer, shortcut):
         if "automatically created attributes end" in line:
             print "End new content"
             endIndex = index
+        if endIndex == -1 and startIndex > 0 and index > startIndex:
+            oldContent.append(line)
 
+    if not append:
+        oldContent = [] 
+                   
     allContent = []
         
     newContent = []
@@ -559,6 +567,7 @@ def createShaderDefinitionFile(attDict, renderer, shortcut):
     finalContent = []
     finalContent.extend(content[:startIndex+1])   
     finalContent.extend(allContent) 
+    finalContent.extend(oldContent)     
     finalContent.extend(newContent)    
     finalContent.extend(content[endIndex:])    
 
@@ -568,19 +577,21 @@ def createShaderDefinitionFile(attDict, renderer, shortcut):
     fh.close()
 
     
-def shaderCreator(renderer, shortCut):
+def shaderCreator(renderer, shortCut, mtype):
     log.debug("shaderCreator " + renderer)
 
     global baseSourcePath
     global baseDestPath
     
     if os.name == 'nt':
-        baseDestPath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + renderer.capitalize())
-        baseSourcePath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaToBase")
+        baseDestPath = path.path(CODINGROOT + "OpenMaya/src/mayaTo" + renderer.capitalize())
+        baseSourcePath = path.path(CODINGROOT + "OpenMaya/src/mayaToBase")
     else:
         pass
             
     materialsFile = baseDestPath + "/" + COMPILER_VERSION + "/sourceCodeDocs/Materials.txt"
+    if mtype == "volumes":
+        materialsFile = baseDestPath + "/" + COMPILER_VERSION + "/sourceCodeDocs/volumes.txt"
     
 #    baseMaterialDestNodeCpp = basePath + "/src/" + shortCut + "_common/" + shortCut + "_baseMaterial.cpp"
     baseMaterialSourceNodeCpp = baseSourcePath + "/src/shaders/materialBase.cpp"
@@ -620,10 +631,11 @@ def shaderCreator(renderer, shortCut):
     #pyRGCreator(pyGlobals, attArray)
     aeTemplateCreator(attrDict, renderer, shortCut)
     #attrIncludeCreator(attrDict, renderer, shortCut)
-    createShaderDefinitionFile(attrDict, renderer, shortCut)
+    createShaderDefinitionFile(attrDict, renderer, shortCut, mtype == "volumes")
     
 if __name__ == "__main__":
     #shaderCreator("Corona", "mtco")
-    shaderCreator("Indigo", "mtin")
-    #global START_NODE_ID
-    #print "ID: --> 0x%08X" % START_NODE_ID
+    shaderCreator("Indigo", "mtin", "materials")
+    shaderCreator("Indigo", "mtin", "volumes")
+    global START_NODE_ID
+    print "ID: --> 0x%08X" % START_NODE_ID

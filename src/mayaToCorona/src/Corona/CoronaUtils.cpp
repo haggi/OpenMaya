@@ -19,11 +19,11 @@ void CoronaRenderer::setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& a
 	for( size_t mId = 0; mId < (numSegments + 1); mId++)
 	{
 		MMatrix c = this->mtco_renderGlobals->globalConversionMatrix;
-		logger.debug(MString("globalConv:"));
-		logger.debug(MString("") + c[0][0] + " "  + c[0][1] + " "  + c[0][2] + " "  + c[0][3]);
-		logger.debug(MString("") + c[1][0] + " "  + c[1][1] + " "  + c[1][2] + " "  + c[1][3]);
-		logger.debug(MString("") + c[2][0] + " "  + c[2][1] + " "  + c[2][2] + " "  + c[2][3]);
-		logger.debug(MString("") + c[3][0] + " "  + c[3][1] + " "  + c[3][2] + " "  + c[3][3]);
+		//logger.debug(MString("globalConv:"));
+		//logger.debug(MString("") + c[0][0] + " "  + c[0][1] + " "  + c[0][2] + " "  + c[0][3]);
+		//logger.debug(MString("") + c[1][0] + " "  + c[1][1] + " "  + c[1][2] + " "  + c[1][3]);
+		//logger.debug(MString("") + c[2][0] + " "  + c[2][1] + " "  + c[2][2] + " "  + c[2][3]);
+		//logger.debug(MString("") + c[3][0] + " "  + c[3][1] + " "  + c[3][2] + " "  + c[3][3]);
 		MMatrix t = (obj->transformMatrices[mId] * c).transpose();
 		Corona::AffineTm tm;
 		Corona::Float4 row1(t[0][0],t[0][1],t[0][2],t[0][3]);

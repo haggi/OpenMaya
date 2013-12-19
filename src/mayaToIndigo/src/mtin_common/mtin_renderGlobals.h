@@ -27,7 +27,6 @@ public:
 	int halt_samples_per_pixel;
 	bool hybrid;
 	bool auto_choose_num_threads;
-	bool num_threads;
 	int super_sample_factor;
 	bool watermark;
 	bool info_overlay;

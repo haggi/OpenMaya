@@ -51,6 +51,7 @@ protected:
 	static    MObject brdfType;
 	static    MObject emissionColor;
 	static    MObject emissionSharpnessFake;
+	static    MObject emissionSharpnessFakePoint;
 	static    MObject anisotropy;
 	static    MObject attenuationDist;
 	static    MObject reflectivity;
@@ -60,7 +61,6 @@ protected:
 	static    MObject refractionGlossiness;
 	static    MObject roundCornersSamples;
 	static    MObject fresnelIor;
-	static    MObject emissionSharpnessFakePoint;
 	static    MObject glassMode;
 	static    MObject diffuse;
 	static    MObject reflectionGlossiness;

@@ -16,7 +16,8 @@ void IndigoRenderer::createRenderSettings()
 	settings->setIntSetting("height", this->mtin_renderGlobals->imgHeight);
 	settings->setBoolSetting("info_overlay", true);
 	settings->setDoubleSetting("halt_time", this->mtin_renderGlobals->halt_time);
-	
+	settings->setIntSetting("num_threads", this->mtin_renderGlobals->threads);
+	settings->setBoolSetting("auto_choose_num_threads", this->mtin_renderGlobals->auto_choose_num_threads);
 	this->sceneRootRef->addChildNode(settings); // Add the settings node to the scene graph.
 
 }
