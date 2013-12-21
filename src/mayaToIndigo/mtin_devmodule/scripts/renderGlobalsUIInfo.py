@@ -230,3 +230,34 @@ entry['name'] = 'environmentSun'
 entry['type'] = 'message'
 entry['displayName'] = 'Environment Sun'
 tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'turbidity'
+entry['type'] = 'float'
+entry['displayName'] = 'Sky Turbidity'
+entry['default'] = '2.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'extra_atmospheric'
+entry['type'] = 'bool'
+entry['displayName'] = 'Extra Athmospheric'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sun_layer'
+entry['type'] = 'int'
+entry['displayName'] = 'Sun Layer'
+entry['default'] = '0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sky_layer'
+entry['type'] = 'int'
+entry['displayName'] = 'Sky Layer'
+entry['default'] = '0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sky_model'
+entry['type'] = 'enum'
+entry['displayName'] = 'Sky Model'
+entry['default'] = '0'
+entry['addInfo'] = 'original:captured-simulation'
+tab['entries'].append(entry)

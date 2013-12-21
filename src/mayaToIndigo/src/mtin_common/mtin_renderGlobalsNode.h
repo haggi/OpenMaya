@@ -33,6 +33,7 @@ static    MObject halt_time;
 static    MObject halt_samples_per_pixel;
 static    MObject hybrid;
 static    MObject auto_choose_num_threads;
+static    MObject num_threads;
 static    MObject super_sample_factor;
 static    MObject watermark;
 static    MObject info_overlay;
@@ -52,6 +53,11 @@ static    MObject glass_acceleration;
 static    MObject environmentType;
 static    MObject environmentColor;
 static    MObject environmentSun;
+static    MObject turbidity;
+static    MObject extra_atmospheric;
+static    MObject sun_layer;
+static    MObject sky_layer;
+static    MObject sky_model;
 //	------------- automatically created attributes end ----------- // 
 
 };

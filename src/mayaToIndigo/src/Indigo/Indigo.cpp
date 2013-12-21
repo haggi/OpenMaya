@@ -1,11 +1,15 @@
 #include "Indigo.h"
+#include "IndigoImgExport.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "utilities/pystring.h"
 #include "../mtin_common/mtin_renderGlobals.h"
 #include "../mtin_common/mtin_mayaScene.h"
 
 #include <maya/MFnCamera.h>
+#include <maya/MGlobal.h>
+#include <maya/MFileIO.h>
 
 #include <IndigoTypes.h>
 #include <IndigoString.h>
@@ -69,100 +73,6 @@ void IndigoRenderer::createSceneGraph()
 	this->defineGeometry();
 }
 
-// Bitmap writing code
-
-
-#define BITMAP_ID        0x4D42       // this is the universal id for a bitmap
-
-#pragma pack (push, 1)
-
-typedef struct {
-   unsigned short int type;                 /* Magic identifier            */
-   unsigned int size;                       /* File size in bytes          */
-   unsigned short int reserved1, reserved2;
-   unsigned int offset;                     /* Offset to image data, bytes */
-} BITMAP_HEADER;
-
-typedef struct {
-   unsigned int size;               /* Header size in bytes      */
-   int width,height;                /* Width and height of image */
-   unsigned short int planes;       /* Number of colour planes   */
-   unsigned short int bits;         /* Bits per pixel            */
-   unsigned int compression;        /* Compression type          */
-   unsigned int imagesize;          /* Image size in bytes       */
-   int xresolution,yresolution;     /* Pixels per meter          */
-   unsigned int ncolours;           /* Number of colours         */
-   unsigned int importantcolours;   /* Important colours         */
-} BITMAP_INFOHEADER;
-
-#pragma pack (pop)
-
-
-void writeFloatBufferToBMP(const Indigo::String& path, float* buffer, size_t w, size_t h)
-{
-	// Convert buffer data to 8-bit first:
-	std::vector<uint8> uint8_buf(w * h * 4);
-
-	for(size_t i=0; i<w * h * 4; ++i)
-		uint8_buf[i] = (uint8)(buffer[i] * 255.9f);
-
-	writeUInt8BufferToBMP(path, &uint8_buf[0], w, h);
-}
-
-
-void writeUInt8BufferToBMP(const Indigo::String& path, uint8* buffer, size_t w, size_t h)
-{
-	int bytesPerLine = (int)w * 3;
-	// round up to a dword boundary
-	if(bytesPerLine & 0x0003) 
-	{
-		bytesPerLine |= 0x0003;
-		++bytesPerLine;
-	}
-
-	BITMAP_HEADER header;
-	memset(&header, 0, sizeof(BITMAP_HEADER));
-	header.type = BITMAP_ID;
-	header.size = sizeof(BITMAP_HEADER) + sizeof(BITMAP_INFOHEADER) + bytesPerLine * (int)h;
-	header.offset = sizeof(BITMAP_HEADER) + sizeof(BITMAP_INFOHEADER);
-
-	BITMAP_INFOHEADER infoheader;
-	memset(&infoheader, 0, sizeof(BITMAP_INFOHEADER));
-	infoheader.size = sizeof(infoheader);
-	infoheader.width = (int)w;
-	infoheader.height = (int)h;
-	infoheader.planes = 1;
-	infoheader.bits = 24;
-	infoheader.compression = 0L;
-
-	Indigo::Vector<char> buf = path.getNullTerminatedBuffer();
-	std::ofstream file(&buf[0], std::ios::out | std::ios::binary);
-	if(!file)
-	{
-		std::cerr << "Could not open file for writing." << std::endl;
-		exit(1);
-	}
-
-	// Write headers
-	file.write((const char*)&header, sizeof(header));
-	file.write((const char*)&infoheader, sizeof(infoheader));
-
-	// Write image data
-	char* line = new char[bytesPerLine];
-	for(int y=(int)h-1; y >= 0; --y)
-	{
-		for(unsigned int x=0; x<w; ++x)
-		{
-			line[x*3] = ((const char*)buffer)[(y*w + x)*4 + 2]; // b
-			line[x*3+1] = ((const char*)buffer)[(y*w + x)*4 + 1]; // g
-			line[x*3+2] = ((const char*)buffer)[(y*w + x)*4]; // r
-		}
-
-		file.write(line, bytesPerLine);
-	}
-	delete[] line;
-}
-
 
 IndigoRenderer::IndigoRenderer()
 {
@@ -174,25 +84,21 @@ IndigoRenderer::~IndigoRenderer()
 
 void IndigoRenderer::render()
 {
-
 	// Path to the directory in which indigo_sdk.dll resides.
 	// The IndigoContext object needs to know this path so it can load the DLL successfully.
 	Indigo::String indigo_dll_dir;
 
 	// Pick the correct binaries directory to use based on what Visual Studio compiler version we are using.
-#if _MSC_VER >= 1600 && _MSC_VER < 1700
-		const Indigo::String msvc_version = "2010";
-#elif _MSC_VER >= 1700 && _MSC_VER < 1800
-		const Indigo::String msvc_version = "2012";
-#else
-#error Unknown MSVC version."
-#endif
+	const Indigo::String msvc_version = "2010";
 
-	//indigo_dll_dir = "C:/Users/haggi/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK_3.6.24/binaries/vs2010_64_debug";
 	MString rendererHome = getRendererHome();
-	logger.debug(MString("Homedir: ") + rendererHome);
-
+	logger.debug(MString("Renderer homedir: ") + rendererHome);
+	
+#ifdef _DEBUG
+	indigo_dll_dir = "H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo/devkit/IndigoSDK/binaries/vs2010_64_debug";
+#else
 	indigo_dll_dir = (rendererHome + "/bin").asChar();
+#endif
 
 	// Path to the appdata directory. This is where the cache directories are written, where the log is written, and where the licence key is read from.
 	// An example appdata path would be 'C:\Users\nick\AppData\Roaming\Indigo Renderer'
@@ -220,20 +126,30 @@ void IndigoRenderer::render()
 	createSceneGraph();
 
 	// Save the scene graph to an IGS on disk so we can look at it in the Indigo GUI.
-	try
-	{		
-		sceneRootRef->writeToXMLFileOnDisk("C:/daten/3dprojects/mayaToIndigo/example.igs", true, NULL);
-	}
-	catch(Indigo::IndigoException& ex)
+	if( this->mtin_renderGlobals->exportSceneFile )
 	{
-		std::cerr << toStdString(ex.what()) << std::endl;
-		EventQueue::Event e;
-		e.data = NULL;
-		e.type = EventQueue::Event::RENDERERROR;
-		theRenderEventQueue()->push(e);
-		return;
+		try
+		{	
+			std::string currentFile = MFileIO::currentFile().asChar();
+			std::vector<std::string> parts;
+			pystring::split(currentFile, parts, "/");
+			currentFile = pystring::replace(parts.back(), ".ma", "");
+			currentFile = pystring::replace(currentFile, ".mb", "");
+			MString scenePath = this->mtin_renderGlobals->basePath + "/indigo/" + currentFile.c_str() + ".igs";
+			logger.debug(MString("Writing igs file to ") + scenePath);
+			logger.debug(MString("Renderglobals export file ") + this->mtin_renderGlobals->exportSceneFileName);
+			sceneRootRef->writeToXMLFileOnDisk(scenePath.asChar(), true, NULL);
+		}
+		catch(Indigo::IndigoException& ex)
+		{
+			std::cerr << toStdString(ex.what()) << std::endl;
+			EventQueue::Event e;
+			e.data = NULL;
+			e.type = EventQueue::Event::RENDERERROR;
+			theRenderEventQueue()->push(e);
+			return;
+		}
 	}
-
 	// Create the main render buffer
 	Indigo::RenderBufferRef render_buffer(new Indigo::RenderBuffer(sceneRootRef));
 
@@ -296,9 +212,10 @@ void IndigoRenderer::render()
 
 	//if( this->mtin_renderGlobals->imageFormatString == "bmp")
 	//{
-		writeUInt8BufferToBMP((imgName + ".bmp").asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
+	BitMap bm;
+	bm.writeUInt8BufferToBMP((imgName + ".bmp").asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
 		//writeFloatBufferToBMP((imgName + "fromFloat.bmp").asChar(), floatBufferRef->dataPtr(), floatBufferRef->width(), floatBufferRef->height());
-		logger.debug(MString("Saved image as: ") + imgName);
+	logger.debug(MString("Saved image as: ") + imgName);
 	//}
 
 	EventQueue::Event e;

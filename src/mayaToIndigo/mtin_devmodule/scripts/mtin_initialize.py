@@ -36,7 +36,65 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def updateEnvironment(self, dummy=None):
-        pass
+        envDict = self.rendererTabUiDict['environment']
+        envDict['environmentColor'].setEnable(False)
+        envDict['turbidity'].setEnable(False)
+        envDict['extra_atmospheric'].setEnable(False)
+        envDict['sun_layer'].setEnable(False)
+        envDict['sky_layer'].setEnable(False)
+        envDict['sky_model'].setEnable(False)
+
+        etype =  self.renderGlobalsNode.environmentType.get()
+        if etype == 1:
+            envDict['environmentColor'].setEnable(True)
+        if etype == 2:
+            envDict['turbidity'].setEnable(True)
+            envDict['extra_atmospheric'].setEnable(True)
+            envDict['sun_layer'].setEnable(True)
+            envDict['sky_layer'].setEnable(True)
+            envDict['sky_model'].setEnable(True)
+            
+        
+        
+    def IndigoEnvironmentCreateTab(self):
+        log.debug("IndigoEnvironmentCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query = True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate = True)
+        scLo = self.rendererName + "ScrollLayout"
+        if self.rendererTabUiDict.has_key('environment'):
+            self.rendererTabUiDict.pop('environment')        
+        uiDict = {}
+        self.rendererTabUiDict['environment'] = uiDict
+        
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
+                with pm.frameLayout(label='Environment', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'environmentType', uiType = 'enum', displayName = 'Environment Type', default='0', data='Color/Map:Sun', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentColor', uiType = 'color', displayName = 'Environment Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentSun', uiType = 'message', displayName = 'Environment Sun', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'turbidity', uiType = 'float', displayName = 'Sky Turbidity', default='2.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'extra_atmospheric', uiType = 'bool', displayName = 'Extra Atmospheric', default='false', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sun_layer', uiType = 'int', displayName = 'Sun Layer', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sky_layer', uiType = 'int', displayName = 'Sky Layer', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sky_model', uiType = 'enum', displayName = 'Sky Model', default='0', data='original:captured-simulation', uiDict=uiDict)                        
+
+        pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
+        pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+
+    def IndigoEnvironmentUpdateTab(self):
+        log.debug("IndigoEnvironmentUpdateTab()")
+        if not self.rendererTabUiDict.has_key('environment'):
+            return
+        
+        envDict = self.rendererTabUiDict['common']
+        
+        envDict['threads'].setEnable(True)
+        if self.renderGlobalsNode.auto_choose_num_threads.get():
+            envDict['threads'].setEnable(False)
+
+        
             
     def IndigoRendererCreateTab(self):
         log.debug("IndigoRendererCreateTab()")
@@ -103,11 +161,6 @@ class IndigoRenderer(Renderer.MayaToRenderer):
 #                        self.addRenderGlobalsUIElement(attName = 'vignetting', uiType = 'bool', displayName = 'Vignetting', default='true', uiDict=uiDict)
 #                        self.addRenderGlobalsUIElement(attName = 'watermark', uiType = 'bool', displayName = 'Watermark', default='false', uiDict=uiDict)
 #                        self.addRenderGlobalsUIElement(attName = 'info_overlay', uiType = 'bool', displayName = 'Info Overlay', default='false', uiDict=uiDict)
-                with pm.frameLayout(label='Environment', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'environmentType', uiType = 'enum', displayName = 'Environment Type', default='0', data='Color/Map:Sun', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'environmentColor', uiType = 'color', displayName = 'Environment Color', default='0.4:0.4:1.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'environmentSun', uiType = 'message', displayName = 'Environment Sun', uiDict=uiDict)
 
                 
                     
@@ -124,10 +177,13 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
-        filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")
+        filename = pm.fileDialog2(fileMode=0, caption="Export Indigo File Name")
         if len(filename) > 0:
+            filename = filename[0]
             print "Got filename", filename
-            self.rendererTabUiDict['xml']['xmlFile'].setText(filename[0])
+            if not filename.endswith(".igs"):
+                filename += ".igs"
+            self.rendererTabUiDict['xml']['xmlFile'].setText(filename)
     
     def dirBrowse(self, args=None):
         dirname = pm.fileDialog2(fileMode=3, caption="Select dir")
@@ -146,24 +202,27 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
-                with pm.frameLayout(label="Indigo XML export", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export scene XML file:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
+                with pm.frameLayout(label="Indigo Scene File export", collapsable = True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export Indigo Scene file:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index = 2 )
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        pm.text(label="XMLFileName:", width = 60, align="right")
-                        defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Indigo"
-                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
+                    defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".igs"
+                    if not defaultXMLPath.dirname().exists():
+                        defaultXMLPath.dirname().makedirs()
+                    with pm.rowLayout(nc=3):
+                        xmlDict['xmlFileText'] = pm.text(label = "Export to")
+                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
                         pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        optiDict = {}
-                        pm.text(label="OptimizedTex Dir:", width = 60, align="right")
+                    optiDict = {}
+                    ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
+                    with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
+                        pm.text(label="OptimizedTex Dir:")
+                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get())
                         pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
-                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get(), width = 60)
                         pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
                 with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
                     ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)
@@ -200,6 +259,9 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivErrorThreshold", attributeType="float", defaultValue = 0.1)
 
         # 
+    def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
+
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
@@ -289,7 +351,8 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         
     def afterGlobalsNodeReplacement(self):
         log.debug("afterGlobalsNodeReplacement")        
-        self.rendererTabUiDict = {}        
+        self.rendererTabUiDict = {}     
+          
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

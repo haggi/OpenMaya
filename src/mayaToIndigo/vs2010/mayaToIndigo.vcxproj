@@ -550,7 +550,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToIndigo.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -562,10 +562,9 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToIndigo.mll</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;C:\Users\haggi\coding\C++Libraries\Boost147_2010\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>Release/mayaToIndigo.pdb</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;$(INDIGO_ROOT)/lib/vs2010_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>Release/mayaToIndigo.lib</ImportLibrary>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -574,7 +573,8 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014release.mll</Command>
+      <Command>copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014.mll
+copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
@@ -764,6 +764,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoCamera.cpp" />
+    <ClCompile Include="..\src\Indigo\IndigoImgExport.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoParser.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoRendererController.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoCallbacks.cpp" />
@@ -829,6 +830,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\src\Indigo\IndigoImgExport.h" />
     <ClInclude Include="..\src\Indigo\IndigoRendererController.h" />
     <ClInclude Include="..\src\Indigo\Indigo.h" />
     <ClInclude Include="..\src\mayaToIndigo.h" />

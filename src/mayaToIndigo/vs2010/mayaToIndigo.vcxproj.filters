@@ -239,6 +239,9 @@
     <ClCompile Include="..\src\shaders\inMediumEpidermisMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Indigo\IndigoImgExport.cpp">
+      <Filter>Source Files\Indigo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -402,6 +405,9 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\inMediumEpidermisMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Indigo\IndigoImgExport.h">
+      <Filter>Source Files\Indigo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

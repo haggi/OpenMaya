@@ -195,6 +195,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		getString(MString("fileTextureName"), depFn, texturePath);	
 		texture.path = texturePath.asChar();
 		texture.exponent = 1.0; // gamma
+		Indigo::Matrix2 uvTransform;
 		texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::UVTexCoordGenerator());
 		IndigoTextureNode tn;
 		tn.shadingNode = snode;

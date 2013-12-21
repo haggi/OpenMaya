@@ -37,4 +37,9 @@ glass_acceleration, bool, Glass Accerlation, false
 environmentType, enum, Environment Type, 1, Off:Color/Map:Sun
 environmentColor, color, Environment Color, 0.4:0.4:1.0
 environmentSun, message, Environment Sun
+turbidity, float, Sky Turbidity, 2.0
+extra_atmospheric, bool, Extra Athmospheric, false
+sun_layer, int, Sun Layer, 0
+sky_layer, int, Sky Layer, 0
+sky_model, enum, Sky Model, 0, original:captured-simulation
 

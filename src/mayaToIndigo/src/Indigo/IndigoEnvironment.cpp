@@ -10,6 +10,8 @@ static Logging logger;
 
 void IndigoRenderer::defineEnvironment()
 {
+	MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
+	MFnDependencyNode globalsNode(indigoGlobals);
 
 	switch( this->mtin_renderGlobals->environmentType )
 	{
@@ -28,8 +30,6 @@ void IndigoRenderer::defineEnvironment()
 				texturePath = texName.asChar();
 			}
 			MColor bgColor(1,1,1);
-			MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
-			MFnDependencyNode globalsNode(indigoGlobals);
 			getColor("environmentColor", globalsNode, bgColor);
 			if( (bgColor.r + bgColor.g + bgColor.b) <= 0.0)
 			{
@@ -71,7 +71,6 @@ void IndigoRenderer::defineEnvironment()
 		case 2: // sun/sky
 		{
 			// first get the globals node and serach for a directional light connection
-			MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
 			MObjectArray nodeList;
 			getConnectedInNodes(MString("environmentSun"), indigoGlobals, nodeList);
 			if( nodeList.length() > 0)
@@ -87,8 +86,20 @@ void IndigoRenderer::defineEnvironment()
 
 					Indigo::SceneNodeBackgroundSettingsRef background_settings_node(new Indigo::SceneNodeBackgroundSettings());
 					Reference<Indigo::SunSkyMaterial> sun_sky_mat(new Indigo::SunSkyMaterial());
-					sun_sky_mat->model = "captured-simulation";
+					
+					MString sky_model;
+					int modelId;
+					getEnum("sky_model", globalsNode, modelId, sky_model);
+					sun_sky_mat->model = sky_model.asChar();
+					sun_sky_mat->enable_sky = true;
+					getBool("extra_atmospheric", globalsNode, sun_sky_mat->extra_atmospheric);
+					sun_sky_mat->name = "sunsky";
+					getUInt("sky_layer", globalsNode, sun_sky_mat->sky_layer);
+					getUInt("sun_layer", globalsNode, sun_sky_mat->sun_layer);
+					getDouble(MString("turbidity"), globalsNode, sun_sky_mat->turbidity);
+
 					sun_sky_mat->sundir = Indigo::Vec3d(lightDir.x, lightDir.y, lightDir.z); // Direction to sun.
+
 					background_settings_node->background_material = sun_sky_mat;
 					sceneRootRef->addChildNode(background_settings_node);
 				}

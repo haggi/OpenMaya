@@ -18,7 +18,7 @@ mtin_RenderGlobals::mtin_RenderGlobals()
 
 MString mtin_RenderGlobals::getImageExt()
 {
-	return MString("ext");
+	return this->imageFormatString;
 }
 
 void mtin_RenderGlobals::setRendererUnit()
@@ -117,6 +117,9 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getBool(MString("auto_choose_num_threads"), IndigoGlobals, this->auto_choose_num_threads))
 			throw("problem reading indigoGlobals.auto_choose_num_threads");
 
+		if(!getBool(MString("num_threads"), IndigoGlobals, this->num_threads))
+			throw("problem reading indigoGlobals.num_threads");
+
 		if(!getInt(MString("super_sample_factor"), IndigoGlobals, this->super_sample_factor))
 			throw("problem reading indigoGlobals.super_sample_factor");
 
@@ -170,6 +173,21 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 
 		if(!getColor(MString("environmentColor"), IndigoGlobals, this->environmentColor))
 			throw("problem reading indigoGlobals.environmentColor");
+
+		if(!getFloat(MString("turbidity"), IndigoGlobals, this->turbidity))
+			throw("problem reading indigoGlobals.turbidity");
+
+		if(!getBool(MString("extra_atmospheric"), IndigoGlobals, this->extra_atmospheric))
+			throw("problem reading indigoGlobals.extra_atmospheric");
+
+		if(!getInt(MString("sun_layer"), IndigoGlobals, this->sun_layer))
+			throw("problem reading indigoGlobals.sun_layer");
+
+		if(!getInt(MString("sky_layer"), IndigoGlobals, this->sky_layer))
+			throw("problem reading indigoGlobals.sky_layer");
+
+		if(!getEnum(MString("sky_model"), IndigoGlobals, this->sky_model))
+			throw("problem reading indigoGlobals.sky_model");
 
 //	------------- automatically created attributes end ----------- // 
 		

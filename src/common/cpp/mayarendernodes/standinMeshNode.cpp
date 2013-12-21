@@ -115,7 +115,7 @@ MObject standinMeshNode::createMesh(const MTime& time,
 		MPoint min, max;
 		read(numPoints);
 		numVertices = numPoints;
-		int numFaces = numPoints / 3;
+		uint numFaces = numPoints / 3;
 		read(min);
 		read(max);
 		MGlobal::displayInfo(MString("File successfully opended. File contains: ") + numPoints + " points what means " + numFaces + " triangles");

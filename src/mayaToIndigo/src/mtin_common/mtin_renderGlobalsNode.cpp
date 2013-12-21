@@ -25,6 +25,7 @@ MObject MayaToIndigoGlobals::halt_time;
 MObject MayaToIndigoGlobals::halt_samples_per_pixel;
 MObject MayaToIndigoGlobals::hybrid;
 MObject MayaToIndigoGlobals::auto_choose_num_threads;
+MObject MayaToIndigoGlobals::num_threads;
 MObject MayaToIndigoGlobals::super_sample_factor;
 MObject MayaToIndigoGlobals::watermark;
 MObject MayaToIndigoGlobals::info_overlay;
@@ -44,6 +45,11 @@ MObject MayaToIndigoGlobals::glass_acceleration;
 MObject MayaToIndigoGlobals::environmentType;
 MObject MayaToIndigoGlobals::environmentColor;
 MObject MayaToIndigoGlobals::environmentSun;
+MObject MayaToIndigoGlobals::turbidity;
+MObject MayaToIndigoGlobals::extra_atmospheric;
+MObject MayaToIndigoGlobals::sun_layer;
+MObject MayaToIndigoGlobals::sky_layer;
+MObject MayaToIndigoGlobals::sky_model;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -123,6 +129,9 @@ MStatus	MayaToIndigoGlobals::initialize()
 	auto_choose_num_threads = nAttr.create("auto_choose_num_threads", "auto_choose_num_threads",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( auto_choose_num_threads ));
 
+	num_threads = nAttr.create("num_threads", "num_threads",  MFnNumericData::kBoolean, 1);
+	CHECK_MSTATUS(addAttribute( num_threads ));
+
 	super_sample_factor = nAttr.create("super_sample_factor", "super_sample_factor",  MFnNumericData::kInt, 2);
 	CHECK_MSTATUS(addAttribute( super_sample_factor ));
 
@@ -191,6 +200,23 @@ MStatus	MayaToIndigoGlobals::initialize()
 
 	environmentSun = mAttr.create("environmentSun", "environmentSun");
 	CHECK_MSTATUS(addAttribute( environmentSun ));
+
+	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( turbidity ));
+
+	extra_atmospheric = nAttr.create("extra_atmospheric", "extra_atmospheric",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( extra_atmospheric ));
+
+	sun_layer = nAttr.create("sun_layer", "sun_layer",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( sun_layer ));
+
+	sky_layer = nAttr.create("sky_layer", "sky_layer",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( sky_layer ));
+
+	sky_model = eAttr.create("sky_model", "sky_model", 0, &stat);
+	stat = eAttr.addField( "original", 0 );
+	stat = eAttr.addField( "captured-simulation", 1 );
+	CHECK_MSTATUS(addAttribute( sky_model ));
 
 //	------------- automatically created attributes end ----------- // 
 

@@ -45,7 +45,7 @@ void DummyRenderer::doProgressiveRendering()
 	int runs = 6;
 	for( int run = runs; run > 0; run--)
 	{		
-		int stepSizeX = pow(2.0f, run);
+		int stepSizeX = (int)pow(2.0f, run);
 		int stepSizeY = stepSizeX;
 
 	}

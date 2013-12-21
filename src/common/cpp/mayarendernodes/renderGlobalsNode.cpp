@@ -77,16 +77,16 @@ MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
 	// pixel filtering
 	// filtertype is renderer specific. It will be defined in subclass
-	filtersizeDV = 3.0f;
-	tilesizeDV = 32;
+	//filtersizeDV = 3.0f;
+	//tilesizeDV = 32;
 
-	gammaDV = 1.0f;
+	//gammaDV = 1.0f;
 
-	maxTraceDepthDV = 4;
+	//maxTraceDepthDV = 4;
 
-	exportSceneFileDV = false;
-	exportSceneFileNameDV= "";
-	sceneScaleDV = 1.0f;
+	//exportSceneFileDV = false;
+	//exportSceneFileNameDV= "";
+	//sceneScaleDV = 1.0f;
 
 }
 
