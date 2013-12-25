@@ -36,6 +36,10 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def updateEnvironment(self, dummy=None):
+        
+        if not self.rendererTabUiDict.has_key('environment'):
+            return
+        
         envDict = self.rendererTabUiDict['environment']
         envDict['environmentColor'].setEnable(False)
         envDict['turbidity'].setEnable(False)
@@ -43,10 +47,15 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         envDict['sun_layer'].setEnable(False)
         envDict['sky_layer'].setEnable(False)
         envDict['sky_model'].setEnable(False)
+        envDict['environmentMapType'].setEnable(False)
+        envDict['environmentMapMultiplier'].setEnable(False)  
+      
 
         etype =  self.renderGlobalsNode.environmentType.get()
         if etype == 1:
             envDict['environmentColor'].setEnable(True)
+            envDict['environmentMapType'].setEnable(True)
+            envDict['environmentMapMultiplier'].setEnable(True)  
         if etype == 2:
             envDict['turbidity'].setEnable(True)
             envDict['extra_atmospheric'].setEnable(True)
@@ -55,6 +64,10 @@ class IndigoRenderer(Renderer.MayaToRenderer):
             envDict['sky_model'].setEnable(True)
             
         
+    def IndigoEnvironmentUpdateTab(self):
+        if not self.rendererTabUiDict.has_key('environment'):
+            return
+        self.updateEnvironment()
         
     def IndigoEnvironmentCreateTab(self):
         log.debug("IndigoEnvironmentCreateTab()")
@@ -72,20 +85,27 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label='Environment', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                         self.addRenderGlobalsUIElement(attName = 'environmentType', uiType = 'enum', displayName = 'Environment Type', default='0', data='Color/Map:Sun', uiDict=uiDict)
+                        pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'environmentColor', uiType = 'color', displayName = 'Environment Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentMapMultiplier', uiType = 'float', displayName = 'Emission Multiplier', default='10', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'environmentMapType', uiType = 'enum', displayName = 'Environment Map Type', default='0',  data='Spherical:Lat-Long', uiDict=uiDict)         
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'sky_model', uiType = 'enum', displayName = 'Sky Model', default='0', data='original:captured-simulation', uiDict=uiDict)                        
                         self.addRenderGlobalsUIElement(attName = 'environmentSun', uiType = 'message', displayName = 'Environment Sun', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'turbidity', uiType = 'float', displayName = 'Sky Turbidity', default='2.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'extra_atmospheric', uiType = 'bool', displayName = 'Extra Atmospheric', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'sun_layer', uiType = 'int', displayName = 'Sun Layer', default='0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'sky_layer', uiType = 'int', displayName = 'Sky Layer', default='0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'sky_model', uiType = 'enum', displayName = 'Sky Model', default='0', data='original:captured-simulation', uiDict=uiDict)                        
 
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
 
-    def IndigoEnvironmentUpdateTab(self):
-        log.debug("IndigoEnvironmentUpdateTab()")
-        if not self.rendererTabUiDict.has_key('environment'):
+        pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.uiCallback, tab="environment")])        
+        self.updateEnvironment()
+
+    def IndigoRendererUpdateTab(self):
+        log.debug("IndigoRendererUpdateTab()")
+        if not self.rendererTabUiDict.has_key('common'):
             return
         
         envDict = self.rendererTabUiDict['common']
@@ -109,6 +129,10 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
+                with pm.frameLayout(label='Global Settings', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth Of Field', default=False, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motion Blur', default=False, uiDict=uiDict)
 #                with pm.frameLayout(label='Frame Buffer', collapsable = True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
 #                        self.addRenderGlobalsUIElement(attName = 'super_sample_factor', uiType = 'int', displayName = 'Supersampling', default='2', uiDict=uiDict)
@@ -233,6 +257,12 @@ class IndigoRenderer(Renderer.MayaToRenderer):
 
     def IndigoTranslatorUpdateTab(self):
         log.debug("IndigoTranslatorUpdateTab()")
+
+    def uiCallback(self, **args):
+        log.debug("uiCallback()")
+        
+        if args['tab'] == "environment":
+            self.updateEnvironment()
 
     def createImageFormats(self):
         if self.renderGlobalsNode:

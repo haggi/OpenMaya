@@ -3,11 +3,19 @@ shader_start:lambert
         inatt:color:color
         inatt:transparency:color
         outatt:outColor:color
+		outatt:message:message
 shader_end
 
 # supported maya textures
 shader_start:file
-        outatt:outColor:color
+	inatt:uvCoord:float
+    outatt:outColor:color
+    outatt:outAlpha:float
+	outatt:message:message
+shader_end
+
+shader_start:place2dTexture
+	outatt:uvCoord:float
 shader_end
 
 
@@ -21,6 +29,7 @@ shader_start:inGlossyTransparent
 	inatt:base_emission:color
 	inatt:displacement:float
 	inatt:emission:color
+	inatt:normalMap:color
 	outatt:outColor:color
 shader_end
 
@@ -35,7 +44,12 @@ shader_start:inPhong
 	inatt:albedo:color
 	inatt:nk_data:enum
 	inatt:emission:color
+	inatt:normalMap:color
 	inatt:specular_reflectivity:color
+	outatt:outColor:color
+shader_end
+
+shader_start:DoubleSidedThinMaterial
 	outatt:outColor:color
 shader_end
 
@@ -46,6 +60,7 @@ shader_start:inDiffuse
 	inatt:base_emission:color
 	inatt:emission:color
 	inatt:displacement:float
+	inatt:normalMap:color
 	inatt:albedo:color
 	outatt:outColor:color
 shader_end
@@ -58,11 +73,12 @@ shader_end
 shader_start:inDiffuseTransmitter
 	inatt:backface_emit:bool
 	inatt:layer:int
-	inatt:internal_medium_name:string
+	inatt:internal_medium_name:message
 	inatt:bump:float
 	inatt:base_emission:color
 	inatt:displacement:float
 	inatt:emission:color
+	inatt:normalMap:color
 	inatt:albedo:color
 	outatt:outColor:color
 shader_end
@@ -70,9 +86,9 @@ shader_end
 shader_start:inBlend
 	inatt:step_blend:bool
 	inatt:backface_emit:bool
-	inatt:a_name:string
+	inatt:a_name:message
 	inatt:blend:float
-	inatt:b_name:string
+	inatt:b_name:message
 	outatt:outColor:color
 shader_end
 
@@ -83,6 +99,7 @@ shader_start:inOrenNayar
 	inatt:base_emission:color
 	inatt:emission:color
 	inatt:displacement:float
+	inatt:normalMap:color
 	inatt:sigma:float
 	inatt:albedo:color
 	outatt:outColor:color
@@ -91,12 +108,30 @@ shader_end
 shader_start:inSpecular
 	inatt:backface_emit:bool
 	inatt:layer:int
-	inatt:internal_medium_name:string
+	inatt:internal_medium_name:message
 	inatt:bump:float
 	inatt:base_emission:color
 	inatt:displacement:float
 	inatt:emission:color
+	inatt:normalMap:color
 	inatt:transparent:bool
+	outatt:outColor:color
+shader_end
+
+shader_start:CoatingMaterial
+	inatt:backface_emit:bool
+	inatt:layer:int
+	inatt:bump:scalar
+	inatt:absorption:color
+	inatt:base_emission:color
+	inatt:interference:float
+	inatt:displacement:float
+	inatt:roughness:float
+	inatt:fresnel_scale:float
+	inatt:emission:color
+	inatt:normalMap:color
+	inatt:ior:float
+	inatt:thickness:float
 	outatt:outColor:color
 shader_end
 

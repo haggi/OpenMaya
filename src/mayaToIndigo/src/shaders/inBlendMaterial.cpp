@@ -137,13 +137,13 @@ MStatus inBlend::initialize()
 	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( backface_emit ));
 
-	a_name = tAttr.create("a_name", "a_name",  MFnNumericData::kString);
+	a_name = mAttr.create("a_name", "a_name");
 	CHECK_MSTATUS(addAttribute( a_name ));
 
 	blend = nAttr.create("blend", "blend",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( blend ));
 
-	b_name = tAttr.create("b_name", "b_name",  MFnNumericData::kString);
+	b_name = mAttr.create("b_name", "b_name");
 	CHECK_MSTATUS(addAttribute( b_name ));
 
 //---------------------------- automatically created attributes end ------------------------------------

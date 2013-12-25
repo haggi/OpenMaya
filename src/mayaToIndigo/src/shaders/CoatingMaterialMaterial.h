@@ -2,10 +2,10 @@
 #include <maya/MTypeId.h>
 
 #ifdef HAS_OVERRIDE
-#include "inGlossyTransparentOverride.h"
+#include "CoatingMaterialOverride.h"
 #endif
 
-// Plugin inGlossyTransparent Shader Class //
+// Plugin CoatingMaterial Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -13,11 +13,11 @@
 // type MPxNode
 //
 
-class inGlossyTransparent : public MPxNode
+class CoatingMaterial : public MPxNode
 {
 public:
-                    inGlossyTransparent();
-    virtual         ~inGlossyTransparent();
+                    CoatingMaterial();
+    virtual         ~CoatingMaterial();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -45,13 +45,17 @@ protected:
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject backface_emit;
 	static    MObject layer;
-	static    MObject exponent;
-	static    MObject internal_medium_name;
 	static    MObject bump;
+	static    MObject absorption;
 	static    MObject base_emission;
+	static    MObject interference;
 	static    MObject displacement;
+	static    MObject roughness;
+	static    MObject fresnel_scale;
 	static    MObject emission;
 	static    MObject normalMap;
+	static    MObject ior;
+	static    MObject thickness;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

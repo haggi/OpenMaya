@@ -53,6 +53,7 @@ protected:
 	static    MObject albedo;
 	static    MObject nk_data;
 	static    MObject emission;
+	static    MObject normalMap;
 	static    MObject specular_reflectivity;
 //---------------------------- automatically created attributes end ------------------------------------
 

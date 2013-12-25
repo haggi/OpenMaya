@@ -21,7 +21,7 @@ public:
         if(result != values.end()) {
             return result->second;
         } else {
-            throw Corona::Exception::PropertyNotFound(Corona::PropertyDescriptor::get(id)->name);
+			throw Corona::Exception::propertyNotFound(Corona::PropertyDescriptor::get(id)->name);
         }
     }
     virtual void set(const int id, const Corona::Abstract::Settings::Property& property) {

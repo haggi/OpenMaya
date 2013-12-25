@@ -23,7 +23,7 @@ public:
     ///                      color), or radiance values (e.g. emission color)
     Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
         Corona::Bitmap<Corona::Rgb> data;
-        Corona::Wx::loadImage(filename, data);
+        Corona::loadImage(filename, data);
 		
         class TextureMap : public Corona::Abstract::Map {
         protected:

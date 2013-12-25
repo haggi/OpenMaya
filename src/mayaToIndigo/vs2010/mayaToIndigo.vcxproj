@@ -551,7 +551,7 @@
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToIndigo.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -562,7 +562,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>indigo_sdk_lib_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\mayaToIndigo.mll</OutputFile>
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2014\lib;$(INDIGO_ROOT)/lib/vs2010_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>Release/mayaToIndigo.lib</ImportLibrary>
@@ -571,10 +571,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014.mll
-copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014release.mll</Command>
+      <Command>copy Release\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014.mll
+copy Release\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">

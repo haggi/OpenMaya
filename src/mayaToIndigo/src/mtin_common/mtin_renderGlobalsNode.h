@@ -58,6 +58,8 @@ static    MObject extra_atmospheric;
 static    MObject sun_layer;
 static    MObject sky_layer;
 static    MObject sky_model;
+static    MObject environmentMapType;
+static    MObject environmentMapMultiplier;
 //	------------- automatically created attributes end ----------- // 
 
 };

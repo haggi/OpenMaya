@@ -49,6 +49,7 @@ protected:
 	static    MObject base_emission;
 	static    MObject emission;
 	static    MObject displacement;
+	static    MObject normalMap;
 	static    MObject albedo;
 //---------------------------- automatically created attributes end ------------------------------------
 

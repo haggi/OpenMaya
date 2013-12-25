@@ -1,5 +1,5 @@
 #inMediumBasic
-precedence, int, Precedence, 1
+precedence, int, Precedence, 2
 ior, float, Ior, 1.33
 cauchy_b_coeff, float, B Coeff, 0.0
 absorption_coefficient_spectrum, color, Absorption, 0:0:0
@@ -9,7 +9,7 @@ phase_function, enum, Phase Function, 0, uniform:henyey_greenstein
 phase_function_hgg, color, Henyey Greenstein G, 0:0:0
 
 #inMediumEpidermis
-precedence, int, Precedence, 1
+precedence, int, Precedence, 2
 
 #inMediumDermis
-precedence, int, Precedence, 1
+precedence, int, Precedence, 2

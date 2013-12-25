@@ -173,9 +173,14 @@ void IndigoRenderer::render()
 	{
 		sceneRootRef->finalise(command_line_args[0]);
 	}
-	catch(Indigo::IndigoException& e)
+	catch(Indigo::IndigoException& ex)
 	{
-		std::cerr << "finalise() failed: " << toStdString(e.what()) << std::endl;
+		std::cerr << "finalise() failed: " << toStdString(ex.what()) << std::endl;
+		EventQueue::Event e;
+		e.data = NULL;
+		e.type = EventQueue::Event::RENDERERROR;
+		theRenderEventQueue()->push(e);
+		return;
 	}
 
 	result = rendererRef->initialiseWithScene(sceneRootRef, render_buffer, command_line_args); // Non-blocking.
@@ -203,20 +208,25 @@ void IndigoRenderer::render()
 	rendererRef->stopRendering();
 
 	// Write the tone-mapped image to disk.
+	MString imgFormatExt = pystring::lower(this->mtin_renderGlobals->imageFormatString.asChar()).c_str();
+	if(( imgFormatExt != "exr") && (imgFormatExt != "bmp"))
+	{
+		logger.debug(MString("Unsupported image output format: ") + this->mtin_renderGlobals->imageFormatString + " -using exr: ");
+		this->mtin_renderGlobals->imageFormatString = "exr";
+	}
 	MString imgName = this->mtin_renderGlobals->getImageOutputFile();
-	if( this->mtin_renderGlobals->imageFormatString == "exr")
+	if( imgFormatExt == "exr")
 	{
 		rendererRef->saveEXR((imgName).asChar());
 		logger.debug(MString("Saved image as: ") + imgName);
 	}
 
-	//if( this->mtin_renderGlobals->imageFormatString == "bmp")
-	//{
-	BitMap bm;
-	bm.writeUInt8BufferToBMP((imgName + ".bmp").asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
-		//writeFloatBufferToBMP((imgName + "fromFloat.bmp").asChar(), floatBufferRef->dataPtr(), floatBufferRef->width(), floatBufferRef->height());
-	logger.debug(MString("Saved image as: ") + imgName);
-	//}
+	if( imgFormatExt == "bmp")
+	{
+		BitMap bm;
+		bm.writeUInt8BufferToBMP((imgName).asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
+		logger.debug(MString("Saved image as: ") + imgName);
+	}
 
 	EventQueue::Event e;
 	e.data = NULL;

@@ -50,6 +50,8 @@ MObject MayaToIndigoGlobals::extra_atmospheric;
 MObject MayaToIndigoGlobals::sun_layer;
 MObject MayaToIndigoGlobals::sky_layer;
 MObject MayaToIndigoGlobals::sky_model;
+MObject MayaToIndigoGlobals::environmentMapType;
+MObject MayaToIndigoGlobals::environmentMapMultiplier;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -217,6 +219,14 @@ MStatus	MayaToIndigoGlobals::initialize()
 	stat = eAttr.addField( "original", 0 );
 	stat = eAttr.addField( "captured-simulation", 1 );
 	CHECK_MSTATUS(addAttribute( sky_model ));
+
+	environmentMapType = eAttr.create("environmentMapType", "environmentMapType", 0, &stat);
+	stat = eAttr.addField( "Spherical", 0 );
+	stat = eAttr.addField( "Lat-Long", 1 );
+	CHECK_MSTATUS(addAttribute( environmentMapType ));
+
+	environmentMapMultiplier = nAttr.create("environmentMapMultiplier", "environmentMapMultiplier",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( environmentMapMultiplier ));
 
 //	------------- automatically created attributes end ----------- // 
 

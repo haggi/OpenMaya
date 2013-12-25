@@ -1,4 +1,4 @@
-#include "inOrenNayarMaterial.h"
+#include "DoubleSidedThinMaterialMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -27,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inOrenNayar::id( 0x0011CF83 );
+MTypeId	DoubleSidedThinMaterial::id( 0x0011CF7D );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void inOrenNayar::postConstructor( )
+void DoubleSidedThinMaterial::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -47,43 +47,34 @@ void inOrenNayar::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  inOrenNayar::aTranslucenceCoeff;
-MObject  inOrenNayar::aDiffuseReflectivity;
-MObject  inOrenNayar::aInTransparency;
-MObject  inOrenNayar::aColor;
-MObject  inOrenNayar::aIncandescence;
-MObject  inOrenNayar::aOutColor;
-MObject  inOrenNayar::aOutTransparency;
-MObject  inOrenNayar::aNormalCamera;
-MObject  inOrenNayar::aNormalCameraX;
-MObject  inOrenNayar::aNormalCameraY;
-MObject  inOrenNayar::aNormalCameraZ;
-MObject  inOrenNayar::aLightData;
-MObject  inOrenNayar::aLightDirection;
-MObject  inOrenNayar::aLightDirectionX;
-MObject  inOrenNayar::aLightDirectionY;
-MObject  inOrenNayar::aLightDirectionZ;
-MObject  inOrenNayar::aLightIntensity;
-MObject  inOrenNayar::aLightIntensityR;
-MObject  inOrenNayar::aLightIntensityG;
-MObject  inOrenNayar::aLightIntensityB;
-MObject  inOrenNayar::aLightAmbient;
-MObject  inOrenNayar::aLightDiffuse;
-MObject  inOrenNayar::aLightSpecular;
-MObject  inOrenNayar::aLightShadowFraction;
-MObject  inOrenNayar::aPreShadowIntensity;
-MObject  inOrenNayar::aLightBlindData;
+MObject  DoubleSidedThinMaterial::aTranslucenceCoeff;
+MObject  DoubleSidedThinMaterial::aDiffuseReflectivity;
+MObject  DoubleSidedThinMaterial::aInTransparency;
+MObject  DoubleSidedThinMaterial::aColor;
+MObject  DoubleSidedThinMaterial::aIncandescence;
+MObject  DoubleSidedThinMaterial::aOutColor;
+MObject  DoubleSidedThinMaterial::aOutTransparency;
+MObject  DoubleSidedThinMaterial::aNormalCamera;
+MObject  DoubleSidedThinMaterial::aNormalCameraX;
+MObject  DoubleSidedThinMaterial::aNormalCameraY;
+MObject  DoubleSidedThinMaterial::aNormalCameraZ;
+MObject  DoubleSidedThinMaterial::aLightData;
+MObject  DoubleSidedThinMaterial::aLightDirection;
+MObject  DoubleSidedThinMaterial::aLightDirectionX;
+MObject  DoubleSidedThinMaterial::aLightDirectionY;
+MObject  DoubleSidedThinMaterial::aLightDirectionZ;
+MObject  DoubleSidedThinMaterial::aLightIntensity;
+MObject  DoubleSidedThinMaterial::aLightIntensityR;
+MObject  DoubleSidedThinMaterial::aLightIntensityG;
+MObject  DoubleSidedThinMaterial::aLightIntensityB;
+MObject  DoubleSidedThinMaterial::aLightAmbient;
+MObject  DoubleSidedThinMaterial::aLightDiffuse;
+MObject  DoubleSidedThinMaterial::aLightSpecular;
+MObject  DoubleSidedThinMaterial::aLightShadowFraction;
+MObject  DoubleSidedThinMaterial::aPreShadowIntensity;
+MObject  DoubleSidedThinMaterial::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject inOrenNayar::backface_emit;
-MObject inOrenNayar::layer;
-MObject inOrenNayar::bump;
-MObject inOrenNayar::base_emission;
-MObject inOrenNayar::emission;
-MObject inOrenNayar::displacement;
-MObject inOrenNayar::normalMap;
-MObject inOrenNayar::sigma;
-MObject inOrenNayar::albedo;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -91,8 +82,8 @@ MObject inOrenNayar::albedo;
 // destruction
 //
 
-inOrenNayar::inOrenNayar() { }
-inOrenNayar::~inOrenNayar() { }
+DoubleSidedThinMaterial::DoubleSidedThinMaterial() { }
+DoubleSidedThinMaterial::~DoubleSidedThinMaterial() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -100,12 +91,12 @@ inOrenNayar::~inOrenNayar() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new inOrenNayar object.
+// In this case creator simply returns a new DoubleSidedThinMaterial object.
 //
 
-void* inOrenNayar::creator()
+void* DoubleSidedThinMaterial::creator()
 {
-    return new inOrenNayar();
+    return new DoubleSidedThinMaterial();
 }
 
 
@@ -115,7 +106,7 @@ void* inOrenNayar::creator()
 // want to connect to.
 //
 
-MStatus inOrenNayar::initialize()
+MStatus DoubleSidedThinMaterial::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -135,34 +126,6 @@ MStatus inOrenNayar::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	backface_emit = nAttr.create("backface_emit", "backface_emit",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( backface_emit ));
-
-	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
-	CHECK_MSTATUS(addAttribute( layer ));
-
-	base_emission = nAttr.createColor("base_emission", "base_emission");
-	nAttr.setDefault(0.0,0.0,0.0);
-	CHECK_MSTATUS(addAttribute( base_emission ));
-
-	emission = nAttr.createColor("emission", "emission");
-	nAttr.setDefault(0.0,0.0,0.0);
-	CHECK_MSTATUS(addAttribute( emission ));
-
-	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( displacement ));
-
-	normalMap = nAttr.createColor("normalMap", "normalMap");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( normalMap ));
-
-	sigma = nAttr.create("sigma", "sigma",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( sigma ));
-
-	albedo = nAttr.createColor("albedo", "albedo");
-	nAttr.setDefault(0.5,0.5,0.8);
-	CHECK_MSTATUS(addAttribute( albedo ));
-
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes
@@ -445,7 +408,7 @@ MStatus inOrenNayar::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus inOrenNayar::compute( const MPlug& plug, MDataBlock& block )
+MStatus DoubleSidedThinMaterial::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.

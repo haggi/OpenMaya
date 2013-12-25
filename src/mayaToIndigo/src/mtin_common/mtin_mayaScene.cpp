@@ -42,10 +42,6 @@ void mtin_MayaScene::userThreadProcedure()
 void mtin_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
 	mtin_MayaObject *obj = (mtin_MayaObject *)mobj;
-	//logger.trace(MString("mtin_MayaScene::transformUpdateCallback"));
-
-	//logger.debug(MString("mtin_updateObj: ") + mobj->dagPath.fullPathName());
-
 	if( isCamera(obj->mobject))
 	{
 		this->mtin_renderer.updateTransform(obj);
@@ -82,7 +78,6 @@ void mtin_MayaScene::transformUpdateCallback(MayaObject *mobj)
 void mtin_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtin_MayaObject *obj = (mtin_MayaObject *)mobj;
-	logger.trace(MString("mtin_MayaScene::deformUpdateCallback"));
 
 	if( obj->instanceNumber > 0)
 		return;

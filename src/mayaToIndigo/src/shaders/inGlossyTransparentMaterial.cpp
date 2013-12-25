@@ -83,6 +83,7 @@ MObject inGlossyTransparent::bump;
 MObject inGlossyTransparent::base_emission;
 MObject inGlossyTransparent::displacement;
 MObject inGlossyTransparent::emission;
+MObject inGlossyTransparent::normalMap;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -159,6 +160,10 @@ MStatus inGlossyTransparent::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	normalMap = nAttr.createColor("normalMap", "normalMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( normalMap ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

@@ -2,6 +2,7 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "../mtin_common/mtin_mayaObject.h"
+#include "../mtin_common/mtin_mayaScene.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -182,6 +183,82 @@ void IndigoRenderer::setDependentParameter(Reference<Indigo::WavelengthDependent
 	}
 }
 
+void IndigoRenderer::setDisplacementParameter(Reference<Indigo::DisplacementParam>& p, MFnDependencyNode& depFn, MString attrName, MString type)
+{
+	MStatus stat;
+	MPlug attrPlug = depFn.findPlug(attrName);
+
+	MObject textureObj = getConnectedFileTextureObject(attrName, depFn);
+	if(textureObj != MObject::kNullObj)
+	{
+		IndigoTextureNode *tNode = NULL;
+		for( size_t txId(0); txId < textureNodes.size(); txId++)
+		{	
+			if( textureNodes[txId].shadingNode.mobject == textureObj )
+			{
+				tNode = &textureNodes[txId];
+				logger.debug(MString("Found texture node ") +  textureNodes[txId].shadingNode.fullName );
+			}
+		}
+		if( tNode )
+		{
+			if( tNode->id < 0)
+			{
+				this->currentMaterial->textures.push_back(tNode->texture);
+				tNode->id = this->currentMaterial->textures.size() - 1;
+			}
+			Indigo::TextureDisplacementParam *tp = new Indigo::TextureDisplacementParam(tNode->id);
+			p = Reference<Indigo::DisplacementParam>(tp);
+		}else{
+			logger.debug(MString("Could not find texture node ") +  getObjectName(textureObj) );
+		}
+	}else{
+		if( type == "float" )
+		{
+			float value;
+			getFloat(attrName, depFn, value);
+			p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
+		}				
+		if( type == "double" )
+		{
+			double value;
+			getDouble(attrName, depFn, value);
+			p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
+		}				
+	}
+}
+
+void IndigoRenderer::setNormalMapParameter(Reference<Indigo::Vec3Param>& p, MFnDependencyNode& depFn, MString attrName, MString type)
+{
+	MStatus stat;
+	MPlug attrPlug = depFn.findPlug(attrName);
+
+	MObject textureObj = getConnectedFileTextureObject(attrName, depFn);
+	if(textureObj != MObject::kNullObj)
+	{
+		IndigoTextureNode *tNode = NULL;
+		for( size_t txId(0); txId < textureNodes.size(); txId++)
+		{	
+			if( textureNodes[txId].shadingNode.mobject == textureObj )
+			{
+				tNode = &textureNodes[txId];
+				logger.debug(MString("Found texture node ") +  textureNodes[txId].shadingNode.fullName );
+			}
+		}
+		if( tNode )
+		{
+			if( tNode->id < 0)
+			{
+				this->currentMaterial->textures.push_back(tNode->texture);
+				tNode->id = this->currentMaterial->textures.size() - 1;
+			}
+			Indigo::Vec3Param *tp = new Indigo::TextureVec3Param(tNode->id);
+			p = Reference<Indigo::Vec3Param>(tp);
+		}else{
+			logger.debug(MString("Could not find normal map node ") +  getObjectName(textureObj) );
+		}
+	}
+}
 
 void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 {
@@ -190,13 +267,42 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 
 	if( snode.typeName == "file")
 	{
+		Indigo::UVTexCoordGenerator *texGen = new Indigo::UVTexCoordGenerator();
+		MObject texPlaceObj = getConnectedInNode(snode.mobject, "uvCoord");
+		if( texPlaceObj != MObject::kNullObj )
+		{
+			MFnDependencyNode texPlaceNode(texPlaceObj);
+			getDouble(MString("offsetU"), texPlaceNode, texGen->translation.x);
+			getDouble(MString("offsetV"), texPlaceNode, texGen->translation.y);
+			float repeatU = 1.0f, repeatV = 1.0f, rotateUV = 0.0f;
+			getFloat("repeatU",  texPlaceNode, repeatU);
+			getFloat("repeatV",  texPlaceNode, repeatV);
+			getFloat("rotateUV",  texPlaceNode, rotateUV);
+
+			Indigo::Matrix2 uvTransform;
+			uvTransform.e[0] = cos(rotateUV) * repeatU;
+			uvTransform.e[1] = -sin(rotateUV) * repeatU;
+			uvTransform.e[2] = sin(rotateUV) * repeatV;
+			uvTransform.e[3] = cos(rotateUV) * repeatV;
+			
+			texGen->matrix = uvTransform;
+			
+		}
+		MColor colorGain(1,1,1);
+		getColor("colorGain", depFn, colorGain);
+		MColor colorOffset(0,0,0);
+		getColor("colorOffset", depFn, colorOffset);
+		double cg = (colorGain.r + colorGain.g + colorGain.b) / 3.0;
+		double co = (colorOffset.r + colorOffset.g + colorOffset.b) / 3.0;
 		Indigo::Texture texture;
+		texture.a = 0.0;
+		texture.b = cg;
+		texture.c = co;
 		MString texturePath;
 		getString(MString("fileTextureName"), depFn, texturePath);	
 		texture.path = texturePath.asChar();
 		texture.exponent = 1.0; // gamma
-		Indigo::Matrix2 uvTransform;
-		texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::UVTexCoordGenerator());
+		texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(texGen);
 		IndigoTextureNode tn;
 		tn.shadingNode = snode;
 		tn.texture = texture;
@@ -210,7 +316,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		this->currentSceneNodeMaterialRef->material = blend;
 		this->currentMaterial = blend;
 		this->currentMaterial->name = snode.fullName.asChar();
-
+		
 		for( size_t atId(0); atId < snode.inputAttributes.size(); atId++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[atId];
@@ -293,6 +399,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			{
 				getBool("backface_emit", depFn, diftrans->backface_emit);
 			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(diftrans->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(diftrans->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(diftrans->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
+			}
 		}
 		
 		this->currentSceneNodeMaterialRef->material = diftrans;
@@ -339,10 +457,6 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "emission")
 			{
 				setDependentParameter(spec->emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, spec->emission);
-				//else
-				//	setColorDependentParameter(spec->emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "base_emission")
 			{
@@ -380,6 +494,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 					}
 				}
 			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(spec->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(spec->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(spec->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
+			}
 		}	
 		this->currentSceneNodeMaterialRef->material = spec;
 		sceneRootRef->addChildNode(this->currentSceneNodeMaterialRef);
@@ -396,7 +522,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		Indigo::DiffuseMaterial *diffuse = new Indigo::DiffuseMaterial();	
 		this->currentMaterial = diffuse;
 		this->currentMaterial->name = snode.fullName.asChar();
-
+		
 		for( size_t atId(0); atId < snode.inputAttributes.size(); atId++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[atId];
@@ -407,15 +533,10 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "emission")
 			{
 				setDependentParameter(diffuse->emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, diffuse->emission);
-				//else
-				//	setColorDependentParameter(diffuse->emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "base_emission")
 			{
 				setDependentParameter(diffuse->base_emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//setColorDependentParameter(diffuse->base_emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "backface_emit")
 			{
@@ -424,6 +545,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "layer")
 			{
 				getUInt("layer", depFn, diffuse->layer);
+			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(diffuse->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(diffuse->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(diffuse->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
 			}
 		}
 					
@@ -448,32 +581,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "sigma")
 			{
 				setIndependentParameter(oren->sigma, depFn, sa.name.c_str(), sa.type.c_str());
-
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureIndependentParamter(sa.connectedMObject, oren->sigma);
-				//else
-				//	setColorIndependentParameter(oren->sigma, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "albedo")
 			{
 				setDependentParameter(oren->albedo, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, oren->albedo);
-				//else
-				//	setColorDependentParameter(oren->albedo, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "emission")
 			{
 				setDependentParameter(oren->emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, oren->emission);
-				//else
-				//	setColorDependentParameter(oren->emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "base_emission")
 			{
 				setDependentParameter(oren->base_emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//setColorDependentParameter(oren->base_emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "backface_emit")
 			{
@@ -482,6 +601,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "layer")
 			{
 				getUInt("layer", depFn, oren->layer);
+			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(oren->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(oren->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(oren->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
 			}
 
 		}
@@ -505,26 +636,21 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		for( size_t atId(0); atId < snode.inputAttributes.size(); atId++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[atId];
+			if( sa.name == "albedo")
+			{
+				setDependentParameter(phong->diffuse_albedo, depFn, sa.name.c_str(), sa.type.c_str());
+			}
 			if( sa.name == "diffuse_albedo")
 			{
 				setDependentParameter(phong->diffuse_albedo, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, phong->diffuse_albedo);
-				//else
-				//	setColorDependentParameter(phong->diffuse_albedo, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "emission")
 			{
 				setDependentParameter(phong->emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, phong->emission);
-				//else
-				//	setColorDependentParameter(phong->emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "base_emission")
 			{
 				setDependentParameter(phong->base_emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//setColorDependentParameter(phong->base_emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "layer")
 			{
@@ -537,7 +663,6 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "exponent")
 			{
 				setIndependentParameter(phong->exponent, depFn, sa.name.c_str(), sa.type.c_str());
-				//setFloatIndependentParameter(phong->exponent, depFn, MString("exponent"));
 			}
 			if( sa.name == "fresnelScale")
 			{
@@ -546,14 +671,22 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "specular_reflectivity")
 			{
 				setDependentParameter(phong->specular_reflectivity, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, phong->specular_reflectivity);
-				//else
-				//	setColorDependentParameter(phong->specular_reflectivity, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "ior")
 			{
 				getDouble(MString("ior"), depFn, phong->ior);
+			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(phong->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(phong->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(phong->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
 			}
 		}	
 		this->currentSceneNodeMaterialRef->material = phong;
@@ -655,15 +788,10 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "emission")
 			{
 				setDependentParameter(glossy->emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//if(sa.connected && sa.connectedMObject.hasFn(MFn::kFileTexture))
-				//	setTextureDependentParamter(sa.connectedMObject, glossy->emission);
-				//else
-				//	setColorDependentParameter(glossy->emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "base_emission")
 			{
 				setDependentParameter(glossy->base_emission, depFn, sa.name.c_str(), sa.type.c_str());
-				//setColorDependentParameter(glossy->base_emission, depFn, MString(sa.name.c_str()));
 			}
 			if( sa.name == "layer")
 			{
@@ -676,6 +804,18 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "exponent")
 			{
 				setIndependentParameter(glossy->exponent, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "displacement")
+			{
+				setDisplacementParameter(glossy->displacement, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "bump")
+			{
+				setDisplacementParameter(glossy->bump, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "normalMap")
+			{
+				setNormalMapParameter(glossy->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
 			}
 		}	
 		this->currentSceneNodeMaterialRef->material = glossy;
@@ -710,22 +850,5 @@ void IndigoRenderer::defineShadingNodes(mtin_MayaObject *obj)
 		}
 
 		obj->matRef = this->currentSceneNodeMaterialRef;
-
-		//bool found = false;
-		//for( int shadingNodeId = numNodes - 1; shadingNodeId >= 0; shadingNodeId-- )
-		//{
-		//	for( size_t mnId = 0; mnId < definedMaterialNodes.size(); mnId++)
-		//	{
-		//		if( material.surfaceShaderNet.shaderList[shadingNodeId].fullName == definedMaterialNodes[mnId].name )
-		//		{
-		//			logger.debug(MString("Object ") + obj->shortName + " will receive material " + definedMaterialNodes[mnId].name);
-		//			obj->matRef = definedMaterialNodes[mnId].materialNode;
-		//			found = true;
-		//			break;
-		//		}
-		//	}
-		//	if( found )
-		//		break;
-		//}
 	}
 }

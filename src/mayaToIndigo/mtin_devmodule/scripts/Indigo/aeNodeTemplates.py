@@ -38,7 +38,7 @@ class AEIndigoNodeTemplate(BaseTemplate):
             self.dimControl(self.thisNode, "mtin_mesh_subdivViewDependent", False)
             
             if self.thisNode.mtin_mesh_subdivViewDependent.get():
-                self.dimControl("mtin_mesh_subdivPixelThreshold", False)
+                self.dimControl(self.thisNode, "mtin_mesh_subdivPixelThreshold", False)
             
             
     def buildCameraTemplate(self, nodeName):
@@ -53,7 +53,7 @@ class AEIndigoNodeTemplate(BaseTemplate):
         self.addControl("mtin_mesh_subdivSmooth", label="Smooth Subdivisions")            
         self.addControl("mtin_mesh_subdivCurvatureThreshold", label="Subdiv Curvature Threshold")            
         self.addControl("mtin_mesh_subdivErrorThreshold", label="Subdiv Error Threshold")            
-        self.addControl("mtin_mesh_subdivViewDependent", label="View Dependent Subdivision")            
+        self.addControl("mtin_mesh_subdivViewDependent", label="View Dependent Subdivision", changeCommand=self.updateMeshUI)            
         self.addControl("mtin_mesh_subdivPixelThreshold", label="Subdiv Pixel Threshold")            
         self.endLayout()
     

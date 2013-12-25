@@ -8,6 +8,7 @@
 #include <maya/MTransformationMatrix.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItMeshVertex.h>
+#include <maya/MQuaternion.h>
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -24,7 +25,7 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 {
 	if( this->mtin_renderGlobals->doMb)
 	{
-		MPoint pos, scale, rot;
+		MPoint pos, oscale, rot;
 		for( uint mId = 0; mId < obj->transformMatrices.size(); mId++)
 		{
 			double time = 0.0;
@@ -32,28 +33,34 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 			if( mId > 0)
 				time = (double)mId/((double)(obj->transformMatrices.size() - 1));
 
-			MMatrix m = obj->transformMatrices[0];
+			MMatrix m = obj->transformMatrices[mId];
 			m = m * this->mtin_renderGlobals->globalConversionMatrix;
-			getMatrixComponents(m, pos, rot, scale);
+			getMatrixComponents(m, pos, rot, oscale);
 			MMatrix scale;
 			scale.setToIdentity();
-			scale[0][0] = m[0][0];
-			scale[1][1] = m[1][1];
-			scale[2][2] = m[2][2];
+			MMatrix mt = m.transpose();
 
-			// scaling to 1.0
-			m[0][0] = 1;
-			m[1][1] = 1;
-			m[2][2] = 1;
+			scale[0][0] = oscale.x;
+			scale[1][1] = oscale.y;
+			scale[2][2] = oscale.z;
+
 			
 			MTransformationMatrix tm(m);
+			MTransformationMatrix origTm(obj->transformMatrices[mId]);
 			double x, y, z, w;
 			tm.getRotationQuaternion(x, y, z, w, MSpace::kWorld);
-			Indigo::AxisAngle axis(Indigo::Vec3d(x, y, z), w);	
+			origTm.getRotationQuaternion(x, y, z, w, MSpace::kWorld);
+
+			Indigo::Vec3d v(x, -z, y);
+			Indigo::AxisAngle axis(v, w);	
+
+			if(v.length() <= 0.0)
+				axis = Indigo::AxisAngle(Indigo::Vec3d(0, 0, 1), 0.0);
+
 			Indigo::KeyFrame posKf(time, Indigo::Vec3d(pos.x, pos.y, pos.z), axis);
 			model->keyframes.push_back(posKf);
 
-			Indigo::MatrixRotation matRot(scale[0][0],scale[1][0],scale[2][0], scale[0][1],scale[1][1],scale[2][1] ,scale[0][2],scale[1][2],scale[2][2]);
+			Indigo::MatrixRotation matRot(scale[0][0],scale[1][0],scale[2][0], scale[0][2],scale[1][2],scale[2][2] ,scale[0][1],scale[1][1],scale[2][1]);
 			model->rotation = new Indigo::MatrixRotation(matRot);
 		}
 	}else{

@@ -24,6 +24,8 @@ void IndigoRenderer::defineEnvironment()
 			MString texName;
 			bool useTexture = false;
 			Indigo::String texturePath = "";
+			MObject fileTexObj = getConnectedFileTextureObject(MString("environmentColor"), globalsNode);
+			MFnDependencyNode fileTexNode(fileTexObj);
 			if( getConnectedFileTexturePath(MString("environmentColor"), MString("indigoGlobals"), texName) )
 			{
 				useTexture = true;
@@ -31,13 +33,8 @@ void IndigoRenderer::defineEnvironment()
 			}
 			MColor bgColor(1,1,1);
 			getColor("environmentColor", globalsNode, bgColor);
-			if( (bgColor.r + bgColor.g + bgColor.b) <= 0.0)
-			{
-				logger.warning("BGColor is black, setting to red.");
-				bgColor.r = 1.0f;
-				bgColor.g = bgColor.b = 0.0f;
-			}
-
+			int mapType = 0;
+			getInt("environmentMapType", globalsNode, mapType);
 			Indigo::SceneNodeBackgroundSettingsRef background_settings(new Indigo::SceneNodeBackgroundSettings());
 
 			Reference<Indigo::DiffuseMaterial> mat(new Indigo::DiffuseMaterial());
@@ -45,26 +42,37 @@ void IndigoRenderer::defineEnvironment()
 			// Albedo should be zero.
 			mat->albedo = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(0))));
 
-
 			Indigo::Texture texture;
-			// Emission is a texture parameter that references our texture that we will create below.
-			//mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
 			if( useTexture )
 			{
 				texture.path = texturePath;
 				texture.exponent = 1; // Since we will usually use a HDR image, the exponent (gamma) should be set to one.
+				MColor colorGain(1,1,1);
+				getColor("colorGain", fileTexNode, colorGain);
+				MColor colorOffset(0,0,0);
+				getColor("colorOffset", fileTexNode, colorOffset);
+				double cg = (colorGain.r + colorGain.g + colorGain.b) / 3.0;
+				double co = (colorOffset.r + colorOffset.g + colorOffset.b) / 3.0;
+				texture.a = 0.0;
+				texture.b = cg;
+				texture.c = co;
 				texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::SphericalTexCoordGenerator(Reference<Indigo::Rotation>(new Indigo::MatrixRotation())));
+				if( mapType == 1 )
+				{
+					texture.tex_coord_generation = Reference<Indigo::TexCoordGenerator>(new Indigo::SphericalEnvTexCoordGenerator(Reference<Indigo::Rotation>(new Indigo::MatrixRotation())));
+				}
 				mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::TextureWavelengthDependentParam(0));
 				mat->textures.push_back(texture);
 			}else{
 				Indigo::RGBSpectrum *iBgColor = new Indigo::RGBSpectrum(Indigo::Vec3d(bgColor.r,bgColor.g,bgColor.b), 2.2);
 				mat->emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iBgColor)));
 			}
+
 			// Base emission is the emitted spectral radiance. No effect here?
-			mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(1.0e10))));
+			double multiplier = (double)this->mtin_renderGlobals->environmentMapMultiplier * 1000.0;
+			mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(multiplier))));
 
 			background_settings->background_material = mat;
-
 			sceneRootRef->addChildNode(background_settings);
 			break;
 		}

@@ -1,4 +1,4 @@
-#include "inOrenNayarMaterial.h"
+#include "CoatingMaterialMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -27,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inOrenNayar::id( 0x0011CF83 );
+MTypeId	CoatingMaterial::id( 0x0011CF7E );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void inOrenNayar::postConstructor( )
+void CoatingMaterial::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -47,43 +47,47 @@ void inOrenNayar::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  inOrenNayar::aTranslucenceCoeff;
-MObject  inOrenNayar::aDiffuseReflectivity;
-MObject  inOrenNayar::aInTransparency;
-MObject  inOrenNayar::aColor;
-MObject  inOrenNayar::aIncandescence;
-MObject  inOrenNayar::aOutColor;
-MObject  inOrenNayar::aOutTransparency;
-MObject  inOrenNayar::aNormalCamera;
-MObject  inOrenNayar::aNormalCameraX;
-MObject  inOrenNayar::aNormalCameraY;
-MObject  inOrenNayar::aNormalCameraZ;
-MObject  inOrenNayar::aLightData;
-MObject  inOrenNayar::aLightDirection;
-MObject  inOrenNayar::aLightDirectionX;
-MObject  inOrenNayar::aLightDirectionY;
-MObject  inOrenNayar::aLightDirectionZ;
-MObject  inOrenNayar::aLightIntensity;
-MObject  inOrenNayar::aLightIntensityR;
-MObject  inOrenNayar::aLightIntensityG;
-MObject  inOrenNayar::aLightIntensityB;
-MObject  inOrenNayar::aLightAmbient;
-MObject  inOrenNayar::aLightDiffuse;
-MObject  inOrenNayar::aLightSpecular;
-MObject  inOrenNayar::aLightShadowFraction;
-MObject  inOrenNayar::aPreShadowIntensity;
-MObject  inOrenNayar::aLightBlindData;
+MObject  CoatingMaterial::aTranslucenceCoeff;
+MObject  CoatingMaterial::aDiffuseReflectivity;
+MObject  CoatingMaterial::aInTransparency;
+MObject  CoatingMaterial::aColor;
+MObject  CoatingMaterial::aIncandescence;
+MObject  CoatingMaterial::aOutColor;
+MObject  CoatingMaterial::aOutTransparency;
+MObject  CoatingMaterial::aNormalCamera;
+MObject  CoatingMaterial::aNormalCameraX;
+MObject  CoatingMaterial::aNormalCameraY;
+MObject  CoatingMaterial::aNormalCameraZ;
+MObject  CoatingMaterial::aLightData;
+MObject  CoatingMaterial::aLightDirection;
+MObject  CoatingMaterial::aLightDirectionX;
+MObject  CoatingMaterial::aLightDirectionY;
+MObject  CoatingMaterial::aLightDirectionZ;
+MObject  CoatingMaterial::aLightIntensity;
+MObject  CoatingMaterial::aLightIntensityR;
+MObject  CoatingMaterial::aLightIntensityG;
+MObject  CoatingMaterial::aLightIntensityB;
+MObject  CoatingMaterial::aLightAmbient;
+MObject  CoatingMaterial::aLightDiffuse;
+MObject  CoatingMaterial::aLightSpecular;
+MObject  CoatingMaterial::aLightShadowFraction;
+MObject  CoatingMaterial::aPreShadowIntensity;
+MObject  CoatingMaterial::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject inOrenNayar::backface_emit;
-MObject inOrenNayar::layer;
-MObject inOrenNayar::bump;
-MObject inOrenNayar::base_emission;
-MObject inOrenNayar::emission;
-MObject inOrenNayar::displacement;
-MObject inOrenNayar::normalMap;
-MObject inOrenNayar::sigma;
-MObject inOrenNayar::albedo;
+MObject CoatingMaterial::backface_emit;
+MObject CoatingMaterial::layer;
+MObject CoatingMaterial::bump;
+MObject CoatingMaterial::absorption;
+MObject CoatingMaterial::base_emission;
+MObject CoatingMaterial::interference;
+MObject CoatingMaterial::displacement;
+MObject CoatingMaterial::roughness;
+MObject CoatingMaterial::fresnel_scale;
+MObject CoatingMaterial::emission;
+MObject CoatingMaterial::normalMap;
+MObject CoatingMaterial::ior;
+MObject CoatingMaterial::thickness;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -91,8 +95,8 @@ MObject inOrenNayar::albedo;
 // destruction
 //
 
-inOrenNayar::inOrenNayar() { }
-inOrenNayar::~inOrenNayar() { }
+CoatingMaterial::CoatingMaterial() { }
+CoatingMaterial::~CoatingMaterial() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -100,12 +104,12 @@ inOrenNayar::~inOrenNayar() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new inOrenNayar object.
+// In this case creator simply returns a new CoatingMaterial object.
 //
 
-void* inOrenNayar::creator()
+void* CoatingMaterial::creator()
 {
-    return new inOrenNayar();
+    return new CoatingMaterial();
 }
 
 
@@ -115,7 +119,7 @@ void* inOrenNayar::creator()
 // want to connect to.
 //
 
-MStatus inOrenNayar::initialize()
+MStatus CoatingMaterial::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -141,27 +145,39 @@ MStatus inOrenNayar::initialize()
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
 
+	absorption = nAttr.createColor("absorption", "absorption");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( absorption ));
+
 	base_emission = nAttr.createColor("base_emission", "base_emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( base_emission ));
+
+	interference = nAttr.create("interference", "interference",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( interference ));
+
+	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( displacement ));
+
+	roughness = nAttr.create("roughness", "roughness",  MFnNumericData::kFloat, 0.01);
+	CHECK_MSTATUS(addAttribute( roughness ));
+
+	fresnel_scale = nAttr.create("fresnel_scale", "fresnel_scale",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( fresnel_scale ));
 
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
 
-	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( displacement ));
-
 	normalMap = nAttr.createColor("normalMap", "normalMap");
 	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( normalMap ));
 
-	sigma = nAttr.create("sigma", "sigma",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( sigma ));
+	ior = nAttr.create("ior", "ior",  MFnNumericData::kFloat, 1.2);
+	CHECK_MSTATUS(addAttribute( ior ));
 
-	albedo = nAttr.createColor("albedo", "albedo");
-	nAttr.setDefault(0.5,0.5,0.8);
-	CHECK_MSTATUS(addAttribute( albedo ));
+	thickness = nAttr.create("thickness", "thickness",  MFnNumericData::kFloat, 0.01);
+	CHECK_MSTATUS(addAttribute( thickness ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -445,7 +461,7 @@ MStatus inOrenNayar::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus inOrenNayar::compute( const MPlug& plug, MDataBlock& block )
+MStatus CoatingMaterial::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.

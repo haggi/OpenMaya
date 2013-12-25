@@ -554,13 +554,9 @@ bool MayaScene::updateInstancer()
 		instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, matrix); 
 		for( uint k = 0; k < dagPathArray.length(); k++)
 			logger.debug(MString("Particle mobj id: ") + i + "particle id: " + obj->instancerParticleId + " path id " + k + " - " + dagPathArray[k].fullPathName());
-		// get matrix from current path?
-		if( ! this->renderGlobals->doMb )
+		if( this->renderGlobals->isMbStartStep )
 			obj->transformMatrices.clear();
-		//logger.debug(MString("transf orig inv:") + origMatrix[3][0] + " " + origMatrix[3][1] + " "  + origMatrix[3][2]);
-		//logger.debug(MString("transf mat inv:") + matrix[3][0] + " " + matrix[3][1] + " "  + matrix[3][2]);
-		//MMatrix matrix1 = origMatrix * matrix;
-		//logger.debug(MString("transf mat mul:") + matrix1[3][0] + " " + matrix1[3][1] + " "  + matrix1[3][2]);
+
 		obj->transformMatrices.push_back(origMatrix * matrix);
 		this->transformUpdateCallback(obj);
 	}

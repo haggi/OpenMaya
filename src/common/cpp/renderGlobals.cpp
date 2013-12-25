@@ -48,6 +48,7 @@ RenderGlobals::RenderGlobals()
 	this->getDefaultGlobals();
 	this->internalUnit = MDistance::internalUnit();
 	this->internalAxis = MGlobal::isYAxisUp() ? YUp : ZUp;
+	this->scaleFactor = 1.0f;
 }
 
 RenderGlobals::~RenderGlobals()
@@ -62,7 +63,7 @@ void RenderGlobals::defineGlobalConversionMatrix()
 	float internalScaleFactor = 1.0f; // internal in mm
 	float rendererScaleFactor = 1.0f; // external in mm
 
-	float scaleFactor = 1.0f;
+	this->scaleFactor = 1.0f;
 
 	switch( this->internalUnit )
 	{

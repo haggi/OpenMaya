@@ -359,6 +359,22 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 	return result;
 }
 
+MObject getConnectedInNode(MObject& thisObject, const char *attrName)
+{
+	MObject result = MObject::kNullObj;
+	MFnDependencyNode depFn(thisObject);
+	MPlug inPlug = depFn.findPlug(attrName);
+	if( !inPlug.isConnected())
+		return result;
+
+	MPlugArray connectedPlugs;
+	inPlug.connectedTo(connectedPlugs, true, false);
+	if( connectedPlugs.length() == 0)
+		return result;
+	
+	return connectedPlugs[0].node();
+}
+
 void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList)
 {
 	MFnDependencyNode depFn(thisObject);
@@ -955,7 +971,7 @@ MObject getConnectedShadingEngine(MObject node)
 void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scale)
 {
 	MTransformationMatrix objTMatrix(matrix);
-	double rotation[3];
+	double rotation[3] = {0,0,0};
 	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
 	objTMatrix.getRotation(rotation, rotOrder, MSpace::kWorld);
 	MVector position = objTMatrix.getTranslation(MSpace::kWorld);

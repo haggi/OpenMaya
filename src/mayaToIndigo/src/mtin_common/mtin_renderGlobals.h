@@ -51,6 +51,8 @@ public:
 	int sun_layer;
 	int sky_layer;
 	int sky_model;
+	int environmentMapType;
+	float environmentMapMultiplier;
 //	------------- automatically created attributes end ----------- // 
 
 

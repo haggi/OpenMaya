@@ -81,6 +81,7 @@ MObject inDiffuse::bump;
 MObject inDiffuse::base_emission;
 MObject inDiffuse::emission;
 MObject inDiffuse::displacement;
+MObject inDiffuse::normalMap;
 MObject inDiffuse::albedo;
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -152,6 +153,10 @@ MStatus inDiffuse::initialize()
 
 	displacement = nAttr.create("displacement", "displacement",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( displacement ));
+
+	normalMap = nAttr.createColor("normalMap", "normalMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( normalMap ));
 
 	albedo = nAttr.createColor("albedo", "albedo");
 	nAttr.setDefault(0.5,0.5,0.8);

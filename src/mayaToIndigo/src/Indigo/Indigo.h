@@ -65,14 +65,12 @@ public:
 
 	void defineShadingNodes(mtin_MayaObject *obj);
 	void createIndigoShadingNode(ShadingNode& snode);
-	//void createIndigoMaterial(ShadingNode& snode);
-	//bool isIndigoMaterial(MString& shadingNodeName);
-	//
-	//void createIndigoMaterial(mtin_MayaObject *obj);
 	void createIndigoDefaultMaterial();
 	void setIndependentParameter(Reference<Indigo::WavelengthIndependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
 	void setDependentParameter(Reference<Indigo::WavelengthDependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
-
+	void setDisplacementParameter(Reference<Indigo::DisplacementParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
+	void setNormalMapParameter(Reference<Indigo::Vec3Param>& p, MFnDependencyNode& depFn, MString attrName, MString type);
+	
 	void createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj);
 };
 

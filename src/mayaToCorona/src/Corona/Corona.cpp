@@ -58,7 +58,7 @@ void CoronaRenderer::saveImage()
 	//    Corona::Wx::saveImage(filename+".png", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
 
 	//if( this->mtco_renderGlobals->imageFormatString.toLowerCase() == "exr")
-	Corona::Wx::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+	Corona::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
 }
 
 void CoronaRenderer::createScene()
@@ -76,7 +76,7 @@ void CoronaRenderer::render()
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  INIT SHADING CORE + SCEME
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ICore::initLib();
+    ICore::initLib(false);
     
     //Context context;
     context.core = ICore::createInstance();
@@ -90,7 +90,7 @@ void CoronaRenderer::render()
     // populate the settings with parameters from a configuration file. If the file does not exist, a new one 
     // is created with default values.
     ConfParser parser;
-    parser.parse("./" CORONA_DEFAULT_CONF_FILENAME, context.settings, true);
+    parser.parseFile("./" CORONA_DEFAULT_CONF_FILENAME, context.settings, true);
 
     // lets change few parameters, for example resolution, and render stamp
 	context.settings->set(PARAM_IMAGE_WIDTH, this->mtco_renderGlobals->imgWidth);

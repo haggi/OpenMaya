@@ -261,3 +261,16 @@ entry['displayName'] = 'Sky Model'
 entry['default'] = '0'
 entry['addInfo'] = 'original:captured-simulation'
 tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'environmentMapType'
+entry['type'] = 'enum'
+entry['displayName'] = 'Environ Map Type'
+entry['default'] = '0'
+entry['addInfo'] = 'Spherical:Lat-Long'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'environmentMapMultiplier'
+entry['type'] = 'float'
+entry['displayName'] = 'Map Multiplier'
+entry['default'] = '1.0'
+tab['entries'].append(entry)

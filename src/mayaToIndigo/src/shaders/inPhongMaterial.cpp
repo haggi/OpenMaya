@@ -85,6 +85,7 @@ MObject inPhong::ior;
 MObject inPhong::albedo;
 MObject inPhong::nk_data;
 MObject inPhong::emission;
+MObject inPhong::normalMap;
 MObject inPhong::specular_reflectivity;
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -172,6 +173,10 @@ MStatus inPhong::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	normalMap = nAttr.createColor("normalMap", "normalMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( normalMap ));
 
 	specular_reflectivity = nAttr.createColor("specular_reflectivity", "specular_reflectivity");
 	nAttr.setDefault(0,0,0);

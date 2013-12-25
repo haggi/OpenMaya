@@ -82,6 +82,7 @@ MObject inSpecular::bump;
 MObject inSpecular::base_emission;
 MObject inSpecular::displacement;
 MObject inSpecular::emission;
+MObject inSpecular::normalMap;
 MObject inSpecular::transparent;
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -140,7 +141,7 @@ MStatus inSpecular::initialize()
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
 
-	internal_medium_name = tAttr.create("internal_medium_name", "internal_medium_name",  MFnNumericData::kString);
+	internal_medium_name = mAttr.create("internal_medium_name", "internal_medium_name");
 	CHECK_MSTATUS(addAttribute( internal_medium_name ));
 
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
@@ -156,6 +157,10 @@ MStatus inSpecular::initialize()
 	emission = nAttr.createColor("emission", "emission");
 	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( emission ));
+
+	normalMap = nAttr.createColor("normalMap", "normalMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( normalMap ));
 
 	transparent = nAttr.create("transparent", "transparent",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( transparent ));

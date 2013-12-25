@@ -81,6 +81,8 @@ bool getConnectedOutPlugs(MObject& thisObject, MPlugArray& outPlugs);
 
 void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList);
 
+MObject getConnectedInNode(MObject& thisObject, const char *attrName);
+
 void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList);
 
 void getConnectedInNodes(MString attribute, MObject& thisObject, MObjectArray& nodeList);

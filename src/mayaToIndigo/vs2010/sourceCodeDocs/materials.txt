@@ -6,9 +6,10 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #inSpecular
-internal_medium_name, string, Internal Medium, ""
+internal_medium_name, message, Internal Medium, ""
 transparent, bool, Transparent, false
 bump, float, Bump, 0.0
 displacement, float, Displacement, 0.0
@@ -16,6 +17,7 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #inPhong
 albedo, color, Albedo, 0.5:0.5:0.8
@@ -29,6 +31,7 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #inGlossyTransparent
 internal_medium_name, message, Internal Medium
@@ -39,9 +42,10 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #inDiffuseTransmitter
-internal_medium_name, string, Internal Medium, ""
+internal_medium_name, message, Internal Medium, ""
 albedo, color, Albedo, 0.5:0.5:0.8
 bump, float, Bump, 0.0
 displacement, float, Displacement, 0.0
@@ -49,6 +53,7 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #inBlend
 blend, float, Blend, 0.0, minmax:0:1
@@ -69,7 +74,21 @@ base_emission, color, Emission Multiplier, 0.0
 emission, color, Emission, 0.0
 layer, int, Layer, 0
 backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
 
 #CoatingMaterial
+absorption, color, Absorption, 0:0:0
+thickness, float, Thickness, 0.01
+roughness, float, Roughness, 0.01
+bump, scalar, Bump, 0.0
+displacement, float, Displacement, 0.0
+base_emission, color, Emission Multiplier, 0.0
+emission, color, Emission, 0.0
+layer, int, Layer, 0
+backface_emit, bool, Backface Emit, false
+normalMap, color, Normal Map, 0:0:0
+ior, float, IOR, 1.2, minmax:1.0:10.0
+fresnel_scale, float, Fresnel Scale, 1.0
+interference, float, Interference, 0.0
 
 #DoubleSidedThinMaterial

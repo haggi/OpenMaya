@@ -69,6 +69,12 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		case 4:
 			logger.setLogLevel(Logging::Debug);
 			break;
+		case 5:
+			logger.setLogLevel(Logging::Detail);
+			break;
+		case 6:
+			logger.setLogLevel(Logging::Feature);
+			break;
 		}
 
 //	------------- automatically created attributes start ----------- // 
@@ -189,6 +195,12 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getEnum(MString("sky_model"), IndigoGlobals, this->sky_model))
 			throw("problem reading indigoGlobals.sky_model");
 
+		if(!getEnum(MString("environmentMapType"), IndigoGlobals, this->environmentMapType))
+			throw("problem reading indigoGlobals.environmentMapType");
+
+		if(!getFloat(MString("environmentMapMultiplier"), IndigoGlobals, this->environmentMapMultiplier))
+			throw("problem reading indigoGlobals.environmentMapMultiplier");
+
 //	------------- automatically created attributes end ----------- // 
 		
 		if(!getFloat(MString("filtersize"), IndigoGlobals, this->filterSize))
@@ -245,6 +257,10 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getString(MString("imagePath"), IndigoGlobals, this->imagePath))
 			throw("problem reading IndigoGlobals.imagePath");
 
+		int id = 0;
+		if(!getEnum(MString("imageFormat"), IndigoGlobals, id, this->imageFormatString))
+			throw("problem reading IndigoGlobals.imageFormat");
+
 		if(!getBool(MString("exportSceneFile"), IndigoGlobals, this->exportSceneFile))
 			throw("problem reading IndigoGlobals.exportSceneFile");
 
@@ -272,7 +288,6 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		this->sceneScaleMatrix.matrix[2][2] = this->sceneScale;
 
 	}catch(char *errorMsg){
-
 		logger.error(errorMsg);
 		this->good = false;
 		return false;	

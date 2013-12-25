@@ -131,6 +131,10 @@ bool mt@_RenderGlobals::getMt@Globals()
 		if(!getString(MString("imagePath"), @Globals, this->imagePath))
 			throw("problem reading @Globals.imagePath");
 
+		int id = 0;
+		if(!getEnum(MString("imageFormat"),  @Globals, id, this->imageFormatString))
+			throw("problem reading  @Globals.imageFormat");
+
 		if(!getBool(MString("exportSceneFile"), @Globals, this->exportSceneFile))
 			throw("problem reading @Globals.exportSceneFile");
 

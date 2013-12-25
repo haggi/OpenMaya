@@ -82,7 +82,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				
 				this->defineColorOrMap(MString("reflectivity"), depFn, data.components.reflect);	
 
-				const Corona::BrdfLobeType brdfs[] = {Corona::BrdfLobeType::BRDF_ASHIKHMIN, Corona::BrdfLobeType::BRDF_FAKE_WARD, Corona::BrdfLobeType::BRDF_PHONG, Corona::BrdfLobeType::BRDF_WARD};
+				const Corona::BrdfLobeType brdfs[] = {Corona::BRDF_ASHIKHMIN, Corona::BRDF_FAKE_WARD, Corona::BRDF_PHONG, Corona::BRDF_WARD};
 				int id;
 				getEnum(MString("brdfType"), depFn, id);
 				data.reflect.brdfType = brdfs[id];
@@ -98,11 +98,11 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 				MColor attenuationColor(0,0,0);
 				getColor("attenuationColor", depFn, attenuationColor);
-				data.refract.attenuationColor = Corona::Rgb(attenuationColor.r,attenuationColor.g,attenuationColor.b);				
+				//data.refract.attenuationColor = Corona::Rgb(attenuationColor.r,attenuationColor.g,attenuationColor.b);				
 				
 				float attenuationDist = 0.0f;
 				getFloat("attenuationDist", depFn, attenuationDist);
-				data.refract.attenuationDist = attenuationDist;		
+				//data.refract.attenuationDist = attenuationDist;		
 
 				int glassMode = 0;
 				getEnum(MString("glassMode"), depFn, glassMode);
@@ -143,7 +143,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 	}
 		
 	//Corona::IMaterial *mat = data.createMtl(this->context.settings);
-	Corona::IMaterial *mat = data.createMaterial(this->context.settings);
+	Corona::IMaterial *mat = data.createMaterial();
 	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }
 
