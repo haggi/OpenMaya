@@ -504,6 +504,9 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getBool(MString("useOptimizedTextures"), CoronaGlobals, this->useOptimizedTextures))
 			throw("problem reading CoronaGlobals.useOptimizedTextures");
 
+		if(!getBool(MString("useSunLightConnection"), CoronaGlobals, this->useSunLightConnection))
+			throw("problem reading CoronaGlobals.useSunLightConnection");
+
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

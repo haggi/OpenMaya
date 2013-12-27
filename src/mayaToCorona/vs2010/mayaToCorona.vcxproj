@@ -549,7 +549,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;C:\Users\haggi\coding\C++Libraries\Boost147_2010\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Release/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -573,7 +573,8 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona_maya2014release.mll</Command>
+      <Command>copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona_maya2014.mll
+copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona_maya2014release.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
@@ -765,6 +766,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\src\Corona\CoronaCamera.cpp" />
     <ClCompile Include="..\src\Corona\CoronaMap.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaPasses.cpp" />
     <ClCompile Include="..\src\Corona\CoronaRendererController.cpp" />
     <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp" />
     <ClCompile Include="..\src\Corona\Corona.cpp" />

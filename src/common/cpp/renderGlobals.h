@@ -179,6 +179,8 @@ public:
 	bool exportSceneFile;
 	MString exportSceneFileName;
 
+	bool useSunLightConnection;
+
 	MMatrix globalConversionMatrix; // for default unit conversion e.g. centimeter to meter
 	MMatrix sceneScaleMatrix; // user defined scene scale
 	float scaleFactor;

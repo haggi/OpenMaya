@@ -43,6 +43,7 @@ MObject MayaRenderGlobalsNode::imagePath;
 MObject MayaRenderGlobalsNode::maxTraceDepth;
 
 MObject MayaRenderGlobalsNode::sunLightConnection;
+MObject MayaRenderGlobalsNode::useSunLightConnection;
 
 MObject MayaRenderGlobalsNode::exportSceneFile;
 MObject MayaRenderGlobalsNode::exportSceneFileName;
@@ -116,6 +117,9 @@ MStatus	MayaRenderGlobalsNode::initialize()
 
 	sceneScale = nAttr.create("sceneScale", "sceneScale",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( sceneScale ));
+
+	useSunLightConnection = nAttr.create("useSunLightConnection", "useSunLightConnection",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( useSunLightConnection ));
 
 	exportSceneFile = nAttr.create("exportSceneFile", "exportSceneFile",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportSceneFile ));

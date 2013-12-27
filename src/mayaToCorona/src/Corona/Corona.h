@@ -60,6 +60,7 @@ public:
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineSettings();
+	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);

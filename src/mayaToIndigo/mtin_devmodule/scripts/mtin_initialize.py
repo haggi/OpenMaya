@@ -238,7 +238,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                         xmlDict['xmlFileText'] = pm.text(label = "Export to")
                         xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
-                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
+                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index = 2 )
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
                     optiDict = {}
                     ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)

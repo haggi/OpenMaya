@@ -5,7 +5,7 @@
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
-
+#include "utilities/pystring.h"
 #include "MyClasses.h"
 #include "CoronaMap.h"
 
@@ -19,6 +19,9 @@ CoronaRenderer::CoronaRenderer()
 	this->context.logger = NULL;
 	this->context.settings = NULL;
 	this->context.isCancelled = false;
+
+	Corona::ICore::initLib(false);
+
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -31,8 +34,8 @@ CoronaRenderer::~CoronaRenderer()
 #pragma comment(lib, "PrecompiledLibs_Assert.lib")
 #pragma comment(lib, "Corona_Assert.lib")
 #else
-#pragma comment(lib, "../../lib/PrecompiledLibs_Release.lib")
-#pragma comment(lib, "../../lib/Corona_Release.lib")
+#pragma comment(lib, "PrecompiledLibs_Release.lib")
+#pragma comment(lib, "Corona_Release.lib")
 #endif
 
 using namespace Corona;
@@ -42,10 +45,13 @@ void CoronaRenderer::saveImage()
 	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
     Corona::Bitmap<float, false> alpha(this->context.fb->getImageSize());
 
+	bool doToneMapping = false;
+	bool showRenderStamp = true;
+
     for(int i = 0; i < bitmap.getHeight(); ++i) 
 	{
         const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
-        this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, true, true, &bitmap[pixel], &alpha[pixel]);
+        this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
     }
 
     //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
@@ -54,11 +60,11 @@ void CoronaRenderer::saveImage()
 	Corona::String filename = this->mtco_renderGlobals->imageOutputFile.asChar();
 	logger.debug(MString("Saving image as ") +  this->mtco_renderGlobals->imageOutputFile);
 	
-	//if( this->mtco_renderGlobals->imageFormatString.toLowerCase() == "png")
-	//    Corona::Wx::saveImage(filename+".png", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
-
-	//if( this->mtco_renderGlobals->imageFormatString.toLowerCase() == "exr")
-	Corona::saveImage(filename+".exr", Corona::RgbBitmapIterator<false>(bitmap, &alpha), false, Corona::IMAGE_DETERMINE_FROM_EXT);
+	bool isLinear = false;
+	//MString imgFormatExt = pystring::lower(this->mtco_renderGlobals->imageFormatString.asChar()).c_str();
+	//if( imgFormatExt == "exr")
+	//	isLinear = true;
+	Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
 }
 
 void CoronaRenderer::createScene()
@@ -76,12 +82,12 @@ void CoronaRenderer::render()
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  INIT SHADING CORE + SCEME
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ICore::initLib(false);
     
     //Context context;
     context.core = ICore::createInstance();
     context.scene = context.core->createScene();
     context.logger = new mtco_Logger(context.core);
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  SETTINGS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,41 +98,8 @@ void CoronaRenderer::render()
     ConfParser parser;
     parser.parseFile("./" CORONA_DEFAULT_CONF_FILENAME, context.settings, true);
 
-    // lets change few parameters, for example resolution, and render stamp
-	context.settings->set(PARAM_IMAGE_WIDTH, this->mtco_renderGlobals->imgWidth);
-	context.settings->set(PARAM_IMAGE_HEIGHT, this->mtco_renderGlobals->imgHeight);
-    context.settings->set(PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
-    context.settings->set(PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
-	context.settings->set(PARAM_PROGRESSIVE_MAX_PASSES, this->mtco_renderGlobals->progressive_maxPasses);
-	context.settings->set(PARAM_NUM_THREADS, this->mtco_renderGlobals->threads);
-	context.settings->set(PARAM_EXPORT_ONLY, this->mtco_renderGlobals->exportSceneFile);
-	
- 
-    // add a custom string to the render stamp
-    String renderStamp = context.settings->get(PARAM_RENDERSTAMP);
-    renderStamp = "Corona API demo | " + renderStamp;
-    context.settings->set(PARAM_RENDERSTAMP, renderStamp);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////  RENDER PASSES
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // lets add few render passes. One render pass can be added multiple times with different names
-    RenderPassData data;
-    data.className = data.name = "NormalsDotProduct";
-    context.renderPasses.push(context.core->createRenderPass(data));
-
-    data.className = "zdepth";
-    data.name = "Z depth render pass";
-    data.zDepth.minDepth = 100;
-    data.zDepth.maxDepth = 200;
-    context.renderPasses.push(context.core->createRenderPass(data));
-
-    data.name = "Second zdepth pass";
-    data.zDepth.minDepth = 150;
-    data.zDepth.maxDepth = 250;
-    context.renderPasses.push(context.core->createRenderPass(data));
-
+	this->defineSettings();
+	this->definePasses();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  INTERNAL FRAME BUFFER
@@ -136,7 +109,9 @@ void CoronaRenderer::render()
     context.fb = context.core->createFb();
     // the settings and render passes need to contain final parameters of the rendering at the time of the call
     context.fb->initFb(context.settings, context.renderPasses);
-
+	//Corona::ColorMappingData cmData;
+	//cmData.gamma = 1.0f;
+	//context.fb->setColorMapping(cmData);
 	createScene();
 
     // test that the now ready scene and settings do not have any errors

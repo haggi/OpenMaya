@@ -63,7 +63,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
                     self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
                     #self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
-                    self.addRenderGlobalsUIElement(attName = 'bgColor', uiType = 'color', displayName = 'Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
 
 #self.addRenderGlobalsUIElement(attName = 'exportOnly', uiType = 'bool', displayName = 'Exportonly', default='false', uiDict=uiDict)
 #self.addRenderGlobalsUIElement(attName = 'gi_saveSecondary', uiType = 'bool', displayName = 'Gi_savesecondary', default='false', uiDict=uiDict)
@@ -187,37 +186,53 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.createGlobalsNode()
         self.updateEnvironment()
         log.debug("CoronaRendererUpdateTab()")
-#        if self.renderGlobalsNode.adaptiveSampling.get():
-#            self.rendererTabUiDict['minSamples'].setEnable(True)
-#            self.rendererTabUiDict['maxError'].setEnable(True)
-#        else:
-#            self.rendererTabUiDict['minSamples'].setEnable(False)
-#            self.rendererTabUiDict['maxError'].setEnable(False)
 
     def xmlFileBrowse(self, args=None):
-        print "xmlfile", args
-        filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")
+        filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
         if len(filename) > 0:
-            print "Got filename", filename
-            self.rendererTabUiDict['xml']['xmlFile'].setText(filename[0])
+            filename = filename[0]
+            if not filename.endswith(".igs"):
+                filename += ".igs"
+            self.rendererTabUiDict['xml']['xmlFile'].setText(filename)
     
     def dirBrowse(self, args=None):
         dirname = pm.fileDialog2(fileMode=3, caption="Select dir")
         if len(dirname) > 0:
             self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
 
+    def editSun(self):
+        uiDict = self.rendererTabUiDict['environment']    
+        suns = pm.ls("CoronaSun")
+        if len(suns) > 0:
+            pm.delete(suns)
+            uiDict['sunButton'].label.set("Create Sun")
+        else:
+            sun = pm.createNode("directionalLight")
+            sun.message >> self.renderGlobalsNode.sunLightConnection
+            uiDict['sunButton'].label.set("Delete Sun")            
+                       
     def CoronaEnvironmentCreateTab(self):
         log.debug("CoronaEnvironmentCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "EnvScrollLayout"
-        envDict = {}
-        self.rendererTabUiDict['environment'] = envDict
+
+        if self.rendererTabUiDict.has_key('environment'):
+            self.rendererTabUiDict.pop('environment')        
+        uiDict = {}
+        self.rendererTabUiDict['environment'] = uiDict
+                
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Environment Lighting", collapsable=False):
-                    pass
+                    self.addRenderGlobalsUIElement(attName = 'bgColor', uiType = 'color', displayName = 'Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'useSunLightConnection', uiType = 'bool', displayName = 'Use Sun', uiDict=uiDict)
+                    buttonLabel = "Create Sun"
+                    suns = pm.ls("CoronaSun")
+                    if len(suns) > 0:
+                        buttonLabel = "Delete Sun"
+                    uiDict['sunButton'] = pm.button(label = buttonLabel, command = self.editSun)
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
 
@@ -236,25 +251,31 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Translator", collapsable = True, collapse=False):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
-                with pm.frameLayout(label="Corona export (no rendering)", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export scene file:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportXMLFile", index = 2 )
+
+                with pm.frameLayout(label="Corona export", collapsable = True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export Corona Scene file (no rendering):", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index = 2 )
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        pm.text(label="ExportFileName:", width = 60, align="right")
-                        defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
-                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath, width = 60)
+                    defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
+                    if not defaultXMLPath.dirname().exists():
+                        defaultXMLPath.dirname().makedirs()
+                    with pm.rowLayout(nc=3):
+                        xmlDict['xmlFileText'] = pm.text(label = "Export to")
+                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
-                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
+                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index = 2 )
+                        
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        optiDict = {}
-                        pm.text(label="OptimizedTex Dir:", width = 60, align="right")
+                    optiDict = {}
+                    ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
+                    with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
+                        pm.text(label="OptimizedTex Dir:")
+                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get())
                         pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
-                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get(), width = 60)
                         pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
+                
                 with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
                     ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".sceneScale", index = 2 )
@@ -282,7 +303,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtco_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
         
         # exponent for sun light
-        pm.addExtension(nodeType="directionalLight", longName="mtco_sun_exponent", attributeType="float", defaultValue = 4.0)
+        pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue = 1.0)
         
             
     def removeLogFile(self):

@@ -56,6 +56,7 @@ class AEIndigoNodeTemplate(BaseTemplate):
         self.addControl("mtin_mesh_subdivViewDependent", label="View Dependent Subdivision", changeCommand=self.updateMeshUI)            
         self.addControl("mtin_mesh_subdivPixelThreshold", label="Subdiv Pixel Threshold")            
         self.endLayout()
+        self.updateMeshUI(nodeName)
     
     def buildIndigoTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)

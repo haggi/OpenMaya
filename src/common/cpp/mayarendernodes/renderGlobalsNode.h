@@ -59,9 +59,10 @@ private:
 	static    MObject maxTraceDepth;
 
 	// sun light
-	// if a renderer can do physical sun or simply sun, 
+	// if a renderer support physical sun or simply sun, 
 	// you always have only one sun which can be plugged in here.
 	static    MObject sunLightConnection;
+	static    MObject useSunLightConnection;
 
 	static	  MObject exportSceneFile;
 	static	  MObject exportSceneFileName;

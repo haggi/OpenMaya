@@ -191,6 +191,9 @@
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaPasses.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
