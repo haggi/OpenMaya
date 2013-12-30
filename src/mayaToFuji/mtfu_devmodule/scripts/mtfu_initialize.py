@@ -136,12 +136,13 @@ class FujiRenderer(Renderer.MayaToRenderer):
 #                        pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
 #                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportXMLFileName", index = 2 )
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
-                    with pm.rowColumnLayout(nc=3, width = 120):
-                        optiDict = {}
-                        pm.text(label="OptimizedTex Dir:", width = 60, align="right")
+                    optiDict = {}
+                    ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
+                    with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
+                        pm.text(label="OptimizedTex Dir:")
+                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get())
                         pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
-                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get(), width = 60)
                         pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
                 with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
                     ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)

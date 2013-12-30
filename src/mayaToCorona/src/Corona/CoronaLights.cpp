@@ -15,6 +15,7 @@ void CoronaRenderer::defineLights()
 	// first get the globals node and serach for a directional light connection
 	MObject coronaGlobals = objectFromName(MString("coronaGlobals"));
 	MObjectArray nodeList;
+	MStatus stat;
 
 	if( this->mtco_renderGlobals->useSunLightConnection )
 	{
@@ -25,16 +26,20 @@ void CoronaRenderer::defineLights()
 			if(sunObj.hasFn(MFn::kTransform))
 			{
 				// we suppose what's connected here is a dir light transform
-				MVector lightDir(0,0,1); // default dir light dir
+				MVector lightDir(0, 0, 1); // default dir light dir
 				MFnDagNode sunDagNode(sunObj);
 				lightDir *= sunDagNode.transformationMatrix();
+				lightDir *= this->mtco_renderGlobals->globalConversionMatrix;
+				lightDir.normalize();
 		
-				sunDagNode.dagPath().extendToShapeDirectlyBelow(0);
+				MObject sunDagObj =	sunDagNode.child(0, &stat);
+				if( !stat )
+					logger.error("no child 0");
 				MColor sunColor(1);
 				float colorMultiplier = 1.0f;
-				if(sunDagNode.object().hasFn(MFn::kDirectionalLight))
+				if(sunDagObj.hasFn(MFn::kDirectionalLight))
 				{
-					MFnDependencyNode sunNode(sunDagNode.object());
+					MFnDependencyNode sunNode(sunDagObj);
 					getColor("color", sunNode, sunColor);
 					getFloat("mtco_sun_multiplier", sunNode, colorMultiplier);
 				}else{

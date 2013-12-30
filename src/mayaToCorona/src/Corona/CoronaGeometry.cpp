@@ -24,6 +24,40 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 {
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
+	
+	bool hasDisplacement = false;
+	Corona::Abstract::Map *displacementMap = NULL;
+	float displacementMin = 0.0f;
+	float displacementMax = 0.01f;
+
+	// I do it here for displacement mapping, maybe we should to another place
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+	if( obj->shadingGroups.length() > 0)
+	{
+		MFnDependencyNode shadingGroup(obj->shadingGroups[0]);
+		MString sgn = shadingGroup.name();
+		MObject displacementObj = getConnectedInNode(obj->shadingGroups[0], "displacementShader");
+		MString doo = getObjectName(displacementObj);
+
+		if( (displacementObj != MObject::kNullObj) && (displacementObj.hasFn(MFn::kDisplacementShader)))
+		{
+			MObject displacementMapObj = getConnectedInNode(displacementObj, "displacement");
+			if( (displacementMapObj != MObject::kNullObj) && (displacementMapObj.hasFn(MFn::kFileTexture)))
+			{
+				MFnDependencyNode displacmentMapNode(displacementObj);
+				getFloat("mtco_displacementMin", displacmentMapNode, displacementMin);
+				getFloat("mtco_displacementMax", displacmentMapNode, displacementMax);
+				MString fileTexturePath = getConnectedFileTexturePath(MString("displacement"), displacmentMapNode);
+				if( fileTexturePath != "")
+				{
+					MapLoader loader;
+					displacementMap = loader.loadBitmap(fileTexturePath.asChar());
+					hasDisplacement = true;
+				}
+			}
+		}
+	}
+	
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);
 
@@ -114,17 +148,47 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 			uint uvId2 = faceUVIndices[faceRelIds[2]];
 
 
-		    Corona::TriangleData tri;
-		    tri.v = Corona::AnimatedPosI3(vtxId0, vtxId1, vtxId2);
-		    tri.n = Corona::AnimatedDirI3(normalId0, normalId1, normalId2);
-			//tri.t[0] = 0;
-			//tri.t[1] = 0;
-			//tri.t[2] = 0;
-			tri.t[0] = uvId0;
-			tri.t[1] = uvId1;
-			tri.t[2] = uvId2;
-			tri.materialId = 0;
-			geom->addPrimitive(tri);
+			if( hasDisplacement )
+			{
+				Corona::DisplacedTriangleData tri;
+				tri.displacement.map = displacementMap;
+				MPoint p0 = points[vtxId0];
+				MPoint p1 = points[vtxId1];
+				MPoint p2 = points[vtxId2];
+				tri.v[0] = Corona::AnimatedPos(Corona::Pos(p0.x, p0.y, p0.z));
+				tri.v[1] = Corona::AnimatedPos(Corona::Pos(p1.x, p1.y, p1.z));
+				tri.v[2] = Corona::AnimatedPos(Corona::Pos(p2.x, p2.y, p2.z));
+				MVector n0 = normals[normalId0];
+				MVector n1 = normals[normalId1];
+				MVector n2 = normals[normalId2];
+				Corona::Dir dir0(n0.x, n0.y, n0.z);
+				Corona::Dir dir1(n1.x, n1.y, n1.z);
+				Corona::Dir dir2(n2.x, n2.y, n2.z);
+				tri.n[0] = Corona::AnimatedDir(dir0);
+				tri.n[1] = Corona::AnimatedDir(dir1);
+				tri.n[2] = Corona::AnimatedDir(dir2);
+				Corona::Pos uv0(uArray[uvId0],vArray[uvId0],0.0);
+				Corona::Pos uv1(uArray[uvId1],vArray[uvId1],0.0);
+				Corona::Pos uv2(uArray[uvId2],vArray[uvId2],0.0);
+				Corona::StaticArray<Corona::Pos, 3> uvp;
+				uvp[0] = uv0;
+				uvp[1] = uv1;
+				uvp[2] = uv2;
+				tri.t.push(uvp);
+				tri.materialId = 0;
+				tri.displacement.min = displacementMin;
+				tri.displacement.max = displacementMax;
+				geom->addPrimitive(tri);			
+			}else{
+				Corona::TriangleData tri;
+				tri.v = Corona::AnimatedPosI3(vtxId0, vtxId1, vtxId2);
+				tri.n = Corona::AnimatedDirI3(normalId0, normalId1, normalId2);
+				tri.t[0] = uvId0;
+				tri.t[1] = uvId1;
+				tri.t[2] = uvId2;
+				tri.materialId = 0;
+				geom->addPrimitive(tri);			
+			}
 
 		}		
 	}

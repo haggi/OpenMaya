@@ -14,7 +14,7 @@ mtfu_MayaScene::mtfu_MayaScene():MayaScene(MayaScene::NORMAL)
 	getRenderGlobals();
 	this->mtfu_renderer.mtfu_scene = this;
 	this->mtfu_renderer.mtfu_renderGlobals = this->renderGlobals;
-	//this->mtfu_renderer.definePreRender();
+	this->needsUserThread = false;
 }
 
 mtfu_MayaScene::mtfu_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
@@ -22,13 +22,16 @@ mtfu_MayaScene::mtfu_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
 	getRenderGlobals();
 	this->mtfu_renderer.mtfu_scene = this;
 	this->mtfu_renderer.mtfu_renderGlobals = this->renderGlobals;
-	//this->mtfu_renderer.definePreRender();
+	this->needsUserThread = false;
 	this->renderType = rtype;
 }
 
 mtfu_MayaScene::~mtfu_MayaScene()
 {
 }
+
+void mtfu_MayaScene::userThreadProcedure()
+{}
 
 void mtfu_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {

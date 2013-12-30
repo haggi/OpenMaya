@@ -35,7 +35,7 @@ void Logging::trace(MString logString, int level)
 void Logging::info(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB INFO: " + makeSpace(level) + logString;
-	if( log_level == Logging::Info )
+	if( Logging::Info <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -45,7 +45,7 @@ void Logging::info(MString logString, int level)
 void Logging::warning(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB WARN: " + makeSpace(level) + logString;
-	if( log_level == Logging::Warning )
+	if( Logging::Warning <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -55,7 +55,7 @@ void Logging::warning(MString logString, int level)
 void Logging::error(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + makeSpace(level) + logString;
-	if( log_level == Logging::Error )
+	if( Logging::Error <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -65,7 +65,7 @@ void Logging::error(MString logString, int level)
 void Logging::debug(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + makeSpace(level) + logString;
-	if( log_level == Logging::Debug )
+	if( Logging::Debug <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -75,7 +75,7 @@ void Logging::debug(MString logString, int level)
 void Logging::progress(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB PROG: " + makeSpace(level) + logString;
-	if( log_level == Logging::Progress )
+	if( Logging::Progress <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else
@@ -85,7 +85,7 @@ void Logging::progress(MString logString, int level)
 void Logging::detail(MString logString, int level)
 {
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DET: " + makeSpace(level) + logString;
-	if( log_level == Logging::Detail )
+	if( Logging::Detail <= log_level )
 		if( log_outtype == Logging::ScriptEditor)
 			MGlobal::displayInfo(outString);
 		else

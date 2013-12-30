@@ -36,6 +36,8 @@ void ImgTools::FrameBufferToExr(MString fileName)
 		return;
 	}
 	MString outputFileName = pystring::replace(fileName.asChar(), ".fb", "").c_str();
+	if(!pystring::endswith(outputFileName.asChar(), ".exr"))
+		outputFileName += ".exr";
 	logger.info(MString("Trying to write framebuffer to: ") + outputFileName);
 
 	if (FbReadHeader(in)) 
@@ -62,8 +64,8 @@ void ImgTools::FrameBufferToExr(MString fileName)
 	FbReadData(in);
 	FbCloseInputFile(in);
 
-	const int width = FbGetWidth(fb);
-	const int height = FbGetHeight(fb);
+	int width = FbGetWidth(fb);
+	int height = FbGetHeight(fb);
 	const int nchannels = FbGetChannelCount(fb);
 
 	if( (width < 1) || (height < 1))
@@ -72,7 +74,7 @@ void ImgTools::FrameBufferToExr(MString fileName)
 		return;
 	}
 
-	std::vector<Imf::Rgba> rgba(width * height);
+	std::vector<Imf::Rgba> rgba( width * height);
 	const float *px = FbGetReadOnly(fb, 0, 0, 0);
 	copy_fb_into_rgba(px, &rgba[0], width, height, nchannels);
 

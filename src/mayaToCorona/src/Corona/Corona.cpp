@@ -79,6 +79,19 @@ void CoronaRenderer::createScene()
 void CoronaRenderer::render()
 {
 
+	const char *f = "H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/ressources/shaderDefinitions.txt";
+	std::ifstream shaderFile(f);
+	if( !shaderFile.good())
+	{
+		logger.error(MString("Unable to open shaderInfoFile ") + MString(f));
+		shaderFile.close();
+		return;
+	}
+	std::string line;
+	std::getline(shaderFile, line);
+	logger.debug(line.c_str());
+	shaderFile.close();
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  INIT SHADING CORE + SCEME
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +131,7 @@ void CoronaRenderer::render()
     context.core->sanityCheck(context.scene);
     context.core->sanityCheck(context.settings);
 
-	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/renderData/").asChar();
+	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/corona/").asChar();
     context.core->beginSession(context.scene, context.settings, context.fb, context.logger, basePath);
     
     // run the rendering. This function blocks until it is done
@@ -139,8 +152,7 @@ void CoronaRenderer::render()
 
     context.core->destroyScene(context.scene);
     context.core->destroyFb(context.fb);
-    ICore::destroyInstance(context.core);
-    //ICore::shutdownLib();
+    ICore::destroyInstance(context.core);	
 	context.core = NULL;
 	context.fb = NULL;
 	context.renderPasses.clear();

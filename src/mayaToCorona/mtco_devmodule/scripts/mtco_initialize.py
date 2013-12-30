@@ -55,7 +55,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     self.addRenderGlobalsUIElement(attName = 'adaptiveSampling', uiType = 'bool', displayName = 'Adaptive Sampling:', default='True', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth of Field:', default='True', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motion Blur:', default='True', uiDict=uiDict)
-                    self.addRenderGlobalsUIElement(attName = 'xftimesamples', uiType = 'int', displayName = 'Mb Samples:', default='2', uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'xftimesamples', uiType = 'int', displayName = 'Mb Samples:', default='2', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                     #self.addRenderGlobalsUIElement(attName = 'random_sampler', uiType = 'enum', displayName = 'Random_Sampler', default='5d_highd', data='5d_highd:Shared:Maximal_value', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName = 'progressive_maxPasses', uiType = 'int', displayName = 'Progressive_maxpasses', default='50', data='minmax:0:9999', uiDict=uiDict)
 
@@ -169,12 +169,14 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 #self.addRenderGlobalsUIElement(attName = 'ppm_initialRadius', uiType = 'float', displayName = 'Ppm_initialradius', default='2.0', data='minmax:0.0001:200.0', uiDict=uiDict)
 #self.addRenderGlobalsUIElement(attName = 'bidir_doMis', uiType = 'bool', displayName = 'Bidir_domis', default='true', uiDict=uiDict)
 #self.addRenderGlobalsUIElement(attName = 'vcm_mode', uiType = 'enum', displayName = 'Vcm_mode', default='Bidir', data='Bidir:Pt:Vcm', uiDict=uiDict)
-#self.addRenderGlobalsUIElement(attName = 'displace_useProjectionSize', uiType = 'bool', displayName = 'Displace_useprojectionsize', default='true', uiDict=uiDict)
-#self.addRenderGlobalsUIElement(attName = 'displace_maxProjectSize', uiType = 'float', displayName = 'Displace_maxprojectsize', default='2.0', data='minmax:0.01:100.0', uiDict=uiDict)
-#self.addRenderGlobalsUIElement(attName = 'displace_maxWorldSize', uiType = 'float', displayName = 'Displace_maxworldsize', default='1.0', data='minmax:0.00001:10000000', uiDict=uiDict)
-#self.addRenderGlobalsUIElement(attName = 'displace_maxSubdiv', uiType = 'int', displayName = 'Displace_maxsubdiv', default='100', data='minmax:1:9999', uiDict=uiDict)
 #self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp_use', default='true', uiDict=uiDict)
 #self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
+                with pm.frameLayout(label="Displacement", collapsable = True, collapse=False):
+                    self.addRenderGlobalsUIElement(attName = 'displace_maxSubdiv', uiType = 'int', displayName = 'Displace_maxsubdiv', default='100', uiDict=uiDict)
+                    pm.separator()
+                    self.addRenderGlobalsUIElement(attName = 'displace_useProjectionSize', uiType = 'bool', displayName = 'Use Camera Projection', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                    self.addRenderGlobalsUIElement(attName = 'displace_maxProjectSize', uiType = 'float', displayName = 'Max Edgelen (Pixels)', default='2.0', uiDict=uiDict)
+                    self.addRenderGlobalsUIElement(attName = 'displace_maxWorldSize', uiType = 'float', displayName = 'Max Edgelen (Worldspace)', default='1.0', uiDict=uiDict)
                     
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
@@ -185,7 +187,19 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def CoronaRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
         self.updateEnvironment()
-        log.debug("CoronaRendererUpdateTab()")
+
+        if not self.rendererTabUiDict.has_key('common'):
+            return
+        
+        uiDict = self.rendererTabUiDict['common']    
+        
+        uiDict['displace_maxWorldSize'].setEnable(False)
+        uiDict['displace_maxProjectSize'].setEnable(False)
+        if self.renderGlobalsNode.displace_useProjectionSize.get():
+            uiDict['displace_maxProjectSize'].setEnable(True)
+        else:
+            uiDict['displace_maxWorldSize'].setEnable(True)
+
 
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
@@ -200,16 +214,18 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if len(dirname) > 0:
             self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
 
-    def editSun(self):
+    def editSun(self, *args):
         uiDict = self.rendererTabUiDict['environment']    
         suns = pm.ls("CoronaSun")
         if len(suns) > 0:
             pm.delete(suns)
-            uiDict['sunButton'].label.set("Create Sun")
+            uiDict['sunButton'].setLabel("Create Sun")
         else:
             sun = pm.createNode("directionalLight")
+            sun = sun.getParent()
+            sun.rename("CoronaSun")
             sun.message >> self.renderGlobalsNode.sunLightConnection
-            uiDict['sunButton'].label.set("Delete Sun")            
+            uiDict['sunButton'].setLabel("Delete Sun")            
                        
     def CoronaEnvironmentCreateTab(self):
         log.debug("CoronaEnvironmentCreateTab()")
@@ -252,8 +268,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label = "Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei = self.getEnumList(attr)) 
 
-                with pm.frameLayout(label="Corona export", collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export Corona Scene file (no rendering):", value1 = False)
+                with pm.frameLayout(label="{0} export".format(self.rendererName), collapsable = True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export {0} Scene file (no rendering):".format(self.rendererName), value1 = False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index = 2 )
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
@@ -304,6 +320,10 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue = 1.0)
+        
+        pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMin", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMax", attributeType="float", defaultValue = 0.01)
+        
         
             
     def removeLogFile(self):

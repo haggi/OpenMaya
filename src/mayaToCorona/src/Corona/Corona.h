@@ -65,6 +65,8 @@ public:
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
 	void defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
+	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
+	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	virtual void defineLights();
 

@@ -119,9 +119,9 @@ void ShaderDefinitions::readShaderDefinitions()
 	this->shadingNodes.push_back(sn);
 
 	logger.feature(MString("home dir: ") + getRendererHome());
-	logger.feature(MString("shader defs file: ") + getRendererHome() + "/ressources/shaderDefinitions.txt");
+	logger.feature(MString("shader defs file: ") + getRendererHome() + "ressources/shaderDefinitions.txt");
 	
-	std::string shaderDefFile = (getRendererHome() + "/ressources/shaderDefinitions.txt").asChar();
+	std::string shaderDefFile = (getRendererHome() + "ressources/shaderDefinitions.txt").asChar();
 
 	std::ifstream shaderFile(shaderDefFile.c_str());
 	if( !shaderFile.good())

@@ -62,6 +62,19 @@ class IndigoRenderer(Renderer.MayaToRenderer):
             envDict['sun_layer'].setEnable(True)
             envDict['sky_layer'].setEnable(True)
             envDict['sky_model'].setEnable(True)
+
+    def editSun(self, *args):
+        uiDict = self.rendererTabUiDict['environment']    
+        suns = pm.ls("IndigoSun")
+        if len(suns) > 0:
+            pm.delete(suns)
+            uiDict['sunButton'].setLabel("Create Sun")
+        else:
+            sun = pm.createNode("directionalLight")
+            sun = sun.getParent()
+            sun.rename("IndigoSun")
+            sun.message >> self.renderGlobalsNode.sunLightConnection
+            uiDict['sunButton'].setLabel("Delete Sun")            
             
         
     def IndigoEnvironmentUpdateTab(self):
@@ -91,7 +104,11 @@ class IndigoRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'environmentMapType', uiType = 'enum', displayName = 'Environment Map Type', default='0',  data='Spherical:Lat-Long', uiDict=uiDict)         
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'sky_model', uiType = 'enum', displayName = 'Sky Model', default='0', data='original:captured-simulation', uiDict=uiDict)                        
-                        self.addRenderGlobalsUIElement(attName = 'environmentSun', uiType = 'message', displayName = 'Environment Sun', uiDict=uiDict)
+                        buttonLabel = "Create Sun"
+                        suns = pm.ls("IndigoSun")
+                        if len(suns) > 0:
+                            buttonLabel = "Delete Sun"
+                        uiDict['sunButton'] = pm.button(label = buttonLabel, command = self.editSun)
                         self.addRenderGlobalsUIElement(attName = 'turbidity', uiType = 'float', displayName = 'Sky Turbidity', default='2.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'extra_atmospheric', uiType = 'bool', displayName = 'Extra Atmospheric', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'sun_layer', uiType = 'int', displayName = 'Sun Layer', default='0', uiDict=uiDict)

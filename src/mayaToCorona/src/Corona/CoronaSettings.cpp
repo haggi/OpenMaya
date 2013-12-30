@@ -20,7 +20,12 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_EXPORT_ONLY, this->mtco_renderGlobals->exportSceneFile);
 	 
 	context.settings->set(Corona::PARAM_LOW_PRIORITY, true); // always render with low priority
-	
+
+	context.settings->set(Corona::PARAM_DISPLACE_USE_PROJ_SIZE, this->mtco_renderGlobals->displace_useProjectionSize);
+	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_PROJ, this->mtco_renderGlobals->displace_maxProjectSize);
+	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_WORLD, this->mtco_renderGlobals->displace_maxWorldSize);
+	context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, this->mtco_renderGlobals->displace_maxSubdiv);
+
     // add a custom string to the render stamp -- only valid for standalone?
     Corona::String renderStamp = context.settings->get(Corona::PARAM_RENDERSTAMP);
     renderStamp = "Corona API demo | " + renderStamp;

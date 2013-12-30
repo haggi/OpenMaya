@@ -10,30 +10,35 @@ shader_start:file
 	outatt:outColor:color
 shader_end
 
+shader_start:displacementShader
+	outatt:displacement:float
+shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
 shader_start:CoronaSurface
-	inatt:refractivity:float
-	inatt:anisotropyRotation:float
-	inatt:emissionDisableSampling:bool
 	inatt:emissionExponent:float
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:emissionSharpnessFake:bool
 	inatt:attenuationColor:color
+	inatt:glassMode:enum
+	inatt:reflectivity:color
+	inatt:translucency:color
+	inatt:volumeEmissionColor:color
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeEmissionDist:float
+	inatt:roundCornersRadius:float
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
 	inatt:brdfType:enum
 	inatt:emissionColor:color
-	inatt:emissionSharpnessFake:bool
 	inatt:anisotropy:float
-	inatt:attenuationDist:floar
-	inatt:reflectivity:float
 	inatt:refractionIndex:float
-	inatt:roundCornersRadius:float
-	inatt:translucency:float
-	inatt:refractionGlossiness:float
-	inatt:roundCornersSamples:int
-	inatt:fresnelIor:float
-	inatt:emissionSharpnessFakePoint:vector
-	inatt:glassMode:enum
-	inatt:diffuse:color
-	inatt:reflectionGlossiness:float
+	inatt:emissionDisableSampling:bool
+	inatt:attenuationDist:float
 	outatt:outColor:color
 shader_end
 

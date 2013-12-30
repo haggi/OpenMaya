@@ -835,6 +835,7 @@ copy Debug\mayaToCorona.mll ..\mtco_devmodule\plug-ins\mayaToCorona_maya2014rele
     <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt" />
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
+    <None Include="sourceCodeDocs\materials.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

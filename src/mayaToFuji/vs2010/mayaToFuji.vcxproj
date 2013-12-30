@@ -480,7 +480,7 @@
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;..\..\common\cpp;.;$(BOOST_ROOT)\include;$(OPENEXR_ROOT)\include;$(OPENEXR_ROOT)\include\openexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaToFuji.pch</PrecompiledHeaderOutputFile>
@@ -739,8 +739,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp" />
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp" />
@@ -784,8 +782,6 @@
     <ClCompile Include="..\src\Fuji\FujiEnvironment.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h" />
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />

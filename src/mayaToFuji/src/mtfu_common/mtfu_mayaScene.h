@@ -40,6 +40,7 @@ public:
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
 	virtual bool postParseCallback();
+	virtual void userThreadProcedure();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtfu_MayaObject *getMayaObjectFromMap(MObject& mobj);
 	bool parseScene(ParseType ptype = NORMALPARSE);

@@ -94,8 +94,8 @@ void RenderQueueWorker::pluginUnloadCallback(void *)
 {
 	logger.debug("pluginUnloadCallback.");
 	RenderQueueWorker::removeCallbacks();
-	// force the renderer to stop
-	setInterrupt(Interrupts::FINISH);
+	// force the dummy renderer to stop
+	// setInterrupt(Interrupts::FINISH);
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -104,8 +104,8 @@ void RenderQueueWorker::pluginUnloadCallback(void *)
 void RenderQueueWorker::sceneCallback(void *)
 {
 	logger.debug("sceneCallback.");
-	// force the renderer to stop
-	setInterrupt(Interrupts::FINISH);
+	// force the dummy renderer to stop
+	// setInterrupt(Interrupts::FINISH);
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);

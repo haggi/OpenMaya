@@ -20,13 +20,30 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.buildBody(nodeName)
         log.debug("AECoronaNodeTemplate")
         
+    def buildDirLightTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_sun_multiplier", label="Intensity Multiplier")
+        self.endLayout()
+
+    def buildDisplacementShaderTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_displacementMin", label="Displacement Min")
+        self.addControl("mtco_displacementMax", label="Displacement Max")
+        self.endLayout()
+        
     def buildCoronaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         if self.thisNode.type() == "camera":
             log.debug("AECoronaNodeTemplate:build camera AE")            
             self.beginLayout("Corona" ,collapse=1)
             self.endLayout()
-    
+        if self.thisNode.type() == "directionalLight":
+            self.buildDirLightTemplate(nodeName)
+        if self.thisNode.type() == "displacementShader":
+            self.buildDisplacementShaderTemplate(nodeName)
+            
     def buildBody(self, nodeName):
         self.buildCoronaTemplates(nodeName)
 

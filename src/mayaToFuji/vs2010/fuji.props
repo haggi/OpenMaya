@@ -2,21 +2,27 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <FUJIYAMA_ROOT>C:\Users\haggi\coding\fujiyama</FUJIYAMA_ROOT>
-    <BOOST_ROOT>C:\Users\haggi\coding\C++Libraries\Boost147_2010</BOOST_ROOT>
-    <OPENEXR_ROOT>C:\Users\haggi\coding\OpenExr\OpenEXR1.7Deploy</OPENEXR_ROOT>
+    <CODING_ROOT>H:\UserDatenHaggi\Documents\coding</CODING_ROOT>
+    <FUJIYAMA_ROOT>$(CODING_ROOT)\Fujiyama-Renderer</FUJIYAMA_ROOT>
+    <BOOST_ROOT>$(CODING_ROOT)\Boost\boost_1_55_0</BOOST_ROOT>
+    <OPENEXR_ROOT>$(CODING_ROOT)\OpenExr\Deploy1.7</OPENEXR_ROOT>
+    <ZLIB_STATIC_ROOT>$(CODING_ROOT)\zlib\static</ZLIB_STATIC_ROOT>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);$(BOOST_ROOT);$(OPENEXR_ROOT)/include;..\..\common\cpp;$(CODING_ROOT)\zlib\static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)/visual_studio\express_2012\Fujiyama-Renderer-for-Win\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libscene.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)\visual_studio\express_2010\Fujiyama-Renderer-for-Win\x64\Debug;$(OPENEXR_ROOT)/lib/debug;$(ZLIB_STATIC_ROOT)\lib;$(BOOST_ROOT)/lib64-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libscene.lib;Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;IlmImf.lib;Half.lib;IlmThread.lib;Iex.lib;libszip.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="CODING_ROOT">
+      <Value>$(CODING_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
     <BuildMacro Include="FUJIYAMA_ROOT">
       <Value>$(FUJIYAMA_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
@@ -27,6 +33,10 @@
     </BuildMacro>
     <BuildMacro Include="OPENEXR_ROOT">
       <Value>$(OPENEXR_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ZLIB_STATIC_ROOT">
+      <Value>$(ZLIB_STATIC_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

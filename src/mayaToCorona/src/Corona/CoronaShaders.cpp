@@ -6,6 +6,7 @@
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "utilities/pystring.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 
@@ -24,9 +25,13 @@ void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode&
 	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
 	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
 	{
-		texmap = loader.loadBitmap(fileTexturePath.asChar());
-	}else{
-		texmap = NULL;
+		if( pystring::endswith(fileTexturePath.asChar(), "exr") || pystring::endswith(fileTexturePath.asChar(), "png"))
+			texmap = loader.loadBitmap(fileTexturePath.asChar());
+		else{
+			texmap = NULL;
+			logger.error(MString("File texture does not end with exr/png: ") + fileTexturePath);
+			col = MColor(1, 0, 1);
+		}
 	}
 	com = Corona::ColorOrMap(rgbColor, texmap);
 }
@@ -41,11 +46,34 @@ void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode&
 	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
 	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
 	{
-		texmap = loader.loadBitmap(fileTexturePath.asChar());
+		if( pystring::endswith(fileTexturePath.asChar(), "exr") || pystring::endswith(fileTexturePath.asChar(), "png"))
+			texmap = loader.loadBitmap(fileTexturePath.asChar());
+		else{
+			texmap = NULL;
+			logger.error(MString("File texture does not end with exr/png: ") + fileTexturePath);
+			rgbColor.r() = 1.0;
+			rgbColor.g() = 0.0;
+			rgbColor.b() = 1.0;
+		}
 	}else{
 		texmap = NULL;
 	}
 	com = Corona::ColorOrMap(rgbColor, texmap);
+}
+
+void CoronaRenderer::defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com)
+{
+	MColor col(0,0,0);
+	getColor(attributeName, depFn, col);
+	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
+	com = rgbColor;
+}
+
+void CoronaRenderer::defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com)
+{
+	float f = 0.0f;
+	getFloat(attributeName, depFn, f);
+	com = f;
 }
 
 void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
@@ -75,7 +103,6 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 					if( obj->attributes->hasColorOverride)
 						overrideColor = obj->attributes->colorOverride;
 				
-				
 				this->defineColorOrMap(MString("diffuse"), depFn, data.components.diffuse);				
 
 				this->defineColorOrMap(MString("translucency"), depFn, data.components.translucency);				
@@ -91,25 +118,21 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				this->defineFloatOrMap(MString("anisotropy"), depFn, data.reflect.anisotropy);	
 				this->defineFloatOrMap(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation);	
 				
-
-				this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);				
+				this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);
+				//-1
 				this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
 				this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
-
-				MColor attenuationColor(0,0,0);
-				getColor("attenuationColor", depFn, attenuationColor);
-				//data.refract.attenuationColor = Corona::Rgb(attenuationColor.r,attenuationColor.g,attenuationColor.b);				
-				
-				float attenuationDist = 0.0f;
-				getFloat("attenuationDist", depFn, attenuationDist);
-				//data.refract.attenuationDist = attenuationDist;		
 
 				int glassMode = 0;
 				getEnum(MString("glassMode"), depFn, glassMode);
 				Corona::GlassMode glassModes[] = {Corona::GlassMode::GLASS_ONESIDED, Corona::GlassMode::GLASS_TWOSIDED, Corona::GlassMode::GLASS_HYBRID};
 				data.refract.glassMode = glassModes[glassMode];
 
-				//data.energyConservation
+				// --- volume ----
+				this->defineColor(MString("attenuationColor"), depFn, data.volume.attenuationColor);				
+				this->defineFloat(MString("attenuationDist"), depFn, data.volume.attenuationDist);				
+				this->defineColor(MString("volumeEmissionColor"), depFn, data.volume.emissionColor);				
+				this->defineFloat(MString("volumeEmissionDist"), depFn, data.volume.emissionDist);				
 
 				// ---- emission ----
 				this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);				

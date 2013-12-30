@@ -7,17 +7,17 @@ class Logging
 {
 public:
 	enum LogLevel{
-	Error,
-	Warning,
-	Info,
-	Progress,
-	Debug,
-	Detail,
-	Feature
+		Error = 0,
+		Warning = 1,
+		Info = 2,
+		Progress = 3,
+		Debug = 4,
+		Detail = 5,
+		Feature = 6
 	};
 	enum OutputType{
-	ScriptEditor,
-	OutputWindow
+		ScriptEditor,
+		OutputWindow
 	};
 
 	static void setLogLevel( Logging::LogLevel level);

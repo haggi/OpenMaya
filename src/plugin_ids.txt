@@ -3,25 +3,25 @@
 
 Appleseed:
 RenderGlobals:		0x0011CF40
-AOShader:					0x0011CF41
-VoxelShader:			0x0011CF42
+AOShader:			0x0011CF41
+VoxelShader:		0x0011CF42
 ConstantShader:		0x0011CF43
 DiagnosticShader:	0x0011CF44
-SSSShader:				0x0011CF45
+SSSShader:			0x0011CF45
 PhysicalSurfaceS:	0x0011CF46
-SmokeShader:			0x0011CF47
+SmokeShader:		0x0011CF47
 WireframeShader:	0x0011CF48
 StandinLocator:		0x0011CF7A
 StandinMeshNode:	0x0011CF7B
 
 Lux:
 RenderGlobals:		0x0011CF49
-Lux Shaders 			0x0011CF4D - 0x0011CF5F
-Lux Textures 			0x0011CF60 - 0x0011CF79
+Lux Shaders 		0x0011CF4D - 0x0011CF5F
+Lux Textures 		0x0011CF60 - 0x0011CF79
 
 KRay:
 RenderGlobals:		0x0011CF4A
-KRayMaterial:			0x0011CF4B
+KRayMaterial:		0x0011CF4B
 
 Corona:
 RenderGlobals:		0x0011CF4C
@@ -31,6 +31,9 @@ Mitsuba:
 RenderGlobals:		
 
 Fujiyama:
-RenderGlobals			0x0011CF7C
+RenderGlobals		0x0011CF7C
+
+Indigo:
+
 
 Last used:	0x0011CF7D

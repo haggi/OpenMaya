@@ -28,6 +28,8 @@ public:
 
 	bool getMtFujiGlobals();
 	virtual MString getImageExt();
+	virtual void setRendererUnit();
+	virtual void setRendererAxis();
 
 private:
 };

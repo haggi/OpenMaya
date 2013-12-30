@@ -22,8 +22,8 @@ namespace FujiRender
 
 	void FujiCallbacks::setCallbacks( ID renderer )
 	{
-	  SiSetTileReportCallback(renderer, NULL, FujiCallbacks::tile_start, FujiCallbacks::interrupt_in_the_middle, FujiCallbacks::tile_done);
-	  SiSetFrameReportCallback(renderer, NULL, FujiCallbacks::frame_start, FujiCallbacks::frame_done);
+		SiSetTileReportCallback(renderer, NULL, FujiCallbacks::tile_start, FujiCallbacks::interrupt_in_the_middle, FujiCallbacks::tile_done);
+		SiSetFrameReportCallback(renderer, NULL, FujiCallbacks::frame_start, FujiCallbacks::frame_done);
 	}
 
 	Interrupt FujiCallbacks::frame_done(void *data, const struct FrameInfo *info)
@@ -115,10 +115,13 @@ namespace FujiRender
 		e.type = EventQueue::Event::TILEDONE;
 		e.tile_xmin = xmin;
 		e.tile_xmax = xmax - 1;
-		e.tile_ymin = height - 1 - ymax - 1 ;
-		e.tile_ymax = height - 1 - ymin;
-		theRenderEventQueue()->push(e);
+		e.tile_ymin = ymin;
+		e.tile_ymax = ymax - 1;
 
+		if( ((e.tile_ymax - e.tile_ymin) <= 64) &&  ((e.tile_xmax - e.tile_xmin) <= 64) )
+			theRenderEventQueue()->push(e);
+		else
+			logger.error("tilesize");
 		return FujiCallbacks::state;
 	}
 

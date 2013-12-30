@@ -327,5 +327,8 @@
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="sourceCodeDocs\materials.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

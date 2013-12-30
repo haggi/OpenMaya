@@ -14,7 +14,7 @@ class mtfu_MayaObject;
 namespace FujiRender
 {
 
-class FujiRenderer : public Renderer
+class FujiRenderer : public MayaTo::Renderer
 {
 public:
 

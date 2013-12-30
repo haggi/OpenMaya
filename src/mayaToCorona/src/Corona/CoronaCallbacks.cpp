@@ -2,6 +2,7 @@
 #include "Corona.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "../mtco_common/mtco_renderGlobals.h"
 
 static Logging logger;
 
@@ -11,6 +12,9 @@ void CoronaRenderer::framebufferCallback()
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
+		return;
+
+	if( this->mtco_renderGlobals->exportSceneFile)
 		return;
 
 	if( this->context.fb == NULL)
@@ -38,14 +42,19 @@ void CoronaRenderer::framebufferCallback()
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];
 	
-
 	for( uint rowId = 0; rowId < p.y; rowId++)
 	{
 		memset(outAlpha, 0, numPixelsInRow * sizeof(float));
 		firstPixelInRow.y = rowId;
 		if(!this->context.isCancelled)
-			this->context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, outColors, outAlpha);
-		else
+		{
+			try{
+				this->context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, outColors, outAlpha);
+			}catch(char *errorMsg){
+				logger.error(errorMsg);
+				break;
+			}
+		}else
 			break;
 		uint rowPos = rowId * numPixelsInRow;
 		for( int x = 0; x < numPixelsInRow; x++)

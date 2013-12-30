@@ -17,6 +17,17 @@ MString mtfu_RenderGlobals::getImageExt()
 	return this->imageFormatString;
 }
 
+void mtfu_RenderGlobals::setRendererUnit()
+{
+	this->rendererUnit = MDistance::kMeters;
+}
+
+void mtfu_RenderGlobals::setRendererAxis()
+{
+	this->rendererAxis = YUp;
+}
+
+
 bool mtfu_RenderGlobals::getMtFujiGlobals()
 {
 	logger.debug("mtfu_RenderGlobals::getFujiGlobals");

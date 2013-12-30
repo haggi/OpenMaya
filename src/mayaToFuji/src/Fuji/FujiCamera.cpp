@@ -14,12 +14,14 @@ using namespace FujiRender;
 
 void FujiRenderer::defineCamera()
 {
+
 	ID camera = SiNewCamera("PerspectiveCamera");
 	if (camera == SI_BADID) 
 	{
 		fprintf(stderr, "Could not allocate camera\n");
 		throw("Could not allocate camera");
 	}
+
 	// get the first renderable camera
 	MPoint rot, pos, scale;
 	logger.debug(MString("Have ") + this->mtfu_scene->camList.size() + " cameras");
@@ -34,6 +36,7 @@ void FujiRenderer::defineCamera()
 			if( !r )
 				continue;
 		}
+
 		logger.debug(MString("using camera ") + this->mtfu_scene->camList[camId]->shortName);
 
 		for( size_t matrixId = 0; matrixId < cam->transformMatrices.size(); matrixId++)
@@ -46,12 +49,18 @@ void FujiRenderer::defineCamera()
 			getMatrixComponents(cam->transformMatrices[matrixId], pos, rot, scale);
 			//SiSetProperty3(camera, "translate", pos.x, pos.y, pos.z);
 			//SiSetProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z));
-			SiSetSampleProperty3(camera, "translate", pos.x, pos.y, pos.z, time);
-			SiSetSampleProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z), time);
+			//SiSetSampleProperty3(camera, "translate", pos.x, pos.y, pos.z, time);
+			//SiSetSampleProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z), time);
 			logger.debug(MString("SetProperty3 cam1 translate ") + pos.x + " " + pos.y + " " + pos.z);
 			logger.debug(MString("SetProperty3 cam1 rotate ") + RadToDeg(rot.x) + " " + RadToDeg(rot.y) + " " + RadToDeg(rot.z));
+
+			SiSetSampleProperty3(camera, "translate", -3, -3, -3, time);
+			SiSetSampleProperty3(camera, "rotate", -35.264389682754654, 45, 0, time);
 		}
-		SiAssignCamera(renderer, camera);
 		break;
 	}
+	//SiSetProperty3(camera, "translate", 3, 3, 3);
+	//SiSetProperty3(camera, "rotate", -35.264389682754654, 45, 0);
+	SiAssignCamera(renderer, camera);
+
 }

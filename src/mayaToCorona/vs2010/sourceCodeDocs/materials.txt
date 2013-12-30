@@ -1,12 +1,14 @@
 #CoronaSurface
 diffuse, color, Diffuse Color, 0.7:0.7:0.7
-translucency, float, Translucency, 0.0
-reflectivity, float, Reflectivity, 0.0
-refractivity, float, Refractivity, 0.0
+translucency, color, Translucency, 0:0:0
+reflectivity, color, Reflectivity, 0:0:0
+refractivity, color, Refractivity, 0:0:0
 refractionGlossiness, float, Glossiness, 1.0
 refractionIndex, float, Refraction Index, 1.2
 attenuationColor, color, Attenuation Color, 0:0:0
-attenuationDist, floar, Attenuation Distance, 0.0
+attenuationDist, float, Attenuation Distance, 0.0
+volumeEmissionColor, color, Attenuation Color, 0:0:0
+volumeEmissionDist, float, Attenuation Distance, 0.0
 glassMode, enum, Glas Mode, 0, OneSided:TwoSided:Hybrid
 reflectionGlossiness, float, Glossiness, 1.0
 anisotropy, float, Anisotropy, 0.5
