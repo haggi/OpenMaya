@@ -68,6 +68,8 @@ public:
 	float sunExitance;
 
 	virtual MString getImageExt();
+	virtual void setRendererUnit();
+	virtual void setRendererAxis();
 
 	MObject getRenderGlobalsNode();
 	bool getMtapGlobals();

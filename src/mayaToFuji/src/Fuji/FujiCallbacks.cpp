@@ -115,8 +115,8 @@ namespace FujiRender
 		e.type = EventQueue::Event::TILEDONE;
 		e.tile_xmin = xmin;
 		e.tile_xmax = xmax - 1;
-		e.tile_ymin = ymin;
-		e.tile_ymax = ymax - 1;
+		e.tile_ymin = height - ymax;
+		e.tile_ymax = height - ymin - 1;
 
 		if( ((e.tile_ymax - e.tile_ymin) <= 64) &&  ((e.tile_xmax - e.tile_xmin) <= 64) )
 			theRenderEventQueue()->push(e);

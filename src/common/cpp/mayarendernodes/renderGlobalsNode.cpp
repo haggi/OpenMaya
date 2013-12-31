@@ -56,8 +56,6 @@ MObject MayaRenderGlobalsNode::filtertype;
 void MayaRenderGlobalsNode::postConstructor()
 {
 	MObject thisObj = thisMObject();
-	MPlug tileSize(thisObj, tilesize);
-	tileSize.setInt(this->tilesizeDV);
 
 	MPlug imgFormatPlug(thisObj, imageFormat);
 	MFnEnumAttribute imgFormatAttribute(imgFormatPlug.attribute());
@@ -76,19 +74,6 @@ void MayaRenderGlobalsNode::postConstructor()
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
-	// pixel filtering
-	// filtertype is renderer specific. It will be defined in subclass
-	//filtersizeDV = 3.0f;
-	//tilesizeDV = 32;
-
-	//gammaDV = 1.0f;
-
-	//maxTraceDepthDV = 4;
-
-	//exportSceneFileDV = false;
-	//exportSceneFileNameDV= "";
-	//sceneScaleDV = 1.0f;
-
 }
 
 MayaRenderGlobalsNode::~MayaRenderGlobalsNode()
@@ -174,7 +159,7 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	filtersize = nAttr.create("filtersize", "filtersize", MFnNumericData::kInt, 3);
 	CHECK_MSTATUS(addAttribute( filtersize ));
 
-	tilesize = nAttr.create("tilesize", "tilesize", MFnNumericData::kInt, 32);
+	tilesize = nAttr.create("tilesize", "tilesize", MFnNumericData::kInt, 64);
 	CHECK_MSTATUS(addAttribute( tilesize ));
 
 	basePath = tAttr.create("basePath", "basePath", MFnNumericData::kString);

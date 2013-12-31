@@ -10,12 +10,26 @@ static Logging logger;
 mtap_RenderGlobals::mtap_RenderGlobals()
 {
 	this->getMtapGlobals();
+	this->setRendererAxis();
+	this->setRendererUnit();
+	this->defineGlobalConversionMatrix();
 }
 
 MString mtap_RenderGlobals::getImageExt()
 {
 	return this->imageFormatString;	
 }
+
+void mtap_RenderGlobals::setRendererUnit()
+{
+	this->rendererUnit = MDistance::kMeters;
+}
+
+void mtap_RenderGlobals:: setRendererAxis()
+{
+	this->rendererAxis = YUp;
+}
+
 
 MObject mtap_RenderGlobals::getRenderGlobalsNode()
 {

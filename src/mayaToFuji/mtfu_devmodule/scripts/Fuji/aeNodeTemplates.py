@@ -40,6 +40,12 @@ class AEFujiNodeTemplate(BaseTemplate):
             self.addControl("sample_count", label="Sample Count")
             self.addControl("double_sided", label="Double Sided")
             self.endLayout()
+
+        if self.thisNode.type() == "ambientLight":
+            self.beginLayout("Fuji" ,collapse=1)
+            self.addControl("sample_count", label="Sample Count")
+            self.addControl("double_sided", label="Double Sided")
+            self.endLayout()
     
     def buildBody(self, nodeName):
         self.buildFujiTemplates(nodeName)

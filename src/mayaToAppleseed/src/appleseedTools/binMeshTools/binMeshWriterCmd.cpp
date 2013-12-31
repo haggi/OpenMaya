@@ -10,6 +10,7 @@
 #include <maya/MItSelectionList.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MDagPath.h>
+#include <maya/MFnMeshData.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MItDag.h>
 
@@ -78,7 +79,10 @@ bool BinMeshWriterCmd::checkSmoothMesh(MDagPath& dagPath)
 	parent.pop();
 	MGlobal::displayInfo(MString("generateSmoothMesh : trying to parent smooth mesh under ") + parent.fullPathName());
 
-	MObject smoothMesh = mesh.generateSmoothMesh(parent.node(), &stat);
+	MFnMeshData meshData;
+	MObject meshDataObj = meshData.create();
+	MObject smoothMesh = mesh.generateSmoothMesh(meshDataObj, &stat);
+	//MObject smoothMesh = mesh.generateSmoothMesh(parent.node(), &stat);
 	if(!stat)
 	{
 		MGlobal::displayError(MString("generateSmoothMesh : failed with parent ") + parent.fullPathName());

@@ -36,6 +36,7 @@ public:
 	virtual void defineMesh(MayaObject *obj);
 	virtual void writeMesh(MayaObject *obj);
 	virtual void defineLights();
+	virtual void defineSettings();
 
 	virtual void render();
 

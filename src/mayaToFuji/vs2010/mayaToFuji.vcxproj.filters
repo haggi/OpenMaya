@@ -170,6 +170,9 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Fuji\FujiSettings.cpp">
+      <Filter>Source Files\Fuji</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

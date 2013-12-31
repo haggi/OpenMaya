@@ -5,7 +5,7 @@ import os
 import subprocess
 import shutil
 
-log = logging.getLogger("mtapLogger")
+log = logging.getLogger("mtfuLogger")
 
 def isOlderThan(fileA, fileB):
     return path.path(fileA).mtime < path.path(fileB).mtime
@@ -26,7 +26,29 @@ def makeExr( filePath, exrFile ):
         return False
     return True
 
+def makeMip( originalFile, convertedFile ):
+    log.debug("Convert %s to mip %s" % (originalFile, convertedFile))
+    
+    # hdr2mip.exe and jpg2mip.exe should be in the plugin dir bin directory
+    cmd = ""
+    if originalFile.endswith(".hdr"):
+        cmd += "hdr2mip "
+    if originalFile.endswith(".jpg"):
+        cmd += "jpg2mip "
+    cmd += originalFile + " " + convertedFile   
+    log.debug(cmd)
+    try:
+        if subprocess.call(cmd, shell = True) is not 0:
+            log.error("Conversion failed")
+            return False            
+    except:
+        log.warning("Conversion to mip failed " +  str(sys.exc_info()[0]) + " - skipping")
+        return False
+    return True
+
 def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
+    log.debug("local " + __file__)
+    log.debug("preRenderOptimizeTextures dest format: {0}".format(destFormat))
     for fileTexture in pm.ls(type="file"):
         fileNamePath = path.path(fileTexture.fileTextureName.get())
         log.debug("Check file texture:" + fileNamePath)
@@ -55,7 +77,7 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
             localPath = optimizedFilePath / fileNamePath[2:]
         if fileNamePath.startswith("/"):
             localPath = optimizedFilePath / fileNamePath[1:]
-        localPath += ".exr"
+        localPath += "." + destFormat
         localPath = path.path(localPath)
         log.debug("local path " + localPath.realpath())
         localPath = localPath.realpath()
@@ -67,25 +89,11 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
                 doConvert = False
         
         if doConvert:
-            # make it a exr
-            if not makeExr(fileNamePath.realpath(), path.path(localPath.replace(".exr", "_t.exr")).realpath()):
+            # make it a optimized
+            if not makeMip(fileNamePath.realpath(), localPath.realpath()):
                 log.debug("Problem converting " + fileNamePath)
                 continue
-            
-            #shutil.copy(localPath.replace(".exr", "_t.exr"), localPath)
-            # executable: maketiledexr(.exe)
-            cmd = "maketiledexr"
-            
-            cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
-            
-            try:
-                subprocess.call(cmd, shell = True)
-            except:
-                log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")
-                continue 
-            
-            os.remove(localPath.replace(".exr", "_t.exr"))
-        
+                                
         if not fileTexture.hasAttr("origFilePath"):
             fileTexture.addAttr("origFilePath", dt="string")
         fileTexture.origFilePath.set(fileNamePath)

@@ -480,7 +480,7 @@
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2014\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;HAS_OVERRIDE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>Debug/mayaToFuji.pch</PrecompiledHeaderOutputFile>
@@ -767,6 +767,7 @@
     <ClCompile Include="..\src\Fuji\FujiGeometry.cpp" />
     <ClCompile Include="..\src\Fuji\FujiImgTools.cpp" />
     <ClCompile Include="..\src\Fuji\FujiLights.cpp" />
+    <ClCompile Include="..\src\Fuji\FujiSettings.cpp" />
     <ClCompile Include="..\src\Fuji\FujiShaders.cpp" />
     <ClCompile Include="..\src\Fuji\FujiUtils.cpp" />
     <ClCompile Include="..\src\mayaToFuji.cpp" />

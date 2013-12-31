@@ -47,20 +47,13 @@ void FujiRenderer::defineCamera()
 				time = (double)matrixId/(double)(cam->transformMatrices.size() - 1);
 			}
 			getMatrixComponents(cam->transformMatrices[matrixId], pos, rot, scale);
-			//SiSetProperty3(camera, "translate", pos.x, pos.y, pos.z);
-			//SiSetProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z));
-			//SiSetSampleProperty3(camera, "translate", pos.x, pos.y, pos.z, time);
-			//SiSetSampleProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z), time);
+			SiSetSampleProperty3(camera, "translate", pos.x, pos.y, pos.z, time);
+			SiSetSampleProperty3(camera, "rotate", RadToDeg(rot.x), RadToDeg(rot.y), RadToDeg(rot.z), time);
 			logger.debug(MString("SetProperty3 cam1 translate ") + pos.x + " " + pos.y + " " + pos.z);
 			logger.debug(MString("SetProperty3 cam1 rotate ") + RadToDeg(rot.x) + " " + RadToDeg(rot.y) + " " + RadToDeg(rot.z));
-
-			SiSetSampleProperty3(camera, "translate", -3, -3, -3, time);
-			SiSetSampleProperty3(camera, "rotate", -35.264389682754654, 45, 0, time);
 		}
 		break;
 	}
-	//SiSetProperty3(camera, "translate", 3, 3, 3);
-	//SiSetProperty3(camera, "rotate", -35.264389682754654, 45, 0);
 	SiAssignCamera(renderer, camera);
 
 }

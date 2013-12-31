@@ -72,42 +72,6 @@ private:
 	static	  MObject useOptimizedTextures;
 
 public:
-	bool adaptiveSamplingDV;
-	// sampling adaptive
-	int minSamplesDV;
-	int maxSamplesDV;
-
-	// sampling raster based
-	int samplesXDV;
-	int samplesYDV;
-
-	bool doMotionBlurDV;
-	bool doDofDV;
-
-	// 
-	int threadsDV;
-	int translatorVerbosityDV;
-	int rendererVerbosityDV;
-
-	bool detectShapeDeformDV;
-
-	// pixel filtering
-	// filtertype is renderer specific. It will be defined in subclass
-	float filtersizeDV;
-	int tilesizeDV;
-
-	float gammaDV;
-
-	//MString basePathDV;
-	//MString imagePathDV;
-	//MString imageNameDV;
-
-	// raytracing
-	int maxTraceDepthDV;
-
-	bool exportSceneFileDV;
-	MString exportSceneFileNameDV;
-	float sceneScaleDV;
 
 
 };

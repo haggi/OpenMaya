@@ -4,6 +4,7 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
+#include "utilities/pystring.h"
 #include <maya/MFnDependencyNode.h>
 
 static Logging logger;
@@ -12,7 +13,6 @@ using namespace FujiRender;
 
 void FujiRenderer::defineLights()
 {
-
 		/* Light */
 	if( this->mtfu_scene->lightList.size() == 0)
 	{
@@ -34,7 +34,7 @@ void FujiRenderer::defineLights()
 		MFnDependencyNode lightFn(obj->mobject);
 
 		float intensity = 1.0f;
-		getFloat("instensity", lightFn, intensity);
+		getFloat("intensity", lightFn, intensity);
 		MColor color(1,1,1);
 		getColor("color", lightFn, color);
 
@@ -70,6 +70,36 @@ void FujiRenderer::defineLights()
 			SiSetProperty1(obj->objectID , "sample_count", sample_count);
 			SiSetProperty1(obj->objectID , "intensity", intensity);
 			SiSetProperty3(obj->objectID , "color", color.r, color.g, color.b);
+		}
+
+		if(obj->mobject.hasFn(MFn::kAmbientLight))
+		{
+			ID light = SiNewLight(SI_DOME_LIGHT);
+			if (light  == SI_BADID) 
+			{
+				logger.debug("Could not allocate dome light");
+				return;
+			}
+			obj->objectID = light;
+			this->setTransform(obj);
+			int sample_count = 8;
+			getInt("sample_count", lightFn, sample_count);
+			bool double_sided = false;
+			getBool("double_sided", lightFn, double_sided);
+			SiSetProperty1(obj->objectID , "double_sided", (int)double_sided);
+			SiSetProperty1(obj->objectID , "sample_count", sample_count);
+			SiSetProperty1(obj->objectID , "intensity", intensity);
+			SiSetProperty3(obj->objectID , "color", color.r, color.g, color.b);
+
+			MString fileTexturePath = getConnectedFileTexturePath(MString("color"), lightFn);
+			if( pystring::endswith(fileTexturePath.asChar(), "mip") )
+			{
+				ID lightTextureID = SiNewTexture(fileTexturePath.asChar());
+				SiAssignTexture(light, "environment_map", lightTextureID);
+			}else{
+				logger.error(MString("Env map has not required mip format, sorry: ") + fileTexturePath);
+			}
+
 		}
 
 	}

@@ -4,7 +4,7 @@ import Renderer as Renderer
 import traceback
 import sys
 import os
-import optimizeTextures
+import mtfu_optimizeTextures
 import Fuji.aeNodeTemplates as aet
 import path
 
@@ -138,12 +138,15 @@ class FujiRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
                     optiDict = {}
                     ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".useOptimizedTextures", index = 2 )
+                    
                     with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
                         pm.text(label="OptimizedTex Dir:")
                         optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get())
                         pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
                         pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
+                
                 with pm.frameLayout(label="Additional Settings", collapsable = True, collapse=False):
                     ui = pm.floatFieldGrp(label="Scene scale:", value1 = 1.0, numberOfFields = 1)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".sceneScale", index = 2 )
@@ -174,6 +177,8 @@ class FujiRenderer(Renderer.MayaToRenderer):
         # lights
         pm.addExtension(nodeType="areaLight", longName="sample_count", attributeType="long", defaultValue = 8)
         pm.addExtension(nodeType="areaLight", longName="double_sided", attributeType="bool", defaultValue = False)
+        pm.addExtension(nodeType="ambientLight", longName="sample_count", attributeType="long", defaultValue = 32)
+        pm.addExtension(nodeType="ambientLight", longName="double_sided", attributeType="bool", defaultValue = False)
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
@@ -241,21 +246,38 @@ class FujiRenderer(Renderer.MayaToRenderer):
             
     def preRenderProcedure(self):
         self.createGlobalsNode()
+        
+        self.renderGlobalsNode.basePath.set(pm.workspace.path)
+        rendererWorkspaceDir = pm.workspace.path + "/fuji"
+        if not rendererWorkspaceDir.exists():
+            rendererWorkspaceDir.makedirs()
+            
+        
         if self.renderGlobalsNode.threads.get() == 0:
             #TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
-        if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
-            optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
-            if not os.path.exists(optimizedPath):
-                optimizedPath.makedirs()
-            self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
 
-        #craete optimized exr textures
-        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get())
+        
+        if self.renderGlobalsNode.useOptimizedTextures.get():
+            log.debug("useOptimizedTextures")
+            if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
+                try:
+                    optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+                except:
+                    log.error("Could not get renderData path from workspace - using temp dir. Maybe the workspace is not set correctly?")
+                    optimizedPath = os.environ['TMP'] + "/optimizedTextures"
+                    
+                if not os.path.exists(optimizedPath):
+                    optimizedPath.makedirs()
+                log.debug("optimized path: " + optimizedPath)
+                self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
+
+            #craete optimized exr textures
+            mtfu_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath = self.renderGlobalsNode.optimizedTexturePath.get(), destFormat = "mip")
 
     def postRenderProcedure(self):
-        optimizeTextures.postRenderOptimizeTextures()
+        mtfu_optimizeTextures.postRenderOptimizeTextures()
         
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)

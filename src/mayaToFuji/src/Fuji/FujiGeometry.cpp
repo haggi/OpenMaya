@@ -163,8 +163,7 @@ void FujiRenderer::writeMesh(MayaObject *o)
 	}
 
 	
-	MString fileName = this->mtfu_renderGlobals->basePath + "/" + makeGoodString(obj->shortName) + ".mesh";
-	fileName = "c:/daten/" +  makeGoodString(obj->shortName) + ".mesh";
+	MString fileName = this->mtfu_renderGlobals->basePath + "/fuji/" + makeGoodString(obj->shortName) + ".mesh";
 	MeshOutput *out = MshOpenOutputFile(fileName.asChar());
 	if( out == NULL )
 	{

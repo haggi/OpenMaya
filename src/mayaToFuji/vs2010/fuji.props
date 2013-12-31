@@ -11,7 +11,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);$(BOOST_ROOT);$(OPENEXR_ROOT)/include;..\..\common\cpp;$(CODING_ROOT)\zlib\static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FUJIYAMA_ROOT);$(BOOST_ROOT);$(OPENEXR_ROOT)/include;..\..\common\cpp;$(CODING_ROOT)\zlib\static\include;C:\Program Files\Autodesk\Maya2014\include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(FUJIYAMA_ROOT)\visual_studio\express_2010\Fujiyama-Renderer-for-Win\x64\Debug;$(OPENEXR_ROOT)/lib/debug;$(ZLIB_STATIC_ROOT)\lib;$(BOOST_ROOT)/lib64-msvc-10.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

@@ -67,8 +67,8 @@ void FujiRenderer::setTransform(mtfu_MayaObject *obj)
 	SiSetProperty3(obj->objectID, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
 	SiSetProperty3(obj->objectID, "scale", scale[0], scale[1], scale[2]);
 
-	logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
-	logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
+	//logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
+	//logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
 
 }
 
@@ -87,10 +87,7 @@ void FujiRenderer::render()
 	try{
 
 		ID framebuffer;
-		//ID renderer;
-		//ID camera;
 		ID light;
-		ID mesh;
 
 		SiOpenScene();
 		renderer = SiNewRenderer();
@@ -101,171 +98,103 @@ void FujiRenderer::render()
 		}
 
 		/* Plugin */
-		if (SiOpenPlugin("PlasticShader")) {
+		if (SiOpenPlugin("PlasticShader")) 
+		{
 		}
 
 		this->defineCamera();
+		this->defineLights();
+		this->defineSettings();
 
-		  /* Light */
-		  light = SiNewLight(SI_POINT_LIGHT);
-		  if (light  == SI_BADID) {
-			fprintf(stderr, "Could not allocate light\n");
-			throw("light");
-		  }
-		  SiSetProperty3(light, "translate", 1, 12, 3);
-
-		  /* Shader */
-		  shader = SiNewShader("PlasticShader");
-		  if (shader == SI_BADID) {
+		shader = SiNewShader("PlasticShader");
+		if (shader == SI_BADID) 
+		{
 			fprintf(stderr, "Could not create shader: PlasticShader\n");
-			throw("plsh");
-		  }
+			throw("Could not create shader: PlasticShader");
+		}
 
-		  /* Mesh and Accelerator */
-		  mesh = SiNewMesh("C:/daten/3dprojects/mayaToFuji/scenes/cube.mesh");
-		  if (mesh == SI_BADID) {
-			throw("mesh");
-		  }
+		for( uint objId = 0; objId < this->mtfu_scene->objectList.size(); objId++)
+		{
+			mtfu_MayaObject *obj = (mtfu_MayaObject *)this->mtfu_scene->objectList[objId];
+			ID mesh = SI_BADID;
+			if( obj->exportFileNames.size() > 0)
+			{
 
-		  /* ObjectInstance */
-		  object = SiNewObjectInstance(mesh);
-		  if (object == SI_BADID) {
-			fprintf(stderr, "Could not create object instance\n");
-			throw("meshinst");
-		  }
-		  SiSetProperty3(object, "rotate", 0, 10, 0);
-		  SiAssignShader(object, shader);
+				mesh = SiNewMesh(obj->exportFileNames[0].asChar());
+				if (mesh == SI_BADID) 
+				{
+					logger.error(MString("Could not create mesh from file: ") + obj->exportFileNames[0]);
+					continue;
+				}
 
-		  /* FrameBuffer */
-		  framebuffer = SiNewFrameBuffer("rgba");
-		  if (framebuffer == SI_BADID) {
+				if( mesh == SI_BADID)
+					continue;
+				obj->objectID = mesh;
+			}else{
+				if( obj->origObject != NULL )
+				{
+					mtfu_MayaObject *origObj = (mtfu_MayaObject *)obj->origObject;
+					mesh = origObj->objectID;
+					if( mesh == SI_BADID)
+						continue;					
+				}else{
+					continue;
+				}
+			};
+
+			object = SiNewObjectInstance(mesh);
+			if (object == SI_BADID) 
+			{
+				throw("Could not create object instance");
+			}
+
+			MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
+			double rot[3];
+			double scale[3];
+			MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::kXYZ;
+			objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
+			MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
+			objTMatrix.getScale(scale, MSpace::kWorld);
+			SiSetProperty3(object, "translate", pos[0], pos[1], pos[2]);
+			SiSetProperty3(object, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
+			SiSetProperty3(object, "scale", scale[0], scale[1], scale[2]);
+			logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
+			logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
+
+			SiAssignShader(object, shader);
+		}
+
+		framebuffer = SiNewFrameBuffer("rgba");
+		if (framebuffer == SI_BADID) 
+		{
 			fprintf(stderr, "Could not allocate framebuffer\n");
-			throw("frameb");
-		  }
+			throw("Could not allocate framebuffer");
+		}
+		SiAssignFrameBuffer(renderer, framebuffer);
 
-		  SiSetProperty2(renderer, "resolution", W, H);
-		  //SiAssignCamera(renderer, camera);
-		  SiAssignFrameBuffer(renderer, framebuffer);
+		callbacks.setCallbacks(renderer);
 
-		  /* Render scene */
-		  SiRenderScene(renderer);
-		  SiSaveFrameBuffer(framebuffer, "C:/daten/3dprojects/mayaToFuji/images/cube.fb");
-		  FujiImgTools::ImgTools imgTools;
-		  imgTools.FrameBufferToExr("C:/daten/3dprojects/mayaToFuji/images/cube.fb");
-		  SiCloseScene();
+		MString imageOutputFile = this->mtfu_renderGlobals->imageOutputFile;
+		FujiImgTools::ImgTools imgTools;
+		MString fbFile = imageOutputFile + ".fb";
 
-		///* Camera */
-		////camera = SiNewCamera("PerspectiveCamera");
-		////if (camera == SI_BADID) 
-		////{
-		////	fprintf(stderr, "Could not allocate camera\n");
-		////	throw("Could not allocate camera");
-		////}
-		////// get the first renderable camera
-		////MTransformationMatrix objTMatrix(this->mtfu_scene->camList[0]->dagPath.inclusiveMatrix());
-		////double rot[3];
-		////MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::RotationOrder::kXYZ;
-		////objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
-		////MVector campos = objTMatrix.getTranslation(MSpace::kWorld);
-		////SiSetProperty3(camera, "translate", campos[0], campos[1], campos[2]);
-		////SiSetProperty3(camera, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
-
-		//defineLights();
-
-		///* Shader */
-		//shader = SiNewShader("PlasticShader");
-		//if (shader == SI_BADID) 
-		//{
-		//	fprintf(stderr, "Could not create shader: PlasticShader\n");
-		//	throw("Could not create shader: PlasticShader");
-		//}
-
-		//for( uint objId = 0; objId < this->mtfu_scene->objectList.size(); objId++)
-		//{
-		//	mtfu_MayaObject *obj = (mtfu_MayaObject *)this->mtfu_scene->objectList[objId];
-		//	ID mesh = SI_BADID;
-		//	if( obj->exportFileNames.size() > 0)
-		//	{
-
-		//		mesh = SiNewMesh(obj->exportFileNames[0].asChar());
-		//		if (mesh == SI_BADID) 
-		//		{
-		//			logger.error(MString("Could not create mesh from file: ") + obj->exportFileNames[0]);
-		//			continue;
-		//		}
-
-		//		if( mesh == SI_BADID)
-		//			continue;
-		//		obj->objectID = mesh;
-		//	}else{
-		//		if( obj->origObject != NULL )
-		//		{
-		//			mtfu_MayaObject *origObj = (mtfu_MayaObject *)obj->origObject;
-		//			mesh = origObj->objectID;
-		//			if( mesh == SI_BADID)
-		//				continue;					
-		//		}else{
-		//			continue;
-		//		}
-		//	};
-
-		//	object = SiNewObjectInstance(mesh);
-		//	if (object == SI_BADID) 
-		//	{
-		//		throw("Could not create object instance");
-		//	}
-
-		//	MTransformationMatrix objTMatrix(obj->dagPath.inclusiveMatrix());
-		//	double rot[3];
-		//	double scale[3];
-		//	MTransformationMatrix::RotationOrder rotOrder =  MTransformationMatrix::kXYZ;
-		//	objTMatrix.getRotation(rot, rotOrder, MSpace::kWorld);
-		//	MVector pos = objTMatrix.getTranslation(MSpace::kWorld);
-		//	objTMatrix.getScale(scale, MSpace::kWorld);
-		//	SiSetProperty3(object, "translate", pos[0], pos[1], pos[2]);
-		//	SiSetProperty3(object, "rotate", RadToDeg(rot[0]), RadToDeg(rot[1]), RadToDeg(rot[2]));
-		//	SiSetProperty3(object, "scale", scale[0], scale[1], scale[2]);
-		//	logger.debug(MString("SetProperty3 ") + obj->shortName + " translate " + pos[0] + " " + pos[1] + " " + pos[2]);
-		//	logger.debug(MString("SetProperty3 ") + obj->shortName + " rotate " + RadToDeg(rot[0]) + " " + RadToDeg(rot[1]) + " " + RadToDeg(rot[2]));
-
-		//	SiAssignShader(object, shader);
-		//}
-		///* FrameBuffer */
-
-		//framebuffer = SiNewFrameBuffer("rgba");
-		//if (framebuffer == SI_BADID) 
-		//{
-		//	fprintf(stderr, "Could not allocate framebuffer\n");
-		//	throw("Could not allocate framebuffer");
-		//}
-
-
-		//SiSetProperty2(renderer, "resolution", W, H);
-		//SiAssignFrameBuffer(renderer, framebuffer);
-		//SiSetProperty1(renderer, "threads", this->mtfu_renderGlobals->threads);
-		//SiSetProperty2(renderer, "pixelsamples", this->mtfu_renderGlobals->samplesX, this->mtfu_renderGlobals->samplesY);
-		//SiSetProperty1(renderer, "use_max_thread", 0);
-		////SiSetProperty1(renderer, "thread_count", 1);
-
-		//callbacks.setCallbacks(renderer);
-
-		///* Render scene */
-		//MString imageOutputFile = this->mtfu_renderGlobals->imageOutputFile;
-		//FujiImgTools::ImgTools imgTools;
-		//MString fbFile = imageOutputFile + ".fb";
-		//Status result = SiRenderScene(renderer);
-		//if( result == SI_BADID )
-		//{
-		//	logger.error("Renderer exited with error.");
-		//	SiCloseScene();
-		//	return;
-		//}
-		//SiSaveFrameBuffer(framebuffer, fbFile.asChar());
-		//imgTools.FrameBufferToExr(fbFile);
-		//SiCloseScene();
+		Status result = SiRenderScene(renderer);
+		if( result == SI_BADID )
+		{
+			logger.error("Renderer exited with error.");
+			SiCloseScene();
+			throw("Renderer exited with error.");
+		}
+		SiSaveFrameBuffer(framebuffer, fbFile.asChar());
+		imgTools.FrameBufferToExr(fbFile);
+		SiCloseScene();
 
 	}catch(char *errorMsg){
 		logger.error(errorMsg);
+		EventQueue::Event e;
+		e.data = NULL;
+		e.type = EventQueue::Event::RENDERERROR;
+		theRenderEventQueue()->push(e);
 	}
 
 	EventQueue::Event e;
