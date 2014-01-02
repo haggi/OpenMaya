@@ -4,7 +4,7 @@ import Renderer as Renderer
 import traceback
 import sys
 import os
-import optimizeTextures
+import mtap_optimizeTextures
 import Appleseed.aeNodeTemplates as aet
 import Appleseed.appleseedMenu as appleseedMenu
 import Appleseed.appleseedShaderTools as shaderTools
@@ -448,6 +448,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         #pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue=0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue=0.0)
+        pm.addExtension(nodeType="camera", longName="mtap_latLongLens", attributeType="bool", defaultValue=False)
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtap_mesh_useassembly", attributeType="bool", defaultValue=False)
@@ -537,11 +538,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
 
         #craete optimized exr textures
-        optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
+        mtap_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
         shaderTools.createAutoShaderNodes()
         
     def postRenderProcedure(self):
-        optimizeTextures.postRenderOptimizeTextures()
+        mtap_optimizeTextures.postRenderOptimizeTextures()
         shaderTools.removeAutoShaderNodes()
 
     def afterGlobalsNodeReplacement(self):

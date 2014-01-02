@@ -9,6 +9,7 @@
 #include <maya/MFloatArray.h>
 #include <maya/MIntArray.h>
 #include <maya/MFnMesh.h>
+#include <maya/MFnMeshData.h>
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
@@ -31,6 +32,9 @@ public:
 	MFnMesh			meshFn;
 	
 	MDagPath meshDagPath;
+	MObject meshObject;
+	MFnMeshData smoothMeshData;
+
 	// mesh data
 	MFloatArray		u,v;
 	MPointArray		points;
@@ -40,6 +44,8 @@ public:
 	MIntArray perFaceAssignments;
 	MIntArray perTriangleAssignments;
 	std::vector<Face> faceList;
+
+	MObject checkSmoothMesh();
 
 	void setTransform();
     // Return the name of the mesh.

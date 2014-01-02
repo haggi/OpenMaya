@@ -55,79 +55,79 @@ void BinMeshWriterCmd::printUsage()
 	MGlobal::displayInfo("BinMeshWriterCmd usage: ... ");
 }
 
-bool BinMeshWriterCmd::checkSmoothMesh(MDagPath& dagPath)
-{
-	MStatus stat;
-	MFnMesh mesh(dagPath, &stat);
-	if(!stat)
-	{
-		MGlobal::displayError(MString("checkSmoothMesh : could not get mesh from ") + dagPath.fullPathName());
-		return false;
-	}
-
-	bool displaySmoothMesh = false;
-	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
-	{
-		if( !displaySmoothMesh )
-			return false;
-	}else{
-		MGlobal::displayError(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
-		return false;
-	}
-	
-	MDagPath parent = dagPath;
-	parent.pop();
-	MGlobal::displayInfo(MString("generateSmoothMesh : trying to parent smooth mesh under ") + parent.fullPathName());
-
-	MFnMeshData meshData;
-	MObject meshDataObj = meshData.create();
-	MObject smoothMesh = mesh.generateSmoothMesh(meshDataObj, &stat);
-	//MObject smoothMesh = mesh.generateSmoothMesh(parent.node(), &stat);
-	if(!stat)
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : failed with parent ") + parent.fullPathName());
-		return false;
-	}
-	
-	MFnMesh smoothMeshDn(smoothMesh, &stat);
-	if(!stat)
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : could not create smoothMesh from ") + getObjectName(smoothMesh));
-		return false;
-	}
-	
-	dagPath.set(smoothMeshDn.dagPath());
-
-	MPointArray points;
-	stat = smoothMeshDn.getPoints(points);
-	if( !stat )
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : could not get points"));
-	}
-	MGlobal::displayInfo(MString("generateSmoothMesh : numPoints: ") + points.length());
-
-	MFnDagNode dnode(smoothMesh, &stat);
-	if( !stat )
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : unable to get dagNode from dag path: ") + stat.errorString());
-	}
-	
-	MDagPath dp = dnode.dagPath(&stat);
-	if( !stat )
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : unable to get dp from dagnode: ") + stat.errorString());
-	}
-
-	MFnMesh tstMesh(dnode.dagPath(), &stat);
-	if( !stat )
-	{
-		MGlobal::displayError(MString("generateSmoothMesh : unable to get mesh from dag path: ") + stat.errorString());
-	}
-	
-
-	//dagPath = smoothMeshDn.dagPath();
-	return true;
-}
+//bool BinMeshWriterCmd::checkSmoothMesh(MDagPath& dagPath)
+//{
+//	MStatus stat;
+//	MFnMesh mesh(dagPath, &stat);
+//	if(!stat)
+//	{
+//		MGlobal::displayError(MString("checkSmoothMesh : could not get mesh from ") + dagPath.fullPathName());
+//		return false;
+//	}
+//
+//	bool displaySmoothMesh = false;
+//	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
+//	{
+//		if( !displaySmoothMesh )
+//			return false;
+//	}else{
+//		MGlobal::displayError(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
+//		return false;
+//	}
+//	
+//	MDagPath parent = dagPath;
+//	parent.pop();
+//	MGlobal::displayInfo(MString("generateSmoothMesh : trying to parent smooth mesh under ") + parent.fullPathName());
+//
+//	MFnMeshData meshData;
+//	MObject meshDataObj = meshData.create();
+//	MObject smoothMesh = mesh.generateSmoothMesh(meshDataObj, &stat);
+//	//MObject smoothMesh = mesh.generateSmoothMesh(parent.node(), &stat);
+//	if(!stat)
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : failed with parent ") + parent.fullPathName());
+//		return false;
+//	}
+//	
+//	MFnMesh smoothMeshDn(smoothMesh, &stat);
+//	if(!stat)
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : could not create smoothMesh from ") + getObjectName(smoothMesh));
+//		return false;
+//	}
+//	
+//	dagPath.set(smoothMeshDn.dagPath());
+//
+//	MPointArray points;
+//	stat = smoothMeshDn.getPoints(points);
+//	if( !stat )
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : could not get points"));
+//	}
+//	MGlobal::displayInfo(MString("generateSmoothMesh : numPoints: ") + points.length());
+//	
+//	MFnDagNode dnode(smoothMesh, &stat);
+//	if( !stat )
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : unable to get dagNode from dag path: ") + stat.errorString());
+//	}
+//	
+//	MDagPath dp = dnode.dagPath(&stat);
+//	if( !stat )
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : unable to get dp from dagnode: ") + stat.errorString());
+//	}
+//
+//	MFnMesh tstMesh(dnode.dagPath(), &stat);
+//	if( !stat )
+//	{
+//		MGlobal::displayError(MString("generateSmoothMesh : unable to get mesh from dag path: ") + stat.errorString());
+//	}
+//	
+//
+//	//dagPath = smoothMeshDn.dagPath();
+//	return true;
+//}
 
 void BinMeshWriterCmd::removeSmoothMesh(MDagPath& dagPath)
 {
@@ -154,17 +154,17 @@ bool BinMeshWriterCmd::exportBinMeshes()
 
 		MDagPath origMeshPath = dagPath;
 
-		bool hasSmoothMesh = false;
-		if( this->useSmoothPreview )
-			hasSmoothMesh = checkSmoothMesh(dagPath);
+		//bool hasSmoothMesh = false;
+		//if( this->useSmoothPreview )
+		//	hasSmoothMesh = checkSmoothMesh(dagPath);
 
 		MeshWalker walker(dagPath);
 
 		if( this->doTransform )
 			walker.setTransform();
 
-		if(hasSmoothMesh)
-			removeSmoothMesh(dagPath);
+		//if(hasSmoothMesh)
+		//	removeSmoothMesh(dagPath);
 
 
 		if( this->oneFilePerMesh )

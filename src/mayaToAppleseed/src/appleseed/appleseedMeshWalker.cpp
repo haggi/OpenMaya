@@ -3,10 +3,12 @@
 #include <maya/MItMeshPolygon.h>
 #include <maya/MGlobal.h>
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 #include "shadingTools/shadingUtils.h"
 #include <maya/MBoundingBox.h>
 #include <maya/MDagPath.h>
 #include <maya/MMatrix.h>
+#include <maya/MFnMeshData.h>
 
 /*
 	The mesh walker is used by the binary mesh writer to export data.
@@ -18,16 +20,71 @@
 	Of course there is a bit overhead because we have no shared points, but because the proxymesh will be reduced,
 	there will be much less connected vertices than in a normal mesh, so the overhead should be acceptable.
 */
+
+MObject MeshWalker::checkSmoothMesh()
+{
+	MStatus stat;
+	MObject object = MObject::kNullObj;
+
+	MFnMesh mesh(this->meshObject, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("checkSmoothMesh : could not get mesh: ") + stat.errorString());
+		return object;
+	}
+
+	bool displaySmoothMesh = false;
+	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
+	{
+		if( !displaySmoothMesh )
+			return object;
+	}else{
+		MGlobal::displayError(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
+		return object;
+	}
+	
+	MObject meshDataObj = smoothMeshData.create();
+	MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : failed"));
+		return object;
+	}
+	
+	MFnMesh smoothMeshDn(smoothMeshObj, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : could not create smoothMeshDn: ") + stat.errorString());
+		return object;
+	}
+	
+	MPointArray points;
+	stat = smoothMeshDn.getPoints(points);
+	if( !stat )
+	{
+		MGlobal::displayError(MString("generateSmoothMesh : could not get points"));
+	}
+	MGlobal::displayInfo(MString("generateSmoothMesh : numPoints: ") + points.length());
+	
+	return smoothMeshObj;
+}
+
+
 MeshWalker::MeshWalker(MDagPath& dagPath)
 {
 	MStatus stat;
 	meshDagPath = dagPath;
-	MObject meshMObject = dagPath.node();
-	meshFn.setObject(meshMObject);
+	this->meshObject = dagPath.node();
+
+	MObject smoothMesh = this->checkSmoothMesh();
+	if( smoothMesh != MObject::kNullObj)
+		this->meshObject = smoothMesh;
+
+	meshFn.setObject(this->meshObject);
 	
 	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups);
 
-	MItMeshPolygon faceIt(meshMObject, &stat);
+	MItMeshPolygon faceIt(this->meshObject, &stat);
 	CHECK_MSTATUS(stat);
 
 	meshFn.getPoints(points);
@@ -193,5 +250,6 @@ size_t MeshWalker::get_face_tex_coords(const size_t face_index, const size_t ver
 // Return the material assigned to a given face.
 size_t MeshWalker::get_face_material(const size_t face_index) const 
 {
-	return this->perTriangleAssignments[face_index];
+	return 0;
+	//return this->perTriangleAssignments[face_index];
 }

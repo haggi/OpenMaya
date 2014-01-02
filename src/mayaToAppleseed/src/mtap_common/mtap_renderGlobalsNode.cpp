@@ -61,17 +61,15 @@ MObject MayaToAppleseedGlobals::sunExitanceMultiplier;
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {
-	tilesizeDV = 64; // override default of 32
-
 	imageFormatList.append("Png");
 	imageFormatList.append("Exr");
 
 	filterTypeList.append("Box");
+	filterTypeList.append("Blackman-Harris");
+	filterTypeList.append("Catmull-Rom");
 	filterTypeList.append("Mitchell");
 	filterTypeList.append("Gauss");
 	filterTypeList.append("Triangle");
-	filterTypeList.append("Catmull-Rom");
-
 }
 
 MayaToAppleseedGlobals::~MayaToAppleseedGlobals()
