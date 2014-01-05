@@ -36,6 +36,8 @@ public:
 	asr::Assembly *getObjectAssembly();
 	mtap_MayaObject *getAssemblyObject();
 	MString getAssemblyInstName();
+	MString getAssemblyName();
+	MString getObjectName();
 	bool needsAssembly();
 	bool isTransform();
 	bool isGeo();

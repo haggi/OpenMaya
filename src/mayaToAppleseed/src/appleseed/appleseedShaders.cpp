@@ -706,7 +706,7 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 // translate shaders here, will be seperated later if we have a real shading language
 void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
 {
-	asr::Assembly *assembly = getAssemblyFromMayaObject(obj);
+	asr::Assembly *assembly = getObjectAssembly(obj);
 
 	// get per face shadingGroups
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
@@ -731,6 +731,8 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 		{
 			materialNames.push_back(materialName.asChar());
 			return;		
+		}else{
+			logger.debug(MString("----MaterialName: ") + materialName + " does not exist in assembly: " + assembly->get_name());
 		}
 
 		// if we have double sided shading, we have a xx_back material 

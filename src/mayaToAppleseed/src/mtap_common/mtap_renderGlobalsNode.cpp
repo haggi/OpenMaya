@@ -17,8 +17,6 @@ MObject MayaToAppleseedGlobals::maxError;
 MObject MayaToAppleseedGlobals::caustics;
 MObject MayaToAppleseedGlobals::diffuseDepth;
 MObject MayaToAppleseedGlobals::glossyDepth;
-MObject MayaToAppleseedGlobals::exportXMLFile;
-MObject MayaToAppleseedGlobals::exportXMLFileName;
 MObject MayaToAppleseedGlobals::assemblyExportType;
 MObject MayaToAppleseedGlobals::environmentColor;
 MObject MayaToAppleseedGlobals::environmentType;
@@ -148,12 +146,12 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	max_ray_intensity = nAttr.create("max_ray_intensity", "max_ray_intensity",  MFnNumericData::kFloat, 0.0f);
 	CHECK_MSTATUS(addAttribute( max_ray_intensity ));
 
-	exportXMLFile = nAttr.create("exportXMLFile", "exportXMLFile",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( exportXMLFile ));
+	//exportXMLFile = nAttr.create("exportXMLFile", "exportXMLFile",  MFnNumericData::kBoolean, false);
+	//CHECK_MSTATUS(addAttribute( exportXMLFile ));
 
-	exportXMLFileName = tAttr.create("exportXMLFileName", "exportXMLFileName",  MFnNumericData::kString);
-	tAttr.setUsedAsFilename(true);
-	CHECK_MSTATUS(addAttribute( exportXMLFileName ));
+	//exportXMLFileName = tAttr.create("exportXMLFileName", "exportXMLFileName",  MFnNumericData::kString);
+	//tAttr.setUsedAsFilename(true);
+	//CHECK_MSTATUS(addAttribute( exportXMLFileName ));
 
 	// reduced to auto because we do not need the others (I hope) remove the whole attribute in the next release
 	assemblyExportType = eAttr.create( "assemblyExportType", "assemblyExportType", 0, &stat);

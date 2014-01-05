@@ -20,12 +20,15 @@ public:
 	static void renderQueueWorkerTimerCallback( float time, float lastTime, void *userPtr);
 	static void renderQueueWorkerNodeDirtyCallback( void *userPtr);
 	static void renderQueueWorkerIdleCallback(float time, float lastTime, void *userPtr);
+	static void addIdleUIComputationCreateCallback(void* data);
+	static void addIdleUIComputationCallback();
 	//static void renderQueueWorkerIdleCallback(void *dummy);
 	static void sceneCallback(void *);
 	static void pluginUnloadCallback(void *);
 	static void computationEventThread(void *);
 	static void uiUpdateEventThread(void *);
 	static void userThread(void *);
+	static void sendFinalizeIfQueueEmpty(void *);
 private:
 };
 
@@ -36,7 +39,6 @@ namespace EventQueue{
 	};
 };
 
-static MComputation renderComputation;
 
 std::vector<MObject> *getModifiedObjectList();
 

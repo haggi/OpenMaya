@@ -36,8 +36,8 @@ private:
 
 	//static    MObject filtertype;
 	static	  MObject lightingEngine;
-	static	  MObject exportXMLFile;
-	static	  MObject exportXMLFileName;
+	//static	  MObject exportXMLFile;
+	//static	  MObject exportXMLFileName;
 
 	static	  MObject assemblyExportType;
 	static	  MObject assemblyPolyTheshold;

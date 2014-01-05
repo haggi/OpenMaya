@@ -23,12 +23,6 @@
 
 static Logging logger;
 
-MayaScene::MayaScene(RenderType rtype)
-{
-	this->init();
-	this->renderType = rtype;
-}
-
 MayaScene::MayaScene()
 {
 	this->init();
@@ -51,6 +45,10 @@ bool MayaScene::canDoIPR()
 MayaScene::~MayaScene()
 {}
 
+void MayaScene::setRenderType(RenderType rtype)
+{
+	this->renderType = rtype;
+}
 // Here is checked if the linklist is complete, what means that we do not have to do any 
 // complicated light linking, but default procedures. If excludedLights is > 0 then we found 
 // any excluded Lights.
@@ -271,12 +269,18 @@ bool MayaScene::isCamera(MObject obj)
 {
 	if( obj.hasFn(MFn::kCamera))
 	{
-		//MFnDependencyNode camFn(obj);
-		//bool renderable = true;
-		//getBool(MString("renderable"), camFn, renderable);
-		//if( renderable )
-			return true;
+		return true;
 	}
+	return false;
+}
+
+bool MayaScene::isCameraRenderable(MObject obj)
+{
+	MFnDependencyNode camFn(obj);
+	bool renderable = true;
+	getBool(MString("renderable"), camFn, renderable);
+	if( renderable )
+		return true;
 	return false;
 }
 
@@ -288,18 +292,19 @@ void  MayaScene::classifyMayaObject(MayaObject *obj)
 		this->camList.push_back(obj);
 		return;
 	}
+
 	if( this->isLight(obj->mobject))
 	{
 		this->lightList.push_back(obj);
-		//obj->is_light = true;
-
 		return;
 	}
+
 	if( obj->mobject.hasFn(MFn::kInstancer))
 	{
 		instancerDagPathList.push_back(obj->dagPath);
 		return;
 	}
+
 	this->objectList.push_back(obj);
 }
 
@@ -315,6 +320,7 @@ std::vector<MayaObject *> origObjects;
 bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttributes *parentAttributes, MayaObject *parentObject)
 {
 	logger.debug(MString("parse: ") + currentPath.fullPathName(), level);
+
 	MayaObject *mo = mayaObjectCreator(currentPath);
 	ObjectAttributes *currentAttributes = mo->getObjectAttributes(parentAttributes);
 	mo->parent = parentObject;
@@ -357,19 +363,36 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttri
 	return true;
 }
 
-bool MayaScene::parseScene(ParseType ptype)
+bool MayaScene::parseScene()
 {
-	if( ptype == HIERARCHYPARSE)
+	origObjects.clear();
+
+	clearObjList(this->objectList);
+	clearObjList(this->camList);
+	clearObjList(this->lightList);
+
+	MDagPath world = getWorld();
+	if(parseSceneHierarchy(world, 0, NULL, NULL))
 	{
-		origObjects.clear();
-		MDagPath world = getWorld();
-		if(parseSceneHierarchy(world, 0, NULL, NULL))
+		this->parseInstancerNew(); 
+		this->getLightLinking();
+		if(this->uiCamera.isValid() && (MGlobal::mayaState() != MGlobal::kBatch))
 		{
-			this->good = true;
-			this->parseInstancerNew(); 
-			this->getLightLinking();
-			return true;
+			MayaObject *cam = NULL;
+			for( uint camId = 0; camId < this->camList.size(); camId++)
+			{
+				if( this->camList[camId]->dagPath == this->uiCamera )
+					cam = this->camList[camId];
+			}
+			if( cam == NULL )
+			{
+				logger.error(MString("UI Camera not found: ") + this->uiCamera.fullPathName());
+				return false;
+			}
+			clearObjList(this->camList, cam);
 		}
+		this->good = true;
+		return true;
 	}
 	return false;
 }
@@ -377,20 +400,7 @@ bool MayaScene::parseScene(ParseType ptype)
 // the camera from the UI is set via render command
 void MayaScene::setCurrentCamera(MDagPath camDagPath)
 {
-	// if we are in UI rendering state, try to get the current camera
-	MayaObject *mayaCam = NULL;
-	std::vector<MayaObject *>::iterator mIter = this->camList.begin();
-	for(;mIter!=this->camList.end(); mIter++)
-	{
-		MayaObject *cam = *mIter;
-		if( cam->dagPath.node() == camDagPath.node() )
-			mayaCam = cam;
-	}
-
-	if( mayaCam != NULL )
-	{
-		this->clearObjList(this->camList, mayaCam);
-	}
+	this->uiCamera = camDagPath;
 }
 
 bool MayaScene::updateScene()
@@ -823,42 +833,42 @@ bool MayaScene::getShadingGroups()
 void MayaScene::getPasses()
 {
 	// clear
-	for( size_t renderPassId = 0; renderPassId < this->renderGlobals->renderPasses.size(); renderPassId++)
-		delete this->renderGlobals->renderPasses[renderPassId];
-	this->renderGlobals->renderPasses.clear();
+	//for( size_t renderPassId = 0; renderPassId < this->renderGlobals->renderPasses.size(); renderPassId++)
+	//	delete this->renderGlobals->renderPasses[renderPassId];
+	//this->renderGlobals->renderPasses.clear();
 
-	// add pass for lights for shadow maps 
+	//// add pass for lights for shadow maps 
 
-	// add pass for lights with photon maps
+	//// add pass for lights with photon maps
 
-	// finally do the normal beauty passes
-	RenderPass *rp = new RenderPass();
-	rp->evalFrequency = RenderPass::OncePerFrame;
-	rp->passType = RenderPass::Beauty;
+	//// finally do the normal beauty passes
+	//RenderPass *rp = new RenderPass();
+	//rp->evalFrequency = RenderPass::OncePerFrame;
+	//rp->passType = RenderPass::Beauty;
 
-	int numcams = (int)this->camList.size();
-	for( int objId = 0; objId < numcams; objId++)
-	{
-		MayaObject *obj = this->camList[objId];
+	//int numcams = (int)this->camList.size();
+	//for( int objId = 0; objId < numcams; objId++)
+	//{
+	//	MayaObject *obj = this->camList[objId];
 
-		// the renderable check is moved here because it will disable
-		// rendering from the UI with a normally not renderable camera.
-		if( MGlobal::mayaState() == MGlobal::kBatch )
-		{
-			bool renderable = false;
-			MFnDependencyNode camFn(obj->mobject);
-			getBool("renderable", camFn, renderable);
-			if( renderable )
-			{
-				rp->objectList.push_back(obj);
-				logger.debug(MString("Adding camera ") + camFn.name() + " to render cam list.");
-			}
-		}else{
-			rp->objectList.push_back(obj);
-		}
-	}	
-	
-	this->renderGlobals->renderPasses.push_back(rp);
+	//	// the renderable check is moved here because it will disable
+	//	// rendering from the UI with a normally not renderable camera.
+	//	if( MGlobal::mayaState() == MGlobal::kBatch )
+	//	{
+	//		bool renderable = false;
+	//		MFnDependencyNode camFn(obj->mobject);
+	//		getBool("renderable", camFn, renderable);
+	//		if( renderable )
+	//		{
+	//			rp->objectList.push_back(obj);
+	//			logger.debug(MString("Adding camera ") + camFn.name() + " to render cam list.");
+	//		}
+	//	}else{
+	//		rp->objectList.push_back(obj);
+	//	}
+	//}	
+	//
+	//this->renderGlobals->renderPasses.push_back(rp);
 }
 
 
@@ -867,94 +877,77 @@ bool MayaScene::doFrameJobs()
 	logger.debug("MayaScene::doFrameJobs()");
 	logger.progress(MString("\n========== Start rendering of frame ") + this->currentFrame + " ==============\n");
 
-	size_t numPasses = this->renderGlobals->renderPasses.size();
-	for( size_t passId = 0; passId < numPasses; passId++)
+	this->parseScene(); 
+	this->renderGlobals->getMbSteps();
+
+	if(this->renderGlobals->mbElementList.size() == 0)
 	{
-		// Get the objects from the currentPass object list. 
-		// In case of a shadow map generation it is a light,
-		// in case of a beauty its a camera.
-		this->renderGlobals->currentRenderPass = this->renderGlobals->renderPasses[passId];
-		size_t numPassElements = this->renderGlobals->currentRenderPass->objectList.size();
-		for( size_t passElementId = 0; passElementId < numPassElements; passElementId++)
-		{
-		
-			this->renderGlobals->currentRenderPassElementId = passElementId;
-			if( this->renderGlobals->currentRenderPass->passType == RenderPass::Beauty)
-			{
-				MayaObject *camera = (MayaObject *)this->renderGlobals->currentRenderPass->objectList[passElementId];
-				this->renderGlobals->getMbSteps(camera->mobject);
-			}
-
-			if(this->renderGlobals->mbElementList.size() == 0)
-			{
-				logger.error(MString("no mb steps, somethings wrong."));
-				return false;
-			}
-
-			int numMbSteps = (int)this->renderGlobals->mbElementList.size();
-			logger.debug(MString("mbSteps: ") + numMbSteps);
-			this->renderGlobals->currentMbStep = 0;
-
-			for( int mbStepId = 0; mbStepId < numMbSteps; mbStepId++)
-			{
-				this->renderGlobals->isMbStartStep = this->renderGlobals->mbElementList[mbStepId].time == this->renderGlobals->mbElementList[0].time;
-				this->renderGlobals->currentMbElement = this->renderGlobals->mbElementList[mbStepId];
-				this->renderGlobals->currentFrameNumber = (float)(this->renderGlobals->currentFrame + this->renderGlobals->mbElementList[mbStepId].time);
-				bool needView = true;
-				if( mbStepId > 0)
-				{
-					if( this->renderGlobals->mbElementList[mbStepId].time != this->renderGlobals->mbElementList[mbStepId-1].time)
-					{
-						needView = true;
-					}else{
-						needView = false;
-					}
-				}
-				if( needView )
-				{
-					MayaObject *camera = (MayaObject *)this->renderGlobals->currentRenderPass->objectList[passElementId];
-					logger.debug(MString("doFrameJobs() viewFrame: ") + this->renderGlobals->currentFrameNumber);
-					if( MGlobal::mayaState() != MGlobal::kBatch )
-					{
-						if( MRenderView::setCurrentCamera( camera->dagPath ) != MS::kSuccess )
-						{
-							logger.error("renderViewRender: error occurred in setCurrentCamera." );
-							return false;
-						}
-					}
-					MGlobal::viewFrame(this->renderGlobals->currentFrameNumber);
-				}
-
-				// TODO: dynamic runup necessary?
-				this->updateScene();
-				logger.info(MString("update scene done"));
-				this->renderGlobals->currentMbStep++;
-			}
-
-			// Here we set the output type to output window.
-			// This will use the trace() command. The reason is that otherways the output will not be printed until 
-			// the end of rendering.
-			if(this->renderType == MayaScene::NORMAL)
-				logger.setOutType(Logging::OutputWindow);
-
-			EventQueue::Event e;
-			e.data = NULL;
-			e.type = EventQueue::Event::STARTRENDER;
-			e.data = this;
-			theRenderEventQueue()->push(e);
-
-			// in non IPR rendering the renderQueueWorker blocks until rendering is finished.
-			RenderQueueWorker::startRenderQueueWorker();
-
-			if(this->renderType == MayaScene::NORMAL)
-				logger.setOutType(Logging::ScriptEditor);
-		}		
+		logger.error(MString("no mb steps, somethings wrong."));
+		return false;
 	}
 
-	// if we render from UI jump back to full frame after rendering
-	// TODO consider IPR
-	if( MGlobal::mayaState() != MGlobal::kBatch )
-		MGlobal::viewFrame(this->renderGlobals->currentFrame);
+	int numMbSteps = (int)this->renderGlobals->mbElementList.size();
+	
+	for( uint camId = 0; camId < this->camList.size(); camId++)
+	{
+		MayaObject *camera = this->camList[camId];
+		if( !this->isCameraRenderable(camera->mobject) && (!(camera->dagPath == this->uiCamera)))
+		{	
+			logger.debug(MString("Camera ") + camera->shortName + " is not renderalbe, skipping.");
+			continue;
+		}
+		
+		logger.info(MString("Rendering camera ") + camera->shortName);
+
+		for( int mbStepId = 0; mbStepId < numMbSteps; mbStepId++)
+		{
+			this->renderGlobals->currentMbStep = mbStepId;
+			this->renderGlobals->isMbStartStep = this->renderGlobals->mbElementList[mbStepId].time == this->renderGlobals->mbElementList[0].time;
+			this->renderGlobals->currentMbElement = this->renderGlobals->mbElementList[mbStepId];
+			this->renderGlobals->currentFrameNumber = (float)(this->renderGlobals->currentFrame + this->renderGlobals->mbElementList[mbStepId].time);
+			bool needView = true;
+			if( mbStepId > 0)
+			{
+				if( this->renderGlobals->mbElementList[mbStepId].time == this->renderGlobals->mbElementList[mbStepId-1].time)
+				{
+					needView = false;
+				}
+			}
+
+			if( needView )
+			{
+				logger.debug(MString("doFrameJobs() viewFrame: ") + this->renderGlobals->currentFrameNumber);
+				if( MGlobal::mayaState() != MGlobal::kBatch )
+				{
+					MRenderView::setCurrentCamera( camera->dagPath );
+				}
+				MGlobal::viewFrame(this->renderGlobals->currentFrameNumber);
+			}
+
+			// TODO: dynamic runup necessary?
+			this->updateScene();
+			logger.info(MString("update scene done"));
+			this->renderGlobals->currentMbStep++;
+		}
+
+		// Here we set the output type to output window.
+		// This will use the trace() command. The reason is that otherways the output will not be printed until 
+		// the end of rendering.
+		if(this->renderType == MayaScene::NORMAL)
+			logger.setOutType(Logging::OutputWindow);
+
+		this->renderImage();
+		
+		EventQueue::Event e;
+		e.type = EventQueue::Event::FRAMEDONE;
+		theRenderEventQueue()->push(e);
+
+		if(this->renderType == MayaScene::NORMAL)
+			logger.setOutType(Logging::ScriptEditor);
+
+		if( MGlobal::mayaState() != MGlobal::kBatch )
+			MGlobal::viewFrame(this->renderGlobals->currentFrame);
+	}
 
 	return true;
 }
@@ -963,7 +956,11 @@ bool MayaScene::doFrameJobs()
 
 void MayaScene::theRenderThread( MayaScene *mayaScene)
 {
-	mayaScene->renderImage();
+	mayaScene->renderScene();
+	EventQueue::Event e;
+	e.type = EventQueue::Event::RENDERDONE;
+	theRenderEventQueue()->push(e);
+
 }
 
 void MayaScene::startRenderThread()
@@ -1048,3 +1045,14 @@ MayaObject *MayaScene::getObject(MDagPath dp)
 	return mo;
 }
 
+void MayaScene::waitForFrameCompletion()
+{
+	while( 1 )
+	{
+		if( this->renderState == RenderState::FRAMEDONE )
+			break;
+		if( this->renderState == RenderState::RENDERERROR )
+			break;
+		boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+	}
+}

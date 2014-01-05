@@ -170,11 +170,11 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getInt(MString("glossyDepth"), appleseedGlobals, this->glossyDepth))
 			throw("problem reading appleseedGlobals.glossyDepth");
 
-		if(!getBool(MString("exportXMLFile"), appleseedGlobals, this->exportXMLFile))
-			throw("problem reading appleseedGlobals.exportXMLFile");
+		if(!getBool(MString("exportSceneFile"), appleseedGlobals, this->exportSceneFile))
+			throw("problem reading appleseedGlobals.exportSceneFile");
 
-		if(!getString(MString("exportXMLFileName"), appleseedGlobals, this->exportXMLFileName))
-			throw("problem reading appleseedGlobals.exportXMLFileName");
+		if(!getString(MString("exportSceneFileName"), appleseedGlobals, this->exportSceneFileName))
+			throw("problem reading appleseedGlobals.exportSceneFileName");
 		
 		if(!getEnum(MString("environmentType"), appleseedGlobals, this->environmentType, this->environmentTypeString))
 			throw("problem reading appleseedGlobals.environmentTypeString");
@@ -268,6 +268,12 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getFloat(MString("max_ray_intensity"), appleseedGlobals, this->max_ray_intensity))
 			throw("problem reading appleseedGlobals.max_ray_intensity");
+
+		if(!getFloat(MString("motionBlurRange"), appleseedGlobals, this->motionBlurRange))
+			throw("problem reading appleseedGlobals.motionBlurRange");
+
+		if(!getEnum(MString("motionBlurType"), appleseedGlobals, this->motionBlurType))
+			throw("problem reading appleseedGlobals.motionBlurType");
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

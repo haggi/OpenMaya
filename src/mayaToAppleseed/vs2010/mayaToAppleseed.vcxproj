@@ -39,8 +39,6 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp" />
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.cpp" />
@@ -78,6 +76,7 @@
     <ClCompile Include="..\src\mtap_common\mtap_material.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_mayaSceneFactory.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_shadingNode.cpp" />
@@ -123,13 +122,12 @@
     <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h" />
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h" />
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h" />
     <ClInclude Include="..\..\common\cpp\mayaScene.h" />
+    <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />

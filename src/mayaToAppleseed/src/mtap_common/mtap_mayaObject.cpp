@@ -34,10 +34,21 @@ mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
 MString mtap_MayaObject::getAssemblyInstName()
 {
 	if( this->instancerParticleId > -1 )
-		return this->fullName + "assemblyInstance";
+		return this->fullName + "_assInst";
 	else
-		return this->dagPath.fullPathName() + "assemblyInstance";
+		return this->dagPath.fullPathName() + "_assInst";
 }
+
+MString mtap_MayaObject::getAssemblyName()
+{
+	return this->dagPath.fullPathName() + "_ass";
+}
+
+MString mtap_MayaObject::getObjectName()
+{
+	return makeGoodString(this->dagPath.fullPathName());
+}
+
 
 // after the creation of an attribute node, ALL objects have a assemblyObject, either the parent one or the object itself.
 mtap_MayaObject *mtap_MayaObject::getAssemblyObject()
@@ -49,18 +60,20 @@ mtap_MayaObject *mtap_MayaObject::getAssemblyObject()
 
 asr::Assembly *mtap_MayaObject::getObjectAssembly()
 {
-	if( this->attributes != NULL )
-	{
-		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)this->attributes;
-		if( att != NULL )
-		{
-			if( att->assemblyObject != NULL )
-			{
-				return att->assemblyObject->objectAssembly;
-			}
-		}
-	}
-	return NULL;
+	//if( this->attributes != NULL )
+	//{
+	//	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)this->attributes;
+	//	if( att != NULL )
+	//	{
+	//		if( att->assemblyObject != NULL )
+	//		{
+	//			return att->assemblyObject->objectAssembly;
+	//		}
+	//	}
+	//}
+	if( this->origObject != NULL )
+		return ((mtap_MayaObject *)this->origObject)->objectAssembly;
+	return this->objectAssembly;
 }
 
 mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)

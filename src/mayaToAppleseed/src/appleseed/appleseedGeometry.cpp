@@ -50,6 +50,46 @@ void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, asr::MeshObject
 	createMeshFromFile(obj, proxyFile, meshArray);
 }
 
+MObject AppleseedRenderer::checkSmoothMesh(MObject& meshObject, MFnMeshData& smoothMeshData)
+{
+	MStatus stat;
+	MObject object = MObject::kNullObj;
+
+	MFnMesh mesh(meshObject, &stat);
+	if(!stat)
+	{
+		logger.error(MString("checkSmoothMesh : could not get mesh: ") + stat.errorString());
+		return object;
+	}
+
+	bool displaySmoothMesh = false;
+	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
+	{
+		if( !displaySmoothMesh )
+			return object;
+	}else{
+		logger.error(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
+		return object;
+	}
+	
+	MObject meshDataObj = smoothMeshData.create();
+	MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, &stat);
+	if(!stat)
+	{
+		logger.error(MString("generateSmoothMesh : failed"));
+		return object;
+	}
+	
+	MFnMesh smoothMeshDn(smoothMeshObj, &stat);
+	if(!stat)
+	{
+		logger.error(MString("generateSmoothMesh : could not create smoothMeshDn: ") + stat.errorString());
+		return object;
+	}
+		
+	return smoothMeshObj;
+}
+
 
 void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
 {
@@ -60,6 +100,12 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 	// In this case, get the standin node, read the path of the binmesh file and load it.
 
 	MObject meshObject = obj->mobject;
+
+	MFnMeshData smoothMeshData;
+	MObject smoothMesh = this->checkSmoothMesh(meshObject, smoothMeshData);
+	//if( smoothMesh != MObject::kNullObj)
+	//	meshObject = smoothMesh;
+
 	MStatus stat = MStatus::kSuccess;
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);

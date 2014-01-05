@@ -10,7 +10,7 @@
 static Logging logger;
 
 
-mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
+mtap_MayaScene::mtap_MayaScene()
 {
 	this->renderGlobals = NULL;
 	this->getRenderGlobals();
@@ -20,43 +20,24 @@ mtap_MayaScene::mtap_MayaScene():MayaScene(MayaScene::NORMAL)
 	this->mtap_renderer.definePreRender();
 	this->userThreadUpdateInterval= 1000;
 	this->needsUserThread = false;
-}
-
-mtap_MayaScene::mtap_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
-{
-	this->renderGlobals = NULL;
-	this->getRenderGlobals();
-	this->cando_ipr = true;
-	this->mtap_renderer.mtap_scene = this;
-	this->mtap_renderer.renderGlobals = this->renderGlobals;
-	this->mtap_renderer.definePreRender();
-	this->renderType = rtype;
-	this->userThreadUpdateInterval= 1000;
-	this->needsUserThread = false;
-
 }
 
 mtap_MayaScene::~mtap_MayaScene()
 {
+	logger.debug("~mtap_MayaScene");
 }
 
 void mtap_MayaScene::userThreadProcedure()
 {}
 
-//
-// we only need to update the assembly instances, all other elements are static.
-//
-
 void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
-	//logger.debug(MString("mtap_MayaScene::transformUpdateCallback"));
 
-	//if( isCamera(obj->mobject))
-	//{
-	//	this->mtap_renderer.updateTransform(obj);
-	//	return;
-	//}
+	if( !obj->mobject.hasFn(MFn::kTransform))
+		return;
+
+	logger.detail(MString("mtap_MayaScene::transformUpdateCallback"));
 
 	// if this is an instance of an object which has an assembly, then update it,
 	// if not, ignore instance.
@@ -84,19 +65,19 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 
 }
 
-//
-//	will be called for every geometry deform step
-//
 void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
 	logger.debug(MString("mtap_MayaScene::shapeUpdateCallback"));
 
-	// we write only the original geometry, not its instances
+	if( !obj->mobject.hasFn(MFn::kShape))
+		return;
+
+	// we update only the original geometry, not its instances
 	if( obj->instanceNumber > 0)
 		return;
 
-	if( !obj->geometryShapeSupported() )
+	if( !obj->geometryShapeSupported())
 		return;
 
 	if( !obj->visible && !obj->isCamera() )
@@ -117,39 +98,39 @@ void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 						// that it could be the case that it was visible and is not visible any more. 
 						// In this case we want to remove it because we don't want to waste time and memory for
 						// an completly invisible object.
-						MFnMesh meshFn(obj->mobject);
-						MString meshFullName = makeGoodString(meshFn.fullPathName());
-						MString meshInstName = meshFullName + "_inst";
+						//MFnMesh meshFn(obj->mobject);
+						//MString meshFullName = makeGoodString(meshFn.fullPathName());
+						//MString meshInstName = meshFullName + "_inst";
 
-						asr::Assembly *objAssembly = obj->getObjectAssembly();
-						if( objAssembly )
-						{
-							logger.debug(MString("Found assembly for this object, searching for mesh instance name: ") + meshInstName);						
-							asr::ObjectInstance *oi = objAssembly->object_instances().get_by_name(meshInstName.asChar());
-							if( oi )
-							{
-								logger.debug(MString("Found mesh instance : ") + meshInstName + " removing");		
-								objAssembly->object_instances().remove(oi);
-							}else{
-								logger.debug(MString("Found no mesh instance : ") + meshInstName);		
-							}
-							asr::Object *mo = objAssembly->objects().get_by_name(meshFullName.asChar());
-							if( mo )
-							{
-								logger.debug(MString("Found mesh object : ") + meshFullName + " removing");		
-								objAssembly->objects().remove(mo);
-							}else{
-								logger.debug(MString("Found no mesh objct : ") + meshFullName);		
-							}
+						//asr::Assembly *objAssembly = obj->getObjectAssembly();
+						//if( objAssembly )
+						//{
+						//	logger.debug(MString("Found assembly for this object, searching for mesh instance name: ") + meshInstName);						
+						//	asr::ObjectInstance *oi = objAssembly->object_instances().get_by_name(meshInstName.asChar());
+						//	if( oi )
+						//	{
+						//		logger.debug(MString("Found mesh instance : ") + meshInstName + " removing");		
+						//		objAssembly->object_instances().remove(oi);
+						//	}else{
+						//		logger.debug(MString("Found no mesh instance : ") + meshInstName);		
+						//	}
+						//	asr::Object *mo = objAssembly->objects().get_by_name(meshFullName.asChar());
+						//	if( mo )
+						//	{
+						//		logger.debug(MString("Found mesh object : ") + meshFullName + " removing");		
+						//		objAssembly->objects().remove(mo);
+						//	}else{
+						//		logger.debug(MString("Found no mesh objct : ") + meshFullName);		
+						//	}
 
-							//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
-							//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
-							objAssembly->bump_version_id();
-							return; // no further shape update needed because shape/geo is removed.
-						}else{
-							logger.debug(MString("Found no assembly for this object."));						
-							return;
-						}
+						//	//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
+						//	//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
+						//	objAssembly->bump_version_id();
+						//	return; // no further shape update needed because shape/geo is removed.
+						//}else{
+						//	logger.debug(MString("Found no assembly for this object."));						
+						//	return;
+						//}
 					}
 				}
 			}
@@ -447,7 +428,7 @@ bool mtap_MayaScene::renderImage()
 
 	this->mtap_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
 
-	if( this->renderGlobals->exportXMLFile)
+	if( this->renderGlobals->exportSceneFile)
 		this->mtap_renderer.writeXML();
 
 	this->mtap_renderer.render();
@@ -455,9 +436,9 @@ bool mtap_MayaScene::renderImage()
 	return true;
 }
 
-bool mtap_MayaScene::parseScene(ParseType ptype)
+bool mtap_MayaScene::parseScene()
 {
-	MayaScene::parseScene(ptype);
+	MayaScene::parseScene();
 	postParseCallback();
 	return true;
 }
@@ -469,138 +450,138 @@ bool mtap_MayaScene::parseScene(ParseType ptype)
 // 
 void mtap_MayaScene::createObjAssembly(mtap_MayaObject *obj)
 {
-	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+	//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
-	if( !obj->visible )
-		if( !obj->isVisiblityAnimated() && (!obj->isInstanced()) )
-			if( !att->hasInstancerConnection)
-				return;
+	//if( !obj->visible )
+	//	if( !obj->isVisiblityAnimated() && (!obj->isInstanced()) )
+	//		if( !att->hasInstancerConnection)
+	//			return;
 
-	if( att->needsOwnAssembly)
-		obj->objectAssembly = createAssembly(obj);
+	//if( att->needsOwnAssembly)
+	//	obj->objectAssembly = createAssembly(obj);
 }
 
 void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
 {
-	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+	//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
-	// instances will be added below only for the original object
-	if( obj->instanceNumber > 0)
-		return;
+	//// instances will be added below only for the original object
+	//if( obj->instanceNumber > 0)
+	//	return;
 
-	if( obj->objectAssembly == NULL)
-		return;
+	//if( obj->objectAssembly == NULL)
+	//	return;
 
-	if( !obj->visible && !obj->isVisiblityAnimated() && !obj->isInstanced())
-		return;
+	//if( !obj->visible && !obj->isVisiblityAnimated() && !obj->isInstanced())
+	//	return;
 
-	// simply add instances for all paths
-	MFnDagNode objNode(obj->mobject);
-	MDagPathArray pathArray;
-	objNode.getAllPaths(pathArray);
+	//// simply add instances for all paths
+	//MFnDagNode objNode(obj->mobject);
+	//MDagPathArray pathArray;
+	//objNode.getAllPaths(pathArray);
 
-	this->mtap_renderer.interactiveAIList.clear();
+	//this->mtap_renderer.interactiveAIList.clear();
 
-	for( uint pId = 0; pId < pathArray.length(); pId++)
-	{
-		// if the object itself is not visible and the path is the one of the original shape, ignore it
-		// this way we can hide the original geometry and make only the instances visible
-		if( (!obj->visible) && (pId == 0))
-			continue;
-		MDagPath currentPath = pathArray[pId];
-		if(!IsVisible(currentPath))
-			continue;
-		MString assemblyInstName = currentPath.fullPathName() + "assemblyInstance";
-		logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemblyInstName );		    
-		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-		assemblyInstName.asChar(),
-		asr::ParamArray(),
-		obj->objectAssembly->get_name());
+	//for( uint pId = 0; pId < pathArray.length(); pId++)
+	//{
+	//	// if the object itself is not visible and the path is the one of the original shape, ignore it
+	//	// this way we can hide the original geometry and make only the instances visible
+	//	if( (!obj->visible) && (pId == 0))
+	//		continue;
+	//	MDagPath currentPath = pathArray[pId];
+	//	if(!IsVisible(currentPath))
+	//		continue;
+	//	MString assemblyInstName = currentPath.fullPathName() + "assemblyInstance";
+	//	logger.debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemblyInstName );		    
+	//	asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+	//	assemblyInstName.asChar(),
+	//	asr::ParamArray(),
+	//	obj->objectAssembly->get_name());
 
-		this->mtap_renderer.interactiveAIList.push_back(ai.get());
+	//	this->mtap_renderer.interactiveAIList.push_back(ai.get());
 
-		// if world, then add a global scene scaling.
-		if( obj->shortName == "world")
-		{
-			asf::Matrix4d appMatrix;
-			MMatrix transformMatrix;
-			transformMatrix.setToIdentity();
-			transformMatrix *= this->renderGlobals->sceneScaleMatrix;
-			this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
-			ai->transform_sequence().set_transform(0.0,	asf::Transformd::from_local_to_parent(appMatrix));
-			this->mtap_renderer.scenePtr->assembly_instances().insert(ai);
-			continue;
-		}
-		if( this->renderType == MayaScene::IPR)
-		{
-			if( obj->parent != NULL)
-			{
-				mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
-				if( parent->objectAssembly != NULL)
-				{
-					logger.debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
-					parent->objectAssembly->assembly_instances().insert(ai);
-				}else{
-					//this->mtap_renderer.scene->assembly_instances().insert(ai);
-					this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
-				}
-			}else{
-				//this->mtap_renderer.scene->assembly_instances().insert(ai);
-				this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
-			}
-		}else{
-			//this->mtap_renderer.scene->assembly_instances().insert(ai);
-			this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
-		}
-	}
+	//	// if world, then add a global scene scaling.
+	//	if( obj->shortName == "world")
+	//	{
+	//		asf::Matrix4d appMatrix;
+	//		MMatrix transformMatrix;
+	//		transformMatrix.setToIdentity();
+	//		transformMatrix *= this->renderGlobals->sceneScaleMatrix;
+	//		this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
+	//		ai->transform_sequence().set_transform(0.0,	asf::Transformd::from_local_to_parent(appMatrix));
+	//		this->mtap_renderer.scenePtr->assembly_instances().insert(ai);
+	//		continue;
+	//	}
+	//	if( this->renderType == MayaScene::IPR)
+	//	{
+	//		if( obj->parent != NULL)
+	//		{
+	//			mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
+	//			if( parent->objectAssembly != NULL)
+	//			{
+	//				logger.debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
+	//				parent->objectAssembly->assembly_instances().insert(ai);
+	//			}else{
+	//				//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//				this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//			}
+	//		}else{
+	//			//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//			this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//		}
+	//	}else{
+	//		//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//	}
+	//}
 }
 
 bool mtap_MayaScene::postParseCallback()
 {
 	logger.debug("mtap_MayaScene::postParseCallback");
 
-	std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
-	for(;mIter!=this->objectList.end(); mIter++)
-	{
-		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
-		this->createObjAssembly(obj);
-	}
+	//std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
+	//for(;mIter!=this->objectList.end(); mIter++)
+	//{
+	//	mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
+	//	this->createObjAssembly(obj);
+	//}
 
-	// after the definition of all assemblies, there is a least one "world" assembly, this will be our master assembly
-	// where all the lights and other elements will be placed in
-	this->mtap_renderer.defineMasterAssembly();
+	//// after the definition of all assemblies, there is a least one "world" assembly, this will be our master assembly
+	//// where all the lights and other elements will be placed in
+	//this->mtap_renderer.defineMasterAssembly();
 
-	// all assemblies need their own assembly instance because assemblies are only created where instances are necessary.
-	mIter = this->objectList.begin();
-	for(;mIter!=this->objectList.end(); mIter++)
-	{
-		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
-		createObjAssemblyInstances(obj);		
-	}
-	
-	int count = 0;
-	mIter  = this->instancerNodeElements.begin();
-	for(;mIter!=this->instancerNodeElements.end(); mIter++)
-	{
-		mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
+	//// all assemblies need their own assembly instance because assemblies are only created where instances exist.
+	//mIter = this->objectList.begin();
+	//for(;mIter!=this->objectList.end(); mIter++)
+	//{
+	//	mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
+	//	createObjAssemblyInstances(obj);		
+	//}
+	//
+	//int count = 0;
+	//mIter  = this->instancerNodeElements.begin();
+	//for(;mIter!=this->instancerNodeElements.end(); mIter++)
+	//{
+	//	mtap_MayaObject *obj = (mtap_MayaObject *)*mIter;
 
-		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-		MString objname = obj->fullName;
-		if( obj->instancerParticleId < 0)
-			continue;
-		if( obj->origObject == NULL)
-			continue;
-		if( ((mtap_MayaObject *)(obj->origObject))->objectAssembly == NULL)
-			continue;
+	//	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+	//	MString objname = obj->fullName;
+	//	if( obj->instancerParticleId < 0)
+	//		continue;
+	//	if( obj->origObject == NULL)
+	//		continue;
+	//	if( ((mtap_MayaObject *)(obj->origObject))->objectAssembly == NULL)
+	//		continue;
 
-		logger.debug(MString("instancer node element: ") + obj->shortName + " path " + obj->fullName);
-		MString instancerElementName = obj->fullName + "assemblyInstance";
-		asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
-		instancerElementName.asChar(),
-		asr::ParamArray(),
-		((mtap_MayaObject *)(obj->origObject))->objectAssembly->get_name());
-		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
-	}
+	//	logger.debug(MString("instancer node element: ") + obj->shortName + " path " + obj->fullName);
+	//	MString instancerElementName = obj->fullName + "assemblyInstance";
+	//	asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+	//	instancerElementName.asChar(),
+	//	asr::ParamArray(),
+	//	((mtap_MayaObject *)(obj->origObject))->objectAssembly->get_name());
+	//	this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//}
 
 	return true;
 }
@@ -620,8 +601,6 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 	asr::Assembly *assemblyPtr = NULL;
 	asr::Assembly *parentAssembly = NULL;
 
-	// in ipr mode we create hierarchies
-	// that means we put the assembly into the parent assembly->assemblies()
 	if( this->renderType == MayaScene::IPR)
 	{
 		if( obj->parent != NULL)
@@ -645,9 +624,6 @@ asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
 		this->mtap_renderer.scenePtr->assemblies().insert(assembly);
 		assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
 	}
-
-	//this way we can be sure that there is always a default material in case unknown material are assigned
-	this->mtap_renderer.addDefaultMaterial(assemblyPtr);
 
 	if( this->renderGlobals->assemblySBVH )
 	{

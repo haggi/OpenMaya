@@ -324,7 +324,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "a_name")
 			{
 				if(!sa.connected )
-					logger.error(MString("GlossyTransparent shader needs a medium connection: ") + snode.fullName);
+					logger.error(MString("a_name has no connection: ") + snode.fullName);
 
 				MObject connectedMedium;
 				getMsgObj("a_name", depFn, connectedMedium);
@@ -344,7 +344,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "b_name")
 			{
 				if(!sa.connected )
-					logger.error(MString("GlossyTransparent shader needs a medium connection: ") + snode.fullName);
+					logger.error(MString("b_name has no connection: ") + snode.fullName);
 
 				MObject connectedMedium;
 				getMsgObj("b_name", depFn, connectedMedium);

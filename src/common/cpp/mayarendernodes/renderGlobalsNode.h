@@ -36,6 +36,8 @@ private:
 	static    MObject doMotionBlur;
 	static    MObject doDof;
 	static	  MObject xftimesamples;
+	static	  MObject motionBlurRange;
+	static	  MObject motionBlurType;
 	// 
 	static    MObject threads;
 	static	  MObject translatorVerbosity;

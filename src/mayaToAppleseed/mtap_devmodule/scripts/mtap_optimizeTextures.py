@@ -14,7 +14,8 @@ def makeExr( filePath, exrFile ):
     log.debug("Convert %s to exr %s" % (filePath, exrFile))
     
     #TODO:currently use mentalrays imf_copy, maybe there is a better way...
-    cmd = "\"" + os.environ['MENTALRAY_LOCATION'] + "bin/imf_copy\" "
+    #cmd = "\"" + os.environ['MENTALRAY_LOCATION'] + "bin/imf_copy\" "
+    cmd = "imf_copy "
     cmd += filePath + " " + exrFile   
     log.debug(cmd)
     try:
@@ -79,6 +80,7 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
             cmd += " " + localPath.replace(".exr", "_t.exr") + " " + localPath
             
             try:
+                log.debug("make tiledExr: " + cmd)
                 subprocess.call(cmd, shell = True)
             except:
                 log.warning("Conversion to tiled exr failed " +  str(sys.exc_info()[0]) + " - skipping")

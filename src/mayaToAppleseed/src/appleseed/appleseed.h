@@ -38,6 +38,8 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MDagPath.h>
+#include <maya/MFnMeshData.h>
+
 
 
 #include "mtap_tileCallback.h"
@@ -113,7 +115,8 @@ public:
 	bool isSunLightTransform(mtap_MayaObject *obj);
 	void defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&, std::vector<MayaObject *>&);
 	bool initializeRenderer(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList);
-	void definePreRender();
+	void definePreRender();	
+	MObject checkSmoothMesh(MObject& meshObject, MFnMeshData& meshData);
 	void defineMesh(mtap_MayaObject *obj);
 	void defineNurbsSurface(mtap_MayaObject *obj);
 	void defineParticle(mtap_MayaObject *obj);
@@ -134,6 +137,12 @@ public:
 	void updateShape(mtap_MayaObject *obj);
 	asr::Assembly *getAssemblyFromMayaObject(mtap_MayaObject *obj);
 	asr::AssemblyInstance *getAssemblyInstFromMayaObject(mtap_MayaObject *obj);
+	asr::AssemblyInstance *getObjectAssemblyInstance(mtap_MayaObject *obj);
+	asr::Assembly *createObjectAssembly(mtap_MayaObject *obj);
+	asr::Assembly *getObjectAssembly(mtap_MayaObject *obj);
+	asr::AssemblyInstance *createObjectAssemblyInstance(mtap_MayaObject *obj);
+	asr::Object *createObjectGeometry(mtap_MayaObject *obj);
+	asr::Object *getObjectGeometry(mtap_MayaObject *obj);
 	void updateCamera(bool shape = true);
 	void defineEnvironment(mtap_RenderGlobals *renderGlobals);
 	void defineMasterAssembly();
@@ -150,6 +159,7 @@ public:
 	mtap_IRendererController mtap_controller;
 
 	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix); 
+	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj); 
 	asf::auto_release_ptr<asr::Scene> scene;
 	asr::Scene *scenePtr;
 	

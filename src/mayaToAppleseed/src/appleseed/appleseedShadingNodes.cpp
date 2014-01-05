@@ -154,8 +154,8 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	asr::Assembly *assembly = localAssembly;
 	
 	// textures and colors are placed in the master assembly
-	if( pystring::find(appleName.asChar(), "file"))
-		assembly = this->masterAssembly;
+	//if( pystring::find(appleName.asChar(), "file") > -1)
+	//	assembly = this->masterAssembly;
 
 	asr::Entity *entity = NULL;
 
@@ -332,7 +332,7 @@ void AppleseedRenderer::defineShadingNodes(mtap_MayaObject *obj)
 		{
 			ShadingNode sn = material.surfaceShaderNet.shaderList[shadingNodeId];
 			logger.feature(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
-			createAppleseedShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId], obj->getObjectAssembly());
+			createAppleseedShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId], getObjectAssembly(obj));
 		}
 	}
 

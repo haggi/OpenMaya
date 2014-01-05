@@ -46,7 +46,7 @@ public:
 	std::vector<Face> faceList;
 
 	MObject checkSmoothMesh();
-
+	bool	useSmoothMesh;
 	void setTransform();
     // Return the name of the mesh.
     virtual const char* get_name() const;

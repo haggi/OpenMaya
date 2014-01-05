@@ -171,10 +171,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         pm.connectControl(envDict['pskLumMulti'], self.renderGlobalsNodeName + ".luminance_multiplier", index=2)                    
                         envDict['pskSatMulti'] = pm.floatFieldGrp(label="Saturation Multiplier:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskSatMulti'], self.renderGlobalsNodeName + ".saturation_multiplier", index=2)                    
-                        envDict['pskSunAzi'] = pm.floatFieldGrp(label="Sun Azimut:", value1=1.0, numberOfFields=1)
-                        pm.connectControl(envDict['pskSunAzi'], self.renderGlobalsNodeName + ".sun_phi", index=2)                    
-                        envDict['pskSunEle'] = pm.floatFieldGrp(label="Sun Elevation:", value1=1.0, numberOfFields=1)
-                        pm.connectControl(envDict['pskSunEle'], self.renderGlobalsNodeName + ".sun_theta", index=2)                    
+                        #envDict['pskSunAzi'] = pm.floatFieldGrp(label="Sun Azimut:", value1=1.0, numberOfFields=1)
+                        #pm.connectControl(envDict['pskSunAzi'], self.renderGlobalsNodeName + ".sun_phi", index=2)                    
+                        #envDict['pskSunEle'] = pm.floatFieldGrp(label="Sun Elevation:", value1=1.0, numberOfFields=1)
+                        #pm.connectControl(envDict['pskSunEle'], self.renderGlobalsNodeName + ".sun_theta", index=2)                    
                         envDict['pskTurb'] = pm.floatFieldGrp(label="Turbidity:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskTurb'], self.renderGlobalsNodeName + ".turbidity", index=2)                    
                         envDict['pskTurbMax'] = pm.floatFieldGrp(label="Turbidity Max:", value1=1.0, numberOfFields=1)
@@ -412,6 +412,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
                     optiDict = {}
                     ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".useOptimizedTextures", index = 2 )
                     with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
                         pm.text(label="OptimizedTex Dir:")
@@ -591,8 +592,9 @@ def initRenderer():
     try:
         log.debug("Init renderer Appleseed")
         theRenderer().registerRenderer()
-        loadAETemplates()
-        theRenderer().createRendererMenu()
+        if not pm.about(batch=True):
+            loadAETemplates()
+            theRenderer().createRendererMenu()
         loadPlugins()
     except:
         traceback.print_exc(file=sys.__stderr__)

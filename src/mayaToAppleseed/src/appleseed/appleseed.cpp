@@ -140,6 +140,25 @@ bool AppleseedRenderer::initializeRenderer(mtap_RenderGlobals *renderGlobals,  s
 
 void AppleseedRenderer::defineMasterAssembly()
 {
+	if( this->scenePtr->assemblies().get_by_name("world") == NULL)
+	{
+		asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( "world", asr::ParamArray());
+		this->scenePtr->assemblies().insert(assembly);			
+
+		asf::Matrix4d appMatrix;
+		MMatrix transformMatrix;
+		transformMatrix.setToIdentity();
+		transformMatrix *= this->renderGlobals->globalConversionMatrix;
+		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance = asr::AssemblyInstanceFactory::create(
+			"world_assInst",
+			asr::ParamArray(),
+			"world");
+
+		this->MMatrixToAMatrix(transformMatrix, appMatrix);
+		assemblyInstance->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
+		this->scenePtr->assembly_instances().insert(assemblyInstance);
+	}
+
 	this->masterAssembly = this->scenePtr->assemblies().get_by_name("world");
 }
 
@@ -196,6 +215,13 @@ void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assem
 //
 //	Puts Object (only mesh at the moment) into this assembly.
 //
+
+void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj)
+{
+	MMatrix matrix;
+	matrix.setToIdentity();
+	putObjectIntoAssembly(assembly, obj, matrix);
+}
 
 void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix)
 {
@@ -332,15 +358,17 @@ void AppleseedRenderer::render()
 
 	//asr::global_logger().remove_target(log_target.get());
 	asr::global_logger().remove_target(m_log_target.get());
-	m_log_target->close();
+	//m_log_target->close();
 
 	this->renderGlobals->getImageName();
 	logger.debug(MString("Writing image: ") + renderGlobals->imageOutputFile);
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write_main_image(imageOutputFile.asChar());
 	project->get_frame()->write_aov_images(imageOutputFile.asChar());
-	EventQueue::Event e;
-	e.data = NULL;
-	e.type = EventQueue::Event::FRAMEDONE;
-	theRenderEventQueue()->push(e);
+
+	
+	//EventQueue::Event e;
+	//e.data = NULL;
+	//e.type = EventQueue::Event::FRAMEDONE;
+	//theRenderEventQueue()->push(e);
 }

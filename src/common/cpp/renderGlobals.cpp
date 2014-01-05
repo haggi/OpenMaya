@@ -34,7 +34,8 @@ RenderGlobals::RenderGlobals()
 	this->mbEndTime = 0.0f;
 	this->currentFrame = 0.0f;
 	this->currentFrameNumber = 0.0f;
-	this->mbtype = 1;
+	this->motionBlurRange = 0.4f;
+	this->motionBlurType = 0; // center
 	this->xftimesamples = 2;
 	this->geotimesamples = 2;
 	this->createDefaultLight = false;
@@ -186,19 +187,19 @@ bool RenderGlobals::isTransformStep()
 // If motionblur is turned on, I need to evaluate the instances/geometry serveral times.
 // To know at which point what type of export deform/transform is needed, I create a list of
 // times that will be added to the current render frame e.g. frame 101 + mbStep1 (.20) = 101.20
-bool RenderGlobals::getMbSteps( MObject& camera)
+bool RenderGlobals::getMbSteps()
 {
 	this->mbElementList.clear();
 
 	// if shadowmap then ignore motionblur steps
-	if(this->currentRenderPass->passType == RenderPass::ShadowMap)
-	{
-		MbElement mbel;
-		mbel.elementType = MbElement::Both;
-		mbel.time = 0.0;
-		this->mbElementList.push_back(mbel);
-		return true;
-	}
+	//if(this->currentRenderPass->passType == RenderPass::ShadowMap)
+	//{
+	//	MbElement mbel;
+	//	mbel.elementType = MbElement::Both;
+	//	mbel.time = 0.0;
+	//	this->mbElementList.push_back(mbel);
+	//	return true;
+	//}
 
 
 	// if no motionblur, I add 0.0 to the list as dummy
@@ -210,21 +211,14 @@ bool RenderGlobals::getMbSteps( MObject& camera)
 		this->mbElementList.push_back(mbel);
 		return true;
 	}
-
-	// For the calculation of motionblur steps, I need the camera shutter angle and the number of mb steps
-	MFnCamera fnCam(camera);
-	double shutterAngle;
-	if( !getDouble(MString("shutterAngle"), fnCam, shutterAngle) )
-	{
-		logger.error("RenderGlobals::getMbSteps Unable to read shutter angle from cam " + fnCam.name());
-		return false;
-	}
     
 	//degrees * ( M_PI/ 180.0 );
     //radians * (180.0/M_PI);
 	//TODO: make motionblur calculation time dependent instead of frame dependent
 
-	double shutterDist = shutterAngle / (2.0 * M_PI);
+	
+	//double shutterDist = shutterAngle / (2.0 * M_PI);
+	double shutterDist = this->motionBlurRange;
 	MString info;
 
 	this->mbLength = shutterDist;
@@ -233,20 +227,22 @@ bool RenderGlobals::getMbSteps( MObject& camera)
 
 	// get mb type
 	// 0 = leading blur --> blur ends at frame
-	if( this->mbtype == 0)
+	switch(this->motionBlurType)
 	{
-		startStep = -shutterDist;
-	}
-	// 1 = centered blur --> blur starts at frame - (shutterDist/2.0)
-	if( this->mbtype == 1)
-	{
+	case 0: // center blur
 		startStep = -shutterDist/2.0;
-	}
-	// 2 = trailing blur --> blur centered at frame
-	if( this->mbtype == 2)
-	{
+		break;
+	case 1: // frame start
 		startStep = 0.0;
-	}
+		break;
+	case 2: // frame end
+		startStep = -shutterDist;
+		break;
+	default:
+		startStep = -shutterDist;
+		break;
+	};
+
 	double endStep = shutterDist - fabs(startStep);
 	
 	this->mbStartTime = startStep;

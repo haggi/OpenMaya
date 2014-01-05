@@ -75,11 +75,14 @@ MeshWalker::MeshWalker(MDagPath& dagPath)
 	MStatus stat;
 	meshDagPath = dagPath;
 	this->meshObject = dagPath.node();
+	this->useSmoothMesh = false;
 
 	MObject smoothMesh = this->checkSmoothMesh();
 	if( smoothMesh != MObject::kNullObj)
+	{
 		this->meshObject = smoothMesh;
-
+		this->useSmoothMesh = true;
+	}
 	meshFn.setObject(this->meshObject);
 	
 	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups);
@@ -87,9 +90,21 @@ MeshWalker::MeshWalker(MDagPath& dagPath)
 	MItMeshPolygon faceIt(this->meshObject, &stat);
 	CHECK_MSTATUS(stat);
 
-	meshFn.getPoints(points);
-    meshFn.getNormals( normals, MSpace::kWorld );
-	meshFn.getUVs(u, v);
+	stat = meshFn.getPoints(points);
+	if(!stat)
+		MGlobal::displayError(MString("MeshWalker : getPoints: ") + stat.errorString());
+	stat = meshFn.getNormals( normals, MSpace::kObject );
+	if(!stat)
+		MGlobal::displayError(MString("MeshWalker : normals: ") + stat.errorString());
+	stat = meshFn.getUVs(u, v);
+	if(!stat)
+		MGlobal::displayError(MString("MeshWalker : getUvs: ") + stat.errorString());
+
+	MGlobal::displayInfo(MString("MeshWalker : numU: ") + u.length() + " numV:" + v.length());
+
+	for( uint i = 0; i < v.length(); i++)
+		MGlobal::displayInfo(MString("MeshWalker : V[") + i + "]: " + u[i]);
+
 
 	MPointArray triPoints;
 	MIntArray triVtxIds;

@@ -20,6 +20,9 @@ MObject MayaRenderGlobalsNode::samplesX;
 MObject MayaRenderGlobalsNode::samplesY;
 
 MObject MayaRenderGlobalsNode::doMotionBlur;
+MObject MayaRenderGlobalsNode::motionBlurRange;
+MObject MayaRenderGlobalsNode::motionBlurType;
+
 MObject MayaRenderGlobalsNode::doDof;
 MObject MayaRenderGlobalsNode::xftimesamples;
 
@@ -127,6 +130,15 @@ MStatus	MayaRenderGlobalsNode::initialize()
 
 	doMotionBlur = nAttr.create("doMotionBlur", "doMotionBlur", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( doMotionBlur ));
+	motionBlurRange = nAttr.create("motionBlurRange", "motionBlurRange", MFnNumericData::kFloat, 0.4);
+	CHECK_MSTATUS(addAttribute( motionBlurRange ));
+	
+	motionBlurType = eAttr.create("motionBlurType", "motionBlurType", 0, &stat);
+	stat = eAttr.addField( "Center", 0 );
+	stat = eAttr.addField( "FrameStart", 1 );
+	stat = eAttr.addField( "FrameEnd", 2 );
+	CHECK_MSTATUS(addAttribute( motionBlurType ));
+	
 	doDof = nAttr.create("doDof", "doDof", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( doDof ));
 	xftimesamples = nAttr.create("xftimesamples", "xftimesamples", MFnNumericData::kInt, 2);

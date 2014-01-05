@@ -63,18 +63,24 @@ bool BinMeshReaderCmd::importBinMeshes()
 	for( size_t meshId = 0; meshId < meshArray.size(); meshId++)
 	{
 		int numVertices = meshArray[meshId]->get_vertex_count();
+		int numNormals = meshArray[meshId]->get_vertex_normal_count();
 		int numTriangles = meshArray[meshId]->get_triangle_count();
 		int numMaterials = meshArray[meshId]->get_material_slot_count();
+		int numUVs = meshArray[meshId]->get_tex_coords_count();
 		
-		MPointArray points;
+		MPointArray points(numVertices);
+		MVectorArray normals(numNormals);
 		MIntArray faceVertexCounts;
 		MIntArray faceConnects;
-
+		MFloatArray uArray(numUVs), vArray(numUVs);
+		MIntArray uvIds;
+		
 		for( size_t vtxId = 0; vtxId < numVertices; vtxId++)
 		{
 			asr::GVector3 p = meshArray[meshId]->get_vertex(vtxId);
-			points.append(p.x, p.y, p.z);
+			points[vtxId] = MPoint(p.x, p.y, p.z);
 		}
+
 		for( size_t triId = 0; triId < numTriangles; triId++)
 		{
 			faceVertexCounts.append(3);
@@ -82,10 +88,32 @@ bool BinMeshReaderCmd::importBinMeshes()
 			faceConnects.append(tri.m_v0);
 			faceConnects.append(tri.m_v1);
 			faceConnects.append(tri.m_v2);
+			uvIds.append(tri.m_a0);
+			uvIds.append(tri.m_a1);
+			uvIds.append(tri.m_a2);
 		}
+
+		for( size_t uvId = 0; uvId < numUVs; uvId++)
+		{
+			asr::GVector2 uv = meshArray[meshId]->get_tex_coords(uvId);
+			uArray[uvId] = uv.x;
+			vArray[uvId] = uv.y;
+		}
+
+		for( size_t nId = 0; nId < numNormals; nId++)
+		{
+			asr::GVector3 v = meshArray[meshId]->get_vertex_normal(nId);
+			normals[nId] = MVector(v.x, v.y, v.z);
+		}
+
 		MFnMesh newMesh;
 		MStatus stat;
-		newMesh.create(numVertices, numTriangles, points, faceVertexCounts, faceConnects, MObject::kNullObj, &stat);
+		//newMesh.create(numVertices, numTriangles, points, faceVertexCounts, faceConnects, MObject::kNullObj, &stat);
+		newMesh.create(numVertices, numTriangles, points, faceVertexCounts, faceConnects, uArray, vArray, MObject::kNullObj, &stat);
+
+        stat = newMesh.clearUVs();
+		stat = newMesh.setUVs(uArray, vArray);
+        stat = newMesh.assignUVs(faceVertexCounts, uvIds);
 
 	}
 

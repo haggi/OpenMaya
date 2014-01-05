@@ -20,14 +20,18 @@ public:
 		IPR,
 		NONE
 	};
-	enum ParseType{
-		NORMALPARSE, 
-		HIERARCHYPARSE,
-		NONEPARSE
+	enum RenderState{
+		START = 0, 
+		TRANSLATE = 1,
+		RENDERING = 2,
+		FRAMEDONE = 3,
+		RENDERERROR = 4,
+		UNDEF = 5
 	};
 	bool good;
 	RenderType renderType;
 
+	RenderState renderState;
 	std::vector<int> lightIdentifier; // plugids for detecting new lighttypes
 	std::vector<int> objectIdentifier; // plugids for detecting new objTypes
 
@@ -44,13 +48,15 @@ public:
 	boost::thread rendererThread;
 	
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
-	bool parseScene(ParseType ptype = NORMALPARSE);
+	bool parseScene();
 
 	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
 
 	bool cando_ipr;
 	bool canDoIPR();
+
+	MDagPath uiCamera;
 
 	bool updateScene(); // update all necessary objects
 	bool updateInstancer(); // update all necessary objects
@@ -101,12 +107,14 @@ public:
 	bool isGeo(MObject obj);
 	bool isLight(MObject obj);
 	bool isCamera(MObject obj);
+	bool isCameraRenderable(MObject obj);
 
+	void waitForFrameCompletion();
+	void setRenderType(RenderType rtype);
 	MayaObject *getObject(MObject obj);
 	MayaObject *getObject(MDagPath dp);
 	void init();
 	MayaScene();
-	MayaScene(RenderType rtype);
 	virtual ~MayaScene();
 };
 

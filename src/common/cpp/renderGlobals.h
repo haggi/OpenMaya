@@ -132,7 +132,8 @@ public:
 	float gamma;
 
 	bool doMb;
-	int mbtype; // leading = 0, centered = 1, trailing = 2
+	float motionBlurRange; // float range default = 0.4 ~ 144°
+	int motionBlurType; // Center, FrameStart, FrameEnd
 	float mbStartTime; // frame relative start time e.g. -0.2 frames
 	float mbEndTime; // frame relative end time e.g. 0.2 frames
 	float mbLength; // absolute length of motion blur, e.g. 0.4 frames
@@ -196,7 +197,7 @@ public:
 	RenderGlobals();
 	virtual ~RenderGlobals();
 	bool getDefaultGlobals();
-	bool getMbSteps( MObject& camera);
+	bool getMbSteps();
 	bool isTransformStep();
 	bool isDeformStep();
 	void getImageName();

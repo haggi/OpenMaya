@@ -22,6 +22,7 @@ shader_start:asSurface_shader_collection
         inatt:surface_shader5:message
         inatt:surface_shader8:message
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asBsdf_mix
@@ -30,18 +31,21 @@ shader_start:asBsdf_mix
         inatt:weight1:varying_scalar
         inatt:weight0:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asLambertian_brdf
         inatt:reflectance:varying_color
         inatt:reflectance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asSpecular_brdf
         inatt:reflectance:varying_color
         inatt:reflectance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asConstant_surface_shader
@@ -50,6 +54,7 @@ shader_start:asConstant_surface_shader
         inatt:color_multiplier:varying_scalar
         inatt:alpha_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asCone_edf
@@ -59,12 +64,14 @@ shader_start:asCone_edf
         inatt:importance_multiplier:uniform_float
         inatt:radiance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asDiffuse_btdf
         inatt:transmittance:varying_color
         inatt:transmittance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asMicrofacet_brdf
@@ -75,6 +82,7 @@ shader_start:asMicrofacet_brdf
         inatt:fresnel_multiplier:varying_scalar
         inatt:reflectance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asAshikhmin_brdf
@@ -86,6 +94,7 @@ shader_start:asAshikhmin_brdf
         inatt:fresnel_multiplier:varying_scalar
         inatt:diffuse_reflectance:varying_color
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asBsdf_blend
@@ -93,11 +102,13 @@ shader_start:asBsdf_blend
         inatt:bsdf1:message
         inatt:weight:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asDiagnostic_surface_shader
         inatt:mode:enum
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asDisk_texture_2d
@@ -117,6 +128,7 @@ shader_start:asFast_sss_surface_shader
         inatt:occlusion_samples:int
         inatt:albedo:varying_color
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asSpecular_btdf
@@ -127,6 +139,7 @@ shader_start:asSpecular_btdf
         inatt:transmittance_multiplier:varying_scalar
         inatt:reflectance_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asDiffuse_edf
@@ -135,6 +148,7 @@ shader_start:asDiffuse_edf
         inatt:cast_indirect_light:boolean
         inatt:importance_multiplier:uniform_float
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asMaterial
@@ -153,6 +167,7 @@ shader_start:asKelemen_brdf
         inatt:matte_reflectance:varying_color
         inatt:roughness:uniform_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asAo_surface_shader
@@ -160,6 +175,7 @@ shader_start:asAo_surface_shader
         inatt:sampling_method:enum
         inatt:samples:int
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 shader_start:asPhysical_surface_shader
@@ -173,6 +189,7 @@ shader_start:asPhysical_surface_shader
         inatt:color_multiplier:varying_scalar
         inatt:alpha_multiplier:varying_scalar
         outatt:outColor:color
+        outatt:message:message
 shader_end
 
 #---------------------------- automatically created attributes end ------------------------------------

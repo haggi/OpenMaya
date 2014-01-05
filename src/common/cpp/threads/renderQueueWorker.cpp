@@ -1,6 +1,8 @@
 #include "renderQueueWorker.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "mayaSceneFactory.h"
+
 #include <maya/MSceneMessage.h>
 #include <maya/MTimerMessage.h>
 #include <maya/MNodeMessage.h>
@@ -17,14 +19,14 @@
 
 static Logging logger;
 
-static MayaScene *mayaScenePtr = NULL;
-
+static bool renderDone = false;
 static bool isRendering = false;
 static bool isIpr = false;
 static int numTiles = 0;
 static int tilesDone = 0;
 static MCallbackId timerCallbackId = 0;
 static MCallbackId idleCallbackId = 0;
+static MCallbackId computationInterruptCallbackId = 0;
 static MCallbackId sceneCallbackId0 = 0;
 static MCallbackId sceneCallbackId1 = 0;
 static MCallbackId pluginCallbackId = 0;
@@ -35,6 +37,8 @@ static std::vector<MDagPath> interactiveUpdateListDP;
 
 static std::map<MCallbackId, MObject> objIdMap;
 RV_PIXEL *imageBuffer = NULL;
+
+static MComputation renderComputation = MComputation();
 
 EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue()
 {
@@ -94,8 +98,6 @@ void RenderQueueWorker::pluginUnloadCallback(void *)
 {
 	logger.debug("pluginUnloadCallback.");
 	RenderQueueWorker::removeCallbacks();
-	// force the dummy renderer to stop
-	// setInterrupt(Interrupts::FINISH);
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -105,7 +107,6 @@ void RenderQueueWorker::sceneCallback(void *)
 {
 	logger.debug("sceneCallback.");
 	// force the dummy renderer to stop
-	// setInterrupt(Interrupts::FINISH);
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -142,7 +143,6 @@ void RenderQueueWorker::removeCallbacks()
 
 
 void RenderQueueWorker::renderQueueWorkerIdleCallback(float time, float lastTime, void *userPtr)
-//void RenderQueueWorker::renderQueueWorkerIdleCallback(void *dummy)
 {
 	if( modifiedObjList.empty())
 	{
@@ -192,47 +192,83 @@ void RenderQueueWorker::renderQueueWorkerTimerCallback( float time, float lastTi
 
 void RenderQueueWorker::computationEventThread( void *dummy)
 {
-	while(isRendering)
-	{
-		boost::this_thread::sleep(boost::posix_time::milliseconds(50));
-		if(renderComputation.isInterruptRequested())
+	//while(isRendering)
+	//{
+	//	boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+		if(renderComputation.isInterruptRequested() && isRendering)
 		{
+			logger.debug("computationEventThread::InterruptRequested.");
 			EventQueue::Event e;
 			e.type = EventQueue::Event::INTERRUPT;
 			theRenderEventQueue()->push(e);
-			break;
+			if(computationInterruptCallbackId != 0)
+			{
+				MMessage::removeCallback(computationInterruptCallbackId);
+				computationInterruptCallbackId = 0;
+			}
 		}
-	}
-	logger.detail("computationEventThread finished.");
+	//}
+	//logger.detail("computationEventThread finished.");
 }
 
- void RenderQueueWorker::uiUpdateEventThread(void *dummy)
- {
+// In UI work the rendering is not blocking
+// That means that the renderqueue method breaks the loop. But we need it for updating and messaging. 
+// So this thread calls the renderqueue method every 50ms to update rendering etc. 
+void RenderQueueWorker::uiUpdateEventThread(void *dummy)
+{
 	while(isRendering)
 	{
-		boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
-		EventQueue::Event e;
-		e.type = EventQueue::Event::UPDATEUI;
-		theRenderEventQueue()->push(e);
+		RenderQueueWorker::startRenderQueueWorker();
+		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
 	}
 	logger.detail("uiUpdateEventThread finished.");
- }
+}
 
- void RenderQueueWorker::userThread(void *dummy)
- {
+void RenderQueueWorker::userThread(void *dummy)
+{
 	while(isRendering)
 	{
 		int updateInterval = 50;
-		if (mayaScenePtr != NULL)
+		if (MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
 		{
-			updateInterval = mayaScenePtr->userThreadUpdateInterval;
-			mayaScenePtr->userThreadProcedure();
+			updateInterval = MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadUpdateInterval;
+			MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadProcedure();
 		}
 		boost::this_thread::sleep(boost::posix_time::milliseconds(updateInterval));
 	}
 	logger.detail("userThread finished.");
- }
+}
 
+void RenderQueueWorker::addIdleUIComputationCreateCallback(void* data)
+{
+	logger.debug("addIdleUIComputationCreateCallback.");
+	renderComputation.beginComputation();
+
+	MMessage::removeCallback(computationInterruptCallbackId);
+	MStatus status;
+
+	computationInterruptCallbackId = MEventMessage::addEventCallback("idle", RenderQueueWorker::computationEventThread, (void*)data, &status);
+	renderComputation.endComputation();
+}
+
+void RenderQueueWorker::addIdleUIComputationCallback()
+{
+	MStatus status;
+	logger.debug("addIdleUIComputationCallback.");
+	computationInterruptCallbackId = MEventMessage::addEventCallback("idle", RenderQueueWorker::addIdleUIComputationCreateCallback, NULL, &status);
+}
+
+void RenderQueueWorker::sendFinalizeIfQueueEmpty(void *)
+{
+	
+	while( theRenderEventQueue()->size() > 0)
+		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+
+	logger.debug("sendFinalizeIfQueueEmpty: queue is null, sending finalize.");
+	EventQueue::Event e;
+	e.type = EventQueue::Event::FINISH;
+	theRenderEventQueue()->push(e);
+}
 
 void RenderQueueWorker::startRenderQueueWorker()
 {
@@ -244,20 +280,20 @@ void RenderQueueWorker::startRenderQueueWorker()
 	MStatus status;
 	while(!terminateLoop)
 	{
-		if( isIpr )
+		if(MGlobal::mayaState() != MGlobal::kBatch)
 		{
-			// do not block in ipr mode
-			if(theRenderEventQueue()->empty() )
+			if(!theRenderEventQueue()->try_pop(e))
 				break;
+		}else{
+			theRenderEventQueue()->wait_and_pop(e);
 		}
 
-		theRenderEventQueue()->wait_and_pop(e);
-		
 		switch(e.type)
 		{
 		case EventQueue::Event::FINISH:
 			logger.debug("Event::Finish");
 			terminateLoop = true;
+			isRendering = false;
 
 			if( MRenderView::doesRenderEditorExist())
 			{	
@@ -267,58 +303,65 @@ void RenderQueueWorker::startRenderQueueWorker()
 				{
 					isIpr = false;
 					RenderQueueWorker::removeCallbacks();
-					if( mayaScenePtr != NULL)
-					{
-						delete mayaScenePtr;
-					}
 				}else{
-					renderComputation.endComputation();
+					if(computationInterruptCallbackId != 0)
+						MMessage::removeCallback(computationInterruptCallbackId);
+					if(timerCallbackId != 0)
+						MMessage::removeCallback(timerCallbackId);
+					//renderComputation.endComputation();
 				}
-				// in normal rendering the maya scene pointer will be not deleted, because there are still some 
-				// procedures that have to be done after actual rendering is done.
-				mayaScenePtr = NULL;
-				isRendering = false;
+				if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
+				{
+					MayaTo::MayaSceneFactory().deleteMaysScene();
+				}
 			}
 			tilesDone = 0;
 			break;
-
-		case EventQueue::Event::STARTRENDER:
-			logger.debug("Event::Startrender");
-			if( e.data != NULL)
-			{				
+		case EventQueue::Event::INITRENDER:
+			{
+				logger.debug("Event::InitRendering");
+				computationInterruptCallbackId = 0;
+				renderDone = false;
 				isRendering = true;
-				mayaScenePtr = (MayaScene *)e.data;
-				logger.debug(MString("Startrender with size ") + mayaScenePtr->renderGlobals->imgWidth + " and " + mayaScenePtr->renderGlobals->imgHeight);
-				int width = mayaScenePtr->renderGlobals->imgWidth;
-				int height = mayaScenePtr->renderGlobals->imgHeight;
+				MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
+				int width = mayaScene->renderGlobals->imgWidth;
+				int height = mayaScene->renderGlobals->imgHeight;
 
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, false, true);
 
-				if(mayaScenePtr->renderType != MayaScene::IPR)
+				if(mayaScene->renderType != MayaScene::IPR)
 				{
-					boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
-					boost::thread(RenderQueueWorker::uiUpdateEventThread, (void *)NULL);
-					if( mayaScenePtr->needsUserThread)
+					if( MGlobal::mayaState() != MGlobal::kBatch)
+						timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
+					//boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
+					//if( MGlobal::mayaState() != MGlobal::kBatch)
+					//	boost::thread(RenderQueueWorker::uiUpdateEventThread, (void *)NULL);
+					if( mayaScene->needsUserThread)
 						boost::thread(RenderQueueWorker::userThread, (void *)NULL);
-					renderComputation.beginComputation();
+					//renderComputation.beginComputation();
+					addIdleUIComputationCallback();
 				}
 
 				// calculate numtiles
-				int numTX = (int)ceil((float)width/(float)mayaScenePtr->renderGlobals->tilesize);
-				int numTY = (int)ceil((float)height/(float)mayaScenePtr->renderGlobals->tilesize);
+				int numTX = (int)ceil((float)width/(float)mayaScene->renderGlobals->tilesize);
+				int numTY = (int)ceil((float)height/(float)mayaScene->renderGlobals->tilesize);
 				numTiles = numTX * numTY;
 
-				mayaScenePtr->startRenderThread();
+				mayaScene->startRenderThread();
 
-				if(mayaScenePtr->renderType == MayaScene::IPR)
+				if(mayaScene->renderType == MayaScene::IPR)
 				{
 					RenderQueueWorker::addCallbacks();
 					isIpr = true;
 				}
+				break;
 			}
-			break;
-
+		case EventQueue::Event::STARTRENDER:
+			{
+				logger.debug("Event::Startrender");
+				break;
+			}
 		case EventQueue::Event::RENDERERROR:
 			{
 				if( e.data != NULL)
@@ -336,6 +379,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				isRendering = false;
 			}
 			break;
+
 		case EventQueue::Event::FRAMEDONE:
 			logger.debug("Event::FRAMEDONE");
 			if( e.data != NULL)
@@ -353,9 +397,14 @@ void RenderQueueWorker::startRenderQueueWorker()
 				imageBuffer = NULL;
 			}
 
-			e.type = EventQueue::Event::FINISH;
-			theRenderEventQueue()->push(e);
-			isRendering = false;
+			//e.type = EventQueue::Event::FINISH;
+			//theRenderEventQueue()->push(e);
+			//isRendering = false;
+			break;
+
+		case EventQueue::Event::RENDERDONE:
+			logger.debug("Event::RENDERDONE");
+			boost::thread(RenderQueueWorker::sendFinalizeIfQueueEmpty, (void *)NULL);
 			break;
 
 		case EventQueue::Event::FRAMEUPDATE:
@@ -387,25 +436,13 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::INTERRUPT:
 			logger.debug("Event::INTERRUPT");
-			mayaScenePtr->stopRendering();
+			logger.debug(MString("Event::INTERRUPT - queueSize: ") + theRenderEventQueue()->size());
+			MayaTo::MayaSceneFactory().getMayaScenePtr()->stopRendering();
 			break;
-
-		case EventQueue::Event::UPDATEUI:
-			{
-				logger.debug("Event::UPDATEUI");
-				MString cmd = "refresh;";
-				MString result;
-				logger.debug("...->update...");
-				MGlobal::executeCommand(cmd, result);
-			}
-			break;
-
 
 		case EventQueue::Event::IPRSTOP:
 			logger.debug("Event::IPRSTOP");
-			mayaScenePtr->stopRendering();
-			//e.type = EventQueue::Event::FINISH;
-			//theRenderEventQueue()->push(e);
+			MayaTo::MayaSceneFactory().getMayaScenePtr()->stopRendering();
 			break;
 
 		case EventQueue::Event::TILEDONE:
@@ -427,8 +464,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::PIXELSDONE:
 			if( MRenderView::doesRenderEditorExist())
 			{
-				int width = mayaScenePtr->renderGlobals->imgWidth;
-				int height = mayaScenePtr->renderGlobals->imgHeight;
+				int width = MayaTo::MayaSceneFactory().getMayaScenePtr()->renderGlobals->imgWidth;
+				int height = MayaTo::MayaSceneFactory().getMayaScenePtr()->renderGlobals->imgHeight;
 				if( imageBuffer == NULL)
 				{
 					imageBuffer = new RV_PIXEL[width * height];
@@ -440,13 +477,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				for( size_t pId = 0; pId < e.numPixels; pId++)
 				{
 					imageBuffer[width * pixels[pId].y + pixels[pId].x] =  pixels[pId].pixel;
-					//pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
 				}
-				//logger.debug(MString("Event::PIXELSDONE - queueSize: ") + theRenderEventQueue()->size()+ " numpixels " + e.numPixels);
-				//for( size_t pId = 0; pId < e.numPixels; pId++)
-				//{
-				//	MRenderView::updatePixels(pixels[pId].x,  pixels[pId].x, pixels[pId].y,  pixels[pId].y, &pixels[pId].pixel); 
-				//}
 				pixelsChanged += e.numPixels;
 				if( (theRenderEventQueue()->size() <= 1) || (pixelsChanged >= minPixelsChanged))
 				{
@@ -461,8 +492,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::PRETILE:
 			if( !isIpr )
 			{
-				size_t ymin = mayaScenePtr->renderGlobals->imgHeight - e.tile_ymax;
-				size_t ymax = mayaScenePtr->renderGlobals->imgHeight - e.tile_ymin - 1;
+				size_t ymin = MayaTo::MayaSceneFactory().getMayaScenePtr()->renderGlobals->imgHeight - e.tile_ymax;
+				size_t ymax = MayaTo::MayaSceneFactory().getMayaScenePtr()->renderGlobals->imgHeight - e.tile_ymin - 1;
 
 				//logger.debug("Event::PRETILE");
 				if( MRenderView::doesRenderEditorExist())
@@ -476,11 +507,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::IPRUPDATESCENE:
 			logger.debug("Event::IPRUPDATESCENE");
-			mayaScenePtr->updateInteraciveRenderScene(interactiveUpdateList);
+			MayaTo::MayaSceneFactory().getMayaScenePtr()->updateInteraciveRenderScene(interactiveUpdateList);
 			break;
 		}
 
-		if(isIpr)
+		if(MGlobal::mayaState() != MGlobal::kBatch)
 			break;
 	}
 }

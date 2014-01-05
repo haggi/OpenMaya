@@ -8,6 +8,7 @@
 #include <maya/MPoint.h>
 #include <maya/MDagPath.h>
 #include <maya/MPointArray.h>
+#include <maya/MFloatArray.h>
 #include <maya/MObjectArray.h>
 #include <maya/MDagPathArray.h>
 #include <fstream>

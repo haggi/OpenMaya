@@ -36,9 +36,6 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{983a5ccb-92c0-4f40-8e3f-28a9cab13b2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\dummyRenderer">
-      <UniqueIdentifier>{22efe55d-4c09-4cb3-89fe-aa87930770de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="mtap_common">
       <UniqueIdentifier>{70de2472-49c1-4d70-b529-399a19d3cda2}</UniqueIdentifier>
     </Filter>
@@ -95,14 +92,8 @@
     <ClCompile Include="..\src\pluginMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp">
-      <Filter>common\dummyRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp">
       <Filter>common\threads</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp">
-      <Filter>common\dummyRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp">
       <Filter>common\utilities</Filter>
@@ -293,6 +284,9 @@
     <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_mayaSceneFactory.cpp">
+      <Filter>mtap_common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -337,14 +331,8 @@
     <ClInclude Include="..\..\common\cpp\threads\threads.h">
       <Filter>common\threads</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h">
-      <Filter>common\dummyRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h">
       <Filter>common\threads</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h">
-      <Filter>common\dummyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h">
       <Filter>common\utilities</Filter>
@@ -513,6 +501,9 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

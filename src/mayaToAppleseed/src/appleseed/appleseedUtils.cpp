@@ -376,7 +376,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *
 		transformMatrix.matrix[3][0] = obj->transformMatrices[matrixId].matrix[3][0];
 		transformMatrix.matrix[3][1] = obj->transformMatrices[matrixId].matrix[3][1];
 		transformMatrix.matrix[3][2] = obj->transformMatrices[matrixId].matrix[3][2];
-		transformMatrix *= this->renderGlobals->sceneScaleMatrix;
+		transformMatrix *= this->renderGlobals->globalConversionMatrix;
 		MMatrix colMatrix = obj->transformMatrices[matrixId];
 		colMatrix.matrix[3][0] = transformMatrix.matrix[3][0];
 		colMatrix.matrix[3][1] = transformMatrix.matrix[3][1];
@@ -393,14 +393,14 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Light *l
 {
 	asf::Matrix4d appMatrix;
 	MMatrix colMatrix = obj->transformMatrices[0];
+	colMatrix *=  this->renderGlobals->globalConversionMatrix;
 	this->MMatrixToAMatrix(colMatrix, appMatrix);
 	light->set_transform(asf::Transformd::from_local_to_parent(appMatrix));	
 }
 
 void AppleseedRenderer::MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& appleMatrix)
 {
-	MMatrix rowMatrix;
-	rowToColumn(mayaMatrix, rowMatrix);
+	MMatrix rowMatrix = mayaMatrix.transpose();
 	for( int i = 0; i < 4; i++)
 		for( int k = 0; k < 4; k++)
 			appleMatrix[i * 4 + k] = rowMatrix[i][k];
