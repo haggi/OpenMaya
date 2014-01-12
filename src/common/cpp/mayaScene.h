@@ -50,7 +50,7 @@ public:
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
 	bool parseScene();
 
-	bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
+	//bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
 
 	bool cando_ipr;

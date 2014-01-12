@@ -34,30 +34,21 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 {
 	mtap_MayaObject *obj = (mtap_MayaObject *)mobj;
 
-	if( !obj->mobject.hasFn(MFn::kTransform))
+	// instancer elements are a special case. They contain a shape node, but they are updated as a transform
+	if( !obj->mobject.hasFn(MFn::kTransform) && (obj->instancerParticleId < 0))
 		return;
 
 	logger.detail(MString("mtap_MayaScene::transformUpdateCallback"));
 
-	// if this is an instance of an object which has an assembly, then update it,
-	// if not, ignore instance.
 	if( obj->instanceNumber > 0)
 	{
 		if( obj->origObject == NULL)
 			return;
-
-		// check if the original object has its own assembly, if not no update is needed
-		if( ((mtap_MayaObject *)obj->origObject)->objectAssembly == NULL)
-			return;
-
 	}else{
 		if( obj->instancerParticleId > -1)
 		{
 			if( obj->origObject == NULL)
-			{
-				logger.debug(MString("transformUpdateCallback: obj orig obj == NULL with instancerParticleId > -1"));
 				return;
-			}
 		}
 	}
 
@@ -73,69 +64,12 @@ void mtap_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 	if( !obj->mobject.hasFn(MFn::kShape))
 		return;
 
-	// we update only the original geometry, not its instances
-	if( obj->instanceNumber > 0)
+	if( !obj->visible && !obj->attributes->hasInstancerConnection && !obj->isInstancerObject && !(obj->isCamera()))
 		return;
 
 	if( !obj->geometryShapeSupported())
 		return;
 
-	if( !obj->visible && !obj->isCamera() )
-	{
-		if( !obj->isInstanced() )
-		{
-			if( !obj->attributes->hasInstancerConnection )
-			{
-				if( obj->mobject.hasFn(MFn::kMesh))
-				{
-					if( !obj->isVisiblityAnimated())
-					{
-						return;
-					}else{
-						logger.debug(MString("Obj ") + obj->shortName + " is not visible, but visibility is animated.");						
-
-						// objects visibility is animated and object is not visible, well, that means 
-						// that it could be the case that it was visible and is not visible any more. 
-						// In this case we want to remove it because we don't want to waste time and memory for
-						// an completly invisible object.
-						//MFnMesh meshFn(obj->mobject);
-						//MString meshFullName = makeGoodString(meshFn.fullPathName());
-						//MString meshInstName = meshFullName + "_inst";
-
-						//asr::Assembly *objAssembly = obj->getObjectAssembly();
-						//if( objAssembly )
-						//{
-						//	logger.debug(MString("Found assembly for this object, searching for mesh instance name: ") + meshInstName);						
-						//	asr::ObjectInstance *oi = objAssembly->object_instances().get_by_name(meshInstName.asChar());
-						//	if( oi )
-						//	{
-						//		logger.debug(MString("Found mesh instance : ") + meshInstName + " removing");		
-						//		objAssembly->object_instances().remove(oi);
-						//	}else{
-						//		logger.debug(MString("Found no mesh instance : ") + meshInstName);		
-						//	}
-						//	asr::Object *mo = objAssembly->objects().get_by_name(meshFullName.asChar());
-						//	if( mo )
-						//	{
-						//		logger.debug(MString("Found mesh object : ") + meshFullName + " removing");		
-						//		objAssembly->objects().remove(mo);
-						//	}else{
-						//		logger.debug(MString("Found no mesh objct : ") + meshFullName);		
-						//	}
-
-						//	//	obj->objectAssembly->object_instances().remove(obj->objectAssembly->object_instances().get_by_name("my_obj_instance"));
-						//	//  obj->objectAssembly->objects().remove(obj->objectAssembly->objects().get_by_name("my_obj_instance"));
-						//	objAssembly->bump_version_id();
-						//	return; // no further shape update needed because shape/geo is removed.
-						//}else{
-						//	logger.debug(MString("Found no assembly for this object."));						
-						//	return;
-						//}
-					}
-				}
-			}
-		}
-	}
 	this->mtap_renderer.updateShape(obj);
 }
 

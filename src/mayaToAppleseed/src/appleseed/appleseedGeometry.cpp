@@ -261,6 +261,5 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 			mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, perFaceShadingGroup));
 		}		
 	}
-	//meshArray.push_back(mesh.get());
 }
 

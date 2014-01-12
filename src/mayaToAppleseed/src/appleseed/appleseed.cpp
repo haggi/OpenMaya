@@ -208,6 +208,8 @@ void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assem
 	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 	{
 		asr::GVector3 vtx((float)points[vtxId].x, (float)points[vtxId].y, (float)points[vtxId].z);
+		//logger.debug(MString("update vtx0: ") + points[vtxId].x + " " + points[vtxId].y + " " + points[vtxId].z);
+
 		meshShape->set_vertex_pose(vtxId, mbSegmentIndex - 1, vtx);
 	}
 }
@@ -365,10 +367,5 @@ void AppleseedRenderer::render()
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write_main_image(imageOutputFile.asChar());
 	project->get_frame()->write_aov_images(imageOutputFile.asChar());
-
 	
-	//EventQueue::Event e;
-	//e.data = NULL;
-	//e.type = EventQueue::Event::FRAMEDONE;
-	//theRenderEventQueue()->push(e);
 }

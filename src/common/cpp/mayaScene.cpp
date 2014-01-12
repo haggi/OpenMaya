@@ -330,7 +330,7 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, ObjectAttri
 	//	find the original mayaObject for instanced objects. Can be useful later.
 	//
 
-	if( currentPath.instanceNumber() == 0)
+	if(currentPath.instanceNumber() == 0)
 		origObjects.push_back(mo);
 	else{
 		MFnDagNode node(currentPath.node());
@@ -392,6 +392,7 @@ bool MayaScene::parseScene()
 			clearObjList(this->camList, cam);
 		}
 		this->good = true;
+
 		return true;
 	}
 	return false;
@@ -417,7 +418,10 @@ bool MayaScene::updateScene()
 		if( !this->renderGlobals->isMbStartStep )
 			if( !obj->motionBlurred )
 				continue;
-		
+
+		if(this->renderGlobals->isDeformStep())
+			this->shapeUpdateCallback(obj);
+
 		if( this->renderGlobals->isTransformStep() )
 		{
 			if( this->renderGlobals->isMbStartStep )
@@ -426,29 +430,7 @@ bool MayaScene::updateScene()
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 			this->transformUpdateCallback(obj);
 		}
-
-		if(this->renderGlobals->isDeformStep())
-			this->shapeUpdateCallback(obj);
 	}
-
-	//mIter = this->camList.begin();
-	//for(;mIter!=this->camList.end(); mIter++)
-	//{
-	//	MayaObject *obj = *mIter;
-	//	obj->updateObject();
-
-	//	if( !this->renderGlobals->isMbStartStep )
-	//		if( !obj->motionBlurred )
-	//			continue;
-	//	
-	//	if( this->renderGlobals->isTransformStep() )
-	//	{
-	//		if( this->renderGlobals->isMbStartStep )
-	//			obj->transformMatrices.clear();
-	//		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-	//		this->transformUpdateCallback(obj);
-	//	}
-	//}
 
 	for(size_t camId = 0; camId < this->camList.size(); camId++)
 	{
@@ -490,18 +472,9 @@ bool MayaScene::updateScene()
 		}
 	}
 
-	// if we have a particle instancer we have to geparse it at the beginning of a transform step
-	// without, we would get only the movement of existing particles, not new ones. e.g. if we have zero
-	// particles at start frame all subsequent frames would have zero particles as well if we didnt parse it again.
 	if( this->renderGlobals->isTransformStep() )
 	{
-		if( this->renderGlobals->isMbStartStep )
-		{
-			this->parseInstancerNew();
-			this->updateInstancer();
-		}else{
-			this->updateInstancer();
-		}
+		this->updateInstancer();
 	}
 
 	return true;
@@ -569,6 +542,7 @@ bool MayaScene::updateInstancer()
 
 		obj->transformMatrices.push_back(origMatrix * matrix);
 		this->transformUpdateCallback(obj);
+		//this->shapeUpdateCallback(obj);
 	}
 	return true;
 }
@@ -704,127 +678,6 @@ bool MayaScene::parseInstancerNew()
 }
 
 
-bool MayaScene::parseInstancer()
-{
-	bool result = true;
-
-	InstDoneList.clear();
-
-	MDagPath dagPath;
-	int numInstancers = (int)instancerDagPathList.size();
-	int numobjects = (int)this->objectList.size();
-
-	for(int iId = 0; iId < numInstancers; iId++)
-	{
-		MDagPath instPath = instancerDagPathList[iId];
-		MObject instancerMObject = instPath.node();
-		MString path = instPath.fullPathName();
-		MFnInstancer instFn(instPath);
-		int numParticles = instFn.particleCount();
-		logger.debug(MString("Detected instancer. instPath: ") + path + " it has " + numParticles + " particle instances");
-		MDagPathArray allPaths;
-		MMatrixArray allMatrices;
-		MIntArray pathIndices;
-		MIntArray pathStartIndices;
-		
-		// give me all instances in this instancer
-		instFn.allInstances( allPaths, allMatrices, pathStartIndices, pathIndices );
-	
-		for( int p = 0; p < numParticles; p++ )
-		{
-			MMatrix particleMatrix = allMatrices[p];
-
-			//  the number of paths instanced under a particle is computed by
-			//  taking the difference between the starting path index for this
-			//  particle and that of the next particle.  The size of the start
-			//  index array is always one larger than the number of particles.
-			//
-			int numPaths = pathStartIndices[p+1]-pathStartIndices[p];
-	        
-			//  the values pathIndices[pathStart...pathStart+numPaths] give the
-			//  indices in the allPaths array of the paths instanced under this
-			//  particular particle.  Remember, different paths can be instanced
-			//  under each particle.
-			//
-			int pathStart = pathStartIndices[p];
-
-			//  loop through the instanced paths for this particle
-			//
-			MayaObject *mo = NULL;
-			MayaObject *origObj = NULL;
-			for( int i = pathStart; i < pathStart+numPaths; i++ )
-			{
-				int curPathIndex = pathIndices[i];
-				MDagPath curPath = allPaths[curPathIndex];
-				
-				// search for the correct orig MayaObject element
-				// first search the already done list, this could be faster
-				int numObj = (int)InstDoneList.size();
-				bool found = false;
-				MDagPath dp = curPath;
-				MObject thisObject = curPath.node();
-				MObject foundObject = MObject::kNullObj;
-				for( int oId = 0; oId < numObj; oId++)
-				{
-					MObject doneObj = InstDoneList[oId]->mobject;
-					if( doneObj == thisObject)
-					{
-						logger.debug("Found mobject in instancer done list");
-						origObj = InstDoneList[oId];
-						found = true;
-						break;
-					}
-				}
-				// well it is not in the done list, so search the whole obj list for instances
-				if( !found)
-				{
-					int foundId = -1;
-					for( int oId = 0; oId < numobjects; oId++)
-					{
-						mo = this->objectList[oId];
-						MObject doneObj = mo->mobject;
-						if( doneObj == thisObject)
-						{
-							logger.debug("Found mobject in all list");
-							found = true;
-							origObj = mo;
-							InstDoneList.push_back(mo);
-							break;
-						}
-					}
-				}
-				// TODO: visibiliy check - necessary?
-				MMatrix instancedPathMatrix = curPath.inclusiveMatrix();
-				MMatrix finalMatrixForPath = instancedPathMatrix * particleMatrix;
-				MPoint finalPoint = MPoint::origin * finalMatrixForPath;
-				MDagPath cp = curPath;
-				MayaObject *newObj = this->mayaObjectCreator(thisObject);
-				*newObj = *origObj;
-				newObj->dagPath = cp;
-				newObj->origObject = origObj;
-				newObj->isInstancerObject = true;
-				newObj->instancerMatrix = finalMatrixForPath;
-				newObj->transformMatrices.clear();
-				newObj->transformMatrices.push_back(finalMatrixForPath);
-				newObj->visible = true;
-				newObj->instancerParticleId = p;
-				newObj->instanceNumber = p;
-				newObj->instancerMObj = instancerMObject;
-				newObj->fullName = origObj->fullName + MString("_i_") + p;				
-				newObj->shortName = origObj->shortName + MString("_i_") + p;
-				this->instancerNodeElements.push_back(newObj);
-				//this->objectList.push_back(newObj);
-				newObj->index = (int)(this->instancerNodeElements.size() - 1);
-	                
-				MString instancedPathName = curPath.fullPathName();
-				//logger.info(instancedPathName + " pos " + finalPoint.x + " "  + finalPoint.y + " "  + finalPoint.z);
-
-			}
-		}
-	}
-	return true;
-}
-
 bool MayaScene::getShadingGroups()
 {
 	return true;
@@ -957,10 +810,10 @@ bool MayaScene::doFrameJobs()
 void MayaScene::theRenderThread( MayaScene *mayaScene)
 {
 	mayaScene->renderScene();
+
 	EventQueue::Event e;
 	e.type = EventQueue::Event::RENDERDONE;
 	theRenderEventQueue()->push(e);
-
 }
 
 void MayaScene::startRenderThread()

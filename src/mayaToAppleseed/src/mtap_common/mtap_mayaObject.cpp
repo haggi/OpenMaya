@@ -33,15 +33,30 @@ mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
 
 MString mtap_MayaObject::getAssemblyInstName()
 {
+	MString assemblyName = this->getAssemblyName();
 	if( this->instancerParticleId > -1 )
-		return this->fullName + "_assInst";
+		return this->dagPath.fullPathName() + "_" + this->instancerParticleId + "_assInst";
 	else
-		return this->dagPath.fullPathName() + "_assInst";
+		return assemblyName + "_assInst";
 }
 
 MString mtap_MayaObject::getAssemblyName()
 {
-	return this->dagPath.fullPathName() + "_ass";
+	if( this->isInstanced() || (this->instancerParticleId > -1))
+	{
+		if( this->origObject != NULL )
+		{
+			mtap_MayaObject *orig = (mtap_MayaObject *)this->origObject;
+			return orig->getAssemblyName();
+		}
+	}
+
+	// we always use the transform name as assemblyName, if we have a shape node,
+	// go one element up to the transform node
+	MDagPath path = this->dagPath;
+	if( this->mobject.hasFn(MFn::kShape) )
+		path.pop();
+	return path.fullPathName() + "_ass";
 }
 
 MString mtap_MayaObject::getObjectName()

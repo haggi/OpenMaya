@@ -16,6 +16,10 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {
 	logger.debug(MString("asr::updateTransform: ") + obj->shortName);
 
+	// if we have no object assembly, there is no need to update the assemblyInstance
+	if( this->getObjectAssembly(obj) == NULL )
+		return;
+
 	if( obj->shortName == "world")
 		return;
 
@@ -33,6 +37,13 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 	}
 	
 	asr::AssemblyInstance *assemblyInstance = this->getObjectAssemblyInstance(obj);
+
+	if( assemblyInstance == NULL)
+	{
+		if( obj->visible || (obj->instancerParticleId > -1))
+			assemblyInstance = this->createObjectAssemblyInstance(obj);
+	}
+
 	if( assemblyInstance != NULL)
 	{
 		assemblyInstance->transform_sequence().clear();
@@ -44,60 +55,6 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 		this->updateCamera(false);
 		return;
 	}
-
-	//// if no motionblur or no animation or this is the motionblur start step, then clear the transform list
-	//if( !this->renderGlobals->doMb || !obj->isObjAnimated() || this->renderGlobals->isMbStartStep)
-	//	assemblyInstance->transform_sequence().clear();
-	//
-	//	int mbsamples = this->renderGlobals->xftimesamples;
-
-
-
-	//	size_t numTransforms = assemblyInst->transform_sequence().size();
-	//	float time = 0.0f;
-	//	if( mbsamples > 1)
-	//		time = (float)numTransforms/((float)mbsamples - 1.0f);
-
-	//	asf::Matrix4d appMatrix;
-	//	MMatrix colMatrix = obj->dagPath.inclusiveMatrix();
-
-	//	logger.debug(MString("check for sun light ") + obj->shortName);
-	//	if( isSunLight(obj) )
-	//	{
-	//		colMatrix.setToIdentity();
-	//	}
-
-	//	if( obj->attributes != NULL)
-	//	{
-	//		if( obj->attributes->hasInstancerConnection )
-	//		{
-	//			logger.debug(MString("Found particle instanced element: ") + obj->fullName);
-	//			MFnInstancer instFn(obj->instancerDagPath);
-	//			MDagPathArray dagPathArray;
-	//			MMatrix matrix;
-	//			instFn.instancesForParticle(obj->instancerParticleId, dagPathArray, colMatrix); 
-	//		}
-	//	}
-
-	//	this->MMatrixToAMatrix(colMatrix, appMatrix);
-	//	
-	//	assemblyInst->transform_sequence().set_transform(time, asf::Transformd::from_local_to_parent(appMatrix));
-
-	//	// temporary solution: if object is invisible, scale it to 0.0 if possible
-	//	if( !obj->visible && obj->isVisiblityAnimated() && !this->renderGlobals->isMbStartStep)
-	//	{
-	//		asf::Matrix4d appMatrix;
-	//		MMatrix zeroMatrix;
-	//		zeroMatrix.setToIdentity();
-	//		zeroMatrix[0][0] = zeroMatrix[1][1] = zeroMatrix[2][2] = 0.00001;
-	//		this->MMatrixToAMatrix(zeroMatrix, appMatrix);
-	//		assemblyInst->transform_sequence().clear();
-	//		assemblyInst->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
-	//		logger.debug(MString("Scaling invisible object to zero : ") + obj->shortName);
-	//		return;
-	//	}
-
-	//}
 }
 
 asr::Assembly *AppleseedRenderer::createObjectAssembly(mtap_MayaObject *obj)
@@ -110,6 +67,14 @@ asr::Assembly *AppleseedRenderer::createObjectAssembly(mtap_MayaObject *obj)
 
 asr::Assembly *AppleseedRenderer::getObjectAssembly(mtap_MayaObject *obj)
 {
+	if( obj->isInstanced() || (obj->instancerParticleId > -1))
+	{
+		if( obj->origObject != NULL )
+		{
+			mtap_MayaObject *orig = (mtap_MayaObject *)obj->origObject;
+			return this->scenePtr->assemblies().get_by_name(orig->getAssemblyName().asChar());
+		}
+	}
 	return this->scenePtr->assemblies().get_by_name(obj->getAssemblyName().asChar());
 }
 
@@ -148,7 +113,24 @@ asr::AssemblyInstance *AppleseedRenderer::createObjectAssemblyInstance(mtap_Maya
 asr::AssemblyInstance *AppleseedRenderer::getObjectAssemblyInstance(mtap_MayaObject *obj)
 {
 	this->defineMasterAssembly(); // make sure that we have a master
-	return this->masterAssembly->assembly_instances().get_by_name(obj->getAssemblyInstName().asChar());
+
+	if( obj->mobject.hasFn(MFn::kShape))
+	{
+		
+		if( obj->parent != NULL)
+		{
+			obj = (mtap_MayaObject *)obj->parent;
+			if( !obj->mobject.hasFn(MFn::kTransform) )
+			{
+				logger.error(MString("Object is not a transform: and it's parent is not a transform: ") + obj->shortName);
+				return 0;
+			}
+		}
+	}
+
+	MString name = obj->getAssemblyInstName();
+	asr::AssemblyInstance *ai = this->masterAssembly->assembly_instances().get_by_name(name.asChar());
+	return ai;
 }
 
 asr::Object *AppleseedRenderer::createObjectGeometry(mtap_MayaObject *obj)
@@ -167,32 +149,33 @@ asr::Object *AppleseedRenderer::getObjectGeometry(mtap_MayaObject *obj)
 	return object;
 }
 
+
 void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 {
 	logger.debug(MString("asr::updateShape: ") + obj->shortName);
 
-	if( !obj->isObjVisible() && !obj->hasInstancerConnection)
+	if( obj->isCamera())
 	{
-		logger.debug(MString("updateShape: obj is invisible, skipping ") + obj->shortName);
+		this->updateCamera(true);
 		return;
 	}
+
+	if( obj->isLight())
+	{
+		this->updateLight(obj);
+		return;
+	}
+
 	// get assembly, assemblyInstance and geometry
-	asr::Assembly *objectAssembly = obj->getObjectAssembly();
+	asr::Assembly *objectAssembly = this->getObjectAssembly(obj);
 
 	if( objectAssembly == NULL)
 	{
 		objectAssembly = this->createObjectAssembly(obj);
 	}
 
-	asr::AssemblyInstance *objectAssemblyInstance = this->getObjectAssemblyInstance(obj);
-	if( objectAssemblyInstance == NULL)
-	{
-		objectAssemblyInstance = this->createObjectAssemblyInstance(obj);
-	}
-
 	if( obj->mobject.hasFn(MFn::kMesh))
 	{
-
 		asr::Object *geometryObject = objectAssembly->objects().get_by_name(obj->getObjectName().asChar());
 		if( geometryObject != NULL)
 		{
@@ -209,15 +192,6 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 		}else{
 			this->putObjectIntoAssembly(objectAssembly, obj);
 		}
-	}
-	
-	if( obj->isCamera())
-	{
-		this->updateCamera(true);
-	}
-	if( obj->isLight())
-	{
-		this->updateLight(obj);
 	}
 }
 

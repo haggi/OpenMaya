@@ -78,7 +78,7 @@ void RenderQueueWorker::addCallbacks()
     {
         MObject             node = nodesIter.item();
         MFnDependencyNode   nodeFn(node);
-		logger.debug(MString("Adding dirty callback to node ") + nodeFn.name());
+		logger.detail(MString("Adding dirty callback to node ") + nodeFn.name());
 		MCallbackId id = MNodeMessage::addNodeDirtyCallback(node, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, NULL, &stat );
 		objIdMap[id] = node;
 
@@ -96,7 +96,7 @@ void RenderQueueWorker::addCallbacks()
 
 void RenderQueueWorker::pluginUnloadCallback(void *)
 {
-	logger.debug("pluginUnloadCallback.");
+	logger.detail("pluginUnloadCallback.");
 	RenderQueueWorker::removeCallbacks();
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
@@ -105,8 +105,7 @@ void RenderQueueWorker::pluginUnloadCallback(void *)
 
 void RenderQueueWorker::sceneCallback(void *)
 {
-	logger.debug("sceneCallback.");
-	// force the dummy renderer to stop
+	logger.detail("sceneCallback.");
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -116,7 +115,7 @@ void RenderQueueWorker::reAddCallbacks()
 {
 	MStatus stat;
 	std::vector<MObject>::iterator iter;
-	logger.debug("reAdd callbacks after idle.");
+	logger.detail("reAdd callbacks after idle.");
 	for( iter = modifiedObjList.begin(); iter != modifiedObjList.end(); iter++)
 	{
 		MObject node = *iter;
@@ -149,11 +148,11 @@ void RenderQueueWorker::renderQueueWorkerIdleCallback(float time, float lastTime
 		return;
 	}
 	std::vector<MObject>::iterator iter;
-	logger.debug("renderQueueWorkerIdleCallback.");
+	logger.detail("renderQueueWorkerIdleCallback.");
 	for( iter = modifiedObjList.begin(); iter != modifiedObjList.end(); iter++)
 	{
 		MObject obj = *iter;
-		logger.debug(MString("renderQueueWorkerIdleCallback::Found object ") + getObjectName(obj) + " in update list");		
+		logger.detail(MString("renderQueueWorkerIdleCallback::Found object ") + getObjectName(obj) + " in update list");		
 	}
 	
 	interactiveUpdateList = modifiedObjList;
@@ -174,12 +173,12 @@ void RenderQueueWorker::renderQueueWorkerNodeDirtyCallback(void *dummy)
 	iter = objIdMap.find(thisId);
 	if( iter == objIdMap.end())
 	{
-		logger.debug("Id not found.");
+		logger.detail("Id not found.");
 		return;
 	}
 	MObject mapMO = iter->second;
 	MString objName = getObjectName(mapMO);
-	logger.debug(MString("nodeDirty: ") + objName);
+	logger.detail(MString("nodeDirty: ") + objName);
 	modifiedObjList.push_back(mapMO);
 }
 
@@ -192,36 +191,18 @@ void RenderQueueWorker::renderQueueWorkerTimerCallback( float time, float lastTi
 
 void RenderQueueWorker::computationEventThread( void *dummy)
 {
-	//while(isRendering)
-	//{
-	//	boost::this_thread::sleep(boost::posix_time::milliseconds(50));
-		if(renderComputation.isInterruptRequested() && isRendering)
-		{
-			logger.debug("computationEventThread::InterruptRequested.");
-			EventQueue::Event e;
-			e.type = EventQueue::Event::INTERRUPT;
-			theRenderEventQueue()->push(e);
-			if(computationInterruptCallbackId != 0)
-			{
-				MMessage::removeCallback(computationInterruptCallbackId);
-				computationInterruptCallbackId = 0;
-			}
-		}
-	//}
-	//logger.detail("computationEventThread finished.");
-}
-
-// In UI work the rendering is not blocking
-// That means that the renderqueue method breaks the loop. But we need it for updating and messaging. 
-// So this thread calls the renderqueue method every 50ms to update rendering etc. 
-void RenderQueueWorker::uiUpdateEventThread(void *dummy)
-{
-	while(isRendering)
+	if(renderComputation.isInterruptRequested() && isRendering)
 	{
-		RenderQueueWorker::startRenderQueueWorker();
-		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
+		logger.detail("computationEventThread::InterruptRequested.");
+		EventQueue::Event e;
+		e.type = EventQueue::Event::INTERRUPT;
+		theRenderEventQueue()->push(e);
+		if(computationInterruptCallbackId != 0)
+		{
+			MMessage::removeCallback(computationInterruptCallbackId);
+			computationInterruptCallbackId = 0;
+		}
 	}
-	logger.detail("uiUpdateEventThread finished.");
 }
 
 void RenderQueueWorker::userThread(void *dummy)
@@ -241,7 +222,7 @@ void RenderQueueWorker::userThread(void *dummy)
 
 void RenderQueueWorker::addIdleUIComputationCreateCallback(void* data)
 {
-	logger.debug("addIdleUIComputationCreateCallback.");
+	logger.detail("addIdleUIComputationCreateCallback.");
 	renderComputation.beginComputation();
 
 	MMessage::removeCallback(computationInterruptCallbackId);
@@ -254,7 +235,7 @@ void RenderQueueWorker::addIdleUIComputationCreateCallback(void* data)
 void RenderQueueWorker::addIdleUIComputationCallback()
 {
 	MStatus status;
-	logger.debug("addIdleUIComputationCallback.");
+	logger.detail("addIdleUIComputationCallback.");
 	computationInterruptCallbackId = MEventMessage::addEventCallback("idle", RenderQueueWorker::addIdleUIComputationCreateCallback, NULL, &status);
 }
 
@@ -264,7 +245,7 @@ void RenderQueueWorker::sendFinalizeIfQueueEmpty(void *)
 	while( theRenderEventQueue()->size() > 0)
 		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 
-	logger.debug("sendFinalizeIfQueueEmpty: queue is null, sending finalize.");
+	logger.detail("sendFinalizeIfQueueEmpty: queue is null, sending finalize.");
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -308,10 +289,13 @@ void RenderQueueWorker::startRenderQueueWorker()
 						MMessage::removeCallback(computationInterruptCallbackId);
 					if(timerCallbackId != 0)
 						MMessage::removeCallback(timerCallbackId);
-					//renderComputation.endComputation();
 				}
 				if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
 				{
+					boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+					logger.debug("Waiting for render thread to finish");
+					MayaTo::MayaSceneFactory().getMayaScenePtr()->rendererThread.join();
+					logger.debug("Render thread to finished deleting scene");
 					MayaTo::MayaSceneFactory().deleteMaysScene();
 				}
 			}
@@ -330,16 +314,16 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, false, true);
 
-				if(mayaScene->renderType != MayaScene::IPR)
+				if( MGlobal::mayaState() != MGlobal::kBatch)
 				{
-					if( MGlobal::mayaState() != MGlobal::kBatch)
-						timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
-					//boost::thread(RenderQueueWorker::computationEventThread, (void *)NULL);
-					//if( MGlobal::mayaState() != MGlobal::kBatch)
-					//	boost::thread(RenderQueueWorker::uiUpdateEventThread, (void *)NULL);
+					timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
+
 					if( mayaScene->needsUserThread)
 						boost::thread(RenderQueueWorker::userThread, (void *)NULL);
-					//renderComputation.beginComputation();
+				}
+
+				if(mayaScene->renderType == MayaScene::NORMAL)
+				{
 					addIdleUIComputationCallback();
 				}
 
@@ -396,10 +380,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 				delete[] imageBuffer;
 				imageBuffer = NULL;
 			}
-
-			//e.type = EventQueue::Event::FINISH;
-			//theRenderEventQueue()->push(e);
-			//isRendering = false;
 			break;
 
 		case EventQueue::Event::RENDERDONE:
@@ -436,7 +416,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::INTERRUPT:
 			logger.debug("Event::INTERRUPT");
-			logger.debug(MString("Event::INTERRUPT - queueSize: ") + theRenderEventQueue()->size());
 			MayaTo::MayaSceneFactory().getMayaScenePtr()->stopRendering();
 			break;
 
@@ -519,6 +498,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 RenderQueueWorker::~RenderQueueWorker()
 {
 	// clean the queue
+	logger.debug("~RenderQueueWorker");
 	EventQueue::Event e;
 	while(RenderEventQueue.try_pop(e))
 	{}

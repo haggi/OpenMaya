@@ -483,11 +483,14 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
 
     def showLogFile(self):
         logfile = pm.workspace.path + "/applelog.log"
+        log.debug("Trying to open logfile: {0}".format(logfile))
         if os.path.exists(logfile):
             lh = open(logfile, 'r')
             rl = lh.readlines()
             for l in rl:
                 sys.__stdout__.write(l)
+        else:
+            print "Logfile", logfile, "not found"
             
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
