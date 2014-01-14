@@ -12,9 +12,9 @@ static Logging logger;
 
 void IndigoRenderer::defineCamera()
 {
-	for( size_t camId = 0; camId < this->mtin_renderGlobals->currentRenderPass->objectList.size(); camId++)
+	for( uint camId = 0; camId < this->mtin_scene->camList.size(); camId++)
 	{
-		mtin_MayaObject *icam = (mtin_MayaObject *)this->mtin_renderGlobals->currentRenderPass->objectList[camId];
+		mtin_MayaObject *icam = (mtin_MayaObject *)this->mtin_scene->camList[camId];
 		MFnCamera camFn(icam->dagPath);
 		float lensRadius = 0.01;
 		getFloat(MString("mtin_lensRadius"), camFn, lensRadius); 

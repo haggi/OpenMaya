@@ -38,13 +38,12 @@ public:
 	virtual void stopRendering();
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
-	virtual bool postParseCallback();
+	//virtual bool postParseCallback();
 	virtual void userThreadProcedure();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtin_MayaObject *getMayaObjectFromMap(MObject& mobj);
-	bool parseScene(ParseType ptype = NORMALPARSE);
+	//bool parseScene(ParseType ptype = NORMALPARSE);
 	mtin_MayaScene();
-	mtin_MayaScene(RenderType rtype);
 	~mtin_MayaScene();
 };
 

@@ -6,6 +6,7 @@
 #include "mtin_common/mtin_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "mayaSceneFactory.h"
 
 static Logging logger;
 
@@ -38,7 +39,7 @@ MSyntax MayaToIndigo::newSyntax()
 MStatus MayaToIndigo::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayatoIndigo...");
+	MGlobal::displayInfo("Executing mayaToIndigo...");
 	logger.setLogLevel(Logging::Debug);
 	
 	MArgDatabase argData(syntax(), args);
@@ -46,16 +47,29 @@ MStatus MayaToIndigo::doIt( const MArgList& args)
 	int width = -1;
 	int height = -1;
 
+	MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
+
+	if( !mayaScene->good )
+	{
+		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
+		MayaTo::MayaSceneFactory().deleteMaysScene();
+		return MS::kFailure;
+	}
+
 	if ( argData.isFlagSet("-width", &stat))
 	{
 		argData.getFlagArgument("-width", 0, width);
 		logger.debug(MString("width: ") + width);
+		if( width > 0 )
+			mayaScene->renderGlobals->imgWidth = width;
 	}
 
 	if ( argData.isFlagSet("-height", &stat))
 	{
 		argData.getFlagArgument("-height", 0, height);
 		logger.debug(MString("height: ") + height);
+		if( height > 0 )
+			mayaScene->renderGlobals->imgHeight = height;
 	}
 
 	if ( argData.isFlagSet("-stopIpr", &stat))
@@ -70,33 +84,19 @@ MStatus MayaToIndigo::doIt( const MArgList& args)
 	if ( argData.isFlagSet("-pauseIpr", &stat))
 	{
 		logger.debug(MString("-pauseIpr"));
+		logger.debug(MString("-stopIpr"));
+		EventQueue::Event e;
+		e.type = EventQueue::Event::IPRPAUSE;
+		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	MayaScene::RenderType rtype = MayaScene::NORMAL;
 	if ( argData.isFlagSet("-startIpr", &stat))
 	{
 		logger.debug(MString("-startIpr"));
-		rtype = MayaScene::IPR;
-	}else{
-		logger.debug(MString("normal render"));
+		mayaScene->setRenderType(MayaScene::IPR);
 	}
-
-	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
-	mtin_MayaScene *mayaScene = new mtin_MayaScene(rtype);
 	
-	if( !mayaScene->good )
-	{
-		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}
-
-	if( !mayaScene->parseScene(MayaScene::HIERARCHYPARSE) )
-	{
-		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
-
 	if ( argData.isFlagSet("-camera", &stat))
 	{
 	    MDagPath camera;
@@ -108,18 +108,11 @@ MStatus MayaToIndigo::doIt( const MArgList& args)
 		mayaScene->setCurrentCamera(camera);
 	}			
 
-	if( height > 0)
-		mayaScene->renderGlobals->imgHeight = height;
-
-	if( width > 0)
-		mayaScene->renderGlobals->imgWidth = width;
-
-	if(!mayaScene->renderScene())
-	{
-		logger.error("Problems have occurred during rendering of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
-
-	MGlobal::displayInfo("mayatoIndigo rendering done.\n");
+	EventQueue::Event e;
+	e.type = EventQueue::Event::INITRENDER;
+	theRenderEventQueue()->push(e);
+	
+	RenderQueueWorker::startRenderQueueWorker();
+	
 	return MStatus::kSuccess;
 }

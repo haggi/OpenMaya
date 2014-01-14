@@ -35,11 +35,7 @@ def preRenderOptimizeTextures(destFormat = "exr", optimizedFilePath = ""):
         if not fileNamePath.exists():
             log.debug("file texture could not be found, skipping.")
             continue
-            
-        if fileNamePath.ext[1:] == destFormat:
-            log.debug("file texture is already an " + destFormat + " skipping.")
-            continue
-        
+                    
         if fileTexture.useFrameExtension.get():
             log.debug("file texture is animated skipping.")
             continue

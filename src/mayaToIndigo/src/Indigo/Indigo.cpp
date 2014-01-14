@@ -227,11 +227,6 @@ void IndigoRenderer::render()
 		bm.writeUInt8BufferToBMP((imgName).asChar(), uint8_buffer->dataPtr(), uint8_buffer->width(), uint8_buffer->height());
 		logger.debug(MString("Saved image as: ") + imgName);
 	}
-
-	EventQueue::Event e;
-	e.data = NULL;
-	e.type = EventQueue::Event::FRAMEDONE;
-	theRenderEventQueue()->push(e);
 }
 
 void IndigoRenderer::initializeRenderer()

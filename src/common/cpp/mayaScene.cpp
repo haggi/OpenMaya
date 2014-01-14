@@ -408,10 +408,12 @@ bool MayaScene::updateScene()
 {
 	logger.debug(MString("MayaScene::updateSceneNew."));
 
-	std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
-	for(;mIter!=this->objectList.end(); mIter++)
+	//std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
+	//for(;mIter!=this->objectList.end(); mIter++)
+	for( int objId = this->objectList.size() - 1; objId >= 0; objId--)
 	{
-		MayaObject *obj = *mIter;
+		//MayaObject *obj = *mIter;
+		MayaObject *obj = this->objectList[objId];
 		obj->updateObject();
 		logger.debug(MString("updateObj: ") + obj->dagPath.fullPathName());
 
@@ -451,7 +453,7 @@ bool MayaScene::updateScene()
 	}
 
 
-
+	std::vector<MayaObject *>::iterator mIter;
 	mIter = this->lightList.begin();
 	for(;mIter!=this->lightList.end(); mIter++)
 	{

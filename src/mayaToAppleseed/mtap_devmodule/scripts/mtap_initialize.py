@@ -10,6 +10,7 @@ import Appleseed.appleseedMenu as appleseedMenu
 import Appleseed.appleseedShaderTools as shaderTools
 import path
 import tempfile
+import maya.cmds as cmds
 
 reload(Renderer)
 
@@ -481,8 +482,9 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         except:
             pass
 
-    def showLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
+    # this method only exists because I was unable to write the logfile during rendering
+    # it will be called from the plugin
+    def showLogFile(self, logfile):
         log.debug("Trying to open logfile: {0}".format(logfile))
         if os.path.exists(logfile):
             lh = open(logfile, 'r')
@@ -504,10 +506,6 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             pm.mayatoappleseed()
         else:
             pm.mayatoappleseed(width=width, height=height, camera=camera)
-            
-        if not self.ipr_isrunning:
-            self.showLogFile()
-        self.postRenderProcedure()
             
         
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
@@ -532,18 +530,19 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             #TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
-        if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
-            try:
-                optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
-            except:
-                optimizedPath = path.path(tempfile.gettempdir()) / "optimizedTextures"
-            if not os.path.exists(optimizedPath):
-                optimizedPath.makedirs()
-            self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
-
-        #craete optimized exr textures
-        mtap_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
-        shaderTools.createAutoShaderNodes()
+        if self.renderGlobalsNode.useOptimizedTextures.get():
+            if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
+                try:
+                    optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+                except:
+                    optimizedPath = path.path(tempfile.gettempdir()) / "optimizedTextures"
+                if not os.path.exists(optimizedPath):
+                    optimizedPath.makedirs()
+                self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
+    
+            #craete optimized exr textures
+            mtap_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
+            shaderTools.createAutoShaderNodes()
         
     def postRenderProcedure(self):
         mtap_optimizeTextures.postRenderOptimizeTextures()

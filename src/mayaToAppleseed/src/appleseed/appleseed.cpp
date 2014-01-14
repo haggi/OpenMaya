@@ -351,7 +351,8 @@ void AppleseedRenderer::render()
     //asr::global_logger().add_target(log_target.get());
 
 	m_log_target.reset(asf::create_file_log_target());
-	m_log_target->open((this->renderGlobals->basePath + "/applelog.log").asChar() );
+	MString logPath = this->renderGlobals->basePath + "/applelog" + (int)this->mtap_scene->renderGlobals->currentFrame + ".log";
+	m_log_target->open(logPath.asChar() );
 	asr::global_logger().add_target(m_log_target.get());
 
 	logger.debug("------------- start rendering ----------------------");
@@ -367,5 +368,19 @@ void AppleseedRenderer::render()
 	MString imageOutputFile =  renderGlobals->imageOutputFile;
 	project->get_frame()->write_main_image(imageOutputFile.asChar());
 	project->get_frame()->write_aov_images(imageOutputFile.asChar());
-	
+
+	// if we render sequences, we remove all geometry and other elemenet because
+	// otherwise we could have the case that we have a deforming geometry and it will receive more and more deform steps.
+	if( this->mtap_scene->renderType != MayaScene::IPR )
+	{
+		this->scene.reset();
+
+		if( MGlobal::mayaState() != MGlobal::kBatch )
+		{
+			MString cmd = MString("import mtap_initialize as minit; minit.theRenderer().showLogFile(\"") + logPath + "\")";
+			logger.debug(cmd);
+			MGlobal::executePythonCommand(cmd, true, false);	
+		}
+	}
+
 }

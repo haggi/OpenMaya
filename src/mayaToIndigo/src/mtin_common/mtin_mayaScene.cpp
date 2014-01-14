@@ -10,22 +10,11 @@
 
 static Logging logger;
 
-
-mtin_MayaScene::mtin_MayaScene():MayaScene(MayaScene::NORMAL)
+mtin_MayaScene::mtin_MayaScene():MayaScene()
 {
 	getRenderGlobals();
 	this->mtin_renderer.mtin_scene = this;
 	this->mtin_renderer.mtin_renderGlobals = this->renderGlobals;
-	this->userThreadUpdateInterval = 200;
-	this->needsUserThread = true;
-}
-
-mtin_MayaScene::mtin_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
-{
-	getRenderGlobals();
-	this->mtin_renderer.mtin_scene = this;
-	this->mtin_renderer.mtin_renderGlobals = this->renderGlobals;
-	this->renderType = rtype;
 	this->userThreadUpdateInterval = 200;
 	this->needsUserThread = true;
 }
@@ -326,20 +315,20 @@ bool mtin_MayaScene::renderImage()
 	return true;
 }
 
-bool mtin_MayaScene::parseScene(ParseType ptype)
-{
-	MayaScene::parseScene(ptype);
-	postParseCallback();
-	return true;
-}
-
-bool mtin_MayaScene::postParseCallback()
-{
-	logger.debug("mtin_MayaScene::postParseCallback");
-
-
-	return true;
-}
+//bool mtin_MayaScene::parseScene(ParseType ptype)
+//{
+//	MayaScene::parseScene(ptype);
+//	postParseCallback();
+//	return true;
+//}
+//
+//bool mtin_MayaScene::postParseCallback()
+//{
+//	logger.debug("mtin_MayaScene::postParseCallback");
+//
+//
+//	return true;
+//}
 
 
 
