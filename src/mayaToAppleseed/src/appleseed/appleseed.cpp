@@ -59,8 +59,9 @@ AppleseedRenderer::AppleseedRenderer()
 
 AppleseedRenderer::~AppleseedRenderer()
 {
-	logger.debug("Releasing scene");
-	this->scene.reset();
+	//logger.debug("Releasing scene");
+	//this->scene.reset();
+	//this->project->get_scene()->release();
 	logger.debug("Releasing project");
 	this->project.reset();
 	logger.debug("Releasing done.");
@@ -81,9 +82,8 @@ void AppleseedRenderer::defineProject()
 
 	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + ".appleseed";
 	this->project->set_path(outputPath.asChar());
-	this->scene = asr::SceneFactory::create();
-	this->scenePtr = this->scene.get();
-	this->project->set_scene(this->scene);
+	this->project->set_scene(asr::SceneFactory::create());
+	this->scenePtr = this->project->get_scene();
 
 	definedEntities.clear();
 }
@@ -165,7 +165,6 @@ void AppleseedRenderer::defineMasterAssembly()
 void AppleseedRenderer::defineScene(mtap_RenderGlobals *renderGlobals, std::vector<MayaObject *>& objectList, std::vector<MayaObject *>& lightList, std::vector<MayaObject *>& camList, std::vector<MayaObject *>& instancerList)
 {
 	logger.debug("AppleseedRenderer::defineScene");
-
 	// camera has to be defined here because the next command defineOutput will need a camera
 	this->updateCamera(true);
 	this->defineOutput();
@@ -220,6 +219,7 @@ void AppleseedRenderer::addDeformStep(mtap_MayaObject *obj, asr::Assembly *assem
 
 void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj)
 {
+	logger.debug(MString("putObjectIntoAssembly obj: ") + obj->shortName);
 	MMatrix matrix;
 	matrix.setToIdentity();
 	putObjectIntoAssembly(assembly, obj, matrix);
@@ -373,7 +373,9 @@ void AppleseedRenderer::render()
 	// otherwise we could have the case that we have a deforming geometry and it will receive more and more deform steps.
 	if( this->mtap_scene->renderType != MayaScene::IPR )
 	{
-		this->scene.reset();
+		this->project->set_scene(asf::auto_release_ptr<asr::Scene>(0));
+		this->project->set_scene(asr::SceneFactory::create());
+		this->scenePtr = this->project->get_scene();
 
 		if( MGlobal::mayaState() != MGlobal::kBatch )
 		{

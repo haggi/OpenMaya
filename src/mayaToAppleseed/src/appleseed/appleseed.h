@@ -90,6 +90,7 @@ public:
 	void writeXML();
 	void defineProject();
 	void defineConfig();
+	void addRenderParams(asr::ParamArray& pa);
 	void defineOutput();
 	void defineColor(MString& name, MColor& color, float intensity = 1.0f, MString colorSpace = "srgb");
 	void addDefaultMaterial(asr::Assembly *assembly);
@@ -160,7 +161,7 @@ public:
 
 	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj, MMatrix matrix); 
 	void putObjectIntoAssembly(asr::Assembly *assembly, mtap_MayaObject *obj); 
-	asf::auto_release_ptr<asr::Scene> scene;
+	//asf::auto_release_ptr<asr::Scene> scene;
 	asr::Scene *scenePtr;
 	
 	// shaders

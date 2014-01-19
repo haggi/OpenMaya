@@ -101,7 +101,12 @@ void MayaObject::getShadingGroups()
 		logger.debug(MString("getShadingGroups::Supported geo ") + this->shortName);
 		// only makes sense if we have a geometry shape.
 		if( this->mobject.hasFn(MFn::kMesh) || this->mobject.hasFn(MFn::kNurbsSurface) || this->mobject.hasFn(MFn::kParticle) || this->mobject.hasFn(MFn::kNParticle))
+		{
 			getObjectShadingGroups(this->dagPath, this->perFaceAssignments, this->shadingGroups);
+
+			// TEST MEM TEST MEM
+			//this->perFaceAssignments.clear();
+		}
 	}
 }
 
@@ -225,13 +230,10 @@ void MayaObject::initialize()
 		}	
 	}
 
-	// special case "world"
 	if( this->mobject.hasFn(MFn::kWorld))
 	{
 		this->shortName = this->fullName = this->fullNiceName = "world";
 	}
-
-	this->getShadingGroups();
 }
 
 MayaObject::MayaObject(MObject& mobject)

@@ -14,7 +14,10 @@ MObject MayaToAppleseedGlobals::colorSpace;
 MObject MayaToAppleseedGlobals::lightingEngine;
 MObject MayaToAppleseedGlobals::clamping;
 MObject MayaToAppleseedGlobals::maxError;
-MObject MayaToAppleseedGlobals::caustics;
+MObject MayaToAppleseedGlobals::enable_caustics;
+MObject MayaToAppleseedGlobals::enable_ibl;
+MObject MayaToAppleseedGlobals::enable_dl;
+MObject MayaToAppleseedGlobals::enable_diagnostics;
 MObject MayaToAppleseedGlobals::diffuseDepth;
 MObject MayaToAppleseedGlobals::glossyDepth;
 MObject MayaToAppleseedGlobals::assemblyExportType;
@@ -34,7 +37,7 @@ MObject MayaToAppleseedGlobals::max_ray_intensity;
 MObject MayaToAppleseedGlobals::assemblySBVH;
 
 
-//MObject MayaToAppleseedGlobals::imageFormat;
+MObject MayaToAppleseedGlobals::texCacheSize;
 MObject MayaToAppleseedGlobals::environmentMap;
 MObject MayaToAppleseedGlobals::assemblyPolyTheshold;
 MObject MayaToAppleseedGlobals::latlongHoShift;
@@ -55,7 +58,19 @@ MObject MayaToAppleseedGlobals::physicalSun;
 MObject MayaToAppleseedGlobals::physicalSunConnection;
 MObject MayaToAppleseedGlobals::sunTurbidity;
 MObject MayaToAppleseedGlobals::sunExitanceMultiplier;
-//MObject MayaToAppleseedGlobals::sunExitance;
+
+MObject MayaToAppleseedGlobals::sppmAlpha;
+MObject MayaToAppleseedGlobals::dl_mode;
+MObject MayaToAppleseedGlobals::env_photons_per_pass;
+MObject MayaToAppleseedGlobals::initial_radius;
+MObject MayaToAppleseedGlobals::light_photons_per_pass;
+MObject MayaToAppleseedGlobals:: max_photons_per_estimate;
+MObject MayaToAppleseedGlobals::photons_per_pass;
+
+MObject MayaToAppleseedGlobals::pixel_renderer;
+MObject MayaToAppleseedGlobals::rendererType;
+MObject MayaToAppleseedGlobals::frameRendererPasses;
+
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
 {
@@ -99,6 +114,17 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "64bit Double", 5 );
 	CHECK_MSTATUS(addAttribute( bitdepth ));
 
+	pixel_renderer = eAttr.create( "pixel_renderer", "pixel_renderer", 0, &stat);
+	stat = eAttr.addField( "adaptive", 0 );
+	stat = eAttr.addField( "uniform", 1 );
+	CHECK_MSTATUS(addAttribute( pixel_renderer ));
+
+	rendererType = eAttr.create( "rendererType", "rendererType", 0, &stat);
+	stat = eAttr.addField( "Tile Renderer", 0 );
+	stat = eAttr.addField( "Frame Renderer", 1 );
+	CHECK_MSTATUS(addAttribute( rendererType ));
+
+
 	colorSpace = eAttr.create( "colorSpace", "colorSpace", 0, &stat);
 	stat = eAttr.addField( "linear_rgb", 0 );
 	stat = eAttr.addField( "srgb", 1 );
@@ -108,6 +134,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	lightingEngine = eAttr.create( "lightingEngine", "lightingEngine", 0, &stat);
 	stat = eAttr.addField( "Path tracing", 0 );
 	stat = eAttr.addField( "Distributed Raytracing", 1 );
+	stat = eAttr.addField( "Stochastic Progressive Photon Mapping", 2 );
 	CHECK_MSTATUS(addAttribute( lightingEngine ));
 
 	clamping = nAttr.create("clamping", "clamping",  MFnNumericData::kBoolean, false);
@@ -116,11 +143,26 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	maxError = nAttr.create("maxError", "maxError",  MFnNumericData::kFloat, 0.01f);
 	CHECK_MSTATUS(addAttribute( maxError ));
 
-	caustics = nAttr.create("caustics", "caustics",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( caustics ));
+	enable_caustics = nAttr.create("enable_caustics", "enable_caustics",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( enable_caustics ));
+
+	enable_dl = nAttr.create("enable_dl", "enable_ibl",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( enable_dl ));
+
+	enable_dl = nAttr.create("enalbe_dl", "enable_dl",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( enable_dl ));
+
+	enable_diagnostics = nAttr.create("enable_diagnostics", "enable_diagnostics",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( enable_diagnostics ));
 
 	diffuseDepth = nAttr.create("diffuseDepth", "diffuseDepth",  MFnNumericData::kInt, 4);
 	CHECK_MSTATUS(addAttribute( diffuseDepth ));
+
+	texCacheSize = nAttr.create("texCacheSize", "texCacheSize",  MFnNumericData::kInt, 1024);
+	CHECK_MSTATUS(addAttribute( texCacheSize ));
+
+	frameRendererPasses = nAttr.create("frameRendererPasses", "frameRendererPasses",  MFnNumericData::kInt, 10);
+	CHECK_MSTATUS(addAttribute( frameRendererPasses ));
 
 	glossyDepth = nAttr.create("glossyDepth", "glossyDepth",  MFnNumericData::kInt, 4);
 	CHECK_MSTATUS(addAttribute( glossyDepth ));
@@ -146,19 +188,9 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	max_ray_intensity = nAttr.create("max_ray_intensity", "max_ray_intensity",  MFnNumericData::kFloat, 0.0f);
 	CHECK_MSTATUS(addAttribute( max_ray_intensity ));
 
-	//exportXMLFile = nAttr.create("exportXMLFile", "exportXMLFile",  MFnNumericData::kBoolean, false);
-	//CHECK_MSTATUS(addAttribute( exportXMLFile ));
-
-	//exportXMLFileName = tAttr.create("exportXMLFileName", "exportXMLFileName",  MFnNumericData::kString);
-	//tAttr.setUsedAsFilename(true);
-	//CHECK_MSTATUS(addAttribute( exportXMLFileName ));
-
 	// reduced to auto because we do not need the others (I hope) remove the whole attribute in the next release
 	assemblyExportType = eAttr.create( "assemblyExportType", "assemblyExportType", 0, &stat);
 	stat = eAttr.addField( "Auto", 0 );
-	//stat = eAttr.addField( "One Master Assembly", 1 );
-	//stat = eAttr.addField( "Per Shape Assembly", 2 );
-	//stat = eAttr.addField( "Per NamedSet Assembly", 3 );
 	CHECK_MSTATUS(addAttribute( assemblyExportType ));
 
 	assemblyPolyTheshold = nAttr.create("assemblyPolyTheshold", "assemblyPolyTheshold",  MFnNumericData::kInt, 10000);
@@ -195,7 +227,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute( environmentIntensity ));
 
-	directLightSamples = nAttr.create("directLightSamples", "directLightSamples",  MFnNumericData::kInt, 0);
+	directLightSamples = nAttr.create("directLightSamples", "directLightSamples",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( directLightSamples ));
 
 	latlongHoShift = nAttr.create("latlongHoShift", "latlongHoShift",  MFnNumericData::kFloat, .0f);
@@ -253,8 +285,26 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	sunExitanceMultiplier = nAttr.create("sunExitanceMultiplier", "sunExitanceMultiplier",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( sunExitanceMultiplier ));
 
-	//sunExitance = nAttr.create("sunExitance", "sunExitance",  MFnNumericData::kFloat, 1.0f);
-	//CHECK_MSTATUS(addAttribute( sunExitance ));
+	sppmAlpha = nAttr.create("sppmAlpha", "sppmAlpha",  MFnNumericData::kFloat, .8f);
+	CHECK_MSTATUS(addAttribute( sppmAlpha ));
+
+	dl_mode = tAttr.create("dl_mode", "dl_mode",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( dl_mode ));
+
+	env_photons_per_pass = nAttr.create("env_photons_per_pass", "env_photons_per_pass",  MFnNumericData::kInt, 100000);
+	CHECK_MSTATUS(addAttribute( env_photons_per_pass ));
+
+	initial_radius = nAttr.create("initial_radius", "initial_radius",  MFnNumericData::kFloat, .5f);
+	CHECK_MSTATUS(addAttribute( initial_radius ));
+
+	light_photons_per_pass = nAttr.create("light_photons_per_pass", "light_photons_per_pass",  MFnNumericData::kInt, 100000);
+	CHECK_MSTATUS(addAttribute( light_photons_per_pass ));
+
+	max_photons_per_estimate = nAttr.create("max_photons_per_estimate", "max_photons_per_estimate",  MFnNumericData::kInt, 100);
+	CHECK_MSTATUS(addAttribute( max_photons_per_estimate ));
+
+	photons_per_pass = nAttr.create("photons_per_pass", "photons_per_pass",  MFnNumericData::kInt, 100000);
+	CHECK_MSTATUS(addAttribute( photons_per_pass ));
 
 	return stat;
 

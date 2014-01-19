@@ -134,6 +134,7 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
         // A ShadingGroup will have a MFnSet 
         MObjectArray sets, comps;
         fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
+		logger.debug(MString("getConnectedSetsAndMembers done"));
 
         // Each set is a Shading Group. Loop through them.
         for(unsigned int i = 0; i < sets.length(); ++i)

@@ -38,14 +38,14 @@ public:
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
 	virtual void userThreadProcedure();
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
-	virtual bool postParseCallback();
+	//virtual bool postParseCallback();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtap_MayaObject *getMayaObjectFromMap(MObject& mobj);
-	bool parseScene();
-	void createObjAssembly(mtap_MayaObject *obj);
-	void createObjAssemblyInstances(mtap_MayaObject *obj);
-	asr::Assembly *createAssembly(mtap_MayaObject *obj);
-	asr::Assembly *getAssembly(mtap_MayaObject *obj);
+	//bool parseScene();
+	//void createObjAssembly(mtap_MayaObject *obj);
+	//void createObjAssemblyInstances(mtap_MayaObject *obj);
+	//asr::Assembly *createAssembly(mtap_MayaObject *obj);
+	//asr::Assembly *getAssembly(mtap_MayaObject *obj);
 	mtap_MayaScene();
 	~mtap_MayaScene();
 };

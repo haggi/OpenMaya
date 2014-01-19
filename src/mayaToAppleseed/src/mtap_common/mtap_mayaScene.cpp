@@ -370,33 +370,33 @@ bool mtap_MayaScene::renderImage()
 	return true;
 }
 
-bool mtap_MayaScene::parseScene()
-{
-	MayaScene::parseScene();
-	postParseCallback();
-	return true;
-}
+//bool mtap_MayaScene::parseScene()
+//{
+//	MayaScene::parseScene();
+//	postParseCallback();
+//	return true;
+//}
 
 //
 //	Here we build the assemblies and add them to the scene
 //  Because all assemblies will need an assembly instance, the 
 //	instances are defined as well.
 // 
-void mtap_MayaScene::createObjAssembly(mtap_MayaObject *obj)
-{
-	//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+//void mtap_MayaScene::createObjAssembly(mtap_MayaObject *obj)
+//{
+//	//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
+//
+//	//if( !obj->visible )
+//	//	if( !obj->isVisiblityAnimated() && (!obj->isInstanced()) )
+//	//		if( !att->hasInstancerConnection)
+//	//			return;
+//
+//	//if( att->needsOwnAssembly)
+//	//	obj->objectAssembly = createAssembly(obj);
+//}
 
-	//if( !obj->visible )
-	//	if( !obj->isVisiblityAnimated() && (!obj->isInstanced()) )
-	//		if( !att->hasInstancerConnection)
-	//			return;
-
-	//if( att->needsOwnAssembly)
-	//	obj->objectAssembly = createAssembly(obj);
-}
-
-void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
-{
+//void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
+//{
 	//mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
 
 	//// instances will be added below only for the original object
@@ -468,11 +468,11 @@ void mtap_MayaScene::createObjAssemblyInstances(mtap_MayaObject *obj)
 	//		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 	//	}
 	//}
-}
+//}
 
-bool mtap_MayaScene::postParseCallback()
-{
-	logger.debug("mtap_MayaScene::postParseCallback");
+//bool mtap_MayaScene::postParseCallback()
+//{
+//	logger.debug("mtap_MayaScene::postParseCallback");
 
 	//std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
 	//for(;mIter!=this->objectList.end(); mIter++)
@@ -517,53 +517,53 @@ bool mtap_MayaScene::postParseCallback()
 	//	this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
 	//}
 
-	return true;
-}
+//	return true;
+//}
 
 
-asr::Assembly *mtap_MayaScene::getAssembly(mtap_MayaObject *obj)
-{
-	return this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-}
-
-asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
-{
-	
-	logger.debug(MString("Creating new assembly for: ") + obj->fullName);
-	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
-	
-	asr::Assembly *assemblyPtr = NULL;
-	asr::Assembly *parentAssembly = NULL;
-
-	if( this->renderType == MayaScene::IPR)
-	{
-		if( obj->parent != NULL)
-		{
-			mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
-			parentAssembly = this->getAssembly(parent);
-			if( parentAssembly != NULL)
-			{
-				logger.debug(MString("Insert assembly ") + obj->shortName + " into parent " + parent->shortName);
-				parent->objectAssembly->assemblies().insert(assembly);
-				assemblyPtr = parent->objectAssembly->assemblies().get_by_name(obj->fullName.asChar());
-			}else{
-				this->mtap_renderer.scenePtr->assemblies().insert(assembly);
-				assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-			}
-		}else{
-			this->mtap_renderer.scenePtr->assemblies().insert(assembly);
-			assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-		}
-	}else{
-		this->mtap_renderer.scenePtr->assemblies().insert(assembly);
-		assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
-	}
-
-	if( this->renderGlobals->assemblySBVH )
-	{
-		if( obj->animated || obj->isShapeConnected() )
-			assemblyPtr->get_parameters().insert_path("acceleration_structure.algorithm", "sbvh");
-	}
-
-	return assemblyPtr;
-}
+//asr::Assembly *mtap_MayaScene::getAssembly(mtap_MayaObject *obj)
+//{
+//	return this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
+//}
+//
+//asr::Assembly *mtap_MayaScene::createAssembly(mtap_MayaObject *obj)
+//{
+//	
+//	logger.debug(MString("Creating new assembly for: ") + obj->fullName);
+//	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->fullName.asChar(), asr::ParamArray());
+//	
+//	asr::Assembly *assemblyPtr = NULL;
+//	asr::Assembly *parentAssembly = NULL;
+//
+//	if( this->renderType == MayaScene::IPR)
+//	{
+//		if( obj->parent != NULL)
+//		{
+//			mtap_MayaObject *parent = (mtap_MayaObject *)obj->parent;
+//			parentAssembly = this->getAssembly(parent);
+//			if( parentAssembly != NULL)
+//			{
+//				logger.debug(MString("Insert assembly ") + obj->shortName + " into parent " + parent->shortName);
+//				parent->objectAssembly->assemblies().insert(assembly);
+//				assemblyPtr = parent->objectAssembly->assemblies().get_by_name(obj->fullName.asChar());
+//			}else{
+//				this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+//				assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
+//			}
+//		}else{
+//			this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+//			assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
+//		}
+//	}else{
+//		this->mtap_renderer.scenePtr->assemblies().insert(assembly);
+//		assemblyPtr = this->mtap_renderer.scenePtr->assemblies().get_by_name(obj->fullName.asChar());
+//	}
+//
+//	if( this->renderGlobals->assemblySBVH )
+//	{
+//		if( obj->animated || obj->isShapeConnected() )
+//			assemblyPtr->get_parameters().insert_path("acceleration_structure.algorithm", "sbvh");
+//	}
+//
+//	return assemblyPtr;
+//}

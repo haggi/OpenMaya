@@ -161,8 +161,17 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getFloat(MString("maxError"), appleseedGlobals, this->maxError))
 			throw("problem reading appleseedGlobals.maxError");
 
-		if(!getBool(MString("caustics"), appleseedGlobals, this->caustics))
-			throw("problem reading appleseedGlobals.caustics");
+		if(!getBool(MString("enable_ibl"), appleseedGlobals, this->enable_ibl))
+			throw("problem reading appleseedGlobals.enable_ibl");
+
+		if(!getBool(MString("enable_dl"), appleseedGlobals, this->enable_dl))
+			throw("problem reading appleseedGlobals.enable_dl");
+
+		if(!getBool(MString("enable_diagnostics"), appleseedGlobals, this->enable_diagnostics))
+			throw("problem reading appleseedGlobals.enable_diagnostics");
+
+		if(!getBool(MString("enable_caustics"), appleseedGlobals, this->enable_caustics))
+			throw("problem reading appleseedGlobals.enable_caustics");
 
 		if(!getInt(MString("diffuseDepth"), appleseedGlobals, this->diffuseDepth))
 			throw("problem reading appleseedGlobals.diffuseDepth");
@@ -197,7 +206,7 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getColor(MString("gradientZenit"), appleseedGlobals, this->gradientZenit))
 			throw("problem reading appleseedGlobals.gradientZenit");
 
-		if(!getInt(MString("directLightSamples"), appleseedGlobals, this->directLightSamples))
+		if(!getFloat(MString("directLightSamples"), appleseedGlobals, this->directLightSamples))
 			throw("problem reading appleseedGlobals.directLightSamples");
 
 		if(!getEnum(MString("imageFormat"), appleseedGlobals, this->imageFormat, this->imageFormatString))
@@ -274,6 +283,40 @@ bool mtap_RenderGlobals::getMtapGlobals()
 
 		if(!getEnum(MString("motionBlurType"), appleseedGlobals, this->motionBlurType))
 			throw("problem reading appleseedGlobals.motionBlurType");
+
+		if(!getInt(MString("texCacheSize"), appleseedGlobals, this->texCacheSize))
+			throw("problem reading appleseedGlobals.texCacheSize");
+
+		if(!getInt(MString("env_photons_per_pass"), appleseedGlobals, this->env_photons_per_pass))
+			throw("problem reading appleseedGlobals.env_photons_per_pass");
+
+		if(!getInt(MString("light_photons_per_pass"), appleseedGlobals, this->light_photons_per_pass))
+			throw("problem reading appleseedGlobals.light_photons_per_pass");
+
+		if(!getInt(MString("max_photons_per_estimate"), appleseedGlobals, this->max_photons_per_estimate))
+			throw("problem reading appleseedGlobals.max_photons_per_estimate");
+
+		if(!getInt(MString("photons_per_pass"), appleseedGlobals, this->photons_per_pass))
+			throw("problem reading appleseedGlobals.photons_per_pass");
+
+		if(!getFloat(MString("sppmAlpha"), appleseedGlobals, this->sppmAlpha))
+			throw("problem reading appleseedGlobals.sppmAlpha");
+
+		if(!getFloat(MString("initial_radius"), appleseedGlobals, this->initial_radius))
+			throw("problem reading appleseedGlobals.initial_radius");
+
+		if(!getString(MString("dl_mode"), appleseedGlobals, this->dl_mode))
+			throw("problem reading appleseedGlobals.dl_mode");
+
+		if(!getEnum(MString("pixel_renderer"), appleseedGlobals, this->pixel_renderer))
+			throw("problem reading appleseedGlobals.pixel_renderer");
+
+		if(!getEnum(MString("rendererType"), appleseedGlobals, this->rendererType))
+			throw("problem reading appleseedGlobals.rendererType");
+
+		if(!getInt(MString("frameRendererPasses"), appleseedGlobals, this->frameRendererPasses))
+			throw("problem reading appleseedGlobals.frameRendererPasses");
+		
 
 		this->sceneScaleMatrix.setToIdentity();
 		this->sceneScaleMatrix.matrix[0][0] = this->sceneScale;

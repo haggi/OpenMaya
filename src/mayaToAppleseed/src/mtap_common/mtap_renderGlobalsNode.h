@@ -22,7 +22,10 @@ private:
 	static    MObject colorSpace;
 	static	  MObject clamping;
 	static	  MObject maxError;
-	static	  MObject caustics;
+	static	  MObject enable_caustics;
+	static	  MObject enable_ibl;
+	static	  MObject enable_dl;
+	static	  MObject enable_diagnostics;
 	static	  MObject diffuseDepth;
 	static	  MObject glossyDepth;
 	static	  MObject directLightSamples;
@@ -33,11 +36,12 @@ private:
 	static	  MObject max_path_length;
 	static	  MObject max_ray_intensity;
 	static	  MObject assemblySBVH;
+	static	  MObject pixel_renderer;
+	static	  MObject rendererType; // generic frame, tile based
+	static	  MObject frameRendererPasses;
 
-	//static    MObject filtertype;
+	static    MObject texCacheSize;
 	static	  MObject lightingEngine;
-	//static	  MObject exportXMLFile;
-	//static	  MObject exportXMLFileName;
 
 	static	  MObject assemblyExportType;
 	static	  MObject assemblyPolyTheshold;
@@ -66,11 +70,16 @@ private:
 	static	  MObject physicalSunConnection;
 	static	  MObject sunTurbidity;
 	static	  MObject sunExitanceMultiplier;
-//	static	  MObject sunExitance;
-
-//	static	  MObject imageFormat;
-
 	static	  MObject AOVs;
+
+	//sppm
+	static	  MObject sppmAlpha;
+	static	  MObject dl_mode;
+	static	  MObject env_photons_per_pass;
+	static	  MObject initial_radius;
+	static	  MObject light_photons_per_pass;
+	static	  MObject max_photons_per_estimate;
+	static	  MObject photons_per_pass;
 };
 
 #endif

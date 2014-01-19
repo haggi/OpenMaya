@@ -80,13 +80,11 @@ void AppleseedRenderer::updateCamera(bool shape)
 			camParams.insert("diaphragm_blades",  (MString("") + mtap_diaphragm_blades).asChar());
 			camParams.insert("diaphragm_tilt_angle",  (MString("") + mtap_diaphragm_tilt_angle).asChar());
 
-			asr::Camera *appleCam;
-			this->camera = asr::ThinLensCameraFactory().create(
+			asf::auto_release_ptr<asr::Camera> appleCam = asr::ThinLensCameraFactory().create(
 					cam->shortName.asChar(),
 					camParams);
-			appleCam = this->camera.get();		
-			fillTransformMatices(cam, appleCam);
-			this->scenePtr->set_camera(this->camera);
+			fillTransformMatices(cam, appleCam.get());
+			this->scenePtr->set_camera(appleCam);
 			break; // only one camera is supported at the moment
 		}else{
 			logger.debug(MString("Updating camera transform: ") + cam->shortName);

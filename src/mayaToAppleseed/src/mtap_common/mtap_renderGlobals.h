@@ -19,10 +19,13 @@ public:
 	MString lightingEngineString;
 	bool clamping;
 	float maxError;
-	bool caustics;
+	bool enable_caustics;
+	bool enable_ibl;
+	bool enable_dl;
+	bool enable_diagnostics;	
 	int diffuseDepth;
 	int glossyDepth;
-	int directLightSamples;
+	float directLightSamples;
 	int environmentSamples;
 	int bsdfSamples;
 	bool next_event_estimation;
@@ -30,6 +33,7 @@ public:
 	float max_path_length;
 	float max_ray_intensity;
 	bool assemblySBVH;
+	int texCacheSize;
 
 	bool exportXMLFile;
 	MString exportXMLFileName;
@@ -66,6 +70,17 @@ public:
 	float sunTurbidity;
 	float sunExitanceMultiplier;
 	float sunExitance;
+
+	float sppmAlpha;
+	MString dl_mode;
+	int env_photons_per_pass;
+	float initial_radius;
+	int light_photons_per_pass;
+	int max_photons_per_estimate;
+	int photons_per_pass;
+	int pixel_renderer;
+	int rendererType;
+	int frameRendererPasses;
 
 	virtual MString getImageExt();
 	virtual void setRendererUnit();

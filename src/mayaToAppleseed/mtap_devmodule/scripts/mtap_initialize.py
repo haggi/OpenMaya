@@ -39,7 +39,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def theRenderer(arg=None):
         if not AppleseedRenderer.theRendererInstance:
             AppleseedRenderer.theRendererInstance = AppleseedRenderer(RENDERER_NAME , __name__)
-            #AppleseedRenderer.theRendererInstance = AppleseedRenderer(RENDERER_NAME , "mtap_initialize")
+            # AppleseedRenderer.theRendererInstance = AppleseedRenderer(RENDERER_NAME , "mtap_initialize")
         return AppleseedRenderer.theRendererInstance
     
     def __init__(self, rendererName, moduleName):
@@ -70,25 +70,25 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         envDict = self.rendererTabUiDict['environment']
         envType = self.renderGlobalsNode.environmentType.get()
         
-        #Simply turn all off
+        # Simply turn all off
         for key in envDict.keys():
             envDict[key].setEnable(False)
         envDict['environmentType'].setEnable(True)
 
-        #Constant
+        # Constant
         if envType == 0:
             envDict['environmentColor'].setEnable(True)
-        #Gradient
+        # Gradient
         if envType == 1:
             envDict['gradientHorizon'].setEnable(True)
             envDict['gradientZenit'].setEnable(True)
-        #Map
+        # Map
         if envType == 2:
             envDict['environmentMap'].setEnable(True)
-        #SphericalMap
+        # SphericalMap
         if envType == 3:
             envDict['environmentMap'].setEnable(True)
-        #Pyhsical Sky
+        # Pyhsical Sky
         if envType == 4:
             envDict['pskModel'].setEnable(True)
             envDict['pskUsePhySun'].setEnable(True)
@@ -112,7 +112,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                 envDict['pskPhySun'].setText(str(sunConnection))
                 
             skyModel = self.renderGlobalsNode.skyModel.get()
-            if skyModel == 1: #hosek
+            if skyModel == 1:  # hosek
                 envDict['pskGrAlbedo'].setEnable(True)
             envDict['pskGrHShit'].setEnable(True)
             envDict['pskLumMulti'].setEnable(True)
@@ -162,7 +162,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         envDict['pskPhySun'] = pm.textFieldGrp(label="Sunobject:", text="", editable=False) 
                         envDict['pskSunExitMulti'] = pm.floatFieldGrp(label="sunExitance Multiplier:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskSunExitMulti'], self.renderGlobalsNodeName + ".sunExitanceMultiplier", index=2)             
-                        #pm.connectControl(envDict['pskPhySun'], self.renderGlobalsNodeName + ".physicalSunConnection", index=2)                                                                   
+                        # pm.connectControl(envDict['pskPhySun'], self.renderGlobalsNodeName + ".physicalSunConnection", index=2)                                                                   
                         pm.separator()
                         envDict['pskGrAlbedo'] = pm.floatFieldGrp(label="Ground Albedo:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskGrAlbedo'], self.renderGlobalsNodeName + ".ground_albedo", index=2)                    
@@ -172,10 +172,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         pm.connectControl(envDict['pskLumMulti'], self.renderGlobalsNodeName + ".luminance_multiplier", index=2)                    
                         envDict['pskSatMulti'] = pm.floatFieldGrp(label="Saturation Multiplier:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskSatMulti'], self.renderGlobalsNodeName + ".saturation_multiplier", index=2)                    
-                        #envDict['pskSunAzi'] = pm.floatFieldGrp(label="Sun Azimut:", value1=1.0, numberOfFields=1)
-                        #pm.connectControl(envDict['pskSunAzi'], self.renderGlobalsNodeName + ".sun_phi", index=2)                    
-                        #envDict['pskSunEle'] = pm.floatFieldGrp(label="Sun Elevation:", value1=1.0, numberOfFields=1)
-                        #pm.connectControl(envDict['pskSunEle'], self.renderGlobalsNodeName + ".sun_theta", index=2)                    
+                        # envDict['pskSunAzi'] = pm.floatFieldGrp(label="Sun Azimut:", value1=1.0, numberOfFields=1)
+                        # pm.connectControl(envDict['pskSunAzi'], self.renderGlobalsNodeName + ".sun_phi", index=2)                    
+                        # envDict['pskSunEle'] = pm.floatFieldGrp(label="Sun Elevation:", value1=1.0, numberOfFields=1)
+                        # pm.connectControl(envDict['pskSunEle'], self.renderGlobalsNodeName + ".sun_theta", index=2)                    
                         envDict['pskTurb'] = pm.floatFieldGrp(label="Turbidity:", value1=1.0, numberOfFields=1)
                         pm.connectControl(envDict['pskTurb'], self.renderGlobalsNodeName + ".turbidity", index=2)                    
                         envDict['pskTurbMax'] = pm.floatFieldGrp(label="Turbidity Max:", value1=1.0, numberOfFields=1)
@@ -286,28 +286,36 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.setUITemplate("renderGlobalsTemplate", pushTemplate=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ScrollLayout"
+        if self.rendererTabUiDict.has_key('common'):
+            self.rendererTabUiDict.pop('common')        
+        uiDict = {}
+        self.rendererTabUiDict['common'] = uiDict
+
+        
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                with pm.frameLayout(label="Sampling", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Pixel Sampler", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        ui = pm.checkBoxGrp(label="Adaptive Sampling:", value1=False, cc=self.AppleseedRendererUpdateTab)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".adaptiveSampling", index=2)
-                        self.rendererTabUiDict['minSamples'] = pm.intFieldGrp(label="Samples min:", value1=2, numberOfFields=1)
-                        pm.connectControl(self.rendererTabUiDict['minSamples'], self.renderGlobalsNodeName + ".minSamples", index=2)
-                        ui = pm.intFieldGrp(label="Samples max:", value1=16, numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".maxSamples", index=2)
-                        self.rendererTabUiDict['maxError'] = pm.floatFieldGrp(label="Max Error:", value1=0.01, numberOfFields=1)
-                        pm.connectControl(self.rendererTabUiDict['maxError'], self.renderGlobalsNodeName + ".maxError", index=2)
-                        pm.separator()
-                        ui = pm.checkBoxGrp(label="Motionblur:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doMotionBlur", index=2)
-                        ui = pm.checkBoxGrp(label="Depth Of Field:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".doDof", index=2)
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".pixel_renderer")
+                        ui = pm.attrEnumOptionMenuGrp(label="Pixel Sampler", at=self.renderGlobalsNodeName + ".pixel_renderer", ei=self.getEnumList(attr)) 
+
+                        self.addRenderGlobalsUIElement(attName='minSamples', uiType='int', displayName='Min Samples', default=False, uiDict=uiDict)                        
+                        self.addRenderGlobalsUIElement(attName='maxSamples', uiType='int', displayName='Max Samples', default=False, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='maxError', uiType='float', displayName='Max Error', default=False, uiDict=uiDict)
+
+                with pm.frameLayout(label="Filtering", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
+                        ui = pm.attrEnumOptionMenuGrp(label="Filter Type", at=self.renderGlobalsNodeName + ".filtertype", ei=self.getEnumList(attr)) 
+                        self.addRenderGlobalsUIElement(attName='filtersize', uiType='int', displayName='Filter Size', default=False, uiDict=uiDict)
+                        
+                with pm.frameLayout(label="Features", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                        self.addRenderGlobalsUIElement(attName='doMotionBlur', uiType='bool', displayName='Motion Blur', default=False, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='doDof', uiType='bool', displayName='Depth Of Field', default=False, uiDict=uiDict)
                     
                 with pm.frameLayout(label="Output", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".imageFormat")
-                        #ui = pm.attrEnumOptionMenuGrp(label = "Image Format", at=self.renderGlobalsNodeName + ".imageFormat", ei = self.getEnumList(attr)) 
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".bitdepth")
                         ui = pm.attrEnumOptionMenuGrp(label="Bit Depth", at=self.renderGlobalsNodeName + ".bitdepth", ei=self.getEnumList(attr)) 
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".colorSpace")
@@ -315,54 +323,55 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         ui = pm.checkBoxGrp(label="Clamping:", value1=False)
                         pm.connectControl(ui, self.renderGlobalsNodeName + ".clamping", index=2)
                     
-                with pm.frameLayout(label="Filtering", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".filtertype")
-                        ui = pm.attrEnumOptionMenuGrp(label="Filter Type", at=self.renderGlobalsNodeName + ".filtertype", ei=self.getEnumList(attr)) 
-                        ui = pm.intFieldGrp(label="Filter Size:", numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".filtersize", index=2)
-
-                with pm.frameLayout(label="Lighting", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Lighting Engine", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".lightingEngine")
                         ui = pm.attrEnumOptionMenuGrp(label="Lighting Engine", at=self.renderGlobalsNodeName + ".lightingEngine", ei=self.getEnumList(attr)) 
-                        ui = pm.intFieldGrp(label="Max Trace Depth:", value1=4, numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".maxTraceDepth", index=2)
-                        ui = pm.checkBoxGrp(label="Caustics:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".caustics", index=2)
-                        with pm.frameLayout(label="Advanced Lighting", collapsable=True, collapse=True):
+                        with pm.frameLayout(label="Common Settings", collapsable=True, collapse=True):
                             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                                ui = pm.intFieldGrp(label="Diffuse Depth:", value1=4, numberOfFields=1)
-                                pm.connectControl(ui, self.renderGlobalsNodeName + ".diffuseDepth", index=2)
-                                ui = pm.intFieldGrp(label="Glossy Depth:", value1=4, numberOfFields=1)
-                                pm.connectControl(ui, self.renderGlobalsNodeName + ".glossyDepth", index=2)
-                                ui = pm.intFieldGrp(label="Direct Light Samples:", value1=4, numberOfFields=1)
-                                pm.connectControl(ui, self.renderGlobalsNodeName + ".directLightSamples", index=2)
+                                self.addRenderGlobalsUIElement(attName='maxTraceDepth', uiType='int', displayName='Max Trace Depth', uiDict=uiDict)                        
+                                self.addRenderGlobalsUIElement(attName='rr_min_path_length', uiType='float', displayName='RR Min Path Len', uiDict=uiDict)                        
+                                self.addRenderGlobalsUIElement(attName='enable_caustics', uiType='bool', displayName='Enable Caustics', default=False, uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='enable_ibl', uiType='bool', displayName='Enable IBL', default=False, uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='enable_dl', uiType='bool', displayName='Enable Direct Light', default=False, uiDict=uiDict)
+                                
+                                self.addRenderGlobalsUIElement(attName='directLightSamples', uiType='int', displayName='Direct Light Samples', uiDict=uiDict)                        
+                                self.addRenderGlobalsUIElement(attName='environmentSamples', uiType='int', displayName='Environment Samples', uiDict=uiDict)                        
+                                
+                                self.addRenderGlobalsUIElement(attName='diffuseDepth', uiType='int', displayName='Diffuse Depth', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='glossyDepth', uiType='int', displayName='Glossy Depth', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='max_ray_intensity', uiType='float', displayName='Max Ray Intensity', uiDict=uiDict)                        
 
-                    
+                        with pm.frameLayout(label="SPPM Settings", collapsable=True, collapse=True):
+                            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                                self.addRenderGlobalsUIElement(attName='sppmAlpha', uiType='float', displayName='Alpha', uiDict=uiDict)                        
+                                self.addRenderGlobalsUIElement(attName='env_photons_per_pass', uiType='int', displayName='Env Photons PP', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='light_photons_per_pass', uiType='int', displayName='Light Photons PP', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='photons_per_pass', uiType='int', displayName='Photons PP', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='max_photons_per_estimate', uiType='int', displayName='Max Photons Per Estimate', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='initial_radius', uiType='float', displayName='Initial Radius', uiDict=uiDict)                        
+                                
                 with pm.frameLayout(label="Renderer", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        ui = pm.intFieldGrp(label="Threads:", numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".threads", index=2)
-                        ui = pm.intFieldGrp(label="Verbosity:", numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".rendererVerbosity", index=2)
-                        ui = pm.intFieldGrp(label="Tile Size:", value1=32, numberOfFields=1)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".tilesize", index=2)
-                        ui = pm.checkBoxGrp(label="Use SBVH Acceleration for mb:", value1=False)
-                        pm.connectControl(ui, self.renderGlobalsNodeName + ".assemblySBVH", index=2)
+                        self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads:', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='rendererVerbosity', uiType='int', displayName='Verbosity:', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='tilesize', uiType='int', displayName='Tile Size:', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='texCacheSize', uiType='int', displayName='Tex Cache Size (kb):', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='assemblySBVH', uiType='bool', displayName='Use SBVH Acc. for mb:', uiDict=uiDict)                        
                     
         pm.setUITemplate("renderGlobalsTemplate", popTemplate=True)                    
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         
-        #pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
+        # pm.scriptJob(attributeChange=[self.renderGlobalsNode.samplingType, pm.Callback(self.KrayRendererUIUpdateCallback, "sampling")])
 
-        #self.updateEnvironment()
+        # self.updateEnvironment()
         self.AppleseedRendererUpdateTab()
 
     def AppleseedRendererUpdateTab(self, dummy=None):
+        return
         self.createGlobalsNode()
-        #self.updateEnvironment()
+        # self.updateEnvironment()
         log.debug("AppleseedRendererUpdateTab()")
         if self.renderGlobalsNode.adaptiveSampling.get():
             self.rendererTabUiDict['minSamples'].setEnable(True)
@@ -396,30 +405,30 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     attr = pm.Attribute(self.renderGlobalsNodeName + ".translatorVerbosity")
                     ui = pm.attrEnumOptionMenuGrp(label="Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei=self.getEnumList(attr)) 
                 
-                with pm.frameLayout(label="{0} export".format(self.rendererName), collapsable = True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export {0} Scene file (no rendering):".format(self.rendererName), value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index = 2 )
+                with pm.frameLayout(label="{0} export".format(self.rendererName), collapsable=True, collapse=False):
+                    ui = pm.checkBoxGrp(label="Export {0} Scene file (no rendering):".format(self.rendererName), value1=False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index=2)
                     xmlDict = {}
                     self.rendererTabUiDict['xml'] = xmlDict
                     defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
                     if not defaultXMLPath.dirname().exists():
                         defaultXMLPath.dirname().makedirs()
                     with pm.rowLayout(nc=3):
-                        xmlDict['xmlFileText'] = pm.text(label = "Export to")
-                        xmlDict['xmlFile'] = pm.textField(text = defaultXMLPath)
+                        xmlDict['xmlFileText'] = pm.text(label="Export to")
+                        xmlDict['xmlFile'] = pm.textField(text=defaultXMLPath)
                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
-                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index = 2 )
+                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index=2)
                         
-                with pm.frameLayout(label="Optimize Textures", collapsable = True, collapse=False):
+                with pm.frameLayout(label="Optimize Textures", collapsable=True, collapse=False):
                     optiDict = {}
-                    ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1 = False)
-                    pm.connectControl(ui, self.renderGlobalsNodeName + ".useOptimizedTextures", index = 2 )
+                    ui = pm.checkBoxGrp(label="Use Optimized Textures:", value1=False)
+                    pm.connectControl(ui, self.renderGlobalsNodeName + ".useOptimizedTextures", index=2)
                     with pm.rowLayout(nc=3):
                         self.rendererTabUiDict['opti'] = optiDict
                         pm.text(label="OptimizedTex Dir:")
-                        optiDict['optiField'] = pm.textField(text = self.renderGlobalsNode.optimizedTexturePath.get())
+                        optiDict['optiField'] = pm.textField(text=self.renderGlobalsNode.optimizedTexturePath.get())
                         pm.symbolButton(image="navButtonBrowse.png", c=self.dirBrowse)
-                        pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index = 2 )
+                        pm.connectControl(optiDict['optiField'], self.renderGlobalsNodeName + ".optimizedTexturePath", index=2)
                         
                 with pm.frameLayout(label="Additional Settings", collapsable=True, collapse=False):
                     ui = pm.floatFieldGrp(label="Scene scale:", value1=1.0, numberOfFields=1)
@@ -447,7 +456,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         """Register Appleseed specific node extensions. e.g. camera type, diaphram_blades and others
         """
         # we will have a thinlens camera only
-        #pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
+        # pm.addExtension(nodeType="camera", longName="mtap_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_blades", attributeType="long", defaultValue=0)
         pm.addExtension(nodeType="camera", longName="mtap_diaphragm_tilt_angle", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="camera", longName="mtap_latLongLens", attributeType="bool", defaultValue=False)
@@ -527,7 +536,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def preRenderProcedure(self):
         self.createGlobalsNode()
         if self.renderGlobalsNode.threads.get() == 0:
-            #TODO this is windows only, search for another solution...
+            # TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
         if self.renderGlobalsNode.useOptimizedTextures.get():
@@ -540,7 +549,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     optimizedPath.makedirs()
                 self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
     
-            #craete optimized exr textures
+            # craete optimized exr textures
             mtap_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
             shaderTools.createAutoShaderNodes()
         
@@ -565,13 +574,13 @@ AETemplates directory, the automatic loading will not work. So I replace it with
 
 def loadAETemplates():    
     rendererName = "Appleseed"
-    aeDir = path.path(__file__).dirname() + "/" + rendererName +"/AETemplate/"
+    aeDir = path.path(__file__).dirname() + "/" + rendererName + "/AETemplate/"
     for d in aeDir.listdir("*.py"):
         if d.endswith("Template.py"):
             templateName = d.basename().replace(".py", "")
             pythonCommand = "import {1}.AETemplate.{0}".format(templateName, rendererName)
             melCommand = 'python("{0}");'.format(pythonCommand)
-            #log.debug("load aeTemplate: " + templateName + " : " + melCommand)
+            # log.debug("load aeTemplate: " + templateName + " : " + melCommand)
             pm.mel.eval(melCommand)
 
 def loadPlugins():
