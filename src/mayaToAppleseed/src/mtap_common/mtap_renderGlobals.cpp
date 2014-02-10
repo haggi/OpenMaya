@@ -311,11 +311,11 @@ bool mtap_RenderGlobals::getMtapGlobals()
 		if(!getEnum(MString("pixel_renderer"), appleseedGlobals, this->pixel_renderer))
 			throw("problem reading appleseedGlobals.pixel_renderer");
 
-		if(!getEnum(MString("rendererType"), appleseedGlobals, this->rendererType))
-			throw("problem reading appleseedGlobals.rendererType");
-
 		if(!getInt(MString("frameRendererPasses"), appleseedGlobals, this->frameRendererPasses))
 			throw("problem reading appleseedGlobals.frameRendererPasses");
+
+		if(!getFloat(MString("adaptiveQuality"), appleseedGlobals, this->adaptiveQuality))
+			throw("problem reading appleseedGlobals.adaptiveQuality");
 		
 
 		this->sceneScaleMatrix.setToIdentity();

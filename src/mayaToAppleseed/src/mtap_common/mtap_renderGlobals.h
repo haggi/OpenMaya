@@ -34,6 +34,7 @@ public:
 	float max_ray_intensity;
 	bool assemblySBVH;
 	int texCacheSize;
+	float adaptiveQuality;
 
 	bool exportXMLFile;
 	MString exportXMLFileName;
@@ -79,7 +80,6 @@ public:
 	int max_photons_per_estimate;
 	int photons_per_pass;
 	int pixel_renderer;
-	int rendererType;
 	int frameRendererPasses;
 
 	virtual MString getImageExt();

@@ -14,6 +14,7 @@ MObject MayaToAppleseedGlobals::colorSpace;
 MObject MayaToAppleseedGlobals::lightingEngine;
 MObject MayaToAppleseedGlobals::clamping;
 MObject MayaToAppleseedGlobals::maxError;
+MObject MayaToAppleseedGlobals::adaptiveQuality;
 MObject MayaToAppleseedGlobals::enable_caustics;
 MObject MayaToAppleseedGlobals::enable_ibl;
 MObject MayaToAppleseedGlobals::enable_dl;
@@ -68,7 +69,6 @@ MObject MayaToAppleseedGlobals:: max_photons_per_estimate;
 MObject MayaToAppleseedGlobals::photons_per_pass;
 
 MObject MayaToAppleseedGlobals::pixel_renderer;
-MObject MayaToAppleseedGlobals::rendererType;
 MObject MayaToAppleseedGlobals::frameRendererPasses;
 
 
@@ -119,12 +119,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	stat = eAttr.addField( "uniform", 1 );
 	CHECK_MSTATUS(addAttribute( pixel_renderer ));
 
-	rendererType = eAttr.create( "rendererType", "rendererType", 0, &stat);
-	stat = eAttr.addField( "Tile Renderer", 0 );
-	stat = eAttr.addField( "Frame Renderer", 1 );
-	CHECK_MSTATUS(addAttribute( rendererType ));
-
-
 	colorSpace = eAttr.create( "colorSpace", "colorSpace", 0, &stat);
 	stat = eAttr.addField( "linear_rgb", 0 );
 	stat = eAttr.addField( "srgb", 1 );
@@ -143,6 +137,9 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	maxError = nAttr.create("maxError", "maxError",  MFnNumericData::kFloat, 0.01f);
 	CHECK_MSTATUS(addAttribute( maxError ));
 
+	adaptiveQuality = nAttr.create("adaptiveQuality", "adaptiveQuality",  MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute( adaptiveQuality ));
+	
 	enable_caustics = nAttr.create("enable_caustics", "enable_caustics",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( enable_caustics ));
 
@@ -158,10 +155,10 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	diffuseDepth = nAttr.create("diffuseDepth", "diffuseDepth",  MFnNumericData::kInt, 4);
 	CHECK_MSTATUS(addAttribute( diffuseDepth ));
 
-	texCacheSize = nAttr.create("texCacheSize", "texCacheSize",  MFnNumericData::kInt, 1024);
+	texCacheSize = nAttr.create("texCacheSize", "texCacheSize",  MFnNumericData::kInt, 512);
 	CHECK_MSTATUS(addAttribute( texCacheSize ));
 
-	frameRendererPasses = nAttr.create("frameRendererPasses", "frameRendererPasses",  MFnNumericData::kInt, 10);
+	frameRendererPasses = nAttr.create("frameRendererPasses", "frameRendererPasses",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( frameRendererPasses ));
 
 	glossyDepth = nAttr.create("glossyDepth", "glossyDepth",  MFnNumericData::kInt, 4);

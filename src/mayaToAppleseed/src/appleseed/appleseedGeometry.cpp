@@ -126,6 +126,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 
 	// check for standInNode connection
 	MObjectArray connectedElements;
+	logger.debug(MString("findConnectedNodeTypes ") + meshFn.name());
 	findConnectedNodeTypes(MTAP_MESH_STANDIN_ID, meshObject, connectedElements, false);
 
 	if( connectedElements.length() > 0)

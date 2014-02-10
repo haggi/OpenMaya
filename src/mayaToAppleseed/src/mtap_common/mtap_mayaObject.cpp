@@ -51,11 +51,27 @@ MString mtap_MayaObject::getAssemblyName()
 		}
 	}
 
-	// we always use the transform name as assemblyName, if we have a shape node,
-	// go one element up to the transform node
+	// We always use the transform name as assemblyName, if we have a shape node,
+	// go one element up to the transform node.
 	MDagPath path = this->dagPath;
+	
 	if( this->mobject.hasFn(MFn::kShape) )
+	{
+		//logger.feature(MString("object is shape:") + this->dagPath.fullPathName());
+		if( this->isInstanced() )
+		{
+			MDagPathArray pathArray;
+			path.getAllPathsTo(this->mobject, pathArray);
+			//for( uint i = 0; i < pathArray.length(); i++)
+			//	logger.feature(MString("pathArray: index:") + i + " :: " + pathArray[i].fullPathName());
+			if( pathArray.length() > 0)
+			{
+				path = pathArray[0];
+				//logger.feature(MString("Using dagPath for instance ") + path.fullPathName() + " orig path: " + this->fullName);
+			}
+		}
 		path.pop();
+	}
 	return path.fullPathName() + "_ass";
 }
 

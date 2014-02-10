@@ -22,6 +22,7 @@ private:
 	static    MObject colorSpace;
 	static	  MObject clamping;
 	static	  MObject maxError;
+	static	  MObject adaptiveQuality;
 	static	  MObject enable_caustics;
 	static	  MObject enable_ibl;
 	static	  MObject enable_dl;
@@ -37,7 +38,6 @@ private:
 	static	  MObject max_ray_intensity;
 	static	  MObject assemblySBVH;
 	static	  MObject pixel_renderer;
-	static	  MObject rendererType; // generic frame, tile based
 	static	  MObject frameRendererPasses;
 
 	static    MObject texCacheSize;

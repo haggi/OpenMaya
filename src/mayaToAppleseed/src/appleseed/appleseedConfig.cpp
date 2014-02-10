@@ -18,34 +18,33 @@ void AppleseedRenderer::addRenderParams(asr::ParamArray& paramArray)
 	lightingEngines.append("sppm");
 	lightingEngine = lightingEngines[renderGlobals->lightingEngine];
 
-	//generic_frame_renderer
-	if( this->renderGlobals->rendererType == 0) // tile based renderer
-	{
-		paramArray.insert_path("generic_tile_renderer.min_samples", renderGlobals->minSamples);
-		paramArray.insert_path("generic_tile_renderer.max_samples", renderGlobals->maxSamples);
-		paramArray.insert_path("generic_tile_renderer.quality", renderGlobals->maxError);
-		paramArray.insert_path("generic_tile_renderer.enable_ibl", "true");
-		paramArray.insert_path("generic_tile_renderer.ibl_bsdf_samples", this->renderGlobals->bsdfSamples);
-		paramArray.insert_path("generic_tile_renderer.ibl_env_samples", this->renderGlobals->environmentSamples);
-		if( this->renderGlobals->pixel_renderer == 0 )
-			paramArray.insert_path("generic_tile_renderer.sampler",  "adaptive");
-		if( this->renderGlobals->pixel_renderer == 1 )
-			paramArray.insert_path("generic_tile_renderer.sampler",  "uniform");
+	paramArray.insert("rendering_threads", renderGlobals->threads);
+	paramArray.insert_path("texture_store.max_size", this->renderGlobals->texCacheSize * 1024 * 1024); // at least 128 MB
 
+	if( this->renderGlobals->pixel_renderer == 1) // 
+	{
+		paramArray.insert("pixel_renderer", "uniform");
+		paramArray.insert_path("uniform_pixel_renderer.decorrelate_pixels", true);
+		paramArray.insert_path("uniform_pixel_renderer.force_antialiasing", false);
+		paramArray.insert_path("uniform_pixel_renderer.samples", this->renderGlobals->maxSamples);
+	}
+	if( this->renderGlobals->pixel_renderer == 0) // adaptive
+	{
+		paramArray.insert("pixel_renderer", "adaptive");
+		paramArray.insert_path("adaptive_pixel_renderer.enable_diagnostics", this->renderGlobals->enable_diagnostics);
+		paramArray.insert_path("adaptive_pixel_renderer.min_samples", this->renderGlobals->minSamples);
+		paramArray.insert_path("adaptive_pixel_renderer.max_samples", this->renderGlobals->maxSamples);
+		paramArray.insert_path("adaptive_pixel_renderer.quality", this->renderGlobals->adaptiveQuality);
 	}
 
-	if( this->renderGlobals->rendererType == 1) // frame renderer
-	{
-		paramArray.insert_path("generic_frame_renderer.passes", renderGlobals->frameRendererPasses);
-	}
+	paramArray.insert_path("generic_frame_renderer.passes", renderGlobals->frameRendererPasses);
 
-	paramArray.insert_path("generic_frame_renderer.rendering_threads", renderGlobals->threads);
-	paramArray.insert_path("texture_store.max_size", this->renderGlobals->texCacheSize * 1024);
-	paramArray.insert_path("lighting_engine", lightingEngine.asChar());
+
+	paramArray.insert("lighting_engine", lightingEngine.asChar());
 	paramArray.insert_path((lightingEngine + ".max_path_length").asChar(), renderGlobals->maxTraceDepth);
 	paramArray.insert_path((lightingEngine + ".enable_ibl").asChar(), renderGlobals->enable_ibl);
 	paramArray.insert_path((lightingEngine + ".rr_min_path_length").asChar(), renderGlobals->rr_min_path_length);
-
+	
 	//drt + pt
 	if( renderGlobals->directLightSamples > 0)
 		paramArray.insert_path((lightingEngine + ".dl_light_samples").asChar(), this->renderGlobals->directLightSamples);

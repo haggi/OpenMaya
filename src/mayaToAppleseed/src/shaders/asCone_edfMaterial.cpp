@@ -144,6 +144,10 @@ MStatus asCone_edf::initialize()
 	radiance_multiplier = nAttr.create("radiance_multiplier", "radiance_multiplier",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( radiance_multiplier ));
 
+	cast_indirect_light = nAttr.create("cast_indirect_light", "cast_indirect_light",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( cast_indirect_light ));
+
+
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes

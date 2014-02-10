@@ -85,9 +85,14 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         # Map
         if envType == 2:
             envDict['environmentMap'].setEnable(True)
+            envDict['latlongVeShift'].setEnable(True)
+            envDict['latlongHoShift'].setEnable(True)
+            
         # SphericalMap
         if envType == 3:
             envDict['environmentMap'].setEnable(True)
+            envDict['latlongVeShift'].setEnable(True)
+            envDict['latlongHoShift'].setEnable(True)
         # Pyhsical Sky
         if envType == 4:
             envDict['pskModel'].setEnable(True)
@@ -132,6 +137,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         scLo = self.rendererName + "AOScrollLayout"
         envDict = {}
         self.rendererTabUiDict['environment'] = envDict
+        uiDict = envDict
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Environment Lighting", collapsable=False):
@@ -147,10 +153,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                         envDict['gradientHorizon'] = pm.attrColorSliderGrp(label="Gradient Horizon", at=self.renderGlobalsNodeName + ".gradientHorizon")
                         envDict['gradientZenit'] = pm.attrColorSliderGrp(label="Gradient Zenit", at=self.renderGlobalsNodeName + ".gradientZenit")
                         envDict['environmentMap'] = pm.attrColorSliderGrp(label="Environment Map", at=self.renderGlobalsNodeName + ".environmentMap")
-                        envDict['latLongHShift'] = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1=1.0, numberOfFields=1)
-                        pm.connectControl(envDict['latLongHShift'], self.renderGlobalsNodeName + ".latlongHoShift", index=2)
-                        envDict['latLongVShift'] = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1=1.0, numberOfFields=1)
-                        pm.connectControl(envDict['latLongVShift'], self.renderGlobalsNodeName + ".latlongVeShift", index=2)
+                        self.addRenderGlobalsUIElement(attName='latlongHoShift', uiType='float', displayName='LatLong Horiz Shift:', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='latlongVeShift', uiType='float', displayName='LatLong Vertical Shift:', uiDict=uiDict)
+#                         envDict['latLongHShift'] = pm.floatFieldGrp(label="LatLong Horiz Shift:", value1=1.0, numberOfFields=1)
+#                         pm.connectControl(envDict['latLongHShift'], self.renderGlobalsNodeName + ".latlongHoShift", index=2)
+#                         envDict['latLongVShift'] = pm.floatFieldGrp(label="LatLong Vertical Shift:", value1=1.0, numberOfFields=1)
+#                         pm.connectControl(envDict['latLongVShift'], self.renderGlobalsNodeName + ".latlongVeShift", index=2)
                     
                 with pm.frameLayout(label="Physical Sky", collapsable=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
@@ -296,12 +304,15 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Pixel Sampler", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".pixel_renderer")
-                        ui = pm.attrEnumOptionMenuGrp(label="Pixel Sampler", at=self.renderGlobalsNodeName + ".pixel_renderer", ei=self.getEnumList(attr)) 
-
+                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".pixel_renderer")
+                        #ui = pm.attrEnumOptionMenuGrp(label="Pixel Sampler", at=self.renderGlobalsNodeName + ".pixel_renderer", ei=self.getEnumList(attr)) 
+                        self.addRenderGlobalsUIElement(attName = 'pixel_renderer', uiType = 'enum', displayName = 'Pixel Sampler', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName='minSamples', uiType='int', displayName='Min Samples', default=False, uiDict=uiDict)                        
                         self.addRenderGlobalsUIElement(attName='maxSamples', uiType='int', displayName='Max Samples', default=False, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='maxError', uiType='float', displayName='Max Error', default=False, uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName='frameRendererPasses', uiType='int', displayName='Passes', uiDict=uiDict)
+                        
 
                 with pm.frameLayout(label="Filtering", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
@@ -327,7 +338,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                         attr = pm.Attribute(self.renderGlobalsNodeName + ".lightingEngine")
                         ui = pm.attrEnumOptionMenuGrp(label="Lighting Engine", at=self.renderGlobalsNodeName + ".lightingEngine", ei=self.getEnumList(attr)) 
-                        with pm.frameLayout(label="Common Settings", collapsable=True, collapse=True):
+                        with pm.frameLayout(label="Common Settings", collapsable=True, collapse=False):
                             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                                 self.addRenderGlobalsUIElement(attName='maxTraceDepth', uiType='int', displayName='Max Trace Depth', uiDict=uiDict)                        
                                 self.addRenderGlobalsUIElement(attName='rr_min_path_length', uiType='float', displayName='RR Min Path Len', uiDict=uiDict)                        
@@ -342,7 +353,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                                 self.addRenderGlobalsUIElement(attName='glossyDepth', uiType='int', displayName='Glossy Depth', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName='max_ray_intensity', uiType='float', displayName='Max Ray Intensity', uiDict=uiDict)                        
 
-                        with pm.frameLayout(label="SPPM Settings", collapsable=True, collapse=True):
+                        uiDict["SPPM Settings"] = pm.frameLayout(label="SPPM Settings", collapsable=True, collapse=False)
+                        with uiDict["SPPM Settings"]:
                             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                                 self.addRenderGlobalsUIElement(attName='sppmAlpha', uiType='float', displayName='Alpha', uiDict=uiDict)                        
                                 self.addRenderGlobalsUIElement(attName='env_photons_per_pass', uiType='int', displayName='Env Photons PP', uiDict=uiDict)
@@ -351,7 +363,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                                 self.addRenderGlobalsUIElement(attName='max_photons_per_estimate', uiType='int', displayName='Max Photons Per Estimate', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName='initial_radius', uiType='float', displayName='Initial Radius', uiDict=uiDict)                        
                                 
-                with pm.frameLayout(label="Renderer", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Renderer", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads:', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='rendererVerbosity', uiType='int', displayName='Verbosity:', uiDict=uiDict)
@@ -369,17 +381,30 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         self.AppleseedRendererUpdateTab()
 
     def AppleseedRendererUpdateTab(self, dummy=None):
-        return
         self.createGlobalsNode()
-        # self.updateEnvironment()
         log.debug("AppleseedRendererUpdateTab()")
-        if self.renderGlobalsNode.adaptiveSampling.get():
-            self.rendererTabUiDict['minSamples'].setEnable(True)
-            self.rendererTabUiDict['maxError'].setEnable(True)
-        else:
-            self.rendererTabUiDict['minSamples'].setEnable(False)
-            self.rendererTabUiDict['maxError'].setEnable(False)
+        if not self.rendererTabUiDict.has_key('common'):
+            return
+        
+        envDict = self.rendererTabUiDict['common']
+        
+        if self.renderGlobalsNode.pixel_renderer.get() == 0:
+            envDict['maxSamples'].setLabel("Max Samples")
+            envDict['minSamples'].setEnable(True)
+            envDict['maxSamples'].setEnable(True)
+            envDict['maxError'].setEnable(True)
+            
+        if self.renderGlobalsNode.pixel_renderer.get() == 1:
+            envDict['minSamples'].setEnable(False)
+            envDict['maxError'].setEnable(False)
+            envDict['maxSamples'].setLabel("Samples")
 
+        if self.renderGlobalsNode.lightingEngine.get() == 0: #path tracing
+            envDict["SPPM Settings"].setEnable(False)
+            
+        if self.renderGlobalsNode.lightingEngine.get() == 2: #sppm
+            envDict["SPPM Settings"].setEnable(True)
+        
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
         filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")

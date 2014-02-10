@@ -237,7 +237,7 @@ void AppleseedRenderer::putObjectIntoAssembly(asr::Assembly *assembly, mtap_Maya
 	this->createMesh(obj, meshArray, isProxy);
 
 	logger.debug(MString("Found ") + meshArray.size() + " meshes.");
-
+	
 	for( size_t meshId = 0; meshId < meshArray.size(); meshId++)
 	{
 		MString meshName = meshArray[meshId]->get_name();

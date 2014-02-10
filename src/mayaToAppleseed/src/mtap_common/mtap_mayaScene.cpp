@@ -38,19 +38,16 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 	if( !obj->mobject.hasFn(MFn::kTransform) && (obj->instancerParticleId < 0))
 		return;
 
-	logger.detail(MString("mtap_MayaScene::transformUpdateCallback"));
+	//logger.feature(MString("mtap_MayaScene::transformUpdateCallback") + mobj->shortName);
 
-	if( obj->instanceNumber > 0)
+	if( obj->instancerParticleId > -1)
 	{
 		if( obj->origObject == NULL)
 			return;
-	}else{
-		if( obj->instancerParticleId > -1)
-		{
-			if( obj->origObject == NULL)
-				return;
-		}
 	}
+
+	if( !obj->visible )
+		return;
 
 	this->mtap_renderer.updateTransform(obj);
 

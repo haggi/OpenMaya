@@ -140,6 +140,9 @@ MStatus asDiffuse_edf::initialize()
 	importance_multiplier = nAttr.create("importance_multiplier", "importance_multiplier",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( importance_multiplier ));
 
+	cast_indirect_light = nAttr.create("cast_indirect_light", "cast_indirect_light",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( cast_indirect_light ));
+
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes
