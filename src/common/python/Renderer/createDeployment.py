@@ -60,53 +60,65 @@ def zipdir(p, zipf):
 
 def createDeployment(renderer, shortCut, mayaRelease):
     
+    projectName = "mayaTo{0}".format(renderer.capitalize())
     if os.name == 'nt':
-        basePath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + renderer.capitalize())
+        basePath = path.path("H:/UserDatenHaggi/Documents/coding/OpenMaya/src/{0}".format(projectName))
     else:
-        pass
-    if not basePath:
-        print "No base path"
+        print "Os not supported"
         return
     
     sourceDir = path.path(basePath + "/" +  shortCut + "_devmodule")
-    destDir = path.path(basePath + "/deployment/mayaTo" + renderer.capitalize())
-    if destDir.exists():
-        print "rm old dir"
-        shutil.rmtree(destDir)
-        print "rm old dir done"
-        
-    os.makedirs(destDir)
-    
+    devDestDir = path.path("{0}/deployment/{1}".format(basePath, projectName))
+    if devDestDir.exists():
+        print "removing old {0} dir".format(devDestDir)
+        shutil.rmtree(devDestDir)
+
+    # dev destination directories                
+    try:
+        print "Creating destination directory", devDestDir
+        os.makedirs(devDestDir)
+    except WindowsError:
+        print "\nERROR: Failure creating {0}\n".format(devDestDir)
+        return
+
     # get folders from dev module
-    devFolders = ['bin', 'icons', 'plug-ins', 'ressources', 'shaders']
+    devFolders = ['bin', 'plug-ins', 'ressources', 'shaders']
     
     for folder in devFolders:
-        os.makedirs(destDir + "/" + folder)
-
+        print "Creating destination directory", devDestDir + "/" + folder
+        os.makedirs(devDestDir + "/" + folder)
+    
     #module file
-    shutil.copy(sourceDir+"/mayaTo" + renderer.capitalize() + ".mod", destDir)
-    mfh = open(destDir+"/mayaTo" + renderer.capitalize() + ".mod", "r")
+    shutil.copy(sourceDir+"/mayaTo" + renderer.capitalize() + ".mod", devDestDir)
+    mfh = open(devDestDir+"/mayaTo" + renderer.capitalize() + ".mod", "r")
     content = mfh.readlines()
     mfh.close()
-    mfh = open(destDir+"/mayaTo" + renderer.capitalize() + ".mod", "w")
+    mfh = open(devDestDir+"/mayaTo" + renderer.capitalize() + ".mod", "w")
     for c in content:
         mfh.write(c.replace(shortCut +"_devmodule", "mayaTo" + renderer.capitalize()))
     mfh.close()
+
     
     #mll
     print "copy ", sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll"
-    shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll", destDir + "/plug-ins/mayato" + renderer + ".mll")
+    shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll", devDestDir + "/plug-ins/mayato" + renderer + ".mll")
 
     #bin
     if renderer == "appleseed":
         dkDir = path.path(sourceDir.parent + "/devkit/appleseed_devkit_win64/bin/Release")
         for f in dkDir.listdir():
-            shutil.copy(f, destDir + "/bin")
+            shutil.copy(f, devDestDir + "/bin")
+
+    iconsSourceDir = "{0}/icons/".format(sourceDir)
+    iconsDestDir = "{0}/icons/".format(devDestDir)
+    shutil.copytree(iconsSourceDir, iconsDestDir)
+
+    return
 
     #scripts
     scDir = path.path(sourceDir.parent.parent + "/common/python/")
-    shutil.copytree(scDir, destDir + "/scripts/")
-    scDir = destDir + "/scripts/"
+    shutil.copytree(scDir, devDestDir + "/scripts/")
+    scDir = devDestDir + "/scripts/"
     files = scDir.listdir(".*")
     for f in files:
         if f.isdir():
@@ -125,39 +137,26 @@ def createDeployment(renderer, shortCut, mayaRelease):
                     continue
                 if file.startswith("."):
                     continue
-                dst = ff.replace(sourceDir, destDir)
+                dst = ff.replace(sourceDir, devDestDir)
                 print "copy", ff, "to", dst
                 shutil.copy(ff, dst)
             for d in dirs:
                 dd = path.path(os.path.join(root, d))
-                dst = dd.replace(sourceDir, destDir)
+                dst = dd.replace(sourceDir, devDestDir)
                 print "mkdir", dst
                 os.makedirs(dst)
                 
-#    scDir = path.path(sourceDir + "/scripts/")
-#    for f in scDir.listdir("*.py"):
-#        try:
-#            shutil.copytree(f, destDir + "/scripts/")
-#        except:
-#            pass
-#    scDir = path.path(sourceDir + "/scripts/AETemplates")
-#    for f in scDir.listdir("*.py"):
-#        try:
-#            shutil.copytree(f, destDir + "/scripts/AETemplates")
-#        except:
-#            pass
-#    print "chdir", destDir.parent    
-#    os.chdir(destDir.parent)        
-#    zippedFileName = "mayato" + renderer.lower() + ".zip"
-#    print "Creating zip file:", zippedFileName
-#    zip = zipfile.ZipFile(zippedFileName, 'w')
-#    zipdir("mayato" + renderer.lower(), zip)
-#    zip.close() 
-#    zip_folder(destDir, zippedFileName)
-
-#    for f in files:
-#        print "remove", f
-        #shutil.rmtree(f)
+    # get external folders 
+    extFolders = ['{0}Examples'.format(projectName)]
+        
+    for folder in extFolders:
+        deployDir = devDestDir.parent
+        try:
+            shutil.rmtree(deployDir + "/" + folder)
+        except:
+            pass
+        shutil.copytree(basePath + "/" + folder, deployDir + "/" + folder)
     
 if __name__ == "__main__":
-    createDeployment("appleseed", "mtap", "2013")
+    #createDeployment("appleseed", "mtap", "2013")    
+    createDeployment("corona", "mtco", "2014")

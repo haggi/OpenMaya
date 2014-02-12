@@ -40,13 +40,10 @@ public:
 	virtual void stopRendering();
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList);
 	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<MayaObject *>& mtapObjectList);
-	virtual bool postParseCallback();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mtco_MayaObject *getMayaObjectFromMap(MObject& mobj);
-	bool parseScene(ParseType ptype = NORMALPARSE);
 	virtual void userThreadProcedure();
 	mtco_MayaScene();
-	mtco_MayaScene(RenderType rtype);
 	virtual ~mtco_MayaScene();
 };
 

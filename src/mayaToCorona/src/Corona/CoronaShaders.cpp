@@ -125,7 +125,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 				int glassMode = 0;
 				getEnum(MString("glassMode"), depFn, glassMode);
-				Corona::GlassMode glassModes[] = {Corona::GlassMode::GLASS_ONESIDED, Corona::GlassMode::GLASS_TWOSIDED, Corona::GlassMode::GLASS_HYBRID};
+				Corona::GlassMode glassModes[] = {Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID};
 				data.refract.glassMode = glassModes[glassMode];
 
 				// --- volume ----

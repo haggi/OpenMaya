@@ -404,25 +404,27 @@ void MayaScene::setCurrentCamera(MDagPath camDagPath)
 	this->uiCamera = camDagPath;
 }
 
-bool MayaScene::updateScene()
+bool MayaScene::updateScene(MFn::Type updateElement)
 {
 	logger.debug(MString("MayaScene::updateSceneNew."));
 
-	//std::vector<MayaObject *>::iterator mIter = this->objectList.begin();
-	//for(;mIter!=this->objectList.end(); mIter++)
-	for( int objId = this->objectList.size() - 1; objId >= 0; objId--)
+	for( int objId = 0; objId < this->objectList.size(); objId++)
 	{
-		//MayaObject *obj = *mIter;
 		MayaObject *obj = this->objectList[objId];
+		
+		if( !obj->mobject.hasFn(updateElement))
+			continue;
+
 		obj->updateObject();
-		logger.debug(MString("updateObj: ") + obj->dagPath.fullPathName());
+		logger.feature(MString("updateObj ") + objId + ": " + obj->dagPath.fullPathName());
 
 		if( !this->renderGlobals->isMbStartStep )
 			if( !obj->motionBlurred )
 				continue;
 
 		if(this->renderGlobals->isDeformStep())
-			this->shapeUpdateCallback(obj);
+			if( obj->mobject.hasFn(MFn::kShape))
+				this->shapeUpdateCallback(obj);
 
 		if( this->renderGlobals->isTransformStep() )
 		{
@@ -430,9 +432,19 @@ bool MayaScene::updateScene()
 				obj->transformMatrices.clear();
 
 			obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
-			this->transformUpdateCallback(obj);
+			if( obj->mobject.hasFn(MFn::kTransform))
+				this->transformUpdateCallback(obj);
 		}
 	}
+
+
+	return true;
+}
+
+bool MayaScene::updateScene()
+{
+	updateScene(MFn::kShape);
+	updateScene(MFn::kTransform);
 
 	for(size_t camId = 0; camId < this->camList.size(); camId++)
 	{
@@ -784,12 +796,6 @@ bool MayaScene::doFrameJobs()
 			logger.info(MString("update scene done"));
 			this->renderGlobals->currentMbStep++;
 		}
-
-		// Here we set the output type to output window.
-		// This will use the trace() command. The reason is that otherways the output will not be printed until 
-		// the end of rendering.
-		if(this->renderType == MayaScene::NORMAL)
-			logger.setOutType(Logging::OutputWindow);
 
 		this->renderImage();
 		

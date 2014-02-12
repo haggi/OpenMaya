@@ -58,7 +58,9 @@ public:
 
 	MDagPath uiCamera;
 
+	MFn::Type updateElement;
 	bool updateScene(); // update all necessary objects
+	bool updateScene(MFn::Type updateElement); // update all necessary objects
 	bool updateInstancer(); // update all necessary objects
 	virtual void transformUpdateCallback(MayaObject *) = 0;
 	virtual void shapeUpdateCallback(MayaObject *) = 0;

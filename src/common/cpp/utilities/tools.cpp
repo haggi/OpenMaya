@@ -644,7 +644,7 @@ void posFromMatrix(MMatrix& matrix, MVector& pos)
 void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot)
 {
 	MTransformationMatrix tm(matrix);
-	MTransformationMatrix::RotationOrder order = MTransformationMatrix::RotationOrder::kXYZ;
+	MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
 	double rotation[3];
 	tm.getRotation(rotation, order, MSpace::kWorld);
 	rot.x = rotation[0];
@@ -656,7 +656,7 @@ void posRotFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot)
 void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot, MVector& scl)
 {
 	MTransformationMatrix tm(matrix);
-	MTransformationMatrix::RotationOrder order = MTransformationMatrix::RotationOrder::kXYZ;
+	MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
 	double rotation[3];
 	double scaling[3];
 	tm.getRotation(rotation, order, MSpace::kWorld);
@@ -888,6 +888,9 @@ void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& conne
 {
 
 	MGlobal::displayInfo(MString("thisNode: ") + getObjectName(thisObject));
+
+	MString name = getObjectName(thisObject);
+
 	MFnDependencyNode depFn(thisObject);
 	if(depFn.typeId().id() == nodeId)
 	{
@@ -901,11 +904,15 @@ void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& conne
 	MPlugArray plugArray;
 	depFn.getConnections(plugArray);
 
+	int numc = plugArray.length();
+
 	for( uint plugId = 0; plugId < plugArray.length(); plugId++)
 	{
 		MPlug plug = plugArray[plugId];
 		if( isPlugInList(plug, completeList))
 			continue;
+
+		completeList.append(plug);
 
 		MString pn = plug.name();
 		if( upstream && plug.isDestination())
@@ -922,7 +929,6 @@ void findConnectedNodeTypes(uint nodeId, MObject thisObject, MObjectArray& conne
 		{
 			findConnectedNodeTypes(nodeId, otherSidePlugs[cplugId].node(), connectedElements, completeList, upstream);
 		}		
-		completeList.append(plug);
 	}
 
 }

@@ -40,4 +40,7 @@ namespace EventQueue{
 
 std::vector<MObject> *getModifiedObjectList();
 
+void setStartComputation();
+void setEndComputation();
+
 #endif

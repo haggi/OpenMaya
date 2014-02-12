@@ -4,6 +4,7 @@
 #include "utilities/logging.h"
 #include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaObject.h"
+#include "../mtco_common/mtco_mayaScene.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 
@@ -12,9 +13,9 @@ static Logging logger;
 void CoronaRenderer::defineCamera()
 {
 	MPoint rot, pos, scale;
-	for( size_t camId = 0; camId < this->mtco_renderGlobals->currentRenderPass->objectList.size(); camId++)
+	for(int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
 	{
-		mtco_MayaObject *cam = (mtco_MayaObject *)this->mtco_renderGlobals->currentRenderPass->objectList[camId];
+		mtco_MayaObject *cam = (mtco_MayaObject *)this->mtco_scene->camList[objId];
 
 		logger.debug(MString("using camera ") + cam->shortName);
 		MFnCamera camera(cam->mobject);

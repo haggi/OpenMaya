@@ -232,6 +232,16 @@ void RenderQueueWorker::addIdleUIComputationCreateCallback(void* data)
 	renderComputation.endComputation();
 }
 
+void setStartComputation()
+{
+	renderComputation.beginComputation();
+}
+
+void setEndComputation()
+{
+	renderComputation.endComputation();
+}
+
 void RenderQueueWorker::addIdleUIComputationCallback()
 {
 	MStatus status;
@@ -278,8 +288,10 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 			if( MRenderView::doesRenderEditorExist())
 			{	
-				MRenderView::endRender();
-
+				status = MRenderView::endRender();
+				if(!status)
+					logger.debug(MString("MRenderView endRender failed: ") + status.errorString());
+				
 				if( isIpr )
 				{
 					isIpr = false;
@@ -299,6 +311,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 					MayaTo::MayaSceneFactory().deleteMaysScene();
 				}
 			}
+
 			tilesDone = 0;
 			break;
 		case EventQueue::Event::INITRENDER:
@@ -332,6 +345,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 				int numTY = (int)ceil((float)height/(float)mayaScene->renderGlobals->tilesize);
 				numTiles = numTX * numTY;
 
+				// Here we set the output type to output window.
+				// This will use the trace() command. The reason is that otherways the output will not be printed until 
+				// the end of rendering.
+				logger.setOutType(Logging::OutputWindow);
+
 				mayaScene->startRenderThread();
 
 				if(mayaScene->renderType == MayaScene::IPR)
@@ -339,6 +357,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 					RenderQueueWorker::addCallbacks();
 					isIpr = true;
 				}
+
 				break;
 			}
 		case EventQueue::Event::STARTRENDER:

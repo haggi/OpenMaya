@@ -10,23 +10,12 @@
 
 static Logging logger;
 
-
-mtco_MayaScene::mtco_MayaScene():MayaScene(MayaScene::NORMAL)
+mtco_MayaScene::mtco_MayaScene():MayaScene()
 {
 	getRenderGlobals();
 	this->mtco_renderer.mtco_scene = this;
+	this->cando_ipr = false;
 	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
-	this->userThreadUpdateInterval = 200;
-	this->needsUserThread = true;
-}
-
-mtco_MayaScene::mtco_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
-{
-	getRenderGlobals();
-	this->mtco_renderer.mtco_scene = this;
-	this->mtco_renderer.mtco_renderGlobals = this->renderGlobals;
-	//this->mtco_renderer.definePreRender();
-	this->renderType = rtype;
 	this->userThreadUpdateInterval = 200;
 	this->needsUserThread = true;
 }
@@ -325,27 +314,7 @@ bool mtco_MayaScene::renderImage()
 
 	this->renderGlobals->getImageName();
 
-	//this->mtco_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
-
-	//if( this->renderGlobals->exportXMLFile)
-	//	this->mtco_renderer.writeXML();
-
 	this->mtco_renderer.render();
-
-	return true;
-}
-
-bool mtco_MayaScene::parseScene(ParseType ptype)
-{
-	MayaScene::parseScene(ptype);
-	postParseCallback();
-	return true;
-}
-
-bool mtco_MayaScene::postParseCallback()
-{
-	logger.debug("mtco_MayaScene::postParseCallback");
-
 
 	return true;
 }

@@ -87,6 +87,8 @@ public:
 	void createScene();
 
 	void framebufferCallback();
+
+	void doit(); // for testing
 };
 
 #endif
