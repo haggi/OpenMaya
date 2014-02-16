@@ -82,7 +82,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         return
 
     # get folders from dev module
-    devFolders = ['bin', 'plug-ins', 'ressources', 'shaders']
+    devFolders = ['bin', 'plug-ins', 'shaders']
     
     for folder in devFolders:
         print "Creating destination directory", devDestDir + "/" + folder
@@ -100,22 +100,32 @@ def createDeployment(renderer, shortCut, mayaRelease):
 
     
     #mll
-    print "copy ", sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll"
-    shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + "release.mll", devDestDir + "/plug-ins/mayato" + renderer + ".mll")
+    print "copy ", sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + ".mll"
+    shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + ".mll", devDestDir + "/plug-ins/mayato" + renderer + ".mll")
 
+    #ressources
+    scDir = path.path(sourceDir + "/ressources")
+    shutil.copytree(scDir, devDestDir + "/ressources")
+    
     #bin
     if renderer == "appleseed":
         dkDir = path.path(sourceDir.parent + "/devkit/appleseed_devkit_win64/bin/Release")
         for f in dkDir.listdir():
             shutil.copy(f, devDestDir + "/bin")
 
+    if renderer == "corona":
+        binDir = sourceDir + "/bin"
+        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_vc_corona.dll", "Config-15610.conf"]:
+            sourceFile = binDir + "/" + f
+            destFile =   devDestDir + "/bin/" + f
+            print "Copy ", sourceFile, "to", destFile
+            shutil.copy(sourceFile, devDestDir + "/bin")
+
     iconsSourceDir = "{0}/icons/".format(sourceDir)
     iconsDestDir = "{0}/icons/".format(devDestDir)
     shutil.copytree(iconsSourceDir, iconsDestDir)
 
-    return
-
-    #scripts
+    #common python scripts
     scDir = path.path(sourceDir.parent.parent + "/common/python/")
     shutil.copytree(scDir, devDestDir + "/scripts/")
     scDir = devDestDir + "/scripts/"
@@ -130,6 +140,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
     for f in files:
         f.remove()
 
+    #renderer python scripts
     for root, dirs, files in os.walk(sourceDir + "/scripts/"):
             for file in files:
                 ff = path.path(os.path.join(root, file))
@@ -156,6 +167,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         except:
             pass
         shutil.copytree(basePath + "/" + folder, deployDir + "/" + folder)
+
     
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")    

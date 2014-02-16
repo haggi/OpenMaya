@@ -194,7 +194,6 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	}
 }
 
-
 Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
 {
 	Corona::IGeometryGroup* geom = NULL;

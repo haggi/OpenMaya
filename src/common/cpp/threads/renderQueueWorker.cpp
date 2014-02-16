@@ -2,7 +2,7 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "mayaSceneFactory.h"
-
+#include "memory/memoryInfo.h"
 #include <maya/MSceneMessage.h>
 #include <maya/MTimerMessage.h>
 #include <maya/MNodeMessage.h>
@@ -13,12 +13,15 @@
 #include "../dummyRenderer/dummyScene.h"
 #include "../mayaScene.h"
 
+#include <time.h>
+
 #include <maya/MGlobal.h>
 
 #include <map>
 
 static Logging logger;
 
+//static 
 static bool renderDone = false;
 static bool isRendering = false;
 static bool isIpr = false;
@@ -35,6 +38,9 @@ static std::vector<MObject> modifiedObjList;
 static std::vector<MObject> interactiveUpdateList;
 static std::vector<MDagPath> interactiveUpdateListDP;
 
+static clock_t renderStartTime = 0;
+static clock_t renderEndTime = 0;
+
 static std::map<MCallbackId, MObject> objIdMap;
 RV_PIXEL *imageBuffer = NULL;
 
@@ -47,6 +53,54 @@ EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue()
 
 RenderQueueWorker::RenderQueueWorker()
 {
+}
+
+void RenderQueueWorker::setStartTime()
+{
+	renderStartTime = clock();
+}
+
+void RenderQueueWorker::setEndTime()
+{
+	renderEndTime = clock();
+}
+
+MString RenderQueueWorker::getElapsedTimeString()
+{
+	int hours;
+	int minutes;
+	float sec;
+	float elapsedTime = (float)(renderEndTime - renderStartTime)/(float)CLOCKS_PER_SEC;
+	hours = elapsedTime/3600;
+	elapsedTime -= hours * 3600;
+	minutes = elapsedTime/60;
+	elapsedTime -= minutes * 60;
+	sec = elapsedTime;
+	char tmpStr[1024];
+	memset(tmpStr, '\0', 1024);
+	sprintf(tmpStr, "%2.2f", sec);
+	MString secString = tmpStr;
+	MString timeString = "";
+	if( hours > 0)
+		timeString += hours + ":";
+
+	if( (minutes > 0) || (hours > 0)) 
+		timeString += minutes + ":";
+
+	timeString = timeString + tmpStr;
+	return (MString("Render Time: ") + timeString);
+}
+
+MString RenderQueueWorker::getCaptionString()
+{
+	MString captionString;
+	MString frameString = MString("Frame ") + MayaTo::MayaSceneFactory().getMayaScenePtr()->renderGlobals->currentFrameNumber;
+	MString timeString = getElapsedTimeString();
+	size_t mem =  getPeakUsage();
+	MString memUnit = "MB";
+	MString memoryString = MString("Mem: ") + mem + memUnit;
+	captionString = MString("(") + getRendererName() + ")\\n" + frameString + "  " + timeString + "  " + memoryString;
+	return captionString;
 }
 
 std::vector<MObject> *getModifiedObjectList()
@@ -285,10 +339,15 @@ void RenderQueueWorker::startRenderQueueWorker()
 			logger.debug("Event::Finish");
 			terminateLoop = true;
 			isRendering = false;
-
+			setEndTime();
 			if( MRenderView::doesRenderEditorExist())
 			{	
 				status = MRenderView::endRender();
+				MString captionString = getCaptionString();
+				MString captionCmd = MString("pm.renderWindowEditor(\"renderView\", edit=True, pcaption=\"") + captionString + "\");";
+				logger.debug(captionCmd);
+				MGlobal::executePythonCommandOnIdle(captionCmd);
+
 				if(!status)
 					logger.debug(MString("MRenderView endRender failed: ") + status.errorString());
 				
@@ -317,15 +376,19 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::INITRENDER:
 			{
 				logger.debug("Event::InitRendering");
+				setStartTime();
 				computationInterruptCallbackId = 0;
 				renderDone = false;
 				isRendering = true;
+				logger.debug("Init check");
 				MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
 				int width = mayaScene->renderGlobals->imgWidth;
 				int height = mayaScene->renderGlobals->imgHeight;
 
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, false, true);
+
+				logger.debug("Init check0");
 
 				if( MGlobal::mayaState() != MGlobal::kBatch)
 				{
@@ -335,28 +398,37 @@ void RenderQueueWorker::startRenderQueueWorker()
 						boost::thread(RenderQueueWorker::userThread, (void *)NULL);
 				}
 
+				logger.debug("Init check1");
+
 				if(mayaScene->renderType == MayaScene::NORMAL)
 				{
 					addIdleUIComputationCallback();
 				}
 
+				logger.debug("Init check1a");
 				// calculate numtiles
 				int numTX = (int)ceil((float)width/(float)mayaScene->renderGlobals->tilesize);
 				int numTY = (int)ceil((float)height/(float)mayaScene->renderGlobals->tilesize);
 				numTiles = numTX * numTY;
+
+				logger.debug("Init check1b");
 
 				// Here we set the output type to output window.
 				// This will use the trace() command. The reason is that otherways the output will not be printed until 
 				// the end of rendering.
 				logger.setOutType(Logging::OutputWindow);
 
+				logger.debug(MString("start render thread: "));
+
 				mayaScene->startRenderThread();
+				logger.debug("Init check1c");
 
 				if(mayaScene->renderType == MayaScene::IPR)
 				{
 					RenderQueueWorker::addCallbacks();
 					isIpr = true;
 				}
+				logger.debug("Init check2");
 
 				break;
 			}

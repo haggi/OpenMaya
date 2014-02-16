@@ -27,7 +27,13 @@ public:
 	static void computationEventThread(void *);
 	static void userThread(void *);
 	static void sendFinalizeIfQueueEmpty(void *);
+	static void setStartTime();
+	static void setEndTime();
+	static MString getElapsedTimeString();
+	static MString getCaptionString();
+
 private:
+
 };
 
 namespace EventQueue{

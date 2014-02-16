@@ -8,5 +8,7 @@
 static size_t startUsage = 0;
 
 size_t getCurrentUsage();
+size_t getPeakUsage();
+
 
 #endif

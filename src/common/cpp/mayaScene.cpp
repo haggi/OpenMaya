@@ -817,6 +817,7 @@ bool MayaScene::doFrameJobs()
 
 void MayaScene::theRenderThread( MayaScene *mayaScene)
 {
+	logger.debug(MString("theRenderThread: renderScene"));
 	mayaScene->renderScene();
 
 	EventQueue::Event e;
@@ -826,7 +827,9 @@ void MayaScene::theRenderThread( MayaScene *mayaScene)
 
 void MayaScene::startRenderThread()
 {
+	logger.debug(MString("startRenderThread: startThread"));
 	rendererThread = boost::thread(MayaScene::theRenderThread, this);
+	logger.debug(MString("startRenderThread: startThread detach"));
 	rendererThread.detach();
 }
 

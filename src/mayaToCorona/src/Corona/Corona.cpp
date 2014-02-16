@@ -21,14 +21,12 @@ CoronaRenderer::CoronaRenderer()
 	this->context.isCancelled = false;
 
 	Corona::ICore::initLib(false);
-
 }
 
 CoronaRenderer::~CoronaRenderer()
 {
 	Corona::ICore::shutdownLib();
 }
-
 
 #ifdef CORONA_RELEASE_ASSERTS
 #pragma comment(lib, "PrecompiledLibs_Assert.lib")
@@ -171,8 +169,9 @@ void CoronaRenderer::doit()
 
     // populate the settings with parameters from a configuration file. If the file does not exist, a new one 
     // is created with default values.
+	Corona::String confPath = (getRendererHome() + "bin/").asChar();
     ConfParser parser;
-    parser.parseFile("./" CORONA_DEFAULT_CONF_FILENAME, context.settings, ConfParser::CREATE_IF_NONEXISTENT);
+    parser.parseFile(confPath + CORONA_DEFAULT_CONF_FILENAME, context.settings, ConfParser::CREATE_IF_NONEXISTENT);
 
 	this->defineSettings();
 	this->definePasses();
@@ -204,19 +203,7 @@ void CoronaRenderer::render()
 
 	//doit();
 	//return;
-
-	const char *f = "H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/ressources/shaderDefinitions.txt";
-	std::ifstream shaderFile(f);
-	if( !shaderFile.good())
-	{
-		logger.error(MString("Unable to open shaderInfoFile ") + MString(f));
-		shaderFile.close();
-		return;
-	}
-	std::string line;
-	std::getline(shaderFile, line);
-	logger.debug(line.c_str());
-	shaderFile.close();
+	logger.debug(MString("Starting corona rendering..."));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  INIT SHADING CORE + SCEME
@@ -227,6 +214,8 @@ void CoronaRenderer::render()
     context.scene = context.core->createScene();
     context.logger = new mtco_Logger(context.core);
 
+	logger.debug(MString("core/scene/logger..."));
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  SETTINGS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,9 +224,15 @@ void CoronaRenderer::render()
     // populate the settings with parameters from a configuration file. If the file does not exist, a new one 
     // is created with default values.
     ConfParser parser;
-    parser.parseFile("./" CORONA_DEFAULT_CONF_FILENAME, context.settings, true);
+	
+	Corona::String resPath = (getRendererHome() + "ressources/").asChar();
+	logger.debug(MString("parser: ") + (resPath + CORONA_DEFAULT_CONF_FILENAME).cStr());
+    parser.parseFile(resPath + CORONA_DEFAULT_CONF_FILENAME, context.settings, ConfParser::CREATE_IF_NONEXISTENT);
+
+	logger.debug(MString("defineSettings..."));
 
 	this->defineSettings();
+	logger.debug(MString("definePasses..."));
 	this->definePasses();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,22 +240,30 @@ void CoronaRenderer::render()
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // create a new framebuffer, and init it before the rendering
+	logger.debug(MString("createFb..."));
     context.fb = context.core->createFb();
     // the settings and render passes need to contain final parameters of the rendering at the time of the call
+	logger.debug(MString("initFb..."));
     context.fb->initFb(context.settings, context.renderPasses);
 	//Corona::ColorMappingData cmData;
 	//cmData.gamma = 1.0f;
 	//context.fb->setColorMapping(cmData);
+	logger.debug(MString("createScene..."));
 	createScene();
+	logger.debug(MString("createScene done..."));
 
     // test that the now ready scene and settings do not have any errors
+	logger.debug(MString("sanityCheck scene..."));
     context.core->sanityCheck(context.scene);
+	logger.debug(MString("sanityCheck settings..."));
     context.core->sanityCheck(context.settings);
 
 	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/corona/").asChar();
+	logger.debug(MString("beginSession..."));
     context.core->beginSession(context.scene, context.settings, context.fb, context.logger, basePath);
     
     // run the rendering. This function blocks until it is done
+	logger.debug(MString("renderFrame..."));
     context.core->renderFrame();
 	context.isCancelled = true;
     context.core->endSession();
