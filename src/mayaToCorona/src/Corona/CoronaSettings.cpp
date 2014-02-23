@@ -15,7 +15,22 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, this->mtco_renderGlobals->imgHeight);
     context.settings->set(Corona::PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
     context.settings->set(Corona::PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
+	
+	if( this->mtco_renderGlobals->renderer == 0)
+		context.settings->set(Corona::PARAM_RENDERER, 2);
+	if( this->mtco_renderGlobals->renderer == 1)
+		context.settings->set(Corona::PARAM_RENDERER, 0);
+	
+	context.settings->set(Corona::PARAM_IMAGE_BUCKETSIZE, this->mtco_renderGlobals->image_bucketSize);
+	context.settings->set(Corona::PARAM_BUCKET_INITIAL_SAMPLES, this->mtco_renderGlobals->buckets_initialSamples);
+	context.settings->set(Corona::PARAM_BUCKET_ADAPTIVE_STEPS, this->mtco_renderGlobals->buckets_adaptiveSteps);
+	context.settings->set(Corona::PARAM_BUCKETS_ADAPTIVE_THRESHOLD, this->mtco_renderGlobals->buckets_adaptiveThreshold);
+
 	context.settings->set(Corona::PARAM_PROGRESSIVE_MAX_PASSES, this->mtco_renderGlobals->progressive_maxPasses);
+	context.settings->set(Corona::PARAM_PROGRESSIVE_ADAPTIVITY, this->mtco_renderGlobals->progressive_adaptivity);
+	context.settings->set(Corona::PARAM_PROGRESSIVE_RECALCULATE_EVERY, this->mtco_renderGlobals->progressive_recalculateEvery);
+	context.settings->set(Corona::PARAM_PROGRESSIVE_TIME_LIMIT, this->mtco_renderGlobals->progressive_timeLimit);
+
 	context.settings->set(Corona::PARAM_NUM_THREADS, this->mtco_renderGlobals->threads);
 	context.settings->set(Corona::PARAM_EXPORT_ONLY, this->mtco_renderGlobals->exportSceneFile);
 	 

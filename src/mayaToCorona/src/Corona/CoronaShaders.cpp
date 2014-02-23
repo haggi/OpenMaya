@@ -149,6 +149,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
 				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
 
+
 			}else if(ss.typeName == "lambert"){
 				getColor("color", depFn, colorVal);
 				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
