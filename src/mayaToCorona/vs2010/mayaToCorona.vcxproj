@@ -60,7 +60,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
-      <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
@@ -166,10 +166,12 @@
     <ClInclude Include="..\src\shaders\textureBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\mtco_devmodule\ressources\releaseNotes.txt" />
     <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt" />
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
     <None Include="sourceCodeDocs\materials.txt" />
+    <None Include="sourceCodeDocs\todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

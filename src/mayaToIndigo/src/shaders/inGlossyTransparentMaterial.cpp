@@ -15,6 +15,7 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
+#include <maya/MDGModifier.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -42,6 +43,14 @@ void inGlossyTransparent::postConstructor( )
     // to get input data and store output data.
     //
     setMPSafe( true );
+
+	MDGModifier modifier;
+	MPlug sourcePlug = MPlug(this->thisMObject(), emission);
+	MPlug destPlug = MPlug(this->thisMObject(), aIncandescence);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	stat = modifier.doIt();
+
 }
 
 
@@ -78,6 +87,7 @@ MObject  inGlossyTransparent::aLightBlindData;
 MObject inGlossyTransparent::backface_emit;
 MObject inGlossyTransparent::layer;
 MObject inGlossyTransparent::exponent;
+MObject inGlossyTransparent::iesProfile;
 MObject inGlossyTransparent::internal_medium_name;
 MObject inGlossyTransparent::bump;
 MObject inGlossyTransparent::base_emission;
@@ -143,6 +153,10 @@ MStatus inGlossyTransparent::initialize()
 
 	exponent = nAttr.create("exponent", "exponent",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( exponent ));
+
+	iesProfile = tAttr.create("iesProfile", "iesProfile",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( iesProfile ));
 
 	internal_medium_name = mAttr.create("internal_medium_name", "internal_medium_name");
 	CHECK_MSTATUS(addAttribute( internal_medium_name ));

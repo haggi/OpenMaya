@@ -35,6 +35,7 @@ class AEinSpecularTemplate(BaseTemplate):
         self.addControl("base_emission", label="Emission Multiplier")
         self.addControl("displacement", label="Displacement")
         self.addControl("emission", label="Emission")
+        self.addControl("iesProfile", label="IES Profile")
         self.addControl("transparent", label="Transparent")
         self.addSeparator()
         #autoAddEnd

@@ -6,7 +6,9 @@
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
     <MAYA_ROOT>C:\Program Files\Autodesk\Maya2014</MAYA_ROOT>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <TargetExt>.mll</TargetExt>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(INDIGO_ROOT)/include;$(BOOST_ROOT);$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
@@ -23,6 +25,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(Configuration)\$(ProjectName).mll ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="INDIGO_ROOT">

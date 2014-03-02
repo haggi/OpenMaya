@@ -47,7 +47,15 @@ MStatus MayaToIndigo::doIt( const MArgList& args)
 	int width = -1;
 	int height = -1;
 
+	if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
+		MayaTo::MayaSceneFactory().deleteMaysScene();
 	MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
+
+	if( mayaScene->renderState == MayaScene::RENDERING )
+	{
+		logger.error("A render process is already in progress. Cancel request.\n\n");
+		return MS::kFailure;
+	}
 
 	if( !mayaScene->good )
 	{
@@ -107,6 +115,8 @@ MStatus MayaToIndigo::doIt( const MArgList& args)
 		logger.debug(MString("camera: ") + camera.fullPathName());
 		mayaScene->setCurrentCamera(camera);
 	}			
+
+	logger.setOutType(Logging::OutputWindow);
 
 	EventQueue::Event e;
 	e.type = EventQueue::Event::INITRENDER;

@@ -33,6 +33,7 @@ class AEinOrenNayarTemplate(BaseTemplate):
         self.addControl("bump", label="Bump")
         self.addControl("base_emission", label="Emission Multiplier")
         self.addControl("emission", label="Emission")
+        self.addControl("iesProfile", label="IES Profile")
         self.addControl("displacement", label="Displacement")
         self.addControl("sigma", label="Sigma")
         self.addControl("albedo", label="Albedo")

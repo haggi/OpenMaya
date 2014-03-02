@@ -803,8 +803,10 @@ bool MayaScene::doFrameJobs()
 		e.type = EventQueue::Event::FRAMEDONE;
 		theRenderEventQueue()->push(e);
 
-		if(this->renderType == MayaScene::NORMAL)
-			logger.setOutType(Logging::ScriptEditor);
+		logger.setOutType(Logging::OutputWindow);
+
+		//if(this->renderType == MayaScene::NORMAL)
+		//	logger.setOutType(Logging::ScriptEditor);
 
 		if( MGlobal::mayaState() != MGlobal::kBatch )
 			MGlobal::viewFrame(this->renderGlobals->currentFrame);

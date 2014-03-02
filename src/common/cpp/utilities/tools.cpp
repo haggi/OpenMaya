@@ -993,3 +993,44 @@ void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scal
 	scale.y = scal[1]; 
 	scale.z = scal[2];
 }
+
+void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, float inV, float& outU, float& outV)
+{
+	MObject texPlaceObj = getConnectedInNode(fileTextureNode, "uvCoord");
+	outU = inU;
+	outV = outV;
+	if( texPlaceObj == MObject::kNullObj )
+		return;
+
+	double offsetU = 0.0;
+	double offsetV = 0.0;
+
+	MFnDependencyNode texPlaceNode(texPlaceObj);
+	getDouble(MString("offsetU"), texPlaceNode, offsetU);
+	getDouble(MString("offsetV"), texPlaceNode, offsetV);
+	float repeatU = 1.0f, repeatV = 1.0f, rotateUV = 0.0f;
+	getFloat("repeatU",  texPlaceNode, repeatU);
+	getFloat("repeatV",  texPlaceNode, repeatV);
+	getFloat("rotateUV",  texPlaceNode, rotateUV);
+
+	MMatrix rotationMatrix;
+	rotationMatrix.setToIdentity();
+	rotationMatrix[0][0] =  cos(rotateUV) * repeatU;
+	rotationMatrix[1][0] = -sin(rotateUV) * repeatU;
+	rotationMatrix[0][1] =  sin(rotateUV) * repeatV;
+	rotationMatrix[1][1] =  cos(rotateUV) * repeatV;
+
+	MVector uv(inU - 0.5, inV - 0.5, 0.0);
+	uv = uv * rotationMatrix;
+	uv.x += 0.5;
+	uv.y += 0.5;
+
+	uv.x *= repeatU;
+	uv.y *= repeatV;
+
+	uv.x += offsetU;
+	uv.y += offsetV;
+
+	outU = uv.x;
+	outV = uv.y;
+}

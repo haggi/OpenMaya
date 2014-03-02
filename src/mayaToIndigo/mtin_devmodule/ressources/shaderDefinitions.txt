@@ -24,6 +24,7 @@ shader_start:inGlossyTransparent
 	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:exponent:float
+	inatt:iesProfile:string
 	inatt:internal_medium_name:message
 	inatt:bump:float
 	inatt:base_emission:color
@@ -38,11 +39,12 @@ shader_start:inPhong
 	inatt:backface_emit:bool
 	inatt:layer:int
 	inatt:exponent:float
+	inatt:iesProfile:string
 	inatt:bump:float
 	inatt:base_emission:color
 	inatt:ior:float
 	inatt:albedo:color
-	inatt:nk_data:enum
+	inatt:nk_data:string
 	inatt:emission:color
 	inatt:normalMap:color
 	inatt:specular_reflectivity:color
@@ -56,6 +58,7 @@ shader_end
 shader_start:inDiffuse
 	inatt:backface_emit:bool
 	inatt:layer:int
+	inatt:iesProfile:string
 	inatt:bump:float
 	inatt:base_emission:color
 	inatt:emission:color
@@ -73,6 +76,7 @@ shader_end
 shader_start:inDiffuseTransmitter
 	inatt:backface_emit:bool
 	inatt:layer:int
+	inatt:iesProfile:string
 	inatt:internal_medium_name:message
 	inatt:bump:float
 	inatt:base_emission:color
@@ -95,6 +99,7 @@ shader_end
 shader_start:inOrenNayar
 	inatt:backface_emit:bool
 	inatt:layer:int
+	inatt:iesProfile:string
 	inatt:bump:scalar
 	inatt:base_emission:color
 	inatt:emission:color
@@ -108,6 +113,7 @@ shader_end
 shader_start:inSpecular
 	inatt:backface_emit:bool
 	inatt:layer:int
+	inatt:iesProfile:string
 	inatt:internal_medium_name:message
 	inatt:bump:float
 	inatt:base_emission:color
@@ -121,6 +127,7 @@ shader_end
 shader_start:CoatingMaterial
 	inatt:backface_emit:bool
 	inatt:layer:int
+	inatt:iesProfile:string
 	inatt:bump:scalar
 	inatt:absorption:color
 	inatt:base_emission:color
@@ -132,28 +139,6 @@ shader_start:CoatingMaterial
 	inatt:normalMap:color
 	inatt:ior:float
 	inatt:thickness:float
-	outatt:outColor:color
-shader_end
-
-shader_start:inMediumEpidermis
-	inatt:precedence:int
-	outatt:outColor:color
-shader_end
-
-shader_start:inMediumDermis
-	inatt:precedence:int
-	outatt:outColor:color
-shader_end
-
-shader_start:inMediumBasic
-	inatt:subsurface_scattering:bool
-	inatt:precedence:int
-	inatt:scattering_coefficient_spectrum:color
-	inatt:absorption_coefficient_spectrum:color
-	inatt:ior:float
-	inatt:phase_function_hgg:color
-	inatt:cauchy_b_coeff:float
-	inatt:phase_function:enum
 	outatt:outColor:color
 shader_end
 

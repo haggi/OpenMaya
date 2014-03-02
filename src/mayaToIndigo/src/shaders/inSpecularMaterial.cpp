@@ -15,6 +15,7 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
+#include <maya/MDGModifier.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -42,6 +43,14 @@ void inSpecular::postConstructor( )
     // to get input data and store output data.
     //
     setMPSafe( true );
+
+	MDGModifier modifier;
+
+	MPlug sourcePlug = MPlug(this->thisMObject(), emission);
+	MPlug destPlug = MPlug(this->thisMObject(), aIncandescence);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	stat = modifier.doIt();
 }
 
 
@@ -77,6 +86,7 @@ MObject  inSpecular::aLightBlindData;
 //---------------------------- automatically created attributes start ------------------------------------
 MObject inSpecular::backface_emit;
 MObject inSpecular::layer;
+MObject inSpecular::iesProfile;
 MObject inSpecular::internal_medium_name;
 MObject inSpecular::bump;
 MObject inSpecular::base_emission;
@@ -140,6 +150,9 @@ MStatus inSpecular::initialize()
 
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
+
+	iesProfile = tAttr.create("iesProfile", "iesProfile",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( iesProfile ));
 
 	internal_medium_name = mAttr.create("internal_medium_name", "internal_medium_name");
 	CHECK_MSTATUS(addAttribute( internal_medium_name ));

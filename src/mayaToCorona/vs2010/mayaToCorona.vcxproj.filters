@@ -321,5 +321,11 @@
     <None Include="sourceCodeDocs\materials.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="..\mtco_devmodule\ressources\releaseNotes.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\todo.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

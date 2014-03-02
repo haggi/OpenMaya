@@ -80,7 +80,7 @@ void IndigoRenderer::defineEnvironment()
 		{
 			// first get the globals node and serach for a directional light connection
 			MObjectArray nodeList;
-			getConnectedInNodes(MString("environmentSun"), indigoGlobals, nodeList);
+			getConnectedInNodes(MString("sunLightConnection"), indigoGlobals, nodeList);
 			if( nodeList.length() > 0)
 			{
 				MObject sunObj = nodeList[0];

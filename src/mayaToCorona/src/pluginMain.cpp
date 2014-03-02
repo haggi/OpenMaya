@@ -1,6 +1,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
 
+#include "CoronaCore/api/Api.h"
 #include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
 #include "utilities/tools.h"
@@ -12,7 +13,7 @@ static const MString CoronaSurfacesDrawDBClassification("drawdb/shader/surface/C
 static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.2"
+#define VERSION "0.22"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -58,6 +59,9 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	Corona::ICore::initLib(false);
+
+
 	return status;
 }
 
@@ -101,6 +105,8 @@ MStatus uninitializePlugin( MObject obj)
 		status.perror("Problem executing cmd: mtco_initialize.unregister()");
 		return status;
 	}
+
+	Corona::ICore::shutdownLib();
 
 	return status;
 }

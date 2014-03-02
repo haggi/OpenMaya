@@ -15,6 +15,7 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
+#include <maya/MDGModifier.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -41,6 +42,20 @@ void inDiffuse::postConstructor( )
     // shared global data and should only use attributes in the datablock
     // to get input data and store output data.
     //
+	MStatus stat;
+
+	MDGModifier modifier;
+	MPlug sourcePlug(this->thisMObject(), albedo);
+	MPlug destPlug(this->thisMObject(), aColor);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	sourcePlug = MPlug(this->thisMObject(), emission);
+	destPlug = MPlug(this->thisMObject(), aIncandescence);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	stat = modifier.doIt();
+
+
     setMPSafe( true );
 }
 
@@ -77,6 +92,7 @@ MObject  inDiffuse::aLightBlindData;
 //---------------------------- automatically created attributes start ------------------------------------
 MObject inDiffuse::backface_emit;
 MObject inDiffuse::layer;
+MObject inDiffuse::iesProfile;
 MObject inDiffuse::bump;
 MObject inDiffuse::base_emission;
 MObject inDiffuse::emission;
@@ -139,6 +155,10 @@ MStatus inDiffuse::initialize()
 
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
+
+	iesProfile = tAttr.create("iesProfile", "iesProfile",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( iesProfile ));
 
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( bump ));
@@ -411,6 +431,7 @@ MStatus inDiffuse::initialize()
     //
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
+    CHECK_MSTATUS( attributeAffects( albedo, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
@@ -459,8 +480,11 @@ MStatus inDiffuse::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceNormal = block.inputValue( aNormalCamera, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-        MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
-        CHECK_MSTATUS( status );
+        MFloatVector& surfaceColor = block.inputValue( albedo, &status ).asFloatVector();
+        CHECK_MSTATUS( status );		
+
+//        MFloatVector& surfaceaColor = block.inputValue( aColor, &status ).asFloatVector();
+//       CHECK_MSTATUS( status );		
 
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
         CHECK_MSTATUS( status );

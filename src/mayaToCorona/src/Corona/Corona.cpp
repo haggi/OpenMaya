@@ -19,13 +19,11 @@ CoronaRenderer::CoronaRenderer()
 	this->context.logger = NULL;
 	this->context.settings = NULL;
 	this->context.isCancelled = false;
-
-	Corona::ICore::initLib(false);
 }
 
 CoronaRenderer::~CoronaRenderer()
 {
-	Corona::ICore::shutdownLib();
+	//Corona::ICore::shutdownLib();
 }
 
 #ifdef CORONA_RELEASE_ASSERTS

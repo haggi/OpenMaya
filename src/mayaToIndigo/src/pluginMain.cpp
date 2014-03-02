@@ -18,7 +18,7 @@
 #include "shaders/inMediumBasicMaterial.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.1"
+#define VERSION "0.11"
 
 static const MString inGlossyTransparentsRegistrantId("inGlossyTransparentPlugin");
 static const MString inGlossyTransparentsDrawDBClassification("drawdb/shader/surface/inGlossyTransparent");

@@ -147,6 +147,8 @@ MObject getConnectedShadingEngine(MObject node);
 
 void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scale);
 
+void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, float inV, float& outU, float& outV);
+
 
 #endif
 

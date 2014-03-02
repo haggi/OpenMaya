@@ -47,6 +47,7 @@ protected:
 	static    MObject backface_emit;
 	static    MObject layer;
 	static    MObject exponent;
+	static    MObject iesProfile;
 	static    MObject bump;
 	static    MObject base_emission;
 	static    MObject ior;

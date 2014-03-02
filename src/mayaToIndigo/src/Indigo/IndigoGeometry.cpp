@@ -156,7 +156,7 @@ void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
 		getBool("mtin_mesh_subdivViewDependent", meshFn, mesh_node->view_dependent_subdivision);
 		getDouble(MString("mtin_mesh_subdivPixelThreshold"), meshFn, mesh_node->subdivide_pixel_threshold);
 	}
-
+	
 	sceneRootRef->addChildNode(mesh_node);
 
 	obj->meshRef = mesh_node;
@@ -259,8 +259,18 @@ void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
     //Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), axis);
     //model->keyframes.push_back(posKf);
     //model->rotation = new Indigo::MatrixRotation(matRot);
+
 	createTransform(model, obj);
+	logger.debug(MString("Assinging material: ") + matRef->getName().dataPtr());
+
 	
+	for( uint i = 0; i < obj->iesProfilePaths.size(); i++)
+	{
+		Indigo::String iesPath(obj->iesProfilePaths[i].asChar());
+		Indigo::IESProfileRef iesRef(new Indigo::IESProfile(iesPath, matRef));
+		model->ies_profiles.push_back(iesRef);
+	}
+
 	model->setMaterials(Indigo::Vector<Indigo::SceneNodeMaterialRef>(1, matRef));		
 	sceneRootRef->addChildNode(model); // Add node to scene graph.
 }

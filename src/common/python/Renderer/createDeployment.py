@@ -73,6 +73,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         print "removing old {0} dir".format(devDestDir)
         shutil.rmtree(devDestDir)
 
+    deploymentDir =  path.path("{0}/deployment".format(basePath))
     # dev destination directories                
     try:
         print "Creating destination directory", devDestDir
@@ -82,7 +83,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         return
 
     # get folders from dev module
-    devFolders = ['bin', 'plug-ins', 'shaders']
+    devFolders = ['plug-ins', 'shaders']
     
     for folder in devFolders:
         print "Creating destination directory", devDestDir + "/" + folder
@@ -107,6 +108,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
     scDir = path.path(sourceDir + "/ressources")
     shutil.copytree(scDir, devDestDir + "/ressources")
     
+    manuapPdf = None
     #bin
     if renderer == "appleseed":
         dkDir = path.path(sourceDir.parent + "/devkit/appleseed_devkit_win64/bin/Release")
@@ -115,12 +117,31 @@ def createDeployment(renderer, shortCut, mayaRelease):
 
     if renderer == "corona":
         binDir = sourceDir + "/bin"
+        destBinDir = devDestDir + "/bin/"
+        if not destBinDir.exists():
+            destBinDir.makedirs()
         for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_vc_corona.dll", "Config-15610.conf"]:
             sourceFile = binDir + "/" + f
-            destFile =   devDestDir + "/bin/" + f
+            destFile =   destBinDir + f
             print "Copy ", sourceFile, "to", destFile
             shutil.copy(sourceFile, devDestDir + "/bin")
-
+        
+        manualPdf = path.path("C:/daten/web/openmaya/manuals/mayaToCorona/mayaToCorona.pdf")
+        
+    if manualPdf is not None:
+        docsDir = deploymentDir + "/docs"
+        print "Check", docsDir
+        if not docsDir.exists():
+            print "Create docs dir"
+            docsDir.makedirs()
+        manualPdf.copy2(docsDir)
+        
+    if renderer == "indigo":
+        binDir = sourceDir + "/bin"
+        destDir = devDestDir + "/bin"
+        shutil.copytree(binDir, destDir)
+        os.remove(destDir + "/licence.sig")
+        
     iconsSourceDir = "{0}/icons/".format(sourceDir)
     iconsDestDir = "{0}/icons/".format(devDestDir)
     shutil.copytree(iconsSourceDir, iconsDestDir)
@@ -171,4 +192,5 @@ def createDeployment(renderer, shortCut, mayaRelease):
     
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")    
-    createDeployment("corona", "mtco", "2014")
+    createDeployment("corona", "mtco", "2014")    
+    #createDeployment("indigo", "mtin", "2014")

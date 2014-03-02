@@ -45,6 +45,7 @@ protected:
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject backface_emit;
 	static    MObject layer;
+	static    MObject iesProfile;
 	static    MObject internal_medium_name;
 	static    MObject bump;
 	static    MObject base_emission;

@@ -50,7 +50,7 @@ entry['name'] = 'renderer'
 entry['type'] = 'enum'
 entry['displayName'] = 'Renderer'
 entry['default'] = 'Progressive'
-entry['addInfo'] = 'Progressive:Bucket:Ppm'
+entry['addInfo'] = 'Progressive:Bucket'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'accelerationStructure'

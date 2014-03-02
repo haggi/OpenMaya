@@ -37,7 +37,7 @@ public:
 	Indigo::SceneNodeRootRef sceneRootRef;
 	Indigo::SceneNodeMaterialRef currentSceneNodeMaterialRef;
 	Indigo::Material *currentMaterial;
-
+	std::vector<MString> currentIESPathList;
 	bool rendererStarted;
 	bool rendererAborted;
 

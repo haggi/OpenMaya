@@ -6,7 +6,7 @@ lowThreadPriority, bool, Lowthreadpriority, true
 vfb_showBucketOrder, bool, Vfb_showbucketorder, false
 doShading, bool, Doshading, true
 doAa, bool, Doaa, true
-renderer, enum, Renderer, Progressive ,Progressive:Bucket:Ppm
+renderer, enum, Renderer, Progressive ,Progressive:Bucket
 accelerationStructure, enum, Accelerationstructure, Embree_bvh4_spatial ,None:Embree_bvh4_spatial
 gi_primarySolver, enum, Gi_primarysolver, Pathtracing ,Pathtracing:None:Irradiance_cache
 gi_secondarySolver, enum, Gi_secondarysolver, Pathtracing ,Pathtracing:None:Vpl

@@ -35,6 +35,7 @@ class AEinDiffuseTransmitterTemplate(BaseTemplate):
         self.addControl("base_emission", label="Emission Multiplier")
         self.addControl("displacement", label="Displacement")
         self.addControl("emission", label="Emission")
+        self.addControl("iesProfile", label="IES Profile")
         self.addControl("albedo", label="Albedo")
         self.addSeparator()
         #autoAddEnd

@@ -119,7 +119,7 @@ MStatus	MayaToIndigoGlobals::initialize()
 	image_save_period = nAttr.create("image_save_period", "image_save_period",  MFnNumericData::kFloat, 60);
 	CHECK_MSTATUS(addAttribute( image_save_period ));
 
-	halt_time = nAttr.create("halt_time", "halt_time",  MFnNumericData::kFloat, -1);
+	halt_time = nAttr.create("halt_time", "halt_time",  MFnNumericData::kFloat, 30);
 	CHECK_MSTATUS(addAttribute( halt_time ));
 
 	halt_samples_per_pixel = nAttr.create("halt_samples_per_pixel", "halt_samples_per_pixel",  MFnNumericData::kInt, -1);

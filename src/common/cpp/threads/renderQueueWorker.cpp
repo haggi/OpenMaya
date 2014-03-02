@@ -152,17 +152,17 @@ void RenderQueueWorker::pluginUnloadCallback(void *)
 {
 	logger.detail("pluginUnloadCallback.");
 	RenderQueueWorker::removeCallbacks();
-	EventQueue::Event e;
-	e.type = EventQueue::Event::FINISH;
-	theRenderEventQueue()->push(e);
+	//EventQueue::Event e;
+	//e.type = EventQueue::Event::FINISH;
+	//theRenderEventQueue()->push(e);
 }
 
 void RenderQueueWorker::sceneCallback(void *)
 {
 	logger.detail("sceneCallback.");
-	EventQueue::Event e;
-	e.type = EventQueue::Event::FINISH;
-	theRenderEventQueue()->push(e);
+	//EventQueue::Event e;
+	//e.type = EventQueue::Event::FINISH;
+	//theRenderEventQueue()->push(e);
 }
 
 void RenderQueueWorker::reAddCallbacks()
@@ -267,6 +267,7 @@ void RenderQueueWorker::userThread(void *dummy)
 		if (MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
 		{
 			updateInterval = MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadUpdateInterval;
+			logger.debug("call user event proc.");
 			MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadProcedure();
 		}
 		boost::this_thread::sleep(boost::posix_time::milliseconds(updateInterval));
@@ -338,35 +339,31 @@ void RenderQueueWorker::startRenderQueueWorker()
 		case EventQueue::Event::FINISH:
 			logger.debug("Event::Finish");
 			terminateLoop = true;
-			isRendering = false;
 			setEndTime();
 			if( MRenderView::doesRenderEditorExist())
 			{	
 				status = MRenderView::endRender();
 				MString captionString = getCaptionString();
-				MString captionCmd = MString("pm.renderWindowEditor(\"renderView\", edit=True, pcaption=\"") + captionString + "\");";
+				MString captionCmd = MString("import pymel.core as pm;pm.renderWindowEditor(\"renderView\", edit=True, pcaption=\"") + captionString + "\");";
 				logger.debug(captionCmd);
 				MGlobal::executePythonCommandOnIdle(captionCmd);
-
 				if(!status)
 					logger.debug(MString("MRenderView endRender failed: ") + status.errorString());
-				
-				if( isIpr )
-				{
-					isIpr = false;
-					RenderQueueWorker::removeCallbacks();
-				}else{
-					if(computationInterruptCallbackId != 0)
-						MMessage::removeCallback(computationInterruptCallbackId);
-					if(timerCallbackId != 0)
-						MMessage::removeCallback(timerCallbackId);
-				}
+
+				// remove the renderqueue caller
+				if(timerCallbackId != 0)
+					MMessage::removeCallback(timerCallbackId);
+
+				// clean the queue
+				while(RenderEventQueue.try_pop(e))
+				{}
+
 				if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
 				{
-					boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+					//boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 					logger.debug("Waiting for render thread to finish");
 					MayaTo::MayaSceneFactory().getMayaScenePtr()->rendererThread.join();
-					logger.debug("Render thread to finished deleting scene");
+					logger.debug("Render thread finished, deleting scene");
 					MayaTo::MayaSceneFactory().deleteMaysScene();
 				}
 			}
@@ -449,7 +446,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 					imageBuffer = NULL;
 				}
 
-				e.type = EventQueue::Event::FINISH;
+				e.type = EventQueue::Event::RENDERDONE;
 				theRenderEventQueue()->push(e);
 				isRendering = false;
 			}
@@ -474,8 +471,24 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::RENDERDONE:
-			logger.debug("Event::RENDERDONE");
-			boost::thread(RenderQueueWorker::sendFinalizeIfQueueEmpty, (void *)NULL);
+			// stopp callbacks and empty queue before finalizing the rendering.
+			{
+				logger.debug("Event::RENDERDONE");
+				if( isIpr )
+				{
+					isIpr = false;
+					RenderQueueWorker::removeCallbacks();
+				}else{
+					if(computationInterruptCallbackId != 0)
+						MMessage::removeCallback(computationInterruptCallbackId);
+				}
+				isRendering = false;
+
+				EventQueue::Event e;
+				e.type = EventQueue::Event::FINISH;
+				theRenderEventQueue()->push(e);
+				//boost::thread(RenderQueueWorker::sendFinalizeIfQueueEmpty, (void *)NULL);
+			}
 			break;
 
 		case EventQueue::Event::FRAMEUPDATE:

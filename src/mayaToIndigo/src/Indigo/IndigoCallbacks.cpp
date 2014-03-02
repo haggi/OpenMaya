@@ -8,8 +8,6 @@ static Logging logger;
 
 void IndigoRenderer::framebufferCallback()
 {
-	//logger.debug("framebufferCallback");
-
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
@@ -24,7 +22,7 @@ void IndigoRenderer::framebufferCallback()
 	this->toneMapperRef->startToneMapping();
 	while(!this->toneMapperRef->isToneMappingDone())
 	{
-		Sleep(50);
+		Sleep(10);
 	}
 
 	float *data = floatBufferRef->dataPtr();

@@ -25,11 +25,12 @@ void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode&
 	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
 	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
 	{
-		if( pystring::endswith(fileTexturePath.asChar(), "exr") || pystring::endswith(fileTexturePath.asChar(), "png"))
+		if( textureFileSupported(fileTexturePath))
+		{
 			texmap = loader.loadBitmap(fileTexturePath.asChar());
-		else{
+		}else{
 			texmap = NULL;
-			logger.error(MString("File texture does not end with exr/png: ") + fileTexturePath);
+			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
 			col = MColor(1, 0, 1);
 		}
 	}
@@ -46,11 +47,11 @@ void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode&
 	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
 	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
 	{
-		if( pystring::endswith(fileTexturePath.asChar(), "exr") || pystring::endswith(fileTexturePath.asChar(), "png"))
+		if( textureFileSupported(fileTexturePath))
 			texmap = loader.loadBitmap(fileTexturePath.asChar());
 		else{
 			texmap = NULL;
-			logger.error(MString("File texture does not end with exr/png: ") + fileTexturePath);
+			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
 			rgbColor.r() = 1.0;
 			rgbColor.g() = 0.0;
 			rgbColor.b() = 1.0;
@@ -123,6 +124,12 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
 				this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
 
+				// -- round corners -- 
+				float rcRadius = 0.0001;
+				getFloat(MString("roundCornersRadius"), depFn, rcRadius);
+				data.roundedCorners.radius = rcRadius * 0.0001;
+				getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
+
 				int glassMode = 0;
 				getEnum(MString("glassMode"), depFn, glassMode);
 				Corona::GlassMode glassModes[] = {Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID};
@@ -135,7 +142,29 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				this->defineFloat(MString("volumeEmissionDist"), depFn, data.volume.emissionDist);				
 
 				// ---- emission ----
-				this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);				
+				this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
+
+				// ---- ies profiles -----
+				MStatus stat;
+				MPlug iesPlug = depFn.findPlug("mtco_mat_iesProfile", &stat);
+				if( stat )
+				{
+					//data.emission.gonioDiagram
+					MString iesFile = iesPlug.asString();
+					if( iesFile.length() > 4 )
+					{
+						Corona::IesParser iesParser;
+						std::filebuf f;
+						if( f.open(iesFile.asChar(), std::ios::in) )
+						{
+							std::istream is(&f);
+							Corona::IesLight iesLight;
+							iesLight = iesParser.parseIesLight(is);
+							f.close();
+							data.emission.gonioDiagram = iesLight.distribution;
+						}
+					}
+				}
 
 				bool disableSampling = false;
 				getBool("emissionDisableSampling", depFn, disableSampling);

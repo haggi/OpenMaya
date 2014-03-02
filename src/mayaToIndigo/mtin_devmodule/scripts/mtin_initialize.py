@@ -304,8 +304,7 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivPixelThreshold", attributeType="float", defaultValue = 0.4)
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivCurvatureThreshold", attributeType="float", defaultValue = 0.1)
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivErrorThreshold", attributeType="float", defaultValue = 0.1)
-
-        # 
+        
     def addUserTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
 

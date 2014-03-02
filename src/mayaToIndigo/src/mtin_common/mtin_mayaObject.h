@@ -28,6 +28,8 @@ public:
 
 	Indigo::SceneNodeMeshRef meshRef;
 	Indigo::SceneNodeMaterialRef matRef;
+	
+	std::vector<MString> iesProfilePaths;
 
 	virtual bool geometryShapeSupported();
 	virtual mtin_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);

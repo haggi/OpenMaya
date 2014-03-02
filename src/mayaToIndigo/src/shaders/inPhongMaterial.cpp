@@ -15,6 +15,8 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
+#include <maya/MDGModifier.h>
+
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -42,6 +44,17 @@ void inPhong::postConstructor( )
     // to get input data and store output data.
     //
     setMPSafe( true );
+
+	MDGModifier modifier;
+	MPlug sourcePlug(this->thisMObject(), albedo);
+	MPlug destPlug(this->thisMObject(), aColor);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	sourcePlug = MPlug(this->thisMObject(), emission);
+	destPlug = MPlug(this->thisMObject(), aIncandescence);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	stat = modifier.doIt();
 }
 
 
@@ -79,6 +92,7 @@ MObject inPhong::displacement;
 MObject inPhong::backface_emit;
 MObject inPhong::layer;
 MObject inPhong::exponent;
+MObject inPhong::iesProfile;
 MObject inPhong::bump;
 MObject inPhong::base_emission;
 MObject inPhong::ior;
@@ -150,6 +164,10 @@ MStatus inPhong::initialize()
 	exponent = nAttr.create("exponent", "exponent",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( exponent ));
 
+	iesProfile = tAttr.create("iesProfile", "iesProfile",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( iesProfile ));
+
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( bump ));
 
@@ -164,10 +182,8 @@ MStatus inPhong::initialize()
 	nAttr.setDefault(0.5,0.5,0.8);
 	CHECK_MSTATUS(addAttribute( albedo ));
 
-	nk_data = eAttr.create("nk_data", "nk_data", 0, &status);
-	status = eAttr.addField( "al", 0 );
-	status = eAttr.addField( "au", 1 );
-	status = eAttr.addField( "alas", 2 );
+	nk_data = tAttr.create("nk_data", "nk_data",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( nk_data ));
 
 	emission = nAttr.createColor("emission", "emission");
@@ -431,6 +447,7 @@ MStatus inPhong::initialize()
     //
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
+    CHECK_MSTATUS( attributeAffects( albedo, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
@@ -469,7 +486,7 @@ MStatus inPhong::compute( const MPlug& plug, MDataBlock& block )
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.
     //
-	if( plug == aOutColor || plug == aOutTransparency || plug.parent() == aOutColor || plug.parent() == aOutTransparency  )
+	if( plug == aOutColor || plug == aOutTransparency || plug.parent() == albedo  || plug.parent() == aOutColor || plug.parent() == aOutTransparency  )
     {
         MStatus status;
         MFloatVector resultColor( 0.0, 0.0, 0.0 );
@@ -479,7 +496,7 @@ MStatus inPhong::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceNormal = block.inputValue( aNormalCamera, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-        MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
+        MFloatVector& surfaceColor = block.inputValue( albedo, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();

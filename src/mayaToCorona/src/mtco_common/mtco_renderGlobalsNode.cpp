@@ -49,6 +49,7 @@ MObject MayaToCoronaGlobals::maxPtSampleIntensity;
 MObject MayaToCoronaGlobals::subdivEnviroThreshold;
 MObject MayaToCoronaGlobals::lights_texturedResolution;
 MObject MayaToCoronaGlobals::random_seed;
+MObject MayaToCoronaGlobals::numThreads;
 MObject MayaToCoronaGlobals::lightSolver_localFrac;
 MObject MayaToCoronaGlobals::lightSolver_globalFrac;
 MObject MayaToCoronaGlobals::portals_sampleAmount;
@@ -180,7 +181,6 @@ MStatus	MayaToCoronaGlobals::initialize()
 	renderer = eAttr.create("renderer", "renderer", 0, &stat);
 	stat = eAttr.addField( "Progressive", 0 );
 	stat = eAttr.addField( "Bucket", 1 );
-	stat = eAttr.addField( "Ppm", 2 );
 	CHECK_MSTATUS(addAttribute( renderer ));
 
 	accelerationStructure = eAttr.create("accelerationStructure", "accelerationStructure", 1, &stat);
@@ -226,7 +226,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	stat = eAttr.addField( "Maximal_value", 2 );
 	CHECK_MSTATUS(addAttribute( random_sampler ));
 
-	progressive_maxPasses = nAttr.create("progressive_maxPasses", "progressive_maxPasses",  MFnNumericData::kInt, 20);
+	progressive_maxPasses = nAttr.create("progressive_maxPasses", "progressive_maxPasses",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( progressive_maxPasses ));
 
 	progressive_timeLimit = nAttr.create("progressive_timeLimit", "progressive_timeLimit",  MFnNumericData::kInt, 60);
@@ -313,6 +313,9 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	random_seed = nAttr.create("random_seed", "random_seed",  MFnNumericData::kInt, 1234);
 	CHECK_MSTATUS(addAttribute( random_seed ));
+
+	numThreads = nAttr.create("numThreads", "numThreads",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( numThreads ));
 
 	lightSolver_localFrac = nAttr.create("lightSolver_localFrac", "lightSolver_localFrac",  MFnNumericData::kFloat, 0.33);
 	nAttr.setMin(0.0);

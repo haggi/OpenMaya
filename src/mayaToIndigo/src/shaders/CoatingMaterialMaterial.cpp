@@ -77,6 +77,7 @@ MObject  CoatingMaterial::aLightBlindData;
 //---------------------------- automatically created attributes start ------------------------------------
 MObject CoatingMaterial::backface_emit;
 MObject CoatingMaterial::layer;
+MObject CoatingMaterial::iesProfile;
 MObject CoatingMaterial::bump;
 MObject CoatingMaterial::absorption;
 MObject CoatingMaterial::base_emission;
@@ -144,6 +145,10 @@ MStatus CoatingMaterial::initialize()
 
 	layer = nAttr.create("layer", "layer",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( layer ));
+
+	iesProfile = tAttr.create("iesProfile", "iesProfile",  MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute( iesProfile ));
 
 	absorption = nAttr.createColor("absorption", "absorption");
 	nAttr.setDefault(0,0,0);

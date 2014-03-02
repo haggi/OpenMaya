@@ -633,6 +633,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		this->currentMaterial = phong;
 		this->currentMaterial->name = snode.fullName.asChar();
 
+		
 		for( size_t atId(0); atId < snode.inputAttributes.size(); atId++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[atId];
@@ -687,6 +688,13 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 			if( sa.name == "normalMap")
 			{
 				setNormalMapParameter(phong->normal_map, depFn, sa.name.c_str(), sa.type.c_str());
+			}
+			if( sa.name == "nk_data")
+			{
+				MString nk_data;
+				getString(MString(sa.name.c_str()), depFn, nk_data); 
+				if( nk_data.length() > 3 ) // we need at least "x.nk"
+					phong->nk_data = nk_data.asChar();
 			}
 		}	
 		this->currentSceneNodeMaterialRef->material = phong;
@@ -826,10 +834,24 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		materialNodes.push_back(mn);
 	}
 
+	MStatus stat;
+	MPlug iesPlug = depFn.findPlug("iesProfile", &stat);
+	if( stat )
+	{
+		MString iesProfilePath = iesPlug.asString();
+		if( iesProfilePath.length() > 4) // at least "x.ies"
+		{
+			logger.debug(MString("Ies profile File: ") + iesProfilePath);
+			this->currentIESPathList.push_back(iesProfilePath);
+		}
+	}
+
 }
 
 void IndigoRenderer::defineShadingNodes(mtin_MayaObject *obj)
 {
+	this->currentIESPathList.clear();
+
 	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{
 		MObject shadingGroup = obj->shadingGroups[sgId];
@@ -848,7 +870,7 @@ void IndigoRenderer::defineShadingNodes(mtin_MayaObject *obj)
 			logger.debug(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
 			this->createIndigoShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId]);
 		}
-
 		obj->matRef = this->currentSceneNodeMaterialRef;
 	}
+	obj->iesProfilePaths = this->currentIESPathList;
 }

@@ -57,6 +57,7 @@ static    MObject maxPtSampleIntensity;
 static    MObject subdivEnviroThreshold;
 static    MObject lights_texturedResolution;
 static    MObject random_seed;
+static    MObject numThreads;
 static    MObject lightSolver_localFrac;
 static    MObject lightSolver_globalFrac;
 static    MObject portals_sampleAmount;

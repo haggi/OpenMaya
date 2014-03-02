@@ -414,5 +414,8 @@
     <None Include="sourceCodeDocs\volumes.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="..\mtin_devmodule\ressources\releaseNotes.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

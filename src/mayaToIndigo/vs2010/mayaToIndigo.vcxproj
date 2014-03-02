@@ -5,12 +5,20 @@
       <Configuration>Debug2014</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2014|x64">
+      <Configuration>Release2014</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -21,28 +29,47 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(Configuration).props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(Configuration).props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">Debug\</OutDir>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">.mll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">.mll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderOutputFile>Debug/mayaToIndigo.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ProgramDatabaseFile>Debug/mayaToIndigo.pdb</ProgramDatabaseFile>
-      <ImportLibrary>Debug/mayaToIndigo.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent />
     <PostBuildEvent>
-      <Command>copy Debug\mayaToIndigo.mll ..\mtin_devmodule\plug-ins\mayaToIndigo_maya2014.mll</Command>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -167,6 +194,7 @@
     <ClInclude Include="..\src\shaders\inSpecularMaterialOverride.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\mtin_devmodule\ressources\releaseNotes.txt" />
     <None Include="..\mtin_devmodule\ressources\shaderDefinitions.txt" />
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
     <None Include="sourceCodeDocs\materials.txt" />

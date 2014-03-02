@@ -15,6 +15,7 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
+#include <maya/MDGModifier.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -41,7 +42,18 @@ void CoronaSurface::postConstructor( )
     // shared global data and should only use attributes in the datablock
     // to get input data and store output data.
     //
+	MStatus stat;
     setMPSafe( true );
+	MDGModifier modifier;
+	MPlug sourcePlug(this->thisMObject(), diffuse);
+	MPlug destPlug(this->thisMObject(), aColor);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	sourcePlug = MPlug(this->thisMObject(), emissionColor);
+	destPlug = MPlug(this->thisMObject(), aIncandescence);
+	stat = modifier.connect(sourcePlug, destPlug);
+
+	stat = modifier.doIt();
 }
 
 
@@ -478,6 +490,7 @@ MStatus CoronaSurface::initialize()
     //
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
+    CHECK_MSTATUS( attributeAffects( diffuse, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
@@ -529,11 +542,17 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
+        MFloatVector& diffuseColor = block.inputValue( diffuse, &status ).asFloatVector();
+        CHECK_MSTATUS( status );
+
+		surfaceColor = diffuseColor;
+
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
         float diffuseReflectivity = block.inputValue( aDiffuseReflectivity, &status ).asFloat();
         CHECK_MSTATUS( status );
+
 
 //      float translucenceCoeff = block.inputValue( aTranslucenceCoeff,
 //              &status ).asFloat();

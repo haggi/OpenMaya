@@ -21,6 +21,7 @@ mtin_MayaScene::mtin_MayaScene():MayaScene()
 
 mtin_MayaScene::~mtin_MayaScene()
 {
+	logger.debug("~mtin_MayaScene");
 }
 
 void mtin_MayaScene::userThreadProcedure()
@@ -305,30 +306,7 @@ bool mtin_MayaScene::renderImage()
 
 	this->renderGlobals->getImageName();
 
-	//this->mtin_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
-
-	//if( this->renderGlobals->exportXMLFile)
-	//	this->mtin_renderer.writeXML();
-
 	this->mtin_renderer.render();
 
 	return true;
 }
-
-//bool mtin_MayaScene::parseScene(ParseType ptype)
-//{
-//	MayaScene::parseScene(ptype);
-//	postParseCallback();
-//	return true;
-//}
-//
-//bool mtin_MayaScene::postParseCallback()
-//{
-//	logger.debug("mtin_MayaScene::postParseCallback");
-//
-//
-//	return true;
-//}
-
-
-

@@ -33,6 +33,7 @@ class AEinDiffuseTemplate(BaseTemplate):
         self.addControl("bump", label="Bump")
         self.addControl("base_emission", label="Emission Multiplier")
         self.addControl("emission", label="Emission")
+        self.addControl("iesProfile", label="IES Profile")
         self.addControl("displacement", label="Displacement")
         self.addControl("albedo", label="Albedo")
         self.addSeparator()

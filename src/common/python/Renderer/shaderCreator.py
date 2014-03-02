@@ -55,6 +55,9 @@ def makeString(att):
 #    CHECK_MSTATUS(addAttribute( exportXMLFileName ));
 #        
     string = "\t{0} = tAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kString);\n".format(att[0])
+    if len(att) > 4:
+        if att[4] == "useAsFilename":
+            string +="\ttAttr.setUsedAsFilename(true);\n"
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
@@ -634,8 +637,8 @@ def shaderCreator(renderer, shortCut, mtype):
     createShaderDefinitionFile(attrDict, renderer, shortCut, mtype == "volumes")
     
 if __name__ == "__main__":
-    shaderCreator("Corona", "mtco", "materials")
-    #shaderCreator("Indigo", "mtin", "materials")
+    #shaderCreator("Corona", "mtco", "materials")
+    shaderCreator("Indigo", "mtin", "materials")
     #shaderCreator("Indigo", "mtin", "volumes")
     #START_NODE_ID
     print "ID: --> 0x%08X" % START_NODE_ID

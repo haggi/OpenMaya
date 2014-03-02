@@ -48,11 +48,17 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				getFloat("mtco_displacementMin", displacmentMapNode, displacementMin);
 				getFloat("mtco_displacementMax", displacmentMapNode, displacementMax);
 				MString fileTexturePath = getConnectedFileTexturePath(MString("displacement"), displacmentMapNode);
+
 				if( fileTexturePath != "")
 				{
-					MapLoader loader;
-					displacementMap = loader.loadBitmap(fileTexturePath.asChar());
-					hasDisplacement = true;
+					if( !textureFileSupported(fileTexturePath))
+					{
+						logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
+					}else{
+						MapLoader loader;
+						displacementMap = loader.loadBitmap(fileTexturePath.asChar());
+						hasDisplacement = true;
+					}
 				}
 			}
 		}
@@ -189,7 +195,6 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				tri.materialId = 0;
 				geom->addPrimitive(tri);			
 			}
-
 		}		
 	}
 }

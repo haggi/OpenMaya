@@ -80,7 +80,9 @@ IndigoRenderer::IndigoRenderer()
 	this->rendererAborted = false;
 }
 IndigoRenderer::~IndigoRenderer()
-{}
+{
+	logger.debug("~IndigoRenderer");
+}
 
 void IndigoRenderer::render()
 {
@@ -187,13 +189,19 @@ void IndigoRenderer::render()
 	if(result != Indigo::INDIGO_SUCCESS)
 	{
 		std::cerr << "Renderer failed to initialise(), error code: " << result << std::endl;
+		EventQueue::Event e;
+		e.data = NULL;
+		e.type = EventQueue::Event::RENDERERROR;
+		theRenderEventQueue()->push(e);
+		return;
 	}
 
 	// Start rendering. This call will create the render threads, and start the rendering process.
 	// This will happen after the scene building completes.
 	rendererStarted = true;
 	rendererRef->startRendering(); // Non-blocking.
-	this->parse();
+
+	this->parse(); // this one is blocking
 	
 	// Start tone-mapping. The actual tone-mapping work will be done in another thread.
 	this->toneMapperRef->startToneMapping();

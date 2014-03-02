@@ -193,8 +193,8 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getInt(MString("random_seed"), CoronaGlobals, this->random_seed))
 			throw("problem reading coronaGlobals.random_seed");
 
-		if(!getInt(MString("threads"), CoronaGlobals, this->threads))
-			throw("problem reading coronaGlobals.threads");
+		if(!getInt(MString("numThreads"), CoronaGlobals, this->numThreads))
+			throw("problem reading coronaGlobals.numThreads");
 
 		if(!getFloat(MString("lightSolver_localFrac"), CoronaGlobals, this->lightSolver_localFrac))
 			throw("problem reading coronaGlobals.lightSolver_localFrac");

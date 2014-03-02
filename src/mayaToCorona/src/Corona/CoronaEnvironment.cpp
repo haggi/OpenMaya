@@ -18,6 +18,11 @@ void CoronaRenderer::defineEnvironment()
 	{
 		Corona::String fileName = texName.asChar();
 		logger.debug(MString("Found bg texture: ") + texName);
+		if( !textureFileSupported(texName))
+		{
+			logger.error(MString("Sorry, textures of this type are not supported: ") + texName);
+			return;
+		}
 		MapLoader loader;
 		Corona::Abstract::Map *texmap = loader.loadBitmap(fileName);
 		if(texmap == NULL) 
