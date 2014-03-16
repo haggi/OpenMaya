@@ -10,6 +10,9 @@ MTypeId	MayaToIndigoGlobals::id(0x00106EF3);
 
 //	------------- automatically created attributes start ----------- // 
 
+MObject MayaToIndigoGlobals::white_point;
+MObject MayaToIndigoGlobals::white_pointX;
+MObject MayaToIndigoGlobals::white_pointY;
 MObject MayaToIndigoGlobals::bih_tri_threshold;
 MObject MayaToIndigoGlobals::metropolis;
 MObject MayaToIndigoGlobals::large_mutation_prob;
@@ -17,6 +20,14 @@ MObject MayaToIndigoGlobals::max_change;
 MObject MayaToIndigoGlobals::max_num_consec_rejections;
 MObject MayaToIndigoGlobals::logging;
 MObject MayaToIndigoGlobals::path_tracing;
+MObject MayaToIndigoGlobals::tone_mapper;
+MObject MayaToIndigoGlobals::tone_linearScale;
+MObject MayaToIndigoGlobals::tone_reinhardPreScale;
+MObject MayaToIndigoGlobals::tone_reinhardPostScale;
+MObject MayaToIndigoGlobals::tone_reinhardBurn;
+MObject MayaToIndigoGlobals::tone_cameraResponse_function_path;
+MObject MayaToIndigoGlobals::tone_cameraEv_adjust;
+MObject MayaToIndigoGlobals::tone_cameraFilm_iso;
 MObject MayaToIndigoGlobals::save_untonemapped_exr;
 MObject MayaToIndigoGlobals::save_tonemapped_exr;
 MObject MayaToIndigoGlobals::save_igi;
@@ -59,6 +70,7 @@ MayaToIndigoGlobals::MayaToIndigoGlobals()
 {
 	imageFormatList.append("Bmp");
 	imageFormatList.append("Exr");
+
 }
 
 MayaToIndigoGlobals::~MayaToIndigoGlobals()
@@ -84,6 +96,36 @@ MStatus	MayaToIndigoGlobals::initialize()
 
 //	------------- automatically created attributes start ----------- // 
 
+	white_point = eAttr.create("white_point", "white_point", 4, &stat);
+	stat = eAttr.addField( "User", 0 );
+	stat = eAttr.addField( "A", 1 );
+	stat = eAttr.addField( "B", 2 );
+	stat = eAttr.addField( "C", 3 );
+	stat = eAttr.addField( "D50", 4 );
+	stat = eAttr.addField( "D55", 5 );
+	stat = eAttr.addField( "D65", 6 );
+	stat = eAttr.addField( "D75", 7 );
+	stat = eAttr.addField( "E", 8 );
+	stat = eAttr.addField( "F1", 9 );
+	stat = eAttr.addField( "F2", 10 );
+	stat = eAttr.addField( "F3", 11 );
+	stat = eAttr.addField( "F4", 12 );
+	stat = eAttr.addField( "F5", 13 );
+	stat = eAttr.addField( "F6", 14 );
+	stat = eAttr.addField( "F7", 15 );
+	stat = eAttr.addField( "F8", 16 );
+	stat = eAttr.addField( "F9", 17 );
+	stat = eAttr.addField( "F10", 18 );
+	stat = eAttr.addField( "F11", 19 );
+	stat = eAttr.addField( "F12", 20 );
+	CHECK_MSTATUS(addAttribute( white_point ));
+	
+	white_pointX = nAttr.create("white_pointX", "white_pointX",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( white_pointX ));
+
+	white_pointY = nAttr.create("white_pointY", "white_pointY",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( white_pointY ));
+
 	bih_tri_threshold = nAttr.create("bih_tri_threshold", "bih_tri_threshold",  MFnNumericData::kInt, 1100000);
 	CHECK_MSTATUS(addAttribute( bih_tri_threshold ));
 
@@ -107,6 +149,35 @@ MStatus	MayaToIndigoGlobals::initialize()
 	stat = eAttr.addField( "backwards", 1 );
 	CHECK_MSTATUS(addAttribute( path_tracing ));
 
+	tone_mapper = eAttr.create("tone_mapper", "tone_mapper", 1, &stat);
+	stat = eAttr.addField( "linear", 0 );
+	stat = eAttr.addField( "reinhard", 1 );
+	stat = eAttr.addField( "camera", 2 );
+	CHECK_MSTATUS(addAttribute( tone_mapper ));
+
+	tone_linearScale = nAttr.create("tone_linearScale", "tone_linearScale",  MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0001);
+	nAttr.setMax(100);
+	CHECK_MSTATUS(addAttribute( tone_linearScale ));
+
+	tone_reinhardPreScale = nAttr.create("tone_reinhardPreScale", "tone_reinhardPreScale",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( tone_reinhardPreScale ));
+
+	tone_reinhardPostScale = nAttr.create("tone_reinhardPostScale", "tone_reinhardPostScale",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( tone_reinhardPostScale ));
+
+	tone_reinhardBurn = nAttr.create("tone_reinhardBurn", "tone_reinhardBurn",  MFnNumericData::kFloat, 10.0);
+	CHECK_MSTATUS(addAttribute( tone_reinhardBurn ));
+
+	tone_cameraResponse_function_path = tAttr.create("tone_cameraResponse_function_path", "tone_cameraResponse_function_path",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( tone_cameraResponse_function_path ));
+
+	tone_cameraEv_adjust = nAttr.create("tone_cameraEv_adjust", "tone_cameraEv_adjust",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( tone_cameraEv_adjust ));
+
+	tone_cameraFilm_iso = nAttr.create("tone_cameraFilm_iso", "tone_cameraFilm_iso",  MFnNumericData::kFloat, 200.0);
+	CHECK_MSTATUS(addAttribute( tone_cameraFilm_iso ));
+
 	save_untonemapped_exr = nAttr.create("save_untonemapped_exr", "save_untonemapped_exr",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( save_untonemapped_exr ));
 
@@ -119,7 +190,7 @@ MStatus	MayaToIndigoGlobals::initialize()
 	image_save_period = nAttr.create("image_save_period", "image_save_period",  MFnNumericData::kFloat, 60);
 	CHECK_MSTATUS(addAttribute( image_save_period ));
 
-	halt_time = nAttr.create("halt_time", "halt_time",  MFnNumericData::kFloat, 30);
+	halt_time = nAttr.create("halt_time", "halt_time",  MFnNumericData::kFloat, -1);
 	CHECK_MSTATUS(addAttribute( halt_time ));
 
 	halt_samples_per_pixel = nAttr.create("halt_samples_per_pixel", "halt_samples_per_pixel",  MFnNumericData::kInt, -1);

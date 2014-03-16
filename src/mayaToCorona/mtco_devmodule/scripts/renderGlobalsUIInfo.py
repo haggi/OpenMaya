@@ -50,35 +50,28 @@ entry['name'] = 'renderer'
 entry['type'] = 'enum'
 entry['displayName'] = 'Renderer'
 entry['default'] = 'Progressive'
-entry['addInfo'] = 'Progressive:Bucket'
+entry['addInfo'] = 'Progressive:Bucket:BiDir/VCM'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'accelerationStructure'
 entry['type'] = 'enum'
 entry['displayName'] = 'Accelerationstructure'
 entry['default'] = 'Embree_bvh4_spatial'
-entry['addInfo'] = 'None:Embree_bvh4_spatial'
+entry['addInfo'] = 'Embree_bvh4_spatial:Embree_bvh4:BVH full SAH'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'gi_primarySolver'
 entry['type'] = 'enum'
 entry['displayName'] = 'Gi_primarysolver'
 entry['default'] = 'Pathtracing'
-entry['addInfo'] = 'Pathtracing:None:Irradiance_cache'
+entry['addInfo'] = 'None:Pathtracing:Photon Map:HD Cache:VPL:Irradiance Cache'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'gi_secondarySolver'
 entry['type'] = 'enum'
 entry['displayName'] = 'Gi_secondarysolver'
-entry['default'] = 'Pathtracing'
-entry['addInfo'] = 'Pathtracing:None:Vpl'
-tab['entries'].append(entry)
-entry = {}
-entry['name'] = 'imageFilter'
-entry['type'] = 'enum'
-entry['displayName'] = 'Imagefilter'
-entry['default'] = 'None'
-entry['addInfo'] = 'None:Tent'
+entry['default'] = 'HD Cache'
+entry['addInfo'] = 'None:Pathtracing:Photon Map:HD Cache:VPL:Irradiance Cache'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'lights_solver'
@@ -125,7 +118,7 @@ entry = {}
 entry['name'] = 'lights_areaSamplesMult'
 entry['type'] = 'float'
 entry['displayName'] = 'Lights Areasamples Mult'
-entry['default'] = '1.0'
+entry['default'] = '2.0'
 entry['addInfo'] = 'minmax:0.0001:100.0'
 tab['entries'].append(entry)
 entry = {}
@@ -241,7 +234,7 @@ entry = {}
 entry['name'] = 'maxPtSampleIntensity'
 entry['type'] = 'float'
 entry['displayName'] = 'Maxptsampleintensity'
-entry['default'] = '0.0'
+entry['default'] = '20.0'
 entry['addInfo'] = 'minmax:0.0:99999.0'
 tab['entries'].append(entry)
 entry = {}
@@ -310,7 +303,7 @@ entry = {}
 entry['name'] = 'instance_minSize'
 entry['type'] = 'int'
 entry['displayName'] = 'Instance_minsize'
-entry['default'] = '1'
+entry['default'] = '50000'
 entry['addInfo'] = 'minmax:1:999999'
 tab['entries'].append(entry)
 entry = {}
@@ -685,6 +678,19 @@ entry['default'] = '1.0'
 entry['addInfo'] = 'minmax:1.0:99.0'
 tab['entries'].append(entry)
 entry = {}
+entry['name'] = 'colorMapping_useContrast'
+entry['type'] = 'bool'
+entry['displayName'] = 'Color Mapping Use Contrast'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'colorMapping_highlightCompression'
+entry['type'] = 'float'
+entry['displayName'] = 'Highlight Compression'
+entry['default'] = '1.0'
+entry['addInfo'] = 'minmax:0.0:99.0'
+tab['entries'].append(entry)
+entry = {}
 entry['name'] = 'ppm_samplesPerIter'
 entry['type'] = 'int'
 entry['displayName'] = 'Ppm_samplesperiter'
@@ -695,7 +701,7 @@ entry = {}
 entry['name'] = 'ppm_photonsPerIter'
 entry['type'] = 'int'
 entry['displayName'] = 'Ppm_photonsperiter'
-entry['default'] = '5000000'
+entry['default'] = '5000'
 entry['addInfo'] = 'minmax:1000:99000000'
 tab['entries'].append(entry)
 entry = {}
@@ -723,7 +729,7 @@ entry['name'] = 'vcm_mode'
 entry['type'] = 'enum'
 entry['displayName'] = 'Vcm_mode'
 entry['default'] = 'Bidir'
-entry['addInfo'] = 'Bidir:Pt:Vcm'
+entry['addInfo'] = 'Bidir:Vcm'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'displace_useProjectionSize'

@@ -59,16 +59,7 @@ void IndigoRenderer::createSceneGraph()
 
 	this->createRenderSettings();
 	this->defineCamera();
-
-	//==================== Create tone-mapping node (required) =========================
-	Indigo::SceneNodeTonemappingRef tone_mapping(new Indigo::SceneNodeTonemapping());
-	tone_mapping->setType(Indigo::SceneNodeTonemapping::Reinhard);
-	tone_mapping->pre_scale = 1;
-	tone_mapping->post_scale = 1;
-	tone_mapping->burn = 6;
-
-	sceneRootRef->addChildNode(tone_mapping);
-
+	this->createToneMapper();
 	this->defineEnvironment();
 	this->defineGeometry();
 }

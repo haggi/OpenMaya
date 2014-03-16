@@ -39,6 +39,8 @@ void CoronaRenderer::defineCamera()
 		getFloat(MString("fStop"), camera, fStop);
 		getFloat(MString("centerOfInterest"), camera, coi);
 
+		focusDistance *= this->mtco_renderGlobals->scaleFactor;
+
 		MPoint coiBase(0,0,-coi);
 		MPoint coiTransform = coiBase * camMatrix;
 		//logger.debug(MString("Center of interest: ") + coi + " transformed " + coiTransform.x + " "  + coiTransform.y + " "  + coiTransform.z);
@@ -50,15 +52,19 @@ void CoronaRenderer::defineCamera()
 		//Corona::AnimatedFloat fieldOfView(Corona::DEG_TO_RAD(45.f));
 		
 		Corona::CameraData cameraData;
-		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);		
-		
-		cameraData.perspective.focalDist() = focusDistance;
+		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);
+		getBool(MString("mtco_controls_exposure"), camera, cameraData.controlsExposure);
+		getFloat(MString("mtco_iso"), camera, cameraData.iso);
+		getFloat(MString("mtco_shutterSpeed"), camera, cameraData.shutterSpeed);
+
+		Corona::AnimatedFloat focalDist(focusDistance);
+		cameraData.perspective.focalDist = focalDist;
 		cameraData.perspective.fStop = fStop;
-		cameraData.perspective.filmWidth = horizontalFilmAperture * 2.54f * 10.0f; //film width in mm 
+		cameraData.perspective.filmWidth = this->mtco_renderGlobals->toMillimeters(horizontalFilmAperture * 2.54f * 10.0f); //film width in mm 
 		if( dof && this->mtco_renderGlobals->doDof)
 			cameraData.perspective.useDof = true;
 
-		this->context.scene->getCamera() = cameraData;
+		this->context.scene->getCamera() = cameraData; 
 	}
 
 }

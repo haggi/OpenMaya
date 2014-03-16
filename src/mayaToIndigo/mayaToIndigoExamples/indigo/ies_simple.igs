@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene>
+	<renderer_settings>
+		<uid>1</uid>
+		<name>Render Settings</name>
+		<bidirectional>false</bidirectional>
+		<verbose>false</verbose>
+		<write_aperture_preview>false</write_aperture_preview>
+		<save_tonemapped_exr>false</save_tonemapped_exr>
+		<save_untonemapped_exr>false</save_untonemapped_exr>
+		<save_igi>false</save_igi>
+		<save_png>true</save_png>
+		<auto_choose_num_threads>true</auto_choose_num_threads>
+		<cache_trees>true</cache_trees>
+		<metropolis>false</metropolis>
+		<logging>true</logging>
+		<watermark>false</watermark>
+		<aperture_diffraction>false</aperture_diffraction>
+		<post_process_diffraction>true</post_process_diffraction>
+		<material_id_tracer>false</material_id_tracer>
+		<render_foreground_alpha>false</render_foreground_alpha>
+		<depth_pass>false</depth_pass>
+		<shadow_pass>false</shadow_pass>
+		<info_overlay>true</info_overlay>
+		<wait_for_slave_frames_on_stop>false</wait_for_slave_frames_on_stop>
+		<close_gui_on_halt>false</close_gui_on_halt>
+		<save_images_on_close>false</save_images_on_close>
+		<glass_acceleration>false</glass_acceleration>
+		<vignetting>true</vignetting>
+		<merging>true</merging>
+		<dithering>true</dithering>
+		<max_depth>10000</max_depth>
+		<max_num_consec_rejections>10000</max_num_consec_rejections>
+		<num_threads>32</num_threads>
+		<width>480</width>
+		<height>270</height>
+		<super_sample_factor>2</super_sample_factor>
+		<bih_tri_threshold>1100000</bih_tri_threshold>
+		<batched>false</batched>
+		<gpu>false</gpu>
+		<halt_time>20</halt_time>
+		<halt_samples_per_pixel>-1</halt_samples_per_pixel>
+		<frame_upload_period>40</frame_upload_period>
+		<large_mutation_prob>0.4</large_mutation_prob>
+		<max_change>0.01</max_change>
+		<image_save_period>10000000</image_save_period>
+		<hybrid>false</hybrid>
+		<splat_filter>
+			<fastbox/>
+		</splat_filter>
+		<downsize_filter>
+			<mn_cubic>
+				<blur>1</blur>
+				<ring>0</ring>
+				<radius>1.600000023841858</radius>
+			</mn_cubic>
+		</downsize_filter>
+		<white_point>
+			0.34567 0.3585			
+		</white_point>
+	</renderer_settings>
+
+	<camera>
+		<uid>2</uid>
+		<name>Camera</name>
+		<aperture_radius>0.000010000000149011612</aperture_radius>
+		<focus_distance>4.999999999999999</focus_distance>
+		<sensor_width>0.03599992800000001</sensor_width>
+		<lens_sensor_dist>0.03499999999999999</lens_sensor_dist>
+		<exposure_duration>0.33000001311302185</exposure_duration>
+		<lens_shift_up_distance>0</lens_shift_up_distance>
+		<lens_shift_right_distance>0</lens_shift_right_distance>
+		<aperture_shape>
+			<circular/>
+		</aperture_shape>
+		<keyframe>
+			<time>0</time>
+			<pos>-0.043848275526050334 -0.009738614563590637 0.18600884440178364</pos>
+			<rotation_quaternion>
+				<axis>0 0 1</axis>
+				<angle>0</angle>
+			</rotation_quaternion>
+		</keyframe>
+		<up>-0.8245001225972471 -0.002878060053922383 0.5658544553217291</up>
+		<forwards>-0.5658510079427463 -0.0019752006552791195 -0.8245051457647488</forwards>
+		<camera_type>thin-lens-perspective</camera_type>
+	</camera>
+
+	<tonemapping>
+		<uid>3</uid>
+		<name>Tone Mapping</name>
+		<reinhard>
+			<pre_scale>1</pre_scale>
+			<post_scale>1</post_scale>
+			<burn>10</burn>
+		</reinhard>
+	</tonemapping>
+
+	<background_settings>
+		<uid>4</uid>
+		<name>Background Settings</name>
+		<background_material>
+			<material>
+				<name></name>
+				<diffuse>
+					<albedo>
+						<constant>
+							<uniform>
+								<value>0</value>
+							</uniform>
+						</constant>
+					</albedo>
+					<base_emission>
+						<constant>
+							<uniform>
+								<value>1000</value>
+							</uniform>
+						</constant>
+					</base_emission>
+					<emission>
+						<constant>
+							<rgb>
+								<rgb>0 0 0</rgb>
+								<gamma>2.2</gamma>
+							</rgb>
+						</constant>
+					</emission>
+					<random_triangle_colours>false</random_triangle_colours>
+					<layer>0</layer>
+				</diffuse>
+			</material>
+		</background_material>
+	</background_settings>
+
+	<mesh>
+		<uid>5</uid>
+		<name>_pPlane1_pPlaneShape1</name>
+		<max_num_subdivisions>0</max_num_subdivisions>
+		<subdivide_pixel_threshold>4</subdivide_pixel_threshold>
+		<subdivide_curvature_threshold>0</subdivide_curvature_threshold>
+		<displacement_error_threshold>0</displacement_error_threshold>
+		<view_dependent_subdivision>true</view_dependent_subdivision>
+		<subdivision_smoothing>true</subdivision_smoothing>
+		<normal_smoothing>true</normal_smoothing>
+		<merge_vertices_with_same_pos_and_normal>true</merge_vertices_with_same_pos_and_normal>
+		<wrap_u>false</wrap_u>
+		<wrap_v>false</wrap_v>
+		<view_dependent_subdivision>true</view_dependent_subdivision>
+		<scale>1</scale>
+		<external>
+			<path>H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo/mayaToIndigoExamples/indigo/ies_simple_meshes\mesh_3605415075_9476.igmesh</path>
+		</external>
+	</mesh>
+
+	<material>
+		<uid>6</uid>
+		<name>inDiffuse1SG1</name>
+		<diffuse>
+			<albedo>
+				<constant>
+					<rgb>
+						<rgb>0.9 0.8 0.5</rgb>
+						<gamma>2.2</gamma>
+					</rgb>
+				</constant>
+			</albedo>
+			<random_triangle_colours>false</random_triangle_colours>
+			<layer>0</layer>
+		</diffuse>
+	</material>
+
+	<material>
+		<uid>7</uid>
+		<name>inDiffuse1</name>
+		<diffuse>
+			<albedo>
+				<constant>
+					<rgb>
+						<rgb>0.5413596034049988 0.5413596034049988 0.5413596034049988</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</albedo>
+			<bump>
+				<constant>
+					0
+				</constant>
+			</bump>
+			<displacement>
+				<constant>
+					0
+				</constant>
+			</displacement>
+			<base_emission>
+				<constant>
+					<rgb>
+						<rgb>0 0 0</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</base_emission>
+			<emission>
+				<constant>
+					<rgb>
+						<rgb>0 0 0</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</emission>
+			<random_triangle_colours>false</random_triangle_colours>
+			<layer>0</layer>
+		</diffuse>
+	</material>
+
+	<model2>
+		<uid>8</uid>
+		<name>_pPlane1_pPlaneShape1_model</name>
+		<geometry_uid>5</geometry_uid>
+		<scale>1</scale>
+		<rotation>
+			<matrix>
+				0.3744137404788742 0 0 0 0 -0.3744137404788742 0 0.3744137404788742 0 
+			</matrix>
+		</rotation>
+		<keyframe>
+			<time>0</time>
+			<pos>0 0 0</pos>
+			<rotation_quaternion>
+				<axis>0 0 1</axis>
+				<angle>0</angle>
+			</rotation_quaternion>
+		</keyframe>
+		<materials>
+			<material_uid>7</material_uid>
+		</materials>
+	</model2>
+
+	<mesh>
+		<uid>9</uid>
+		<name>_pPlane2_pPlaneShape2</name>
+		<max_num_subdivisions>0</max_num_subdivisions>
+		<subdivide_pixel_threshold>4</subdivide_pixel_threshold>
+		<subdivide_curvature_threshold>0</subdivide_curvature_threshold>
+		<displacement_error_threshold>0</displacement_error_threshold>
+		<view_dependent_subdivision>true</view_dependent_subdivision>
+		<subdivision_smoothing>true</subdivision_smoothing>
+		<normal_smoothing>true</normal_smoothing>
+		<merge_vertices_with_same_pos_and_normal>true</merge_vertices_with_same_pos_and_normal>
+		<wrap_u>false</wrap_u>
+		<wrap_v>false</wrap_v>
+		<view_dependent_subdivision>true</view_dependent_subdivision>
+		<scale>1</scale>
+		<external>
+			<path>H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo/mayaToIndigoExamples/indigo/ies_simple_meshes\mesh_4026271574_9476.igmesh</path>
+		</external>
+	</mesh>
+
+	<material>
+		<uid>10</uid>
+		<name>inDiffuse2SG1</name>
+		<diffuse>
+			<albedo>
+				<constant>
+					<rgb>
+						<rgb>0.9 0.8 0.5</rgb>
+						<gamma>2.2</gamma>
+					</rgb>
+				</constant>
+			</albedo>
+			<random_triangle_colours>false</random_triangle_colours>
+			<layer>0</layer>
+		</diffuse>
+	</material>
+
+	<material>
+		<uid>11</uid>
+		<name>inDiffuse2</name>
+		<diffuse>
+			<albedo>
+				<constant>
+					<rgb>
+						<rgb>1 1 1</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</albedo>
+			<bump>
+				<constant>
+					0
+				</constant>
+			</bump>
+			<displacement>
+				<constant>
+					0
+				</constant>
+			</displacement>
+			<base_emission>
+				<constant>
+					<rgb>
+						<rgb>10 10 10</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</base_emission>
+			<emission>
+				<constant>
+					<rgb>
+						<rgb>1 1 1</rgb>
+						<gamma>2.200000047683716</gamma>
+					</rgb>
+				</constant>
+			</emission>
+			<random_triangle_colours>false</random_triangle_colours>
+			<layer>0</layer>
+		</diffuse>
+	</material>
+
+	<model2>
+		<uid>12</uid>
+		<name>_pPlane2_pPlaneShape2_model</name>
+		<geometry_uid>9</geometry_uid>
+		<scale>1</scale>
+		<rotation>
+			<matrix>
+				2.2204459996194763e-18 0.009999999776482582 0 0 0 -0.009999999776482582 -0.009999999776482582 2.2204459996194763e-18 0 
+			</matrix>
+		</rotation>
+		<keyframe>
+			<time>0</time>
+			<pos>-0.17967590509322112 0 0.013725772694787936</pos>
+			<rotation_quaternion>
+				<axis>0 0 1</axis>
+				<angle>0</angle>
+			</rotation_quaternion>
+		</keyframe>
+		<materials>
+			<material_uid>11</material_uid>
+		</materials>
+		<ies_profile>
+			<material_uid>11</material_uid>
+			<path>H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo/mayaToIndigoExamples/data/2.IES</path>
+		</ies_profile>
+	</model2>
+</scene>

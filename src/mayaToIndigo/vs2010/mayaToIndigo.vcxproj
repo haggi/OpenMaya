@@ -104,6 +104,7 @@
     <ClCompile Include="..\src\Indigo\IndigoLights.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoRenderSettings.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoShaders.cpp" />
+    <ClCompile Include="..\src\Indigo\IndigoToneMapper.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoUtils.cpp" />
     <ClCompile Include="..\src\mayaToIndigo.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_mayaSceneFactory.cpp" />

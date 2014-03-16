@@ -42,16 +42,19 @@ void inDiffuseTransmitter::postConstructor( )
     // shared global data and should only use attributes in the datablock
     // to get input data and store output data.
     //
+	MStatus stat;
     setMPSafe( true );
 
 	MDGModifier modifier;
 	MPlug sourcePlug(this->thisMObject(), albedo);
 	MPlug destPlug(this->thisMObject(), aColor);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	sourcePlug = MPlug(this->thisMObject(), emission);
 	destPlug = MPlug(this->thisMObject(), aIncandescence);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	stat = modifier.doIt();
 

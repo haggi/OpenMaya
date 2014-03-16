@@ -2,6 +2,8 @@
 #define mtco_MAYA_OBJECT_H
 
 #include <maya/MMatrix.h>
+#include "maya/MFnMeshData.h"
+
 #include "mayaObject.h"
 
 #include "CoronaCore/api/Api.h"
@@ -17,7 +19,6 @@ public:
 };
 
 
-
 class mtco_MayaObject : public MayaObject
 {
 public:
@@ -30,6 +31,8 @@ public:
 	virtual bool geometryShapeSupported();
 	virtual mtco_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
 	virtual void getMaterials();
+
+	std::vector<MFnMeshData> meshDataArray;
 };
 
 #endif

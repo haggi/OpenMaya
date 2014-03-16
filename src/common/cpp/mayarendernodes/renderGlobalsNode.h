@@ -74,7 +74,7 @@ private:
 	static	  MObject useOptimizedTextures;
 
 public:
-
+	int		 defaultEnumFilterType;
 
 };
 

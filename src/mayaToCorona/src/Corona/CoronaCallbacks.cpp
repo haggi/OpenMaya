@@ -36,7 +36,7 @@ void CoronaRenderer::framebufferCallback()
 		
 	//logger.debug(MString("Corona img width: ") + p.x + " height " + p.y);
 	uint numPixelsInRow = width;
-	bool doToneMapping = false;
+	bool doToneMapping = true;
 	bool showRenderStamp = true;
 	Corona::Pixel firstPixelInRow(0,0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];

@@ -12,6 +12,9 @@ public:
 	mtin_RenderGlobals();
 	
 //	------------- automatically created attributes start ----------- // 
+	int white_point;
+	float white_pointX;
+	float white_pointY;
 	int bih_tri_threshold;
 	bool metropolis;
 	float large_mutation_prob;
@@ -19,6 +22,14 @@ public:
 	int max_num_consec_rejections;
 	bool logging;
 	int path_tracing;
+	int tone_mapper;
+	float tone_linearScale;
+	float tone_reinhardPreScale;
+	float tone_reinhardPostScale;
+	float tone_reinhardBurn;
+	MString tone_cameraResponse_function_path;
+	float tone_cameraEv_adjust;
+	float tone_cameraFilm_iso;
 	bool save_untonemapped_exr;
 	bool save_tonemapped_exr;
 	bool save_igi;

@@ -96,6 +96,10 @@ public:
 	MDistance::Unit rendererUnit;
 	RendererUpAxis internalAxis;
 	RendererUpAxis rendererAxis;
+	
+	float internalScaleFactor;
+	float rendererScaleFactor;
+	float toMillimeters(float mm);
 
 	MObject renderGlobalsMobject;
 	bool good;

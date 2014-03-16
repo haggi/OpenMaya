@@ -1,12 +1,14 @@
-import pymel.core as pm
 import logging
-import Renderer as Renderer
 import traceback
 import sys
 import os
+import path
+import pymel.core as pm
+import Renderer as Renderer
 import optimizeTextures
 import Indigo.aeNodeTemplates as aet
-import path
+import uiTools
+import Indigo.camWhitePoints 
 
 reload(Renderer)
 
@@ -27,6 +29,8 @@ class IndigoRenderer(Renderer.MayaToRenderer):
     def __init__(self, rendererName, moduleName):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
+        self.pluginBasePath = path.path(__file__).parent.parent
+
         
     
     def getEnumList(self, attr):
@@ -120,20 +124,54 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         pm.scriptJob(attributeChange=[self.renderGlobalsNode.environmentType, pm.Callback(self.uiCallback, tab="environment")])        
         self.updateEnvironment()
 
+    def IndigoRendererSetValuesFromWitePoint(self):
+        white_point = self.renderGlobalsNode.white_point.get()
+        if white_point != 0:
+            wpName, xValue, yValue = Indigo.camWhitePoints.WHITE_POINTS[white_point]
+            self.renderGlobalsNode.white_pointX.set(float(xValue))
+            self.renderGlobalsNode.white_pointY.set(float(yValue))
+
+    def IndigoRendererSetWitePointXY(self, args = None):
+        white_point = self.renderGlobalsNode.white_point.get()
+        if white_point != 0:
+            wpName, xValue, yValue = Indigo.camWhitePoints.WHITE_POINTS[white_point]
+            white_pointX = self.renderGlobalsNode.white_pointX.get()
+            white_pointY = self.renderGlobalsNode.white_pointY.get()
+            # if we change a x/y value, set the selction to User Defined (0)
+            if white_point != 0:
+                if xValue != white_pointX or yValue != white_pointY:
+                    self.renderGlobalsNode.white_point.set(0)
+    
     def IndigoRendererUpdateTab(self):
+        print "IndigoRendererUpdateTab()"
         log.debug("IndigoRendererUpdateTab()")
+        print self.rendererTabUiDict
         if not self.rendererTabUiDict.has_key('common'):
             return
-        
         envDict = self.rendererTabUiDict['common']
+
+        tonemapper = self.renderGlobalsNode.tone_mapper.get()
+        for element in ['tone_linearScale', "tone_reinhardPreScale", "tone_reinhardPostScale", "tone_reinhardBurn", "toneMappingCLOM", "tone_cameraEv_adjust", "tone_cameraFilm_iso"]:
+            envDict[element].setEnable(False)
+        print "Tonemapper", tonemapper
+        if tonemapper == 0:
+            envDict['tone_linearScale'].setEnable(True)
+        if tonemapper == 1:
+            envDict['tone_reinhardPreScale'].setEnable(True)
+            envDict['tone_reinhardPostScale'].setEnable(True)
+            envDict['tone_reinhardBurn'].setEnable(True)
+        if tonemapper == 2:
+            envDict['toneMappingCLOM'].setEnable(True)
+            envDict['tone_cameraEv_adjust'].setEnable(True)
+            envDict['tone_cameraFilm_iso'].setEnable(True)
         
         envDict['threads'].setEnable(True)
         if self.renderGlobalsNode.auto_choose_num_threads.get():
-            envDict['threads'].setEnable(False)
-
+            envDict['threads'].setEnable(False)   
         
-            
+        
     def IndigoRendererCreateTab(self):
+        print "IndigoRendererCreateTab()"
         log.debug("IndigoRendererCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query = True)
@@ -146,10 +184,56 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label='Global Settings', collapsable = True, collapse=False):
+
+                with pm.frameLayout(label='Halt conditions', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'halt_time', uiType = 'float', displayName = 'Halt Time', default='-1', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'halt_samples_per_pixel', uiType = 'int', displayName = 'Max Samples PP', default='-1', uiDict=uiDict)
+                
+                with pm.frameLayout(label='Features', collapsable = True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
                         self.addRenderGlobalsUIElement(attName = 'doDof', uiType = 'bool', displayName = 'Depth Of Field', default=False, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'doMotionBlur', uiType = 'bool', displayName = 'Motion Blur', default=False, uiDict=uiDict)
+
+                with pm.frameLayout(label='ToneMapping', collapsable = True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400) as toneMappingCL:
+                        self.addRenderGlobalsUIElement(attName = 'tone_mapper', uiType = 'enum', displayName = 'Tone Mapper', uiDict=uiDict, callback=self.IndigoRendererUpdateTab)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'tone_linearScale', uiType = 'float', displayName = 'Scale', default='1.0', uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'tone_reinhardPreScale', uiType = 'float', displayName = 'Pre Scale', default='1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'tone_reinhardPostScale', uiType = 'float', displayName = 'Post Scale', default='1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'tone_reinhardBurn', uiType = 'float', displayName = 'Burn', default='10.0', uiDict=uiDict)
+                        pm.separator()
+                        with pm.rowLayout(self.rendererName + 'RowLayout', nc=2, width = 400) as toneMappingCLOM:
+                            uiDict['toneMappingCLOM'] = toneMappingCLOM
+                            pm.text(label="Camera Response Function")
+                            cameraFuncDir = self.pluginBasePath + "/bin/data/camera_response_functions"
+                            uiTools.MayaToFileListPopUp(parent=toneMappingCLOM, attribute=self.renderGlobalsNode.tone_cameraResponse_function_path, directory=cameraFuncDir)
+                        #self.addRenderGlobalsUIElement(attName = 'tone_cameraResponse_function_path', uiType = 'string', displayName = 'Response Func File', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'tone_cameraEv_adjust', uiType = 'float', displayName = 'EV Adjust', default='0.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'tone_cameraFilm_iso', uiType = 'float', displayName = 'ISO', default='200.0', uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'white_point', uiType = 'enum', displayName = 'White Point', uiDict=uiDict, callback=self.IndigoRendererSetValuesFromWitePoint)
+                        self.addRenderGlobalsUIElement(attName = 'white_pointX', uiType = 'float', displayName = 'White Point X', default='0.0', uiDict=uiDict, callback=self.IndigoRendererSetWitePointXY)
+                        self.addRenderGlobalsUIElement(attName = 'white_pointY', uiType = 'float', displayName = 'White Point Y', default='0.0', uiDict=uiDict, callback=self.IndigoRendererSetWitePointXY)
+
+                        
+                with pm.frameLayout(label='Threads', collapsable = True, collapse=True):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+                        self.addRenderGlobalsUIElement(attName = 'auto_choose_num_threads', uiType = 'bool', displayName = 'Auto Choose Threads', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Num Threads', default='0', uiDict=uiDict)
+
+
+#                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
+#                        self.addRenderGlobalsUIElement(attName = 'aperture_diffraction', uiType = 'bool', displayName = 'Aperture Diffraction', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'post_process_diffraction', uiType = 'bool', displayName = 'Post Aperture Diffraction', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'render_foreground_alpha', uiType = 'bool', displayName = 'Alpha Image', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'vignetting', uiType = 'bool', displayName = 'Vignetting', default='true', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'watermark', uiType = 'bool', displayName = 'Watermark', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName = 'info_overlay', uiType = 'bool', displayName = 'Info Overlay', default='false', uiDict=uiDict)
+
 #                with pm.frameLayout(label='Frame Buffer', collapsable = True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
 #                        self.addRenderGlobalsUIElement(attName = 'super_sample_factor', uiType = 'int', displayName = 'Supersampling', default='2', uiDict=uiDict)
@@ -183,38 +267,14 @@ class IndigoRenderer(Renderer.MayaToRenderer):
 #                        self.addRenderGlobalsUIElement(attName = 'logging', uiType = 'bool', displayName = 'Logging', default='true', uiDict=uiDict)
 #                        self.addRenderGlobalsUIElement(attName = 'image_save_period', uiType = 'float', displayName = 'Img Save Period', default='60', uiDict=uiDict)
 #                        self.addRenderGlobalsUIElement(attName = 'cache_trees', uiType = 'bool', displayName = 'Cache Kd-Trees', default='true', uiDict=uiDict)
-
-                with pm.frameLayout(label='Halt conditions', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'halt_time', uiType = 'float', displayName = 'Halt Time', default='-1', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'halt_samples_per_pixel', uiType = 'int', displayName = 'Max Samples PP', default='-1', uiDict=uiDict)
-                
-                with pm.frameLayout(label='Threads', collapsable = True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-                        self.addRenderGlobalsUIElement(attName = 'auto_choose_num_threads', uiType = 'bool', displayName = 'Auto Choose Threads', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Num Threads', default='0', uiDict=uiDict)
-
-#                with pm.frameLayout(label='Image', collapsable = True, collapse=False):
-#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn = True, width = 400):
-#                        self.addRenderGlobalsUIElement(attName = 'aperture_diffraction', uiType = 'bool', displayName = 'Aperture Diffraction', default='true', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName = 'post_process_diffraction', uiType = 'bool', displayName = 'Post Aperture Diffraction', default='true', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName = 'render_foreground_alpha', uiType = 'bool', displayName = 'Alpha Image', default='false', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName = 'vignetting', uiType = 'bool', displayName = 'Vignetting', default='true', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName = 'watermark', uiType = 'bool', displayName = 'Watermark', default='false', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName = 'info_overlay', uiType = 'bool', displayName = 'Info Overlay', default='false', uiDict=uiDict)
-
                 
                     
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate = True)
         pm.formLayout(parentForm, edit = True, attachForm = [ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
         self.updateEnvironment()
+        self.IndigoRendererSetValuesFromWitePoint()
         self.IndigoRendererUpdateTab()
-
-    def IndigoRendererUpdateTab(self, dummy = None):
-        self.createGlobalsNode()
-        self.updateEnvironment()
-        log.debug("IndigoRendererUpdateTab()")
         
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
@@ -291,19 +351,24 @@ class IndigoRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Indigo specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        pm.addExtension(nodeType="camera", longName="mtin_lensRadius", attributeType="float", defaultValue = 0.1)
+        pm.addExtension(nodeType="camera", longName="mtin_lensRadius", attributeType="float", defaultValue = 0.1, minValue = 0.0001, softMaxValue=10.0)
         pm.addExtension(nodeType="camera", longName="mtin_autoFocus", attributeType="bool", defaultValue = False)
-        pm.addExtension(nodeType="camera", longName="mtin_whiteBalance", attributeType="enum", enumName = "D50:D55:D65")
-        pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="long", defaultValue = 5)
+        pm.addExtension(nodeType="camera", longName="mtin_exposureDuration", attributeType="float", defaultValue = 0.33, minValue = 0.0001, softMaxValue=100.0)
+        pm.addExtension(nodeType="camera", longName="mtin_apertureShape", attributeType="enum", enumName="circular:generated:image", defaultValue=0)
+        pm.addExtension(nodeType="camera", longName="mtin_numBlades", attributeType="long", defaultValue = 5, minValue = 3, softMaxValue=10)
+        pm.addExtension(nodeType="camera", longName="mtin_startAngle", attributeType="float", defaultValue = 0.0, minValue = 0.0, softMaxValue=360.0)
+        pm.addExtension(nodeType="camera", longName="mtin_bladeOffset", attributeType="float", defaultValue = 0.0, minValue = 0.0, softMaxValue=360.0)
+        pm.addExtension(nodeType="camera", longName="mtin_bladeCurvatureRadius", attributeType="float", defaultValue = 0.0, softMaxValue=10.0)
+        pm.addExtension(nodeType="camera", longName="mtin_appFile", dataType="string", usedAsFilename=True)
         
         # mesh
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivUse", attributeType="bool", defaultValue = False)
-        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivMaxSubdiv", attributeType="long", defaultValue = 0)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivMaxSubdiv", attributeType="long", defaultValue = 1, minValue = 1, softMaxValue=4)
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivViewDependent", attributeType="bool", defaultValue = False)
         pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivSmooth", attributeType="bool", defaultValue = True)
-        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivPixelThreshold", attributeType="float", defaultValue = 0.4)
-        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivCurvatureThreshold", attributeType="float", defaultValue = 0.1)
-        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivErrorThreshold", attributeType="float", defaultValue = 0.1)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivPixelThreshold", attributeType="float", defaultValue = 0.4, minValue = .001, softMaxValue=5.0)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivCurvatureThreshold", attributeType="float", defaultValue = 0.1, minValue = .001, softMaxValue=5.0)
+        pm.addExtension(nodeType="mesh", longName="mtin_mesh_subdivErrorThreshold", attributeType="float", defaultValue = 0.1, minValue = .001, softMaxValue=5.0)
         
     def addUserTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
@@ -324,20 +389,10 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         self.renderGlobalsNode.imageName.set(imageName)        
     
     def removeLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        try:
-            if os.path.exists(logfile):
-                os.remove(logfile)
-        except:
-            pass
+        pass
 
     def showLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        if os.path.exists(logfile):
-            lh = open(logfile, 'r')
-            rl = lh.readlines()
-            for l in rl:
-                sys.__stdout__.write(l)
+        pass
             
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")

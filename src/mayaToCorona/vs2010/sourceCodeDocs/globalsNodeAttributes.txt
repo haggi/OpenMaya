@@ -6,18 +6,17 @@ lowThreadPriority, bool, Lowthreadpriority, true
 vfb_showBucketOrder, bool, Vfb_showbucketorder, false
 doShading, bool, Doshading, true
 doAa, bool, Doaa, true
-renderer, enum, Renderer, Progressive ,Progressive:Bucket
-accelerationStructure, enum, Accelerationstructure, Embree_bvh4_spatial ,None:Embree_bvh4_spatial
-gi_primarySolver, enum, Gi_primarysolver, Pathtracing ,Pathtracing:None:Irradiance_cache
-gi_secondarySolver, enum, Gi_secondarysolver, Pathtracing ,Pathtracing:None:Vpl
-imageFilter, enum, Imagefilter, None , None:Tent
+renderer, enum, Renderer, Progressive ,Progressive:Bucket:BiDir/VCM
+accelerationStructure, enum, Accelerationstructure, Embree_bvh4_spatial ,Embree_bvh4_spatial:Embree_bvh4:BVH full SAH
+gi_primarySolver, enum, Gi_primarysolver, Pathtracing ,None:Pathtracing:Photon Map:HD Cache:VPL:Irradiance Cache
+gi_secondarySolver, enum, Gi_secondarysolver, HD Cache ,None:Pathtracing:Photon Map:HD Cache:VPL:Irradiance Cache
 lights_solver, enum, Lights_solver, Combined ,Combined:Photon
 enviroSolver, enum, Envirosolver, Fast ,Fast:Fast_compensate
 embree_triangles, enum, Triangles, Fast ,Fast:Avx
 random_sampler, enum, Random_Sampler, 5d_highd ,5d_highd:Shared:Maximal_value
 progressive_maxPasses, int, Progressive_maxpasses, 0 ,minmax:0:9999
 progressive_timeLimit, int, Progressive_timelimit, 60
-lights_areaSamplesMult, float, Lights Areasamples Mult, 1.0 ,minmax:0.0001:100.0
+lights_areaSamplesMult, float, Lights Areasamples Mult, 2.0 ,minmax:0.0001:100.0
 lights_env_resolution, int, Lights_env_resolution, 1000 ,minmax:1:100000
 pathtracingSamples, int, Pathtracingsamples, 16 ,minmax:1:100
 lights_areaMethod, enum, Lights Areamethod, Reproject ,Simple:Reproject
@@ -34,7 +33,7 @@ imagefilter_blurring, float, Imagefilter_blurring, 0.5 ,minmax:0.0:1.0
 system_maxNormalDev, float, System_maxnormaldev, 0.55 ,minmax:0.001:2.0
 progressive_recalculateEvery, int, Progressive_recalculateevery, 0 ,minmax:0:999
 progressive_adaptivity, float, Progressive_adaptivity, 0.0 ,minmax:0.0:99.0
-maxPtSampleIntensity, float, Maxptsampleintensity, 0.0 ,minmax:0.0:99999.0
+maxPtSampleIntensity, float, Maxptsampleintensity, 20.0 ,minmax:0.0:99999.0
 subdivEnviroThreshold, float, Subdivenvirothreshold, 0.005 ,minmax:0.0:1.0
 lights_texturedResolution, float, Lights_texturedresolution, 0.3 ,minmax:0.0001:99.0
 random_seed, int, Random_seed, 1234 ,minmax:Int_min:Int_max
@@ -44,7 +43,7 @@ lightSolver_globalFrac, float, Lightsolver_globalfrac, 0.33 ,minmax:0.0:1.0
 portals_sampleAmount, float, Portals_sampleamount, 0.75 ,minmax:0.0:1.0
 shadowBias, float, Shadowbias, -6.07 ,-8.0:-2.0
 resumeRendering, bool, Resumerendering, false
-instance_minSize, int, Instance_minsize, 1 ,minmax:1:999999
+instance_minSize, int, Instance_minsize, 50000 ,minmax:1:999999
 gi_ic_incrementalBuild, bool, Gi_ic_incrementalbuild, false
 gi_ic_incrementalFilename, string, Gi_ic_incrementalfilename, "incrementalic.dat"
 gi_ic_hemisphereSubdiv, int, Gi_ic_hemispheresubdiv, 7 ,minmax:1:100
@@ -90,7 +89,7 @@ bvh_cost_triangle, float, Bvh_cost_triangle, 1.0 ,minmax:0.01:1000.0
 bvh_leafSizeMin, int, Bvh_leafsizemin, 2 ,minmax:1:1000
 bvh_leafSizeMax, int, Bvh_leafsizemax, 6 ,minmax:2:1000
 colorMapping_exponent, float, Colormapping_exponent, 0.0 ,minmax:-100.0:100.0
-colorMapping_gamma, float, Colormapping_gamma, 2.2 ,minmax:0.1:10.0
+colorMapping_gamma, float, Colormapping_gamma, 2.2 ,minmax:0.01:10.0
 colorMapping_whiteMultiplier, float, Colormapping_whitemultiplier, 1.0 ,minmax:0.01:999.0
 colorMapping_displayTemperature, float, Colormapping_displaytemperature, 6500.0 ,minmax:1000.0:99999.0
 colorMapping_sceneTemperature, float, Colormapping_scenetemperature, 6500.0 ,minmax:1000.0:99999.0
@@ -99,12 +98,14 @@ colorMapping_gBalance, float, Colormapping_gbalance, 1.0 ,minmax:0.0:999.0
 colorMapping_bBalance, float, Colormapping_bbalance, 1.0 ,minmax:0.0:999.0
 colorMapping_workingSpace, enum, Colormapping Workingspace, Rgb ,Lms:Rgb
 colorMapping_contrast, float, Colormapping_contrast, 1.0 ,minmax:1.0:99.0
+colorMapping_useContrast, bool, Color Mapping Use Contrast, false
+colorMapping_highlightCompression, float, Highlight Compression, 1.0 ,minmax:0.01:99.0
 ppm_samplesPerIter, int, Ppm_samplesperiter, 1 ,minmax:1:50
-ppm_photonsPerIter, int, Ppm_photonsperiter, 5000000 ,minmax:1000:99000000
+ppm_photonsPerIter, int, Ppm_photonsperiter, 5000 ,minmax:1000:99000000
 ppm_alpha, float, Ppm_alpha, 0.666 ,minmax:0.01:1.0
 ppm_initialRadius, float, Ppm_initialradius, 2.0 ,minmax:0.0001:200.0
 bidir_doMis, bool, Bidir_domis, true
-vcm_mode, enum, Vcm_mode, Bidir ,Bidir:Pt:Vcm
+vcm_mode, enum, Vcm_mode, Bidir ,Bidir:Vcm
 displace_useProjectionSize, bool, Displace_useprojectionsize, true
 displace_maxProjectSize, float, Displace_maxprojectsize, 2.0 ,minmax:0.01:100.0
 displace_maxWorldSize, float, Displace_maxworldsize, 1.0 ,minmax:0.00001:10000000

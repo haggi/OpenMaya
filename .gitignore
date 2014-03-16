@@ -23,3 +23,7 @@
 src/mayaToNox/
 src/mayaToFluid/
 src/mayaToMitsuba/
+src/mayaToCorona/docs/betaTesters.txt
+src/mayaToCorona/vs2010/x64/
+*.igmesh
+src/mayaToIndigo/vs2010/x64/

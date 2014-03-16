@@ -1,0 +1,7 @@
+- sky shader
+- ao shader
+- other settings for globals
+- exposure of the camera
+- back ground color intensity
+- there are no AA settings
+- no GI settings

@@ -31,6 +31,7 @@ class MayaObject : public MBoundingBox
 {
 public:
 	MObject mobject;
+	MObject smoothMeshDataObject;
 	MString shortName;
 	MString fullName; 
 	MString fullNiceName;

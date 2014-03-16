@@ -109,9 +109,6 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getEnum(MString("gi_secondarySolver"), CoronaGlobals, this->gi_secondarySolver))
 			throw("problem reading coronaGlobals.gi_secondarySolver");
 
-		if(!getEnum(MString("imageFilter"), CoronaGlobals, this->imageFilter))
-			throw("problem reading coronaGlobals.imageFilter");
-
 		if(!getEnum(MString("lights_solver"), CoronaGlobals, this->lights_solver))
 			throw("problem reading coronaGlobals.lights_solver");
 
@@ -376,6 +373,12 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getFloat(MString("colorMapping_contrast"), CoronaGlobals, this->colorMapping_contrast))
 			throw("problem reading coronaGlobals.colorMapping_contrast");
 
+		if(!getBool(MString("colorMapping_useContrast"), CoronaGlobals, this->colorMapping_useContrast))
+			throw("problem reading coronaGlobals.colorMapping_useContrast");
+
+		if(!getFloat(MString("colorMapping_highlightCompression"), CoronaGlobals, this->colorMapping_highlightCompression))
+			throw("problem reading coronaGlobals.colorMapping_highlightCompression");
+
 		if(!getInt(MString("ppm_samplesPerIter"), CoronaGlobals, this->ppm_samplesPerIter))
 			throw("problem reading coronaGlobals.ppm_samplesPerIter");
 
@@ -416,7 +419,10 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 			throw("problem reading coronaGlobals.bgColor");
 
 //	------------- automatically created attributes end ----------- // 
-		
+
+		if(!getInt(MString("filtertype"), CoronaGlobals, this->filterType))
+			throw("problem reading CoronaGlobals.filtertype");
+
 		if(!getFloat(MString("filtersize"), CoronaGlobals, this->filterSize))
 			throw("problem reading CoronaGlobals.filtersize");
 

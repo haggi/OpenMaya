@@ -38,6 +38,7 @@ MTypeId	inPhong::id( 0x0011CF7E );
 //
 void inPhong::postConstructor( )
 {
+	MStatus stat;
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
     // shared global data and should only use attributes in the datablock
@@ -48,11 +49,13 @@ void inPhong::postConstructor( )
 	MDGModifier modifier;
 	MPlug sourcePlug(this->thisMObject(), albedo);
 	MPlug destPlug(this->thisMObject(), aColor);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	sourcePlug = MPlug(this->thisMObject(), emission);
 	destPlug = MPlug(this->thisMObject(), aIncandescence);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	stat = modifier.doIt();
 }

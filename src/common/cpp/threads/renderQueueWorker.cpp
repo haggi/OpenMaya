@@ -25,6 +25,7 @@ static Logging logger;
 static bool renderDone = false;
 static bool isRendering = false;
 static bool isIpr = false;
+static bool userEventFinished = false;
 static int numTiles = 0;
 static int tilesDone = 0;
 static MCallbackId timerCallbackId = 0;
@@ -267,11 +268,12 @@ void RenderQueueWorker::userThread(void *dummy)
 		if (MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
 		{
 			updateInterval = MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadUpdateInterval;
-			logger.debug("call user event proc.");
+			//logger.debug("call user event proc.");
 			MayaTo::MayaSceneFactory().getMayaScenePtr()->userThreadProcedure();
 		}
 		boost::this_thread::sleep(boost::posix_time::milliseconds(updateInterval));
 	}
+	userEventFinished = true;
 	logger.detail("userThread finished.");
 }
 
@@ -354,18 +356,25 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if(timerCallbackId != 0)
 					MMessage::removeCallback(timerCallbackId);
 
+				while(!userEventFinished)
+				{
+					boost::this_thread::sleep(boost::posix_time::milliseconds(5));
+				}
+
 				// clean the queue
 				while(RenderEventQueue.try_pop(e))
 				{}
 
-				if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
-				{
-					//boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-					logger.debug("Waiting for render thread to finish");
-					MayaTo::MayaSceneFactory().getMayaScenePtr()->rendererThread.join();
-					logger.debug("Render thread finished, deleting scene");
-					MayaTo::MayaSceneFactory().deleteMaysScene();
-				}
+				MString waitCursorCmd = "import pymel.core as pm;pm.waitCursor(state=False);";
+				MGlobal::executePythonCommand(waitCursorCmd);
+			}
+			if( MayaTo::MayaSceneFactory().getMayaScenePtr() != NULL)
+			{
+				//boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+				logger.debug("Waiting for render thread to finish");
+				MayaTo::MayaSceneFactory().getMayaScenePtr()->rendererThread.join();
+				logger.debug("Render thread finished, deleting scene");
+				MayaTo::MayaSceneFactory().deleteMaysScene();
 			}
 
 			tilesDone = 0;
@@ -392,7 +401,17 @@ void RenderQueueWorker::startRenderQueueWorker()
 					timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
 
 					if( mayaScene->needsUserThread)
+					{
 						boost::thread(RenderQueueWorker::userThread, (void *)NULL);
+						userEventFinished = false;
+					}else{
+						userEventFinished = true;
+					}
+				}
+				if( MRenderView::doesRenderEditorExist())
+				{
+					MString waitCursorCmd = "import pymel.core as pm;pm.waitCursor(state=True);";
+					MGlobal::executePythonCommand(waitCursorCmd);
 				}
 
 				logger.debug("Init check1");

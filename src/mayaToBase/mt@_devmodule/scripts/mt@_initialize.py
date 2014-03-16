@@ -27,6 +27,8 @@ class @Renderer(Renderer.MayaToRenderer):
     def __init__(self, rendererName, moduleName):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
+        self.pluginBasePath = path.path(__file__).parent
+
         
     
     def getEnumList(self, attr):

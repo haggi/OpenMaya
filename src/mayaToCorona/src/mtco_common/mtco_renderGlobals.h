@@ -24,7 +24,6 @@ public:
 	int accelerationStructure;
 	int gi_primarySolver;
 	int gi_secondarySolver;
-	int imageFilter;
 	int lights_solver;
 	int enviroSolver;
 	int embree_triangles;
@@ -113,6 +112,8 @@ public:
 	float colorMapping_bBalance;
 	int colorMapping_workingSpace;
 	float colorMapping_contrast;
+	bool colorMapping_useContrast;
+	float colorMapping_highlightCompression;
 	int ppm_samplesPerIter;
 	int ppm_photonsPerIter;
 	float ppm_alpha;

@@ -55,14 +55,19 @@ RenderGlobals::RenderGlobals()
 RenderGlobals::~RenderGlobals()
 {}
 
+float RenderGlobals::toMillimeters(float mm)
+{
+	return mm * 1.0/rendererScaleFactor;
+}
+
 void RenderGlobals::defineGlobalConversionMatrix()
 {
 	globalConversionMatrix.setToIdentity();
 	MMatrix scaleMatrix;
 	scaleMatrix.setToIdentity();
 
-	float internalScaleFactor = 1.0f; // internal in mm
-	float rendererScaleFactor = 1.0f; // external in mm
+	internalScaleFactor = 1.0f; // internal in mm
+	rendererScaleFactor = 1.0f; // external in mm
 
 	this->scaleFactor = 1.0f;
 

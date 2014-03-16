@@ -736,7 +736,7 @@ MString getConnectedFileTexturePath(MString& plugName, MFnDependencyNode& depFn)
 	return path;
 }
 
-bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value)
+bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& value, MObject& outFileNode)
 {
 	MStatus stat;
 	MObject obj = objectFromName(nodeName);
@@ -764,7 +764,6 @@ bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& 
 
 	MPlug destPlug = parray[0];
 	MObject fileNode = destPlug.node();
-
 	std::cout << "filenode: " << getObjectName(fileNode).asChar() << " plug name " << destPlug.name() << "\n";
 	
 	if( !fileNode.hasFn(MFn::kFileTexture) )
@@ -785,6 +784,7 @@ bool getConnectedFileTexturePath(MString& plugName, MString& nodeName, MString& 
 	MString fileTextureName = ftn.asString();
 	std::cout << "fileTextureName value: " << fileTextureName.asChar() <<"\n";
 	value = fileTextureName;
+	outFileNode = fileNode;
 	return true;
 }
 

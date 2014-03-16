@@ -142,5 +142,27 @@ shader_start:CoatingMaterial
 	outatt:outColor:color
 shader_end
 
+shader_start:inMediumEpidermis
+	inatt:precedence:int
+	outatt:outColor:color
+shader_end
+
+shader_start:inMediumDermis
+	inatt:precedence:int
+	outatt:outColor:color
+shader_end
+
+shader_start:inMediumBasic
+	inatt:subsurface_scattering:bool
+	inatt:precedence:int
+	inatt:scattering_coefficient_spectrum:color
+	inatt:absorption_coefficient_spectrum:color
+	inatt:ior:float
+	inatt:phase_function_hgg:color
+	inatt:cauchy_b_coeff:float
+	inatt:phase_function:enum
+	outatt:outColor:color
+shader_end
+
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

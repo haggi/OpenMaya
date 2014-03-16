@@ -2,6 +2,7 @@
 #define MAYA_TO_CORONA_H
 
 #include <maya/MObject.h>
+#include <maya/MFnMeshData.h>
 #include "rendering/renderer.h"
 #include <vector>
 
@@ -52,6 +53,7 @@ public:
 	std::vector<MObject> interactiveUpdateMOList;
 
 	Context context;
+	Corona::ColorMappingData colorMappingData;
 
 	CoronaRenderer();
 	virtual ~CoronaRenderer();
@@ -60,9 +62,14 @@ public:
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineSettings();
+	void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
+	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData);
+	virtual void updateMesh(mtco_MayaObject *obj);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
+	void clearMaterialLists();
 	void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
 	void defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);

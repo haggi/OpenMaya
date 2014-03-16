@@ -21,7 +21,6 @@ MObject MayaToCoronaGlobals::renderer;
 MObject MayaToCoronaGlobals::accelerationStructure;
 MObject MayaToCoronaGlobals::gi_primarySolver;
 MObject MayaToCoronaGlobals::gi_secondarySolver;
-MObject MayaToCoronaGlobals::imageFilter;
 MObject MayaToCoronaGlobals::lights_solver;
 MObject MayaToCoronaGlobals::enviroSolver;
 MObject MayaToCoronaGlobals::embree_triangles;
@@ -110,6 +109,8 @@ MObject MayaToCoronaGlobals::colorMapping_gBalance;
 MObject MayaToCoronaGlobals::colorMapping_bBalance;
 MObject MayaToCoronaGlobals::colorMapping_workingSpace;
 MObject MayaToCoronaGlobals::colorMapping_contrast;
+MObject MayaToCoronaGlobals::colorMapping_useContrast;
+MObject MayaToCoronaGlobals::colorMapping_highlightCompression;
 MObject MayaToCoronaGlobals::ppm_samplesPerIter;
 MObject MayaToCoronaGlobals::ppm_photonsPerIter;
 MObject MayaToCoronaGlobals::ppm_alpha;
@@ -132,6 +133,13 @@ MayaToCoronaGlobals::MayaToCoronaGlobals()
 	imageFormatList.append("Exr");
 	imageFormatList.append("Jpg");
 	imageFormatList.append("Png");
+
+	filterTypeList.append("None");
+	filterTypeList.append("Box");
+	filterTypeList.append("Gauss");
+	filterTypeList.append("Tent");
+
+	this->defaultEnumFilterType = 2;
 }
 
 MayaToCoronaGlobals::~MayaToCoronaGlobals()
@@ -181,29 +189,32 @@ MStatus	MayaToCoronaGlobals::initialize()
 	renderer = eAttr.create("renderer", "renderer", 0, &stat);
 	stat = eAttr.addField( "Progressive", 0 );
 	stat = eAttr.addField( "Bucket", 1 );
+	stat = eAttr.addField( "BiDir/VCM", 2 );
 	CHECK_MSTATUS(addAttribute( renderer ));
 
-	accelerationStructure = eAttr.create("accelerationStructure", "accelerationStructure", 1, &stat);
-	stat = eAttr.addField( "None", 0 );
-	stat = eAttr.addField( "Embree_bvh4_spatial", 1 );
+	accelerationStructure = eAttr.create("accelerationStructure", "accelerationStructure", 0, &stat);
+	stat = eAttr.addField( "Embree_bvh4_spatial", 0 );
+	stat = eAttr.addField( "Embree_bvh4", 1 );
+	stat = eAttr.addField( "BVH full SAH", 2 );
 	CHECK_MSTATUS(addAttribute( accelerationStructure ));
 
-	gi_primarySolver = eAttr.create("gi_primarySolver", "gi_primarySolver", 0, &stat);
-	stat = eAttr.addField( "Pathtracing", 0 );
-	stat = eAttr.addField( "None", 1 );
-	stat = eAttr.addField( "Irradiance_cache", 2 );
+	gi_primarySolver = eAttr.create("gi_primarySolver", "gi_primarySolver", 1, &stat);
+	stat = eAttr.addField( "None", 0 );
+	stat = eAttr.addField( "Pathtracing", 1 );
+	stat = eAttr.addField( "Photon Map", 2 );
+	stat = eAttr.addField( "HD Cache", 3 );
+	stat = eAttr.addField( "VPL", 4 );
+	stat = eAttr.addField( "Irradiance Cache", 5 );
 	CHECK_MSTATUS(addAttribute( gi_primarySolver ));
 
-	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 0, &stat);
-	stat = eAttr.addField( "Pathtracing", 0 );
-	stat = eAttr.addField( "None", 1 );
-	stat = eAttr.addField( "Vpl", 2 );
-	CHECK_MSTATUS(addAttribute( gi_secondarySolver ));
-
-	imageFilter = eAttr.create("imageFilter", "imageFilter", 0, &stat);
+	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 3, &stat);
 	stat = eAttr.addField( "None", 0 );
-	stat = eAttr.addField( "Tent", 1 );
-	CHECK_MSTATUS(addAttribute( imageFilter ));
+	stat = eAttr.addField( "Pathtracing", 1 );
+	stat = eAttr.addField( "Photon Map", 2 );
+	stat = eAttr.addField( "HD Cache", 3 );
+	stat = eAttr.addField( "VPL", 4 );
+	stat = eAttr.addField( "Irradiance Cache", 5 );
+	CHECK_MSTATUS(addAttribute( gi_secondarySolver ));
 
 	lights_solver = eAttr.create("lights_solver", "lights_solver", 0, &stat);
 	stat = eAttr.addField( "Combined", 0 );
@@ -232,7 +243,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	progressive_timeLimit = nAttr.create("progressive_timeLimit", "progressive_timeLimit",  MFnNumericData::kInt, 60);
 	CHECK_MSTATUS(addAttribute( progressive_timeLimit ));
 
-	lights_areaSamplesMult = nAttr.create("lights_areaSamplesMult", "lights_areaSamplesMult",  MFnNumericData::kFloat, 1.0);
+	lights_areaSamplesMult = nAttr.create("lights_areaSamplesMult", "lights_areaSamplesMult",  MFnNumericData::kFloat, 2.0);
 	nAttr.setMin(0.0001);
 	nAttr.setMax(100.0);
 	CHECK_MSTATUS(addAttribute( lights_areaSamplesMult ));
@@ -296,7 +307,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( progressive_adaptivity ));
 
-	maxPtSampleIntensity = nAttr.create("maxPtSampleIntensity", "maxPtSampleIntensity",  MFnNumericData::kFloat, 0.0);
+	maxPtSampleIntensity = nAttr.create("maxPtSampleIntensity", "maxPtSampleIntensity",  MFnNumericData::kFloat, 20.0);
 	nAttr.setMin(0.0);
 	nAttr.setMax(99999.0);
 	CHECK_MSTATUS(addAttribute( maxPtSampleIntensity ));
@@ -338,7 +349,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	resumeRendering = nAttr.create("resumeRendering", "resumeRendering",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( resumeRendering ));
 
-	instance_minSize = nAttr.create("instance_minSize", "instance_minSize",  MFnNumericData::kInt, 1);
+	instance_minSize = nAttr.create("instance_minSize", "instance_minSize",  MFnNumericData::kInt, 50000);
 	CHECK_MSTATUS(addAttribute( instance_minSize ));
 
 	gi_ic_incrementalBuild = nAttr.create("gi_ic_incrementalBuild", "gi_ic_incrementalBuild",  MFnNumericData::kBoolean, false);
@@ -566,10 +577,18 @@ MStatus	MayaToCoronaGlobals::initialize()
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_contrast ));
 
+	colorMapping_useContrast = nAttr.create("colorMapping_useContrast", "colorMapping_useContrast",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( colorMapping_useContrast ));
+
+	colorMapping_highlightCompression = nAttr.create("colorMapping_highlightCompression", "colorMapping_highlightCompression",  MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setMax(99.0);
+	CHECK_MSTATUS(addAttribute( colorMapping_highlightCompression ));
+
 	ppm_samplesPerIter = nAttr.create("ppm_samplesPerIter", "ppm_samplesPerIter",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( ppm_samplesPerIter ));
 
-	ppm_photonsPerIter = nAttr.create("ppm_photonsPerIter", "ppm_photonsPerIter",  MFnNumericData::kInt, 5000000);
+	ppm_photonsPerIter = nAttr.create("ppm_photonsPerIter", "ppm_photonsPerIter",  MFnNumericData::kInt, 5000);
 	CHECK_MSTATUS(addAttribute( ppm_photonsPerIter ));
 
 	ppm_alpha = nAttr.create("ppm_alpha", "ppm_alpha",  MFnNumericData::kFloat, 0.666);
@@ -587,8 +606,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	vcm_mode = eAttr.create("vcm_mode", "vcm_mode", 0, &stat);
 	stat = eAttr.addField( "Bidir", 0 );
-	stat = eAttr.addField( "Pt", 1 );
-	stat = eAttr.addField( "Vcm", 2 );
+	stat = eAttr.addField( "Vcm", 1 );
 	CHECK_MSTATUS(addAttribute( vcm_mode ));
 
 	displace_useProjectionSize = nAttr.create("displace_useProjectionSize", "displace_useProjectionSize",  MFnNumericData::kBoolean, true);

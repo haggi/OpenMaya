@@ -18,6 +18,9 @@ public:
 
 private:
 //	------------- automatically created attributes start ----------- // 
+static    MObject white_point;
+static    MObject white_pointX;
+static    MObject white_pointY;
 static    MObject bih_tri_threshold;
 static    MObject metropolis;
 static    MObject large_mutation_prob;
@@ -25,6 +28,14 @@ static    MObject max_change;
 static    MObject max_num_consec_rejections;
 static    MObject logging;
 static    MObject path_tracing;
+static    MObject tone_mapper;
+static    MObject tone_linearScale;
+static    MObject tone_reinhardPreScale;
+static    MObject tone_reinhardPostScale;
+static    MObject tone_reinhardBurn;
+static    MObject tone_cameraResponse_function_path;
+static    MObject tone_cameraEv_adjust;
+static    MObject tone_cameraFilm_iso;
 static    MObject save_untonemapped_exr;
 static    MObject save_tonemapped_exr;
 static    MObject save_igi;

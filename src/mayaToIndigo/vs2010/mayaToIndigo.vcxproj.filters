@@ -236,6 +236,9 @@
     <ClCompile Include="..\src\mtin_common\mtin_mayaSceneFactory.cpp">
       <Filter>mtin_common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Indigo\IndigoToneMapper.cpp">
+      <Filter>Source Files\Indigo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

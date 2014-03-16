@@ -1,6 +1,9 @@
+#include <vector>
+
 #include "Corona.h"
 #include <maya/MPoint.h>
 #include "maya/MFnMesh.h"
+#include "maya/MFnMeshData.h"
 #include "maya/MItMeshPolygon.h"
 #include <maya/MPointArray.h>
 #include <maya/MMatrix.h>
@@ -19,6 +22,42 @@
 #include "CoronaMap.h"
 
 static Logging logger;
+
+void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData)
+{
+	MStatus stat;
+
+	// first check if displaySmoothMesh is turned on
+	obj->smoothMeshDataObject = MObject::kNullObj;
+
+	MFnMesh mesh(obj->mobject, &stat);
+	if(!stat)
+	{
+		MGlobal::displayError(MString("defineSmoothMesh : could not get mesh: ") + stat.errorString());
+	}
+
+	bool displaySmoothMesh = false;
+	if( getBool("displaySmoothMesh", mesh, displaySmoothMesh) )
+	{
+		if( !displaySmoothMesh )
+			return;
+	}else{
+		MGlobal::displayError(MString("defineSmoothMesh : could not get displaySmoothMesh attr "));
+		return;
+	}
+
+	MObject meshDataObj = smoothMeshData.create();	
+	MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, &stat);
+
+	if(!stat)
+	{
+		MGlobal::displayError(MString("defineSmoothMesh : failed"));
+		return;
+	}
+	obj->smoothMeshDataObject = smoothMeshObj;
+}
+
+
 
 void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 {
@@ -64,6 +103,11 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		}
 	}
 	
+	MFnMeshData smoothMeshData;
+	defineSmoothMesh(obj, smoothMeshData);
+	if( obj->smoothMeshDataObject != MObject::kNullObj)
+		meshObject = obj->smoothMeshDataObject;
+
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);
 
@@ -86,6 +130,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	
 	geom = this->context.scene->addGeomGroup();
 	obj->geom = geom;
+
 
 	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
 	{
@@ -193,7 +238,8 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				tri.t[1] = uvId1;
 				tri.t[2] = uvId2;
 				tri.materialId = 0;
-				geom->addPrimitive(tri);			
+				
+				geom->addPrimitive(tri);
 			}
 		}		
 	}

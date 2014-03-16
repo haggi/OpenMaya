@@ -1,7 +1,8 @@
-import pymel.core as pm
-import logging
 import sys
 import os
+import logging
+import path
+import pymel.core as pm
 
 log = logging.getLogger("renderLogger")
 
@@ -89,6 +90,9 @@ class MayaToRenderer(object):
     
     def connectUIElement(self, uiElement, attribute):
         
+        if attribute.type() == 'color':
+            #color is automatically connnected via attrEnumOptionMenu
+            return        
         if attribute.type() == 'enum':
             #enum is automatically connnected via attrEnumOptionMenu
             return        

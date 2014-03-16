@@ -74,6 +74,9 @@ bool mt@_RenderGlobals::getMt@Globals()
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 
 		
+		if(!getInt(MString("filtertype"), @Globals, this->filterType))
+			throw("problem reading @Globals.filtertype");
+
 		if(!getFloat(MString("filtersize"), @Globals, this->filterSize))
 			throw("problem reading @Globals.filtersize");
 

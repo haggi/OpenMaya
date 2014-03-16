@@ -15,16 +15,28 @@
 
 static Logging logger;
 
+static std::vector<Corona::NativeMtlData> dataArray;
+static std::vector<MObject> shaderArray;
+
 void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
 {
 	MapLoader loader;
+	//mtco_MapLoader loader;
 	Corona::Abstract::Map *texmap = NULL;
 	MColor col(0,0,0);
 	MString fileTexturePath = "";
 	getColor(attributeName, depFn, col);
 	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
-	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
+	MObject fileTextureObject;
+	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
 	{
+		//MFnDependencyNode ftn(fileTextureObject);
+		//MColor gain, offset;
+		//getColor("colorGain", ftn, gain);
+		//getColor("colorOffset", ftn, offset);
+		//loader.colorGain = gain;
+		//loader.colorOffset = offset;
+
 		if( textureFileSupported(fileTexturePath))
 		{
 			texmap = loader.loadBitmap(fileTexturePath.asChar());
@@ -45,7 +57,8 @@ void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode&
 	MString fileTexturePath = "";
 	getFloat(attributeName, depFn, f);
 	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
-	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath))
+	MObject fileTextureObject;
+	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
 	{
 		if( textureFileSupported(fileTexturePath))
 			texmap = loader.loadBitmap(fileTexturePath.asChar());
@@ -77,6 +90,33 @@ void CoronaRenderer::defineFloat(MString& attributeName, MFnDependencyNode& depF
 	com = f;
 }
 
+bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj)
+{
+	int index = -1;
+	for( size_t i = 0; i < shaderArray.size(); i++)
+	{
+		if( shaderArray[i] == shadingGroup)
+		{
+			index = i;
+			break;
+		}
+	}
+	if( index > -1)
+	{
+		logger.info(MString("Reusing material data."));
+		Corona::IMaterial *mat = dataArray[index].createMaterial();
+		obj->instance->addMaterial(Corona::IMaterialSet(mat));
+		return true;
+	}
+	return false;
+}
+
+void CoronaRenderer::clearMaterialLists()
+{
+	shaderArray.clear();
+	dataArray.clear();
+}
+
 void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
 {
 	Corona::NativeMtlData data;
@@ -84,7 +124,12 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		
 	if( obj->shadingGroups.length() > 0)
 	{
+		
+		if(assingExistingMat(obj->shadingGroups[0], obj))
+			return;
+
 		Material mat(obj->shadingGroups[0]);
+
 		if( mat.surfaceShaderNet.shaderList.size() > 0)
 		{
 			// give me the last node in the node list, this should be the surface shader
@@ -178,6 +223,8 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
 				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
 
+				shaderArray.push_back(obj->shadingGroups[0]);
+				dataArray.push_back(data);
 
 			}else if(ss.typeName == "lambert"){
 				getColor("color", depFn, colorVal);
@@ -195,7 +242,6 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
 	}
 		
-	//Corona::IMaterial *mat = data.createMtl(this->context.settings);
 	Corona::IMaterial *mat = data.createMaterial();
 	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }

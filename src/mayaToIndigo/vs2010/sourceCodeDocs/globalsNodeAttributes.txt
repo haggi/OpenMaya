@@ -1,5 +1,8 @@
 #commonTab
 #frame Renderer
+white_point, enum, White Point, D50, User:A:B:C:D50:D55:D65:D75:E:F1:F2:F3:F4:F5:F6:F7:F8:F9:F10:F11:F12
+white_pointX, float, White Point X, 0.0
+white_pointY, float, White Point Y, 0.0
 bih_tri_threshold, int, BIH Threshold, 1100000
 metropolis, bool, Metropolis, true
 large_mutation_prob, float, Large Mutation Probability, 0.1
@@ -7,6 +10,14 @@ max_change, float, Perturb Radius, .01
 max_num_consec_rejections, int, Number of Rejections, 1000
 logging, bool, Logging, true
 path_tracing, enum, Path Tracing, 0, bidirectional:backwards
+tone_mapper, enum, Tone Mapper, 1, linear:reinhard:camera
+tone_linearScale, float, Scale, 1.0, minmax:0.0001:100
+tone_reinhardPreScale, float, Pre Scale, 1.0
+tone_reinhardPostScale, float, Post Scale, 1.0
+tone_reinhardBurn, float, Burn, 10.0
+tone_cameraResponse_function_path, string, Response Func File, ""
+tone_cameraEv_adjust, float, EV Adjust, 0.0
+tone_cameraFilm_iso, float, ISO, 200.0
 save_untonemapped_exr, bool, Untonemapped EXR, false
 save_tonemapped_exr, bool, Tonemapped EXR, true
 save_igi, bool, Save Indigo ImageFile, false,

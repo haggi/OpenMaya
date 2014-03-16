@@ -8,6 +8,25 @@ entry['name'] = 'None'
 entry['type'] = 'frame'
 tab['entries'].append(entry)
 entry = {}
+entry['name'] = 'white_point'
+entry['type'] = 'enum'
+entry['displayName'] = 'White Point'
+entry['default'] = 'D50'
+entry['addInfo'] = 'User:A:B:C:D50:D55:D65:D75:E:F1:F2:F3:F4:F5:F6:F7:F8:F9:F10:F11:F12'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'white_pointX'
+entry['type'] = 'float'
+entry['displayName'] = 'White Point X'
+entry['default'] = '0.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'white_pointY'
+entry['type'] = 'float'
+entry['displayName'] = 'White Point Y'
+entry['default'] = '0.0'
+tab['entries'].append(entry)
+entry = {}
 entry['name'] = 'bih_tri_threshold'
 entry['type'] = 'int'
 entry['displayName'] = 'BIH Threshold'
@@ -49,6 +68,56 @@ entry['type'] = 'enum'
 entry['displayName'] = 'Path Tracing'
 entry['default'] = '0'
 entry['addInfo'] = 'bidirectional:backwards'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_mapper'
+entry['type'] = 'enum'
+entry['displayName'] = 'Tone Mapper'
+entry['default'] = '1'
+entry['addInfo'] = 'linear:reinhard:camera'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_linearScale'
+entry['type'] = 'float'
+entry['displayName'] = 'Scale'
+entry['default'] = '1.0'
+entry['addInfo'] = 'minmax:0.0001:100'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_reinhardPreScale'
+entry['type'] = 'float'
+entry['displayName'] = 'Pre Scale'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_reinhardPostScale'
+entry['type'] = 'float'
+entry['displayName'] = 'Post Scale'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_reinhardBurn'
+entry['type'] = 'float'
+entry['displayName'] = 'Burn'
+entry['default'] = '10.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_cameraResponse_function_path'
+entry['type'] = 'string'
+entry['displayName'] = 'Response Func File'
+entry['default'] = '""'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_cameraEv_adjust'
+entry['type'] = 'float'
+entry['displayName'] = 'EV Adjust'
+entry['default'] = '0.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'tone_cameraFilm_iso'
+entry['type'] = 'float'
+entry['displayName'] = 'ISO'
+entry['default'] = '200.0'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'save_untonemapped_exr'

@@ -1,0 +1,26 @@
+release 0.23
+- added color mapping
+- added camera settings exposue/iso/shutter speed
+- added smoothmesh preview translation
+
+release 0.22
+- changed the time limit to seconds
+- added max ray depth
+- fixed a crash when the image has no file format extension
+- added waitCursor for UI rendering
+- added filters
+- added acceleration structures
+- added exit color
+- added max ray intensity
+- added VCM renderer settings
+- reusing already defined materials
+- fixed depth of field scaling problem
+
+release 0.21
+- Added UI diffuse shading feedback for Corona Shader, works now with texture display.
+- Added bucket rendering
+- Added round corners in shading
+- Not allowed textures types are now ignored and an Error message appears. Previously e.g. a hdr as background image caused a crash.
+- Moved the init/shutdown lib functions to the pluginMain to avoid unnecessary errors.
+
+# release 0.2 - first public release

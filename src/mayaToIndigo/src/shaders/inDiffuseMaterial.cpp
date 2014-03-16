@@ -47,11 +47,13 @@ void inDiffuse::postConstructor( )
 	MDGModifier modifier;
 	MPlug sourcePlug(this->thisMObject(), albedo);
 	MPlug destPlug(this->thisMObject(), aColor);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	sourcePlug = MPlug(this->thisMObject(), emission);
 	destPlug = MPlug(this->thisMObject(), aIncandescence);
-	stat = modifier.connect(sourcePlug, destPlug);
+	if( !destPlug.isConnected() )
+		stat = modifier.connect(sourcePlug, destPlug);
 
 	stat = modifier.doIt();
 

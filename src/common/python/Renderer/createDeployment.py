@@ -115,6 +115,8 @@ def createDeployment(renderer, shortCut, mayaRelease):
         for f in dkDir.listdir():
             shutil.copy(f, devDestDir + "/bin")
 
+    
+    manualPdf = path.path("C:/daten/web/openmaya/manuals/{0}/{0}.pdf".format(projectName))
     if renderer == "corona":
         binDir = sourceDir + "/bin"
         destBinDir = devDestDir + "/bin/"
@@ -126,7 +128,15 @@ def createDeployment(renderer, shortCut, mayaRelease):
             print "Copy ", sourceFile, "to", destFile
             shutil.copy(sourceFile, devDestDir + "/bin")
         
-        manualPdf = path.path("C:/daten/web/openmaya/manuals/mayaToCorona/mayaToCorona.pdf")
+                
+    if renderer == "indigo":
+        binDir = sourceDir + "/bin"
+        destDir = devDestDir + "/bin"
+        shutil.copytree(binDir, destDir)
+        try:
+            os.remove(destDir + "/licence.sig")
+        except:
+            pass
         
     if manualPdf is not None:
         docsDir = deploymentDir + "/docs"
@@ -135,12 +145,6 @@ def createDeployment(renderer, shortCut, mayaRelease):
             print "Create docs dir"
             docsDir.makedirs()
         manualPdf.copy2(docsDir)
-        
-    if renderer == "indigo":
-        binDir = sourceDir + "/bin"
-        destDir = devDestDir + "/bin"
-        shutil.copytree(binDir, destDir)
-        os.remove(destDir + "/licence.sig")
         
     iconsSourceDir = "{0}/icons/".format(sourceDir)
     iconsDestDir = "{0}/icons/".format(devDestDir)

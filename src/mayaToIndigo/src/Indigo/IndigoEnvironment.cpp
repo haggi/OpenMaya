@@ -24,13 +24,13 @@ void IndigoRenderer::defineEnvironment()
 			MString texName;
 			bool useTexture = false;
 			Indigo::String texturePath = "";
-			MObject fileTexObj = getConnectedFileTextureObject(MString("environmentColor"), globalsNode);
-			MFnDependencyNode fileTexNode(fileTexObj);
-			if( getConnectedFileTexturePath(MString("environmentColor"), MString("indigoGlobals"), texName) )
+			MObject fileTexObj;
+			if( getConnectedFileTexturePath(MString("environmentColor"), MString("indigoGlobals"), texName, fileTexObj) )
 			{
 				useTexture = true;
 				texturePath = texName.asChar();
 			}
+			MFnDependencyNode fileTexNode(fileTexObj);
 			MColor bgColor(1,1,1);
 			getColor("environmentColor", globalsNode, bgColor);
 			int mapType = 0;

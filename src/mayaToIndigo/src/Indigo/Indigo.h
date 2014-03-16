@@ -70,6 +70,7 @@ public:
 	void setDependentParameter(Reference<Indigo::WavelengthDependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
 	void setDisplacementParameter(Reference<Indigo::DisplacementParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
 	void setNormalMapParameter(Reference<Indigo::Vec3Param>& p, MFnDependencyNode& depFn, MString attrName, MString type);
+	void createToneMapper();
 	
 	void createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj);
 };

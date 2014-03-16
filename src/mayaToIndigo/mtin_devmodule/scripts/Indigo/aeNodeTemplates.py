@@ -14,7 +14,7 @@ class BaseTemplate(pm.ui.AETemplate):
 
 class AEIndigoNodeTemplate(BaseTemplate):
     def __init__(self, nodeName):
-        BaseTemplate.__init__(self,nodeName)
+        BaseTemplate.__init__(self, nodeName)
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         self.buildBody(nodeName)
@@ -39,15 +39,43 @@ class AEIndigoNodeTemplate(BaseTemplate):
             
             if self.thisNode.mtin_mesh_subdivViewDependent.get():
                 self.dimControl(self.thisNode, "mtin_mesh_subdivPixelThreshold", False)
-            
+
+    def updateCamerAperture(self, nodeName):
+        self.dimControl(self.thisNode, "mtin_numBlades", True)
+        self.dimControl(self.thisNode, "mtin_startAngle", True)
+        self.dimControl(self.thisNode, "mtin_bladeOffset", True)
+        self.dimControl(self.thisNode, "mtin_bladeCurvatureRadius", True)
+        self.dimControl(self.thisNode, "mtin_appFile", True)
+        
+        app = self.thisNode.mtin_apertureShape.get()
+        if app == 0: #circular
+            pass
+        if app == 1: #generated
+            self.dimControl(self.thisNode, "mtin_numBlades", False)
+            self.dimControl(self.thisNode, "mtin_startAngle", False)
+            self.dimControl(self.thisNode, "mtin_bladeOffset", False)
+            self.dimControl(self.thisNode, "mtin_bladeCurvatureRadius", False)
+        if app == 2: #file
+            self.dimControl(self.thisNode, "mtin_appFile", False)            
             
     def buildCameraTemplate(self, nodeName):
-        self.beginLayout("Indigo" ,collapse=1)
-        self.addControl("mtin_lensRadius", label="Lens Radius")            
+        self.beginLayout("Indigo" , collapse=1)
+        self.addControl("mtin_lensRadius", label="Lens Radius")
+        self.addControl("mtin_exposureDuration", label="Exposure duration")
+        self.addControl("mtin_autoFocus", label="Auto Focus")
+        self.addSeparator()
+        self.addControl("mtin_apertureShape", label="Aperture Shape", changeCommand=self.updateCamerAperture)
+        self.addSeparator()
+        self.addControl("mtin_numBlades", label="Number of Blades")
+        self.addControl("mtin_startAngle", label="Blades Start Angle")
+        self.addControl("mtin_bladeOffset", label="Blade Offset")
+        self.addControl("mtin_bladeCurvatureRadius", label="Blade Curvature Radius")
+        self.addSeparator()
+        self.addControl("mtin_appFile", label="File")
         self.endLayout()
     
     def buildMeshTemplate(self, nodeName):
-        self.beginLayout("Indigo" ,collapse=1)
+        self.beginLayout("Indigo" , collapse=1)
         self.addControl("mtin_mesh_subdivUse", label="Create Subdivision Surface", changeCommand=self.updateMeshUI)            
         self.addControl("mtin_mesh_subdivMaxSubdiv", label="Max Subdivisions")            
         self.addControl("mtin_mesh_subdivSmooth", label="Smooth Subdivisions")            

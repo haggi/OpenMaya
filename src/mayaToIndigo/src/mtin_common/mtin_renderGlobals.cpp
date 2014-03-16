@@ -78,6 +78,15 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		}
 
 //	------------- automatically created attributes start ----------- // 
+		if(!getEnum(MString("white_point"), IndigoGlobals, this->white_point))
+			throw("problem reading indigoGlobals.white_point");
+
+		if(!getFloat(MString("white_pointX"), IndigoGlobals, this->white_pointX))
+			throw("problem reading indigoGlobals.white_pointX");
+
+		if(!getFloat(MString("white_pointY"), IndigoGlobals, this->white_pointY))
+			throw("problem reading indigoGlobals.white_pointY");
+
 		if(!getInt(MString("bih_tri_threshold"), IndigoGlobals, this->bih_tri_threshold))
 			throw("problem reading indigoGlobals.bih_tri_threshold");
 
@@ -98,6 +107,30 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 
 		if(!getEnum(MString("path_tracing"), IndigoGlobals, this->path_tracing))
 			throw("problem reading indigoGlobals.path_tracing");
+
+		if(!getEnum(MString("tone_mapper"), IndigoGlobals, this->tone_mapper))
+			throw("problem reading indigoGlobals.tone_mapper");
+
+		if(!getFloat(MString("tone_linearScale"), IndigoGlobals, this->tone_linearScale))
+			throw("problem reading indigoGlobals.tone_linearScale");
+
+		if(!getFloat(MString("tone_reinhardPreScale"), IndigoGlobals, this->tone_reinhardPreScale))
+			throw("problem reading indigoGlobals.tone_reinhardPreScale");
+
+		if(!getFloat(MString("tone_reinhardPostScale"), IndigoGlobals, this->tone_reinhardPostScale))
+			throw("problem reading indigoGlobals.tone_reinhardPostScale");
+
+		if(!getFloat(MString("tone_reinhardBurn"), IndigoGlobals, this->tone_reinhardBurn))
+			throw("problem reading indigoGlobals.tone_reinhardBurn");
+
+		if(!getString(MString("tone_cameraResponse_function_path"), IndigoGlobals, this->tone_cameraResponse_function_path))
+			throw("problem reading indigoGlobals.tone_cameraResponse_function_path");
+
+		if(!getFloat(MString("tone_cameraEv_adjust"), IndigoGlobals, this->tone_cameraEv_adjust))
+			throw("problem reading indigoGlobals.tone_cameraEv_adjust");
+
+		if(!getFloat(MString("tone_cameraFilm_iso"), IndigoGlobals, this->tone_cameraFilm_iso))
+			throw("problem reading indigoGlobals.tone_cameraFilm_iso");
 
 		if(!getBool(MString("save_untonemapped_exr"), IndigoGlobals, this->save_untonemapped_exr))
 			throw("problem reading indigoGlobals.save_untonemapped_exr");

@@ -9,6 +9,7 @@
 #include <maya/MPointArray.h>
 #include <maya/MFloatPointArray.h>
 #include <maya/MGlobal.h>
+#include <maya/MColor.h>
 
 #include "CoronaCore/api/Api.h"
 
@@ -18,62 +19,61 @@ bool textureFileSupported(MString fileName);
 class mtco_MapLoader : public Corona::Object {
 public:
 
-	float repeatU;
-	float repeatV;
-	float offsetU;
-	float offsetV;
-	float ro;
+	MColor colorGain;
+	MColor colorOffset;
+	float  multiplier;
 
-	mtco_MapLoader( float ru, float rv, float ou, float ov, float rot)
+	mtco_MapLoader( MColor gain, MColor offset, float multi)
 	{
-		repeatU = ru;
-		repeatV = rv;
-		offsetU = ou;
-		offsetV = ov;
-		ro = rot;
+		colorGain = gain;
+		colorOffset = offset;
+		multiplier = multi;
 	};
 
 	mtco_MapLoader()
 	{
-		repeatU = 1.0;
-		repeatV = 1.0;
-		offsetU = 0.0;
-		offsetV = 0.0;
-		ro = 0.0;
+		colorGain = MColor(1,1,1);
+		colorOffset = MColor(0,0,0);
+		multiplier = 1.0f;
 	};
 
     Corona::Abstract::Map* loadBitmap(const Corona::String& filename) 
 	{
         Corona::Bitmap<Corona::Rgb> data;
         Corona::loadImage(filename, data);
-		repeatU = 1.0;
 
         class TextureMap : public Corona::Abstract::Map 
 		{
         protected:
             Corona::TextureShader shader;
         public:
-			float repeatU;
-			float repeatV;
-			float offsetU;
-			float offsetV;
-			float ro;
+			MColor colorGain;
+			MColor colorOffset;
+			float  multiplier;
 
             TextureMap(const Corona::Bitmap<Corona::Rgb>& data, const int mapChannel) 
 			{
                 shader.data = data;
                 shader.mapChannel = mapChannel;
-				repeatU = 1.0;
-				repeatV = 1.0;
-				offsetU = 0.0;
-				offsetV = 0.0;
-				ro = 0.0;
+				colorGain = MColor(1,1,1);
+				colorOffset = MColor(0,0,0);
+				multiplier = 1.0f;
             }
 
             virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) 
 			{
                 outAlpha = 1.f;
-                return shader.eval(context);
+				Corona::Rgb result = shader.eval(context);
+				result.r() *= colorGain.r; 
+				result.r() += colorOffset.r; 
+				result.g() *= colorGain.g; 
+				result.g() += colorOffset.g; 
+				result.b() *= colorGain.b; 
+				result.b() += colorOffset.b; 
+
+				result *= multiplier; 
+
+                return result;
             }
 
             /// \brief Same as evalColor, only scalar value is returned
@@ -103,11 +103,9 @@ public:
 
         };
 		TextureMap *tm = new TextureMap(data, 0);
-		tm->offsetU = offsetU;
-		tm->offsetV = offsetV;
-		tm->repeatU = repeatU;
-		tm->repeatV = repeatV;
-		tm->ro = this->ro;
+		tm->colorGain = colorGain;
+		tm->colorOffset = colorOffset;
+		tm->multiplier = multiplier;
 
         return tm;
     }

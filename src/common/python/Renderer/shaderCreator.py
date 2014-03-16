@@ -638,7 +638,7 @@ def shaderCreator(renderer, shortCut, mtype):
     
 if __name__ == "__main__":
     #shaderCreator("Corona", "mtco", "materials")
-    shaderCreator("Indigo", "mtin", "materials")
-    #shaderCreator("Indigo", "mtin", "volumes")
+    #shaderCreator("Indigo", "mtin", "materials")
+    shaderCreator("Indigo", "mtin", "volumes")
     #START_NODE_ID
     print "ID: --> 0x%08X" % START_NODE_ID

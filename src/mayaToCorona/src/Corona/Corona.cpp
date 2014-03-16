@@ -43,7 +43,6 @@ void CoronaRenderer::saveImage()
 
 	bool doToneMapping = false;
 	bool showRenderStamp = true;
-
     for(int i = 0; i < bitmap.getHeight(); ++i) 
 	{
         const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
@@ -57,9 +56,18 @@ void CoronaRenderer::saveImage()
 	logger.debug(MString("Saving image as ") +  this->mtco_renderGlobals->imageOutputFile);
 	
 	bool isLinear = false;
-	//MString imgFormatExt = pystring::lower(this->mtco_renderGlobals->imageFormatString.asChar()).c_str();
-	//if( imgFormatExt == "exr")
-	//	isLinear = true;
+	
+	std::string imgFormatExt = this->mtco_renderGlobals->imageOutputFile.toLowerCase().asChar();
+	std::vector<std::string> fileParts;
+	pystring::split(imgFormatExt, fileParts, ".");
+	std::string ext = fileParts.back();
+
+	logger.debug(MString("Extension: ") + ext.c_str());
+	if( (ext != "exr") && (ext != "png") && (ext != "bmp") && (ext != "jpg"))
+	{
+		logger.warning(MString("Filename does not contain a valid extension: ") + this->mtco_renderGlobals->imageOutputFile + " adding exr.");
+		filename += ".exr";
+	}
 	Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
 }
 
@@ -229,6 +237,7 @@ void CoronaRenderer::render()
 
 	logger.debug(MString("defineSettings..."));
 
+	this->clearMaterialLists();
 	this->defineSettings();
 	logger.debug(MString("definePasses..."));
 	this->definePasses();
@@ -240,6 +249,10 @@ void CoronaRenderer::render()
     // create a new framebuffer, and init it before the rendering
 	logger.debug(MString("createFb..."));
     context.fb = context.core->createFb();
+
+	//colorMappingData = context.settings->getColorMapping();
+	//this->context.fb->setColorMapping(colorMappingData);
+
     // the settings and render passes need to contain final parameters of the rendering at the time of the call
 	logger.debug(MString("initFb..."));
     context.fb->initFb(context.settings, context.renderPasses);
@@ -254,6 +267,7 @@ void CoronaRenderer::render()
 	logger.debug(MString("sanityCheck scene..."));
     context.core->sanityCheck(context.scene);
 	logger.debug(MString("sanityCheck settings..."));
+	//this->sanityCheck(context.settings);
     context.core->sanityCheck(context.settings);
 
 	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/corona/").asChar();
@@ -300,7 +314,9 @@ void CoronaRenderer::render()
 void CoronaRenderer::initializeRenderer()
 {}
 void CoronaRenderer::updateShape(MayaObject *obj)
-{}
+{
+}
+
 void CoronaRenderer::updateTransform(MayaObject *obj)
 {}
 void CoronaRenderer::IPRUpdateEntities()

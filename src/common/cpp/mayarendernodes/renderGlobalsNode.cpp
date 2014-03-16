@@ -69,6 +69,7 @@ void MayaRenderGlobalsNode::postConstructor()
 
 	MPlug filtertypePlug(thisObj, filtertype);
 	MFnEnumAttribute filtertypeAttribute(filtertypePlug.attribute());
+	filtertypeAttribute.setDefault(this->defaultEnumFilterType);
 	for( uint i = 0; i < filterTypeList.length(); i++)
 	{
 		filtertypeAttribute.addField(filterTypeList[i], i);
@@ -77,6 +78,7 @@ void MayaRenderGlobalsNode::postConstructor()
 
 MayaRenderGlobalsNode::MayaRenderGlobalsNode()
 {
+	this->defaultEnumFilterType = 0;
 }
 
 MayaRenderGlobalsNode::~MayaRenderGlobalsNode()
