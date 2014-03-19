@@ -2,6 +2,7 @@ release 0.23
 - added color mapping
 - added camera settings exposue/iso/shutter speed
 - added smoothmesh preview translation
+- added deformation motion blur
 
 release 0.22
 - changed the time limit to seconds

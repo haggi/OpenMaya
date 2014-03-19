@@ -760,7 +760,7 @@ bool MayaScene::doFrameJobs()
 		MayaObject *camera = this->camList[camId];
 		if( !this->isCameraRenderable(camera->mobject) && (!(camera->dagPath == this->uiCamera)))
 		{	
-			logger.debug(MString("Camera ") + camera->shortName + " is not renderalbe, skipping.");
+			logger.debug(MString("Camera ") + camera->shortName + " is not renderable, skipping.");
 			continue;
 		}
 		
@@ -797,6 +797,9 @@ bool MayaScene::doFrameJobs()
 			this->renderGlobals->currentMbStep++;
 		}
 
+		if( MGlobal::mayaState() != MGlobal::kBatch )
+			MGlobal::viewFrame(this->renderGlobals->currentFrame);
+
 		this->renderImage();
 		
 		EventQueue::Event e;
@@ -804,12 +807,6 @@ bool MayaScene::doFrameJobs()
 		theRenderEventQueue()->push(e);
 
 		logger.setOutType(Logging::OutputWindow);
-
-		//if(this->renderType == MayaScene::NORMAL)
-		//	logger.setOutType(Logging::ScriptEditor);
-
-		if( MGlobal::mayaState() != MGlobal::kBatch )
-			MGlobal::viewFrame(this->renderGlobals->currentFrame);
 	}
 
 	return true;

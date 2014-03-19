@@ -115,11 +115,7 @@ public:
 // loaded using this class.
 class MapLoader : public Corona::Object {
 public:
-    
-    /// \brief Creates a TextureMap (child class of Abstract::Map) from a texture with given filename.
-    /// \param isreflectance Specifies if the loaded TextureMap should return reflectance values (e.g. diffuse 
-    ///                      color), or radiance values (e.g. emission color)
-    Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
+     Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
         Corona::Bitmap<Corona::Rgb> data;
         Corona::loadImage(filename, data);
 		

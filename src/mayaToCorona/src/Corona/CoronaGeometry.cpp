@@ -23,12 +23,12 @@
 
 static Logging logger;
 
-void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData)
+void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject)
 {
 	MStatus stat;
 
 	// first check if displaySmoothMesh is turned on
-	obj->smoothMeshDataObject = MObject::kNullObj;
+	mobject = MObject::kNullObj;
 
 	MFnMesh mesh(obj->mobject, &stat);
 	if(!stat)
@@ -54,9 +54,37 @@ void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothM
 		MGlobal::displayError(MString("defineSmoothMesh : failed"));
 		return;
 	}
-	obj->smoothMeshDataObject = smoothMeshObj;
+	mobject = smoothMeshObj;
 }
 
+void CoronaRenderer::getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshObject)
+{
+	MStatus stat;
+	MFnMesh meshFn(meshObject, &stat);
+	CHECK_MSTATUS(stat);
+
+	meshFn.getPoints(pts);
+	meshFn.getNormals( nrm, MSpace::kWorld );
+}
+
+// for every motion blur step, the mesh geometry is saved to be able to generate a final
+// mesh description for corona.
+void CoronaRenderer::updateMesh(mtco_MayaObject *obj)
+{
+	meshData md;
+	MFnMeshData meshData;
+	MObject mobject;
+	defineSmoothMesh(obj, meshData, mobject);
+	if( mobject == MObject::kNullObj)
+	{
+		mobject = obj->mobject;
+	}
+	getMeshData(md.points, md.normals, mobject);
+	obj->meshDataArray.push_back(md);
+	logger.debug(MString("Adding ") + md.points.length() + " vertices to mesh data");
+	logger.debug(MString("Adding ") + md.normals.length() + " normals to mesh data");
+
+}
 
 
 void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
@@ -104,9 +132,10 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	}
 	
 	MFnMeshData smoothMeshData;
-	defineSmoothMesh(obj, smoothMeshData);
-	if( obj->smoothMeshDataObject != MObject::kNullObj)
-		meshObject = obj->smoothMeshDataObject;
+	MObject mobject;
+	defineSmoothMesh(obj, smoothMeshData, mobject);
+	if( mobject != MObject::kNullObj)
+		meshObject = mobject;
 
 	MFnMesh meshFn(meshObject, &stat);
 	CHECK_MSTATUS(stat);
@@ -121,6 +150,10 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	MFloatArray uArray, vArray;
 	meshFn.getUVs(uArray, vArray);
 
+	int numSteps = (int)obj->meshDataArray.size();
+	uint numVertices = points.length();
+	uint numNormals = normals.length();
+
 	//logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
 
@@ -131,15 +164,30 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	geom = this->context.scene->addGeomGroup();
 	obj->geom = geom;
 
+	// to capture the vertex and normal positions, we capture the data during the motion steps
+	// and save them in a an std::vector. The uv's do not change, so we only sample them once.
+	uint npts = 0;
+	for( int mbStep = 0; mbStep < numSteps; mbStep++)
+	{
+		meshData& md = obj->meshDataArray[mbStep];
+		if( mbStep > 0)
+		{
+			uint npts1 = md.points.length();
 
-	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
-	{
-		geom->getVertices().push(Corona::Pos(points[vtxId].x,points[vtxId].y,points[vtxId].z));
-	}
+		}
+		npts = md.points.length();
+
+		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
+		{
+			MPoint& p = md.points[vtxId];
+			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
+		}
 	
-	for( uint nId = 0; nId < normals.length(); nId++)
-	{
-		geom->getNormals().push(Corona::Dir(normals[nId].x,normals[nId].y,normals[nId].z));
+		for( uint nId = 0; nId < md.normals.length(); nId++)
+		{
+			MFloatVector& n =  md.normals[nId];
+			geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
+		}
 	}
 
 	for( uint tId = 0; tId < uArray.length(); tId++)
@@ -231,18 +279,34 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				tri.displacement.max = displacementMax;
 				geom->addPrimitive(tri);			
 			}else{
+
 				Corona::TriangleData tri;
-				tri.v = Corona::AnimatedPosI3(vtxId0, vtxId1, vtxId2);
-				tri.n = Corona::AnimatedDirI3(normalId0, normalId1, normalId2);
+				
+				tri.v.setSegments(numSteps - 1);
+				tri.n.setSegments(numSteps - 1);
+								
+				for( int stepId = 0; stepId < numSteps; stepId++)
+				{
+					tri.v[stepId][0] = vtxId0 + numVertices * stepId;
+					tri.v[stepId][1] = vtxId1 + numVertices * stepId;
+					tri.v[stepId][2] = vtxId2 + numVertices * stepId;
+					tri.n[stepId][0] = normalId0 + numNormals * stepId;
+					tri.n[stepId][1] = normalId1 + numNormals * stepId;
+					tri.n[stepId][2] = normalId2 + numNormals * stepId;
+				}
+
 				tri.t[0] = uvId0;
 				tri.t[1] = uvId1;
 				tri.t[2] = uvId2;
 				tri.materialId = 0;
 				
 				geom->addPrimitive(tri);
+
 			}
 		}		
 	}
+
+	obj->meshDataArray.clear();
 }
 
 Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
@@ -281,6 +345,9 @@ void CoronaRenderer::defineGeometry()
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
 		if( geom == NULL )
 		{
+			//if( obj->isShapeConnected() )
+			//	if( this->mtco_renderGlobals->doMb )
+
 			logger.debug(MString("Geo pointer is NULL"));
 			continue;
 		}

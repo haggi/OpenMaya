@@ -16,6 +16,10 @@ void CoronaRenderer::defineCamera()
 	for(int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
 	{
 		mtco_MayaObject *cam = (mtco_MayaObject *)this->mtco_scene->camList[objId];
+		if( !this->mtco_scene->isCameraRenderable(cam->mobject) && (!(cam->dagPath == this->mtco_scene->uiCamera)))
+		{	
+			continue;
+		}
 
 		logger.debug(MString("using camera ") + cam->shortName);
 		MFnCamera camera(cam->mobject);

@@ -1,3 +1,5 @@
+# 0.12
+
 # 0.11
 - added IES light profiles
 - added nk_data for phong
@@ -7,4 +9,4 @@
 - added white_points
 - added camera aperture settings and exposure duration
 
-# 0.1 first public release
+# 0.10 first public release

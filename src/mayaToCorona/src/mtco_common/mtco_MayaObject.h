@@ -2,7 +2,8 @@
 #define mtco_MAYA_OBJECT_H
 
 #include <maya/MMatrix.h>
-#include "maya/MFnMeshData.h"
+#include <maya/MPointArray.h>
+#include <maya/MFloatVectorArray.h>
 
 #include "mayaObject.h"
 
@@ -18,6 +19,10 @@ public:
 	MMatrix objectMatrix;
 };
 
+struct meshData{
+	MPointArray points;
+	MFloatVectorArray normals;
+};
 
 class mtco_MayaObject : public MayaObject
 {
@@ -32,7 +37,7 @@ public:
 	virtual mtco_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
 	virtual void getMaterials();
 
-	std::vector<MFnMeshData> meshDataArray;
+	std::vector<meshData> meshDataArray;
 };
 
 #endif

@@ -3,6 +3,8 @@
 
 #include <maya/MObject.h>
 #include <maya/MFnMeshData.h>
+#include <maya/MPointArray.h>
+#include <maya/MFloatVectorArray.h>
 #include "rendering/renderer.h"
 #include <vector>
 
@@ -53,7 +55,6 @@ public:
 	std::vector<MObject> interactiveUpdateMOList;
 
 	Context context;
-	Corona::ColorMappingData colorMappingData;
 
 	CoronaRenderer();
 	virtual ~CoronaRenderer();
@@ -65,8 +66,9 @@ public:
 	void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
-	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData);
-	virtual void updateMesh(mtco_MayaObject *obj);
+	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject);
+	void updateMesh(mtco_MayaObject *obj);
+	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
@@ -95,7 +97,7 @@ public:
 
 	void framebufferCallback();
 
-	void doit(); // for testing
+	//void doit(); // for testing
 };
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "mt@_renderGlobalsNode.h"
 
-MTypeId	MayaTo@Globals::id(0x00106EF3);
+MTypeId	MayaTo@Globals::id(0x000000);
 
 //	------------- automatically created attributes start ----------- // 
 //	------------- automatically created attributes end ----------- // 

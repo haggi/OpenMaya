@@ -32,9 +32,6 @@ MStatus returnStatus;
 		return MS::kFailure;		\
 	}
 
-
-MTypeId standinMeshNode::id( 0x0011CF7B );
-
 MObject standinMeshNode::time;
 MObject standinMeshNode::outputMesh;
 MObject standinMeshNode::binMeshFile;	
