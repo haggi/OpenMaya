@@ -2,7 +2,7 @@
 
 #include <maya/MFnDependencyNode.h>
 
-MTypeId	mtap_StandinLocator::id(0x0011CF7A);
+MTypeId	mtap_StandinLocator::id(0x0011CF41);
 
 mtap_StandinLocator::mtap_StandinLocator()
 {}

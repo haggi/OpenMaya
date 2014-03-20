@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blender_musgrave::id( 0x0011CF72 );
+MTypeId blender_musgrave::id( 0x0011EF44 );
 
 MObject blender_musgrave::outColor;
 

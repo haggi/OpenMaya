@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asDiffuse_edf::id( 0x0011CF8A );
+MTypeId	asDiffuse_edf::id( 0x0011CF4B );
 
 
 // the postConstructor() function is called immediately after the objects

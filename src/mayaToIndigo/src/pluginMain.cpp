@@ -5,6 +5,7 @@
 #include "mtin_common/mtin_renderGlobalsNode.h"
 #include "utilities/tools.h"
 
+#include "shaders/inISLNode.h"
 #include "shaders/inGlossyTransparentMaterial.h"
 #include "shaders/inPhongMaterial.h"
 #include "shaders/inDiffuseMaterial.h"
@@ -20,6 +21,10 @@
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.11"
 
+
+static const MString inISLNodeRegistrantId("inISLNodePlugin");
+static const MString inISLNodeDrawDBClassification("drawdb/shader/surface/inISLNode");
+static const MString inISLNodeFullClassification("indigo/material:shader/surface:" + inISLNodeDrawDBClassification);
 static const MString inGlossyTransparentsRegistrantId("inGlossyTransparentPlugin");
 static const MString inGlossyTransparentsDrawDBClassification("drawdb/shader/surface/inGlossyTransparent");
 static const MString inGlossyTransparentsFullClassification("indigo/material:shader/surface:" + inGlossyTransparentsDrawDBClassification);
@@ -77,6 +82,7 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inMediumBasicsDrawDBClassification, inMediumBasicsRegistrantId,inMediumBasicOverride::creator));
 #endif
 
+	CHECK_MSTATUS( plugin.registerNode( "inISLNode", inISLNode::id, inISLNode::creator, inISLNode::initialize, MPxNode::kDependNode, &inISLNodeFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "inGlossyTransparent", inGlossyTransparent::id, inGlossyTransparent::creator, inGlossyTransparent::initialize, MPxNode::kDependNode, &inGlossyTransparentsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "inPhong", inPhong::id, inPhong::creator, inPhong::initialize, MPxNode::kDependNode, &inPhongsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "inDiffuse", inDiffuse::id, inDiffuse::creator, inDiffuse::initialize, MPxNode::kDependNode, &inDiffusesFullClassification ));
@@ -143,7 +149,8 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inMediumDermissDrawDBClassification, inMediumDermissRegistrantId));
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inMediumBasicsDrawDBClassification, inMediumBasicsRegistrantId));
 #endif
-
+	
+	CHECK_MSTATUS( plugin.deregisterNode( inISLNode::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( inGlossyTransparent::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( inPhong::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( inDiffuse::id ) );

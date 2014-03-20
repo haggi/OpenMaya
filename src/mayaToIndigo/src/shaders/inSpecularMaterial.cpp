@@ -28,7 +28,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inSpecular::id( 0x0011CF84 );
+MTypeId	inSpecular::id( 0x0011CF67 );
 
 
 // the postConstructor() function is called immediately after the objects

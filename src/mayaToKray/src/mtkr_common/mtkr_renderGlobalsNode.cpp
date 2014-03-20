@@ -5,7 +5,7 @@
 
 #include "mtkr_renderGlobalsNode.h"
 
-MTypeId	MayaToKrayGlobals::id(0x0011CF4A);
+MTypeId	MayaToKrayGlobals::id(0x0011CF68);
 
 MObject MayaToKrayGlobals::bitdepth;
 MObject MayaToKrayGlobals::colorSpace;

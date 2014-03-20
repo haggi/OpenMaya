@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blender_clouds::id( 0x0011CF77 );
+MTypeId blender_clouds::id( 0x0011EF41 );
 
 MObject blender_clouds::outColor;
 

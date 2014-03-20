@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId mediumclear::id( 0x0011CF69 );
+MTypeId mediumclear::id( 0x0011EF50 );
 
 MObject mediumclear::outColor;
 

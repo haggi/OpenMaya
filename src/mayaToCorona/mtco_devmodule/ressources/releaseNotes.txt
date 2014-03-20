@@ -3,6 +3,7 @@ release 0.23
 - added camera settings exposue/iso/shutter speed
 - added smoothmesh preview translation
 - added deformation motion blur
+- added Corona Surface shader texture hardware display
 
 release 0.22
 - changed the time limit to seconds

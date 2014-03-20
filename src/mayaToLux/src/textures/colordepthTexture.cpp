@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId colordepth::id( 0x0011CF68 );
+MTypeId colordepth::id( 0x0011EF47 );
 
 MObject colordepth::outColor;
 

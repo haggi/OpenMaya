@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId fresnel::id( 0x0011CF64 );
+MTypeId fresnel::id( 0x0011EF4C );
 
 MObject fresnel::outColor;
 

@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	glossycoating::id( 0x0011CF59 );
+MTypeId	glossycoating::id( 0x0011CF6F );
 
 
 // the postConstructor() function is called immediately after the objects

@@ -6,7 +6,7 @@
 
 #include "mtin_renderGlobalsNode.h"
 
-MTypeId	MayaToIndigoGlobals::id(0x00106EF3);
+MTypeId	MayaToIndigoGlobals::id(0x0011CF59);
 
 //	------------- automatically created attributes start ----------- // 
 

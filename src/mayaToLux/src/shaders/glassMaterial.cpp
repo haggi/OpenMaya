@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	glass::id( 0x0011CF50 );
+MTypeId	glass::id( 0x0011CF6E );
 
 
 // the postConstructor() function is called immediately after the objects

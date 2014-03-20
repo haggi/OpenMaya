@@ -17,7 +17,7 @@
 #include <maya/MDrawRegistry.h>
 #include <maya/MDGModifier.h>
 
-MTypeId	inISLNode::id( 0x0011CF7F );
+MTypeId	inISLNode::id( 0x0011CF60 );
 
 
 //void inISLNode::postConstructor( )
@@ -25,6 +25,7 @@ MTypeId	inISLNode::id( 0x0011CF7F );
 
 
 MObject  inISLNode::islData;
+MObject  inISLNode::outColor;
 
 inISLNode::inISLNode() { }
 inISLNode::~inISLNode() { }
@@ -48,6 +49,9 @@ MStatus inISLNode::initialize()
 	islData = tAttr.create("islData", "islData",  MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);
 	CHECK_MSTATUS(addAttribute( islData ));
+
+	outColor = nAttr.createColor("outColor", "outColor");
+	CHECK_MSTATUS(addAttribute( outColor ));
 
     return( MS::kSuccess );
 }

@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId add::id( 0x0011CF6D );
+MTypeId add::id( 0x0011CF7D );
 
 MObject add::outColor;
 

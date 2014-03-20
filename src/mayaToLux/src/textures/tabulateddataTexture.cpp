@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId tabulateddata::id( 0x0011CF71 );
+MTypeId tabulateddata::id( 0x0011EF52 );
 
 MObject tabulateddata::outColor;
 

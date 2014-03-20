@@ -28,7 +28,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inOrenNayar::id( 0x0011CF83 );
+MTypeId	inOrenNayar::id( 0x0011CF65 );
 
 
 // the postConstructor() function is called immediately after the objects

@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId bilerp::id( 0x0011CF6F );
+MTypeId bilerp::id( 0x0011CF7F );
 
 MObject bilerp::outColor;
 

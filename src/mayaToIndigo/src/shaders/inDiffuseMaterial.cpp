@@ -28,7 +28,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inDiffuse::id( 0x0011CF7F );
+MTypeId	inDiffuse::id( 0x0011CF5D );
 
 
 // the postConstructor() function is called immediately after the objects

@@ -123,6 +123,7 @@
     <ClCompile Include="..\src\shaders\inDiffuseTransmitterMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\inGlossyTransparentMaterial.cpp" />
     <ClCompile Include="..\src\shaders\inGlossyTransparentMaterialOverride.cpp" />
+    <ClCompile Include="..\src\shaders\inISLNode.cpp" />
     <ClCompile Include="..\src\shaders\inMediumBasicMaterial.cpp" />
     <ClCompile Include="..\src\shaders\inMediumBasicMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\inMediumDermisMaterial.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="..\src\shaders\inDiffuseTransmitterMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\inGlossyTransparentMaterial.h" />
     <ClInclude Include="..\src\shaders\inGlossyTransparentMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\inISLNode.h" />
     <ClInclude Include="..\src\shaders\inMediumBasicMaterial.h" />
     <ClInclude Include="..\src\shaders\inMediumBasicMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\inMediumDermisMaterial.h" />

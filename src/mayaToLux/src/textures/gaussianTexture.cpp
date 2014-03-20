@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId gaussian::id( 0x0011CF65 );
+MTypeId gaussian::id( 0x0011EF4D );
 
 MObject gaussian::outColor;
 

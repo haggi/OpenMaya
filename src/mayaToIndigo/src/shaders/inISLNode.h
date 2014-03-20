@@ -18,4 +18,5 @@ public:
 protected:
 
 	static    MObject islData;
+	static    MObject outColor;
 };

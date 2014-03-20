@@ -66,3 +66,7 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         self.endNoOptimize()
         self.endLayout()
         
+        self.beginLayout("Hardware Texturing" ,collapse=0)
+        pm.mel.eval('AEhardwareTextureTemplate "%s"' % self.nodeName + r'("color incandescence ")')
+        self.endLayout()
+        

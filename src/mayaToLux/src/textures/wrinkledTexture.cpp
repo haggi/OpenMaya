@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId wrinkled::id( 0x0011CF78 );
+MTypeId wrinkled::id( 0x0011EF55 );
 
 MObject wrinkled::outColor;
 

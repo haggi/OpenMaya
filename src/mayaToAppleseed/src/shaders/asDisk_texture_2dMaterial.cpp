@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asDisk_texture_2d::id( 0x0011CF7D );
+MTypeId	asDisk_texture_2d::id( 0x0011CF4C );
 
 
 // the postConstructor() function is called immediately after the objects

@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId windy::id( 0x0011CF67 );
+MTypeId windy::id( 0x0011EF54 );
 
 MObject windy::outColor;
 

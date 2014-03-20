@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asSpecular_btdf::id( 0x0011CF89 );
+MTypeId	asSpecular_btdf::id( 0x0011CF54 );
 
 
 // the postConstructor() function is called immediately after the objects

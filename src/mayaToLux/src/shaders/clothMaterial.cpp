@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	cloth::id( 0x0011CF57 );
+MTypeId	cloth::id( 0x0011CF6C );
 
 
 // the postConstructor() function is called immediately after the objects

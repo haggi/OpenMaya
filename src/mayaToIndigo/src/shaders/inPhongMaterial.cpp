@@ -29,7 +29,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inPhong::id( 0x0011CF7E );
+MTypeId	inPhong::id( 0x0011CF66 );
 
 
 // the postConstructor() function is called immediately after the objects

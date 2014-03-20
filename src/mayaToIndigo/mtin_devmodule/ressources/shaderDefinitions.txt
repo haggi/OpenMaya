@@ -164,5 +164,10 @@ shader_start:inMediumBasic
 	outatt:outColor:color
 shader_end
 
+shader_start:inISLNode
+	inatt:islData:string
+	outatt:outColor:color
+shader_end
+
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId mediumhomogenus::id( 0x0011CF6B );
+MTypeId mediumhomogenus::id( 0x0011EF51 );
 
 MObject mediumhomogenus::outColor;
 

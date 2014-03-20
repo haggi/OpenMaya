@@ -98,4 +98,7 @@ fresnel_scale, float, Fresnel Scale, 1.0
 interference, float, Interference, 0.0
 iesProfile, string, IES Profile, "", useAsFilename
 
+#ISLNode
+islData, string, Data, ""
+
 #DoubleSidedThinMaterial

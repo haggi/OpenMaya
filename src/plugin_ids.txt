@@ -2,38 +2,100 @@
 0x0011EF40 : 0x0011EF7F
 
 Appleseed:
-RenderGlobals:		0x0011CF40
-AOShader:			0x0011CF41
-VoxelShader:		0x0011CF42
-ConstantShader:		0x0011CF43
-DiagnosticShader:	0x0011CF44
-SSSShader:			0x0011CF45
-PhysicalSurfaceS:	0x0011CF46
-SmokeShader:		0x0011CF47
-WireframeShader:	0x0011CF48
-StandinLocator:		0x0011CF7A
-StandinMeshNode:	0x0011CF7B
-
-Lux:
-RenderGlobals:		0x0011CF49
-Lux Shaders 		0x0011CF4D - 0x0011CF5F
-Lux Textures 		0x0011CF60 - 0x0011CF79
-
-KRay:
-RenderGlobals:		0x0011CF4A
-KRayMaterial:		0x0011CF4B
+0x0011CF40	0x0011CF40	mayaToAppleseed	mtap_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_renderGlobalsNode.cpp
+0x0011CF41	0x0011CF41	mayaToAppleseed	mtap_standinLocator.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinLocator.cpp
+0x0011CF42	0x0011CF42	mayaToAppleseed	mtap_standinMeshNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinMeshNode.cpp
+0x0011CF43	0x0011CF43	mayaToAppleseed	asAo_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asAo_surface_shaderMaterial.cpp
+0x0011CF44	0x0011CF44	mayaToAppleseed	asAshikhmin_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asAshikhmin_brdfMaterial.cpp
+0x0011CF45	0x0011CF45	mayaToAppleseed	asBsdf_blendMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asBsdf_blendMaterial.cpp
+0x0011CF46	0x0011CF46	mayaToAppleseed	asBsdf_mixMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asBsdf_mixMaterial.cpp
+0x0011CF47	0x0011CF47	mayaToAppleseed	asCone_edfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asCone_edfMaterial.cpp
+0x0011CF48	0x0011CF48	mayaToAppleseed	asConstant_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asConstant_surface_shaderMaterial.cpp
+0x0011CF49	0x0011CF49	mayaToAppleseed	asDiagnostic_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDiagnostic_surface_shaderMaterial.cpp
+0x0011CF4A	0x0011CF4A	mayaToAppleseed	asDiffuse_btdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDiffuse_btdfMaterial.cpp
+0x0011CF4B	0x0011CF4B	mayaToAppleseed	asDiffuse_edfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDiffuse_edfMaterial.cpp
+0x0011CF4C	0x0011CF4C	mayaToAppleseed	asDisk_texture_2dMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDisk_texture_2dMaterial.cpp
+0x0011CF4D	0x0011CF4D	mayaToAppleseed	asFast_sss_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asFast_sss_surface_shaderMaterial.cpp
+0x0011CF4E	0x0011CF4E	mayaToAppleseed	asKelemen_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asKelemen_brdfMaterial.cpp
+0x0011CF4F	0x0011CF4F	mayaToAppleseed	asLambertian_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asLambertian_brdfMaterial.cpp
+0x0011CF50	0x0011CF50	mayaToAppleseed	asMaterialMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asMaterialMaterial.cpp
+0x0011CF51	0x0011CF51	mayaToAppleseed	asMicrofacet_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asMicrofacet_brdfMaterial.cpp
+0x0011CF52	0x0011CF52	mayaToAppleseed	asPhysical_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asPhysical_surface_shaderMaterial.cpp
+0x0011CF53	0x0011CF53	mayaToAppleseed	asSpecular_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSpecular_brdfMaterial.cpp
+0x0011CF54	0x0011CF54	mayaToAppleseed	asSpecular_btdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSpecular_btdfMaterial.cpp
+0x0011CF55	0x0011CF55	mayaToAppleseed	asSurface_shader_collectionMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSurface_shader_collectionMaterial.cpp
 
 Corona:
-RenderGlobals:		0x0011CF4C
-CoronaSurface:		0x0011CF7D
+0x0011CF56	0x0011CF56	mayaToCorona	mtco_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\mtco_common\mtco_renderGlobalsNode.cpp
+0x0011CF57	0x0011CF57	mayaToCorona	CoronaSurfaceMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\CoronaSurfaceMaterial.cpp
 
-Mitsuba:
-RenderGlobals:		
-
-Fujiyama:
-RenderGlobals		0x0011CF7C
+Fuji:
+0x0011CF58	0x0011CF58	mayaToFuji	mtfu_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToFuji\src\mtfu_common\mtfu_renderGlobalsNode.cpp
 
 Indigo:
+0x0011CF59	0x0011CF59	mayaToIndigo	mtin_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\mtin_common\mtin_renderGlobalsNode.cpp
+0x0011CF5A	0x0011CF5A	mayaToIndigo	CoatingMaterialMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\CoatingMaterialMaterial.cpp
+0x0011CF5B	0x0011CF5B	mayaToIndigo	DoubleSidedThinMaterialMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\DoubleSidedThinMaterialMaterial.cpp
+0x0011CF5C	0x0011CF5C	mayaToIndigo	inBlendMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inBlendMaterial.cpp
+0x0011CF5D	0x0011CF5D	mayaToIndigo	inDiffuseMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inDiffuseMaterial.cpp
+0x0011CF5E	0x0011CF5E	mayaToIndigo	inDiffuseTransmitterMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inDiffuseTransmitterMaterial.cpp
+0x0011CF5F	0x0011CF5F	mayaToIndigo	inGlossyTransparentMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inGlossyTransparentMaterial.cpp
+0x0011CF60	0x0011CF60	mayaToIndigo	inISLNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inISLNode.cpp
+0x0011CF61	0x0011CF61	mayaToIndigo	inMediumBasicMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inMediumBasicMaterial.cpp
+0x0011CF62	0x0011CF62	mayaToIndigo	inMediumDermisMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inMediumDermisMaterial.cpp
+0x0011CF63	0x0011CF63	mayaToIndigo	inMediumEpidermisMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inMediumEpidermisMaterial.cpp
+0x0011CF64	0x0011CF64	mayaToIndigo	inNullMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inNullMaterial.cpp
+0x0011CF65	0x0011CF65	mayaToIndigo	inOrenNayarMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inOrenNayarMaterial.cpp
+0x0011CF66	0x0011CF66	mayaToIndigo	inPhongMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inPhongMaterial.cpp
+0x0011CF67	0x0011CF67	mayaToIndigo	inSpecularMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToIndigo\src\shaders\inSpecularMaterial.cpp
 
+Kray:
+0x0011CF68	0x0011CF68	mayaToKray	mtkr_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToKray\src\mtkr_common\mtkr_renderGlobalsNode.cpp
+0x0011CF69	0x0011CF69	mayaToKray	krayMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToKray\src\shaders\krayMaterial.cpp
 
-Last used:	0x0011CF7D
+Lux:
+0x0011CF6A	0x0011CF6A	mayaToLux	mtlu_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\mtlu_common\mtlu_renderGlobalsNode.cpp
+0x0011CF6B	0x0011CF6B	mayaToLux	carpaintMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\carpaintMaterial.cpp
+0x0011CF6C	0x0011CF6C	mayaToLux	clothMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\clothMaterial.cpp
+0x0011CF6D	0x0011CF6D	mayaToLux	glass2Material.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\glass2Material.cpp
+0x0011CF6E	0x0011CF6E	mayaToLux	glassMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\glassMaterial.cpp
+0x0011CF6F	0x0011CF6F	mayaToLux	glossycoatingMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\glossycoatingMaterial.cpp
+0x0011CF70	0x0011CF70	mayaToLux	glossyMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\glossyMaterial.cpp
+0x0011CF71	0x0011CF71	mayaToLux	glossytranslucentMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\glossytranslucentMaterial.cpp
+0x0011CF72	0x0011CF72	mayaToLux	layeredMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\layeredMaterial.cpp
+0x0011CF73	0x0011CF73	mayaToLux	matteMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\matteMaterial.cpp
+0x0011CF74	0x0011CF74	mayaToLux	mattetranslucentMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\mattetranslucentMaterial.cpp
+0x0011CF75	0x0011CF75	mayaToLux	metal2Material.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\metal2Material.cpp
+0x0011CF76	0x0011CF76	mayaToLux	metalMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\metalMaterial.cpp
+0x0011CF77	0x0011CF77	mayaToLux	mirrorMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\mirrorMaterial.cpp
+0x0011CF78	0x0011CF78	mayaToLux	mixMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\mixMaterial.cpp
+0x0011CF79	0x0011CF79	mayaToLux	roughglassMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\roughglassMaterial.cpp
+0x0011CF7A	0x0011CF7A	mayaToLux	scatterMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\scatterMaterial.cpp
+0x0011CF7B	0x0011CF7B	mayaToLux	shinymetalMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\shinymetalMaterial.cpp
+0x0011CF7C	0x0011CF7C	mayaToLux	velvetMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\shaders\velvetMaterial.cpp
+0x0011CF7D	0x0011CF7D	mayaToLux	addTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\addTexture.cpp
+0x0011CF7E	0x0011CF7E	mayaToLux	bandTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\bandTexture.cpp
+0x0011CF7F	0x0011CF7F	mayaToLux	bilerpTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\bilerpTexture.cpp
+0x0011EF40	0x0011EF40	mayaToLux	blackbodyTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blackbodyTexture.cpp
+0x0011EF41	0x0011EF41	mayaToLux	blender_cloudsTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blender_cloudsTexture.cpp
+0x0011EF42	0x0011EF42	mayaToLux	blender_distortednoiseTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blender_distortednoiseTexture.cpp
+0x0011EF43	0x0011EF43	mayaToLux	blender_marbleTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blender_marbleTexture.cpp
+0x0011EF44	0x0011EF44	mayaToLux	blender_musgraveTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blender_musgraveTexture.cpp
+0x0011EF45	0x0011EF45	mayaToLux	blender_woodTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\blender_woodTexture.cpp
+0x0011EF46	0x0011EF46	mayaToLux	brickTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\brickTexture.cpp
+0x0011EF47	0x0011EF47	mayaToLux	colordepthTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\colordepthTexture.cpp
+0x0011EF48	0x0011EF48	mayaToLux	constantTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\constantTexture.cpp
+0x0011EF49	0x0011EF49	mayaToLux	dotsTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\dotsTexture.cpp
+0x0011EF4A	0x0011EF4A	mayaToLux	fbmTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\fbmTexture.cpp
+0x0011EF4B	0x0011EF4B	mayaToLux	fresnelcolorTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\fresnelcolorTexture.cpp
+0x0011EF4C	0x0011EF4C	mayaToLux	fresnelTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\fresnelTexture.cpp
+0x0011EF4D	0x0011EF4D	mayaToLux	gaussianTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\gaussianTexture.cpp
+0x0011EF4E	0x0011EF4E	mayaToLux	harlequinTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\harlequinTexture.cpp
+0x0011EF4F	0x0011EF4F	mayaToLux	marbleTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\marbleTexture.cpp
+0x0011EF50	0x0011EF50	mayaToLux	mediumclearTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\mediumclearTexture.cpp
+0x0011EF51	0x0011EF51	mayaToLux	mediumhomogenusTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\mediumhomogenusTexture.cpp
+0x0011EF52	0x0011EF52	mayaToLux	tabulateddataTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\tabulateddataTexture.cpp
+0x0011EF53	0x0011EF53	mayaToLux	uvTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\uvTexture.cpp
+0x0011EF54	0x0011EF54	mayaToLux	windyTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\windyTexture.cpp
+0x0011EF55	0x0011EF55	mayaToLux	wrinkledTexture.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\wrinkledTexture.cpp
+

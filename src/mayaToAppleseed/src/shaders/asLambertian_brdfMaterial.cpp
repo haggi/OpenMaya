@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asLambertian_brdf::id( 0x0011CF7F );
+MTypeId	asLambertian_brdf::id( 0x0011CF4F );
 
 
 // the postConstructor() function is called immediately after the objects

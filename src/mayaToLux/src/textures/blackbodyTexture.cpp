@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blackbody::id( 0x0011CF61 );
+MTypeId blackbody::id( 0x0011EF40 );
 
 MObject blackbody::outColor;
 

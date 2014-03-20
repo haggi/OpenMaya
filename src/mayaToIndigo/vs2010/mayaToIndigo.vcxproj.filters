@@ -239,6 +239,9 @@
     <ClCompile Include="..\src\Indigo\IndigoToneMapper.cpp">
       <Filter>Source Files\Indigo</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\inISLNode.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -402,6 +405,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\inISLNode.h">
+      <Filter>Source Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

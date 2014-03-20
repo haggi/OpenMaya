@@ -6,7 +6,7 @@
 
 #include "mtlu_renderGlobalsNode.h"
 
-MTypeId	MayaToLuxGlobals::id(0x0011CF49);
+MTypeId	MayaToLuxGlobals::id(0x0011CF6A);
 
 //	------------- automatically created attributes start ----------- // 
 

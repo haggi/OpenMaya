@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	metal::id( 0x0011CF54 );
+MTypeId	metal::id( 0x0011CF76 );
 
 
 // the postConstructor() function is called immediately after the objects

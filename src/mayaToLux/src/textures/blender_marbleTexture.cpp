@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blender_marble::id( 0x0011CF66 );
+MTypeId blender_marble::id( 0x0011EF43 );
 
 MObject blender_marble::outColor;
 

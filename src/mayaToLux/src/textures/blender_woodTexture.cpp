@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blender_wood::id( 0x0011CF75 );
+MTypeId blender_wood::id( 0x0011EF45 );
 
 MObject blender_wood::outColor;
 

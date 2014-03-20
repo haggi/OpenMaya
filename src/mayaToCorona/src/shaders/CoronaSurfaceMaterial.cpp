@@ -28,7 +28,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	CoronaSurface::id( 0x0011CF7D );
+MTypeId	CoronaSurface::id( 0x0011CF57 );
 
 
 // the postConstructor() function is called immediately after the objects

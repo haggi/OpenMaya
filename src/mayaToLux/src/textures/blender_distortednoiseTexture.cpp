@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId blender_distortednoise::id( 0x0011CF63 );
+MTypeId blender_distortednoise::id( 0x0011EF42 );
 
 MObject blender_distortednoise::outColor;
 

@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inMediumDermis::id( 0x0011CF86 );
+MTypeId	inMediumDermis::id( 0x0011CF62 );
 
 
 // the postConstructor() function is called immediately after the objects

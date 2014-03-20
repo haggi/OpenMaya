@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asMicrofacet_brdf::id( 0x0011CF84 );
+MTypeId	asMicrofacet_brdf::id( 0x0011CF51 );
 
 
 // the postConstructor() function is called immediately after the objects

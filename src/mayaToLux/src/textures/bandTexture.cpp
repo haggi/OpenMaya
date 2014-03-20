@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId band::id( 0x0011CF74 );
+MTypeId band::id( 0x0011CF7E );
 
 MObject band::outColor;
 

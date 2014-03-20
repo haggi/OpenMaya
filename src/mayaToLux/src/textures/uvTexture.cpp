@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId uv::id( 0x0011CF76 );
+MTypeId uv::id( 0x0011EF53 );
 
 MObject uv::outColor;
 

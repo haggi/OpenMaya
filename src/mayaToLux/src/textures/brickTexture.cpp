@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId brick::id( 0x0011CF70 );
+MTypeId brick::id( 0x0011EF46 );
 
 MObject brick::outColor;
 

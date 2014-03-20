@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	inNull::id( 0x0011CF80 );
+MTypeId	inNull::id( 0x0011CF64 );
 
 
 // the postConstructor() function is called immediately after the objects

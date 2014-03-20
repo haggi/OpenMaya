@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asAshikhmin_brdf::id( 0x0011CF85 );
+MTypeId	asAshikhmin_brdf::id( 0x0011CF44 );
 
 
 // the postConstructor() function is called immediately after the objects

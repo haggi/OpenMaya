@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asBsdf_mix::id( 0x0011CF7E );
+MTypeId	asBsdf_mix::id( 0x0011CF46 );
 
 
 // the postConstructor() function is called immediately after the objects

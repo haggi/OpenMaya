@@ -33,9 +33,16 @@ struct IndigoTextureNode{
 	};
 };
 
+struct IndigoScriptNode{
+	MString name;
+	Indigo::ShaderInfoRef scriptRefNode;
+	ShadingNode shadingNode;
+};
+
 std::vector<MaterialNode> materialNodes;
 std::vector<IndigoTextureNode> textureNodes;
 std::vector<MediumNode> mediumNodes;
+std::vector<IndigoScriptNode> scriptNodes;
 
 
 void IndigoRenderer::createIndigoDefaultMaterial()
@@ -157,30 +164,54 @@ void IndigoRenderer::setDependentParameter(Reference<Indigo::WavelengthDependent
 		}else{
 			logger.debug(MString("Could not find texture node ") +  getObjectName(textureObj) );
 		}
-	}else{
-		float gamma = 2.2f;
-		if( type == "color" )
-		{			
-			MColor color(1,1,1);
-			getColor(attrName, depFn, color);
-			Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(color.r,color.g,color.b), gamma);
-			p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
-		}
-		if( type == "float" )
-		{
-			float value;
-			getFloat(attrName, depFn, value);
-			Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(value,value,value), gamma);
-			p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
-		}				
-		if( type == "double" )
-		{
-			double value;
-			getDouble(attrName, depFn, value);
-			Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(value,value,value), gamma);
-			p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
-		}				
+		return;
 	}
+	
+	MObject connectedObj = getOtherSideNode(attrPlug);
+	MFnDependencyNode connectedNode(connectedObj);
+
+	if(connectedNode.typeName() == "inISLNode")
+	{
+		Indigo::ShaderInfoRef infoRef;
+		for( size_t txId(0); txId < scriptNodes.size(); txId++)
+		{	
+			if( scriptNodes[txId].shadingNode.mobject == connectedObj )
+			{
+				infoRef = scriptNodes[txId].scriptRefNode;
+				logger.debug(MString("Found script node ") +  scriptNodes[txId].shadingNode.fullName );
+			}
+		}
+		if( infoRef.nonNull() )
+		{
+			p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ShaderWavelengthDependentParam(infoRef));
+		}else{
+			logger.debug(MString("Could not find script ref node ") +  getObjectName(connectedObj) );
+		}
+		return;
+	}
+
+	float gamma = 2.2f;
+	if( type == "color" )
+	{			
+		MColor color(1,1,1);
+		getColor(attrName, depFn, color);
+		Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(color.r,color.g,color.b), gamma);
+		p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
+	}
+	if( type == "float" )
+	{
+		float value;
+		getFloat(attrName, depFn, value);
+		Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(value,value,value), gamma);
+		p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
+	}				
+	if( type == "double" )
+	{
+		double value;
+		getDouble(attrName, depFn, value);
+		Indigo::RGBSpectrum *iColor = new Indigo::RGBSpectrum(Indigo::Vec3d(value,value,value), gamma);
+		p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(iColor)));
+	}				
 }
 
 void IndigoRenderer::setDisplacementParameter(Reference<Indigo::DisplacementParam>& p, MFnDependencyNode& depFn, MString attrName, MString type)
@@ -307,6 +338,16 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		tn.shadingNode = snode;
 		tn.texture = texture;
 		textureNodes.push_back(tn);
+	}
+
+	if( snode.typeName == "inISLNode")
+	{
+		IndigoScriptNode scriptNode;
+		scriptNode.name = snode.fullName;
+		scriptNode.shadingNode = snode;
+		scriptNode.scriptRefNode = new Indigo::ShaderInfo();
+		scriptNode.scriptRefNode->shader = "def eval(vec3 pos) vec3 : vec3(1.8, 0.0, 0.0)";
+		scriptNodes.push_back(scriptNode);
 	}
 
 	if( snode.typeName == "inBlend")

@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	layered::id( 0x0011CF52 );
+MTypeId	layered::id( 0x0011CF72 );
 
 
 // the postConstructor() function is called immediately after the objects

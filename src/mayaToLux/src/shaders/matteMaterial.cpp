@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	matte::id( 0x0011CF58 );
+MTypeId	matte::id( 0x0011CF73 );
 
 
 // the postConstructor() function is called immediately after the objects

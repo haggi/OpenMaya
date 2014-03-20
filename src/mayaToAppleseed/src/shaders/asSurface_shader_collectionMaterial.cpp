@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	asSurface_shader_collection::id( 0x0011CF7D );
+MTypeId	asSurface_shader_collection::id( 0x0011CF55 );
 
 
 // the postConstructor() function is called immediately after the objects

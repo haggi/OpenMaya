@@ -44,7 +44,7 @@ MStatus returnStatus;
 	}
 
 
-MTypeId mtap_standinMeshNode::id( 0x0011CF7B );
+MTypeId mtap_standinMeshNode::id( 0x0011CF42 );
 								  
 
 MObject mtap_standinMeshNode::time;

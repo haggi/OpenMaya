@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId fbm::id( 0x0011CF6E );
+MTypeId fbm::id( 0x0011EF4A );
 
 MObject fbm::outColor;
 

@@ -10,7 +10,7 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId harlequin::id( 0x0011CF6C );
+MTypeId harlequin::id( 0x0011EF4E );
 
 MObject harlequin::outColor;
 

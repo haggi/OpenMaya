@@ -6,7 +6,7 @@
 
 #include "mtfu_renderGlobalsNode.h"
 
-MTypeId	MayaToFujiGlobals::id(0x0011CF7A);
+MTypeId	MayaToFujiGlobals::id(0x0011CF58);
 
 //	------------- automatically created attributes start ----------- // 
 

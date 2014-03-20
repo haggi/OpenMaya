@@ -6,7 +6,7 @@
 
 #include "mtco_renderGlobalsNode.h"
 
-MTypeId	MayaToCoronaGlobals::id(0x0011CF4C);
+MTypeId	MayaToCoronaGlobals::id(0x0011CF56);
 
 //	------------- automatically created attributes start ----------- // 
 
