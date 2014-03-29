@@ -3,6 +3,8 @@ import os
 import logging
 import path
 import pymel.core as pm
+import uiUtils
+import commonGlobals
 
 log = logging.getLogger("renderLogger")
 
@@ -14,12 +16,15 @@ class MayaToRenderer(object):
         self.pluginName = "mayato" + self.rendererName.lower()
         self.renderGlobalsNodeName = self.rendererName.lower() + "Globals"
         self.renderGlobalsNode = None
-        #self.baseRenderMelCommand = "import {0} as rcall; reload(rcall); rcall.theRenderer().".format(self.moduleName)
+        # self.baseRenderMelCommand = "import {0} as rcall; reload(rcall); rcall.theRenderer().".format(self.moduleName)
         self.baseRenderMelCommand = "import {0} as rcall; rcall.theRenderer().".format(self.moduleName)
         self.imageFormats = []
         self.ipr_isrunning = False
         self.imageFormatCtrl = None
+        self.openMayaCommonGlobals = None
     
+    def addRenderGlobalsUIElement(self, attName=None, uiType=None, displayName=None, default=None, data=None, uiDict=None, callback=None):
+        uiUtils.addRenderGlobalsUIElement(self.renderGlobalsNodeName, attName, uiType, displayName, default, data, uiDict, callback)
     # the render callback is called with arguments like this
     # renderCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
     # if the renderCmd is replaced with a python call it may not get all informations so we 
@@ -31,7 +36,7 @@ class MayaToRenderer(object):
         return cmd
 
     def makeMelPythonCmdStringFromPythonCmd(self, pythonCmdObj, argSet):
-        pCmd  = "\"{0}{1}(".format(self.baseRenderMelCommand, pythonCmdObj.__name__)
+        pCmd = "\"{0}{1}(".format(self.baseRenderMelCommand, pythonCmdObj.__name__)
         argList = []
         for dtype, value in argSet:
             if dtype == 'string':
@@ -53,65 +58,9 @@ class MayaToRenderer(object):
         melCmd += "    string $cmdString = " + self.makeMelPythonCmdStringFromPythonCmd(pythonCmdObj, argSet) + ";\n"
         melCmd += "    python($cmdString);\n"
         melCmd += "};\n";
-        #print "MelCmd:", melCmd
+        # print "MelCmd:", melCmd
         pm.mel.eval(melCmd)
         return melProcName
-
-    def getEnumList(self, attr):
-        return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
-    
-    def addUIElement(self, uiType, attribute, uiLabel, callback):
-        ui = None
-        if uiType == 'bool':
-            ui = pm.checkBoxGrp(label=uiLabel)
-            if callback is not None:
-                pm.checkBoxGrp(ui, edit=True, cc=callback)
-        if uiType == 'int':
-            ui = pm.intFieldGrp(label=uiLabel, numberOfFields = 1)
-            if callback is not None:
-                pm.intFieldGrp(ui, edit=True, cc = callback)
-        if uiType == 'float':
-            ui = pm.floatFieldGrp(label=uiLabel, numberOfFields = 1)
-            if callback is not None:
-                pm.floatFieldGrp(ui, edit=True, cc= callback)
-        if uiType == 'enum':
-            ui = pm.attrEnumOptionMenuGrp(label = uiLabel, at=attribute, ei = self.getEnumList(attribute)) 
-            # attrEnumOptionGrp has no cc callback, so I create a script job
-            if callback is not None:
-                attribute = pm.Attribute(self.renderGlobalsNodeName + "." + attribute)
-                pm.scriptJob(attributeChange=[attribute, callback], parent=ui)           
-        if uiType == 'color':
-            ui = pm.attrColorSliderGrp(label=uiLabel, at=attribute)
-        if uiType == 'string':
-            ui = pm.textFieldGrp(label=uiLabel)
-            if callback is not None:
-                pm.textFieldGrp(ui, edit=True, cc=callback)
-        return ui
-    
-    def connectUIElement(self, uiElement, attribute):
-        
-        if attribute.type() == 'color':
-            #color is automatically connnected via attrEnumOptionMenu
-            return        
-        if attribute.type() == 'enum':
-            #enum is automatically connnected via attrEnumOptionMenu
-            return        
-        if attribute.type() == 'float3':
-            #float3 == color is automatically connnected via attrColorSliderGrp
-            return
-        if attribute.type() == 'message':
-            #no automatic connection necessary, will be controlled by other scritps
-            return
-        log.debug("Adding connection for {0}".format(attribute))
-        pm.connectControl(uiElement, attribute, index = 2)
-    
-    def addRenderGlobalsUIElement(self, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None, callback=None):
-        
-        attribute = pm.Attribute(self.renderGlobalsNodeName + "." + attName)
-        uiElement = self.addUIElement(uiType, attribute, displayName, callback)
-        self.connectUIElement(uiElement, attribute)
-        uiDict[attName] = uiElement
-                
     
     def batchRenderProcedure(self, options):
         self.preRenderProcedure()
@@ -169,7 +118,21 @@ class MayaToRenderer(object):
     def renderMenuProcedure(self):
         self.preRenderProcedure()
         log.debug("renderMenuProcedure")
-            
+              
+    def OpenMayaCommonGlobalsCreateTab(self):
+        self.createGlobalsNode()
+        if self.openMayaCommonGlobals is None:
+            self.openMayaCommonGlobals = commonGlobals.OpenMayaCommonGlobals(self.renderGlobalsNode)
+        self.openMayaCommonGlobals.renderNode = self.renderGlobalsNode
+        self.openMayaCommonGlobals.OpenMayaCommonGlobalsCreateTab()
+                    
+    def OpenMayaCommonGlobalsUpdateTab(self):
+        self.createGlobalsNode()
+        if self.openMayaCommonGlobals is None:
+            self.openMayaCommonGlobals = commonGlobals.OpenMayaCommonGlobals(self.renderGlobalsNode)
+        self.openMayaCommonGlobals.renderNode = self.renderGlobalsNode
+        self.openMayaCommonGlobals.OpenMayaCommonGlobalsUpdateTab()
+        
     # render tab creation. Renderer tabs need a mel globals procedure.
     # a mel procedure is called for create and update tab
     # here I create a fake mel procedure to call my own python command
@@ -190,16 +153,17 @@ class MayaToRenderer(object):
         if tabName == "OpenMayaCommonGlobals":
             createTabCmd = "{0}CreateTab".format(tabName) 
             updateTabCmd = "{0}UpdateTab".format(tabName) 
-            tabLabel = "Common"
+            tabLabel = "{0}Common".format(self.rendererName)
             createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
             updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
             melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
             melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
         
-        log.debug("mel create tab: \n" + melCreateCmd)
-        log.debug("mel update tab: \n" + melUpdateCmd)
-        log.debug("python create tab: \n" + createPyCmd)
-        log.debug("python update tab: \n" + updatePyCmd)
+        #log.debug("mel create tab: \n" + melCreateCmd)
+        #log.debug("mel update tab: \n" + melUpdateCmd)
+        #log.debug("python create tab: \n" + createPyCmd)
+        #log.debug("python update tab: \n" + updatePyCmd)
+        #log.debug("tab proc return {0} {1} {2}".format(tabLabel, createTabCmd, updateTabCmd))
         pm.mel.eval(melCreateCmd)
         pm.mel.eval(melUpdateCmd)
         return (tabLabel, createTabCmd, updateTabCmd)
@@ -211,10 +175,10 @@ class MayaToRenderer(object):
         self.createGlobalsNode()
         drg = pm.PyNode("defaultRenderGlobals")
         if self.renderGlobalsNode.threads.get() == 0:
-            #TODO this is windows only, search for another solution...
+            # TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
-        #craete optimized exr textures
+        # craete optimized exr textures
         
         
     def postRenderProcedure(self):
@@ -227,75 +191,22 @@ class MayaToRenderer(object):
         pass
 
     def overwriteUpdateMayaImageFormatControl(self):
-        melCmdCreateA = """
+        cmd = """
 global proc string createMayaImageFormatControl()
 {
-    string $currentRenderer = currentRenderer();
-    if( $currentRenderer == "mentalRay" )
-        return createMRImageFormatControl();
-        """
-        melCmdCreateB = """
-    string $parent = `setParent -query`;
-
-    // Delete the control if it already exists
-    //
-    string $fullPath = $parent + "|imageMenuMayaSW";
-    if (`layout -exists $fullPath`) {
-        deleteUI $fullPath;
-    }
-
-    optionMenuGrp
-        -label (uiRes("m_createMayaSoftwareCommonGlobalsTab.kImageFormatMenu"))
-        -changeCommand "changeMayaSoftwareImageFormat"
-        imageMenuMayaSW;
-
-    int $isVector = 0;
-    if( $currentRenderer == "mayaVector" )
-        $isVector = 1;
-
-    buildImageFormatsMenu($isVector, 1, 1, 1, 1);
-
-    // connect the label, so we can change its color
-    connectControl -index 1 imageMenuMayaSW defaultRenderGlobals.imageFormat;
-    // connect the menu, so it will always match the attribute
-    connectControl -index 2 imageMenuMayaSW defaultRenderGlobals.imageFormat;
-
-    scriptJob
-        -parent $parent
-        -attributeChange
-            "defaultRenderGlobals.imageFormat"
-            "updateMayaSoftwareImageFormatControl";
-
     return "imageMenuMayaSW";
 }
-
+"""
+        pm.mel.eval(cmd)        
+        cmd = """
 global proc updateMayaImageFormatControl()
-{
-    string $currentRenderer = currentRenderer();
-        """
-        melCmdCreateC = """
-    else if( $currentRenderer == "mentalRay" )
-        updateMentalRayImageFormatControl();
-    else
-        updateMayaSoftwareImageFormatControl();
-
-    //update the Mulitple camera frame buffer naming control
-        updateMultiCameraBufferNamingMenu();
-}
-        """
-        
-        rendererCmdA = "\n\tif( $currentRenderer == \"{0}\" )\n\
-        return {1};".format(self.rendererName, "python(\"minit.theRenderer().createImageFormatControls()\")")
-        rendererCmdB = "\n\tif( $currentRenderer == \"{0}\" )\n\
-        python(\"minit.theRenderer().updateImageFormatControls()\");".format(self.rendererName)
-
-        melCmd = melCmdCreateA + rendererCmdA +  melCmdCreateB + rendererCmdB + melCmdCreateC 
-        print "Complete mel command", melCmd   
-        pm.mel.eval(melCmd)
+{}
+"""
+        pm.mel.eval(cmd)        
+        return
     
     def unDoOverwriteUpdateMayaImageFormatControl(self):
         pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
-        pass
     
     def createGlobalsNode(self):      
         selection = pm.ls(sl=True)
@@ -322,16 +233,16 @@ global proc updateMayaImageFormatControl()
         pass
 
     def hyperShadePanelBuildCreateMenuCallback(self):
-        #log.debug("hyperShadePanelBuildCreateMenuCallback")
+        # log.debug("hyperShadePanelBuildCreateMenuCallback")
         pm.menuItem(label=self.rendererName)
         pm.menuItem(divider=True)
     
     def hyperShadePanelBuildCreateSubMenuCallback(self):
-        #log.debug("hyperShadePanelBuildCreateSubMenuCallback")
+        # log.debug("hyperShadePanelBuildCreateSubMenuCallback")
         return "shader/surface"
     
     def buildRenderNodeTreeListerContentCallback(self, tl, postCommand, filterString):
-        #log.debug("buildRenderNodeTreeListerContentCallback")        
+        # log.debug("buildRenderNodeTreeListerContentCallback")        
 
 #        int $numCategories = mrNumNodeCategories();
 #        int $i;
@@ -357,7 +268,7 @@ global proc updateMayaImageFormatControl()
         # this is necessary for < maya2014 because in these versions the mentalray plugin somehow destroys the callback call
         if len(tl) > 0:
             melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", self.rendererName.lower() + "/material", "-asShader", "")
-            #melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
+            # melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
             log.debug("Treelister cmd " + melCmd)
             pm.mel.eval(melCmd)
             melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", self.rendererName.lower() + "/texture", "-asUtility", "")
@@ -377,9 +288,9 @@ global proc updateMayaImageFormatControl()
     def registerAETemplateCallbacks(self):
         log.debug("registerAETemplateCallbacks")
         # callback is defined as mel script, didn't work as pymel command.. 
-        #aeCallbackName = "AE{0}NodeCallback".format(self.rendererName)
-        #aeCallbackString = "callbacks -addCallback {0} -hook AETemplateCustomContent -owner {1};".format(aeCallbackName, self.pluginName)
-        #pm.mel.eval(aeCallbackString)
+        # aeCallbackName = "AE{0}NodeCallback".format(self.rendererName)
+        # aeCallbackString = "callbacks -addCallback {0} -hook AETemplateCustomContent -owner {1};".format(aeCallbackName, self.pluginName)
+        # pm.mel.eval(aeCallbackString)
 
         pm.callbacks(addCallback=self.aeTemplateCallback, hook='AETemplateCustomContent', owner=self.pluginName)
         
@@ -415,23 +326,23 @@ global proc updateMayaImageFormatControl()
         self.registerNodeExtensions()
         self.registerAETemplateCallbacks()
         pm.renderer(self.rendererName, rendererUIName=self.rendererName)
-        pm.renderer(self.rendererName, edit=True, renderProcedure=self.makeMelProcFromPythonCmd(self.renderProcedure, [('int', 'width'), 
-                                                                                                                       ('int', 'height'), 
-                                                                                                                       ('int', 'doShadows'), 
-                                                                                                                       ('int', 'doGlow'), 
-                                                                                                                       ('string', 'camera'), 
+        pm.renderer(self.rendererName, edit=True, renderProcedure=self.makeMelProcFromPythonCmd(self.renderProcedure, [('int', 'width'),
+                                                                                                                       ('int', 'height'),
+                                                                                                                       ('int', 'doShadows'),
+                                                                                                                       ('int', 'doGlow'),
+                                                                                                                       ('string', 'camera'),
                                                                                                                        ('string', 'options')]))
         pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
         pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.makeMelProcFromPythonCmd(self.batchRenderProcedure, [('string', 'options')]))
-        #pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
-        #pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
+        # pm.renderer(self.rendererName, edit=True, batchRenderProcedure=self.renderCallback("batchRenderProcedure"))
+        # pm.renderer(self.rendererName, edit=True, commandRenderProcedure=self.renderCallback("commandRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsProcedure=self.renderCallback("batchRenderOptionsProcedure"))
         pm.renderer(self.rendererName, edit=True, batchRenderOptionsStringProcedure=self.renderCallback("batchRenderOptionsStringProcedure"))
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultRenderGlobals")
         pm.renderer(self.rendererName, edit=True, addGlobalsNode="defaultResolution")
         pm.renderer(self.rendererName, edit=True, addGlobalsNode=self.renderGlobalsNodeName)
         
-        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.makeMelProcFromPythonCmd(self.startIprRenderProcedure, [('string', 'editor'), 
+        pm.renderer(self.rendererName, edit=True, startIprRenderProcedure=self.makeMelProcFromPythonCmd(self.startIprRenderProcedure, [('string', 'editor'),
                                                                                                                                        ('int', 'resolutionX'),
                                                                                                                                        ('int', 'resolutionY'),
                                                                                                                                        ('string', 'camera')]))
@@ -460,19 +371,20 @@ global proc updateMayaImageFormatControl()
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
                 
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
-        #self.overwriteUpdateMayaImageFormatControl()
+        #pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
+        # self.overwriteUpdateMayaImageFormatControl()
         # because mentalray is still hardcoded in the maya scripts, I cannot simply use my own commons without replacing some original scripts
         # so I use the defaults
-        #pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
+        # pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
         
+
         # my own tabs
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))
         self.addUserTabs()
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
         
-        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
-        #pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
+        # pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
         self.overwriteUpdateMayaImageFormatControl()
         
         log.debug("RegisterRenderer done")
@@ -481,17 +393,17 @@ global proc updateMayaImageFormatControl()
         log.debug("createImageFormatControls()")
         self.createGlobalsNode()        
         self.createImageFormats()
-        #self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats")
+        # self.imageFormatCtrl = pm.optionMenuGrp(label="Image Formats")
         
         if pm.optionMenuGrp("openMayaImageFormats", q=True, exists=True):
             pm.deleteUI("openMayaImageFormats")
             
-        self.imageFormatCtrl = pm.optionMenuGrp("openMayaImageFormats",label="Image Formats", cc=pm.Callback(self.imageFormatCallback))                    
+        self.imageFormatCtrl = pm.optionMenuGrp("openMayaImageFormats", label="Image Formats", cc=pm.Callback(self.imageFormatCallback))                    
         
         for pr in self.imageFormats:
             log.debug("adding image format: " + pr)
             pm.menuItem(pr)
-        #pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.imageFormatCallback)], parent = self.imageFormatCtrl)
+        # pm.scriptJob(attributeChange=[self.renderGlobalsNode.imageFormat, pm.Callback(self.imageFormatCallback)], parent = self.imageFormatCtrl)
         return self.imageFormatCtrl
 
     def updateImageFormatControls(self):
@@ -525,7 +437,7 @@ global proc updateMayaImageFormatControl()
     def unRegisterRenderer(self):
         if pm.renderer(self.rendererName, q=True, exists=True):
             pm.renderer(self.rendererName, unregisterRenderer=True)
-            #self.unDoOverwriteUpdateMayaImageFormatControl()
+            # self.unDoOverwriteUpdateMayaImageFormatControl()
     
     def globalsTabCreateProcNames(self):
         pass

@@ -343,3 +343,9 @@ entry['type'] = 'float'
 entry['displayName'] = 'Map Multiplier'
 entry['default'] = '1.0'
 tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'preferredTextEditor'
+entry['type'] = 'string'
+entry['displayName'] = 'Text Editor'
+entry['default'] = 'notepad.exe'
+tab['entries'].append(entry)

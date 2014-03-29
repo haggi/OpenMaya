@@ -234,6 +234,9 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 		if(!getFloat(MString("environmentMapMultiplier"), IndigoGlobals, this->environmentMapMultiplier))
 			throw("problem reading indigoGlobals.environmentMapMultiplier");
 
+		if(!getString(MString("preferredTextEditor"), IndigoGlobals, this->preferredTextEditor))
+			throw("problem reading indigoGlobals.preferredTextEditor");
+
 //	------------- automatically created attributes end ----------- // 
 		
 		if(!getFloat(MString("filtersize"), IndigoGlobals, this->filterSize))

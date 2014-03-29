@@ -64,6 +64,7 @@ public:
 	int sky_model;
 	int environmentMapType;
 	float environmentMapMultiplier;
+	MString preferredTextEditor;
 //	------------- automatically created attributes end ----------- // 
 
 

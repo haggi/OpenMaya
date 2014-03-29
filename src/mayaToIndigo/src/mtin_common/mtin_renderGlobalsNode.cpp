@@ -3,6 +3,7 @@
 #include <maya/MFnGenericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMessageAttribute.h>
+#include <maya/MFnStringData.h>
 
 #include "mtin_renderGlobalsNode.h"
 
@@ -63,6 +64,7 @@ MObject MayaToIndigoGlobals::sky_layer;
 MObject MayaToIndigoGlobals::sky_model;
 MObject MayaToIndigoGlobals::environmentMapType;
 MObject MayaToIndigoGlobals::environmentMapMultiplier;
+MObject MayaToIndigoGlobals::preferredTextEditor;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -70,7 +72,6 @@ MayaToIndigoGlobals::MayaToIndigoGlobals()
 {
 	imageFormatList.append("Bmp");
 	imageFormatList.append("Exr");
-
 }
 
 MayaToIndigoGlobals::~MayaToIndigoGlobals()
@@ -119,7 +120,7 @@ MStatus	MayaToIndigoGlobals::initialize()
 	stat = eAttr.addField( "F11", 19 );
 	stat = eAttr.addField( "F12", 20 );
 	CHECK_MSTATUS(addAttribute( white_point ));
-	
+
 	white_pointX = nAttr.create("white_pointX", "white_pointX",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( white_pointX ));
 
@@ -298,6 +299,13 @@ MStatus	MayaToIndigoGlobals::initialize()
 
 	environmentMapMultiplier = nAttr.create("environmentMapMultiplier", "environmentMapMultiplier",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( environmentMapMultiplier ));
+
+	MFnStringData	fnStringData;
+	MObject	defaultString;
+
+	defaultString = fnStringData.create( "notepad.exe" );
+	preferredTextEditor = tAttr.create("preferredTextEditor", "preferredTextEditor",  MFnNumericData::kString, defaultString);
+	CHECK_MSTATUS(addAttribute( preferredTextEditor ));
 
 //	------------- automatically created attributes end ----------- // 
 

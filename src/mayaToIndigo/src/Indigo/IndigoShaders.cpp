@@ -240,23 +240,49 @@ void IndigoRenderer::setDisplacementParameter(Reference<Indigo::DisplacementPara
 			}
 			Indigo::TextureDisplacementParam *tp = new Indigo::TextureDisplacementParam(tNode->id);
 			p = Reference<Indigo::DisplacementParam>(tp);
+			return;
 		}else{
 			logger.debug(MString("Could not find texture node ") +  getObjectName(textureObj) );
 		}
-	}else{
-		if( type == "float" )
-		{
-			float value;
-			getFloat(attrName, depFn, value);
-			p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
-		}				
-		if( type == "double" )
-		{
-			double value;
-			getDouble(attrName, depFn, value);
-			p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
-		}				
+		return;
 	}
+
+	MObject connectedObj = getOtherSideNode(attrPlug);
+	MFnDependencyNode connectedNode(connectedObj);
+
+	if(connectedNode.typeName() == "inISLNode")
+	{
+		Indigo::ShaderInfoRef infoRef;
+		for( size_t txId(0); txId < scriptNodes.size(); txId++)
+		{	
+			if( scriptNodes[txId].shadingNode.mobject == connectedObj )
+			{
+				infoRef = scriptNodes[txId].scriptRefNode;
+				logger.debug(MString("Found script node ") +  scriptNodes[txId].shadingNode.fullName );
+			}
+		}
+		if( infoRef.nonNull() )
+		{
+			//p = Reference<Indigo::WavelengthDependentParam>(new Indigo::ShaderWavelengthDependentParam(infoRef));
+			p = Reference<Indigo::DisplacementParam>(new Indigo::ShaderDisplacementParam(infoRef));
+		}else{
+			logger.debug(MString("Could not find script ref node ") +  getObjectName(connectedObj) );
+		}
+		return;
+	}
+
+	if( type == "float" )
+	{
+		float value;
+		getFloat(attrName, depFn, value);
+		p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
+	}				
+	if( type == "double" )
+	{
+		double value;
+		getDouble(attrName, depFn, value);
+		p = Reference<Indigo::DisplacementParam>(new Indigo::ConstantDisplacementParam(value));
+	}				
 }
 
 void IndigoRenderer::setNormalMapParameter(Reference<Indigo::Vec3Param>& p, MFnDependencyNode& depFn, MString attrName, MString type)
@@ -346,7 +372,9 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 		scriptNode.name = snode.fullName;
 		scriptNode.shadingNode = snode;
 		scriptNode.scriptRefNode = new Indigo::ShaderInfo();
-		scriptNode.scriptRefNode->shader = "def eval(vec3 pos) vec3 : vec3(1.8, 0.0, 0.0)";
+		MString script;
+		getString(MString("islData"), depFn, script);
+		scriptNode.scriptRefNode->shader = script.asChar();
 		scriptNodes.push_back(scriptNode);
 	}
 

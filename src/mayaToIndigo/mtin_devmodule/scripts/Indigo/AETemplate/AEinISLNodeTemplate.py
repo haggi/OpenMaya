@@ -8,6 +8,10 @@ import pymel.core as pm
 log = logging.getLogger("ui")
 
 def editTextThread(text, node, scrollField):
+    globalsNode = pm.ls(type="indigoGlobals")[0]
+    textEditProgram = globalsNode.preferredTextEditor.get()
+    #textEditProgram = r"C:/Program Files (x86)/Notepad++/notepad++.exe -nosession"
+    
     if text is None:
         text = ""
     tmpDir = os.environ['TMP']
@@ -17,7 +21,6 @@ def editTextThread(text, node, scrollField):
     f = open(tmpFileName, "w")
     f.write(text)
     f.close()
-    textEditProgram = r"C:/Program Files (x86)/Notepad++/notepad++.exe -nosession"
     cmd = '{0} {1}'.format(textEditProgram, tmpFileName)
     subprocess.call(cmd)
     
@@ -87,6 +90,8 @@ class AEinISLNodeTemplate(BaseTemplate):
                     log.error("Unable to load shader from file {0}".format(filename))
     
     def editButtonNew(self, attr):
+        pmAttr = pm.Attribute(attr)
+        self.thisNode = pmAttr.node()
         parent = pm.setParent(query=True)
         text = self.thisNode.islData.get()
         self.textField = pm.scrollField(wordWrap=True, text=text, editable=True, changeCommand=self.textChangeCommand, keyPressCommand=self.textChangeCommand)
@@ -96,6 +101,8 @@ class AEinISLNodeTemplate(BaseTemplate):
         pm.button(label="Save Shader", c=self.saveShaderCommand)
                 
     def editButtonReplace(self, attr):
+        pmAttr = pm.Attribute(attr)
+        self.thisNode = pmAttr.node()
         text = self.thisNode.islData.get()
         if self.textField is not None:
             self.textField.setText(text)

@@ -167,6 +167,7 @@ shader_end
 shader_start:inISLNode
 	inatt:islData:string
 	outatt:outColor:color
+	outatt:outFloat:float
 shader_end
 
 #---------------------------- automatically created attributes end ------------------------------------

@@ -71,6 +71,7 @@ static    MObject sky_layer;
 static    MObject sky_model;
 static    MObject environmentMapType;
 static    MObject environmentMapMultiplier;
+static    MObject preferredTextEditor;
 //	------------- automatically created attributes end ----------- // 
 
 };

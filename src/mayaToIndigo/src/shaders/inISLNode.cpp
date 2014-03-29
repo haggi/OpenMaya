@@ -26,6 +26,7 @@ MTypeId	inISLNode::id( 0x0011CF60 );
 
 MObject  inISLNode::islData;
 MObject  inISLNode::outColor;
+MObject  inISLNode::outFloat;
 
 inISLNode::inISLNode() { }
 inISLNode::~inISLNode() { }
@@ -52,6 +53,9 @@ MStatus inISLNode::initialize()
 
 	outColor = nAttr.createColor("outColor", "outColor");
 	CHECK_MSTATUS(addAttribute( outColor ));
+
+	outFloat = nAttr.create("outFloat", "outFloat", MFnNumericData::kFloat, 0.0f);
+	CHECK_MSTATUS(addAttribute( outFloat ));
 
     return( MS::kSuccess );
 }

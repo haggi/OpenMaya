@@ -41,7 +41,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def CoronaRendererCreateTab(self):
         log.debug("CoronaRendererCreateTab()")
         self.createGlobalsNode()
-        parentForm = pm.setParent(query=True)        
+        parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ScrollLayout"
         if self.rendererTabUiDict.has_key('common'):

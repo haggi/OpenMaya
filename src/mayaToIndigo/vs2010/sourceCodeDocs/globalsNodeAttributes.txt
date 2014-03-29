@@ -55,3 +55,4 @@ sky_layer, int, Sky Layer, 0
 sky_model, enum, Sky Model, 0, original:captured-simulation
 environmentMapType, enum, Environ Map Type, 0, Spherical:Lat-Long
 environmentMapMultiplier, float, Map Multiplier, 1.0
+preferredTextEditor, string, Text Editor, notepad.exe
