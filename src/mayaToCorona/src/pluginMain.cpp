@@ -13,7 +13,7 @@ static const MString CoronaSurfacesDrawDBClassification("drawdb/shader/surface/C
 static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.22"
+#define VERSION "0.24"
 
 MStatus initializePlugin( MObject obj )
 {

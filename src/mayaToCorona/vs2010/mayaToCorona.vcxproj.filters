@@ -188,6 +188,9 @@
     <ClCompile Include="..\src\mtco_common\mtco_mayaSceneFactory.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaOSLNode.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -306,6 +309,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaOSLNode.h">
+      <Filter>Source Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -274,7 +274,9 @@ void CoronaRenderer::render()
 
 	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/corona/").asChar();
 	logger.debug(MString("beginSession..."));
-    context.core->beginSession(context.scene, context.settings, context.fb, context.logger, basePath);
+	ICore::AdditionalInfo info;
+	info.defaultFilePath = basePath;
+    context.core->beginSession(context.scene, context.settings, context.fb, context.logger, info);
     
     // run the rendering. This function blocks until it is done
 	logger.debug(MString("renderFrame..."));

@@ -1,9 +1,15 @@
+release 0.24
+- added ies lights
+- fixed shutter speed 
+
 release 0.23
 - added color mapping
 - added camera settings exposue/iso/shutter speed
 - added smoothmesh preview translation
 - added deformation motion blur
 - added Corona Surface shader texture hardware display
+- modified round corners shader to scene units
+- added my own commonGlobalsUI - quite tricky
 
 release 0.22
 - changed the time limit to seconds

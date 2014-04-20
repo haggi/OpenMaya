@@ -1,13 +1,12 @@
 #ifndef MAYA_TO_CORONA_H
 #define MAYA_TO_CORONA_H
 
+#include <vector>
 #include <maya/MObject.h>
 #include <maya/MFnMeshData.h>
 #include <maya/MPointArray.h>
 #include <maya/MFloatVectorArray.h>
 #include "rendering/renderer.h"
-#include <vector>
-
 #include "CoronaCore/api/Api.h"
 
 
@@ -92,6 +91,7 @@ public:
 	// utils
 	//void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj);
+	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 	// temp
 	void createScene();
 

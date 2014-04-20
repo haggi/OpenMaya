@@ -5,6 +5,7 @@ import path
 import pymel.core as pm
 import uiUtils
 import commonGlobals
+import commonGlobalsMel
 
 log = logging.getLogger("renderLogger")
 
@@ -150,14 +151,14 @@ class MayaToRenderer(object):
         melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
         melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
         
-        if tabName == "OpenMayaCommonGlobals":
-            createTabCmd = "{0}CreateTab".format(tabName) 
-            updateTabCmd = "{0}UpdateTab".format(tabName) 
-            tabLabel = "{0}Common".format(self.rendererName)
-            createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
-            updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
-            melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
-            melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
+#         if tabName == "CommonGlobals":
+#             createTabCmd = "{0}CreateTab".format(tabName) 
+#             updateTabCmd = "{0}UpdateTab".format(tabName) 
+#             tabLabel = "{0}Common".format(self.rendererName)
+#             createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
+#             updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
+#             melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
+#             melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
         
         #log.debug("mel create tab: \n" + melCreateCmd)
         #log.debug("mel update tab: \n" + melUpdateCmd)
@@ -379,14 +380,15 @@ global proc updateMayaImageFormatControl()
         
 
         # my own tabs
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
+        pm.mel.eval(commonGlobalsMel.modifiedScripts)
+        pm.mel.eval("global proc updateMayaImageFormatControl(){}")
+        pm.mel.eval("global proc imageMenuMayaSW(){}")
+        
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("CommonGlobals"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))
         self.addUserTabs()
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
-        
-        # pm.evalDeferred(self.overwriteUpdateMayaImageFormatControl)
-        self.overwriteUpdateMayaImageFormatControl()
-        
+                
         log.debug("RegisterRenderer done")
 
     def createImageFormatControls(self):
@@ -435,8 +437,10 @@ global proc updateMayaImageFormatControl()
         pass
             
     def unRegisterRenderer(self):
+        print "unregister"
         if pm.renderer(self.rendererName, q=True, exists=True):
             pm.renderer(self.rendererName, unregisterRenderer=True)
+            #pm.mel.eval("source unifiedRenderGlobalsWindow")
             # self.unDoOverwriteUpdateMayaImageFormatControl()
     
     def globalsTabCreateProcNames(self):

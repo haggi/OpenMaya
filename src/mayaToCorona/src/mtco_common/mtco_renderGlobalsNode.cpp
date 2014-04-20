@@ -632,7 +632,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( renderStamp ));
 
 	bgColor = nAttr.createColor("bgColor", "bgColor");
-	nAttr.setDefault(0.4,0.4,1.0);
+	nAttr.setDefault(1.0,1.0,1.0);
 	CHECK_MSTATUS(addAttribute( bgColor ));
 
 //	------------- automatically created attributes end ----------- // 

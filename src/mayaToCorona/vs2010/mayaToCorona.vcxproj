@@ -40,16 +40,14 @@
       <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CORONA_RELEASE_ASSERTS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(Configuration)\$(ProjectName).mll</OutputFile>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,6 +115,7 @@
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
@@ -159,6 +158,7 @@
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\materialBase.h" />

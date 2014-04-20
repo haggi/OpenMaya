@@ -112,4 +112,4 @@ displace_maxWorldSize, float, Displace_maxworldsize, 1.0 ,minmax:0.00001:1000000
 displace_maxSubdiv, int, Displace_maxsubdiv, 100 ,minmax:1:9999
 renderstamp_use, bool, Renderstamp_use, true
 renderStamp, string, Renderstamp, "corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"
-bgColor, color, Background Color, 0.4:0.4:1.0
+bgColor, color, Background Color, 1.0:1.0:1.0

@@ -9,6 +9,7 @@
 #include "utilities/pystring.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
+#include "CoronaOSLMap.h"
 
 
 #include "CoronaMap.h"
@@ -172,7 +173,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				// -- round corners -- 
 				float rcRadius = 0.0001;
 				getFloat(MString("roundCornersRadius"), depFn, rcRadius);
-				data.roundedCorners.radius = rcRadius * 0.0001;
+				data.roundedCorners.radius = rcRadius * this->mtco_renderGlobals->scaleFactor;
 				getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
 
 				int glassMode = 0;
@@ -188,7 +189,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 				// ---- emission ----
 				this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
-
+				
 				// ---- ies profiles -----
 				MStatus stat;
 				MPlug iesPlug = depFn.findPlug("mtco_mat_iesProfile", &stat);
@@ -199,14 +200,38 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 					if( iesFile.length() > 4 )
 					{
 						Corona::IesParser iesParser;
-						std::filebuf f;
-						if( f.open(iesFile.asChar(), std::ios::in) )
+						//std::ifstream input(iesFile.asChar());
+						Corona::FileReader input;
+						Corona::String fn(iesFile.asChar());
+						input.open(fn);
+						if( !input.failed() )
 						{
-							std::istream is(&f);
-							Corona::IesLight iesLight;
-							iesLight = iesParser.parseIesLight(is);
-							f.close();
-							data.emission.gonioDiagram = iesLight.distribution;
+						
+							try {
+
+								const double rm[4][4] = {
+									{1.0, 0.0, 0.0, 0.0}, 
+									{0.0, 0.0, 1.0, 0.0}, 
+									{0.0,-1.0, 0.0, 0.0}, 
+									{0.0, 0.0, 0.0, 1.0} 							
+								};
+								MMatrix zup(rm);
+
+								MMatrix tm = zup * obj->transformMatrices[0];
+								Corona::AnimatedAffineTm atm;
+								setAnimatedTransformationMatrix(atm, tm);
+								
+								const Corona::IesLight light = iesParser.parseIesLight(input);
+								data.emission.gonioDiagram = light.distribution;
+								Corona::Matrix33 m(atm[0].extractRotation());
+							
+								data.emission.emissionFrame = Corona::AnimatedMatrix33(m);
+
+							} catch (Corona::Exception& ex) {
+								logger.error(MString(ex.getMessage().cStr()));
+							}
+						}else{
+							logger.error(MString("Unable to read ies file .") + iesFile);
 						}
 					}
 				}

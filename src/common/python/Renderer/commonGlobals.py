@@ -40,24 +40,41 @@ class OpenMayaCommonGlobals(object):
     def setImageSize(self, preset):
         for imgFormat in self.imageFormatData:
             if imgFormat[0] == preset:
+                self.defaultResolution.aspectLock.set(0)
                 self.defaultResolution.width.set(imgFormat[1])
                 self.defaultResolution.height.set(imgFormat[2])
+                self.defaultResolution.deviceAspectRatio.set(float(imgFormat[1])/float(imgFormat[2]))
     
-    def updateImageSize(self, args):
+    def updateImageSize(self, *args):
         if not self.rendererTabUiDict.has_key('common'):
             return
         uiDict = self.rendererTabUiDict['common']
         
         w = self.defaultResolution.width.get()
         h = self.defaultResolution.height.get()
+        dar = self.defaultResolution.deviceAspectRatio.get()
+        
+        if args[0] == "width":
+            if self.defaultResolution.aspectLock.get():
+                h = w/dar
+        if args[0] == "height":
+            if self.defaultResolution.aspectLock.get():
+                w = h * dar
+        if args[0] == "devAsp":
+            h = w/dar
+        darNew = w/h
+        self.defaultResolution.deviceAspectRatio.set(darNew)
+        self.defaultResolution.width.set(w)
+        self.defaultResolution.height.set(h)
+        #uiDict['width'].setValue1(w) 
+        #uiDict['height'].setValue1(h)
+
         for imgFormat in self.imageFormatData:            
             if w == imgFormat[1] and h == imgFormat[2]:
                 uiDict['imageSizePresets'].setSelect(self.imageFormatData.index(imgFormat) + 1) 
                 return
         uiDict['imageSizePresets'].setSelect(1)
          
-        uiDict['width'].setValue1(w) 
-        uiDict['height'].setValue1(h)
             
             
     def setFrameNumbering(self, args):
@@ -123,10 +140,10 @@ class OpenMayaCommonGlobals(object):
                         uiDict['imageSizePresets'].setSelect(12) 
 
                         self.addRenderDefaultResGlobalsUIElement(attName='aspectLock', uiType='bool', displayName='Maintain aspect ratio', uiDict=uiDict)
-                        self.addRenderDefaultResGlobalsUIElement(attName='width', uiType='int', displayName='Width:', uiDict=uiDict, callback=self.updateImageSize)
-                        self.addRenderDefaultResGlobalsUIElement(attName='height', uiType='int', displayName='Height:', uiDict=uiDict, callback=self.updateImageSize)
-                        self.addRenderDefaultResGlobalsUIElement(attName='deviceAspectRatio', uiType='float', displayName='Device Aspect:', uiDict=uiDict, callback=self.updateImageSize)
-                        self.addRenderDefaultResGlobalsUIElement(attName='pixelAspect', uiType='float', displayName='Pixel Aspect:', uiDict=uiDict, callback=self.updateImageSize)
+                        self.addRenderDefaultResGlobalsUIElement(attName='width', uiType='int', displayName='Width:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "width"))
+                        self.addRenderDefaultResGlobalsUIElement(attName='height', uiType='int', displayName='Height:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "height"))
+                        self.addRenderDefaultResGlobalsUIElement(attName='deviceAspectRatio', uiType='float', displayName='Device Aspect:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "devAsp"))
+                        #self.addRenderDefaultResGlobalsUIElement(attName='pixelAspect', uiType='float', displayName='Pixel Aspect:', uiDict=uiDict, callback=self.updateImageSize)
                         
                 with pm.frameLayout(label="Render Scripts",collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):

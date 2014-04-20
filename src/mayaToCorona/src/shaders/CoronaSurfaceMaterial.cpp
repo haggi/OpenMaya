@@ -263,12 +263,14 @@ MStatus CoronaSurface::initialize()
 
     aColor = nAttr.createColor( "color", "c", &status );
     CHECK_MSTATUS( status );
+	CHECK_MSTATUS( nAttr.setHidden( true ) );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.58824f, 0.644f ) );
 
     aIncandescence = nAttr.createColor( "incandescence", "ic", &status );
     CHECK_MSTATUS( status );
+	CHECK_MSTATUS( nAttr.setHidden( true ) );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.0f, 0.0f ) );
@@ -547,13 +549,24 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& diffuseColor = block.inputValue( diffuse, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-		surfaceColor = diffuseColor;
+		//MPlug cplug(this->thisMObject(), aColor);
+		//cplug.child(0).setDouble(surfaceColor.x);
+		//cplug.child(1).setDouble(surfaceColor.y);
+		//cplug.child(2).setDouble(surfaceColor.z);
 
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
         float diffuseReflectivity = block.inputValue( aDiffuseReflectivity, &status ).asFloat();
         CHECK_MSTATUS( status );
+
+        MFloatVector& emissionColorV = block.inputValue( emissionColor,  &status ).asFloatVector();
+        CHECK_MSTATUS( status );
+
+		//MPlug eplug(this->thisMObject(), emissionColor);
+		//eplug.child(0).setDouble(emissionColorV.x);
+		//eplug.child(1).setDouble(emissionColorV.y);
+		//eplug.child(2).setDouble(emissionColorV.z);
 
 
 //      float translucenceCoeff = block.inputValue( aTranslucenceCoeff,

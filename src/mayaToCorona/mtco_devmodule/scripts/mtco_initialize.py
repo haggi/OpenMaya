@@ -37,8 +37,15 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def updateEnvironment(self, dummy=None):
         pass
-            
+
+    def CoronaCommonGlobalsCreateTab(self):
+        self.OpenMayaCommonGlobalsCreateTab()            
+
+    def CoronaCommonGlobalsUpdateTab(self):
+        self.OpenMayaCommonGlobalsUpdateTab()            
+        
     def CoronaRendererCreateTab(self):
+        print "CoronaRendererCreateTab()"
         log.debug("CoronaRendererCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
@@ -160,6 +167,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.CoronaRendererUpdateTab()
 
     def CoronaRendererUpdateTab(self, dummy=None):
+        print "Update corona renderer tab"
         self.createGlobalsNode()
         self.updateEnvironment()
 
@@ -408,7 +416,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         """
         pm.addExtension(nodeType="camera", longName="mtco_controls_exposure", attributeType="bool", defaultValue=False)
         pm.addExtension(nodeType="camera", longName="mtco_iso", attributeType="float", defaultValue=100.0)
-        pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0)
+        pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0, minValue=0.001, softMaxValue=2048.0)
         
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue=1.0)
@@ -417,25 +425,15 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMax", attributeType="float", defaultValue=0.01)
         
         # testing ies
-        # pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
+        pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         
             
     def removeLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        try:
-            if os.path.exists(logfile):
-                os.remove(logfile)
-        except:
-            pass
+        pass
 
     def showLogFile(self):
-        logfile = pm.workspace.path + "/applelog.log"
-        if os.path.exists(logfile):
-            lh = open(logfile, 'r')
-            rl = lh.readlines()
-            for l in rl:
-                sys.__stdout__.write(l)
-            
+        pass
+    
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
         self.removeLogFile()
