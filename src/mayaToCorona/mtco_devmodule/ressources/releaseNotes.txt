@@ -1,6 +1,10 @@
 release 0.24
 - added ies lights
-- fixed shutter speed 
+- fixed shutter speed
+- added pointLights
+- added spotLights
+- added directionalLights
+- started experimental OSL (not usable for users yet)
 
 release 0.23
 - added color mapping

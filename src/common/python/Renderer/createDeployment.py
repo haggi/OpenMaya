@@ -122,7 +122,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         destBinDir = devDestDir + "/bin/"
         if not destBinDir.exists():
             destBinDir.makedirs()
-        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_vc_corona.dll", "Config-15610.conf"]:
+        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_vc_corona.dll", "Config-15653683.conf"]:
             sourceFile = binDir + "/" + f
             destFile =   destBinDir + f
             print "Copy ", sourceFile, "to", destFile
@@ -164,6 +164,11 @@ def createDeployment(renderer, shortCut, mayaRelease):
     files = scDir.listdir("*.pyc")
     for f in files:
         f.remove()
+
+    #common mel replacement scripts
+    scDir = path.path(sourceDir.parent.parent + "/common/mel/")
+    for f in scDir.listdir("*.mel"):
+        f.copy("{destDir}/scripts/{melName}".format(destDir=devDestDir, melName=f.basename()))
 
     #renderer python scripts
     for root, dirs, files in os.walk(sourceDir + "/scripts/"):

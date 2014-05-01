@@ -115,11 +115,7 @@ class MayaToRenderer(object):
     def renderingEditorsSubMenuProcedure(self):
         self.preRenderProcedure()
         log.debug("renderingEditorsSubMenuProcedure")
-    
-    def renderMenuProcedure(self):
-        self.preRenderProcedure()
-        log.debug("renderMenuProcedure")
-              
+                  
     def OpenMayaCommonGlobalsCreateTab(self):
         self.createGlobalsNode()
         if self.openMayaCommonGlobals is None:
@@ -207,6 +203,7 @@ global proc updateMayaImageFormatControl()
         return
     
     def unDoOverwriteUpdateMayaImageFormatControl(self):
+        log.debug("UndoOverwrite")
         pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
     
     def createGlobalsNode(self):      
@@ -221,7 +218,9 @@ global proc updateMayaImageFormatControl()
                 self.renderGlobalsNode = pm.createNode(self.renderGlobalsNodeName)
                 self.renderGlobalsNode.rename(self.renderGlobalsNodeName)
                 log.debug("Created node " + str(self.renderGlobalsNode))
-                optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
+                optimizedPath = pm.workspace.path+"/optimizedTextures"
+                if pm.workspace.fileRules.has_key('renderData'):
+                    optimizedPath = pm.workspace.path / pm.workspace.fileRules['renderData'] / "optimizedTextures"
                 if not os.path.exists(optimizedPath):
                     optimizedPath.makedirs()
                 self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
@@ -368,7 +367,6 @@ global proc updateMayaImageFormatControl()
         pm.renderer(self.rendererName, edit=True, showBatchRenderLogProcedure=self.renderCallback("showBatchRenderLogProcedure"))
         pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))
         pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
-        pm.renderer(self.rendererName, edit=True, renderMenuProcedure=self.renderCallback("renderMenuProcedure"))
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
                 
@@ -378,19 +376,22 @@ global proc updateMayaImageFormatControl()
         # so I use the defaults
         # pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
         
-
+        pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
         # my own tabs
-        pm.mel.eval(commonGlobalsMel.modifiedScripts)
-        pm.mel.eval("global proc updateMayaImageFormatControl(){}")
-        pm.mel.eval("global proc imageMenuMayaSW(){}")
+        #pm.mel.eval(commonGlobalsMel.modifiedScripts)
+        #pm.mel.eval("global proc updateMayaSoftwareImageFormatControl(){print(\"haggis mayasoftware update image format control.\\n\");}")
+        #pm.mel.eval("global proc updateMayaImageFormatControl(){print(\"haggis update image format control.\\n\");}")
+        #pm.mel.eval("global proc imageMenuMayaSW(){}")
         
+        pm.evalDeferred(self.addTabs)                
+        log.debug("RegisterRenderer done")
+        
+    def addTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("CommonGlobals"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))
         self.addUserTabs()
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Translator"))    
-                
-        log.debug("RegisterRenderer done")
-
+        
     def createImageFormatControls(self):
         log.debug("createImageFormatControls()")
         self.createGlobalsNode()        

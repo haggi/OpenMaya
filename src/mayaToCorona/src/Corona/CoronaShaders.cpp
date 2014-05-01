@@ -246,14 +246,18 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 				MVector point(0,0,0);
 				getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
-				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
-
+				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));					
 				shaderArray.push_back(obj->shadingGroups[0]);
 				dataArray.push_back(data);
 
 			}else if(ss.typeName == "lambert"){
 				getColor("color", depFn, colorVal);
 				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
+
+				//OSLMap *oslMap = new OSLMap;
+				//oslMap->coronaRenderer = this;
+				//data.components.diffuse.setMap(oslMap);
+
 			}else{
 				data.components.diffuse.setColor(Corona::Rgb(.2, .2, 1.0));
 			}

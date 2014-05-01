@@ -45,6 +45,9 @@
     <Filter Include="common\translators">
       <UniqueIdentifier>{2a28f46a-b40f-4722-b926-505c84b0ed12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\OSL">
+      <UniqueIdentifier>{267da3f8-bcc1-4f30-99cc-870a056014c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -191,6 +194,12 @@
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\OSL\oslRenderer.cpp">
+      <Filter>Source Files\OSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -312,6 +321,15 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\coronaOSLNode.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\OSL\oslRenderer.h">
+      <Filter>Source Files\OSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaLights.h">
+      <Filter>Source Files\Corona</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

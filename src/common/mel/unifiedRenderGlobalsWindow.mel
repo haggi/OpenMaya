@@ -1,0 +1,1785 @@
+// Copyright (C) 1997-2013 Autodesk, Inc., and/or its licensors.
+// All rights reserved.
+//
+// The coded instructions, statements, computer programs, and/or related
+// material (collectively the "Data") in these files contain unpublished
+// information proprietary to Autodesk, Inc. ("Autodesk") and/or its licensors,
+// which is protected by U.S. and Canadian federal copyright law and by
+// international treaties.
+//
+// The Data is provided for use exclusively by You. You have the right to use,
+// modify, and incorporate this Data into other products for purposes authorized 
+// by the Autodesk software license agreement, without fee.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. AUTODESK
+// DOES NOT MAKE AND HEREBY DISCLAIMS ANY EXPRESS OR IMPLIED WARRANTIES
+// INCLUDING, BUT NOT LIMITED TO, THE WARRANTIES OF NON-INFRINGEMENT,
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, OR ARISING FROM A COURSE 
+// OF DEALING, USAGE, OR TRADE PRACTICE. IN NO EVENT WILL AUTODESK AND/OR ITS
+// LICENSORS BE LIABLE FOR ANY LOST REVENUES, DATA, OR PROFITS, OR SPECIAL,
+// DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES, EVEN IF AUTODESK AND/OR ITS
+// LICENSORS HAS BEEN ADVISED OF THE POSSIBILITY OR PROBABILITY OF SUCH DAMAGES.
+
+global string $gMasterLayerRendererName = "masterLayer";
+
+// Description:
+//		Find all renderers currently in use in this scene based on overrides
+//		to defaultRenderGlobals.currentRenderer. This is used by
+//		isDisplayingAllRendererTabs() to determine if it is necessary to
+//		display tabs for more than one renderer on the master layer. Note
+//		that if more than one renderer is in use in the scene, ALL renderer
+//		tabs will be displayed. Getting only the relevant tabs to display
+//		was proving too error-prone in this fragile code.
+//
+proc string[] getAllUsedRenderers()
+{
+	// result always includes current renderer
+	string $currentRendererName = currentRenderer();
+	string $result[] = { $currentRendererName };
+
+	string $allRenderers[] = `renderer -query -namesOfAvailableRenderers`;
+	string $connections[] = `listConnections -p true -type "renderLayer" defaultRenderGlobals.currentRenderer`;
+	for ($c in $connections) {
+		// if this is an adjustment plug, get the matching value
+		if (`match "\.adjustments\[[0-9]*\].plug" $c` != "") {
+			// strinp off "plug" and replace with "value"
+			string $valueAttr = `substring $c 1 (size($c) - 4)`;
+			$valueAttr += "value";
+			string $renderer = "";
+			catch($renderer = eval("getAttr " + $valueAttr));
+			// if the value of the attribute is a registered renderer
+			// then add it to the list
+			if (stringArrayContains($renderer, $allRenderers) && !stringArrayContains($renderer, $result)) {
+				$result[size($result)] = $renderer;
+			}
+		}
+	}
+	return $result;
+}
+
+global proc int isValidFileNamePrefix(string $prefix)
+{
+	int $isValid = 1;
+
+	if (match("[*?\"|!$]", $prefix) != "")
+	{
+		// Most of these characters may not occur in NT filenames
+		// The ' ', '!' and '$' are troublesome on Unix.
+		//
+		catch(error (uiRes("m_unifiedRenderGlobalsWindow.kInvalidCharacters")));
+		$isValid = 0;
+	}
+	return $isValid;
+}
+
+
+// Description:
+//		Checks whether we're displaying all renderer tabs in the
+//		Render Settings window.
+//
+// Returns:
+//		true	if more than 1 render layer exists & we're on the master layer
+//				and the user is using multiple renderers in their scene
+//		false	otherwise
+//
+global proc int isDisplayingAllRendererTabs()
+{
+    if (!`objExists renderLayerManager`) {
+      return false;
+    }
+
+	string $layerNames[] = `listConnections renderLayerManager.renderLayerId`;
+	int $numLayers = `size($layerNames)`;
+
+	if( $numLayers > 1 )
+	{
+		string $currentLayer = `editRenderLayerGlobals -query -currentRenderLayer`;
+		int $numRenderers = size(getAllUsedRenderers());
+
+		if (0 == `getAttr ($currentLayer + ".identification")` && $numRenderers > 1) {
+			// We are currently on the master layer
+			return true;
+		}
+	}
+	return false;
+}
+
+proc string findTabForUpdateProc(string $updateProc, string $tabLayoutName, string $tabLayoutPrefix)
+{
+	// Find the tab that this updateProc corresponds to
+	// eg For proc called updateMentalRayFeaturesTab, find tab named masterLayerFeaturesTab
+	string $updateTab = "";
+	// prefix is either "masterLayer", or "mentalRay", "mayaSoftware" etc.
+	int $prefixNameSize = size($tabLayoutPrefix);
+	string $tabNames[] = `tabLayout -q -ca $tabLayoutName`;
+	string $tab;
+	for ($tab in $tabNames)
+	{
+		int $nameSize = size($tab);
+		// strip off prefix eg "masterLayer" from the beginning and "tab" from the end
+		string $whichTab = `substring $tab ($prefixNameSize+1) ($nameSize-3)`;
+		if (`match $whichTab $updateProc` == $whichTab)
+		{
+			$updateTab = $tab;
+			break;
+		}
+	}
+
+	// A few procs don't conform to the pattern above
+	if ($tabLayoutPrefix == "masterLayer")
+	{
+		if ($updateProc == "updateMayaRenderPassTab")
+			$updateTab = "masterLayerPassesTab";
+		else if ($updateProc == "updateVectorGlobalsTab")
+			$updateTab = "masterLayerMayaVectorTab";
+	}
+	else if ($tabLayoutPrefix == "mentalRay")
+	{
+		if ($updateProc == "updateMayaRenderPassTab")
+			$updateTab = "mentalRayPassesTab";
+	}
+	return $updateTab;
+}
+
+// Description:
+//		Updates the tabs for the special master layer layout.
+//
+global proc updateMasterLayerTabs()
+{
+	// Unmanage the tab layout during the update process
+	//
+	global string $gMasterLayerRendererName;
+	string $tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+	tabLayout -edit -manage false $tabLayoutName;
+
+	// Update this renderer's tabs
+	//
+	int $i;
+	string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+	string $currentRenderer = currentRenderer();
+	string $tabNames[] = `tabLayout -q -ca $tabLayoutName`;
+
+	for ($i = 0; $i < size($renderers); $i++){
+		string $renderer = $renderers[$i];
+
+		// Get the update procedure names
+		string $tabUpdateProcs[] = `renderer -query -globalsTabUpdateProcNames $renderer`;
+		string $proc;
+		for ($proc in $tabUpdateProcs)
+		{
+			// Find the tab that this updateProc corresponds to
+			// eg For proc called updateMentalRayFeaturesTab, find tab named masterLayerFeaturesTab
+			string $updateTab = findTabForUpdateProc($proc, $tabLayoutName, "masterLayer");
+
+			string $tabChildren[] = {};
+			if ($updateTab != "")
+				$tabChildren = `formLayout -q -ca $updateTab`;
+			if ( (size($tabChildren) != 0) && ($proc != "") )
+			{
+				// Only update the tab if it's content has already been created
+				eval($proc);
+			}
+		}
+	}
+
+	// Update the tab selection to reflect the current renderer.
+	// If the common tab is selected, or if the selected tab is already one
+	// of the tabs for the current renderer do not change the tab selection.
+	// Otherwise select the first tab of the current renderer.
+	//
+	int $selectedTabIdx = `tabLayout -q -selectTabIndex $tabLayoutName`;
+	if ($selectedTabIdx > 1) {
+		string $selectedTabName = `tabLayout -q -selectTab $tabLayoutName`;
+		string $temp[] = `renderer -q -globalsTabLabels $currentRenderer`;
+		string $currRenderTabs[];
+		for ($tab in $temp) {
+			$currRenderTabs[size($currRenderTabs)] =
+				rendererTabName($gMasterLayerRendererName, $tab);
+		}
+
+		if (!stringArrayContains($selectedTabName, $currRenderTabs)) {
+			string $allTabs[] = `tabLayout -q -childArray $tabLayoutName`;
+			int $numTabs = size($allTabs);
+			// skip common tab
+			for ($i=1; $i<$numTabs; $i++) {
+				if (stringArrayContains($allTabs[$i], $currRenderTabs)) {
+					tabLayout -edit -selectTab $allTabs[$i] $tabLayoutName;
+					break;
+				}
+			}
+		}
+	}
+
+	// Now manage the tab
+	//
+	tabLayout -edit -manage true $tabLayoutName;
+}
+
+
+// Description:  This procedure is called to show the current
+//      renderer's tabLayout and hide all the other renderers'
+//      tabLayout.
+//
+proc manageCurrentRendererTabLayout()
+{
+    // Change the tabForm to show only the tabLayout associated with the
+    // current renderer.
+    //
+    string $tabLayouts[] = `formLayout -query -childArray tabForm`;
+
+	// Unmanage all the tabLayout.
+	//
+	for ($i = 0; $i < size($tabLayouts); $i++)
+	{
+		tabLayout -edit -manage false $tabLayouts[$i];
+	}
+
+	if( isDisplayingAllRendererTabs() )
+	{
+		// Manage only the master layer tabLayout. If it doesn't exist,
+		// create it.
+		//
+		global string $gMasterLayerRendererName;
+		string $tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+
+		if (!`tabLayout -exists $tabLayoutName`)
+		{
+			addMasterLayerTabsToGlobalsWindow();
+		}
+		tabLayout -edit -manage true $tabLayoutName;
+	}
+	else
+	{
+		// Manage only the tabLayout associated with the current renderer.
+		//
+		string $renderer = currentRenderer();
+		string $tabLayoutName = rendererTabLayoutName($renderer);
+
+		// If the tabLayout for the current renderer does not exists
+		// yet, then add it to the window.
+		//
+		if (!`tabLayout -exists $tabLayoutName`)
+		{
+			addRendererTabsToGlobalsWindow($renderer);
+		}
+		tabLayout -edit -manage true $tabLayoutName;
+	}
+}
+
+//==================================================================
+//
+// Starting the Window building section
+//
+//==================================================================
+
+proc updateCurrentRendererTabs()
+{
+	//
+	// Description:
+	//	This procedure is called when an event has occurred which may have
+	//	invalidated information contained in the tabs of the render globals
+	//	window. This can occur, for example, when the current renderer changes.
+	//	This procedure calls the tab updating procedures that were registered
+	//	with Maya when the various renderers registered themselves.
+	//
+
+	int $preventUpdate = false;
+	if( `window -exists unifiedRenderGlobalsWindow` &&
+		! `window -query -visible unifiedRenderGlobalsWindow` ){
+		// Don't update the tabs if the window isn't visible.
+		// Updates may take a long time (bug 233040) and should be avoided
+		// when possible
+		//
+		$preventUpdate = true;
+	}
+
+	if( isDisplayingAllRendererTabs() )
+	{
+		// Check if the master layer tabLayout exists or not.
+		//
+		global string $gMasterLayerRendererName;
+		string $tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+		if (!`tabLayout -exists $tabLayoutName`)
+		{
+			// Delete existing tabLayouts
+			string $tabLayouts[] = `formLayout -query -childArray tabForm`;
+			for ($i = 0; $i < size($tabLayouts); $i++)
+			{
+				// On windows we always delete the previous tabLayout, because
+				// of desktop heap memory issues (298476) - on other platforms
+				// we always keep the masterLayTabLayout around to speed things up
+				// when switching between eg default render layer and other layer
+				if (`about -win` || ($tabLayouts[$i] != "masterLayerTabLayout"))
+				{
+					deleteUI $tabLayouts[$i];
+				}
+
+			}
+			// Create it.
+			//
+			addMasterLayerTabsToGlobalsWindow();
+		}
+		else if( ! $preventUpdate )
+		{
+			// Update this master layer's tabs.
+			//
+			updateMasterLayerTabs();
+		}
+   	}
+	else
+	{
+		// Update only current renderer's tabLayout
+		//
+		string $renderer = currentRenderer();
+
+		// Check if the tabs for this renderer exists or not.
+		//
+		string $tabLayoutName = rendererTabLayoutName($renderer);
+		if (!`tabLayout -exists $tabLayoutName`)
+		{
+			// If this renderer's tabLayout doesn't exist, it means we will be creating it
+			// so delete the one(s) that exist right now
+			string $tabLayouts[] = `formLayout -query -childArray tabForm`;
+			for ($i = 0; $i < size($tabLayouts); $i++)
+			{
+				if (`about -win` || ($tabLayouts[$i] != "masterLayerTabLayout"))
+				{
+					// See note above about bug 298476
+					deleteUI $tabLayouts[$i];
+				}
+
+			}
+			$tabLayouts = `formLayout -query -childArray tabForm`;
+
+			// Create it.
+			//
+			addRendererTabsToGlobalsWindow($renderer);
+		}
+		else if( ! $preventUpdate )
+		{
+			// Update this renderer's tabs.
+			//
+			string $tabUpdateProcs[];
+
+			$tabUpdateProcs =
+				`renderer -query -globalsTabUpdateProcNames $renderer`;
+
+			string $proc;
+
+			for ($proc in $tabUpdateProcs)
+			{
+				string $tabLayoutName = rendererTabLayoutName($renderer);
+				string $tabNames[] = `tabLayout -q -ca $tabLayoutName`;
+
+				string $updateTab = findTabForUpdateProc($proc, $tabLayoutName, $renderer);
+
+				string $tabChildren[] = {};
+				if ($updateTab != "")
+					$tabChildren = `formLayout -q -ca $updateTab`;
+				if ( (size($tabChildren) != 0) && ($proc != "") )
+				{
+					// Only update the tab if it's content has already been created
+					eval($proc);
+				}
+			}
+		}
+	}
+
+	// Manage only current renderer's tabLayout.
+	//
+	manageCurrentRendererTabLayout();
+
+}
+
+proc updateCurrentRendererLogo()
+{
+    //
+    // Description:
+    //  This procedure is called when an event has occurred which may have
+    //  invalidated the picture of the renderer logo in the render globals
+    //  window. This can occur, for example, when the current renderer changes.
+    //  This procedure calls the logo updating procedures that were registered
+    //  with Maya when the various renderers registered themselves.
+    //
+
+    if (!`symbolButton -exists unifiedRenderGlobalsRendererLogoPicture`)
+    {
+        // The logo has not been created.
+        //
+        return;
+    }
+
+    // If the current renderer has specified both a logo image and callback,
+    // enable the symbol button UI to show the logo.
+    // By default, the logo is invisible.
+    //
+    string $imageName = `renderer -query -logoImageName (currentRenderer())`;
+    string $logoCallback = `renderer -query -logoCallbackProcedure (currentRenderer())`;
+	string $logoAnnotation = (uiRes("m_unifiedRenderGlobalsWindow.kLogoAnnot"));
+
+    if ( 0 < size($imageName) && 0 < size($logoCallback) )
+    {
+        symbolButton
+            -edit
+            -image $imageName
+            -command $logoCallback
+			-annotation $logoAnnotation
+            -visible true
+            unifiedRenderGlobalsRendererLogoPicture;
+    }
+    else
+    {
+        symbolButton
+            -edit
+            -visible false
+            unifiedRenderGlobalsRendererLogoPicture;
+    }
+
+}
+
+// Description: Called when the user selects a new layer from the
+//              Layer option menu
+global proc updateCurrentRenderLayerSel()
+{
+	setParent unifiedRenderGlobalsWindow;
+
+	string $currLayer = `editRenderLayerGlobals -q -currentRenderLayer`;
+	string $newLayer = `optionMenu -q -value unifiedRenderGlobalsRenderLayerOptionMenu`;
+	if ($newLayer == "masterLayer") {
+		$newLayer = "defaultRenderLayer";
+	}
+
+	if ($currLayer != $newLayer &&
+			`objExists $newLayer` &&
+			`nodeType $newLayer` == "renderLayer") {
+		if(catch(`editRenderLayerGlobals -currentRenderLayer $newLayer`))
+			optionMenu -e -value $currLayer unifiedRenderGlobalsRenderLayerOptionMenu;
+	}
+}
+
+// Description: Update the layer list and current selected layer,
+//              called when an update is triggered on the window
+//
+global proc updateRenderLayerOptionMenu()
+{
+	setParent unifiedRenderGlobalsWindow;
+
+    if (!`objExists renderLayerManager`) {
+      return;
+    }
+
+	string $layers[] = `listConnections renderLayerManager.renderLayerId`;
+	if (size($layers) > 0) {
+		string $currLayer = `editRenderLayerGlobals -q -currentRenderLayer`;
+		$layers = sortLayers($layers);
+		int $numLayers = size($layers);
+
+		string $menuItemNames[] = `optionMenu -q -itemListLong unifiedRenderGlobalsRenderLayerOptionMenu`;
+		int $numItems = size($menuItemNames);
+
+		// script job stuff
+		string $updateScript = ("evalDeferred -lowestPriority \"updateUnifiedRenderGlobalsWindowSpecifiedUI\"");
+		int $jobsReplaced = false;
+
+		int $i = 0;
+		string $currItem = "";
+		for ($i=0; $i<$numLayers; $i++) {
+			// reverse order for layers to match render layer editor
+			string $layer = $layers[$numLayers - $i - 1];
+			string $label = $layer;
+			if ($layer == "defaultRenderLayer") {
+				$label = "masterLayer";
+			}
+			if ($layer == $currLayer) {
+				$currItem = $label;
+			}
+
+			if ($i >= $numItems) {
+				menuItem
+					-label $label
+					-parent unifiedRenderGlobalsRenderLayerOptionMenu;
+			} else {
+				menuItem -edit
+					-label $label
+					$menuItemNames[$i];
+			}
+
+			if ($jobsReplaced) {
+				scriptJob -parent unifiedRenderGlobalsRenderLayerOptionMenu
+					-nodeNameChanged $layer $updateScript;
+			} else {
+				scriptJob -replacePrevious -parent unifiedRenderGlobalsRenderLayerOptionMenu
+					-nodeNameChanged $layer $updateScript;
+				$jobsReplaced = true;
+			}
+		}
+
+		// delete extras
+		for (; $i<$numItems; $i++) {
+			deleteUI $menuItemNames[$i];
+		}
+
+		// reset selection
+		if ($currItem != "") {
+			optionMenu -edit -value $currItem
+				unifiedRenderGlobalsRenderLayerOptionMenu;
+		}
+	}
+}
+
+// Description: Load presets for several nodes together.
+//
+global proc loadNodePresets( string $name )
+{
+	int $i;
+	string $globalsNodes[] = `renderer -q -globalsNodes (currentRenderer())`;
+
+	for ($i = 0; $i < size($globalsNodes); $i++)
+	{
+		if(`nodePreset -exists $globalsNodes[$i] $name`) {
+			nodePreset -load $globalsNodes[$i] $name;
+		}
+	}
+
+	updateObjTypeFilterToCheckBox();
+
+}
+
+// Remove presets for several nodes together.
+global proc removePreferedPresets( )
+{
+	int $i;
+    string $currentRenderer = currentRenderer();
+	string $globalsNodes[] = `renderer -q -globalsNodes $currentRenderer`;
+
+	for ($i = 0; $i < size($globalsNodes); $i++)
+	{
+		optionVar -remove ($currentRenderer + $globalsNodes[$i] + "PreferredPreset");
+	}
+}
+
+// Set prefered presets for several nodes together.
+global proc setPreferedPreset( string $name )
+{
+	int $i;
+    string $currentRenderer = currentRenderer();
+	string $globalsNodes[] = `renderer -q -globalsNodes $currentRenderer`;
+
+	for ($i = 0; $i < size($globalsNodes); $i++)
+	{
+        string $preferredPresetOptVar = $currentRenderer + $globalsNodes[$i] + "PreferredPreset";
+		if(`nodePreset -exists $globalsNodes[$i] $name`) {
+			optionVar -stringValue $preferredPresetOptVar $name;
+		}
+        else {
+            optionVar -remove $preferredPresetOptVar;
+        }
+	}
+}
+
+// Revert all the setting to the defaults
+global proc unifiedRenderGlobalsRevertToDefault()
+{
+	int $i;
+
+	// Save selection, because the createNode commands will change it.
+	string $sel[] = `ls -sl`;
+    string $currentRender = currentRenderer();
+	string $globalsNodes[] = `renderer -q -globalsNodes $currentRender`;
+
+	for ($i = 0; $i < size($globalsNodes); $i++)
+	{
+		string $node = $globalsNodes[$i];
+		string $type = `nodeType $node`;
+        if($currentRender != "mayaSoftware" && ($type == "renderGlobals" || $type == "resolution"))
+            continue;
+		string $default = `createNode $type`;
+		copyNode $default $node;
+		delete $default;
+	}
+
+    if($currentRender != "mayaSoftware") {
+	    // Bug 210571:
+	    // Ensure the default resolution for all renderers is 960 x 540
+        float $width = 960;
+        float $height = 540;
+        float $pixelAspect = 1;
+        float $deviceAspectRatio = $pixelAspect*($width/$height);
+        setAttr defaultResolution.width $width;
+        setAttr defaultResolution.height $height;
+        setAttr defaultResolution.pixelAspect $pixelAspect;
+        setAttr defaultResolution.deviceAspectRatio $deviceAspectRatio;
+
+	    // Bug 227580:
+	    // Reset the settings in Common tab to default
+        int $renderAll = 1;
+	    string $imageFilePrefix = "";
+	    int $putFrameBeforeExt	= 0;
+	    int $animation = 0;
+	    int $periodInExt = 1;
+	    int $imageFormat = 7;
+	    string $imfPluginKey;
+        int $usemayaFileName = 1;
+        int $useFrameExt = 0;
+	    float $startFrame = 1.0;
+	    float $endFrame = 10.0;
+	    float $byFrameStep = 1.0;
+	    int $extensionPadding = 1;
+        int $multiCamNamingMode = 0;
+        string $bufferName = "<RenderPassType>:<RenderPass>.<Camera>";
+	    int $outFormatControl = 0;
+	    string $outFormatExt;
+	    int $modifyExtension = 0;
+	    float $startExtension = 1.0;
+	    float $byExtension = 1.0;
+	    string $renderVersion;
+        int $animationRange = 1;
+	    int $enableDefaultLight = 1;
+	    string $preMel;
+	    string $postMel;
+	    string $preRenderLayerMel;
+	    string $postRenderLayerMel;
+	    string $preRenderMel;
+	    string $postRenderMel;
+        int $renderLayerEnable = 0;
+	    int $aspectLock = 0;
+	    int $imageSizeUnits = 0;
+	    float $dotsPerInch = 72.0;
+	    int $pixelDensityUnits = 0;
+	    int $lockDeviceAspectRatio = 0;
+
+        setAttr "defaultRenderGlobals.renderAll" $renderAll;
+	    setAttr -type "string" defaultRenderGlobals.imageFilePrefix $imageFilePrefix;
+	    setAttr "defaultRenderGlobals.putFrameBeforeExt" $putFrameBeforeExt;
+	    setAttr "defaultRenderGlobals.animation" $animation;
+	    setAttr "defaultRenderGlobals.periodInExt" $periodInExt;
+	    setAttr "defaultRenderGlobals.imageFormat" $imageFormat;
+	    setAttr -type "string" "defaultRenderGlobals.imfPluginKey" $imfPluginKey;
+        setAttr "defaultRenderGlobals.useMayaFileName" $usemayaFileName;
+        setAttr "defaultRenderGlobals.useFrameExt" $useFrameExt;
+	    setAttr "defaultRenderGlobals.startFrame" $startFrame;
+	    setAttr "defaultRenderGlobals.endFrame" $endFrame;
+	    setAttr "defaultRenderGlobals.byFrameStep" $byFrameStep;
+	    setAttr "defaultRenderGlobals.extensionPadding" $extensionPadding;
+        setAttr "defaultRenderGlobals.multiCamNamingMode" $multiCamNamingMode;
+        setAttr -type "string" "defaultRenderGlobals.bufferName" $bufferName;
+	    setAttr "defaultRenderGlobals.outFormatControl" $outFormatControl;
+	    setAttr -type "string" "defaultRenderGlobals.outFormatExt" $outFormatExt;
+	    setAttr "defaultRenderGlobals.modifyExtension" $modifyExtension;
+	    setAttr "defaultRenderGlobals.startExtension" $startExtension;
+	    setAttr "defaultRenderGlobals.byExtension" $byExtension;
+	    setAttr -type "string" "defaultRenderGlobals.renderVersion" $renderVersion;
+        setAttr "defaultRenderGlobals.animationRange" $animationRange;
+	    setAttr "defaultRenderGlobals.enableDefaultLight" $enableDefaultLight;
+	    setAttr -type "string" "defaultRenderGlobals.preMel" $preMel;
+	    setAttr -type "string" "defaultRenderGlobals.postMel" $postMel;
+	    setAttr -type "string" "defaultRenderGlobals.preRenderLayerMel" $preRenderLayerMel;
+	    setAttr -type "string" "defaultRenderGlobals.postRenderLayerMel" $postRenderLayerMel;
+	    setAttr -type "string" "defaultRenderGlobals.preRenderMel" $preRenderMel;
+	    setAttr -type "string" "defaultRenderGlobals.postRenderMel" $postRenderMel;
+        setAttr "defaultRenderGlobals.renderLayerEnable" $renderLayerEnable;
+	    setAttr "defaultResolution.aspectLock" $aspectLock;
+	    setAttr "defaultResolution.imageSizeUnits" $imageSizeUnits;
+	    setAttr "defaultResolution.dotsPerInch" $dotsPerInch;
+	    setAttr "defaultResolution.pixelDensityUnits" $pixelDensityUnits;
+	    setAttr "defaultResolution.lockDeviceAspectRatio" $lockDeviceAspectRatio;
+    }
+	string $allCameras[] = `ls -cameras`;
+	for ($i = 0; $i < size($allCameras); $i++)
+	{
+		if (!strcmp($allCameras[$i], "perspShape"))
+			setAttr ($allCameras[$i]+".renderable") 1;
+		else
+			setAttr ($allCameras[$i]+".renderable") 0;
+		setAttr ($allCameras[$i]+".mask") 1;
+		setAttr ($allCameras[$i]+".depth") 0;
+	}
+	updateMayaSoftwareCameraControl();
+	select -noExpand $sel;
+
+	createObjectTypeFilters(0);
+	resetObjFilterToDefault();
+
+}
+
+global proc UNIFIED_buildRenderGlobalsPresetsMenu()
+{
+	//
+	// Description:
+	//	This procedure builds the Presets menu in the render globals window.
+	//
+	setParent unifiedRenderGlobalsWindow;
+	menu -edit -deleteAllItems presetsMenu;
+
+    string $currentRenderer = currentRenderer();
+	if ($currentRenderer == "mentalRay" &&
+        size(`ls mentalrayGlobals`) == 0 )
+	{
+		miCreateDefaultNodes();
+	}
+    else if ($currentRenderer == "mayaVector" &&
+             size(`ls vectorRenderGlobals`) == 0 )
+    {
+        vrCreateGlobalsNode();
+    }
+    // Check if the renderer specified any nodes to be saved
+    // as presets.
+    //
+    string $globalsNodes[] =
+        `renderer -q -globalsNodes $currentRenderer`;
+
+    // If no nodes are specified, then no preset is provided.
+    //
+    if (size($globalsNodes) == 0)
+    {
+        return;
+    }
+
+	setParent -menu presetsMenu;
+
+
+    //------------------
+    // Save Preset
+    //------------------
+
+	menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kSaveSettingsAsPreset"))
+		-command "saveNodePresetDialog(`renderer -q -globalsNodes (currentRenderer())`, getRenderSettingPresetArgs((currentRenderer())))"
+        URGSavePresetCtrl;
+
+    //------------------
+    // Load Preset
+    //------------------
+	string $globalsNodes[] = `renderer -q -globalsNodes (currentRenderer())`;
+	string $presetArray[];
+
+    if (size($globalsNodes)>0)
+    {
+		$presetArray = `nodePreset -list $globalsNodes[0]`;
+
+
+		menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kLoadPreset")) -subMenu true URGLoadPresetCtrl;
+
+		menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kDefaultSettings")) -command "unifiedRenderGlobalsRevertToDefault";
+
+		menuItem -divider true;
+
+		// Add a menu item for each available preset.
+		//
+		int $i;
+		for ($i = 0; $i < size($presetArray); $i++)
+		{
+			menuItem -label $presetArray[$i]
+				-command ("loadNodePresets \"" + $presetArray[$i] + "\"" );
+		}
+		setParent -menu ..; // from Load Preset menu
+    }
+
+
+    //------------------
+    // Delete Preset
+    //------------------
+	menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kDeletePreset")) -subMenu true;
+
+	if (size($presetArray) == 0)
+	{
+		menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kNoPresetsCurrentlyExist")) -enable false;
+	}
+	else
+	{
+        string $commaNodes;
+        string $globals[] = `renderer -q -globalsNodes $currentRenderer`;
+        for ($node in $globals) {
+            // Enclose the node in quotes and comma separate them.
+            $commaNodes += "\"" + $node + "\", ";
+        }
+
+		// Add a menu item to be able to delete each available preset.
+		//
+		for ($i = 0; $i < size($presetArray); $i++)
+		{
+			menuItem -label $presetArray[$i]
+                -command ( "nodePresetConfirmDeleteDialog { "
+                        + $commaNodes + "\"" + $presetArray[$i] + "\" }" );
+		}
+	}
+	setParent -menu ..; // from Delete Preset menu
+
+	menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kSetPreferredPreset")) -subMenu true;
+
+	int $preferredPresetExists = false;
+	string $preferredPresetName;
+	string $preferredPresetOptVar = (currentRenderer() + $globalsNodes[0] + "PreferredPreset");
+
+	if (`optionVar -exists $preferredPresetOptVar`)
+	{
+		$preferredPresetExists = true;
+		$preferredPresetName = `optionVar -query $preferredPresetOptVar`;
+	}
+
+	menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kPreferredDefaultSettings")) -checkBox (!$preferredPresetExists)
+		-command "removePreferedPresets";
+
+	menuItem -divider true;
+
+	// Add a menu item to be able to set each available preset as your
+	// preferred preset (to which render globals will be initialized
+	// when you create a new file).
+	//
+	int $checkBoxValue;
+
+	for ($i = 0; $i < size($presetArray); $i++)
+	{
+		$checkBoxValue = false;
+		if ($preferredPresetExists)
+		{
+			$checkBoxValue = ($presetArray[$i] == $preferredPresetName);
+		}
+		menuItem -label $presetArray[$i] -checkBox $checkBoxValue
+			-command ("setPreferedPreset "+$presetArray[$i]);
+	}
+	setParent -menu ..; // from Set Preferred Preset menu
+}
+
+global proc createRenderSettingsWindow()
+//
+//  Procedure Name:
+//      createRenderSettingsWindow
+//
+//  Description:
+//      This procedure only builds the Render Settings UI WITHOUT showing it.
+//      If you want to show the window and/or update tabs use unifiedRenderGlobalsWindow instead.
+//      If you only want to create the UI to add or delete tabs use this procedure.  
+{
+    if (!`window -exists unifiedRenderGlobalsWindow`) {
+        // Create the window
+        //
+        window -title (localizedUIMisc("Render Settings"))
+            -wh 456 670 -tlc 200 220
+            -mb true -retain
+            -iconName (uiRes("m_unifiedRenderGlobalsWindow.kRSettings")) unifiedRenderGlobalsWindow;
+
+        // Set up the menus
+        //
+        menu -label (uiRes("m_unifiedRenderGlobalsWindow.kEdit"));
+        menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kChangeProjectImage"))
+            -c "ProjectWindow";
+
+        menu -label (uiRes("m_unifiedRenderGlobalsWindow.kPresets"))
+            -postMenuCommand "UNIFIED_buildRenderGlobalsPresetsMenu"
+            presetsMenu;
+
+        //	Adds support for the Context Sensitive Help Menu.
+        //
+        addContextHelpProc "unifiedRenderGlobalsWindow" "UNIFIED_buildRenderGlobalsContextHelpItems";
+
+        doHelpMenu "unifiedRenderGlobalsWindow" "unifiedRenderGlobalsWindow";
+
+        formLayout rgMainForm;
+
+        //--------------------------------------------------------------
+        // Create a frame containing:
+        // - A pulldown menu for switching between render layers;
+        // - A pulldown menu for switching between renderers;
+        // - The optional rendering logo on a button.
+        //--------------------------------------------------------------
+        frameLayout -labelVisible false -cll false -cl false
+            -borderStyle  "etchedIn"
+            rendererPlusLayerLayout;
+
+        string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+        string $rendererUIName = "";
+        $selectForm = `formLayout`;
+
+        $selectLayer = `rowLayout -numberOfColumns 2`;
+
+        text -label (uiRes("m_unifiedRenderGlobalsWindow.kCurrentLayer"));
+        optionMenu
+            -annotation (uiRes("m_unifiedRenderGlobalsWindow.kCurrentLayerAnn"))
+            -cc "updateCurrentRenderLayerSel"
+            unifiedRenderGlobalsRenderLayerOptionMenu;
+
+        setParent ..; // from rowLayout
+
+        $selectRenderer = `rowLayout -numberOfColumns 2`;
+
+        text -label (uiRes("m_unifiedRenderGlobalsWindow.kRenderUsing")) unifiedRenderGlobalsRendererSelOptionMenuText;
+        optionMenu
+                -annotation (uiRes("m_unifiedRenderGlobalsWindow.kSelectRenderer"))
+                -cc "updateCurrentRendererSel(\"unifiedRenderGlobalsRendererSelOptionMenu\")"
+                unifiedRenderGlobalsRendererSelOptionMenu;
+
+        connectControl unifiedRenderGlobalsRendererSelOptionMenuText defaultRenderGlobals.currentRenderer;
+
+        // If we cannot find the default renderer (the corresponding
+        // plug-in may not be loaded, default the menu to the first
+        // available renderer.
+        int $selectedItem = 1;
+        for ($i = 0; $i < size($renderers); $i += 1)
+        {
+            $rendererUIName = `renderer -query -rendererUIName $renderers[$i]`;
+            menuItem -l $rendererUIName
+                     -enableCommandRepeat false
+                     ("unifiedRenderGlobalsRendererSelOptionMenuItem" +$i);
+
+            // Check if this renderer is the same as currentRenderer.
+            //
+            if ($renderers[$i] == currentRenderer())
+            {
+                $selectedItem = $i + 1;
+            }
+        }
+
+        // Set the renderer to the the current renderer.
+        //
+        optionMenu -edit
+            -select $selectedItem unifiedRenderGlobalsRendererSelOptionMenu;
+
+        setParent ..;  // from rowLayout
+
+        // Create the symbol button for the renderer logo.
+        // The image, visibility state, and callback for the button
+        // are set in updateCurrentRendererLogo().
+        //
+        symbolButton -visible false unifiedRenderGlobalsRendererLogoPicture;
+        updateCurrentRendererLogo();
+
+        // Set up the form such that the logo is right justified
+        // in the frame.
+        //
+        formLayout -edit
+            -attachForm $selectLayer "top" 2
+            -attachForm $selectLayer "left" 2
+            -attachNone $selectLayer "right"
+            -attachNone $selectLayer "bottom"
+
+            -attachControl $selectRenderer "top" 4 $selectLayer
+
+            -attachForm $selectRenderer "left" 2
+            -attachNone $selectRenderer "right"
+            -attachForm $selectRenderer "bottom" 2
+
+            -attachForm unifiedRenderGlobalsRendererLogoPicture "top" 2
+            -attachNone unifiedRenderGlobalsRendererLogoPicture "left"
+            -attachForm unifiedRenderGlobalsRendererLogoPicture "right" 2
+            -attachForm unifiedRenderGlobalsRendererLogoPicture "bottom" 2
+            $selectForm;
+        setParent ..; // from formLayout
+
+        setParent ..;  // from rendererPlusLayerLayout;
+
+        //--------------------------------------------------------------
+        // Tabs
+        //--------------------------------------------------------------
+        formLayout tabForm;
+
+        // Define a template for scrollLayout which will be used when
+        // creating the scrollLayouts inside of each of the following tabs.
+        //
+        if (!`uiTemplate -exists renderGlobalsTemplate`)
+        {
+            uiTemplate renderGlobalsTemplate;
+
+            scrollLayout
+                    -defineTemplate renderGlobalsTemplate
+                    -horizontalScrollBarThickness 0
+                    -verticalScrollBarThickness 16;
+        }
+
+        setParent ..; // from tabForm
+
+        //--------------------------------------------------------------
+        // Button area starts
+        //--------------------------------------------------------------
+
+        button -label (uiRes("m_unifiedRenderGlobalsWindow.kClose"))
+            -h 26
+            -c "window -e -vis 0 unifiedRenderGlobalsWindow"
+            rgCloseBtn;
+
+        setParent ..;  // from rgMainForm
+
+        // Fix up the layout
+
+        formLayout -edit
+
+            -af rendererPlusLayerLayout "top" 0
+            -af rendererPlusLayerLayout "left" 0
+            -af rendererPlusLayerLayout "right" 0
+            -an rendererPlusLayerLayout "bottom"
+
+            -ac tabForm top 5 rendererPlusLayerLayout
+            -af tabForm left 0
+            -af tabForm right 0
+            -ac tabForm bottom 5 rgCloseBtn
+
+            -an rgCloseBtn "top"
+            -af rgCloseBtn "bottom" 5
+            -af rgCloseBtn "left" 5
+            -af rgCloseBtn "right" 5
+            rgMainForm;
+
+        setUITemplate -popTemplate ;
+
+        // register the procedure responsible for updating all renderer
+        // related UI created in this script
+        //
+        registerUpdateRendererUIProc("updateUnifiedRenderGlobalsWindowSpecifiedUI");
+        scriptJob -event SceneOpened unifiedRenderGlobalsWindowSceneOpenedCallback
+            -parent unifiedRenderGlobalsWindow;
+        scriptJob -event renderLayerManagerChange updateUnifiedRenderGlobalsWindowSpecifiedUI
+            -parent unifiedRenderGlobalsWindow;
+        scriptJob -event renderLayerChange updateUnifiedRenderGlobalsWindowSpecifiedUI
+            -parent unifiedRenderGlobalsWindow;
+
+        updateUnifiedRenderGlobalsWindowSpecifiedUI;    
+    }
+
+}
+
+global proc unifiedRenderGlobalsWindow ()
+//
+//  Procedure Name:
+//      unifiedRenderGlobalsWindow
+//
+//  Description:
+//		This procedure builds and show the UI for the Render Settings window 
+//		The update* procedures make sure that the values are valid.
+//		And the change* procedures do the editting of the values.
+//
+{
+	// If the window exists already, just show it.
+	//
+	if (`window -exists unifiedRenderGlobalsWindow`) {
+		showWindow unifiedRenderGlobalsWindow;
+		updateCurrentRendererTabs();
+		return;
+	}
+    
+    createRenderSettingsWindow();
+
+    //--------------------------------------------------------------
+    // Show window
+    //--------------------------------------------------------------
+    showWindow unifiedRenderGlobalsWindow;
+
+    // Display the tabs of the current renderer.
+    //
+    updateCurrentRendererTabs();
+}
+
+//==================================================================
+// Update UI when rendererChanged.
+//==================================================================
+global proc updateUnifiedRenderGlobalsWindowSpecifiedUI()
+{
+    setParent unifiedRenderGlobalsWindow;
+
+	// Change the optionMenuGrp for switching between layers.
+	//
+	updateRenderLayerOptionMenu();
+
+    // Change the optionMenuGrp for switching between renderers.
+    //
+
+    int $i;
+	string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+
+	// Check for any updates in the renderer list
+	//
+	int $numItems =
+        `optionMenu
+			-query
+			-numberOfItems
+			unifiedRenderGlobalsRendererSelOptionMenu`;
+
+	// Make sure all the renderers are being shown in the option menu.
+	//
+	if($numItems != size($renderers))
+	{
+		setParent -menu unifiedRenderGlobalsRendererSelOptionMenu;
+
+		string $menuItemNames[] =
+			`optionMenu
+				-query
+				-itemListLong
+				unifiedRenderGlobalsRendererSelOptionMenu`;
+
+		// Remove all the menuItems and create new ones to reflect the
+		// renderers currently available
+		//
+		for ($i = 0; $i < size($menuItemNames); $i++)
+		{
+			deleteUI $menuItemNames[$i];
+		}
+
+		for ($i = 0; $i < size($renderers); $i++)
+		{
+            $rendererUIName = `renderer -query -rendererUIName $renderers[$i]`;
+			menuItem
+				-label $rendererUIName
+				-enableCommandRepeat false
+				("unifiedRenderGlobalsRendererSelOptionMenuItem" + $i);
+		}
+
+		setParent ..;
+	}
+
+	// Update the Renderer selection option box to reflect current
+    // renderer.
+	//
+
+	for ($i = 0; $i < size($renderers); $i++)
+	{
+		if($renderers[$i] == currentRenderer())
+		{
+			optionMenu
+				-edit
+				-select ($i+1)
+				unifiedRenderGlobalsRendererSelOptionMenu;
+		}
+	}
+
+	// Update the visibility of the Renderer logo picture
+	// depending on the current renderer.
+	//
+	updateCurrentRendererLogo();
+
+    updateCurrentRendererTabs();
+
+    // image format section in the common tab is renderer specific.
+    updateMayaImageFormatControl();
+
+    // Update the current render layer information in
+    // the render setting window's title.
+    // If the master layer is the only render layer, then do not
+    // show layer name in the window title.
+    // If there exists any non master render layer, then show
+    // the current render layer's name.
+    //
+    string $newTitle = localizedUIMisc("Render Settings");
+    string $layerName = currentRenderLayerLabel();
+
+    if ($layerName != "")
+    {
+        $newTitle = (uiRes("m_unifiedRenderGlobalsWindow.kNewRenderSettings"));
+        $newTitle = `format -s $layerName $newTitle`;
+    }
+
+    window -edit -title $newTitle unifiedRenderGlobalsWindow;
+}
+
+//==================================================================
+// Other Tab handler
+//==================================================================
+// Description:
+// Returns:  This procedure returns the name of the tabLayout for
+//           the specified renderer.
+//
+global proc string rendererTabLayoutName(string $renderer)
+{
+    string $tabLayoutName = $renderer+"TabLayout";
+    return $tabLayoutName;
+}
+
+// Description:
+// Returns:  This procedure returns the name of a tab for the
+//           specified renderer.  The name of the tab consists
+//           of three parts
+//              . the renderer's name ("masterLayer" will be
+//				  used if we're displaying all renderer tabs),
+//              . the tabLabel with white spaces removed,
+//              . the ending "Tab".
+//
+global proc string rendererTabName(string $renderer, string $tabLabel)
+{
+    // The tabName is the tabLabel with the white space removed
+    // and the word "Tab" added to the end.
+    //
+    string $tabName = `substituteAllString $tabLabel " " ""`;
+    string $tabName = `substituteAllString $tabName "." ""`;
+	if( isDisplayingAllRendererTabs() ){
+		global string $gMasterLayerRendererName;
+		$tabName = $gMasterLayerRendererName+$tabName+"Tab";
+	}else{
+	    $tabName = $renderer+$tabName+"Tab";
+	}
+    return $tabName;
+}
+
+// Description:
+// Returns: This procedure returns the name of the control with
+//          the $renderer name as a prefix.
+//
+global proc string rendererControlName(string $renderer, string $control)
+{
+    string $controlName = $renderer + $control;
+    return $controlName;
+}
+
+// Description:
+//	Calls "createProc" routine(s) to fill the selected tab
+//	in the given tabLayout.
+global proc fillSelectedTabForTabLayout(string $tabLayoutName)
+{
+	int $selectedTab = `tabLayout -q -sti $tabLayoutName`;
+	string $tabNames[] = `tabLayout -q -ca $tabLayoutName`;
+
+	// Check if the tab content was already created
+	string $parentForm = $tabNames[ $selectedTab-1 ];
+	string $tabChildren[] = `formLayout -q -ca $parentForm`;
+	if (size($tabChildren) != 0)
+		return;
+
+	string $createProcs[] = {};
+	if ( isDisplayingAllRendererTabs() )
+	{
+		// Tabs for all rendererers are displayed.
+		// Make list of create procs that corresponds to the tabs
+		// List should look something like this:
+		//	{ "createMayaSoftwareCommonGlobalsTab", "createMayaSoftwareGlobalsTab",
+		//	"createMayaHardwareGlobalsTab ", "createVectorGlobalsTab ",
+		//	"createMayaRenderPassTab",
+		//	"createMentalRayFeaturesTab", "createMentalRayQualityTab",
+		//	"createMentalRayIndirectLightingTab", "createMentalRayOptionsTab" };
+		string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+		for ($renderer in $renderers)
+		{
+			string $rendererProcs[] = `renderer -query -globalsTabCreateProcNames $renderer`;
+			int $numProcs = `size $rendererProcs`;
+			appendStringArray($createProcs, $rendererProcs, $numProcs);
+		}
+		$createProcs = stringArrayRemoveDuplicates( $createProcs );
+	}
+	else
+	{
+		string $renderer = currentRenderer();
+
+		// Get the createProcs for the current renderer
+		$createProcs = `renderer -query -globalsTabCreateProcNames $renderer`;
+	}
+
+	// Call the create proc for the selected tab
+	string $createProc = $createProcs[ $selectedTab-1 ];
+	string $parentForm = $tabNames[ $selectedTab-1 ];
+	if ($createProc == "")
+		return;
+
+	setParent $parentForm;
+	if (!(`match "MentalRay" $createProc` == "MentalRay") )
+	{
+		// If it's not a mental ray tab, just eval this proc
+		eval($createProc);
+	}
+	else
+	{
+		// For mental ray create procs, eval all mental ray procs
+		// because there are dependencies between the tabs
+		string $tempProc;
+		int $tabNum = 0;
+		for ($tempProc in $createProcs) {
+
+			string $tabForm = $tabNames[$tabNum];
+			if (`formLayout -exists $tabForm`)
+				setParent $tabForm;
+			if (`match "MentalRay" $tempProc` == "MentalRay") {
+				eval($tempProc);
+			}
+			$tabNum++;
+		}
+	}
+}
+
+// Description:
+//		This procedure is set up as the "preSelectCommand" for the tabs
+//		when we're displaying all renderer tabs
+//		it creates the content of the selected tab - this is to make the window
+//		more efficent in use of memory (298476)
+global proc fillSelectedTabForMasterLayerTabLayout()
+{
+	global string $gMasterLayerRendererName;
+	string $tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+	fillSelectedTabForTabLayout( $tabLayoutName );
+
+}
+
+// Description:
+//		This procedure is set up as the "preSelectCommand" for the tabs
+//		when an individual renderer is in use.
+//		Creates the content of the selected tab
+//		- this is to make the window more efficent in use of memory (298476)
+global proc fillSelectedTabForCurrentRenderer()
+{
+	string $renderer = currentRenderer();
+	string $tabLayoutName = rendererTabLayoutName($renderer);
+
+	fillSelectedTabForTabLayout( $tabLayoutName );
+}
+
+// Description: This procedure is called to return the name of the
+//              rendererTabLayout.  If such tabLayout does not exist
+//              yet for the specified renderer, then we initialize
+//              the tabLayout for the specified renderer.
+//
+//              The initialization involves:
+//                  . create the tabLayout
+//                  . initialize the common tab.
+//
+global proc string getRendererTabLayout(string $renderer)
+{
+    setParent tabForm;
+
+    string $tabLayoutName = rendererTabLayoutName($renderer);
+
+    if (`tabLayout -exists $tabLayoutName`)
+    {
+        return $tabLayoutName;
+    }
+
+    // Create the tab layout.
+    // The tabLayout is only "manage"d if the specified renderer
+    // is associated with the current renderer.
+    //
+    int $isCurrentRenderer = false;
+
+	if( isDisplayingAllRendererTabs() )
+	{
+		// Create the tabLayout if it doesn't exist
+		tabLayout	-manage true
+					-tabsVisible true
+					-width 1
+					-preSelectCommand "fillSelectedTabForMasterLayerTabLayout"
+					$tabLayoutName;
+	}
+	else
+	{
+		if( $renderer == currentRenderer() )
+		{
+			$isCurrentRenderer = true;
+		}
+		tabLayout	-manage $isCurrentRenderer
+					-tabsVisible true
+					-width 1
+					-preSelectCommand "fillSelectedTabForCurrentRenderer"
+					$tabLayoutName;
+    }
+
+    setParent ..; // from tabLayout
+
+    formLayout
+            -edit
+            -af $tabLayoutName top 0
+            -af $tabLayoutName left 0
+            -af $tabLayoutName right 0
+            -af $tabLayoutName bottom 0
+            tabForm;
+
+    return $tabLayoutName;
+}
+
+proc string renderSettingsTabLabel_melToUI (string $mel)
+{
+	// The arguments passed inside this procedure should not
+	// be localized. This procedure uses the first string
+	// argument that is passed with the "-addGlobalsTab"
+	// flag in the "renderer" command.
+	//
+	string $result = $mel;
+
+	if($mel == "Common"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kCommon"));
+	}
+	else if($mel == "Passes"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kPassesTab"));
+	}
+	else if($mel == "Maya Software"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kMayaSoftware"));
+	}
+	else if($mel == "Maya Hardware"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kMayaHardware"));
+	}
+	else if($mel == "Maya Vector"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kMayaVector"));
+	}
+	else if($mel == "Features"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kFeatures"));
+	}
+	else if($mel == "Quality"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kQuality"));
+	}
+	else if($mel == "Indirect Lighting"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kIndirectLighting"));
+	}
+	else if($mel == "Options"){
+		$result = (uiRes("m_unifiedRenderGlobalsWindow.kOptions"));
+	}
+	else{
+		uiToMelMsg( "renderSettingsTabLabel_melToUI", $mel, 0 );
+	}
+
+	return $result;
+}
+
+
+// Description: This procedure allows a renderer to add one tab
+//              to the unified render globals window
+//              and create the content in the tab using a procedure.
+//
+// Input:
+//              The "rendererName" is the name of the renderer.
+//              The "tabName" is the name of the tab.
+//              The "createProcName" is the name of the procedure
+//              used to create the content of the tab.
+//
+global proc addOneTabToGlobalsWindow(
+    string $renderer, string $tabLabel, string $createProc)
+{
+    // Check to see if the unified render globals window existed.
+    // If it does not exist, then we don't need to add any tab yet.
+    //
+    if (!`window -exists unifiedRenderGlobalsWindow`)
+    {
+        catch(error (uiRes("m_unifiedRenderGlobalsWindow.kCannotAddTabs")));
+        return;
+    }
+
+	int $displayAllTabs = isDisplayingAllRendererTabs();
+	if( !$displayAllTabs )
+	{
+		// If the current renderer the renderer is not this
+		// renderer, then don't add the tab yet.
+		//
+		if( currentRenderer() != $renderer )
+		{
+			return;
+		}
+    }
+
+    setParent unifiedRenderGlobalsWindow;
+
+    // Hide the tabForm while updating.
+    //
+    int $tabFormManagedStatus = `formLayout -q -manage tabForm`;
+    formLayout -edit -manage false tabForm;
+    setParent tabForm;
+
+	// Set the correct tabLayout parent.
+	//
+	string $tabLayoutName;
+	if( $displayAllTabs ){
+		global string $gMasterLayerRendererName;
+		$tabLayoutName = getRendererTabLayout($gMasterLayerRendererName);
+	}else{
+		$tabLayoutName = getRendererTabLayout($renderer);
+	}
+	setParent $tabLayoutName;
+
+    // The tabName is the tabLabel with the white space removed
+    // and the word "Tab" added to the end.
+	// "masterLayer" will act as the renderer name if the tab
+	// is in the master layer.
+    //
+    string $tabName = rendererTabName($renderer, $tabLabel);
+
+    // if the tab-control does not exist, define it and add it
+    // to the tabLayout
+    //
+    if (!`layout -exists $tabName`)
+    {
+        setUITemplate -pushTemplate renderGlobalsTemplate;
+        setUITemplate -pushTemplate attributeEditorTemplate;
+
+	    // Define the tab
+	    //
+		formLayout $tabName;
+
+	    // get the content of the tab from the createTabProc
+	    //
+
+		// Most create procs are now deferred till the tab is selected
+		// These two are the default tabs, so we don't defer them
+		if (($createProc == "createMayaSoftwareCommonGlobalsTab")
+			|| ($createProc == "createMayaSoftwareGlobalsTab"))
+		{
+			eval($createProc);
+		}
+
+		if ($createProc == "vrayCreateVRayCommonGlobalsTab")
+			eval($createProc);
+
+        if ($createProc == "CoronaCommonGlobalsCreateTab")
+            eval($createProc);
+
+		// These end off the layouts of the information in the Tab
+	    //
+	    setParent ..;
+
+        setUITemplate -popTemplate;
+        setUITemplate -popTemplate;
+
+		// Add the tab to the tabLayout
+		//
+		tabLayout
+			-edit
+			-tabLabel $tabName `renderSettingsTabLabel_melToUI $tabLabel`
+			$tabLayoutName;
+    }
+
+    // Restore the old manage status for the tabForm.
+    //
+    formLayout -edit -manage $tabFormManagedStatus tabForm;
+}
+
+
+// Description:
+//		Create the renderer tabs for the master layer.
+//		This will contain the tabs for ALL available renderers.
+//
+global proc addMasterLayerTabsToGlobalsWindow()
+{
+
+    // Check to see if the unified render globals window existed.
+    // If it does not exist, then we don't need to add any tab yet.
+    //
+    if (!`window -exists unifiedRenderGlobalsWindow`)
+    {
+        catch(error (uiRes("m_unifiedRenderGlobalsWindow.kCannotAddTabs")) );
+        return;
+    }
+
+    setParent unifiedRenderGlobalsWindow;
+
+    // Hide the tabForm while updating.
+    //
+    int $tabFormManagedStatus = `formLayout -q -manage tabForm`;
+    formLayout -edit -manage false tabForm;
+    setParent tabForm;
+
+	// Get the tab layout name. Will create the layout if it doesn't
+	// already exist.
+	//
+    global string $gMasterLayerRendererName;
+    string $tabLayoutName = getRendererTabLayout($gMasterLayerRendererName);
+    setParent $tabLayoutName;
+
+    // For each renderer, recreate its tabs.
+    //
+	int $i, $j, $commonTabCreated=false;
+	string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+
+	for ($i = 0; $i < size($renderers); $i++){
+		// Get the tabLabels and createProcNames.
+		string $tabLabels[] = `renderer -query -globalsTabLabels $renderers[$i]`;
+		string $createProcNames[] = `renderer -query -globalsTabCreateProcNames $renderers[$i]`;
+
+		for ($j = 0; $j < size($tabLabels); $j++)
+		{
+			// Check if the tab already exists
+			//
+			if( ("createMayaSoftwareCommonGlobalsTab" == $createProcNames[$j]) ){
+				if( $commonTabCreated == false ){
+					$commonTabCreated = true;
+				}else{ // $commonTabCreated == true
+					// Common tab already exists. Don't create it.
+					continue;
+				}
+			}
+
+			addOneTabToGlobalsWindow(
+				$renderers[$i],
+				$tabLabels[$j],
+				$createProcNames[$j]);
+		}
+	}
+
+    setParent ..;
+
+    // Restore the old manage status for the tabForm.
+    //
+    formLayout -edit -manage $tabFormManagedStatus tabForm;
+}
+
+
+// Description: This procedure lets the specified renderer to
+//              add all its tabs to the unified render globals window.
+//
+global proc addRendererTabsToGlobalsWindow(string $renderer)
+{
+	// Check to see if the unified render globals window existed.
+    // If it does not exist, then we don't need to add any tab yet.
+    //
+    if (!`window -exists unifiedRenderGlobalsWindow`)
+    {
+        catch(error (uiRes("m_unifiedRenderGlobalsWindow.kCannotAddTabs")) );
+        return;
+    }
+
+	int $displayAllTabs = isDisplayingAllRendererTabs();
+	if( !$displayAllTabs )
+	{
+		// If the current renderer the renderer is not this
+		// renderer, then don't add the tab yet.
+		//
+		if( currentRenderer() != $renderer )
+		{
+			return;
+		}
+    }
+
+    setParent unifiedRenderGlobalsWindow;
+
+    // Hide the tabForm while updating.
+    //
+    int $tabFormManagedStatus = `formLayout -q -manage tabForm`;
+    formLayout -edit -manage false tabForm;
+    setParent tabForm;
+
+	// Get the tab layout name. Will create the layout if it doesn't
+	// already exist.
+	//
+	string $tabLayoutName;
+	if( $displayAllTabs ){
+		global string $gMasterLayerRendererName;
+		$tabLayoutName = getRendererTabLayout($gMasterLayerRendererName);
+	}else{
+		$tabLayoutName = getRendererTabLayout($renderer);
+	}
+	setParent $tabLayoutName;
+
+    // Get the tabLabels and createProcNames.
+    //
+    string $tabLabels[] = `renderer -query -globalsTabLabels $renderer`;
+    string $createProcNames[] =
+        `renderer -query -globalsTabCreateProcNames $renderer`;
+
+    int $i;
+    for ($i = 0; $i < size($tabLabels); $i++)
+    {
+		addOneTabToGlobalsWindow(
+			$renderer,
+			$tabLabels[$i],
+			$createProcNames[$i]);
+	}
+
+    setParent ..;
+
+    // Restore the old manage status for the tabForm.
+    //
+    formLayout -edit -manage $tabFormManagedStatus tabForm;
+}
+
+// Description: Set the current tab in the render globals window from
+//              the given label. If tab does not exist for the current
+//              renderer then do nothing
+//
+global proc setCurrentTabInRenderGlobalsWindow(string $tabLabel)
+{
+	// get tab layout name
+	string $currentRenderer = currentRenderer();
+	int $displayAllTabs = isDisplayingAllRendererTabs();
+	string $tabLayoutName;
+	if ($displayAllTabs) {
+		global string $gMasterLayerRendererName;
+		$tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+	} else {
+		$tabLayoutName = rendererTabLayoutName($currentRenderer);
+	}
+
+	if (`tabLayout -exists $tabLayoutName`) {
+		setParent $tabLayoutName;
+		// get name of tab and set to current if it exists in the
+		// current tab layout
+		string $tabName = rendererTabName($currentRenderer, $tabLabel);
+		string $allTabs[] = `layout -q -childArray $tabLayoutName`;
+		if (stringArrayContains($tabName, $allTabs)) {
+			tabLayout -edit
+				-selectTab $tabName
+				$tabLayoutName;
+		}
+	}
+}
+
+
+//==================================================================
+// Misc
+//==================================================================
+
+//==================================================================
+//
+// Add Context Sensitive Help
+//
+//==================================================================
+
+global proc UNIFIED_buildRenderGlobalsContextHelpItems(
+	string $nameRoot,
+	string $menuParent)
+{
+	menuItem -label (uiRes("m_unifiedRenderGlobalsWindow.kHelpOnRenderSettings"))
+		-enableCommandRepeat false
+		-command "showHelp RenderGlobals";
+}
+
+// Description:
+// This procedure removes the tabs in the unified render globals
+// window for one renderer.
+//
+proc removeRendererTabsFromGlobalsWindow(string $renderer)
+{
+    // Check to see if the unified render globals window existed.
+    // If it does not exist, then we don't need to remove any tab.
+    //
+    if (!`window -exists unifiedRenderGlobalsWindow`)
+    {
+        return;
+    }
+
+    setParent unifiedRenderGlobalsWindow;
+    setParent tabForm;
+
+    string $tabLayoutName = getRendererTabLayout($renderer);
+
+    // If this renderer's tabLayout exists, remove it.
+    //
+    if (`tabLayout -exists $tabLayoutName`)
+    {
+        deleteUI $tabLayoutName;
+    }
+}
+
+// Description: This procedure refreshes the unified render
+//      globals window when a different scene is opened.
+//
+global proc unifiedRenderGlobalsWindowSceneOpenedCallback()
+{
+    setParent tabForm;
+    string $renderers[] = `renderer -query -namesOfAvailableRenderers`;
+    int $i;
+    // For each renderer, delete its tabs.
+    //
+    for ($i = 0; $i < size($renderers); $i++)
+    {
+        removeRendererTabsFromGlobalsWindow($renderers[$i]);
+    }
+
+    // For each renderer, recreate its tabs.
+    //
+    for ($i = 0; $i < size($renderers); $i++)
+    {
+        addRendererTabsToGlobalsWindow($renderers[$i]);
+    }
+
+	// Delete the master layer tabs
+	//
+	global string $gMasterLayerRendererName;
+	string $tabLayoutName = rendererTabLayoutName($gMasterLayerRendererName);
+    if( `tabLayout -exists $tabLayoutName` )
+    {
+        deleteUI $tabLayoutName;
+    }
+
+	// Recreate the master layer tabs if we are displaying it
+	//
+	if( isDisplayingAllRendererTabs() )
+	{
+		addMasterLayerTabsToGlobalsWindow();
+   	}
+}
+

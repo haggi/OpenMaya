@@ -4,5 +4,7 @@
     <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2014\bin\maya.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>true</LocalDebuggerAttach>
+    <LocalDebuggerEnvironment>PATH=H:\UserDatenHaggi\Documents\coding\oiio\deploy\bin;H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-10.0
+$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
 </Project>

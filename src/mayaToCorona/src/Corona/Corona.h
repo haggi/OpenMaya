@@ -8,7 +8,7 @@
 #include <maya/MFloatVectorArray.h>
 #include "rendering/renderer.h"
 #include "CoronaCore/api/Api.h"
-
+#include "../OSL/oslRenderer.h"
 
 class mtco_MayaScene;
 class mtco_RenderGlobals;
@@ -53,6 +53,8 @@ public:
 	std::vector<mtco_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
 
+	OSL::OSLShadingNetworkRenderer oslRenderer;
+
 	Context context;
 
 	CoronaRenderer();
@@ -76,6 +78,7 @@ public:
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
+	bool isSunLight(mtco_MayaObject *obj);
 	virtual void defineLights();
 
 	virtual void render();

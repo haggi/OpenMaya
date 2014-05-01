@@ -19,6 +19,8 @@ CoronaRenderer::CoronaRenderer()
 	this->context.logger = NULL;
 	this->context.settings = NULL;
 	this->context.isCancelled = false;
+
+	this->oslRenderer.setup();
 }
 
 CoronaRenderer::~CoronaRenderer()

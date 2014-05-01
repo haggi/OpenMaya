@@ -23,7 +23,7 @@ class AECoronaNodeTemplate(BaseTemplate):
     def buildDirLightTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
-        self.addControl("mtco_sun_multiplier", label="Intensity Multiplier")
+        self.addControl("mtco_sun_multiplier", label="Sun Intensity Multiplier")
         self.endLayout()
 
     def buildDisplacementShaderTemplate(self, nodeName):

@@ -1,4 +1,6 @@
 #include "Corona.h"
+#include "CoronaLights.h"
+
 #include <maya/MObjectArray.h>
 
 #include "utilities/logging.h"
@@ -9,6 +11,27 @@
 #include "../mtco_common/mtco_mayaObject.h"
 
 static Logging logger;
+
+bool CoronaRenderer::isSunLight(mtco_MayaObject *obj)
+{
+	// a sun light has a transform connection to the coronaGlobals.sunLightConnection plug
+	MObject coronaGlobals = objectFromName(MString("coronaGlobals"));
+	MObjectArray nodeList;
+	MStatus stat;
+	getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
+	if( nodeList.length() > 0)
+	{
+		MObject sunObj = nodeList[0];
+		if(sunObj.hasFn(MFn::kTransform))
+		{
+			MFnDagNode sunDagNode(sunObj);
+			MObject sunDagObj =	sunDagNode.child(0, &stat);
+			if( sunDagObj == obj->mobject)
+				return true;
+		}
+	}
+	return false;
+}
 
 void CoronaRenderer::defineLights()
 {
@@ -58,4 +81,76 @@ void CoronaRenderer::defineLights()
 			}
 		}
 	}
+
+	for( size_t lightId = 0; lightId < this->mtco_scene->lightList.size();  lightId++)
+	{
+		mtco_MayaObject *obj =  (mtco_MayaObject *)this->mtco_scene->lightList[lightId];
+		if( this->isSunLight(obj))
+			continue;
+		
+		MFnDependencyNode depFn(obj->mobject);
+
+		if( obj->mobject.hasFn(MFn::kPointLight))
+		{
+			MColor col;
+			getColor("color", depFn, col);
+			float intensity = 1.0f;
+			getFloat("intensity", depFn, intensity);
+			int decay = 0;
+			getEnum(MString("decayRate"), depFn, decay);
+			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
+			PointLight *pl = new PointLight;
+			pl->LP = LP;
+			pl->lightColor = Corona::Rgb(col.r, col.g, col.b);
+			pl->lightIntensity = intensity;
+			this->context.scene->addLightShader(pl);
+		}
+		if( obj->mobject.hasFn(MFn::kSpotLight))
+		{
+			MVector lightDir(0, 0, -1);
+			MColor col;
+			getColor("color", depFn, col);
+			float intensity = 1.0f;
+			getFloat("intensity", depFn, intensity);
+			int decay = 0;
+			getEnum(MString("decayRate"), depFn, decay);
+			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			lightDir *= obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			lightDir.normalize();
+
+			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
+			SpotLight *sl = new SpotLight;
+			sl->LP = LP;
+			sl->lightColor = Corona::Rgb(col.r, col.g, col.b);
+			sl->lightIntensity = intensity;
+			sl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
+			sl->angle = 45.0f;
+			getFloat("coneAngle", depFn, sl->angle);
+			getFloat("penumbraAngle", depFn, sl->penumbraAngle);
+			getFloat("dropoff", depFn, sl->dropoff);
+			this->context.scene->addLightShader(sl);
+		}
+		if( obj->mobject.hasFn(MFn::kDirectionalLight))
+		{
+			MVector lightDir(0, 0, -1);
+			MColor col;
+			getColor("color", depFn, col);
+			float intensity = 1.0f;
+			getFloat("intensity", depFn, intensity);
+			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			lightDir *= m;
+			lightDir.normalize();
+
+			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
+			DirectionalLight *dl = new DirectionalLight;
+			dl->LP = LP;
+			dl->lightColor = Corona::Rgb(col.r, col.g, col.b);
+			dl->lightIntensity = intensity;
+			dl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
+			this->context.scene->addLightShader(dl);
+		}
+	}
+
+
 }
