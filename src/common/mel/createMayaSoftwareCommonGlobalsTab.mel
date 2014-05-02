@@ -43,7 +43,6 @@ global proc setParentToCommonTab()
 	string $renderer = isDisplayingAllRendererTabs() ? $gMasterLayerRendererName : `currentRenderer`;
 	string $tabLayout = rendererTabLayoutName($renderer);
 	setParent $tabLayout;
-	print("tablayout " + $tabLayout + "\n");
 	// Now set the parent to the correct column layout
 	setParent commonTabColumn;
 }
@@ -1004,6 +1003,14 @@ proc createCompressorControl(int $item)
 		return;
 	if( $currentRenderer == "Corona" )
 		return;
+	if( $currentRenderer == "Appleseed" )
+		return;
+	if( $currentRenderer == "Thea" )
+		return;
+	if( $currentRenderer == "Fujiyama" )
+		return;
+	if( $currentRenderer == "Indigo" )
+		return;
 		
 	string $cmd = "playblast -codecOptions";
 	if (`about -mac`) {
@@ -1129,6 +1136,18 @@ global proc updateMayaImageFormatControl()
 	if (`currentRenderer` == "Corona")
 		return;
 
+	if (`currentRenderer` == "Thea")
+		return;
+		
+	if (`currentRenderer` == "Appleseed")
+		return;
+
+	if (`currentRenderer` == "Fujiyama")
+		return;
+		
+	if (`currentRenderer` == "Indigo")
+		return;
+		
 	if( $currentRenderer == "mentalRay" )
 		updateMentalRayImageFormatControl();
 	else

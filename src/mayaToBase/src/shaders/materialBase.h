@@ -1,10 +1,6 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-#ifdef HAS_OVERRIDE
-#include "materialBaseOverride.h"
-#endif
-
 // Plugin MaterialBase Shader Class //
 
 

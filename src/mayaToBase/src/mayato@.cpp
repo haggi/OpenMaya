@@ -6,6 +6,8 @@
 #include "mt@_common/mt@_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "mayaSceneFactory.h"
+#include "mt@_common/mt@_renderGlobals.h"
 
 static Logging logger;
 
@@ -38,7 +40,7 @@ MSyntax MayaTo@::newSyntax()
 MStatus MayaTo@::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayato@...");
+	MGlobal::displayInfo("Executing mayaTo@...");
 	logger.setLogLevel(Logging::Debug);
 	
 	MArgDatabase argData(syntax(), args);
@@ -46,16 +48,29 @@ MStatus MayaTo@::doIt( const MArgList& args)
 	int width = -1;
 	int height = -1;
 
+	MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
+
+	if( !mayaScene->good )
+	{
+		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
+		MayaTo::MayaSceneFactory().deleteMaysScene();
+		return MS::kFailure;
+	}
+
 	if ( argData.isFlagSet("-width", &stat))
 	{
 		argData.getFlagArgument("-width", 0, width);
 		logger.debug(MString("width: ") + width);
+		if( width > 0 )
+			mayaScene->renderGlobals->imgWidth = width;
 	}
 
 	if ( argData.isFlagSet("-height", &stat))
 	{
 		argData.getFlagArgument("-height", 0, height);
 		logger.debug(MString("height: ") + height);
+		if( height > 0 )
+			mayaScene->renderGlobals->imgHeight = height;
 	}
 
 	if ( argData.isFlagSet("-stopIpr", &stat))
@@ -70,33 +85,19 @@ MStatus MayaTo@::doIt( const MArgList& args)
 	if ( argData.isFlagSet("-pauseIpr", &stat))
 	{
 		logger.debug(MString("-pauseIpr"));
+		logger.debug(MString("-stopIpr"));
+		EventQueue::Event e;
+		e.type = EventQueue::Event::IPRPAUSE;
+		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	MayaScene::RenderType rtype = MayaScene::NORMAL;
 	if ( argData.isFlagSet("-startIpr", &stat))
 	{
 		logger.debug(MString("-startIpr"));
-		rtype = MayaScene::IPR;
-	}else{
-		logger.debug(MString("normal render"));
+		mayaScene->setRenderType(MayaScene::IPR);
 	}
-
-	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
-	mt@_MayaScene *mayaScene = new mt@_MayaScene(rtype);
 	
-	if( !mayaScene->good )
-	{
-		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}
-
-	if( !mayaScene->parseScene(MayaScene::HIERARCHYPARSE) )
-	{
-		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
-
 	if ( argData.isFlagSet("-camera", &stat))
 	{
 	    MDagPath camera;
@@ -108,25 +109,11 @@ MStatus MayaTo@::doIt( const MArgList& args)
 		mayaScene->setCurrentCamera(camera);
 	}			
 
-	if( height > 0)
-		mayaScene->renderGlobals->imgHeight = height;
-
-	if( width > 0)
-		mayaScene->renderGlobals->imgWidth = width;
-
-	if(!mayaScene->renderScene())
-	{
-		logger.error("Problems have occurred during rendering of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
-
-	if (rtype == MayaScene::IPR)
-	{
-		// maya scene ptr will be deleted as soon as the ipr is done
-	}else{
-		delete mayaScene;
-	}
-
-	MGlobal::displayInfo("mayato@ rendering done.\n");
+	EventQueue::Event e;
+	e.type = EventQueue::Event::INITRENDER;
+	theRenderEventQueue()->push(e);
+	
+	RenderQueueWorker::startRenderQueueWorker();
+	
 	return MStatus::kSuccess;
 }

@@ -41,7 +41,6 @@ public:
 	virtual bool postParseCallback();
 	void makeMayaObjectMObjMap(); // fill with maya objects and dag nodes for later fast access
 	mt@_MayaObject *getMayaObjectFromMap(MObject& mobj);
-	bool parseScene(ParseType ptype = NORMALPARSE);
 	mt@_MayaScene();
 	mt@_MayaScene(RenderType rtype);
 	~mt@_MayaScene();

@@ -29,7 +29,11 @@ class @Renderer(Renderer.MayaToRenderer):
         self.rendererTabUiDict = {}
         self.pluginBasePath = path.path(__file__).parent
 
-        
+    def @CommonGlobalsCreateTab(self):
+        self.OpenMayaCommonGlobalsCreateTab()            
+
+    def @CommonGlobalsUpdateTab(self):
+        self.OpenMayaCommonGlobalsUpdateTab()                    
     
     def getEnumList(self, attr):
         return [(i, v) for i,v in enumerate(attr.getEnums().keys())]

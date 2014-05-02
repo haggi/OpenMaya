@@ -369,19 +369,15 @@ global proc updateMayaImageFormatControl()
         pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
-                
-        #pm.renderer(self.rendererName, edit=True, addGlobalsTab=('Common', "createMayaSoftwareCommonGlobalsTab", "updateMayaSoftwareCommonGlobalsTab"))
-        # self.overwriteUpdateMayaImageFormatControl()
-        # because mentalray is still hardcoded in the maya scripts, I cannot simply use my own commons without replacing some original scripts
-        # so I use the defaults
-        # pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("OpenMayaCommonGlobals"))    
-        
+
+        # In the maya system files we have to hardcode some renderers if we want to use our own CommonGlobals Tab
+        # The modified scripts are located in the module scritps directory. Unfortunatly the scripts directory is loaded
+        # after mayas own scripts directory so the modified scripts with the same name will never be loaded. To fix this
+        # behaviour I place the module script path at the very first position.        
+        scriptDir = path.path(__file__).dirname().parent
+        os.environ['MAYA_SCRIPT_PATH'] = "{0};{1}".format(scriptDir, os.environ['MAYA_SCRIPT_PATH'])
         pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
-        # my own tabs
-        #pm.mel.eval(commonGlobalsMel.modifiedScripts)
-        #pm.mel.eval("global proc updateMayaSoftwareImageFormatControl(){print(\"haggis mayasoftware update image format control.\\n\");}")
-        #pm.mel.eval("global proc updateMayaImageFormatControl(){print(\"haggis update image format control.\\n\");}")
-        #pm.mel.eval("global proc imageMenuMayaSW(){}")
+        pm.mel.eval("source unifiedRenderGlobalsWindow")
         
         pm.evalDeferred(self.addTabs)                
         log.debug("RegisterRenderer done")

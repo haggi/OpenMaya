@@ -1501,11 +1501,23 @@ global proc addOneTabToGlobalsWindow(
 		{
 			eval($createProc);
 		}
-
+		
 		if ($createProc == "vrayCreateVRayCommonGlobalsTab")
 			eval($createProc);
 
         if ($createProc == "CoronaCommonGlobalsCreateTab")
+            eval($createProc);
+
+        if ($createProc == "AppleseedCommonGlobalsCreateTab")
+            eval($createProc);
+
+        if ($createProc == "IndigoCommonGlobalsCreateTab")
+            eval($createProc);
+
+        if ($createProc == "FujiyamaCommonGlobalsCreateTab")
+            eval($createProc);
+
+        if ($createProc == "TheaCommonGlobalsCreateTab")
             eval($createProc);
 
 		// These end off the layouts of the information in the Tab

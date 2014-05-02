@@ -5,6 +5,8 @@ import logging
 
 log = logging
 
+BASE_DIR=path.path("H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToBase")
+
 def replaceStringInFile(fileName, rendererName, shortCut):    
     print "replaceStringInFile", fileName
     fh = open(fileName)
@@ -46,9 +48,9 @@ def createNewProject(rendererName=None, shortCut=None):
         log.error("No shortCut")
         return
     
-    sourceDirBase = path.path("C:/users/haggi/coding/OpenMaya/src/mayaToBase")
+    sourceDirBase = BASE_DIR
     
-    destDirBase = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + rendererName.capitalize())
+    destDirBase = path.path("{destdir}/mayaTo{renderer}".format(destdir=BASE_DIR.parent, renderer=rendererName.capitalize()))
     
     def recursiveFiles(directory, tab = ""):
         files = directory.listdir()
@@ -76,7 +78,7 @@ def createNewProject(rendererName=None, shortCut=None):
     recursiveFiles(sourceDirBase)
     
 if __name__ == "__main__":
-    createNewProject(rendererName="Corona", shortCut="mtco")
+    createNewProject(rendererName="Thea", shortCut="mtth")
         
     
     

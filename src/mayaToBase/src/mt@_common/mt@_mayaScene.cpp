@@ -9,21 +9,19 @@
 static Logging logger;
 
 
-mt@_MayaScene::mt@_MayaScene():MayaScene(MayaScene::NORMAL)
+mt@_MayaScene::mt@_MayaScene():MayaScene()
 {
 	getRenderGlobals();
 	this->mt@_renderer.mt@_scene = this;
 	this->mt@_renderer.mt@_renderGlobals = this->renderGlobals;
-	//this->mt@_renderer.definePreRender();
+	this->needsUserThread = false;
 }
 
-mt@_MayaScene::mt@_MayaScene(MayaScene::RenderType rtype):MayaScene(rtype)
+mt@_MayaScene::mt@_MayaScene():MayaScene()
 {
 	getRenderGlobals();
 	this->mt@_renderer.mt@_scene = this;
 	this->mt@_renderer.mt@_renderGlobals = this->renderGlobals;
-	//this->mt@_renderer.definePreRender();
-	this->renderType = rtype;
 }
 
 mt@_MayaScene::~mt@_MayaScene()
@@ -319,13 +317,6 @@ bool mt@_MayaScene::renderImage()
 
 	this->mt@_renderer.render();
 
-	return true;
-}
-
-bool mt@_MayaScene::parseScene(ParseType ptype)
-{
-	MayaScene::parseScene(ptype);
-	postParseCallback();
 	return true;
 }
 

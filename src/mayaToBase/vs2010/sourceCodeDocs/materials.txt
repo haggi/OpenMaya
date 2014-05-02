@@ -1,4 +1,4 @@
-#coronaSurface
+#surface
 diffuseColor,
 reflectionColor,
 refractionColor,
