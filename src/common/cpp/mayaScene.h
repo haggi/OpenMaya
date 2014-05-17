@@ -67,7 +67,8 @@ public:
 	virtual void updateInteraciveRenderScene(std::vector<MObject> mobjList) = 0;
 	virtual bool translateShaders(int timeStep) = 0; // overwrite this in your definition
 	virtual bool translateShapes(int timeStep) = 0; // overwrite this in your definition
-
+	MString getExportPath(MString ext, MString rendererName);
+	MString getFileName();
 	bool renderScene();
 	virtual bool doPreRenderJobs() = 0;  // overwrite this in your definition
 	bool doFrameJobs(); // overwrite this in your definition

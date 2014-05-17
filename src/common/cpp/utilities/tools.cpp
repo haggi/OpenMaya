@@ -670,6 +670,23 @@ void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MVector& rot, MVector& sc
 	scl.z = scaling[2];
 }
 
+void posRotSclFromMatrix(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scl)
+{
+	MTransformationMatrix tm(matrix);
+	MTransformationMatrix::RotationOrder order = MTransformationMatrix::kXYZ;
+	double rotation[3];
+	double scaling[3];
+	tm.getRotation(rotation, order, MSpace::kWorld);
+	rot.x = rotation[0];
+	rot.y = rotation[1];
+	rot.z = rotation[2];
+	pos = tm.getTranslation(MSpace::kWorld);
+	tm.getScale(scaling, MSpace::kWorld);
+	scl.x = scaling[0];
+	scl.y = scaling[1];
+	scl.z = scaling[2];
+}
+
 MObject getConnectedFileTextureObject(MString& plugName, MFnDependencyNode& depFn)
 {
 	MStatus stat;

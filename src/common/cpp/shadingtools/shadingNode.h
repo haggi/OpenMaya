@@ -17,6 +17,8 @@ struct ShaderAttribute
 	std::string name;
 	std::string type;
 	bool connected;
+	std::string connectedAttrName;
+	std::string connectedNodeName;
 	MObject connectedMObject;
 };
 

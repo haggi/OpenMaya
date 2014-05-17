@@ -1,3 +1,6 @@
+#ifndef @_RENDERER_H
+#define @_RENDERER_H
+
 #include "rendering/renderer.h"
 #include <maya/MObject.h>
 #include <vector>
@@ -32,3 +35,5 @@ public:
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
 };
+
+#endif

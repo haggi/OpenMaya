@@ -9,7 +9,7 @@ log = logging
 START_ID = "automatically created attributes start"
 END_ID = "automatically created attributes end"
 
-START_NODE_ID = 0x0011CF7C
+START_NODE_ID = 0x0011EF57
 
 COMPILER_VERSION = "vs2010"
 baseDestPath = None
@@ -639,6 +639,7 @@ def shaderCreator(renderer, shortCut, mtype):
 if __name__ == "__main__":
     #shaderCreator("Corona", "mtco", "materials")
     #shaderCreator("Indigo", "mtin", "materials")
-    shaderCreator("Indigo", "mtin", "volumes")
+    #shaderCreator("Indigo", "mtin", "volumes")
+    shaderCreator("Thea", "mtth", "materials")
     #START_NODE_ID
     print "ID: --> 0x%08X" % START_NODE_ID

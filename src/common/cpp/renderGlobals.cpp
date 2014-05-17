@@ -154,6 +154,7 @@ void RenderGlobals::defineGlobalConversionMatrix()
 	YtoZ[3][2] = 0;
 	YtoZ[3][3] = 1;	
 
+
 	if ((this->internalAxis == YUp) && (this->rendererAxis == ZUp) )
 	{
 		globalConversionMatrix = YtoZ;

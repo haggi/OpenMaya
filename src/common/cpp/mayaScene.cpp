@@ -14,11 +14,13 @@
 #include <maya/M3dView.h>
 #include <maya/MRenderView.h>
 #include <maya/MVectorArray.h>
+#include <maya/MFileIO.h>
 
 #include "mayaScene.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "utilities/pystring.h"
 #include "threads/renderQueueWorker.h"
 
 static Logging logger;
@@ -35,6 +37,27 @@ void MayaScene::init()
 	this->userThreadUpdateInterval = 50;
 	this->renderType = NORMAL;
 	this->needsUserThread = false;
+}
+
+MString MayaScene::getExportPath(MString ext, MString rendererName)
+{
+	std::string currentFile = MFileIO::currentFile().asChar();
+	std::vector<std::string> parts;
+	pystring::split(currentFile, parts, "/");
+	currentFile = pystring::replace(parts.back(), ".ma", "");
+	currentFile = pystring::replace(currentFile, ".mb", "");
+	MString scenePath = this->renderGlobals->basePath + "/" + rendererName + "/" + currentFile.c_str() + "." + ext;
+	return scenePath;
+}
+
+MString MayaScene::getFileName()
+{
+	std::string currentFile = MFileIO::currentFile().asChar();
+	std::vector<std::string> parts;
+	pystring::split(currentFile, parts, "/");
+	currentFile = pystring::replace(parts.back(), ".ma", "");
+	currentFile = pystring::replace(currentFile, ".mb", "");
+	return MString(currentFile.c_str());
 }
 
 bool MayaScene::canDoIPR()

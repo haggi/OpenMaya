@@ -279,5 +279,14 @@
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
       <Filter>ressources</Filter>
     </None>
+    <None Include="sourceCodeDocs\materials.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
+      <Filter>ressources</Filter>
+    </None>
+    <None Include="sourceCodeDocs\shaderDefinitions.txt">
+      <Filter>ressources</Filter>
+    </None>
   </ItemGroup>
 </Project>

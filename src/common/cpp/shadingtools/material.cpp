@@ -9,6 +9,7 @@
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include "utilities/logging.h"
+#include "utilities/pystring.h"
 #include "shadingTools/shaderDefs.h"
 
 static Logging logger;
@@ -69,6 +70,10 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 						{
 							dest.inputAttributes[inAttrId].connected = true;
 							dest.inputAttributes[inAttrId].connectedMObject = connectedOutPlugs[outPlugId].node();
+							std::vector<std::string> parts;
+							pystring::split(connectedOutPlugs[outPlugId].name().asChar(), parts, ".");
+							dest.inputAttributes[inAttrId].connectedAttrName = parts[1];
+							dest.inputAttributes[inAttrId].connectedNodeName = parts[0];
 							connCount++;
 						}
 					}
