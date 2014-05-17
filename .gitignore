@@ -27,3 +27,4 @@ src/mayaToCorona/docs/betaTesters.txt
 src/mayaToCorona/vs2010/x64/
 *.igmesh
 src/mayaToIndigo/vs2010/x64/
+src/mayaToThea/vs2010/x64/
