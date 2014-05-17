@@ -6,7 +6,6 @@
 
 static Logging logger;
 
-
 void CoronaRenderer::framebufferCallback()
 {
 	EventQueue::Event e;

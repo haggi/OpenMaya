@@ -51,8 +51,8 @@
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy\Debug\lib\*.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Half_d.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Iex-2_1_d.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Imath-2_1_d.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\IlmThread-2_1_d.lib;H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib\OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy\lib\jpeg.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\exr\static\release\lib\IlmImf-2_1_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\exr\lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy\Debug\lib\*.lib;Half_d.lib;Iex-2_1_d.lib;Imath-2_1_d.lib;IlmThread-2_1_d.lib;H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib\OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy\lib\jpeg.lib;IlmImf-2_1_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(Configuration)\$(ProjectName).mll ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
@@ -73,7 +73,7 @@
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <AdditionalLibraryDirectories>H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy\MinSizeRelease\lib\*.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Half.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Iex-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Imath-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\IlmThread-2_1.lib;H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib\OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy\lib\jpeg.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\exr\static\release\lib\IlmImf-2_1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy\MinSizeRelease\lib\*.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Half.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Iex-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Imath-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\IlmThread-2_1.lib;H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib\OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy\lib\jpeg.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\exr\\lib\IlmImf-2_1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -177,6 +177,11 @@
   <ItemGroup>
     <None Include="..\mtco_devmodule\ressources\releaseNotes.txt" />
     <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt" />
+    <None Include="..\mtco_devmodule\shaders\constant.osl" />
+    <None Include="..\mtco_devmodule\shaders\CoronaOSL.osl" />
+    <None Include="..\mtco_devmodule\shaders\file.osl" />
+    <None Include="..\mtco_devmodule\shaders\place2dTexture.osl" />
+    <None Include="..\mtco_devmodule\shaders\test.osl" />
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
     <None Include="sourceCodeDocs\materials.txt" />

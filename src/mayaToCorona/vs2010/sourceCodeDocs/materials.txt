@@ -24,3 +24,7 @@ emissionSharpnessFakePoint, vector, Sharpness Fake Point, 0:0:0
 emissionDisableSampling, bool, Disable Sampling, false
 
 
+#OSLNode
+color, color, Color, 1:1:1
+script, string, OSL Script, ""
+outColor, color, Out Color, 1:1:1

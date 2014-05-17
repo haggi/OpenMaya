@@ -1,0 +1,9 @@
+shader place2dTexture ( float repeatU = 1.0, 
+					    float repeatV = 1.0, 
+						output vector outUV = 0)
+{
+	outUV[0] = u * repeatU;
+	outUV[1] = v * repeatV;
+
+	//printf("place outU %f outV %f - u %f v %f\n", outUV[0], outUV[1], u, v);
+}

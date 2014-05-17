@@ -11,8 +11,9 @@
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFloatVector.h>
 
-MTypeId OSLNode::id( 0x00000 );
+MTypeId OSLNode::id( 0x0011EF57 );
 
+MObject OSLNode::color;
 MObject OSLNode::outColor;
 MObject OSLNode::script;
 
@@ -71,6 +72,10 @@ MStatus OSLNode::initialize()
 
 	MStatus status;
 
+	color = nAttr.createColor("color", "color");
+	MAKE_INPUT(nAttr);
+	CHECK_MSTATUS(addAttribute( color ));
+
 	script = tAttr.create("script", "script", MFnNumericData::kString);
 	MAKE_INPUT(tAttr);
 	CHECK_MSTATUS(addAttribute( script ));
@@ -82,6 +87,7 @@ MStatus OSLNode::initialize()
 //---------------------------- automatically created attributes start ------------------------------------
 //---------------------------- automatically created attributes end ------------------------------------
 
+	attributeAffects(color, outColor);
 	attributeAffects(script, outColor);
 
     return MS::kSuccess;

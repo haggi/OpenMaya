@@ -64,20 +64,48 @@ public:
 	ShaderGroupRef shadergroup;
 	ShaderGlobals shaderglobals;
 	ustring outputVar;
+	std::string shaderSearchPath;
+
+	OSL::PerThreadInfo *thread_info[256];
+	OSL::ShadingContext *ctx[256];
 
 	OSLShadingNetworkRenderer()
 	{
 		shadingsys = NULL;
 		this->setResolution(256, 256);
 		outputVar = "Cout";
+		for( int i = 0; i < 256; i++)
+		{
+			thread_info[i] = NULL;
+			ctx[i] = NULL;
+		}
 	    //shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &errhandler);
 	};
 
-	~OSLShadingNetworkRenderer(){};
+	~OSLShadingNetworkRenderer()
+	{
+		for( int i = 0; i < 256; i++)
+		{
+			if( ctx[i] != NULL )
+			{
+				shadingsys->release_context(ctx[i]);
+			}
+
+			if( thread_info[i] != NULL )
+			{
+				this->shadingsys->destroy_thread_info(thread_info[i]);
+				thread_info[i] = NULL;
+			}
+		}
+		OSL::ShadingSystem::destroy(this->shadingsys);
+	};
 
 	void setResolution(int x, int y);
 	void setup();
 	void createDummyShader();
+	void setShaderSearchPath(std::string path);
+	void addShaderSearchPath(std::string path);
+
 };
 
 

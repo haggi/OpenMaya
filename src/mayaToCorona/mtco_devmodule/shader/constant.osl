@@ -1,4 +1,0 @@
-shader constant (output color Cout = 0)
-{
-	Cout = color(1.0,0.0,0.0);
-}

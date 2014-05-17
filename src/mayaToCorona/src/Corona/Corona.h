@@ -9,6 +9,8 @@
 #include "rendering/renderer.h"
 #include "CoronaCore/api/Api.h"
 #include "../OSL/oslRenderer.h"
+#include "shadingtools/shadingUtils.h"
+#include "shadingtools/material.h"
 
 class mtco_MayaScene;
 class mtco_RenderGlobals;
@@ -64,6 +66,7 @@ public:
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineSettings();
+	Corona::IGeometryGroup *defineStdPlane();
 	void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
@@ -71,6 +74,10 @@ public:
 	void updateMesh(mtco_MayaObject *obj);
 	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	void defineOSLMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	void createCoronaShadingNode(ShadingNode& snode);
+	bool isOSLConnected(MString attributeName, MFnDependencyNode& depFn); //temporary solution for testing
+	void defineOSLShaders(Corona::IInstance* instance, mtco_MayaObject *obj);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
 	void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);

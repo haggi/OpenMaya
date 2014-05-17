@@ -23,6 +23,23 @@
 
 static Logging logger;
 
+Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
+{
+	Corona::IGeometryGroup* geom = this->context.scene->addGeomGroup();
+    
+    geom->getVertices().push(Corona::Pos(-1, 0, -1));
+    geom->getVertices().push(Corona::Pos(-1, 0,  1));
+    geom->getVertices().push(Corona::Pos( 1, 0,  1));
+    geom->getVertices().push(Corona::Pos( 1, 0, -1));
+
+
+    geom->getNormals().push(Corona::Dir(0, 1, 0));
+    geom->getMapCoords().push(Corona::Pos(0, 0, 0));
+    geom->getMapCoordIndices().push(0);
+	
+	return geom;
+}
+
 void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject)
 {
 	MStatus stat;
@@ -358,7 +375,10 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		this->defineMaterial(obj->instance, obj);
+		if( obj->shortName != "oslObj")
+			this->defineMaterial(obj->instance, obj);
+		else
+			this->defineOSLMaterial(obj->instance, obj);
 	}
 
 
@@ -378,7 +398,10 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		this->defineMaterial(obj->instance, obj);
+		if( obj->shortName != "oslObj")
+			this->defineMaterial(obj->instance, obj);
+		else
+			this->defineOSLMaterial(obj->instance, obj);
 	}
 
     //// first instance with two materials

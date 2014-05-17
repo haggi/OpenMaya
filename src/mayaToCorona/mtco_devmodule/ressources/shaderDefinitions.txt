@@ -7,11 +7,19 @@ shader_end
 
 # supported maya textures
 shader_start:file
+	inatt:fileTextureName:string
+	inatt:uvCoord:float2
 	outatt:outColor:color
 shader_end
 
 shader_start:displacementShader
 	outatt:displacement:float
+shader_end
+
+shader_start:place2dTexture
+	inatt:repeatU:float
+	inatt:repeatV:float
+	outatt:outUV:float2
 shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
@@ -42,5 +50,10 @@ shader_start:CoronaSurface
 	outatt:outColor:color
 shader_end
 
+shader_start:CoronaOSL
+	inatt:color:color
+	inatt:string:string
+	outatt:outColor:color
+shader_end
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

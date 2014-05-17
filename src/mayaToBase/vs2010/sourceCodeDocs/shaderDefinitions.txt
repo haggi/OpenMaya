@@ -1,0 +1,18 @@
+# supported maya shaders
+shader_start:lambert
+	inatt:color:color
+	inatt:transparency:color
+	outatt:outColor:color
+shader_end
+
+# supported maya textures
+shader_start:file
+	outatt:outColor:color
+shader_end
+
+shader_start:displacementShader
+	outatt:displacement:float
+shader_end
+
+#--------------------------- automatically created attributes start ------------------------------------
+#--------------------------- automatically created attributes end ------------------------------------

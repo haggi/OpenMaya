@@ -48,6 +48,9 @@
     <Filter Include="Source Files\OSL">
       <UniqueIdentifier>{267da3f8-bcc1-4f30-99cc-870a056014c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\OSLShaders">
+      <UniqueIdentifier>{9034adb2-f947-46c8-87d6-bfd0e3509064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -350,6 +353,21 @@
     </None>
     <None Include="sourceCodeDocs\todo.txt">
       <Filter>ressources</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\shaders\constant.osl">
+      <Filter>Source Files\OSLShaders</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\shaders\file.osl">
+      <Filter>Source Files\OSLShaders</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\shaders\place2dTexture.osl">
+      <Filter>Source Files\OSLShaders</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\shaders\test.osl">
+      <Filter>Source Files\OSLShaders</Filter>
+    </None>
+    <None Include="..\mtco_devmodule\shaders\CoronaOSL.osl">
+      <Filter>Source Files\OSLShaders</Filter>
     </None>
   </ItemGroup>
 </Project>

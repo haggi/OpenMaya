@@ -92,12 +92,6 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_COLORMAP_HIGHLIGHT_COMPRESSION, this->mtco_renderGlobals->colorMapping_highlightCompression); 
 	if(  this->mtco_renderGlobals->colorMapping_useContrast)
 		context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, this->mtco_renderGlobals->colorMapping_contrast); 
-	
-    // add a custom string to the render stamp -- only valid for standalone?
-    Corona::String renderStamp = context.settings->get(Corona::PARAM_RENDERSTAMP);
-    renderStamp = "Corona API demo | " + renderStamp;
-    context.settings->set(Corona::PARAM_RENDERSTAMP, renderStamp);
-
 }
 
 void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 

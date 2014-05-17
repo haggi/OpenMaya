@@ -19,8 +19,6 @@ CoronaRenderer::CoronaRenderer()
 	this->context.logger = NULL;
 	this->context.settings = NULL;
 	this->context.isCancelled = false;
-
-	this->oslRenderer.setup();
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -208,6 +206,11 @@ void CoronaRenderer::createScene()
 
 void CoronaRenderer::render()
 {
+
+	std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
+	logger.debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
+	this->oslRenderer.setShaderSearchPath(oslShaderPath);
+	this->oslRenderer.setup();
 
 	//doit();
 	//return;

@@ -136,7 +136,7 @@ public:
 
             /// \brief Same as evalColor, only scalar value is returned
             virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
-                outAlpha = 1.f;
+                outAlpha = 0.f;
                 return shader.eval(context).grayValue();
             }
 

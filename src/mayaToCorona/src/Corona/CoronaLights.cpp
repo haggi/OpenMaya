@@ -85,6 +85,9 @@ void CoronaRenderer::defineLights()
 	for( size_t lightId = 0; lightId < this->mtco_scene->lightList.size();  lightId++)
 	{
 		mtco_MayaObject *obj =  (mtco_MayaObject *)this->mtco_scene->lightList[lightId];
+		if(!obj->visible)
+			continue;
+
 		if( this->isSunLight(obj))
 			continue;
 		
@@ -102,8 +105,10 @@ void CoronaRenderer::defineLights()
 			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
 			PointLight *pl = new PointLight;
 			pl->LP = LP;
+			pl->distFactor = 1.0/this->mtco_renderGlobals->scaleFactor;
 			pl->lightColor = Corona::Rgb(col.r, col.g, col.b);
 			pl->lightIntensity = intensity;
+			getEnum(MString("decayRate"), depFn, pl->decayType);
 			this->context.scene->addLightShader(pl);
 		}
 		if( obj->mobject.hasFn(MFn::kSpotLight))
@@ -113,8 +118,6 @@ void CoronaRenderer::defineLights()
 			getColor("color", depFn, col);
 			float intensity = 1.0f;
 			getFloat("intensity", depFn, intensity);
-			int decay = 0;
-			getEnum(MString("decayRate"), depFn, decay);
 			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			lightDir *= obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			lightDir.normalize();
@@ -126,6 +129,8 @@ void CoronaRenderer::defineLights()
 			sl->lightIntensity = intensity;
 			sl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
 			sl->angle = 45.0f;
+			sl->distFactor = 1.0/this->mtco_renderGlobals->scaleFactor;
+			getEnum(MString("decayRate"), depFn, sl->decayType);
 			getFloat("coneAngle", depFn, sl->angle);
 			getFloat("penumbraAngle", depFn, sl->penumbraAngle);
 			getFloat("dropoff", depFn, sl->dropoff);
@@ -149,6 +154,17 @@ void CoronaRenderer::defineLights()
 			dl->lightIntensity = intensity;
 			dl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
 			this->context.scene->addLightShader(dl);
+		}
+		if( obj->mobject.hasFn(MFn::kAreaLight))
+		{
+			logger.warning(MString("Area light: ") + obj->shortName + " not yet supported.");
+			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			obj->geom = defineStdPlane();
+			Corona::AnimatedAffineTm atm;
+			this->setAnimatedTransformationMatrix(atm, obj);
+			obj->instance = obj->geom->addInstance(atm, NULL, NULL);
+			//this->defineMaterial(obj->instance, obj);
+
 		}
 	}
 

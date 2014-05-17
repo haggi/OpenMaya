@@ -185,6 +185,19 @@ SimpleRenderer::has_userdata (ustring name, TypeDesc type, void *renderstate)
     return false;
 }
 
+void OSLShadingNetworkRenderer::setShaderSearchPath(std::string path)
+{
+	this->shaderSearchPath = path;
+}
+
+void OSLShadingNetworkRenderer::addShaderSearchPath(std::string path)
+{
+	if( this->shaderSearchPath.size() > 0)
+		this->shaderSearchPath = this->shaderSearchPath + ";" + path;
+	else
+		this->shaderSearchPath = path;
+}
+
 void OSLShadingNetworkRenderer::setResolution(int x, int y)
 {
 	this->resX = x;
@@ -217,10 +230,20 @@ void OSLShadingNetworkRenderer::setup()
 {
 	this->shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &this->errorHandler);
 	this->shadingsys->attribute("lockgeom", 1);
-	this->createDummyShader();
+	this->shadingsys->attribute ("searchpath:shader", this->shaderSearchPath);
+	//this->createDummyShader();
 	const char *n = "Cout";
 	shadingsys->attribute ("renderer_outputs", TypeDesc(TypeDesc::STRING,1),&n);
 	//this->shadingsys->attribute ("renderer_outputs", TypeDesc::STRING,"Cout");
+
+	//for( int i = 0; i < 32; i++)
+	//{
+		//this->coronaRenderer->oslRenderer.thread_info[threadId] = thread_info = this->shadingsys->create_thread_info();
+		//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
+		//OSL::ShadingContext *context = this->shadingsys->get_context();
+		//this->ctx[i] = context;
+	//}
+
 }
 
 void OSLShadingNetworkRenderer::createDummyShader()

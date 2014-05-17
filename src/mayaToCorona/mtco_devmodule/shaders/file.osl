@@ -1,0 +1,18 @@
+shader file (vector uvCoord = 0, 
+			 string fileTextureName = "",
+			 output color outColor = 0)
+{
+	float s = 0.0;
+	float t = 0.0;
+	if( isconnected(uvCoord))
+	{
+		s = uvCoord[0];
+		t = uvCoord[1];
+	}else{
+		s = u;
+		t = v;
+	}
+	color C = texture(fileTextureName, s, t, "wrap", "periodic");
+	
+	outColor = C;
+}

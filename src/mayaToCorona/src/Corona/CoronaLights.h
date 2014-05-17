@@ -11,6 +11,7 @@ public:
 	Corona::Rgb lightColor;
 	float	lightIntensity;
 	int		decayType;
+	float	distFactor;
 
 	PointLight()
 	{
@@ -18,6 +19,7 @@ public:
 		lightColor = Corona::Rgb(1,1,1);
 		lightIntensity = 1.0f;
 		decayType = 0;// no decay
+		distFactor = 1.0f;
 	}
 
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const
@@ -27,6 +29,7 @@ public:
 		const Corona::Pos P = context.getPosition();
         float distance;
         const Corona::Dir toLight = (LP - P).getNormalized(distance);
+		distance *= distFactor;
 		transport = context.shadowTransmission(LP, Corona::RAY_NORMAL);
 		float dummy;
 		float decay = 1.0;
@@ -54,6 +57,7 @@ public:
 	float	angle;
 	float	penumbraAngle;
 	float	dropoff;
+	float	distFactor;
 
 	SpotLight()
 	{
@@ -64,6 +68,7 @@ public:
 		angle = 45.0f;
 		penumbraAngle = 0.0f;
 		dropoff = 0.0f;
+		distFactor = 1.0f;
 	}
 
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const
@@ -76,6 +81,7 @@ public:
 		const Corona::Pos P = context.getPosition();
         float distance;
         const Corona::Dir toLight = (LP - P).getNormalized(distance);
+		distance *= distFactor;
 		const float cosAngle = acos(Corona::Utils::max(0.f, -dot(toLight, LD)));
 		float dummy;
 		transport = context.shadowTransmission(LP, Corona::RAY_NORMAL);

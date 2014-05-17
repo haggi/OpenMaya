@@ -23,6 +23,7 @@ class OSLNode :public MPxNode
 
     private:
 
+	static MObject  color;
 	static MObject  script;
 	static MObject  outColor;
 

@@ -24,8 +24,8 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Pos pos = context.getPosition();
     sg.P = OSL::Vec3 (pos.x(), pos.y(), pos.z());
 
-	sg.u = uvw.x() * 5;
-	sg.v = uvw.y() * 5;
+	sg.u = uvw.x();
+	sg.v = uvw.y();
 
     // Assume that position P is simply (u,v,1), that makes the patch lie
     // on [0,1] at z=1.
@@ -48,7 +48,23 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 
 Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
 {
-	OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context();
+	int threadId = context.getThreadId();
+	OSL::PerThreadInfo *thread_info = NULL;
+	if( this->coronaRenderer->oslRenderer.thread_info[threadId] == NULL)
+	{
+		this->coronaRenderer->oslRenderer.thread_info[threadId] = this->coronaRenderer->oslRenderer.shadingsys->create_thread_info();
+	}
+	thread_info = this->coronaRenderer->oslRenderer.thread_info[threadId];
+	OSL::ShadingContext *ctx = NULL;
+	if( this->coronaRenderer->oslRenderer.ctx[threadId] == NULL)
+	{
+		this->coronaRenderer->oslRenderer.ctx[threadId] = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
+	}
+	ctx = this->coronaRenderer->oslRenderer.ctx[threadId];
+
+	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
+	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context();
+	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.ctx[threadId];
 
 	OSL::Matrix44 Mshad;
 	OSL::Matrix44 Mobj;
@@ -57,7 +73,7 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 
 	float rgb[3] = {0,0,0};
 
-	if(this->coronaRenderer->oslRenderer.shadingsys->execute (*ctx, *this->coronaRenderer->oslRenderer.shadergroup, sg))
+	if(this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
 	{
 		OSL::TypeDesc t;
 		const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol (*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
@@ -79,7 +95,7 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 		}
 	}
 
-	this->coronaRenderer->oslRenderer.shadingsys->release_context (ctx);
+	//this->coronaRenderer->oslRenderer.shadingsys->release_context(ctx);
 
     outAlpha = 1.f;
 	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
@@ -103,3 +119,7 @@ void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output)
         STOP; //currently not supported
 }
 
+OSLMap::~OSLMap()
+{
+	this->shaderGroup.reset();
+}

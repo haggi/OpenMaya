@@ -7,13 +7,18 @@
 #include "utilities/tools.h"
 
 #include "shaders/CoronaSurfaceMaterial.h"
+#include "shaders/coronaOSLNode.h"
 
 static const MString CoronaSurfacesRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaSurfacesDrawDBClassification("drawdb/shader/surface/CoronaSurface");
 static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
 
+static const MString CoronaOSLRegistrantId("CoronaSurfacePlugin");
+static const MString CoronaOSLDrawDBClassification("drawdb/shader/surface/CoronaOSL");
+static const MString CoronaOSLFullClassification("corona/utility:shader/utility:" + CoronaOSLDrawDBClassification);
+
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.24"
+#define VERSION "0.25"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -27,6 +32,7 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId,CoronaSurfaceOverride::creator));
 #endif
 	CHECK_MSTATUS( plugin.registerNode( "CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification ));
+	CHECK_MSTATUS( plugin.registerNode( "CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification ));
 
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToCorona::creator, MayaToCorona::newSyntax );
@@ -76,6 +82,7 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId));
 #endif
 	CHECK_MSTATUS( plugin.deregisterNode( CoronaSurface::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( OSLNode::id ) );
 
 	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
