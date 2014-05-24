@@ -438,6 +438,75 @@ bool mtth_RenderGlobals::getMtTheaGlobals()
 		if(!getColor(MString("aoHighColor"), TheaGlobals, this->aoHighColor))
 			throw("problem reading theaGlobals.aoHighColor");
 
+		if(!getEnum(MString("illumination"), TheaGlobals, this->illumination))
+			throw("problem reading theaGlobals.illumination");
+
+		if(!getEnum(MString("sunDirectionType"), TheaGlobals, this->sunDirectionType))
+			throw("problem reading theaGlobals.sunDirectionType");
+
+		if(!getFloat(MString("turbidity"), TheaGlobals, this->turbidity))
+			throw("problem reading theaGlobals.turbidity");
+
+		if(!getFloat(MString("ozone"), TheaGlobals, this->ozone))
+			throw("problem reading theaGlobals.ozone");
+
+		if(!getFloat(MString("waterVapor"), TheaGlobals, this->waterVapor))
+			throw("problem reading theaGlobals.waterVapor");
+
+		if(!getFloat(MString("turbidityCoefficient"), TheaGlobals, this->turbidityCoefficient))
+			throw("problem reading theaGlobals.turbidityCoefficient");
+
+		if(!getFloat(MString("wavelengthExponent"), TheaGlobals, this->wavelengthExponent))
+			throw("problem reading theaGlobals.wavelengthExponent");
+
+		if(!getFloat(MString("albedo"), TheaGlobals, this->albedo))
+			throw("problem reading theaGlobals.albedo");
+
+		if(!getFloat(MString("latitude"), TheaGlobals, this->latitude))
+			throw("problem reading theaGlobals.latitude");
+
+		if(!getFloat(MString("longitude"), TheaGlobals, this->longitude))
+			throw("problem reading theaGlobals.longitude");
+
+		if(!getInt(MString("timezone"), TheaGlobals, this->timezone))
+			throw("problem reading theaGlobals.timezone");
+
+		if(!getString(MString("date"), TheaGlobals, this->date))
+			throw("problem reading theaGlobals.date");
+
+		if(!getString(MString("localtime"), TheaGlobals, this->localtime))
+			throw("problem reading theaGlobals.localtime");
+
+		if(!getString(MString("location"), TheaGlobals, this->location))
+			throw("problem reading theaGlobals.location");
+
+		if(!getFloat(MString("ior"), TheaGlobals, this->ior))
+			throw("problem reading theaGlobals.ior");
+
+		if(!getFloat(MString("sunPolarAngle"), TheaGlobals, this->sunPolarAngle))
+			throw("problem reading theaGlobals.sunPolarAngle");
+
+		if(!getFloat(MString("sunAzimuth"), TheaGlobals, this->sunAzimuth))
+			throw("problem reading theaGlobals.sunAzimuth");
+
+		if(!getVector(MString("sunDirection"), TheaGlobals, this->sunDirection))
+			throw("problem reading theaGlobals.sunDirection");
+
+		if(!getColor(MString("backgroundColor"), TheaGlobals, this->backgroundColor))
+			throw("problem reading theaGlobals.backgroundColor");
+
+		if(!getColor(MString("illuminationMap"), TheaGlobals, this->illuminationMap))
+			throw("problem reading theaGlobals.illuminationMap");
+
+		if(!getColor(MString("backgroundMap"), TheaGlobals, this->backgroundMap))
+			throw("problem reading theaGlobals.backgroundMap");
+
+		if(!getColor(MString("reflectionMap"), TheaGlobals, this->reflectionMap))
+			throw("problem reading theaGlobals.reflectionMap");
+
+		if(!getColor(MString("RefractionMap"), TheaGlobals, this->RefractionMap))
+			throw("problem reading theaGlobals.RefractionMap");
+
 //	------------- automatically created attributes end ----------- // 
 		
 		if(!getInt(MString("filtertype"), TheaGlobals, this->filterType))

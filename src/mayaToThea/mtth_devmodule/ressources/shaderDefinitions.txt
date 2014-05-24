@@ -94,6 +94,7 @@ shader_end
 
 shader_start:TheaMaterial
 	inatt:globalEmitter:bool
+	inatt:bsdf:message
 	inatt:emitterAccuracy:float
 	inatt:emitterMinRays:int
 	inatt:causticEmitter:bool

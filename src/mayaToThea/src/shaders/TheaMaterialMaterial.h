@@ -40,6 +40,7 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject globalEmitter;
+	static    MObject bsdf;
 	static    MObject emitterAccuracy;
 	static    MObject emitterMinRays;
 	static    MObject causticEmitter;

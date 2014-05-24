@@ -590,7 +590,7 @@ entry = {}
 entry['name'] = 'seed'
 entry['type'] = 'int'
 entry['displayName'] = 'Seed'
-entry['default'] = 'None'
+entry['default'] = '0'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'rayTraceReflections'
@@ -736,4 +736,149 @@ entry['name'] = 'aoHighColor'
 entry['type'] = 'color'
 entry['displayName'] = 'AoHighColor'
 entry['default'] = '1:1:1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'illumination'
+entry['type'] = 'enum'
+entry['displayName'] = 'Illumination'
+entry['default'] = '0'
+entry['addInfo'] = 'NoIllumination:DomeIllumination:IBLIllumination:PhysicalSkyIllumination'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sunDirectionType'
+entry['type'] = 'enum'
+entry['displayName'] = 'Sun Direction Type'
+entry['default'] = '0'
+entry['addInfo'] = 'DirLight:Time/Date:Azimuth/Elevation'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'turbidity'
+entry['type'] = 'float'
+entry['displayName'] = 'Turbidity'
+entry['default'] = '2.5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'ozone'
+entry['type'] = 'float'
+entry['displayName'] = 'Ozone'
+entry['default'] = '0.35'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'waterVapor'
+entry['type'] = 'float'
+entry['displayName'] = 'Water Vapour'
+entry['default'] = '2.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'turbidityCoefficient'
+entry['type'] = 'float'
+entry['displayName'] = 'Turbidity Coeff'
+entry['default'] = '0.046'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'wavelengthExponent'
+entry['type'] = 'float'
+entry['displayName'] = 'Wavelength Exponent'
+entry['default'] = '1.3'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'albedo'
+entry['type'] = 'float'
+entry['displayName'] = 'Albedo'
+entry['default'] = '0.5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'latitude'
+entry['type'] = 'float'
+entry['displayName'] = 'Latitude'
+entry['default'] = '0.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'longitude'
+entry['type'] = 'float'
+entry['displayName'] = 'Longitude'
+entry['default'] = '0.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'timezone'
+entry['type'] = 'int'
+entry['displayName'] = 'Timezone'
+entry['default'] = '0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'date'
+entry['type'] = 'string'
+entry['displayName'] = 'Date'
+entry['default'] = '"1/6/2014"'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'localtime'
+entry['type'] = 'string'
+entry['displayName'] = 'Localtime'
+entry['default'] = '"12:00:00"'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'location'
+entry['type'] = 'string'
+entry['displayName'] = 'Location'
+entry['default'] = '""'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'ior'
+entry['type'] = 'float'
+entry['displayName'] = 'IOR'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sunPolarAngle'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Polar Angle'
+entry['default'] = '-1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sunAzimuth'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Azimuth'
+entry['default'] = '-1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sunDirection'
+entry['type'] = 'vector'
+entry['displayName'] = 'Sun Direction'
+entry['default'] = '0:0:0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'backgroundColor'
+entry['type'] = 'color'
+entry['displayName'] = 'BackgroundColor'
+entry['default'] = '.6:.7:1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'illuminationMap'
+entry['type'] = 'color'
+entry['displayName'] = 'Illumination Map'
+entry['default'] = '0:0:0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'backgroundMap'
+entry['type'] = 'color'
+entry['displayName'] = 'Background Map'
+entry['default'] = '0:0:0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'reflectionMap'
+entry['type'] = 'color'
+entry['displayName'] = 'Reflection Map'
+entry['default'] = '0:0:0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'RefractionMap'
+entry['type'] = 'color'
+entry['displayName'] = 'Refraction Map'
+entry['default'] = '0:0:0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'medium'
+entry['type'] = 'message'
+entry['displayName'] = 'Medium'
 tab['entries'].append(entry)

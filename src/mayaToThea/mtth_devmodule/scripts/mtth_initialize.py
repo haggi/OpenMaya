@@ -42,7 +42,6 @@ class TheaRenderer(Renderer.MayaToRenderer):
 
     def updateEnvironment(self, dummy=None):
         envDict = self.rendererTabUiDict['environment']
-        envType = self.renderGlobalsNode.environmentType.get()
         #Constant
             
     def TheaRendererCreateTab(self):
@@ -198,14 +197,99 @@ class TheaRenderer(Renderer.MayaToRenderer):
 
     def TheaRendererUpdateTab(self, dummy = None):
         self.createGlobalsNode()
-        self.updateEnvironment()
         log.debug("TheaRendererUpdateTab()")
-        if self.renderGlobalsNode.adaptiveSampling.get():
-            self.rendererTabUiDict['minSamples'].setEnable(True)
-            self.rendererTabUiDict['maxError'].setEnable(True)
-        else:
-            self.rendererTabUiDict['minSamples'].setEnable(False)
-            self.rendererTabUiDict['maxError'].setEnable(False)
+
+
+    def TheaEnvironmentCreateTab(self):
+        log.debug("TheaEnvironmentCreateTab()")
+        self.createGlobalsNode()
+        parentForm = pm.setParent(query=True)
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
+        scLo = self.rendererName + "EnvScrollLayout"
+
+        if self.rendererTabUiDict.has_key('environment'):
+            self.rendererTabUiDict.pop('environment')        
+        uiDict = {}
+        self.rendererTabUiDict['environment'] = uiDict
+        cb = self.TheaEnvironmentUpdateTab
+        with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
+                with pm.frameLayout(label="Environment Lighting", collapsable=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'illumination', uiType = 'enum', displayName = 'Illumination', default='0', data='NoIllumination:DomeIllumination:IBLIllumination:PhysicalSkyIllumination', uiDict=uiDict, callback=cb)
+                        self.addRenderGlobalsUIElement(attName='backgroundColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                    
+                with pm.frameLayout(label="Physical Sky", collapsable=False) as uiDict['physSkyFrame']:
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'turbidity', uiType = 'float', displayName = 'Turbidity', default='2.5', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'ozone', uiType = 'float', displayName = 'Ozone', default='0.35', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'waterVapor', uiType = 'float', displayName = 'Water Vapour', default='2.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'turbidityCoefficient', uiType = 'float', displayName = 'Turbidity Coeff', default='0.046', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'wavelengthExponent', uiType = 'float', displayName = 'Wavelength Exponent', default='1.3', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'albedo', uiType = 'float', displayName = 'Albedo', default='0.5', uiDict=uiDict)
+
+                with pm.frameLayout(label="Physical Sun", collapsable=False) as uiDict['physSunFrame']: 
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'sunPolarAngle', uiType = 'float', displayName = 'Sun Polar Angle', default='-1.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'sunAzimuth', uiType = 'float', displayName = 'Sun Azimuth', default='-1.0', uiDict=uiDict)
+                        #self.addRenderGlobalsUIElement(attName = 'sunDirection', uiType = 'vector', displayName = 'Sun Direction', default='0:0:0', uiDict=uiDict)
+
+                with pm.frameLayout(label="Time Zone", collapsable=False) as uiDict['timeZoneFrame']:              
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'latitude', uiType = 'float', displayName = 'Latitude', default='0.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'longitude', uiType = 'float', displayName = 'Longitude', default='0.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'timezone', uiType = 'int', displayName = 'Timezone', default='0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'date', uiType = 'string', displayName = 'Date', default='"1/6/2014"', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'localtime', uiType = 'string', displayName = 'Localtime', default='"12:00:00"', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'ior', uiType = 'float', displayName = 'IOR', default='1.0', uiDict=uiDict)
+                
+                with pm.frameLayout(label="IBL", collapsable=False) as uiDict['iblFrame']:                   
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'illuminationMap', uiType = 'color', displayName = 'Illumination Map', default='0:0:0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'backgroundMap', uiType = 'color', displayName = 'Background Map', default='0:0:0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'reflectionMap', uiType = 'color', displayName = 'Reflection Map', default='0:0:0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'RefractionMap', uiType = 'color', displayName = 'Refraction Map', default='0:0:0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'medium', uiType = 'message', displayName = 'Medium', default='', uiDict=uiDict)
+
+#                     self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict)
+#                     buttonLabel = "Create Sun"
+#                     suns = pm.ls("CoronaSun")
+#                     if len(suns) > 0:
+#                         buttonLabel = "Delete Sun"
+#                     uiDict['sunButton'] = pm.button(label=buttonLabel, command=self.editSun)
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+
+    def TheaEnvironmentUpdateTab(self):
+        log.debug("TheaEnvironmentUpdateTab()")
+        self.createGlobalsNode()
+        uiDict = self.rendererTabUiDict['environment']
+        envType = self.renderGlobalsNode.illumination.get()
+        uiDict['backgroundColor'].setEnable(False)
+        
+        uiDict['physSkyFrame'].setEnable(False)
+        uiDict['physSunFrame'].setEnable(False)
+        uiDict['timeZoneFrame'].setEnable(False)
+        uiDict['iblFrame'].setEnable(False)
+        
+        if envType == 1: #dome light
+            uiDict['backgroundColor'].setEnable(True)
+        elif envType == 3: #sun light
+            uiDict['physSkyFrame'].setEnable(True)
+            uiDict['physSunFrame'].setEnable(True)
+            uiDict['timeZoneFrame'].setEnable(True)
+
+            # check for connected directional light as sun light
+            sun = self.renderGlobalsNode.sunLightConnection.inputs()
+            if len(sun) == 0:
+                sunLight = pm.createNode("directionalLight")
+                sunLight.getParent().rename("TheaSun")
+                sunLight.message >> self.renderGlobalsNode.sunLightConnection
+                
+                
+    
+    def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
 
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
@@ -272,13 +356,16 @@ class TheaRenderer(Renderer.MayaToRenderer):
         """
         # we will have a thinlens camera only
         #pm.addExtension(nodeType="camera", longName="mtth_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtth_diaphragm_blades", attributeType="long", defaultValue = 0)
-        pm.addExtension(nodeType="camera", longName="mtth_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
+        #pm.addExtension(nodeType="camera", longName="mtth_diaphragm_blades", attributeType="long", defaultValue = 0)
+        #pm.addExtension(nodeType="camera", longName="mtth_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
         
         # mesh
-        pm.addExtension(nodeType="mesh", longName="mtth_mesh_useassembly", attributeType="bool", defaultValue = False)
+        #pm.addExtension(nodeType="mesh", longName="mtth_mesh_useassembly", attributeType="bool", defaultValue = False)
 
-        # 
+        # file
+        pm.addExtension(nodeType="file", longName="mtth_file_iblIntensity", attributeType="float", defaultValue = 1.0)
+        pm.addExtension(nodeType="file", longName="mtth_file_iblRotation", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="file", longName="mtth_file_iblWrapping", attributeType="enum", enumName="CenterWrapping:TileWrapping:FitWrapping:AngularProbeWrapping:HemisphericalWrapping:SphericalWrapping", defaultValue = 0)
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)

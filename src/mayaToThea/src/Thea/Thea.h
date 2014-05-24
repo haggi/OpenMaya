@@ -55,6 +55,8 @@ public:
 	static void renderEndCallback( void *ptr );
 	void doTestRender();
 	void matrixToTransform(MMatrix& m, TheaSDK::Transform& t);
+	void defineShader(mtth_MayaObject *obj);
+	void defineIBLNode(TheaSDK::XML::EnvironmentOptions::IBLMap&, const char *attName);
 };
 
 #endif

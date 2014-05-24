@@ -47,6 +47,7 @@ void TheaRenderer::render()
 	this->defineCamera();
 	this->defineGeometry();
 	this->defineLights();
+	this->defineEnvironment();
 
 	if( this->mtth_renderGlobals->exportSceneFile )
 	{
@@ -62,7 +63,6 @@ void TheaRenderer::render()
 		TheaSDK::SaveScene(scenePath.asChar());
 	}
 
-	this->defineEnvironment();
 
 	volatile bool isrendering=true;
 

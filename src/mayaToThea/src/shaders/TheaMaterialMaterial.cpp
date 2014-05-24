@@ -76,6 +76,7 @@ MObject  TheaMaterial::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject TheaMaterial::globalEmitter;
+MObject TheaMaterial::bsdf;
 MObject TheaMaterial::emitterAccuracy;
 MObject TheaMaterial::emitterMinRays;
 MObject TheaMaterial::causticEmitter;
@@ -145,6 +146,9 @@ MStatus TheaMaterial::initialize()
 //---------------------------- automatically created attributes start ------------------------------------
 	globalEmitter = nAttr.create("globalEmitter", "globalEmitter",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( globalEmitter ));
+
+	bsdf = mAttr.create("bsdf", "bsdf");
+	CHECK_MSTATUS(addAttribute( bsdf ));
 
 	emitterAccuracy = nAttr.create("emitterAccuracy", "emitterAccuracy",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( emitterAccuracy ));

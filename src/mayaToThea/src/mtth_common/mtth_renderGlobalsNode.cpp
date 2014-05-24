@@ -132,6 +132,30 @@ MObject MayaToTheaGlobals::directMaxError;
 MObject MayaToTheaGlobals::walkthroughPrepassSamples;
 MObject MayaToTheaGlobals::skyAnimation;
 MObject MayaToTheaGlobals::aoHighColor;
+MObject MayaToTheaGlobals::illumination;
+MObject MayaToTheaGlobals::sunDirectionType;
+MObject MayaToTheaGlobals::turbidity;
+MObject MayaToTheaGlobals::ozone;
+MObject MayaToTheaGlobals::waterVapor;
+MObject MayaToTheaGlobals::turbidityCoefficient;
+MObject MayaToTheaGlobals::wavelengthExponent;
+MObject MayaToTheaGlobals::albedo;
+MObject MayaToTheaGlobals::latitude;
+MObject MayaToTheaGlobals::longitude;
+MObject MayaToTheaGlobals::timezone;
+MObject MayaToTheaGlobals::date;
+MObject MayaToTheaGlobals::localtime;
+MObject MayaToTheaGlobals::location;
+MObject MayaToTheaGlobals::ior;
+MObject MayaToTheaGlobals::sunPolarAngle;
+MObject MayaToTheaGlobals::sunAzimuth;
+MObject MayaToTheaGlobals::sunDirection;
+MObject MayaToTheaGlobals::backgroundColor;
+MObject MayaToTheaGlobals::illuminationMap;
+MObject MayaToTheaGlobals::backgroundMap;
+MObject MayaToTheaGlobals::reflectionMap;
+MObject MayaToTheaGlobals::RefractionMap;
+MObject MayaToTheaGlobals::medium;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -558,6 +582,93 @@ MStatus	MayaToTheaGlobals::initialize()
 	aoHighColor = nAttr.createColor("aoHighColor", "aoHighColor");
 	nAttr.setDefault(1,1,1);
 	CHECK_MSTATUS(addAttribute( aoHighColor ));
+
+	illumination = eAttr.create("illumination", "illumination", 0, &stat);
+	stat = eAttr.addField( "NoIllumination", 0 );
+	stat = eAttr.addField( "DomeIllumination", 1 );
+	stat = eAttr.addField( "IBLIllumination", 2 );
+	stat = eAttr.addField( "PhysicalSkyIllumination", 3 );
+	CHECK_MSTATUS(addAttribute( illumination ));
+
+	sunDirectionType = eAttr.create("sunDirectionType", "sunDirectionType", 0, &stat);
+	stat = eAttr.addField( "DirLight", 0 );
+	stat = eAttr.addField( "Time/Date", 1 );
+	stat = eAttr.addField( "Azimuth/Elevation", 2 );
+	CHECK_MSTATUS(addAttribute( sunDirectionType ));
+
+	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.5);
+	CHECK_MSTATUS(addAttribute( turbidity ));
+
+	ozone = nAttr.create("ozone", "ozone",  MFnNumericData::kFloat, 0.35);
+	CHECK_MSTATUS(addAttribute( ozone ));
+
+	waterVapor = nAttr.create("waterVapor", "waterVapor",  MFnNumericData::kFloat, 2.0);
+	CHECK_MSTATUS(addAttribute( waterVapor ));
+
+	turbidityCoefficient = nAttr.create("turbidityCoefficient", "turbidityCoefficient",  MFnNumericData::kFloat, 0.046);
+	CHECK_MSTATUS(addAttribute( turbidityCoefficient ));
+
+	wavelengthExponent = nAttr.create("wavelengthExponent", "wavelengthExponent",  MFnNumericData::kFloat, 1.3);
+	CHECK_MSTATUS(addAttribute( wavelengthExponent ));
+
+	albedo = nAttr.create("albedo", "albedo",  MFnNumericData::kFloat, 0.5);
+	CHECK_MSTATUS(addAttribute( albedo ));
+
+	latitude = nAttr.create("latitude", "latitude",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( latitude ));
+
+	longitude = nAttr.create("longitude", "longitude",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( longitude ));
+
+	timezone = nAttr.create("timezone", "timezone",  MFnNumericData::kInt, 0);
+	CHECK_MSTATUS(addAttribute( timezone ));
+
+	date = tAttr.create("date", "date",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( date ));
+
+	localtime = tAttr.create("localtime", "localtime",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( localtime ));
+
+	location = tAttr.create("location", "location",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( location ));
+
+	ior = nAttr.create("ior", "ior",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( ior ));
+
+	sunPolarAngle = nAttr.create("sunPolarAngle", "sunPolarAngle",  MFnNumericData::kFloat, -1.0);
+	CHECK_MSTATUS(addAttribute( sunPolarAngle ));
+
+	sunAzimuth = nAttr.create("sunAzimuth", "sunAzimuth",  MFnNumericData::kFloat, -1.0);
+	CHECK_MSTATUS(addAttribute( sunAzimuth ));
+
+	MObject sunDirectionX = nAttr.create("sunDirectionX", "sunDirectionX",  MFnNumericData::kFloat);
+	MObject sunDirectionY = nAttr.create("sunDirectionY", "sunDirectionY",  MFnNumericData::kFloat);
+	MObject sunDirectionZ = nAttr.create("sunDirectionZ", "sunDirectionZ",  MFnNumericData::kFloat);
+	sunDirection = nAttr.create("sunDirection", "sunDirection",  sunDirectionX,  sunDirectionY,  sunDirectionZ );
+	CHECK_MSTATUS(addAttribute( sunDirection ));
+
+	backgroundColor = nAttr.createColor("backgroundColor", "backgroundColor");
+	nAttr.setDefault(.6,.7,1.0);
+	CHECK_MSTATUS(addAttribute( backgroundColor ));
+
+	illuminationMap = nAttr.createColor("illuminationMap", "illuminationMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( illuminationMap ));
+
+	backgroundMap = nAttr.createColor("backgroundMap", "backgroundMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( backgroundMap ));
+
+	reflectionMap = nAttr.createColor("reflectionMap", "reflectionMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( reflectionMap ));
+
+	RefractionMap = nAttr.createColor("RefractionMap", "RefractionMap");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( RefractionMap ));
+
+	medium = mAttr.create("medium", "medium");
+	CHECK_MSTATUS(addAttribute( medium ));
 
 //	------------- automatically created attributes end ----------- // 
 

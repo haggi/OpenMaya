@@ -3,6 +3,7 @@
 
 #include <maya/MStringArray.h>
 #include <maya/MColor.h>
+#include <maya/MVector.h>
 #include <maya/MMatrix.h>
 #include "renderGlobals.h"
 
@@ -134,6 +135,29 @@ public:
 	int walkthroughPrepassSamples;
 	bool skyAnimation;
 	MColor aoHighColor;
+	int illumination;
+	int sunDirectionType;
+	float turbidity;
+	float ozone;
+	float waterVapor;
+	float turbidityCoefficient;
+	float wavelengthExponent;
+	float albedo;
+	float latitude;
+	float longitude;
+	int timezone;
+	MString date;
+	MString localtime;
+	MString location;
+	float ior;
+	float sunPolarAngle;
+	float sunAzimuth;
+	MVector sunDirection;
+	MColor backgroundColor;
+	MColor illuminationMap;
+	MColor backgroundMap;
+	MColor reflectionMap;
+	MColor RefractionMap;
 //	------------- automatically created attributes end ----------- // 
 
 

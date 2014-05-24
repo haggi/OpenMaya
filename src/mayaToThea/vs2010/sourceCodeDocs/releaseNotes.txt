@@ -2,3 +2,5 @@ release 0.01:
 - first release
 - instancing
 - point lights
+- environment illumination
+- basic shading

@@ -33,7 +33,7 @@ static const MString TheaMaterialsFullClassification("thea/material:shader/surfa
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.2"
+#define VERSION "0.01"
 
 MStatus initializePlugin( MObject obj )
 {

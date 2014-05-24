@@ -23,8 +23,11 @@ class AETheaNodeTemplate(BaseTemplate):
     def buildTheaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         if self.thisNode.type() == "camera":
-            log.debug("AETheaNodeTemplate:build camera AE")            
             self.beginLayout("Thea" ,collapse=1)
+            self.endLayout()
+        if self.thisNode.type() == "file":
+            self.beginLayout("Thea" ,collapse=1)
+            
             self.endLayout()
     
     def buildBody(self, nodeName):
