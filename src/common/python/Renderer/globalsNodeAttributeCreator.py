@@ -59,6 +59,14 @@ def makeString(att):
     string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
     return string
 
+def makeVector(att):
+    string  = "\tMObject {0}X = nAttr.create(\"{0}X\", \"{0}X\",  MFnNumericData::kFloat);\n".format(att[0])
+    string += "\tMObject {0}Y = nAttr.create(\"{0}Y\", \"{0}Y\",  MFnNumericData::kFloat);\n".format(att[0])
+    string += "\tMObject {0}Z = nAttr.create(\"{0}Z\", \"{0}Z\",  MFnNumericData::kFloat);\n".format(att[0])
+    string += "\t{0} = nAttr.create(\"{0}\", \"{0}\",  {0}X,  {0}Y,  {0}Z );\n".format(att[0])
+    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
+    return string
+
 def makeColor(att):
 #    environmentColor = nAttr.createColor("environmentColor", "environmentColor");
 #    nAttr.setDefault(0.6f, 0.7f, 0.9f);
@@ -118,6 +126,8 @@ def fillNodeCPP(renderer, fileName, attArray):
                         attString = makeMessage(att)
                     if att[1] == "string":
                         attString = makeString(att)
+                    if att[1] == "vector":
+                        attString = makeVector(att)
                     newContent.append(attString)                    
             if staticDefToDo:
                 staticDefToDo = False
@@ -198,6 +208,9 @@ def fillCPP(renderer, fileName, attArray):
                 if att[1] == "string":
                     attString = "\t\tif(!getString(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
                     attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
+                if att[1] == "vector":
+                    attString = "\t\tif(!getVector(MString(\"{1}\"), {0}Globals, this->{1}))\n".format(renderer.capitalize(), att[0])
+                    attString += "\t\t\tthrow(\"problem reading {0}Globals.{1}\");\n\n".format(renderer.lower(), att[0])
                 newContent.append(attString)                    
         else:
             if END_ID in value:
@@ -238,6 +251,8 @@ def fillH(fileName, attArray):
                     attString = "\tMColor {0};\n".format(att[0])
                 if att[1] == "string":
                     attString = "\tMString {0};\n".format(att[0])
+                if att[1] == "vector":
+                    attString = "\tMVector {0};\n".format(att[0])
                 newContent.append(attString)                    
         else:
             if END_ID in value:
@@ -299,11 +314,11 @@ def pyRGCreator(pypath, attArray):
                     print "pm.separator()\n"
         else:
             if len(att) > 4:
-                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', data='{4}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3],att[4])
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', data='{4}', uiDict=uiDict)".format(att[0],att[1],att[2],att[3],att[4])
             elif len(att) > 3:
-                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)\n".format(att[0],att[1],att[2],att[3])
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='{3}', uiDict=uiDict)".format(att[0],att[1],att[2],att[3])
             else:
-                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='', uiDict=uiDict)\n".format(att[0],att[1],att[2])
+                print "self.addRenderGlobalsUIElement(attName = '{0}', uiType = '{1}', displayName = '{2}', default='', uiDict=uiDict)".format(att[0],att[1],att[2])
     
 def attributeCreator(renderer, shortCut):
     log.debug("attribute creator for renderer " + renderer)

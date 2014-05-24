@@ -29,6 +29,10 @@ def addUIElement(uiType, attribute, uiLabel, callback, renderGlobalsNodeName):
         ui = pm.textFieldGrp(label=uiLabel)
         if callback is not None:
             pm.textFieldGrp(ui, edit=True, cc=callback)
+    if uiType == 'vector':
+        ui = pm.floatFieldGrp(label=uiLabel, nf=3)
+        if callback is not None:
+            pm.floatFieldGrp(ui, edit=True, cc=callback)
     return ui
 
 def connectUIElement(uiElement, attribute):
@@ -43,6 +47,9 @@ def connectUIElement(uiElement, attribute):
         #float3 == color is automatically connnected via attrColorSliderGrp
         return
     if attribute.type() == 'message':
+        #no automatic connection necessary, will be controlled by other scritps
+        return
+    if attribute.type() == 'vector':
         #no automatic connection necessary, will be controlled by other scritps
         return
     pm.connectControl(uiElement, attribute, index = 2)

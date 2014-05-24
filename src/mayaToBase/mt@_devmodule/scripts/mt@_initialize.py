@@ -155,7 +155,8 @@ class @Renderer(Renderer.MayaToRenderer):
         # mesh
         pm.addExtension(nodeType="mesh", longName="mt@_mesh_useassembly", attributeType="bool", defaultValue = False)
 
-        # 
+    def addUserTabs(self):
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)
