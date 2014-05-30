@@ -32,6 +32,7 @@ class AEGlossyBSDFTemplate(BaseTemplate):
         self.addControl("customTransmittedRoughness", label="CustomTransmittedRoughness")
         self.addControl("normalMapping", label="NormalMapping")
         self.addControl("abbe", label="Abbe")
+        self.addControl("reflectanceColor", label="Reflectance Color")
         self.addControl("kappa", label="Kappa")
         self.addControl("bump", label="Bump")
         self.addControl("anisotropy", label="Anisotropy")
@@ -43,6 +44,7 @@ class AEGlossyBSDFTemplate(BaseTemplate):
         self.addControl("traceRefractions", label="TraceRefractions")
         self.addControl("rotation", label="Rotation")
         self.addControl("transmittedRoughness", label="TransmittedRoughness")
+        self.addControl("transmittanceColor", label="Transmittance Color")
         self.addSeparator()
         #autoAddEnd
         self.endNoOptimize()

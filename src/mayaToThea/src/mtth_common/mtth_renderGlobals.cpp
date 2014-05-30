@@ -204,9 +204,6 @@ bool mtth_RenderGlobals::getMtTheaGlobals()
 		if(!getInt(MString("causticPhotonsCaptured"), TheaGlobals, this->causticPhotonsCaptured))
 			throw("problem reading theaGlobals.causticPhotonsCaptured");
 
-		if(!getInt(MString("threads"), TheaGlobals, this->threads))
-			throw("problem reading theaGlobals.threads");
-
 		if(!getBool(MString("causticSharpening"), TheaGlobals, this->causticSharpening))
 			throw("problem reading theaGlobals.causticSharpening");
 
@@ -278,9 +275,6 @@ bool mtth_RenderGlobals::getMtTheaGlobals()
 
 		if(!getString(MString("skyAnimationStart"), TheaGlobals, this->skyAnimationStart))
 			throw("problem reading theaGlobals.skyAnimationStart");
-
-		if(!getInt(MString("maxSamples"), TheaGlobals, this->maxSamples))
-			throw("problem reading theaGlobals.maxSamples");
 
 		if(!getBool(MString("progressiveClampRadiance"), TheaGlobals, this->progressiveClampRadiance))
 			throw("problem reading theaGlobals.progressiveClampRadiance");

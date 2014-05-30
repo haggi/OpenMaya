@@ -41,7 +41,8 @@ class TheaRenderer(Renderer.MayaToRenderer):
         print "UpdateTest", dummy             
 
     def updateEnvironment(self, dummy=None):
-        envDict = self.rendererTabUiDict['environment']
+        pass
+        #envDict = self.rendererTabUiDict['environment']
         #Constant
             
     def TheaRendererCreateTab(self):
@@ -56,14 +57,14 @@ class TheaRenderer(Renderer.MayaToRenderer):
         self.rendererTabUiDict['common'] = uiDict
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness = 0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):
-                with pm.frameLayout(label="Sampling", collapsable = True, collapse=False):
-                    self.addRenderGlobalsUIElement(attName = 'adaptiveSampling', uiType = 'bool', displayName = 'Adaptive Sampling:', default='True', uiDict=uiDict)
-
-                    
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn = True, width = 400):                    
                 with pm.frameLayout(label="Renderer", collapsable = True, collapse=False):
-                    self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
-                    self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):                    
+                        self.addRenderGlobalsUIElement(attName = 'engine', uiType = 'enum', displayName = 'Render Engine', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'maxRenderSeconds', uiType = 'int', displayName = 'Max Time (sec)', default='0', uiDict=uiDict)
+
+                        #self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
                     
 # self.addRenderGlobalsUIElement(attName = 'giChannel', uiType = 'bool', displayName = 'GiChannel', default='false', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'frameRate', uiType = 'int', displayName = 'FrameRate', default='25', uiDict=uiDict)
@@ -151,7 +152,6 @@ class TheaRenderer(Renderer.MayaToRenderer):
 # self.addRenderGlobalsUIElement(attName = 'irradianceCaching', uiType = 'bool', displayName = 'IrradianceCaching', default='true', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'supersampling', uiType = 'enum', displayName = 'Supersampling', default='AutoSS', data='AutoSS:NoneSS:NormalSS:HighSS', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'fieldDensity', uiType = 'int', displayName = 'FieldDensity', default='100000', uiDict=uiDict)
-# self.addRenderGlobalsUIElement(attName = 'engine', uiType = 'enum', displayName = 'Engine', default='UnbiasedTR1', data='AdaptiveBSD:UnbiasedTR1:UnbiasedTR2:ProgressiveAO:ProgressiveMC:AdaptiveAMC:PrestoAO:PrestoMC:TotalEngines', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'imageSaving', uiType = 'bool', displayName = 'ImageSaving', default='true', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'brightnessThreshold', uiType = 'float', displayName = 'BrightnessThreshold', default='0.001', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'relight', uiType = 'bool', displayName = 'Relight', default='false', uiDict=uiDict)
@@ -174,7 +174,6 @@ class TheaRenderer(Renderer.MayaToRenderer):
 # self.addRenderGlobalsUIElement(attName = 'motionBlur', uiType = 'bool', displayName = 'MotionBlur', default='true', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'endFrame', uiType = 'int', displayName = 'EndFrame', default='100', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'caustics', uiType = 'bool', displayName = 'Caustics', default='false', uiDict=uiDict)
-# self.addRenderGlobalsUIElement(attName = 'maxRenderSeconds', uiType = 'int', displayName = 'MaxRenderSeconds', default='0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'aoClamp', uiType = 'bool', displayName = 'AoClamp', default='false', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'irradianceChannel', uiType = 'bool', displayName = 'IrradianceChannel', default='false', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'sssMaxSamples', uiType = 'int', displayName = 'SssMaxSamples', default='10000', uiDict=uiDict)
@@ -259,6 +258,7 @@ class TheaRenderer(Renderer.MayaToRenderer):
 #                     uiDict['sunButton'] = pm.button(label=buttonLabel, command=self.editSun)
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        self.TheaEnvironmentUpdateTab()
 
     def TheaEnvironmentUpdateTab(self):
         log.debug("TheaEnvironmentUpdateTab()")
@@ -274,6 +274,8 @@ class TheaRenderer(Renderer.MayaToRenderer):
         
         if envType == 1: #dome light
             uiDict['backgroundColor'].setEnable(True)
+        elif envType == 2: #ibl lighting
+            uiDict['iblFrame'].setEnable(True)
         elif envType == 3: #sun light
             uiDict['physSkyFrame'].setEnable(True)
             uiDict['physSunFrame'].setEnable(True)
@@ -284,7 +286,7 @@ class TheaRenderer(Renderer.MayaToRenderer):
             if len(sun) == 0:
                 sunLight = pm.createNode("directionalLight")
                 sunLight.getParent().rename("TheaSun")
-                sunLight.message >> self.renderGlobalsNode.sunLightConnection
+                sunLight.getParent().message >> self.renderGlobalsNode.sunLightConnection
                 
                 
     
@@ -365,7 +367,9 @@ class TheaRenderer(Renderer.MayaToRenderer):
         # file
         pm.addExtension(nodeType="file", longName="mtth_file_iblIntensity", attributeType="float", defaultValue = 1.0)
         pm.addExtension(nodeType="file", longName="mtth_file_iblRotation", attributeType="float", defaultValue = 0.0)
-        pm.addExtension(nodeType="file", longName="mtth_file_iblWrapping", attributeType="enum", enumName="CenterWrapping:TileWrapping:FitWrapping:AngularProbeWrapping:HemisphericalWrapping:SphericalWrapping", defaultValue = 0)
+        pm.addExtension(nodeType="file", longName="mtth_file_iblWrapping", attributeType="enum", enumName="CenterWrapping:TileWrapping:FitWrapping:AngularProbeWrapping:HemisphericalWrapping:SphericalWrapping", defaultValue = 3.0)
+        pm.addExtension(nodeType="file", longName="mtth_file_interpolation", attributeType="enum", enumName="NoInterpolation:BilinearInterpolation:TrilinearInterpolation", defaultValue = 1.0)
+
         
     def setImageName(self):
         self.renderGlobalsNode.basePath.set(pm.workspace.path)

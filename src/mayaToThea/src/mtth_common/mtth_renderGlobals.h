@@ -57,7 +57,6 @@ public:
 	bool directAdaptiveSampling;
 	int russianRouletteDepth;
 	int causticPhotonsCaptured;
-	int threads;
 	bool causticSharpening;
 	float gatherMaxError;
 	float irradianceCacheMaxConstrast;
@@ -82,7 +81,6 @@ public:
 	float aoDistance;
 	int priority;
 	MString skyAnimationStart;
-	int maxSamples;
 	bool progressiveClampRadiance;
 	bool walkthroughAnimation;
 	bool russianRoulette;

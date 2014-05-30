@@ -31,6 +31,7 @@ class AEBssdfBSDFTemplate(BaseTemplate):
         #autoAddBegin
         self.addControl("customTransmittedRoughness", label="CustomTransmittedRoughness")
         self.addControl("normalMapping", label="NormalMapping")
+        self.addControl("reflectanceColor", label="Reflectance Color")
         self.addControl("bump", label="Bump")
         self.addControl("anisotropy", label="Anisotropy")
         self.addControl("absorptionColor", label="AbsorptionColor")

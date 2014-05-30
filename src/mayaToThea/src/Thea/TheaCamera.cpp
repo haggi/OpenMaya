@@ -49,6 +49,7 @@ void TheaRenderer::defineCamera()
 			cam.focalLength = focalLen;
 			cam.pixels = width;
 			cam.lines = height;
+			//cam.depthOfField = 1.0; //given by formula: (focusDistance-nearFocusPlane)/focusDistance
 			sceneXML.addCamera(cam);
 		}else{
 			TheaSDK::CameraPointer cameraPtr = TheaSDK::AddStandardCamera(obj->shortName.asChar(), cameraPos, focalLen, width, height);

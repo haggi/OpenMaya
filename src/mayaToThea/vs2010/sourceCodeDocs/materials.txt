@@ -20,11 +20,11 @@ bsdf, message, BSDF
 
 #BasicBSDF
 absorptionColor,color,AbsorptionColor,0:0:0
-absorptionDensity,int,AbsorptionDensity,100
+absorptionDensity,float,AbsorptionDensity,100.0
 sigma,float,Sigma,0.0
 roughness,float,Roughness,0.1
-anisotropy,int,Anisotropy,0
-rotation,int,Rotation,0
+anisotropy,float,Anisotropy,0.0
+rotation,float,Rotation,0.0
 bump,float,Bump,1.0
 ior,float,Ior,1.5
 kappa,float,Kappa,0.0
@@ -32,12 +32,17 @@ microRoughnessWidth,float,MicroRoughnessWidth,10.0
 microRoughnessHeight,float,MicroRoughnessHeight,0.25
 microRoughness,bool,MicroRoughness,false
 normalMapping,bool,NormalMapping,false
+diffuseColor, color, Diffuse Color, 0.3:0.4:0.7
+translucentColor, color, Translucent Color, 0.0:0.0:0.0
+reflectanceColor, color, Reflectance Color, 0.0:0.0:0.0
+reflectance90Deg, color, Reflectance 90 Degree, 0.0:0.0:0.0
+
 
 #GlossyBSDF
 roughness,float,Roughness,0.1
 transmittedRoughness,float,TransmittedRoughness,0.1
-anisotropy,int,Anisotropy,0
-rotation,int,Rotation,0
+anisotropy,float,Anisotropy,0.0
+rotation,float,Rotation,0.0
 bump,float,Bump,1.0
 ior,float,Ior,1.5
 kappa,float,Kappa,0.0
@@ -48,6 +53,8 @@ normalMapping,bool,NormalMapping,false
 traceReflections,bool,TraceReflections,true
 traceRefractions,bool,TraceRefractions,true
 absorptionColor,color,AbsorptionColor,0:0:0
+transmittanceColor, color, Transmittance Color, 0.0:0.0:0.0
+reflectanceColor, color, Reflectance Color, 0.0:0.0:0.0
 
 #BssdfBSDF
 absorptionColor,color,AbsorptionColor,1:1:1
@@ -57,30 +64,33 @@ scatteringDensity,float,ScatteringDensity,1000.0
 asymmetry,float,Asymmetry,0.0
 roughness,float,Roughness,0.0
 transmittedRoughness,float,TransmittedRoughness,0.0
-anisotropy,int,Anisotropy,0
-rotation,int,Rotation,0
+anisotropy,float,Anisotropy,0.0
+rotation,float,Rotation,0.0
 bump,float,Bump,1.0
 ior,float,Ior,1.3
 customTransmittedRoughness,bool,CustomTransmittedRoughness,false
 normalMapping,bool,NormalMapping,false
 traceReflections,bool,TraceReflections,true
+reflectanceColor, color, Reflectance Color, 0.0:0.0:0.0
 
 #ThinFilmBSDF
 ior,float,Ior,1.52
 thickness,int,Thickness,500
 bump,float,Bump,1.0
 interference,bool,Interference,false
+transmittanceColor, color, Transmittance Color, 0.0:0.0:0.0
 
 #CoatingBSDF
 roughness,float,Roughness,0.1
-anisotropy,int,Anisotropy,0
-rotation,int,Rotation,0
+anisotropy,float,Anisotropy,0.0
+rotation,float,Rotation,0.0
 bump,float,Bump,1.0
 ior,float,Ior,1.5
 kappa,float,Kappa,0.0
-thickness,int,Thickness,100
+thickness,float,Thickness,100.0
 microRoughnessWidth,float,MicroRoughnessWidth,10.0
 microRoughnessHeight,float,MicroRoughnessHeight,0.25
 microRoughness,bool,MicroRoughness,false
 coatingAbsorption,bool,CoatingAbsorption,false
 normalMapping,bool,NormalMapping,false
+reflectanceColor, color, Reflectance Color, 0.0:0.0:0.0

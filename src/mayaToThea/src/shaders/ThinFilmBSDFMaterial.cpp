@@ -76,6 +76,7 @@ MObject  ThinFilmBSDF::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject ThinFilmBSDF::bump;
+MObject ThinFilmBSDF::transmittanceColor;
 MObject ThinFilmBSDF::interference;
 MObject ThinFilmBSDF::ior;
 MObject ThinFilmBSDF::thickness;
@@ -132,6 +133,10 @@ MStatus ThinFilmBSDF::initialize()
 //---------------------------- automatically created attributes start ------------------------------------
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( bump ));
+
+	transmittanceColor = nAttr.createColor("transmittanceColor", "transmittanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( transmittanceColor ));
 
 	interference = nAttr.create("interference", "interference",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( interference ));

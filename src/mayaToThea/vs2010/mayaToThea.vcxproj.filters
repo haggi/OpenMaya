@@ -203,6 +203,9 @@
     <ClCompile Include="..\src\shaders\ThinFilmBSDFMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Thea\TheaSettings.cpp">
+      <Filter>Source Files\Thea</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

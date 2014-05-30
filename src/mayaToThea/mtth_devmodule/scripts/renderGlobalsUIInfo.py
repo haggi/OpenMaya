@@ -266,12 +266,6 @@ entry['displayName'] = 'CausticPhotonsCaptured'
 entry['default'] = '10000'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'threads'
-entry['type'] = 'int'
-entry['displayName'] = 'Threads'
-entry['default'] = '0'
-tab['entries'].append(entry)
-entry = {}
 entry['name'] = 'causticSharpening'
 entry['type'] = 'bool'
 entry['displayName'] = 'CausticSharpening'
@@ -417,12 +411,6 @@ entry['displayName'] = 'SkyAnimationStart'
 entry['default'] = '12:00:00'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'maxSamples'
-entry['type'] = 'int'
-entry['displayName'] = 'MaxSamples'
-entry['default'] = '0'
-tab['entries'].append(entry)
-entry = {}
 entry['name'] = 'progressiveClampRadiance'
 entry['type'] = 'bool'
 entry['displayName'] = 'ProgressiveClampRadiance'
@@ -529,8 +517,8 @@ entry = {}
 entry['name'] = 'engine'
 entry['type'] = 'enum'
 entry['displayName'] = 'Engine'
-entry['default'] = 'UnbiasedTR1'
-entry['addInfo'] = 'AdaptiveBSD:UnbiasedTR1:UnbiasedTR2:ProgressiveAO:ProgressiveMC:AdaptiveAMC:PrestoAO:PrestoMC:TotalEngines'
+entry['default'] = 'PrestoAO'
+entry['addInfo'] = 'AdaptiveBSD:UnbiasedTR1:UnbiasedTR2:ProgressiveAO:ProgressiveMC:AdaptiveAMC:PrestoAO:PrestoMC'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'imageSaving'
@@ -749,7 +737,7 @@ entry['name'] = 'sunDirectionType'
 entry['type'] = 'enum'
 entry['displayName'] = 'Sun Direction Type'
 entry['default'] = '0'
-entry['addInfo'] = 'DirLight:Time/Date:Azimuth/Elevation'
+entry['addInfo'] = 'DirLight:Time/Date:Location:Azimuth/Elevation'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'turbidity'

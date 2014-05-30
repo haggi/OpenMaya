@@ -54,7 +54,6 @@ MObject MayaToTheaGlobals::gatherTraceGlossyRefractions;
 MObject MayaToTheaGlobals::directAdaptiveSampling;
 MObject MayaToTheaGlobals::russianRouletteDepth;
 MObject MayaToTheaGlobals::causticPhotonsCaptured;
-MObject MayaToTheaGlobals::threads;
 MObject MayaToTheaGlobals::causticSharpening;
 MObject MayaToTheaGlobals::gatherMaxError;
 MObject MayaToTheaGlobals::irradianceCacheMaxConstrast;
@@ -79,7 +78,6 @@ MObject MayaToTheaGlobals::antialiasingClampRadiance;
 MObject MayaToTheaGlobals::aoDistance;
 MObject MayaToTheaGlobals::priority;
 MObject MayaToTheaGlobals::skyAnimationStart;
-MObject MayaToTheaGlobals::maxSamples;
 MObject MayaToTheaGlobals::progressiveClampRadiance;
 MObject MayaToTheaGlobals::walkthroughAnimation;
 MObject MayaToTheaGlobals::russianRoulette;
@@ -326,9 +324,6 @@ MStatus	MayaToTheaGlobals::initialize()
 	causticPhotonsCaptured = nAttr.create("causticPhotonsCaptured", "causticPhotonsCaptured",  MFnNumericData::kInt, 10000);
 	CHECK_MSTATUS(addAttribute( causticPhotonsCaptured ));
 
-	threads = nAttr.create("threads", "threads",  MFnNumericData::kInt, 0);
-	CHECK_MSTATUS(addAttribute( threads ));
-
 	causticSharpening = nAttr.create("causticSharpening", "causticSharpening",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( causticSharpening ));
 
@@ -407,9 +402,6 @@ MStatus	MayaToTheaGlobals::initialize()
 	skyAnimationStart = tAttr.create("skyAnimationStart", "skyAnimationStart",  MFnNumericData::kString);
 	CHECK_MSTATUS(addAttribute( skyAnimationStart ));
 
-	maxSamples = nAttr.create("maxSamples", "maxSamples",  MFnNumericData::kInt, 0);
-	CHECK_MSTATUS(addAttribute( maxSamples ));
-
 	progressiveClampRadiance = nAttr.create("progressiveClampRadiance", "progressiveClampRadiance",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( progressiveClampRadiance ));
 
@@ -465,7 +457,7 @@ MStatus	MayaToTheaGlobals::initialize()
 	fieldDensity = nAttr.create("fieldDensity", "fieldDensity",  MFnNumericData::kInt, 100000);
 	CHECK_MSTATUS(addAttribute( fieldDensity ));
 
-	engine = eAttr.create("engine", "engine", 1, &stat);
+	engine = eAttr.create("engine", "engine", 6, &stat);
 	stat = eAttr.addField( "AdaptiveBSD", 0 );
 	stat = eAttr.addField( "UnbiasedTR1", 1 );
 	stat = eAttr.addField( "UnbiasedTR2", 2 );
@@ -474,7 +466,6 @@ MStatus	MayaToTheaGlobals::initialize()
 	stat = eAttr.addField( "AdaptiveAMC", 5 );
 	stat = eAttr.addField( "PrestoAO", 6 );
 	stat = eAttr.addField( "PrestoMC", 7 );
-	stat = eAttr.addField( "TotalEngines", 8 );
 	CHECK_MSTATUS(addAttribute( engine ));
 
 	imageSaving = nAttr.create("imageSaving", "imageSaving",  MFnNumericData::kBoolean, true);
@@ -593,7 +584,8 @@ MStatus	MayaToTheaGlobals::initialize()
 	sunDirectionType = eAttr.create("sunDirectionType", "sunDirectionType", 0, &stat);
 	stat = eAttr.addField( "DirLight", 0 );
 	stat = eAttr.addField( "Time/Date", 1 );
-	stat = eAttr.addField( "Azimuth/Elevation", 2 );
+	stat = eAttr.addField( "Location", 2 );
+	stat = eAttr.addField( "Azimuth/Elevation", 3 );
 	CHECK_MSTATUS(addAttribute( sunDirectionType ));
 
 	turbidity = nAttr.create("turbidity", "turbidity",  MFnNumericData::kFloat, 2.5);

@@ -1,20 +1,22 @@
 #include "Thea.h"
 #include <maya/MFnDependencyNode.h>
 #include "../mtth_common/mtth_mayaScene.h"
+#include "utilities/logging.h"
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include <SDK/XML/sdk.xml.environment.h>
 #include <SDK/Integration/sdk.basics.h>
 
+static Logging logger;
 
 void TheaRenderer::defineIBLNode(TheaSDK::XML::EnvironmentOptions::IBLMap& iblMap, const char *attName)
 {
 	MObject fileNodeObject = getConnectedFileTextureObject(MString(attName),MFnDependencyNode(this->mtth_renderGlobals->renderGlobalsMobject));
-	if(fileNodeObject != MObject.kNullObj)
+	if(fileNodeObject != MObject::kNullObj)
 	{
 		MFnDependencyNode fileNode(fileNodeObject);
 		MString fileName;
-		getString(MString("textureFileName"), fileNode, fileName); 
+		getString(MString("fileTextureName"), fileNode, fileName); 
 		if( fileName.length() > 1)
 		{	
 			iblMap.bitmapFilename = fileName.asChar();
@@ -31,6 +33,27 @@ void TheaRenderer::defineIBLNode(TheaSDK::XML::EnvironmentOptions::IBLMap& iblMa
 		}
 	}
 	iblMap.enabled = false;
+}
+
+TheaSDK::Normal3D TheaRenderer::getSunDirection()
+{
+	TheaSDK::Normal3D sunDir;
+
+	MFnDependencyNode globalsNode(this->mtth_renderGlobals->renderGlobalsMobject);
+	MObjectArray nodeList;
+	getConnectedInNodes(MString("sunLightConnection"), this->mtth_renderGlobals->renderGlobalsMobject, nodeList);
+	if( nodeList.length() > 0)	
+	{
+		MVector lightDir(0,0,1);
+		MFnDagNode sunDagNode(nodeList[0]);
+		//lightDir *= this->mtth_renderGlobals->globalConversionMatrix.inverse();
+		lightDir *= sunDagNode.transformationMatrix();
+		lightDir *= this->mtth_renderGlobals->globalConversionMatrix;
+		lightDir.normalize();
+		return TheaSDK::Normal3D(lightDir.x,lightDir.y,lightDir.z);
+	}
+
+	return TheaSDK::Normal3D(this->mtth_renderGlobals->sunDirection.x,this->mtth_renderGlobals->sunDirection.y,this->mtth_renderGlobals->sunDirection.z);
 }
 
 void TheaRenderer::defineEnvironment()
@@ -50,7 +73,16 @@ void TheaRenderer::defineEnvironment()
 				env.backgroundColor = bgColor;
 			}
 			break;
-		case 2: // physical sky
+		case 2: // ibl
+			{
+				env.illumination = TheaSDK::IBLIllumination;
+				defineIBLNode(env.illuminationMap, "illuminationMap");
+				defineIBLNode(env.backgroundMap, "backgroundMap");
+				defineIBLNode(env.reflectionMap, "reflectionMap");
+				defineIBLNode(env.refractionMap, "refractionMap");
+			}
+			break;
+		case 3: // physical sky
 			{
 				env.illumination = TheaSDK::PhysicalSkyIllumination;
 				env.turbidity = this->mtth_renderGlobals->turbidity;
@@ -61,28 +93,23 @@ void TheaRenderer::defineEnvironment()
 				env.albedo = this->mtth_renderGlobals->albedo;	
 
 				env.location = this->mtth_renderGlobals->location.asChar();
-				env.latitude = this->mtth_renderGlobals->latitude;
-				env.longitude = this->mtth_renderGlobals->longitude;
+
 				env.timezone = this->mtth_renderGlobals->timezone; // from -12 to +12.
 				env.date = this->mtth_renderGlobals->date.asChar(); // format dd/mm/yy.
 				env.localtime = this->mtth_renderGlobals->localtime.asChar(); // format hh/mm/ss.
 
-				env.sunDirection = TheaSDK::Normal3D(this->mtth_renderGlobals->sunDirection.x,this->mtth_renderGlobals->sunDirection.y,this->mtth_renderGlobals->sunDirection.z);
+				env.latitude = this->mtth_renderGlobals->latitude;
+				env.longitude = this->mtth_renderGlobals->longitude;
+
+				env.sunDirection = this->getSunDirection();
 				env.sunPolarAngle = this->mtth_renderGlobals->sunPolarAngle; // in degrees.
 				env.sunAzimuth = this->mtth_renderGlobals->sunAzimuth; // in degrees.
 			}
 			break;
-		case 3: // ibl
-			{
-				env.illumination = TheaSDK::IBLIllumination;
-				defineIBLNode(env.illuminationMap, "illuminationMap");
-				defineIBLNode(env.backgroundMap, "backgroundMap");
-				defineIBLNode(env.reflectionMap, "reflectionMap");
-				defineIBLNode(env.refractionMap, "refractionMap");
-			}
-			break;
 		default:
+			break;				
 		};
+
 		if(this->mtth_renderGlobals->illumination > 0)
 		{
 			this->sceneXML.setEnvironmentOptions(env);

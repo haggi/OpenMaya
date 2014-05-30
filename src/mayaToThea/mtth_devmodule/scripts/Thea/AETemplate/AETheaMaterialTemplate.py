@@ -30,6 +30,7 @@ class AETheaMaterialTemplate(BaseTemplate):
         self.beginNoOptimize()
         #autoAddBegin
         self.addControl("globalEmitter", label="GlobalEmitter")
+        self.addControl("bsdf", label="BSDF")
         self.addControl("emitterAccuracy", label="EmitterAccuracy")
         self.addControl("emitterMinRays", label="EmitterMinRays")
         self.addControl("causticEmitter", label="CausticEmitter")

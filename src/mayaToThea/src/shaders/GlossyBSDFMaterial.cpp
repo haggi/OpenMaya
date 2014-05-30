@@ -78,6 +78,7 @@ MObject  GlossyBSDF::aLightBlindData;
 MObject GlossyBSDF::customTransmittedRoughness;
 MObject GlossyBSDF::normalMapping;
 MObject GlossyBSDF::abbe;
+MObject GlossyBSDF::reflectanceColor;
 MObject GlossyBSDF::kappa;
 MObject GlossyBSDF::bump;
 MObject GlossyBSDF::anisotropy;
@@ -89,6 +90,7 @@ MObject GlossyBSDF::iorSource;
 MObject GlossyBSDF::traceRefractions;
 MObject GlossyBSDF::rotation;
 MObject GlossyBSDF::transmittedRoughness;
+MObject GlossyBSDF::transmittanceColor;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -149,13 +151,17 @@ MStatus GlossyBSDF::initialize()
 	abbe = nAttr.create("abbe", "abbe",  MFnNumericData::kFloat, 50.0);
 	CHECK_MSTATUS(addAttribute( abbe ));
 
+	reflectanceColor = nAttr.createColor("reflectanceColor", "reflectanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( reflectanceColor ));
+
 	kappa = nAttr.create("kappa", "kappa",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( kappa ));
 
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( bump ));
 
-	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kInt, 0);
+	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
 
 	absorptionColor = nAttr.createColor("absorptionColor", "absorptionColor");
@@ -174,11 +180,15 @@ MStatus GlossyBSDF::initialize()
 	traceRefractions = nAttr.create("traceRefractions", "traceRefractions",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( traceRefractions ));
 
-	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kInt, 0);
+	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( rotation ));
 
 	transmittedRoughness = nAttr.create("transmittedRoughness", "transmittedRoughness",  MFnNumericData::kFloat, 0.1);
 	CHECK_MSTATUS(addAttribute( transmittedRoughness ));
+
+	transmittanceColor = nAttr.createColor("transmittanceColor", "transmittanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( transmittanceColor ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

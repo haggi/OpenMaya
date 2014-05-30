@@ -40,7 +40,10 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject normalMapping;
+	static    MObject translucentColor;
+	static    MObject reflectanceColor;
 	static    MObject kappa;
+	static    MObject diffuseColor;
 	static    MObject bump;
 	static    MObject anisotropy;
 	static    MObject absorptionColor;
@@ -50,6 +53,7 @@ protected:
 	static    MObject microRoughnessHeight;
 	static    MObject microRoughness;
 	static    MObject rotation;
+	static    MObject reflectance90Deg;
 	static    MObject sigma;
 	static    MObject microRoughnessWidth;
 //---------------------------- automatically created attributes end ------------------------------------

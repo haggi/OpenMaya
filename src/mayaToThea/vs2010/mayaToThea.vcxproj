@@ -107,6 +107,7 @@
     <ClCompile Include="..\src\Thea\Thea.cpp" />
     <ClCompile Include="..\src\Thea\TheaGeometry.cpp" />
     <ClCompile Include="..\src\Thea\TheaLights.cpp" />
+    <ClCompile Include="..\src\Thea\TheaSettings.cpp" />
     <ClCompile Include="..\src\Thea\TheaShaders.cpp" />
     <ClCompile Include="..\src\Thea\TheaUtils.cpp" />
     <ClCompile Include="..\src\mayaToThea.cpp" />

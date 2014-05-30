@@ -40,6 +40,7 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject bump;
+	static    MObject transmittanceColor;
 	static    MObject interference;
 	static    MObject ior;
 	static    MObject thickness;

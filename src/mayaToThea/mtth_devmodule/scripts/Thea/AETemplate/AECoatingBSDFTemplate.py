@@ -33,6 +33,7 @@ class AECoatingBSDFTemplate(BaseTemplate):
         self.addControl("kappa", label="Kappa")
         self.addControl("bump", label="Bump")
         self.addControl("anisotropy", label="Anisotropy")
+        self.addControl("reflectanceColor", label="Reflectance Color")
         self.addControl("ior", label="Ior")
         self.addControl("roughness", label="Roughness")
         self.addControl("microRoughnessHeight", label="MicroRoughnessHeight")

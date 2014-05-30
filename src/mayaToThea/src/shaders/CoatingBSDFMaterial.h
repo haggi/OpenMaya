@@ -43,6 +43,7 @@ protected:
 	static    MObject kappa;
 	static    MObject bump;
 	static    MObject anisotropy;
+	static    MObject reflectanceColor;
 	static    MObject ior;
 	static    MObject roughness;
 	static    MObject microRoughnessHeight;

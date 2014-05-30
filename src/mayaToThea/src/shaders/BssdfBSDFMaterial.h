@@ -41,6 +41,7 @@ protected:
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject customTransmittedRoughness;
 	static    MObject normalMapping;
+	static    MObject reflectanceColor;
 	static    MObject bump;
 	static    MObject anisotropy;
 	static    MObject absorptionColor;

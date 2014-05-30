@@ -19,6 +19,22 @@ class AETheaNodeTemplate(BaseTemplate):
         self.node = pm.PyNode(self.nodeName)
         self.buildBody(nodeName)
         log.debug("AETheaNodeTemplate")
+
+    def updateFileTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        print "updateFileTemplate node", nodeName, self.thisNode
+#         outputs = self.thisNode.outColor.outputs()
+#         self.dimControl(nodeName, "mtth_file_iblIntensity", True)
+#         self.dimControl(nodeName, "mtth_file_iblRotation", True)
+#         self.dimControl(nodeName, "mtth_file_iblWrapping", True)
+#         if len(outputs) == 0:
+#             return
+#         if outputs[0].type() == "theaGlobals":
+        self.dimControl(nodeName, "mtth_file_iblIntensity", False)
+        self.dimControl(nodeName, "mtth_file_iblRotation", False)
+        self.dimControl(nodeName, "mtth_file_iblWrapping", False)
+        self.dimControl(nodeName, "mtth_file_interpolation", False)            
+        
         
     def buildTheaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
@@ -27,7 +43,10 @@ class AETheaNodeTemplate(BaseTemplate):
             self.endLayout()
         if self.thisNode.type() == "file":
             self.beginLayout("Thea" ,collapse=1)
-            
+            self.addControl("mtth_file_iblIntensity", label="IBL Intensity", changeCommand = self.updateFileTemplate)
+            self.addControl("mtth_file_iblRotation", label="IBL Rotation", changeCommand = self.updateFileTemplate)
+            self.addControl("mtth_file_iblWrapping", label="IBL Wrapping", changeCommand = self.updateFileTemplate)
+            self.addControl("mtth_file_interpolation", label="Interpolation", changeCommand = self.updateFileTemplate)
             self.endLayout()
     
     def buildBody(self, nodeName):

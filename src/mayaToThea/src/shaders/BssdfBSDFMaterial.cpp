@@ -77,6 +77,7 @@ MObject  BssdfBSDF::aLightBlindData;
 //---------------------------- automatically created attributes start ------------------------------------
 MObject BssdfBSDF::customTransmittedRoughness;
 MObject BssdfBSDF::normalMapping;
+MObject BssdfBSDF::reflectanceColor;
 MObject BssdfBSDF::bump;
 MObject BssdfBSDF::anisotropy;
 MObject BssdfBSDF::absorptionColor;
@@ -146,10 +147,14 @@ MStatus BssdfBSDF::initialize()
 	normalMapping = nAttr.create("normalMapping", "normalMapping",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( normalMapping ));
 
+	reflectanceColor = nAttr.createColor("reflectanceColor", "reflectanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( reflectanceColor ));
+
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( bump ));
 
-	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kInt, 0);
+	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
 
 	absorptionColor = nAttr.createColor("absorptionColor", "absorptionColor");
@@ -178,7 +183,7 @@ MStatus BssdfBSDF::initialize()
 	nAttr.setDefault(1,1,1);
 	CHECK_MSTATUS(addAttribute( scatteringColor ));
 
-	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kInt, 0);
+	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( rotation ));
 
 	transmittedRoughness = nAttr.create("transmittedRoughness", "transmittedRoughness",  MFnNumericData::kFloat, 0.0);

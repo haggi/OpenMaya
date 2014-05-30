@@ -29,9 +29,13 @@ class AEBasicBSDFTemplate(BaseTemplate):
         self.beginLayout("ShaderSettings" ,collapse=0)
         self.beginNoOptimize()
         #autoAddBegin
-        self.addControl("normalMapping", label="NormalMapping")
+        self.addControl("diffuseColor", label="Diffuse Color")
+        self.addControl("translucentColor", label="Translucent Color")
+        self.addControl("reflectanceColor", label="Reflectance Color")
+        self.addControl("sigma", label="Sigma")
         self.addControl("kappa", label="Kappa")
         self.addControl("bump", label="Bump")
+        self.addControl("normalMapping", label="NormalMapping")
         self.addControl("anisotropy", label="Anisotropy")
         self.addControl("absorptionColor", label="AbsorptionColor")
         self.addControl("absorptionDensity", label="AbsorptionDensity")
@@ -40,7 +44,6 @@ class AEBasicBSDFTemplate(BaseTemplate):
         self.addControl("microRoughnessHeight", label="MicroRoughnessHeight")
         self.addControl("microRoughness", label="MicroRoughness")
         self.addControl("rotation", label="Rotation")
-        self.addControl("sigma", label="Sigma")
         self.addControl("microRoughnessWidth", label="MicroRoughnessWidth")
         self.addSeparator()
         #autoAddEnd

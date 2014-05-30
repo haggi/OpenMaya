@@ -79,6 +79,7 @@ MObject CoatingBSDF::normalMapping;
 MObject CoatingBSDF::kappa;
 MObject CoatingBSDF::bump;
 MObject CoatingBSDF::anisotropy;
+MObject CoatingBSDF::reflectanceColor;
 MObject CoatingBSDF::ior;
 MObject CoatingBSDF::roughness;
 MObject CoatingBSDF::microRoughnessHeight;
@@ -147,8 +148,12 @@ MStatus CoatingBSDF::initialize()
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( bump ));
 
-	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kInt, 0);
+	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
+
+	reflectanceColor = nAttr.createColor("reflectanceColor", "reflectanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( reflectanceColor ));
 
 	ior = nAttr.create("ior", "ior",  MFnNumericData::kFloat, 1.5);
 	CHECK_MSTATUS(addAttribute( ior ));
@@ -165,10 +170,10 @@ MStatus CoatingBSDF::initialize()
 	microRoughness = nAttr.create("microRoughness", "microRoughness",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( microRoughness ));
 
-	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kInt, 0);
+	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( rotation ));
 
-	thickness = nAttr.create("thickness", "thickness",  MFnNumericData::kInt, 100);
+	thickness = nAttr.create("thickness", "thickness",  MFnNumericData::kFloat, 100.0);
 	CHECK_MSTATUS(addAttribute( thickness ));
 
 	microRoughnessWidth = nAttr.create("microRoughnessWidth", "microRoughnessWidth",  MFnNumericData::kFloat, 10.0);

@@ -231,7 +231,7 @@ void TheaRenderer::defineGeometry()
 		{	
 			obj->xmlModel = boost::shared_ptr<TheaSDK::XML::Model>(new TheaSDK::XML::Model(obj->parent->shortName.asChar()));
 			this->defineShader(obj);
-			obj->xmlModel->materialName="DefaultMat";
+			//obj->xmlModel->materialName="DefaultMat";
 
 			obj->xmlModel->surface = TheaSDK::XML::Surface(TheaSDK::XML::SurfaceInstance(objName.asChar()));
 

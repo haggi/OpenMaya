@@ -7,6 +7,7 @@ shader_end
 
 # supported maya textures
 shader_start:file
+	inatt:fileTextureName:string	
 	outatt:outColor:color
 shader_end
 
@@ -18,8 +19,9 @@ shader_end
 shader_start:BssdfBSDF
 	inatt:customTransmittedRoughness:bool
 	inatt:normalMapping:bool
+	inatt:reflectanceColor:color
 	inatt:bump:float
-	inatt:anisotropy:int
+	inatt:anisotropy:float
 	inatt:absorptionColor:color
 	inatt:absorptionDensity:float
 	inatt:ior:float
@@ -28,7 +30,7 @@ shader_start:BssdfBSDF
 	inatt:scatteringDensity:float
 	inatt:traceReflections:bool
 	inatt:scatteringColor:color
-	inatt:rotation:int
+	inatt:rotation:float
 	inatt:transmittedRoughness:float
 	outatt:outColor:color
 shader_end
@@ -37,17 +39,19 @@ shader_start:GlossyBSDF
 	inatt:customTransmittedRoughness:bool
 	inatt:normalMapping:bool
 	inatt:abbe:float
+	inatt:reflectanceColor:color
 	inatt:kappa:float
 	inatt:bump:float
-	inatt:anisotropy:int
+	inatt:anisotropy:float
 	inatt:absorptionColor:color
 	inatt:ior:float
 	inatt:roughness:float
 	inatt:traceReflections:bool
 	inatt:iorSource:None
 	inatt:traceRefractions:bool
-	inatt:rotation:int
+	inatt:rotation:float
 	inatt:transmittedRoughness:float
+	inatt:transmittanceColor:color
 	outatt:outColor:color
 shader_end
 
@@ -55,30 +59,35 @@ shader_start:CoatingBSDF
 	inatt:normalMapping:bool
 	inatt:kappa:float
 	inatt:bump:float
-	inatt:anisotropy:int
+	inatt:anisotropy:float
+	inatt:reflectanceColor:color
 	inatt:ior:float
 	inatt:roughness:float
 	inatt:microRoughnessHeight:float
 	inatt:coatingAbsorption:bool
 	inatt:microRoughness:bool
-	inatt:rotation:int
-	inatt:thickness:int
+	inatt:rotation:float
+	inatt:thickness:float
 	inatt:microRoughnessWidth:float
 	outatt:outColor:color
 shader_end
 
 shader_start:BasicBSDF
 	inatt:normalMapping:bool
+	inatt:translucentColor:color
+	inatt:reflectanceColor:color
 	inatt:kappa:float
+	inatt:diffuseColor:color
 	inatt:bump:float
-	inatt:anisotropy:int
+	inatt:anisotropy:float
 	inatt:absorptionColor:color
-	inatt:absorptionDensity:int
+	inatt:absorptionDensity:float
 	inatt:ior:float
 	inatt:roughness:float
 	inatt:microRoughnessHeight:float
 	inatt:microRoughness:bool
-	inatt:rotation:int
+	inatt:rotation:float
+	inatt:reflectance90Deg:color
 	inatt:sigma:float
 	inatt:microRoughnessWidth:float
 	outatt:outColor:color
@@ -86,6 +95,7 @@ shader_end
 
 shader_start:ThinFilmBSDF
 	inatt:bump:float
+	inatt:transmittanceColor:color
 	inatt:interference:bool
 	inatt:ior:float
 	inatt:thickness:int

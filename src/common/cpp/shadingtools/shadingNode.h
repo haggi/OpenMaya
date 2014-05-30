@@ -14,6 +14,14 @@ struct ShaderAttribute
 	{
 		connected = false;
 	}
+	enum AttributeType {
+		NONE=0,
+		MESSAGE,
+		FLOAT,
+		COLOR,
+		STRING,
+		BOOL
+	};
 	std::string name;
 	std::string type;
 	bool connected;

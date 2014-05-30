@@ -76,7 +76,10 @@ MObject  BasicBSDF::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject BasicBSDF::normalMapping;
+MObject BasicBSDF::translucentColor;
+MObject BasicBSDF::reflectanceColor;
 MObject BasicBSDF::kappa;
+MObject BasicBSDF::diffuseColor;
 MObject BasicBSDF::bump;
 MObject BasicBSDF::anisotropy;
 MObject BasicBSDF::absorptionColor;
@@ -86,6 +89,7 @@ MObject BasicBSDF::roughness;
 MObject BasicBSDF::microRoughnessHeight;
 MObject BasicBSDF::microRoughness;
 MObject BasicBSDF::rotation;
+MObject BasicBSDF::reflectance90Deg;
 MObject BasicBSDF::sigma;
 MObject BasicBSDF::microRoughnessWidth;
 //---------------------------- automatically created attributes end ------------------------------------
@@ -142,20 +146,32 @@ MStatus BasicBSDF::initialize()
 	normalMapping = nAttr.create("normalMapping", "normalMapping",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( normalMapping ));
 
+	translucentColor = nAttr.createColor("translucentColor", "translucentColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( translucentColor ));
+
+	reflectanceColor = nAttr.createColor("reflectanceColor", "reflectanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( reflectanceColor ));
+
 	kappa = nAttr.create("kappa", "kappa",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( kappa ));
+
+	diffuseColor = nAttr.createColor("diffuseColor", "diffuseColor");
+	nAttr.setDefault(0.3,0.4,0.7);
+	CHECK_MSTATUS(addAttribute( diffuseColor ));
 
 	bump = nAttr.create("bump", "bump",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( bump ));
 
-	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kInt, 0);
+	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
 
 	absorptionColor = nAttr.createColor("absorptionColor", "absorptionColor");
 	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( absorptionColor ));
 
-	absorptionDensity = nAttr.create("absorptionDensity", "absorptionDensity",  MFnNumericData::kInt, 100);
+	absorptionDensity = nAttr.create("absorptionDensity", "absorptionDensity",  MFnNumericData::kFloat, 100.0);
 	CHECK_MSTATUS(addAttribute( absorptionDensity ));
 
 	ior = nAttr.create("ior", "ior",  MFnNumericData::kFloat, 1.5);
@@ -170,8 +186,12 @@ MStatus BasicBSDF::initialize()
 	microRoughness = nAttr.create("microRoughness", "microRoughness",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( microRoughness ));
 
-	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kInt, 0);
+	rotation = nAttr.create("rotation", "rotation",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( rotation ));
+
+	reflectance90Deg = nAttr.createColor("reflectance90Deg", "reflectance90Deg");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( reflectance90Deg ));
 
 	sigma = nAttr.create("sigma", "sigma",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( sigma ));

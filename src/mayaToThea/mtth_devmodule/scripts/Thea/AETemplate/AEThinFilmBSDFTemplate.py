@@ -30,6 +30,7 @@ class AEThinFilmBSDFTemplate(BaseTemplate):
         self.beginNoOptimize()
         #autoAddBegin
         self.addControl("bump", label="Bump")
+        self.addControl("transmittanceColor", label="Transmittance Color")
         self.addControl("interference", label="Interference")
         self.addControl("ior", label="Ior")
         self.addControl("thickness", label="Thickness")

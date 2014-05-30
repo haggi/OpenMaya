@@ -28,6 +28,8 @@ void TheaRenderer::renderEndCallback( void *ptr )
 
 void TheaRenderer::render()
 {
+	clearMaterialLists();
+
 	MString fileName = this->mtth_scene->getFileName();
 	this->mtth_renderGlobals->exportSceneFile = true; // trigger use of XML commands
 	if( this->mtth_renderGlobals->exportSceneFile )
@@ -44,6 +46,7 @@ void TheaRenderer::render()
 		return;
 	}
 
+	this->defineSettings();
 	this->defineCamera();
 	this->defineGeometry();
 	this->defineLights();

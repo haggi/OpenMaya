@@ -42,7 +42,6 @@ gatherTraceGlossyRefractions,bool,GatherTraceGlossyRefractions,true
 directAdaptiveSampling,bool,DirectAdaptiveSampling,true
 russianRouletteDepth,int,RussianRouletteDepth,4
 causticPhotonsCaptured,int,CausticPhotonsCaptured,10000
-threads,int,Threads,0
 causticSharpening,bool,CausticSharpening,false
 gatherMaxError,float,GatherMaxError,0.04
 irradianceCacheMaxConstrast,float,IrradianceCacheMaxConstrast,0.02
@@ -67,7 +66,6 @@ antialiasingClampRadiance,bool,AntialiasingClampRadiance,true
 aoDistance,float,AoDistance,10
 priority,enum,Priority,LowPriority,InheritPriority:LowerPriority:LowPriority:NormalPriority:HighPriority:HighestPriority
 skyAnimationStart,string,SkyAnimationStart,12:00:00
-maxSamples,int,MaxSamples,0
 progressiveClampRadiance,bool,ProgressiveClampRadiance,true
 walkthroughAnimation,bool,WalkthroughAnimation,false
 russianRoulette,bool,RussianRoulette,true
@@ -85,7 +83,7 @@ biasedSupersampling,bool,BiasedSupersampling,false
 irradianceCaching,bool,IrradianceCaching,true
 supersampling,enum,Supersampling,AutoSS,AutoSS:NoneSS:NormalSS:HighSS
 fieldDensity,int,FieldDensity,100000
-engine,enum,Engine,UnbiasedTR1,AdaptiveBSD:UnbiasedTR1:UnbiasedTR2:ProgressiveAO:ProgressiveMC:AdaptiveAMC:PrestoAO:PrestoMC:TotalEngines
+engine,enum,Engine,PrestoAO,AdaptiveBSD:UnbiasedTR1:UnbiasedTR2:ProgressiveAO:ProgressiveMC:AdaptiveAMC:PrestoAO:PrestoMC
 imageSaving,bool,ImageSaving,true
 brightnessThreshold,float,BrightnessThreshold,0.001
 relight,bool,Relight,false
@@ -122,7 +120,7 @@ skyAnimation,bool,SkyAnimation,false
 aoHighColor,color,AoHighColor,1:1:1
 
 illumination, enum, Illumination, 0, NoIllumination:DomeIllumination:IBLIllumination:PhysicalSkyIllumination
-sunDirectionType, enum, Sun Direction Type, 0, DirLight:Time/Date:Azimuth/Elevation
+sunDirectionType, enum, Sun Direction Type, 0, DirLight:Time/Date:Location:Azimuth/Elevation
 turbidity, float, Turbidity, 2.5
 ozone, float, Ozone, 0.35
 waterVapor, float, Water Vapour, 2.0
