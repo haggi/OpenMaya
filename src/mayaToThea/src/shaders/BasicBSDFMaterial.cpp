@@ -87,6 +87,7 @@ MObject BasicBSDF::absorptionDensity;
 MObject BasicBSDF::ior;
 MObject BasicBSDF::roughness;
 MObject BasicBSDF::microRoughnessHeight;
+MObject BasicBSDF::traceReflections;
 MObject BasicBSDF::microRoughness;
 MObject BasicBSDF::rotation;
 MObject BasicBSDF::reflectance90Deg;
@@ -182,6 +183,9 @@ MStatus BasicBSDF::initialize()
 
 	microRoughnessHeight = nAttr.create("microRoughnessHeight", "microRoughnessHeight",  MFnNumericData::kFloat, 0.25);
 	CHECK_MSTATUS(addAttribute( microRoughnessHeight ));
+
+	traceReflections = nAttr.create("traceReflections", "traceReflections",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( traceReflections ));
 
 	microRoughness = nAttr.create("microRoughness", "microRoughness",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( microRoughness ));

@@ -8,6 +8,8 @@
 
 #include <maya/MObject.h>
 #include <maya/MMatrix.h>
+#include <maya/MColor.h>
+#include <maya/MString.h>
 
 #include <SDK/Integration/sdk.h>
 #include <SDK/Integration/sdk.plus.h>
@@ -19,9 +21,12 @@
 	#include <SDK/Integration/sdk.scene.h>
 #endif
 
+#include "TheaXMLUtil.h"
+
 class mtth_MayaScene;
 class mtth_RenderGlobals;
 class mtth_MayaObject;
+
 
 class TheaShadingNode
 {
@@ -122,6 +127,7 @@ public:
 	void clearMaterialLists();
 	void createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj);
 	void assignParameters(ShadingNode& sn, TheaShadingNode& tsn);
+	void assignObjParameters(ShadingNode& sn, Object& o);
 };
 
 #endif

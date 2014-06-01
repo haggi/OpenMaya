@@ -1,4 +1,4 @@
-#include "materialBase.h"
+#include "DiffuseLightMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -27,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	MaterialBase::id( 0x00000 );
+MTypeId	DiffuseLight::id( 0x0011EF5D );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void MaterialBase::postConstructor( )
+void DiffuseLight::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -47,34 +47,41 @@ void MaterialBase::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  MaterialBase::aTranslucenceCoeff;
-MObject  MaterialBase::aDiffuseReflectivity;
-MObject  MaterialBase::aInTransparency;
-MObject  MaterialBase::aColor;
-MObject  MaterialBase::aIncandescence;
-MObject  MaterialBase::aOutColor;
-MObject  MaterialBase::aOutTransparency;
-MObject  MaterialBase::aNormalCamera;
-MObject  MaterialBase::aNormalCameraX;
-MObject  MaterialBase::aNormalCameraY;
-MObject  MaterialBase::aNormalCameraZ;
-MObject  MaterialBase::aLightData;
-MObject  MaterialBase::aLightDirection;
-MObject  MaterialBase::aLightDirectionX;
-MObject  MaterialBase::aLightDirectionY;
-MObject  MaterialBase::aLightDirectionZ;
-MObject  MaterialBase::aLightIntensity;
-MObject  MaterialBase::aLightIntensityR;
-MObject  MaterialBase::aLightIntensityG;
-MObject  MaterialBase::aLightIntensityB;
-MObject  MaterialBase::aLightAmbient;
-MObject  MaterialBase::aLightDiffuse;
-MObject  MaterialBase::aLightSpecular;
-MObject  MaterialBase::aLightShadowFraction;
-MObject  MaterialBase::aPreShadowIntensity;
-MObject  MaterialBase::aLightBlindData;
+MObject  DiffuseLight::aTranslucenceCoeff;
+MObject  DiffuseLight::aDiffuseReflectivity;
+MObject  DiffuseLight::aInTransparency;
+MObject  DiffuseLight::aIncandescence;
+MObject  DiffuseLight::aOutColor;
+MObject  DiffuseLight::aOutTransparency;
+MObject  DiffuseLight::aNormalCamera;
+MObject  DiffuseLight::aNormalCameraX;
+MObject  DiffuseLight::aNormalCameraY;
+MObject  DiffuseLight::aNormalCameraZ;
+MObject  DiffuseLight::aLightData;
+MObject  DiffuseLight::aLightDirection;
+MObject  DiffuseLight::aLightDirectionX;
+MObject  DiffuseLight::aLightDirectionY;
+MObject  DiffuseLight::aLightDirectionZ;
+MObject  DiffuseLight::aLightIntensity;
+MObject  DiffuseLight::aLightIntensityR;
+MObject  DiffuseLight::aLightIntensityG;
+MObject  DiffuseLight::aLightIntensityB;
+MObject  DiffuseLight::aLightAmbient;
+MObject  DiffuseLight::aLightDiffuse;
+MObject  DiffuseLight::aLightSpecular;
+MObject  DiffuseLight::aLightShadowFraction;
+MObject  DiffuseLight::aPreShadowIntensity;
+MObject  DiffuseLight::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject DiffuseLight::attenuation;
+MObject DiffuseLight::power;
+MObject DiffuseLight::efficacy;
+MObject DiffuseLight::color;
+MObject DiffuseLight::frontSide;
+MObject DiffuseLight::backSide;
+MObject DiffuseLight::emitter;
+MObject DiffuseLight::unit;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -82,8 +89,8 @@ MObject  MaterialBase::aLightBlindData;
 // destruction
 //
 
-MaterialBase::MaterialBase() { }
-MaterialBase::~MaterialBase() { }
+DiffuseLight::DiffuseLight() { }
+DiffuseLight::~DiffuseLight() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -91,12 +98,12 @@ MaterialBase::~MaterialBase() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new MaterialBase object.
+// In this case creator simply returns a new DiffuseLight object.
 //
 
-void* MaterialBase::creator()
+void* DiffuseLight::creator()
 {
-    return new MaterialBase();
+    return new DiffuseLight();
 }
 
 
@@ -106,7 +113,7 @@ void* MaterialBase::creator()
 // want to connect to.
 //
 
-MStatus MaterialBase::initialize()
+MStatus DiffuseLight::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -126,6 +133,35 @@ MStatus MaterialBase::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	attenuation = eAttr.create("attenuation", "attenuation", 1, &status);
+	status = eAttr.addField( "Inverse", 0 );
+	status = eAttr.addField( "Inverse Square", 1 );
+	CHECK_MSTATUS(addAttribute( attenuation ));
+
+	power = nAttr.create("power", "power",  MFnNumericData::kFloat, 500.0);
+	CHECK_MSTATUS(addAttribute( power ));
+
+	efficacy = nAttr.create("efficacy", "efficacy",  MFnNumericData::kFloat, 70.0);
+	CHECK_MSTATUS(addAttribute( efficacy ));
+
+	color = nAttr.createColor("color", "color");
+	nAttr.setDefault(1,1,1);
+	CHECK_MSTATUS(addAttribute( color ));
+
+	frontSide = nAttr.create("frontSide", "frontSide",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( frontSide ));
+
+	backSide = nAttr.create("backSide", "backSide",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( backSide ));
+
+	emitter = nAttr.create("emitter", "emitter",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( emitter ));
+
+	unit = eAttr.create("unit", "unit", 0, &status);
+	status = eAttr.addField( "Watts", 0 );
+	status = eAttr.addField( "Lumens", 1 );
+	CHECK_MSTATUS(addAttribute( unit ));
+
 //---------------------------- automatically created attributes end ------------------------------------
 
     // Input Attributes
@@ -143,12 +179,6 @@ MStatus MaterialBase::initialize()
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.8f ) );
-
-    aColor = nAttr.createColor( "color", "c", &status );
-    CHECK_MSTATUS( status );
-    CHECK_MSTATUS( nAttr.setKeyable( true ) );
-    CHECK_MSTATUS( nAttr.setStorable( true ) );
-    CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.58824f, 0.644f ) );
 
     aIncandescence = nAttr.createColor( "incandescence", "ic", &status );
     CHECK_MSTATUS( status );
@@ -357,7 +387,6 @@ MStatus MaterialBase::initialize()
     //
     CHECK_MSTATUS( addAttribute( aTranslucenceCoeff ) );
     CHECK_MSTATUS( addAttribute( aDiffuseReflectivity ) );
-    CHECK_MSTATUS( addAttribute( aColor ) );
     CHECK_MSTATUS( addAttribute( aIncandescence ) );
     CHECK_MSTATUS( addAttribute( aInTransparency ) );
     CHECK_MSTATUS( addAttribute( aOutColor ) );
@@ -375,7 +404,7 @@ MStatus MaterialBase::initialize()
     //
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
+    CHECK_MSTATUS( attributeAffects( color, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aIncandescence, aOutColor ) );
@@ -408,7 +437,7 @@ MStatus MaterialBase::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus MaterialBase::compute( const MPlug& plug, MDataBlock& block )
+MStatus DiffuseLight::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.
@@ -423,7 +452,7 @@ MStatus MaterialBase::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceNormal = block.inputValue( aNormalCamera, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-        MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
+        MFloatVector surfaceColor = block.inputValue( color, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();

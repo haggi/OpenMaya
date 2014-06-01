@@ -7,6 +7,11 @@ shader_end
 
 # supported maya textures
 shader_start:file
+	inatt:repeatU:float
+	inatt:repeatV:float
+	inatt:offsetU:float
+	inatt:offsetV:float
+	inatt:rotateUV:float
 	inatt:fileTextureName:string	
 	outatt:outColor:color
 shader_end
@@ -85,6 +90,7 @@ shader_start:BasicBSDF
 	inatt:ior:float
 	inatt:roughness:float
 	inatt:microRoughnessHeight:float
+	inatt:traceReflections:bool
 	inatt:microRoughness:bool
 	inatt:rotation:float
 	inatt:reflectance90Deg:color
@@ -102,25 +108,32 @@ shader_start:ThinFilmBSDF
 	outatt:outColor:color
 shader_end
 
+shader_start:DiffuseLight
+	inatt:attenuation:enum
+	inatt:power:float
+	inatt:efficacy:float
+	inatt:color:color
+	inatt:frontSide:bool
+	inatt:backSide:bool
+	inatt:emitter:bool
+	inatt:unit:enum
+	outatt:outColor:color
+shader_end
+
 shader_start:TheaMaterial
-	inatt:globalEmitter:bool
-	inatt:bsdf:message
 	inatt:emitterAccuracy:float
-	inatt:emitterMinRays:int
-	inatt:causticEmitter:bool
+	inatt:ambientEmitter:bool
 	inatt:twosided:bool
 	inatt:emitterMaxRays:int
-	inatt:dirtLevel:float
+	inatt:shadowCatcher:bool
 	inatt:tracingDepth:int
 	inatt:passiveEmitter:bool
-	inatt:repaintable:bool
-	inatt:blurredMinSubdivs:int
+	inatt:bsdf:message
 	inatt:perceptualLevel:float
-	inatt:ambientEmitter:bool
-	inatt:blurredMaxSubdivs:int
-	inatt:activeDirt:bool
+	inatt:emitterMinRays:int
+	inatt:emitter:message
 	inatt:ambientLevel:float
-	inatt:shadowCatcher:bool
+	inatt:activeDirt:bool
 	outatt:outColor:color
 shader_end
 

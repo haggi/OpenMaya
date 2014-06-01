@@ -27,7 +27,7 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	TheaMaterial::id( 0x0011EF5D );
+MTypeId	TheaMaterial::id( 0x0011EF5E );
 
 
 // the postConstructor() function is called immediately after the objects
@@ -75,24 +75,19 @@ MObject  TheaMaterial::aPreShadowIntensity;
 MObject  TheaMaterial::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject TheaMaterial::globalEmitter;
-MObject TheaMaterial::bsdf;
 MObject TheaMaterial::emitterAccuracy;
-MObject TheaMaterial::emitterMinRays;
-MObject TheaMaterial::causticEmitter;
+MObject TheaMaterial::ambientEmitter;
 MObject TheaMaterial::twosided;
 MObject TheaMaterial::emitterMaxRays;
-MObject TheaMaterial::dirtLevel;
+MObject TheaMaterial::shadowCatcher;
 MObject TheaMaterial::tracingDepth;
 MObject TheaMaterial::passiveEmitter;
-MObject TheaMaterial::repaintable;
-MObject TheaMaterial::blurredMinSubdivs;
+MObject TheaMaterial::bsdf;
 MObject TheaMaterial::perceptualLevel;
-MObject TheaMaterial::ambientEmitter;
-MObject TheaMaterial::blurredMaxSubdivs;
-MObject TheaMaterial::activeDirt;
+MObject TheaMaterial::emitterMinRays;
+MObject TheaMaterial::emitter;
 MObject TheaMaterial::ambientLevel;
-MObject TheaMaterial::shadowCatcher;
+MObject TheaMaterial::activeDirt;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -144,20 +139,11 @@ MStatus TheaMaterial::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	globalEmitter = nAttr.create("globalEmitter", "globalEmitter",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( globalEmitter ));
-
-	bsdf = mAttr.create("bsdf", "bsdf");
-	CHECK_MSTATUS(addAttribute( bsdf ));
-
 	emitterAccuracy = nAttr.create("emitterAccuracy", "emitterAccuracy",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( emitterAccuracy ));
 
-	emitterMinRays = nAttr.create("emitterMinRays", "emitterMinRays",  MFnNumericData::kInt, 8);
-	CHECK_MSTATUS(addAttribute( emitterMinRays ));
-
-	causticEmitter = nAttr.create("causticEmitter", "causticEmitter",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( causticEmitter ));
+	ambientEmitter = nAttr.create("ambientEmitter", "ambientEmitter",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( ambientEmitter ));
 
 	twosided = nAttr.create("twosided", "twosided",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( twosided ));
@@ -165,8 +151,8 @@ MStatus TheaMaterial::initialize()
 	emitterMaxRays = nAttr.create("emitterMaxRays", "emitterMaxRays",  MFnNumericData::kInt, 100);
 	CHECK_MSTATUS(addAttribute( emitterMaxRays ));
 
-	dirtLevel = nAttr.create("dirtLevel", "dirtLevel",  MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( dirtLevel ));
+	shadowCatcher = nAttr.create("shadowCatcher", "shadowCatcher",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( shadowCatcher ));
 
 	tracingDepth = nAttr.create("tracingDepth", "tracingDepth",  MFnNumericData::kInt, -1);
 	CHECK_MSTATUS(addAttribute( tracingDepth ));
@@ -174,29 +160,23 @@ MStatus TheaMaterial::initialize()
 	passiveEmitter = nAttr.create("passiveEmitter", "passiveEmitter",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( passiveEmitter ));
 
-	repaintable = nAttr.create("repaintable", "repaintable",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( repaintable ));
-
-	blurredMinSubdivs = nAttr.create("blurredMinSubdivs", "blurredMinSubdivs",  MFnNumericData::kInt, -1);
-	CHECK_MSTATUS(addAttribute( blurredMinSubdivs ));
+	bsdf = mAttr.create("bsdf", "bsdf");
+	CHECK_MSTATUS(addAttribute( bsdf ));
 
 	perceptualLevel = nAttr.create("perceptualLevel", "perceptualLevel",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( perceptualLevel ));
 
-	ambientEmitter = nAttr.create("ambientEmitter", "ambientEmitter",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( ambientEmitter ));
+	emitterMinRays = nAttr.create("emitterMinRays", "emitterMinRays",  MFnNumericData::kInt, 8);
+	CHECK_MSTATUS(addAttribute( emitterMinRays ));
 
-	blurredMaxSubdivs = nAttr.create("blurredMaxSubdivs", "blurredMaxSubdivs",  MFnNumericData::kInt, -1);
-	CHECK_MSTATUS(addAttribute( blurredMaxSubdivs ));
-
-	activeDirt = nAttr.create("activeDirt", "activeDirt",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( activeDirt ));
+	emitter = mAttr.create("emitter", "emitter");
+	CHECK_MSTATUS(addAttribute( emitter ));
 
 	ambientLevel = nAttr.create("ambientLevel", "ambientLevel",  MFnNumericData::kFloat, 1.0f);
 	CHECK_MSTATUS(addAttribute( ambientLevel ));
 
-	shadowCatcher = nAttr.create("shadowCatcher", "shadowCatcher",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( shadowCatcher ));
+	activeDirt = nAttr.create("activeDirt", "activeDirt",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( activeDirt ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

@@ -11,6 +11,7 @@
 #include "shaders/BasicBSDFMaterial.h"
 #include "shaders/ThinFilmBSDFMaterial.h"
 #include "shaders/TheaMaterialMaterial.h"
+#include "shaders/DiffuseLightMaterial.h"
 
 static const MString BssdfBSDFsRegistrantId("BssdfBSDFPlugin");
 static const MString BssdfBSDFsDrawDBClassification("drawdb/shader/surface/BssdfBSDF");
@@ -30,6 +31,9 @@ static const MString ThinFilmBSDFsFullClassification("thea/material:shader/surfa
 static const MString TheaMaterialsRegistrantId("TheaMaterialPlugin");
 static const MString TheaMaterialsDrawDBClassification("drawdb/shader/surface/TheaMaterial");
 static const MString TheaMaterialsFullClassification("thea/material:shader/surface:" + TheaMaterialsDrawDBClassification);
+static const MString DiffuseLightsRegistrantId("DiffuseLightPlugin");
+static const MString DiffuseLightsDrawDBClassification("drawdb/shader/surface/DiffuseLight");
+static const MString DiffuseLightsFullClassification("thea/material:shader/surface:" + DiffuseLightsDrawDBClassification);
 
 
 #define VENDOR "haggis vfx & animation"
@@ -59,7 +63,7 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( plugin.registerNode( "BasicBSDF", BasicBSDF::id, BasicBSDF::creator, BasicBSDF::initialize, MPxNode::kDependNode, &BasicBSDFsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "ThinFilmBSDF", ThinFilmBSDF::id, ThinFilmBSDF::creator, ThinFilmBSDF::initialize, MPxNode::kDependNode, &ThinFilmBSDFsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "TheaMaterial", TheaMaterial::id, TheaMaterial::creator, TheaMaterial::initialize, MPxNode::kDependNode, &TheaMaterialsFullClassification ));
-
+	CHECK_MSTATUS( plugin.registerNode( "DiffuseLight", DiffuseLight::id, DiffuseLight::creator, DiffuseLight::initialize, MPxNode::kDependNode, &DiffuseLightsFullClassification ));
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToThea::creator, MayaToThea::newSyntax );
 	if (!status) {
@@ -123,6 +127,7 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS( plugin.deregisterNode( BasicBSDF::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( ThinFilmBSDF::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( TheaMaterial::id ) );
+	CHECK_MSTATUS( plugin.deregisterNode( DiffuseLight::id ) );
 
 
 	std::cout << "deregister mtth globals\n";

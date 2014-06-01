@@ -94,6 +94,7 @@
     <ClCompile Include="..\src\shaders\BssdfBSDFMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\CoatingBSDFMaterial.cpp" />
     <ClCompile Include="..\src\shaders\CoatingBSDFMaterialOverride.cpp" />
+    <ClCompile Include="..\src\shaders\DiffuseLightMaterial.cpp" />
     <ClCompile Include="..\src\shaders\GlossyBSDFMaterial.cpp" />
     <ClCompile Include="..\src\shaders\GlossyBSDFMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\TheaMaterialMaterial.cpp" />
@@ -118,6 +119,7 @@
     <ClCompile Include="..\src\mtth_common\mtth_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\Thea\TheaEnvironment.cpp" />
+    <ClCompile Include="..\src\Thea\TheaXMLUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
@@ -149,6 +151,7 @@
     <ClInclude Include="..\src\shaders\BssdfBSDFMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\CoatingBSDFMaterial.h" />
     <ClInclude Include="..\src\shaders\CoatingBSDFMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\DiffuseLightMaterial.h" />
     <ClInclude Include="..\src\shaders\GlossyBSDFMaterial.h" />
     <ClInclude Include="..\src\shaders\GlossyBSDFMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\TheaMaterialMaterial.h" />
@@ -164,6 +167,7 @@
     <ClInclude Include="..\src\mtth_common\mtth_mayaScene.h" />
     <ClInclude Include="..\src\mtth_common\mtth_renderGlobals.h" />
     <ClInclude Include="..\src\mtth_common\mtth_renderGlobalsNode.h" />
+    <ClInclude Include="..\src\Thea\TheaXMLUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtth_devmodule\ressources\CornellBox.xml" />

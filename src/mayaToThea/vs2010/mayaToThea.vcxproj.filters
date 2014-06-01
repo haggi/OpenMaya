@@ -206,6 +206,12 @@
     <ClCompile Include="..\src\Thea\TheaSettings.cpp">
       <Filter>Source Files\Thea</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Thea\TheaXMLUtil.cpp">
+      <Filter>Source Files\Thea</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\DiffuseLightMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -338,6 +344,12 @@
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\ThinFilmBSDFMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Thea\TheaXMLUtil.h">
+      <Filter>Source Files\Thea</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\DiffuseLightMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>

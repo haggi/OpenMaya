@@ -104,9 +104,9 @@ Lux:
 Thea:
 0x0011EF56	0x0011EF56	mayaToThea	mtth_renderGlobalsNode.cpp
 //0x0011EF57	0x0011EF57	mayaToCorona	coronaOSLNode.cpp
-0x0011EF58 - 0x0011EF5D mayaToThea shaderNodes
+0x0011EF58 - 0x0011EF5E mayaToThea shaderNodes
 
-last one 0x0011EF5D
+last one 0x0011EF5E
 
 
 

@@ -51,6 +51,7 @@ protected:
 	static    MObject ior;
 	static    MObject roughness;
 	static    MObject microRoughnessHeight;
+	static    MObject traceReflections;
 	static    MObject microRoughness;
 	static    MObject rotation;
 	static    MObject reflectance90Deg;

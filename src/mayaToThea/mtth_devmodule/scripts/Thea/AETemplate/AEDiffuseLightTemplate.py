@@ -12,10 +12,10 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
         
 
-class AETheaMaterialTemplate(BaseTemplate):
+class AEDiffuseLightTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
-        log.debug("AETheaMaterialTemplate")
+        log.debug("AEDiffuseLightTemplate")
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         pm.mel.AEswatchDisplay(nodeName)
@@ -29,19 +29,14 @@ class AETheaMaterialTemplate(BaseTemplate):
         self.beginLayout("ShaderSettings" ,collapse=0)
         self.beginNoOptimize()
         #autoAddBegin
-        self.addControl("emitterAccuracy", label="EmitterAccuracy")
-        self.addControl("ambientEmitter", label="AmbientEmitter")
-        self.addControl("twosided", label="Twosided")
-        self.addControl("emitterMaxRays", label="EmitterMaxRays")
-        self.addControl("shadowCatcher", label="ShadowCatcher")
-        self.addControl("tracingDepth", label="TracingDepth")
-        self.addControl("passiveEmitter", label="PassiveEmitter")
-        self.addControl("bsdf", label="BSDF")
-        self.addControl("perceptualLevel", label="PerceptualLevel")
-        self.addControl("emitterMinRays", label="EmitterMinRays")
+        self.addControl("attenuation", label="Attenuation")
+        self.addControl("power", label="Power")
+        self.addControl("efficacy", label="Efficacy")
+        self.addControl("color", label="Color")
+        self.addControl("frontSide", label="Front Side")
+        self.addControl("backSide", label="Back Side")
         self.addControl("emitter", label="Emitter")
-        self.addControl("ambientLevel", label="AmbientLevel")
-        self.addControl("activeDirt", label="ActiveDirt")
+        self.addControl("unit", label="Unit")
         self.addSeparator()
         #autoAddEnd
         self.endNoOptimize()

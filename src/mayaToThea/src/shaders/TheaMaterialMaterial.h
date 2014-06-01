@@ -39,24 +39,19 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject globalEmitter;
-	static    MObject bsdf;
 	static    MObject emitterAccuracy;
-	static    MObject emitterMinRays;
-	static    MObject causticEmitter;
+	static    MObject ambientEmitter;
 	static    MObject twosided;
 	static    MObject emitterMaxRays;
-	static    MObject dirtLevel;
+	static    MObject shadowCatcher;
 	static    MObject tracingDepth;
 	static    MObject passiveEmitter;
-	static    MObject repaintable;
-	static    MObject blurredMinSubdivs;
+	static    MObject bsdf;
 	static    MObject perceptualLevel;
-	static    MObject ambientEmitter;
-	static    MObject blurredMaxSubdivs;
-	static    MObject activeDirt;
+	static    MObject emitterMinRays;
+	static    MObject emitter;
 	static    MObject ambientLevel;
-	static    MObject shadowCatcher;
+	static    MObject activeDirt;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

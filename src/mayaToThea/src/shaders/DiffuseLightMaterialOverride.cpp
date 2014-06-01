@@ -10,35 +10,35 @@
 
 #ifdef HAS_OVERRIDE
 
-#include "materialBaseOverride.h"
+#include "DiffuseLightOverride.h"
 
-MHWRender::MPxSurfaceShadingNodeOverride* MaterialBaseOverride::creator(const MObject& obj)
+MHWRender::MPxSurfaceShadingNodeOverride* DiffuseLightOverride::creator(const MObject& obj)
 {
-	return new MaterialBaseOverride(obj);
+	return new DiffuseLightOverride(obj);
 }
 
-MaterialBaseOverride::MaterialBaseOverride(const MObject& obj)
+DiffuseLightOverride::DiffuseLightOverride(const MObject& obj)
 : MPxSurfaceShadingNodeOverride(obj)
 {
 }
 
-MaterialBaseOverride::~MaterialBaseOverride()
+DiffuseLightOverride::~DiffuseLightOverride()
 {
 }
 
-MHWRender::DrawAPI MaterialBaseOverride::supportedDrawAPIs() const
+MHWRender::DrawAPI DiffuseLightOverride::supportedDrawAPIs() const
 {
 	// works in both gl and dx
 	return MHWRender::kOpenGL | MHWRender::kDirectX11;
 }
 
-MString MaterialBaseOverride::fragmentName() const
+MString DiffuseLightOverride::fragmentName() const
 {
 	// Just reuse Maya's lambert surface shader
 	return "mayaLambertSurface";
 }
 
-void MaterialBaseOverride::getCustomMappings(
+void DiffuseLightOverride::getCustomMappings(
 	MHWRender::MAttributeParameterMappingList& mappings)
 {
 	// The "color", "transparency" and "incandescence" attributes are all
@@ -54,19 +54,19 @@ void MaterialBaseOverride::getCustomMappings(
 	mappings.append(translucenceMapping);
 }
 
-MString MaterialBaseOverride::primaryColorParameter() const
+MString DiffuseLightOverride::primaryColorParameter() const
 {
 	// Use the color parameter from the lambert fragment as the primary color
 	return "color";
 }
 
-MString MaterialBaseOverride::transparencyParameter() const
+MString DiffuseLightOverride::transparencyParameter() const
 {
 	// Use the "transparency" parameter from the lambert fragment for transparency
 	return "transparency";
 }
 
-MString MaterialBaseOverride::bumpAttribute() const
+MString DiffuseLightOverride::bumpAttribute() const
 {
 	// Use the "normalCamera" attribute to recognize bump connections
 	return "normalCamera";

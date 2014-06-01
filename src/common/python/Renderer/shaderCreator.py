@@ -608,7 +608,12 @@ def shaderCreator(renderer, shortCut, mtype):
     fh = open(materialsFile, "r")
     attributes = fh.readlines()
     fh.close()
-
+    attClean = []
+    for a in attributes:
+        if not a.startswith("//"):
+            attClean.append(a)
+    attributes = attClean
+    
     attArray = []
     for att in attributes:
         att = att.strip()

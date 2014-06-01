@@ -1,5 +1,5 @@
-#ifndef MaterialBaseOverride_H
-#define MaterialBaseOverride_H
+#ifndef DiffuseLightOverride_H
+#define DiffuseLightOverride_H
 
 //-
 // ===========================================================================
@@ -13,18 +13,18 @@
 
 //
 // This is the MPxSurfaceShadingNodeOverride implementation to go along with
-// the node defined in MaterialBase.cpp. This provides draw support in
+// the node defined in DiffuseLight.cpp. This provides draw support in
 // Viewport 2.0.
 //
 
 #include <maya/MPxSurfaceShadingNodeOverride.h>
 
-class MaterialBaseOverride : public MHWRender::MPxSurfaceShadingNodeOverride
+class DiffuseLightOverride : public MHWRender::MPxSurfaceShadingNodeOverride
 {
 public:
 	static MHWRender::MPxSurfaceShadingNodeOverride* creator(const MObject& obj);
 
-	virtual ~MaterialBaseOverride();
+	virtual ~DiffuseLightOverride();
 
 	virtual MHWRender::DrawAPI supportedDrawAPIs() const;
 
@@ -37,7 +37,7 @@ public:
 	virtual MString bumpAttribute() const;
 
 private:
-	MaterialBaseOverride(const MObject& obj);
+	DiffuseLightOverride(const MObject& obj);
 };
 
-#endif // _MaterialBaseOverride
+#endif // _DiffuseLightOverride

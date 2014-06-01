@@ -1,7 +1,7 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-// Plugin MaterialBase Shader Class //
+// Plugin DiffuseLight Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -9,11 +9,11 @@
 // type MPxNode
 //
 
-class MaterialBase : public MPxNode
+class DiffuseLight : public MPxNode
 {
 public:
-                    MaterialBase();
-    virtual         ~MaterialBase();
+                    DiffuseLight();
+    virtual         ~DiffuseLight();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -39,6 +39,14 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject attenuation;
+	static    MObject power;
+	static    MObject efficacy;
+	static    MObject color;
+	static    MObject frontSide;
+	static    MObject backSide;
+	static    MObject emitter;
+	static    MObject unit;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient
@@ -46,9 +54,6 @@ protected:
 
    // Diffuse Reflectivity
    static MObject  aDiffuseReflectivity;
-
-   // Surface color
-   static MObject  aColor;
 
    // Incandescence
    static MObject  aIncandescence;
