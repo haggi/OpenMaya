@@ -15,7 +15,7 @@ mtth_MayaScene::mtth_MayaScene():MayaScene()
 	this->mtth_renderer.mtth_scene = this;
 	this->mtth_renderer.mtth_renderGlobals = this->renderGlobals;
 	this->needsUserThread = true;
-	this->userThreadUpdateInterval = 200;
+	this->userThreadUpdateInterval = 50;
 }
 
 

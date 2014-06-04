@@ -75,9 +75,8 @@ MObject  GlossyBSDF::aPreShadowIntensity;
 MObject  GlossyBSDF::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject GlossyBSDF::customTransmittedRoughness;
 MObject GlossyBSDF::normalMapping;
-MObject GlossyBSDF::abbe;
+MObject GlossyBSDF::transmittanceColor;
 MObject GlossyBSDF::reflectanceColor;
 MObject GlossyBSDF::kappa;
 MObject GlossyBSDF::bump;
@@ -90,7 +89,6 @@ MObject GlossyBSDF::iorSource;
 MObject GlossyBSDF::traceRefractions;
 MObject GlossyBSDF::rotation;
 MObject GlossyBSDF::transmittedRoughness;
-MObject GlossyBSDF::transmittanceColor;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -142,14 +140,12 @@ MStatus GlossyBSDF::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	customTransmittedRoughness = nAttr.create("customTransmittedRoughness", "customTransmittedRoughness",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( customTransmittedRoughness ));
-
 	normalMapping = nAttr.create("normalMapping", "normalMapping",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( normalMapping ));
 
-	abbe = nAttr.create("abbe", "abbe",  MFnNumericData::kFloat, 50.0);
-	CHECK_MSTATUS(addAttribute( abbe ));
+	transmittanceColor = nAttr.createColor("transmittanceColor", "transmittanceColor");
+	nAttr.setDefault(0.0,0.0,0.0);
+	CHECK_MSTATUS(addAttribute( transmittanceColor ));
 
 	reflectanceColor = nAttr.createColor("reflectanceColor", "reflectanceColor");
 	nAttr.setDefault(0.0,0.0,0.0);
@@ -185,10 +181,6 @@ MStatus GlossyBSDF::initialize()
 
 	transmittedRoughness = nAttr.create("transmittedRoughness", "transmittedRoughness",  MFnNumericData::kFloat, 0.1);
 	CHECK_MSTATUS(addAttribute( transmittedRoughness ));
-
-	transmittanceColor = nAttr.createColor("transmittanceColor", "transmittanceColor");
-	nAttr.setDefault(0.0,0.0,0.0);
-	CHECK_MSTATUS(addAttribute( transmittanceColor ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

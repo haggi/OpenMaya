@@ -8,6 +8,7 @@
 #include <maya/MVector.h>
 #include <maya/Mpoint.h>
 
+float getFloatAttr(const char* plugName, MFnDependencyNode& dn, const float defaultValue);
 
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value);
 
@@ -25,11 +26,15 @@ bool getInt(MString& plugName, MFnDependencyNode& dn, int& value);
 
 bool getInt(const char *plugName, MFnDependencyNode& dn, int& value);
 
+int getIntAttr(const char *plugName, MFnDependencyNode& dn, int defaultValue);
+
 bool getUInt(const char *plugName, MFnDependencyNode& dn, uint& value);
 
 bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value);
 
 bool getBool(const char *plugName, MFnDependencyNode& dn, bool& value);
+
+bool getBoolAttr(const char *plugName, MFnDependencyNode& dn, bool defaultValue);
 
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value);
 

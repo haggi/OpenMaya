@@ -24,22 +24,18 @@ void TheaRenderer::defineCamera()
 		height = this->mtth_renderGlobals->imgHeight;
 		bool success = true;
 		float focalLen = camFn.focalLength();
-	
+		float focusDistance;
+		getFloat(MString("focusDistance"), camFn, focusDistance);
+		focusDistance *= this->mtth_renderGlobals->scaleFactor;
+		float nearFocusPlane = focusDistance * 0.5;
+		float fStop;
+		getFloat(MString("fStop"), camFn, fStop);
+
 		TheaSDK::Transform cameraPos;
 		matrixToTransform(m, cameraPos);
 
-		//MPoint rot, scale, pos;
-		//posRotSclFromMatrix(m, pos, rot, scale);
-		//TheaSDK::Transform tfinal;
 		TheaSDK::Transform tn;
-		//tfinal = tn.RotateX(rot.x + M_PI);
-		//tfinal = tfinal * tn.RotateY(rot.y);
-		//tfinal = tfinal * tn.RotateZ(rot.z);
-		//tfinal = tfinal * tn.Translate(pos.x, pos.y, pos.z);
-		////tfinal = tfinal * tn.Scale(scale.x, scale.y, scale.z);
-		//cameraPos.tx = cameraPos.ty = cameraPos.tz = 0.0; 
 		cameraPos = cameraPos * tn.RotateX(-DegToRad(180.0));
-		//cameraPos.tz = 20;
 
 		if( this->mtth_renderGlobals->exportSceneFile )
 		{
@@ -49,7 +45,24 @@ void TheaRenderer::defineCamera()
 			cam.focalLength = focalLen;
 			cam.pixels = width;
 			cam.lines = height;
-			//cam.depthOfField = 1.0; //given by formula: (focusDistance-nearFocusPlane)/focusDistance
+			cam.shutterSpeed = getFloatAttr("mtth_shutter_speed", camFn, 250.0);
+			
+			if( getBoolAttr("depthOfField", camFn, false))
+			{
+				if( this->mtth_renderGlobals->doDof)
+				{
+					cam.depthOfField = (focusDistance-nearFocusPlane)/focusDistance;
+					cam.blades = getIntAttr("mtth_diaphragm_blades", camFn, 4);
+					int diaType;
+					getEnum(MString("mtth_diaphragm_type"), camFn, diaType);
+					if( diaType == 0)
+						cam.diaphragm = TheaSDK::Diaphragm::CircularDiaphragm;
+					else
+						cam.diaphragm = TheaSDK::Diaphragm::PolygonalDiaphragm;
+					cam.fNumber = fStop;
+				}
+			}
+
 			sceneXML.addCamera(cam);
 		}else{
 			TheaSDK::CameraPointer cameraPtr = TheaSDK::AddStandardCamera(obj->shortName.asChar(), cameraPos, focalLen, width, height);

@@ -39,9 +39,8 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject customTransmittedRoughness;
 	static    MObject normalMapping;
-	static    MObject abbe;
+	static    MObject transmittanceColor;
 	static    MObject reflectanceColor;
 	static    MObject kappa;
 	static    MObject bump;
@@ -54,7 +53,6 @@ protected:
 	static    MObject traceRefractions;
 	static    MObject rotation;
 	static    MObject transmittedRoughness;
-	static    MObject transmittanceColor;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

@@ -357,9 +357,10 @@ class TheaRenderer(Renderer.MayaToRenderer):
         """Register Thea specific node extensions. e.g. camera type, diaphram_blades and others
         """
         # we will have a thinlens camera only
-        #pm.addExtension(nodeType="camera", longName="mtth_cameraType", attributeType="enum", enumName="Pinhole:Thinlens", defaultValue = 0)
-        #pm.addExtension(nodeType="camera", longName="mtth_diaphragm_blades", attributeType="long", defaultValue = 0)
-        #pm.addExtension(nodeType="camera", longName="mtth_diaphragm_tilt_angle", attributeType="float", defaultValue = 0.0)
+        pm.addExtension(nodeType="camera", longName="mtth_camera_projection", attributeType="enum", enumName="Perspective:Parallel:Spherical:Cylindrical", defaultValue = 0)
+        pm.addExtension(nodeType="camera", longName="mtth_diaphragm_blades", attributeType="long", defaultValue = 5)
+        pm.addExtension(nodeType="camera", longName="mtth_diaphragm_type", attributeType="enum", enumName="Circular:Polygonal", defaultValue = 0.0)
+        pm.addExtension(nodeType="camera", longName="mtth_shutter_speed", attributeType="float", defaultValue = 250.0)
         
         # mesh
         #pm.addExtension(nodeType="mesh", longName="mtth_mesh_useassembly", attributeType="bool", defaultValue = False)

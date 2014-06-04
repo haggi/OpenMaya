@@ -5,6 +5,17 @@
 
 #include "attrTools.h"
 
+float getFloatAttr(const char* plugName, MFnDependencyNode& dn, float defaultValue)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return defaultValue;
+	return plug.asFloat(ctx, &stat);
+}
+
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;
@@ -128,6 +139,16 @@ bool getInt(const char *plugName, MFnDependencyNode& dn, int& value)
 	return getInt(MString(plugName), dn, value);
 }
 
+int getIntAttr(const char *plugName, MFnDependencyNode& dn, int defaultValue)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return defaultValue;
+	return plug.asInt(ctx, &stat);
+}
+
 bool getUInt(const char *plugName, MFnDependencyNode& dn, uint& value)
 {
 	int val = value;
@@ -148,6 +169,17 @@ bool getBool(MString& plugName, MFnDependencyNode& dn, bool& value)
 	if(stat)
 		return true;
 	return result;
+}
+
+bool getBoolAttr(const char *plugName, MFnDependencyNode& dn, bool defaultValue)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return false;
+	return plug.asBool(ctx, &stat);
 }
 
 bool getBool(const char *plugName, MFnDependencyNode& dn, bool& value)

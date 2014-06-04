@@ -77,6 +77,7 @@ void initMaps()
 	paramNameMap["twosided"] = "Two-Sided";
 	
 	paramNameMap["transmittedRoughness"] = "Roughness Tr.";
+	paramNameMap["transmittanceColor"] = "Transmittance";
 
 	paramNameMap["globalEmitter"] = "Global Emitter";
 	paramNameMap["causticEmitter"] = "Caustic Emitter";
@@ -99,6 +100,8 @@ void initMaps()
 	texObjMap["translucentColor"] = "Translucent";
 	texObjMap["reflectanceColor"] = "Reflectance 0";
 	texObjMap["reflectance90Deg"] = "Reflectance 90";
+	texObjMap["transmittanceColor"] = "Transmittance";
+	
 }
 
 MString getType(std::string att)

@@ -524,8 +524,8 @@ bool mtth_RenderGlobals::getMtTheaGlobals()
 		if(!getInt(MString("maxSamples"), TheaGlobals, this->maxSamples))
 			throw("problem reading TheaGlobals.maxSamples");
 
-		if(!getInt(MString("bitdepth"), TheaGlobals, this->bitdepth))
-			throw("problem reading TheaGlobals.bitdepth");
+		//if(!getInt(MString("bitdepth"), TheaGlobals, this->bitdepth))
+		//	throw("problem reading TheaGlobals.bitdepth");
 	
 		if(!getInt(MString("translatorVerbosity"), TheaGlobals, this->translatorVerbosity))
 			throw("problem reading TheaGlobals.translatorVerbosity");
@@ -539,17 +539,17 @@ bool mtth_RenderGlobals::getMtTheaGlobals()
 		if(!getInt(MString("threads"), TheaGlobals, this->threads))
 			throw("problem reading TheaGlobals.threads");
 
-		if(!getInt(MString("geotimesamples"), TheaGlobals, this->geotimesamples))
-			throw("problem reading TheaGlobals.geotimesamples");
+		//if(!getInt(MString("geotimesamples"), TheaGlobals, this->geotimesamples))
+		//	throw("problem reading TheaGlobals.geotimesamples");
 
-		if(!getInt(MString("xftimesamples"), TheaGlobals, this->xftimesamples))
-			throw("problem reading TheaGlobals.xftimesamples");
+		//if(!getInt(MString("xftimesamples"), TheaGlobals, this->xftimesamples))
+		//	throw("problem reading TheaGlobals.xftimesamples");
 
 		if(!getInt(MString("maxTraceDepth"), TheaGlobals, this->maxTraceDepth))
 			throw("problem reading TheaGlobals.maxTraceDepth");
 
-		if(!getBool(MString("createDefaultLight"), TheaGlobals, this->createDefaultLight))
-			throw("problem reading TheaGlobals.createDefaultLight");
+		//if(!getBool(MString("createDefaultLight"), TheaGlobals, this->createDefaultLight))
+		//	throw("problem reading TheaGlobals.createDefaultLight");
 
 		if(!getBool(MString("detectShapeDeform"), TheaGlobals, this->detectShapeDeform))
 			throw("problem reading TheaGlobals.detectShapeDeform");

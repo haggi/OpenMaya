@@ -47,9 +47,9 @@ rotation,float,Rotation,0.0
 bump,float,Bump,1.0
 ior,float,Ior,1.5
 kappa,float,Kappa,0.0
-abbe,float,Abbe,50.0
+//abbe,float,Abbe,50.0
 iorSource,None,IorSource,Constant
-customTransmittedRoughness,bool,CustomTransmittedRoughness,false
+//customTransmittedRoughness,bool,CustomTransmittedRoughness,false
 normalMapping,bool,NormalMapping,false
 traceReflections,bool,TraceReflections,true
 traceRefractions,bool,TraceRefractions,true

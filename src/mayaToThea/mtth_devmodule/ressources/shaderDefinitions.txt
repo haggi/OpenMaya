@@ -41,9 +41,8 @@ shader_start:BssdfBSDF
 shader_end
 
 shader_start:GlossyBSDF
-	inatt:customTransmittedRoughness:bool
 	inatt:normalMapping:bool
-	inatt:abbe:float
+	inatt:transmittanceColor:color
 	inatt:reflectanceColor:color
 	inatt:kappa:float
 	inatt:bump:float
@@ -56,7 +55,6 @@ shader_start:GlossyBSDF
 	inatt:traceRefractions:bool
 	inatt:rotation:float
 	inatt:transmittedRoughness:float
-	inatt:transmittanceColor:color
 	outatt:outColor:color
 shader_end
 
