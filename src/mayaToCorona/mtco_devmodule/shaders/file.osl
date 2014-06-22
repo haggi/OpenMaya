@@ -1,5 +1,14 @@
+#include "mayaUtils.h"
+
+/*
+#define MAYA_COLORBALANCE color defaultColor = color(.5,.5,.5), \
+						  color colorGain = color(1.0,1.0,1.0), \
+						  color colorOffset = color(.0,.0,.0)
+*/
+
 shader file (vector uvCoord = 0, 
 			 string fileTextureName = "",
+			 MAYA_COLORBALANCE,
 			 output color outColor = 0)
 {
 	float s = 0.0;
@@ -13,6 +22,8 @@ shader file (vector uvCoord = 0,
 		t = v;
 	}
 	color C = texture(fileTextureName, s, t, "wrap", "periodic");
+	
+	C = colorBalance(C, colorGain, colorOffset);
 	
 	outColor = C;
 }

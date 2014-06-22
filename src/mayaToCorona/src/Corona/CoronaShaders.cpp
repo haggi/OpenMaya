@@ -10,7 +10,7 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "CoronaOSLMap.h"
-
+#include <maya/MFnAttribute.h>
 
 #include "CoronaMap.h"
 
@@ -19,87 +19,141 @@ static Logging logger;
 static std::vector<Corona::NativeMtlData> dataArray;
 static std::vector<MObject> shaderArray;
 
-
-// check if an oslNode is connected to an attribute, if yes try to create a oslMap
-bool CoronaRenderer::isOSLConnected(MString attributeName, MFnDependencyNode& depFn)
+void CoronaRenderer::defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn)
 {
-	MStatus stat = MS::kSuccess;
-	MPlug attrPlug = depFn.findPlug(attributeName, &stat);
-	if( !stat )
-		return false;
-	MObject otherSideNode = getOtherSideNode(attrPlug);
-	if( otherSideNode == MObject::kNullObj)
-		return false;
-	MFnDependencyNode otherSideFn(otherSideNode);
-	if(otherSideFn.typeName() == "CoronaOSL")
-		return true;
-	return false;
-}
-
-void CoronaRenderer::defineOSLShaders(Corona::IInstance* instance, mtco_MayaObject *obj)
-{
-				//OSLMap *oslMap = new OSLMap;
-				//oslMap->coronaRenderer = this;
-				//data.components.diffuse.setMap(oslMap);
-}
-
-
-void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
-{
-	MapLoader loader;
-	//mtco_MapLoader loader;
 	Corona::Abstract::Map *texmap = NULL;
-	MColor col(0,0,0);
-	MString fileTexturePath = "";
-	getColor(attributeName, depFn, col);
-	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
-	MObject fileTextureObject;
-	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
-	{
-		//MFnDependencyNode ftn(fileTextureObject);
-		//MColor gain, offset;
-		//getColor("colorGain", ftn, gain);
-		//getColor("colorOffset", ftn, offset);
-		//loader.colorGain = gain;
-		//loader.colorOffset = offset;
+	Corona::Rgb rgbColor(0.0);
+	logger.debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
 
-		if( textureFileSupported(fileTexturePath))
+	if( isConnected(attributeName.asChar(), depFn))
+	{
+		logger.debug(MString("it is connected"));
+		size_t numNodes = sn.shaderList.size();
+		MString OSLInterfaceName = depFn.name() + "_" + attributeName + "_OSLInterface";
+		MString shaderGroupName = depFn.name() + "_" + attributeName + "_OSLShadingGroup";
+		OSL::ShaderGroupRef shaderGroup = this->oslRenderer.shadingsys->ShaderGroupBegin(shaderGroupName.asChar()); 		
+		// we only need to define the shading nodes from start to the connected node
+		MObject thisMObject = depFn.object();
+		MString connectedObjectName = getObjectName(getOtherSideNode(attributeName, thisMObject));
+		MString outPlugName;
+		getOtherSideNode(attributeName, thisMObject, outPlugName);
+		
+		logger.debug(MString("defineColorOrMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
+		for( int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++ )
 		{
-			texmap = loader.loadBitmap(fileTexturePath.asChar());
-		}else{
-			texmap = NULL;
-			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
-			col = MColor(1, 0, 1);
+			ShadingNode snode = sn.shaderList[shadingNodeId];
+			logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
+			this->createOSLShadingNode(sn.shaderList[shadingNodeId]);
+
+			if( snode.fullName == connectedObjectName.asChar())
+			{
+				logger.debug(MString("connected node found: ") + snode.fullName + " search output attr.");
+				
+				for( size_t outId = 0; outId < snode.outputAttributes.size(); outId++)
+				{
+					ShaderAttribute& sa = snode.outputAttributes[outId];
+					if( MString(sa.name.c_str()) == outPlugName )
+					{
+						logger.debug(MString("connected out attr found: ") + sa.name.c_str() + " ");
+						MString destParam;
+						if( sa.type == "color" )
+						{
+							destParam = "inColor";
+						}
+						if( sa.type == "float" )
+						{
+							destParam = "inFloat";
+						}
+						if( sa.type == "int" )
+						{
+							destParam = "inInt";
+						}
+						if( sa.type == "bool" )
+						{
+							destParam = "inBool";
+						}
+						logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
+						bool success = this->oslRenderer.shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
+						logger.debug(MString("connecting ") + connectedObjectName + "." + outPlugName + " -> " + OSLInterfaceName + "." + destParam);
+						success = this->oslRenderer.shadingsys->ConnectShaders(connectedObjectName.asChar(), outPlugName.asChar(), OSLInterfaceName.asChar(), destParam.asChar());
+						break;
+					}
+				}
+				break;
+			}
+		}
+		if(!this->oslRenderer.shadingsys->ShaderGroupEnd())
+		{
+			logger.debug("Problem finishing shader group");
+		}
+		OSLMap *oslMap = new OSLMap;
+		oslMap->coronaRenderer = this;
+		oslMap->shaderGroup = shaderGroup;
+		texmap = oslMap;
+	}else{
+		if( getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR )
+		{
+			MColor col = getColorAttr(attributeName.asChar(), depFn);
+			rgbColor = Corona::Rgb(col.r,col.g,col.b);		
+		}
+		if( getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_FLOAT )
+		{
+			float f = getFloatAttr(attributeName.asChar(), depFn, 0.0f);
+			rgbColor = Corona::Rgb(f, f, f);		
 		}
 	}
 	com = Corona::ColorOrMap(rgbColor, texmap);
 }
 
-void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
-{
-	MapLoader loader;
-	Corona::Abstract::Map *texmap = NULL;
-	float f;
-	MString fileTexturePath = "";
-	getFloat(attributeName, depFn, f);
-	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
-	MObject fileTextureObject;
-	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
-	{
-		if( textureFileSupported(fileTexturePath))
-			texmap = loader.loadBitmap(fileTexturePath.asChar());
-		else{
-			texmap = NULL;
-			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
-			rgbColor.r() = 1.0;
-			rgbColor.g() = 0.0;
-			rgbColor.b() = 1.0;
-		}
-	}else{
-		texmap = NULL;
-	}
-	com = Corona::ColorOrMap(rgbColor, texmap);
-}
+//void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
+//{
+//	MapLoader loader;
+//	//mtco_MapLoader loader;
+//	Corona::Abstract::Map *texmap = NULL;
+//	MColor col(0,0,0);
+//	MString fileTexturePath = "";
+//	getColor(attributeName, depFn, col);
+//	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
+//	MObject fileTextureObject;
+//	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
+//	{
+//		if( textureFileSupported(fileTexturePath))
+//		{
+//			texmap = loader.loadBitmap(fileTexturePath.asChar());
+//		}else{
+//			texmap = NULL;
+//			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
+//			col = MColor(1, 0, 1);
+//		}
+//	}
+//	com = Corona::ColorOrMap(rgbColor, texmap);
+//}
+//
+//void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
+//{
+//	MapLoader loader;
+//	Corona::Abstract::Map *texmap = NULL;
+//	float f;
+//	MString fileTexturePath = "";
+//	getFloat(attributeName, depFn, f);
+//	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
+//	MObject fileTextureObject;
+//	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
+//	{
+//		if( textureFileSupported(fileTexturePath))
+//			texmap = loader.loadBitmap(fileTexturePath.asChar());
+//		else{
+//			texmap = NULL;
+//			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
+//			rgbColor.r() = 1.0;
+//			rgbColor.g() = 0.0;
+//			rgbColor.b() = 1.0;
+//		}
+//	}else{
+//		texmap = NULL;
+//	}
+//	com = Corona::ColorOrMap(rgbColor, texmap);
+//}
 
 void CoronaRenderer::defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com)
 {
@@ -155,8 +209,9 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 			return;
 
 		Material mat(obj->shadingGroups[0]);
+		size_t numNodes = mat.surfaceShaderNet.shaderList.size();
 
-		if( mat.surfaceShaderNet.shaderList.size() > 0)
+		if( numNodes > 0)
 		{
 			// give me the last node in the node list, this should be the surface shader
 			ShadingNode ss = mat.surfaceShaderNet.shaderList.back();
@@ -175,30 +230,36 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 					if( obj->attributes->hasColorOverride)
 						overrideColor = obj->attributes->colorOverride;
 				
+				//this->defineColorOrMap(MString("diffuse"), depFn, data.components.diffuse);
+				this->defineAttribute(MString("diffuse"), depFn, data.components.diffuse, mat.surfaceShaderNet);
 
-				if(isOSLConnected(MString("diffuse"), depFn))
-				{
-				}else{
-					this->defineColorOrMap(MString("diffuse"), depFn, data.components.diffuse);				
-				}
-
-				this->defineColorOrMap(MString("translucency"), depFn, data.components.translucency);				
+				//this->defineColorOrMap(MString("translucency"), depFn, data.components.translucency);				
+				this->defineAttribute(MString("translucency"), depFn, data.components.translucency, mat.surfaceShaderNet);
 				
-				this->defineColorOrMap(MString("reflectivity"), depFn, data.components.reflect);	
+				//this->defineColorOrMap(MString("reflectivity"), depFn, data.components.reflect);
+				this->defineAttribute(MString("reflectivity"), depFn, data.components.reflect, mat.surfaceShaderNet);
 
 				const Corona::BrdfLobeType brdfs[] = {Corona::BRDF_ASHIKHMIN, Corona::BRDF_FAKE_WARD, Corona::BRDF_PHONG, Corona::BRDF_WARD};
 				int id;
 				getEnum(MString("brdfType"), depFn, id);
 				data.reflect.brdfType = brdfs[id];
-				this->defineFloatOrMap(MString("reflectionGlossiness"), depFn, data.reflect.glossiness);
-				this->defineFloatOrMap(MString("fresnelIor"), depFn, data.reflect.fresnelIor);	
-				this->defineFloatOrMap(MString("anisotropy"), depFn, data.reflect.anisotropy);	
-				this->defineFloatOrMap(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation);	
+
+				//this->defineFloatOrMap(MString("reflectionGlossiness"), depFn, data.reflect.glossiness);
+				this->defineAttribute(MString("reflectionGlossiness"), depFn, data.reflect.glossiness, mat.surfaceShaderNet);
+				//this->defineFloatOrMap(MString("fresnelIor"), depFn, data.reflect.fresnelIor);	
+				this->defineAttribute(MString("fresnelIor"), depFn, data.reflect.fresnelIor, mat.surfaceShaderNet);
+				//this->defineFloatOrMap(MString("anisotropy"), depFn, data.reflect.anisotropy);	
+				this->defineAttribute(MString("anisotropy"), depFn, data.reflect.anisotropy, mat.surfaceShaderNet);
+				//this->defineFloatOrMap(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation);	
+				this->defineAttribute(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation, mat.surfaceShaderNet);
 				
-				this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);
+				//this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);
+				this->defineAttribute(MString("refractivity"), depFn, data.components.refract, mat.surfaceShaderNet);
 				//-1
-				this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
-				this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
+				//this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
+				this->defineAttribute(MString("refractionIndex"), depFn, data.refract.ior, mat.surfaceShaderNet);
+				//this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
+				this->defineAttribute(MString("refractionGlossiness"), depFn,  data.refract.glossiness, mat.surfaceShaderNet);
 
 				// -- round corners -- 
 				float rcRadius = 0.0001;
@@ -218,7 +279,8 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				this->defineFloat(MString("volumeEmissionDist"), depFn, data.volume.emissionDist);				
 
 				// ---- emission ----
-				this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
+				//this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
+				this->defineAttribute(MString("emissionColor"), depFn, data.emission.color, mat.surfaceShaderNet);
 				
 				// ---- ies profiles -----
 				MStatus stat;
@@ -300,132 +362,122 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }
 
-void CoronaRenderer::createCoronaShadingNode(ShadingNode& snode)
+
+void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 {
-	logger.debug(MString("createCoronaShadingNode: ") + snode.fullName);
-	MFnDependencyNode depFn(snode.mobject);
-
-	if( snode.typeName == "file")
+	MFnDependencyNode depFn(snode.mobject);	
+	
+	// We cannot create a parameter and connect it in one go because for connections we need a shader. 
+	// So we first get all input parameters, then we create the shader and last we connect the connected inputs.
+	for( uint i = 0; i < snode.inputAttributes.size(); i++)
 	{
-		logger.debug(MString("Found file node ") + snode.fullName);
-		MString fileTextureName = "";
-		getString(MString("fileTextureName"), depFn, fileTextureName);
-		std::string tfin = fileTextureName.asChar();
-		logger.debug(MString("found texture file name: ") + tfin.c_str());		
-		const OIIO::string_ref p = fileTextureName.asChar();
-		this->oslRenderer.shadingsys->Parameter("fileTextureName", OSL::TypeDesc::TypeString, &p);
-		bool success = this->oslRenderer.shadingsys->Shader("surface", "file", snode.fullName.asChar());
-		if( !success )
+		ShaderAttribute& sa = snode.inputAttributes[i];
+		if( sa.type == "string" )
 		{
-			logger.debug(MString("Failed to register shader ") + snode.fullName );
+			const OIIO::string_ref p = getString(sa.name.c_str(), depFn).asChar();
+			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeString, &p);
+		}
+		if( sa.type == "float" )
+		{
+			float value = getFloatAttr(sa.name.c_str(), depFn, 0.0f);
+			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeFloat, &value);
 		}
 
-		//// testing only -- connecting shaders
-		for( uint i = 0; i < snode.inputAttributes.size(); i++)
+		// if we 
+		if( sa.type == "color" )
 		{
-			if(snode.inputAttributes[i].connected)
+			float color[3];
+			MString attrName = sa.name.c_str();
+			getColor(sa.name.c_str(), depFn, color);
+			if( sa.name == "color" )
+				attrName = "inColor";
+			this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeColor, color);
+		}
+		if( sa.type == "int" )
+		{
+			int value = getIntAttr(sa.name.c_str(), depFn, 0);
+			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
+		}
+		if( sa.type == "bool" )
+		{
+			int value = (int)getBoolAttr(sa.name.c_str(), depFn, false);
+			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
+		}
+	}
+
+	logger.debug(MString("Register shader type") + snode.typeName + " named " + snode.fullName );
+	bool success = this->oslRenderer.shadingsys->Shader("surface", snode.typeName.asChar(), snode.fullName.asChar());
+	if( !success )
+	{
+		logger.debug(MString("Failed to register shader ") + snode.fullName );
+	}
+
+
+	for( uint i = 0; i < snode.inputAttributes.size(); i++)
+	{
+		if(snode.inputAttributes[i].connected)
+		{
+			logger.debug(MString("Attribute ") + snode.inputAttributes[i].name.c_str() + " is connected from " + snode.inputAttributes[i].connectedAttrName.c_str());
+			std::string sourceShader = snode.inputAttributes[i].connectedNodeName;
+			std::string sourceParam = snode.inputAttributes[i].connectedAttrName;
+			std::string destShader = snode.fullName.asChar();
+			std::string destParam = snode.inputAttributes[i].name;
+			if( destParam == "color" )
+				destParam = "inColor";
+			logger.debug(MString("Connect  ") + sourceShader.c_str() + "." + sourceParam.c_str() + " --> " + destShader.c_str() + "." + destParam.c_str());
+			success = this->oslRenderer.shadingsys->ConnectShaders(sourceShader.c_str(), sourceParam.c_str(), destShader.c_str(), destParam.c_str());
+			if( !success )
 			{
-				logger.debug(MString("Attribute ") + snode.inputAttributes[i].name.c_str() + " is connected from " + snode.inputAttributes[i].connectedAttrName.c_str());
-				std::string sourceShader = snode.inputAttributes[i].connectedNodeName;
-				std::string sourceParam = snode.inputAttributes[i].connectedAttrName;
-				std::string destShader = snode.fullName.asChar();
-				std::string destParam = snode.inputAttributes[i].name;
-				logger.debug(MString("Connect  ") + sourceShader.c_str() + "." + sourceParam.c_str() + " --> " + destShader.c_str() + "." + destParam.c_str());
-				success = this->oslRenderer.shadingsys->ConnectShaders(sourceShader.c_str(), sourceParam.c_str(), destShader.c_str(), destParam.c_str());
-				if( !success )
-				{
-					logger.debug(MString("Failed to connect shaders "));
-				}
+				logger.debug(MString("Failed to connect shaders "));
 			}
 		}
 	}
-	if( snode.typeName == "place2dTexture")
-	{
-		logger.debug(MString("Found place2dTexture node ") + snode.fullName);
-		float repeatU = 1.0f;
-		getFloat("repeatU", depFn, repeatU);
-		this->oslRenderer.shadingsys->Parameter("repeatU", OSL::TypeDesc::TypeFloat, &repeatU);
-		float repeatV = 1.0f;
-		getFloat("repeatV", depFn, repeatV);
-		this->oslRenderer.shadingsys->Parameter("repeatV", OSL::TypeDesc::TypeFloat, &repeatV);
-		bool success = this->oslRenderer.shadingsys->Shader("surface", "place2dTexture", snode.fullName.asChar());
-		if( !success )
-		{
-			logger.debug(MString("Failed to register shader ") + snode.fullName );
-		}
-	}
-	if( snode.typeName == "CoronaOSL")
-	{
-		logger.debug(MString("Found CoronaOSL node ") + snode.fullName);
-		bool success = this->oslRenderer.shadingsys->Shader("surface", "CoronaOSL", snode.fullName.asChar());
-		if( !success )
-		{
-			logger.debug(MString("Failed to register shader ") + snode.fullName );
-		}
-		for( uint i = 0; i < snode.inputAttributes.size(); i++)
-		{
-			if(snode.inputAttributes[i].connected)
-			{
-				logger.debug(MString("Attribute ") + snode.inputAttributes[i].name.c_str() + " is connected from " + snode.inputAttributes[i].connectedAttrName.c_str());
-				std::string sourceShader = snode.inputAttributes[i].connectedNodeName;
-				std::string sourceParam = snode.inputAttributes[i].connectedAttrName;
-				std::string destShader = snode.fullName.asChar();
-				std::string destParam = snode.inputAttributes[i].name;
-				if( destParam == "color" )
-					destParam = "inColor";
-				logger.debug(MString("Connect  ") + sourceShader.c_str() + "." + sourceParam.c_str() + " --> " + destShader.c_str() + "." + destParam.c_str());
-				success = this->oslRenderer.shadingsys->ConnectShaders(sourceShader.c_str(), sourceParam.c_str(), destShader.c_str(), destParam.c_str());
-				if( !success )
-				{
-					logger.debug(MString("Failed to connect shaders "));
-				}
-			}
-		}
-	}
+	
 }
 
-void CoronaRenderer::defineOSLMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
-{
+//void CoronaRenderer::defineOSLMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
+//{
 
-	logger.debug(MString("\n\n----------------- defineOSLMaterial -----------------------"));		
-	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
-	{
-		MObject shadingGroup = obj->shadingGroups[sgId];
-		MString shadingGroupName = getObjectName(shadingGroup);
-		logger.debug(MString("defineOSLMaterial from shadingGroup: ") + shadingGroupName);		
-		Material material(shadingGroup);
-		int numNodes = (int)material.surfaceShaderNet.shaderList.size();
-		if( numNodes > 0)
-		{
-			ShadingNode ss = material.surfaceShaderNet.shaderList.back();
-			if( ss.fullName != "CoronaOSLMat")
-				continue;
+	//logger.debug(MString("\n\n----------------- defineOSLMaterial -----------------------"));		
+	//for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
+	//{
+	//	MObject shadingGroup = obj->shadingGroups[sgId];
+	//	MString shadingGroupName = getObjectName(shadingGroup);
+	//	logger.debug(MString("defineOSLMaterial from shadingGroup: ") + shadingGroupName);		
+	//	Material material(shadingGroup);
+	//	int numNodes = (int)material.surfaceShaderNet.shaderList.size();
+	//	if( numNodes > 0)
+	//	{
+	//		ShadingNode ss = material.surfaceShaderNet.shaderList.back();
+	//		if( ss.fullName != "CoronaOSLMat")
+	//			continue;
 
-			Corona::NativeMtlData data;
+	//		Corona::NativeMtlData data;
 
-			logger.debug(MString("CoronaOSLMat shader: ") + ss.fullName);
+	//		logger.debug(MString("CoronaOSLMat shader: ") + ss.fullName);
 
-			OSL::ShaderGroupRef shaderGroup = this->oslRenderer.shadingsys->ShaderGroupBegin(shadingGroupName.asChar()); 
-			
-			for( int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++ )
-			{
-				ShadingNode sn = material.surfaceShaderNet.shaderList[shadingNodeId];
-				logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + sn.fullName);
-				this->createCoronaShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId]);
-			}
-			if(!this->oslRenderer.shadingsys->ShaderGroupEnd())
-			{
-				logger.debug("Problem finishing shader group");
-			}
-			OSLMap *oslMap = new OSLMap;
-			oslMap->coronaRenderer = this;
-			oslMap->shaderGroup = shaderGroup;
-			data.components.diffuse.setMap(oslMap);
-			//getColor("color", depFn, colorVal);
-			//data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-			Corona::IMaterial *mat = data.createMaterial();
-			obj->instance->addMaterial(Corona::IMaterialSet(mat));
-		}
-	}
-	logger.debug(MString("----------------- defineOSLMaterial done-------------------\n\n"));		
-}
+	//		OSL::ShaderGroupRef shaderGroup = this->oslRenderer.shadingsys->ShaderGroupBegin(shadingGroupName.asChar()); 
+	//		
+	//		for( int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++ )
+	//		{
+	//			ShadingNode sn = material.surfaceShaderNet.shaderList[shadingNodeId];
+	//			logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + sn.fullName);
+	//			//this->createCoronaShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId]);
+	//			this->createOSLShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId]);
+	//		}
+	//		if(!this->oslRenderer.shadingsys->ShaderGroupEnd())
+	//		{
+	//			logger.debug("Problem finishing shader group");
+	//		}
+	//		OSLMap *oslMap = new OSLMap;
+	//		oslMap->coronaRenderer = this;
+	//		oslMap->shaderGroup = shaderGroup;
+	//		data.components.diffuse.setMap(oslMap);
+	//		//getColor("color", depFn, colorVal);
+	//		//data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
+	//		Corona::IMaterial *mat = data.createMaterial();
+	//		obj->instance->addMaterial(Corona::IMaterialSet(mat));
+	//	}
+	//}
+	//logger.debug(MString("----------------- defineOSLMaterial done-------------------\n\n"));		
+//}

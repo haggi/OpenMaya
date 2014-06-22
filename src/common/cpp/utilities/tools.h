@@ -71,6 +71,8 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 
 MObject getOtherSideNode(MPlug& plug);
 
+bool isConnected(const char *attrName, MFnDependencyNode& depFn);
+
 bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& otherSidePlugName);
 
 bool getConnectedPlugs(MString& plugName, MObject& thisObject, MPlug& inPlug, MPlug& outPlug);

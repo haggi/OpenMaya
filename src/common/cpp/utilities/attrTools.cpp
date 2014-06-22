@@ -1,6 +1,7 @@
 #include <maya/MStatus.h>
 #include <maya/MDGContext.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 #include <maya/MPlugArray.h>
 
 #include "attrTools.h"
@@ -105,6 +106,16 @@ bool getString(MString& plugName, MFnDependencyNode& dn, MString& value)
 	if(stat)
 		return true;
 	return result;
+}
+
+MString getString(const char *plugName, MFnDependencyNode& dn)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return "";
+	return plug.asString(ctx, &stat);
 }
 
 bool getLong(MString& plugName, MFnDependencyNode& dn, long& value)
@@ -291,6 +302,27 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MString& value)
 	return result;
 }
 
+bool getColor(const char *plugName, MFnDependencyNode& dn, float *value)
+{
+	MColor c(1,0,1);
+	bool result = getColor(MString(plugName), dn, c);
+	if( result )
+	{
+		value[0] = c.r;
+		value[1] = c.g;
+		value[2] = c.b;
+	}
+	return result;
+}
+
+MColor getColorAttr(const char *plugName, MFnDependencyNode& dn)
+{
+	MColor c(1,0,1);
+	getColor(MString(plugName), dn, c);
+	return c;
+}
+
+
 bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value)
 {
 	return getColor(MString(plugName), dn, value);
@@ -362,7 +394,6 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value)
 bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value)
 {
 	value = MObject::kNullObj;
-
 	MDGContext ctx = MDGContext::fsNormal;
 	MStatus stat = MS::kSuccess;
 	bool result = false;
@@ -377,4 +408,31 @@ bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value)
 		return false;
 	value = inConnections[0].node();
 	return true;
+}
+
+
+ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if( !stat )
+		return ATTR_TYPE::ATTR_TYPE_NONE;
+
+	MObject attObj = plug.attribute(&stat);
+	MFnAttribute att(attObj);
+	if( !stat )
+		return ATTR_TYPE::ATTR_TYPE_NONE;
+
+	if(att.isUsedAsColor())
+		return ATTR_TYPE::ATTR_TYPE_COLOR;
+	if( att.type() == MFn::kNumericAttribute)
+	{
+		MFnNumericAttribute na(attObj, &stat);
+		if( !stat )
+			return ATTR_TYPE::ATTR_TYPE_NONE;
+		if( na.unitType() == MFnNumericData::Type::kFloat )
+			return ATTR_TYPE::ATTR_TYPE_FLOAT;
+	}
+	return ATTR_TYPE::ATTR_TYPE_NONE;
 }

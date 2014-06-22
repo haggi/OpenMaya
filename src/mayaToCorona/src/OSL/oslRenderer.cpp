@@ -231,18 +231,13 @@ void OSLShadingNetworkRenderer::setup()
 	this->shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &this->errorHandler);
 	this->shadingsys->attribute("lockgeom", 1);
 	this->shadingsys->attribute ("searchpath:shader", this->shaderSearchPath);
-	//this->createDummyShader();
 	const char *n = "Cout";
-	shadingsys->attribute ("renderer_outputs", TypeDesc(TypeDesc::STRING,1),&n);
-	//this->shadingsys->attribute ("renderer_outputs", TypeDesc::STRING,"Cout");
+	shadingsys->attribute("renderer_outputs", TypeDesc(TypeDesc::STRING,1),&n);
 
-	//for( int i = 0; i < 32; i++)
-	//{
-		//this->coronaRenderer->oslRenderer.thread_info[threadId] = thread_info = this->shadingsys->create_thread_info();
-		//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
-		//OSL::ShadingContext *context = this->shadingsys->get_context();
-		//this->ctx[i] = context;
-	//}
+	//std::vector<const char *> aovnames(2);
+	//aovnames[0] = "Cout";
+	//aovnames[1] = "fout";
+	//shadingsys->attribute ("renderer_outputs", TypeDesc(TypeDesc::STRING,(int)aovnames.size()), &aovnames[0]);
 
 }
 

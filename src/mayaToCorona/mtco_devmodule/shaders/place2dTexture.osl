@@ -1,9 +1,26 @@
 shader place2dTexture ( float repeatU = 1.0, 
 					    float repeatV = 1.0, 
+						float offsetU = 0.0,
+						float offsetV = 0.0,
+						float rotateUV = 0.0,
 						output vector outUV = 0)
 {
-	outUV[0] = u * repeatU;
-	outUV[1] = v * repeatV;
 
-	//printf("place outU %f outV %f - u %f v %f\n", outUV[0], outUV[1], u, v);
+	float s = u * repeatU;
+	float t = v * repeatV;	
+	
+	point p0 = point(0,0,0);
+	point p1 = point(0,1,0);
+	point pRot = point(s - 0.5 * repeatU, 0.0, t - 0.5 * repeatV);
+	point result = rotate(pRot, rotateUV, p0, p1); 
+	//printf( "orig x %f rotate x %f\n", pRot[0], result[0]);
+	s = result[0] + 0.5 * repeatU;
+	t = result[2] + 0.5 * repeatV;
+	
+	s += offsetU;
+	t += offsetV;
+	
+	outUV[0] = s;
+	outUV[1] = t;
+	
 }

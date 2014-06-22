@@ -1,0 +1,71 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.6dev
+shader checker
+param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1}
+param	color	color1	1 0 0 		 %read{18,18} %write{2147483647,-1}
+param	color	color2	0 0 0 		 %read{18,18} %write{2147483647,-1}
+oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{18,18}
+global	float	u	 %read{6,6} %write{2147483647,-1}
+global	float	v	 %read{7,7} %write{2147483647,-1}
+local	float	s	 %read{8,8} %write{0,6}
+local	float	t	 %read{10,10} %write{1,7}
+local	float	ss	 %read{12,12} %write{9,9}
+local	float	tt	 %read{12,12} %write{11,11}
+const	float	$const1	0		 %read{0,1} %write{2147483647,-1}
+temp	int	$tmp1	 %read{3,3} %write{2,2}
+const	int	$const2	0		 %read{4,4} %write{2147483647,-1}
+const	int	$const3	1		 %read{5,5} %write{2147483647,-1}
+temp	float	$tmp2	 %read{9,9} %write{8,8}
+const	float	$const5	2		 %read{8,16} %write{2147483647,-1}
+temp	float	$tmp3	 %read{11,11} %write{10,10}
+temp	float	$tmp4	 %read{18,18} %write{17,17}
+temp	float	$tmp5	 %read{14,17} %write{12,12}
+const	string	$const6	"mod"		 %read{13,13} %write{2147483647,-1}
+temp	float	$tmp6	 %read{16,16} %write{15,15}
+temp	float	$tmp7	 %read{15,15} %write{14,14}
+temp	float	$tmp8	 %read{17,17} %write{16,16}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:4
+# 	float t = 0.0;
+	assign		s $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl"} %line{4} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:5
+# 	if( isconnected(uvCoord))
+	assign		t $const1 	%line{5} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:6
+# 	{
+	isconnected	$tmp1 uvCoord 	%line{6} %argrw{"wr"}
+	if		$tmp1 6 8 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:8
+# 		t = uvCoord[1];
+	compref		s uvCoord $const2 	%line{8} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:9
+# 	}else{
+	compref		t uvCoord $const3 	%line{9} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:11
+# 		t = v;
+	assign		s u 	%line{11} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:12
+# 	}
+	assign		t v 	%line{12} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:14
+# 	float tt = floor(t * 2);
+	mul		$tmp2 s $const5 	%line{14} %argrw{"wrr"}
+	floor		ss $tmp2 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:15
+#     outColor = mix (color1, color2, mod(ss+tt, 2));
+	mul		$tmp3 t $const5 	%line{15} %argrw{"wrr"}
+	floor		tt $tmp3 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:16
+# }
+	add		$tmp5 ss tt 	%line{16} %argrw{"wrr"}
+	functioncall	$const6 18 	%argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:135
+# PERCOMP1 (sign)
+	div		$tmp7 $tmp5 $const5 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{135} %argrw{"wrr"}
+	floor		$tmp6 $tmp7 	%argrw{"wr"}
+	mul		$tmp8 $const5 $tmp6 	%argrw{"wrr"}
+	sub		$tmp4 $tmp5 $tmp8 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:16
+# }
+	mix		outColor color1 color2 $tmp4 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl"} %line{16} %argrw{"wrrr"}
+	end

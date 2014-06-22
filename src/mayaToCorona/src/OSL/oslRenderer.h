@@ -105,7 +105,6 @@ public:
 	void createDummyShader();
 	void setShaderSearchPath(std::string path);
 	void addShaderSearchPath(std::string path);
-
 };
 
 

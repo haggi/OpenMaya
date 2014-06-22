@@ -1,0 +1,18 @@
+shader OSLInterface(color inColor = 1, float inFloat = 0.0, int inInt = 0, output color Cout = 0)
+{
+	if( isconnected(inColor) )
+	{
+		Cout = inColor ;
+		return;
+	}
+	if( isconnected(inFloat) )
+	{
+		Cout = inFloat;
+		return;
+	}
+	if( isconnected(inInt) )
+	{
+		Cout = inInt;
+		return;
+	}
+}

@@ -1,0 +1,42 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.6dev
+shader OSLInterface
+param	color	inColor	1 1 1 		 %read{0,2} %write{2147483647,-1}
+param	float	inFloat	0 		 %read{4,6} %write{2147483647,-1}
+param	int	inInt	0 		 %read{8,10} %write{2147483647,-1}
+oparam	color	Cout	0 0 0 		 %read{2147483647,-1} %write{2,10}
+temp	int	$tmp1	 %read{1,1} %write{0,0}
+temp	int	$tmp2	 %read{5,5} %write{4,4}
+temp	int	$tmp3	 %read{9,9} %write{8,8}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:4
+# 	{
+	isconnected	$tmp1 inColor 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl"} %line{4} %argrw{"wr"}
+	if		$tmp1 4 4 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:6
+# 		return;
+	assign		Cout inColor 	%line{6} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:7
+# 	}
+	exit	%line{7}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:9
+# 	{
+	isconnected	$tmp2 inFloat 	%line{9} %argrw{"wr"}
+	if		$tmp2 8 8 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:11
+# 		return;
+	assign		Cout inFloat 	%line{11} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:12
+# 	}
+	exit	%line{12}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:14
+# 	{
+	isconnected	$tmp3 inInt 	%line{14} %argrw{"wr"}
+	if		$tmp3 12 12 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:16
+# 		return;
+	assign		Cout inInt 	%line{16} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:17
+# 	}
+	exit	%line{17}
+	end

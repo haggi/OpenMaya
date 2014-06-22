@@ -167,8 +167,22 @@ class MayaToRenderer(object):
     
     def createImageFormats(self):
         pass
+    
+    def checkNamingConvention(self):
+        #check file naming convention. We use only name.ext and name.nr.ext
+        defaultGlobals = pm.SCENE.defaultRenderGlobals
+        defaultGlobals.periodInExt.set(1)
+        defaultGlobals.putFrameBeforeExt.set(1)
+#         if self.defaultGlobals.animation.get():
+#         else:
+#             self.defaultGlobals.putFrameBeforeExt.set(0)
+            
+        
         
     def preRenderProcedure(self):
+        
+        self.checkNamingConvention()
+                
         self.createGlobalsNode()
         drg = pm.PyNode("defaultRenderGlobals")
         if self.renderGlobalsNode.threads.get() == 0:

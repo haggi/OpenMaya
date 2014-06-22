@@ -359,6 +359,18 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 	return result;
 }
 
+bool isConnected(const char *attrName, MFnDependencyNode& depFn)
+{
+	MStatus stat;
+	MPlug inPlug = depFn.findPlug(attrName, &stat);
+	if( !stat )
+		return false;
+	MPlugArray pa;
+	inPlug.connectedTo(pa, true, false);
+	return pa.length() > 0;
+}
+
+
 MObject getConnectedInNode(MObject& thisObject, const char *attrName)
 {
 	MObject result = MObject::kNullObj;

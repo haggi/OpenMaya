@@ -77,18 +77,15 @@ MString RenderQueueWorker::getElapsedTimeString()
 	minutes = elapsedTime/60;
 	elapsedTime -= minutes * 60;
 	sec = elapsedTime;
-	char tmpStr[1024];
-	memset(tmpStr, '\0', 1024);
-	sprintf(tmpStr, "%2.2f", sec);
-	MString secString = tmpStr;
-	MString timeString = "";
-	if( hours > 0)
-		timeString += hours + ":";
-
-	if( (minutes > 0) || (hours > 0)) 
-		timeString += minutes + ":";
-
-	timeString = timeString + tmpStr;
+	char hourStr[1024], minStr[1024], secStr[1024];
+	memset(hourStr, '\0', 1024);
+	memset(minStr, '\0', 1024);
+	memset(secStr, '\0', 1024);
+	sprintf(hourStr, "%02d", hours);
+	sprintf(minStr, "%02d", minutes);
+	sprintf(secStr, "%02.1f", sec);
+	
+	MString timeString = MString("") + hourStr + ":" + minStr + ":" + secStr;
 	return (MString("Render Time: ") + timeString);
 }
 

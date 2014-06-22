@@ -495,6 +495,7 @@ MStatus CoronaSurface::initialize()
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( diffuse, aOutColor ) );
+    CHECK_MSTATUS( attributeAffects( emissionColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );

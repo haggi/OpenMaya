@@ -1,5 +1,8 @@
 #include "Corona.h"
 #include "CoronaOSLMap.h"
+#include "utilities/logging.h"
+
+static Logging logger;
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
 {
@@ -23,7 +26,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Pos uvw = context.getMapCoords(0);
 	Corona::Pos pos = context.getPosition();
     sg.P = OSL::Vec3 (pos.x(), pos.y(), pos.z());
-
+	
 	sg.u = uvw.x();
 	sg.v = uvw.y();
 
@@ -34,11 +37,15 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     sg.dPdy = OSL::Vec3 (sg.dvdx, sg.dvdy, 0.0f);
     sg.dPdz = OSL::Vec3 (0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
     // Tangents of P with respect to surface u,v
+	context.dUvw(0);
     sg.dPdu = OSL::Vec3 (1.0f, 0.0f, 0.0f);
     sg.dPdv = OSL::Vec3 (0.0f, 1.0f, 0.0f);
-    // That also implies that our normal points to (0,0,1)
-    sg.N    = OSL::Vec3 (0, 0, 1);
-    sg.Ng   = OSL::Vec3 (0, 0, 1);
+
+	Corona::Dir Ng = context.getGeometryNormal();
+	Corona::Dir N = context.getShadingNormal();
+
+    sg.N    = OSL::Vec3(N.x(), N.y(), N.z());
+    sg.Ng   = OSL::Vec3(Ng.x(), Ng.y(), Ng.z());
 
     // Set the surface area of the patch to 1 (which it is).  This is
     // only used for light shaders that call the surfacearea() function.
@@ -121,5 +128,6 @@ void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output)
 
 OSLMap::~OSLMap()
 {
+	logger.debug(MString("OSLMap resetting shader group"));
 	this->shaderGroup.reset();
 }

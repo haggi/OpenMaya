@@ -74,8 +74,6 @@ class OpenMayaCommonGlobals(object):
                 uiDict['imageSizePresets'].setSelect(self.imageFormatData.index(imgFormat) + 1) 
                 return
         uiDict['imageSizePresets'].setSelect(1)
-         
-            
             
     def setFrameNumbering(self, args):
         if not self.rendererTabUiDict.has_key('common'):
@@ -83,9 +81,14 @@ class OpenMayaCommonGlobals(object):
         uiDict = self.rendererTabUiDict['common']
         if uiDict['imageNumbering'].getValue() == "name.ext":
             self.defaultGlobals.animation.set(0)
+            self.defaultGlobals.periodInExt.set(1)
         else:
             self.defaultGlobals.animation.set(1)
+            self.defaultGlobals.putFrameBeforeExt.set(1)
+            self.defaultGlobals.periodInExt.set(1)
         self.updateFrameSettings()
+
+                    
         
     def OpenMayaCommonGlobalsCreateTab(self):        
         log.debug("OpenMayaCommonGlobalsCreateTab()")
@@ -117,7 +120,9 @@ class OpenMayaCommonGlobals(object):
                         uiDict['imageNumbering'] = pm.optionMenuGrp(label="Frame/Animation ext:", changeCommand=self.setFrameNumbering)
                         for value in ["name.ext", "name.#.ext"]:
                             pm.menuItem(value)
-                            
+                        if self.defaultGlobals.animation.get():
+                            uiDict['imageNumbering'].setSelect(2)
+                        
                         self.addRenderDefaultGlobalsUIElement(attName='extensionPadding', uiType='int', displayName='Frame Padding:', uiDict=uiDict)
                         
                 with pm.frameLayout(label="Frame Range", collapsable=True, collapse=False) as frameRangeLayout:

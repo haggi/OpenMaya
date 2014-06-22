@@ -8,6 +8,9 @@ shader_end
 # supported maya textures
 shader_start:file
 	inatt:fileTextureName:string
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
 	inatt:uvCoord:float2
 	outatt:outColor:color
 shader_end
@@ -19,7 +22,24 @@ shader_end
 shader_start:place2dTexture
 	inatt:repeatU:float
 	inatt:repeatV:float
+	inatt:offsetU:float
+	inatt:offsetV:float
+	inatt:rotateUV:float
 	outatt:outUV:float2
+shader_end
+
+shader_start:checker
+	inatt:color1:color
+	inatt:color2:color
+	inatt:uvCoord:float2
+	outatt:outColor:color
+shader_end
+
+shader_start:OSLInterface
+	inatt:inColor:color
+	inatt:inFloat:float
+	inatt:inInt:int
+	outatt:Cout:color
 shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
@@ -52,7 +72,7 @@ shader_end
 
 shader_start:CoronaOSL
 	inatt:color:color
-	inatt:string:string
+	inatt:string:script
 	outatt:outColor:color
 shader_end
 #---------------------------- automatically created attributes end ------------------------------------

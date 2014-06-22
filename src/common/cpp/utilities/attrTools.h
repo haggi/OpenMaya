@@ -8,6 +8,13 @@
 #include <maya/MVector.h>
 #include <maya/Mpoint.h>
 
+enum ATTR_TYPE
+{
+	ATTR_TYPE_NONE = 0,
+	ATTR_TYPE_COLOR = 1,
+	ATTR_TYPE_FLOAT = 2,
+};
+
 float getFloatAttr(const char* plugName, MFnDependencyNode& dn, const float defaultValue);
 
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value);
@@ -21,6 +28,8 @@ bool getFloat2(MString& plugName, MFnDependencyNode& dn, MVector& value);
 bool getDouble(MString& plugName, MFnDependencyNode& dn, double& value);
 
 bool getString(MString& plugName, MFnDependencyNode& dn, MString& value);
+
+MString getString(const char *plugName, MFnDependencyNode& dn);
 
 bool getInt(MString& plugName, MFnDependencyNode& dn, int& value);
 
@@ -54,6 +63,10 @@ bool getColor(const char *plugName, MFnDependencyNode& dn, MColor& value);
 
 bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value);
 
+bool getColor(const char *plugName, MFnDependencyNode& dn, float *value);
+
+MColor getColorAttr(const char *plugName, MFnDependencyNode& dn);
+
 bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
@@ -61,5 +74,7 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value);
+
+ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn);
 
 #endif

@@ -375,10 +375,7 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		if( obj->shortName != "oslObj")
-			this->defineMaterial(obj->instance, obj);
-		else
-			this->defineOSLMaterial(obj->instance, obj);
+		this->defineMaterial(obj->instance, obj);
 	}
 
 
@@ -398,17 +395,8 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		if( obj->shortName != "oslObj")
-			this->defineMaterial(obj->instance, obj);
-		else
-			this->defineOSLMaterial(obj->instance, obj);
+		this->defineMaterial(obj->instance, obj);
 	}
-
-    //// first instance with two materials
-    //IInstance* instance = geom->addInstance(AffineTm::IDENTITY);
-    //instance->addMaterial(IMaterialSet(getNativeMtl(settings)));
-    //instance->addMaterial(IMaterialSet(getNativeMtl(settings)));
-
 }
 
 
