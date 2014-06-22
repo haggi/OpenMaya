@@ -160,6 +160,9 @@ MObject MayaToTheaGlobals::medium;
 MayaToTheaGlobals::MayaToTheaGlobals()
 {
 	imageFormatList.append("Exr");
+	imageFormatList.append("Jpg");
+	imageFormatList.append("Png");
+	imageFormatList.append("Tif");
 }
 
 MayaToTheaGlobals::~MayaToTheaGlobals()

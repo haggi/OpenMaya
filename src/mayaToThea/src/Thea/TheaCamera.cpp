@@ -14,22 +14,19 @@ void TheaRenderer::defineCamera()
 	{
 		mtth_MayaObject *obj = (mtth_MayaObject *)this->mtth_scene->camList[objId];
 		MFnCamera camFn(obj->mobject);
-		bool renderable = false;
-		getBool("renderable", camFn, renderable);
-		if( !renderable )
+		
+		if( (this->mtth_scene->camList.size() > 1) && (!getBoolAttr("renderable", camFn, false)) )
 			continue;
+
 		MMatrix m = obj->transformMatrices[0] * this->mtth_renderGlobals->globalConversionMatrix;
 		uint width, height;
 		width = this->mtth_renderGlobals->imgWidth;
 		height = this->mtth_renderGlobals->imgHeight;
 		bool success = true;
 		float focalLen = camFn.focalLength();
-		float focusDistance;
-		getFloat(MString("focusDistance"), camFn, focusDistance);
+		float focusDistance = getFloatAttr("focusDistance", camFn, 10.0f);
 		focusDistance *= this->mtth_renderGlobals->scaleFactor;
-		float nearFocusPlane = focusDistance * 0.5;
-		float fStop;
-		getFloat(MString("fStop"), camFn, fStop);
+		float fStop = getFloatAttr("fStop", camFn, 5.6f);
 
 		TheaSDK::Transform cameraPos;
 		matrixToTransform(m, cameraPos);
@@ -45,13 +42,17 @@ void TheaRenderer::defineCamera()
 			cam.focalLength = focalLen;
 			cam.pixels = width;
 			cam.lines = height;
+			cam.filmHeight = getFloatAttr("verticalFilmAperture", camFn, .9f) * 2.54f * 10.0f;
 			cam.shutterSpeed = getFloatAttr("mtth_shutter_speed", camFn, 250.0);
 			
 			if( getBoolAttr("depthOfField", camFn, false))
 			{
 				if( this->mtth_renderGlobals->doDof)
 				{
-					cam.depthOfField = (focusDistance-nearFocusPlane)/focusDistance;
+					cam.focusDistance = focusDistance;
+					cam.depthOfField = getFloatAttr("mtth_focusRange", camFn, 0.1);
+					cam.autofocus = getBoolAttr("mtth_autoFocus", camFn, false);
+					//cam.depthOfField = (focusDistance-nearFocusPlane)/focusDistance;
 					cam.blades = getIntAttr("mtth_diaphragm_blades", camFn, 4);
 					int diaType;
 					getEnum(MString("mtth_diaphragm_type"), camFn, diaType);

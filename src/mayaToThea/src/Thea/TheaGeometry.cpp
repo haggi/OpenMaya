@@ -235,10 +235,22 @@ void TheaRenderer::defineGeometry()
 
 			obj->xmlModel->surface = TheaSDK::XML::Surface(TheaSDK::XML::SurfaceInstance(objName.asChar()));
 
-			TheaSDK::Transform objPos;
-			MMatrix m = obj->transformMatrices[0] * this->mtth_renderGlobals->globalConversionMatrix;
-			matrixToTransform(m, objPos);
-			obj->xmlModel->frame = objPos;
+			TheaSDK::Transform objBasePos;
+			MMatrix modelTransform = obj->transformMatrices[0] * this->mtth_renderGlobals->globalConversionMatrix;
+			matrixToTransform(modelTransform, objBasePos);
+			obj->xmlModel->frame = objBasePos;
+
+			if( this->mtth_renderGlobals->doMb )
+			{
+				TheaSDK::Transform objBasePosInverse = objBasePos.inverse();
+				TheaSDK::Transform objPos;
+				for( size_t mId = 0; mId < obj->transformMatrices.size(); mId++)
+				{
+					MMatrix m = obj->transformMatrices[mId] * this->mtth_renderGlobals->globalConversionMatrix;
+					matrixToTransform(m, objPos);
+					obj->xmlModel->motion.addFrame(mId, objBasePosInverse * objPos);
+				}
+			}
 			sceneXML.addModel(*obj->xmlModel);
 		}
 

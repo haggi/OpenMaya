@@ -163,12 +163,24 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 	MFnDependencyNode depFn(sn.mobject);
 	initMaps();
 
+
 	if( sn.typeName == "TheaMaterial")
 	{
 		logger.debug(MString("Defining theaMaterial: ") + sn.fullName);
 				
 		if( this->mtth_renderGlobals->exportSceneFile )
 		{
+			// reuse already defined materials
+			for( size_t oId = 0; oId < objList.size(); oId ++)
+			{
+				if( objList[oId].mayaName == sn.fullName)
+				{
+					logger.debug(MString("Reusing material ") + sn.fullName);
+					obj->xmlModel->materialName = sn.fullName.asChar();
+					return;
+				}
+			}
+
 			TheaSDK::XML::Material *material = new TheaSDK::XML::Material;			
 			material->setName(sn.fullName.asChar());
 			TheaSDK::RawXMLObject xml = material->convertToRawXML();

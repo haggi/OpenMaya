@@ -41,9 +41,12 @@ class AETheaNodeTemplate(BaseTemplate):
         if self.thisNode.type() == "camera":
             self.beginLayout("Thea" ,collapse=1)
             self.addControl("mtth_camera_projection", label="Projection Type")
+            self.addControl("mtth_shutter_speed", label="Shutter Speed (1/x)sec")
+            self.addSeparator()
+            self.addControl("mtth_focusRange", label="Focus Range")
+            self.addControl("mtth_autoFocus", label="Auto Focus")
             self.addControl("mtth_diaphragm_blades", label="Num Blades")
             self.addControl("mtth_diaphragm_type", label="Diaphragm Type")
-            self.addControl("mtth_shutter_speed", label="Shutter Speed (1/x)sec")
             self.endLayout()
         if self.thisNode.type() == "file":
             self.beginLayout("Thea" ,collapse=1)

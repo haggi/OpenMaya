@@ -63,7 +63,10 @@ class TheaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'engine', uiType = 'enum', displayName = 'Render Engine', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'threads', uiType = 'int', displayName = 'Threads', default=8, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'maxRenderSeconds', uiType = 'int', displayName = 'Max Time (sec)', default='0', uiDict=uiDict)
-
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName='doDof', uiType='bool', displayName='Depth of Field:', default='True', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='doMotionBlur', uiType='bool', displayName='Motion Blur:', default='True', uiDict=uiDict)
+                        
                         #self.addRenderGlobalsUIElement(attName = 'tilesize', uiType = 'int', displayName = 'Tile Size', default=64, uiDict=uiDict)
                     
 # self.addRenderGlobalsUIElement(attName = 'giChannel', uiType = 'bool', displayName = 'GiChannel', default='false', uiDict=uiDict)
@@ -361,6 +364,8 @@ class TheaRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="camera", longName="mtth_diaphragm_blades", attributeType="long", defaultValue = 5)
         pm.addExtension(nodeType="camera", longName="mtth_diaphragm_type", attributeType="enum", enumName="Circular:Polygonal", defaultValue = 0.0)
         pm.addExtension(nodeType="camera", longName="mtth_shutter_speed", attributeType="float", defaultValue = 250.0)
+        pm.addExtension(nodeType="camera", longName="mtth_focusRange", attributeType="float", defaultValue = 0.1)
+        pm.addExtension(nodeType="camera", longName="mtth_autoFocus", attributeType="bool", defaultValue = False)
         
         # mesh
         #pm.addExtension(nodeType="mesh", longName="mtth_mesh_useassembly", attributeType="bool", defaultValue = False)
