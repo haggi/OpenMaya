@@ -97,6 +97,7 @@ MStatus OSLNode::initialize()
 // DESCRIPTION:
 MStatus OSLNode::compute(const MPlug &plug, MDataBlock &block)
 {
+
 	if( plug == outColor )
 	{
 		// compile shader

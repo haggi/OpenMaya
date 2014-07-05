@@ -221,10 +221,10 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( refractivity ));
 
 	brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
-	status = eAttr.addField( "Phong", 0 );
-	status = eAttr.addField( "Ward", 1 );
-	status = eAttr.addField( "Ashikmin", 2 );
-	status = eAttr.addField( "Fake Ward", 3 );
+	status = eAttr.addField( "Ashikmin", 0 );
+	status = eAttr.addField( "Fake Ward", 1 );
+	status = eAttr.addField( "Phong", 2 );
+	status = eAttr.addField( "Ward", 3 );
 	CHECK_MSTATUS(addAttribute( brdfType ));
 
 	emissionColor = nAttr.createColor("emissionColor", "emissionColor");

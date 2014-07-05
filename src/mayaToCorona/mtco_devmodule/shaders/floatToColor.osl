@@ -1,0 +1,6 @@
+shader floatToColor (float inX = 0.0, float inY = 0.0, float inZ = 0.0, output color outColor = 0)
+{
+	outColor[0] = inX;
+	outColor[1] = inY;
+	outColor[2] = inZ;
+}

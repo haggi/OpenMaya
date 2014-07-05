@@ -68,7 +68,7 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
       <OutputFile>$(Configuration)\$(ProjectName).mll</OutputFile>
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>

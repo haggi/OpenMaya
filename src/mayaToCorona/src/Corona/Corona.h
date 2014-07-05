@@ -74,16 +74,13 @@ public:
 	void updateMesh(mtco_MayaObject *obj);
 	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
-	//void defineOSLMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void createOSLShadingNode(ShadingNode& snode);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
-	//void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
-	//void defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
 	void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
-	//void defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com);
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
+	void defineBump(MString& attributeName, MFnDependencyNode& depFn, Corona::Abstract::Map *bumpMap);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	bool isSunLight(mtco_MayaObject *obj);
 	virtual void defineLights();

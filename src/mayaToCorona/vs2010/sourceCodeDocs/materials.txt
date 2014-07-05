@@ -14,7 +14,7 @@ reflectionGlossiness, float, Glossiness, 1.0
 anisotropy, float, Anisotropy, 0.5
 anisotropyRotation, float, Aniso Rotation, 0.0
 fresnelIor, float, Fresnel Value, 1.0
-brdfType, enum, BRDF Type, 0, Phong:Ward:Ashikmin:Fake Ward
+brdfType, enum, BRDF Type, 0, Ashikmin:Fake Ward:Phong:Ward
 roundCornersRadius, float, Round Courner Radius, 0.0
 roundCornersSamples, int, Round Corners Samples, 10
 emissionColor, color, Emission Color, 0:0:0

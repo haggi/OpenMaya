@@ -1,0 +1,21 @@
+normal getBumpNormal(color centerColor, color uColor, color vColor, float amount)
+{
+
+    vector avg = vector(0.333333);
+
+    float c = dot(avg, vector(centerColor));
+
+    float ddu = c - dot(avg, vector(uColor));
+
+    float ddv = c - dot(avg, vector(vColor));
+
+    return normalize(normal("shader", ddu, -ddv, (1.000000 / amount)));
+
+}
+
+shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, output vector outNormal = 0)
+{
+
+	displace(bumpValue);
+	outNormal = N;
+}

@@ -28,9 +28,24 @@ shader_start:place2dTexture
 	outatt:outUV:float2
 shader_end
 
+shader_start:blendColors
+	inatt:color1:color
+	inatt:color2:color
+	inatt:blender:float
+	outatt:outColor:color
+shader_end
+
+shader_start:bump2d
+	inatt:bumpValue:float
+	inatt:bumpDepth:float
+	inatt:bumpInterp:int
+	outatt:outNormal:vector
+shader_end
+
 shader_start:checker
 	inatt:color1:color
 	inatt:color2:color
+	inatt:contrast:float
 	inatt:uvCoord:float2
 	outatt:outColor:color
 shader_end

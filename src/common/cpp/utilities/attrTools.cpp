@@ -426,7 +426,7 @@ ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn)
 
 	if(att.isUsedAsColor())
 		return ATTR_TYPE::ATTR_TYPE_COLOR;
-	if( att.type() == MFn::kNumericAttribute)
+	if( attObj.apiType() == MFn::kNumericAttribute)
 	{
 		MFnNumericAttribute na(attObj, &stat);
 		if( !stat )

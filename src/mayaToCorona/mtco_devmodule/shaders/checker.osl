@@ -1,4 +1,4 @@
-shader checker (vector uvCoord = 0, color color1 = color(1,0,0), color color2 = 0, output color outColor = 0)
+shader checker (vector uvCoord = 0, color color1 = color(1,0,0), color color2 = 0, float contrast = 1.0, output color outColor = 0)
 {
 	float s = 0.0;
 	float t = 0.0;
@@ -12,5 +12,9 @@ shader checker (vector uvCoord = 0, color color1 = color(1,0,0), color color2 = 
 	}
 	float ss = floor(s * 2);
 	float tt = floor(t * 2);
-    outColor = mix (color1, color2, mod(ss+tt, 2));
+	
+	color contrastColor1 = color1 * contrast;
+	color contrastColor2 = color2 * (1.0 - contrast);
+	
+    outColor = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
 }

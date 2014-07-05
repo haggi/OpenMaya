@@ -72,6 +72,10 @@ void CoronaRenderer::defineAttribute(MString& attributeName, MFnDependencyNode& 
 						{
 							destParam = "inBool";
 						}
+						if( sa.type == "vector" )
+						{
+							destParam = "inVector";
+						}
 						logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
 						bool success = this->oslRenderer.shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
 						logger.debug(MString("connecting ") + connectedObjectName + "." + outPlugName + " -> " + OSLInterfaceName + "." + destParam);
@@ -105,55 +109,14 @@ void CoronaRenderer::defineAttribute(MString& attributeName, MFnDependencyNode& 
 	com = Corona::ColorOrMap(rgbColor, texmap);
 }
 
-//void CoronaRenderer::defineColorOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
-//{
-//	MapLoader loader;
-//	//mtco_MapLoader loader;
-//	Corona::Abstract::Map *texmap = NULL;
-//	MColor col(0,0,0);
-//	MString fileTexturePath = "";
-//	getColor(attributeName, depFn, col);
-//	Corona::Rgb rgbColor = Corona::Rgb(col.r,col.g,col.b);
-//	MObject fileTextureObject;
-//	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
-//	{
-//		if( textureFileSupported(fileTexturePath))
-//		{
-//			texmap = loader.loadBitmap(fileTexturePath.asChar());
-//		}else{
-//			texmap = NULL;
-//			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
-//			col = MColor(1, 0, 1);
-//		}
-//	}
-//	com = Corona::ColorOrMap(rgbColor, texmap);
-//}
-//
-//void CoronaRenderer::defineFloatOrMap(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com)
-//{
-//	MapLoader loader;
-//	Corona::Abstract::Map *texmap = NULL;
-//	float f;
-//	MString fileTexturePath = "";
-//	getFloat(attributeName, depFn, f);
-//	Corona::Rgb rgbColor = Corona::Rgb(f,f,f);
-//	MObject fileTextureObject;
-//	if(getConnectedFileTexturePath(attributeName, depFn.name(), fileTexturePath, fileTextureObject))
-//	{
-//		if( textureFileSupported(fileTexturePath))
-//			texmap = loader.loadBitmap(fileTexturePath.asChar());
-//		else{
-//			texmap = NULL;
-//			logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
-//			rgbColor.r() = 1.0;
-//			rgbColor.g() = 0.0;
-//			rgbColor.b() = 1.0;
-//		}
-//	}else{
-//		texmap = NULL;
-//	}
-//	com = Corona::ColorOrMap(rgbColor, texmap);
-//}
+void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn, Corona::Abstract::Map *bumpMap)
+{
+	Corona::Abstract::Map *texmap = NULL;
+	if( isConnected("normalCamera", depFn))
+	{
+		logger.debug("Bump connected");
+	}
+}
 
 void CoronaRenderer::defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com)
 {
@@ -338,7 +301,11 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				
 				MVector point(0,0,0);
 				getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
-				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));					
+				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));			
+
+
+				defineBump(MString("bump"), depFn, data.bump);
+
 				shaderArray.push_back(obj->shadingGroups[0]);
 				dataArray.push_back(data);
 
@@ -406,13 +373,17 @@ void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 	}
 
 	logger.debug(MString("Register shader type") + snode.typeName + " named " + snode.fullName );
-	bool success = this->oslRenderer.shadingsys->Shader("surface", snode.typeName.asChar(), snode.fullName.asChar());
+	bool success;
+	if( snode.typeName == "bump2d")
+		success = this->oslRenderer.shadingsys->Shader("displacement", snode.typeName.asChar(), snode.fullName.asChar());
+	else
+		success = this->oslRenderer.shadingsys->Shader("surface", snode.typeName.asChar(), snode.fullName.asChar());
 	if( !success )
 	{
 		logger.debug(MString("Failed to register shader ") + snode.fullName );
 	}
 
-
+	
 	for( uint i = 0; i < snode.inputAttributes.size(); i++)
 	{
 		if(snode.inputAttributes[i].connected)

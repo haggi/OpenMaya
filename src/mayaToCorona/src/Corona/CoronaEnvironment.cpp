@@ -26,13 +26,6 @@ void CoronaRenderer::defineEnvironment()
 			return;
 		}
 		MapLoader loader;
-		//mtco_MapLoader loader;
-		//MFnDependencyNode ftn(fileTextureObject);
-		//MColor gain, offset;
-		//getColor("colorGain", ftn, gain);
-		//getColor("colorOffset", ftn, offset);
-		//loader.colorGain = gain;
-		//loader.colorOffset = offset;
 		Corona::Abstract::Map *texmap = loader.loadBitmap(fileName);
 		if(texmap == NULL) 
 		{

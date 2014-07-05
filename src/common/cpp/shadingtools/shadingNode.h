@@ -13,6 +13,8 @@ struct ShaderAttribute
 	ShaderAttribute()
 	{
 		connected = false;
+		connectedChildren = false;
+		connectedSourceChildren = false;
 	}
 	enum AttributeType {
 		NONE=0,
@@ -25,6 +27,8 @@ struct ShaderAttribute
 	std::string name;
 	std::string type;
 	bool connected;
+	bool connectedChildren;
+	bool connectedSourceChildren;
 	std::string connectedAttrName;
 	std::string connectedNodeName;
 	MObject connectedMObject;

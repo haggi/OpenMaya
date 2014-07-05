@@ -51,9 +51,15 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 	{
 		ShaderAttribute att = dest.inputAttributes[inAttrId];
 		//logger.debug(MString("Check in attribute of des: ") + dest.fullName + "." + att.name.c_str());
-		MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);
+		MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);		
 		if( stat )
 		{
+			bool connectedSourceChildren = false;
+			bool connectedChildren = false;
+			if( inPlug.numConnectedChildren() > 0 )
+				if( !inPlug.isConnected() )
+					connectedChildren = true;
+			
 			inPlug.connectedTo(connectedOutPlugs, true, false);
 			for( uint outPlugId = 0; outPlugId < connectedOutPlugs.length(); outPlugId++)
 			{
@@ -62,7 +68,10 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 				{
 					logger.debug(MString("Source node is correct"));
 					MString plugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId]);
-					//logger.debug(MString("Check name of plug: ") + plugName);
+					MString parentPlugName("----none---");
+					if( connectedOutPlugs[outPlugId].isChild() )
+						parentPlugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId].parent());
+
 					for( size_t outAttrId = 0; outAttrId < source.outputAttributes.size(); outAttrId++)
 					{
 						//logger.debug(MString("Compare: ") + plugName + " attname " + source.outputAttributes[outAttrId].name.c_str());

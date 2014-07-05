@@ -127,7 +127,11 @@ def createDeployment(renderer, shortCut, mayaRelease):
             destFile =   destBinDir + f
             print "Copy ", sourceFile, "to", destFile
             shutil.copy(sourceFile, devDestDir + "/bin")
-        
+            
+        shaderDir = sourceDir + "/shaders"
+        shaderDestDir = devDestDir + "/shaders"
+        shutil.rmtree(shaderDestDir)
+        shutil.copytree(shaderDir, shaderDestDir)
                 
     if renderer == "indigo":
         binDir = sourceDir + "/bin"
