@@ -7,4 +7,14 @@
     <LocalDebuggerEnvironment>PATH=H:\UserDatenHaggi\Documents\coding\oiio\deploy\bin;H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-10.0
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
+    <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2015\bin\maya.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerAttach>true</LocalDebuggerAttach>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
+    <LocalDebuggerCommand>C:\Program Files\Autodesk\Maya2015\bin\maya.exe</LocalDebuggerCommand>
+    <LocalDebuggerAttach>true</LocalDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

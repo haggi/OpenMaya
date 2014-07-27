@@ -322,6 +322,41 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject)
 	return result;
 }
 
+MObject getOtherSideSourceNode(MString& plugName, MObject& thisObject, bool checkChildren, MString& outPlugName)
+{
+	MStatus stat;
+	MObject result = MObject::kNullObj;
+	MFnDependencyNode depFn(thisObject, &stat);	if (stat != MStatus::kSuccess) return result;
+	MPlugArray pa;
+	depFn.getConnections(pa);
+	MPlug connectedPlug;
+	for (uint pId = 0; pId < pa.length(); pId++)
+	{
+		MPlug plug = pa[pId];
+		if (!plug.isDestination())
+			continue;
+		while (plug.isChild())
+		{
+			plug = plug.parent();
+		}
+		if (getAttributeNameFromPlug(plug) == plugName)
+		{
+			connectedPlug = pa[pId];
+		}
+	}
+	if (connectedPlug.isNull())
+		return result;
+	connectedPlug.connectedTo(pa, true, false, &stat); if (stat != MStatus::kSuccess) return result;
+	if (pa.length() == 0)
+		return result;
+	MPlug otherSidePlug = pa[0];
+	result = otherSidePlug.node();
+	outPlugName = getAttributeNameFromPlug(otherSidePlug);
+	if (otherSidePlug.isChild())
+		outPlugName = getAttributeNameFromPlug(otherSidePlug.parent());
+	return result;
+}
+
 MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& otherSidePlugNames)
 {
 	MStatus stat;
@@ -359,16 +394,39 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 	return result;
 }
 
-bool isConnected(const char *attrName, MFnDependencyNode& depFn)
+bool isConnected(const char *attrName, MObject& node, bool dest)
+{
+	MFnDependencyNode depFn(node);
+	return isConnected(attrName, depFn, true, true);
+}
+
+bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild = false)
 {
 	MStatus stat;
-	MPlug inPlug = depFn.findPlug(attrName, &stat);
-	if( !stat )
-		return false;
 	MPlugArray pa;
-	inPlug.connectedTo(pa, true, false);
-	return pa.length() > 0;
+	depFn.getConnections(pa);
+
+	for (uint pId = 0; pId < pa.length(); pId++)
+	{
+		if (dest)
+		{
+			if (!pa[pId].isDestination())
+				continue;
+		}
+		else{
+			if (!pa[pId].isSource())
+				continue;
+		}
+		MPlug plug = pa[pId];
+		if (primaryChild)
+			while (plug.isChild())
+				plug = plug.parent();
+		if ((getAttributeNameFromPlug(plug) == attrName))
+			return true;
+	}
+	return false;
 }
+
 
 
 MObject getConnectedInNode(MObject& thisObject, const char *attrName)
@@ -408,12 +466,13 @@ void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList)
 	//return (numConnections > 0);
 }
 
+// get direct connections and primary children connections for such plugs like color, vector, point
 void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList)
 {
 	MPlugArray connectedPlugs;
 	plug.connectedTo(connectedPlugs, true, false);
 	int numConnections = connectedPlugs.length();
-	
+
 	for( int i = 0; i <  numConnections; i++)
 	{
 		MObject plugObject = getOtherSideNode(plug);

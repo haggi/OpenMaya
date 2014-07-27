@@ -67,7 +67,7 @@ public:
 	virtual void defineGeometry();
 	virtual void defineSettings();
 	Corona::IGeometryGroup *defineStdPlane();
-	void sanityCheck(Corona::Abstract::Settings* settings) const; 
+	//void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject);
@@ -75,12 +75,18 @@ public:
 	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void createOSLShadingNode(ShadingNode& snode);
+	void createOSLHelperNodes(ShadingNode& snode);
+	void createPlugHelperNode(MPlug plug, bool outType);
+	bool doesHelperNodeExist(MString helperNode);
+	MString createPlugHelperNodeName(MPlug& plug, bool outType);
+	MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
 	void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
+	Corona::Abstract::Map *getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
-	void defineBump(MString& attributeName, MFnDependencyNode& depFn, Corona::Abstract::Map *bumpMap);
+	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::Abstract::Map **bumpMap);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	bool isSunLight(mtco_MayaObject *obj);
 	virtual void defineLights();

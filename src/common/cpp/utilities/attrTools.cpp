@@ -322,6 +322,13 @@ MColor getColorAttr(const char *plugName, MFnDependencyNode& dn)
 	return c;
 }
 
+MVector getVectorAttr(const char *plugName, MFnDependencyNode& dn)
+{
+	MVector c(0, 0, 0);
+	getVector(MString(plugName), dn, c);
+	return c;
+}
+
 
 bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value)
 {
@@ -410,6 +417,41 @@ bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value)
 	return true;
 }
 
+ATTR_TYPE getPlugAttrType(MPlug plug)
+{
+	MStatus stat = MS::kSuccess;
+	MObject attObj = plug.attribute(&stat);
+	MFnAttribute att(attObj);
+
+	if (!stat)
+		return ATTR_TYPE::ATTR_TYPE_NONE;
+	MString attName = att.name();
+
+	if (attName == "outColor")
+		return ATTR_TYPE::ATTR_TYPE_COLOR;
+
+	if (attName == "color")
+		return ATTR_TYPE::ATTR_TYPE_COLOR;
+
+	if (attName == "normalCamera")
+		return ATTR_TYPE::ATTR_TYPE_VECTOR;
+
+	if (att.isUsedAsColor())
+		return ATTR_TYPE::ATTR_TYPE_COLOR;
+	if (attObj.apiType() == MFn::kNumericAttribute)
+	{
+		MFnNumericAttribute na(attObj, &stat);
+		if (!stat)
+			return ATTR_TYPE::ATTR_TYPE_NONE;
+		if (na.unitType() == MFnNumericData::Type::kFloat)
+			return ATTR_TYPE::ATTR_TYPE_FLOAT;
+	}
+	if (attObj.apiType() == MFn::kAttribute3Float)
+	{
+		return ATTR_TYPE::ATTR_TYPE_VECTOR;
+	}
+	return ATTR_TYPE::ATTR_TYPE_NONE;
+}
 
 ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn)
 {
@@ -435,4 +477,18 @@ ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn)
 			return ATTR_TYPE::ATTR_TYPE_FLOAT;
 	}
 	return ATTR_TYPE::ATTR_TYPE_NONE;
+}
+
+int getChildId(MPlug& plug)
+{
+	if (!plug.isChild())
+		return -1;
+
+	MPlug parentPlug = plug.parent();
+	for (uint chId = 0; chId < parentPlug.numChildren(); chId++)
+	{
+		if (parentPlug.child(chId) == plug)
+			return chId;
+	}
+	return -1;
 }

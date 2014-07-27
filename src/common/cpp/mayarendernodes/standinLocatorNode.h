@@ -1,7 +1,6 @@
 #ifndef MT_STANDIN_H
 #define MT_STANDIN_H
 
-#include <math.h>
 #include <maya/MPxLocatorNode.h> 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -20,6 +19,7 @@
 #include <maya/MColor.h>
 #include <maya/M3dView.h>
 #include <maya/MDistance.h>
+#include <math.h>
 
 class StandinLocatorNode : public MPxLocatorNode
 {

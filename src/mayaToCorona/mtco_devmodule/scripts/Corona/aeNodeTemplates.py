@@ -26,6 +26,12 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("mtco_sun_multiplier", label="Sun Intensity Multiplier")
         self.endLayout()
 
+    def buildBum2dTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("normalMap", label="Normal Map")
+        self.endLayout()
+
     def buildDisplacementShaderTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
@@ -53,6 +59,8 @@ class AECoronaNodeTemplate(BaseTemplate):
             self.buildDisplacementShaderTemplate(nodeName)
         if self.thisNode.type() == "camera":
             self.buildCameraTemplate(nodeName)
+        if self.thisNode.type() == "bump2d":
+            self.buildBum2dTemplate(nodeName)
             
     def buildBody(self, nodeName):
         self.buildCoronaTemplates(nodeName)

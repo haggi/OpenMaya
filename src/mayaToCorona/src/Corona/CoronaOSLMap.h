@@ -7,8 +7,10 @@ class OSLMap : public Corona::Abstract::Map
 {
 public:
 	CoronaRenderer *coronaRenderer;
+	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD };
+	BumpType bumpType;
 	OSL::ShaderGroupRef shaderGroup;
-	
+	OSLMap();
 	~OSLMap();
 
 	void setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj);

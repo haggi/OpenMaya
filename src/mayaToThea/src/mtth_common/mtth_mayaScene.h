@@ -9,12 +9,14 @@
 #include "mtth_renderGlobals.h"
 #include "mtth_MayaObject.h"
 #include "../Thea/Thea.h"
+#include "../Thea/TheaDummy.h"
 #include "utilities/MiniMap.h"
 
 
 class mtth_MayaScene : public MayaScene
 {
 public:
+	//TheaDRenderer mtth_renderer;
 	TheaRenderer mtth_renderer;
 	mtth_RenderGlobals *renderGlobals;
 	MayaObject *defaultCamera; // needed for motionblur calculation

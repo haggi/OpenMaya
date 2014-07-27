@@ -4,6 +4,11 @@
 
 static Logging logger;
 
+OSLMap::OSLMap()
+{
+	this->bumpType = NONE;
+}
+
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
 {
 	//this->coronaRenderer->oslRenderer.renderer.setup_transformations(Mshad, Mobj);
@@ -37,9 +42,9 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     sg.dPdy = OSL::Vec3 (sg.dvdx, sg.dvdy, 0.0f);
     sg.dPdz = OSL::Vec3 (0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
     // Tangents of P with respect to surface u,v
-	context.dUvw(0);
-    sg.dPdu = OSL::Vec3 (1.0f, 0.0f, 0.0f);
-    sg.dPdv = OSL::Vec3 (0.0f, 1.0f, 0.0f);
+	Corona::Dir duvw = context.dUvw(0);
+	sg.dPdu = OSL::Vec3(duvw.x(), duvw.y(), 0.0f);
+    sg.dPdv = OSL::Vec3 (0.0f, duvw.y(), 0.0f);
 
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
@@ -116,9 +121,27 @@ float OSLMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCach
 }
 
 
-Corona::Dir OSLMap::evalBump(const Corona::IShadeContext&, Corona::TextureCache*) 
+Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache)
 {
+	if ( this->bumpType == NONE)
         STOP; //currently not supported
+
+	if (this->bumpType == NORMALTANGENT)
+	{
+		Corona::Matrix33 base = context.bumpBase(0);
+		float outAlpha = 0.0f;
+		Corona::Rgb col = evalColor(context, cache, outAlpha);
+		Corona::Dir normal;
+		normal.x() = (col.r() - 0.5) * 2.0;
+		normal.y() = (col.g() - 0.5) * 2.0;
+		normal.z() = (col.b() - 0.5) * 2.0;
+		normal = base.transform(normal);
+		return normal;
+	}
+	if (this->bumpType == BUMP)
+	{
+		// modify uvs, get grayvalues, calculate gradient
+	}
 }
 
 void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output) 

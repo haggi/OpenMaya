@@ -1,6 +1,8 @@
 release 0.26
 - OSL: blendColors
 - OSL: contrast for checkerNode
+- OSL: allow component connection for color/vector
+- OSL: Normal mapping
 
 release 0.25
 - added OSL for texturing

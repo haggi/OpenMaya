@@ -70,13 +70,13 @@ void CoronaRenderer::defineSettings()
 
 	context.settings->set(Corona::PARAM_GI_PRIMARY_SOLVER, this->mtco_renderGlobals->gi_primarySolver);
 	context.settings->set(Corona::PARAM_GI_SECONDARY_SOLVER, this->mtco_renderGlobals->gi_secondarySolver);
-	context.settings->set(Corona::PARAM_GI_SECONDARY_FILE, Corona::String(this->mtco_renderGlobals->gi_secondaryFile.asChar()));
-	context.settings->set(Corona::PARAM_SAVE_SECONDARY_GI , this->mtco_renderGlobals->gi_saveSecondary);
-	context.settings->set(Corona::PARAM_LOAD_SECONDARY_GI , this->mtco_renderGlobals->gi_loadSecondary);
 
 	context.settings->set(Corona::PARAM_GI_TO_AA_RATIO, this->mtco_renderGlobals->pathtracingSamples);
 	context.settings->set(Corona::PARAM_LIGHT_SAMPLES_MULT, this->mtco_renderGlobals->lights_areaSamplesMult);
 
+//	context.settings->set(Corona::PARAM_HDCACHE_LOAD, this->mtco_renderGlobals->gi_loadSecondary);
+	context.settings->set(Corona::PARAM_HDCACHE_SAVE, this->mtco_renderGlobals->gi_saveSecondary);
+	context.settings->set(Corona::PARAM_HDCACHE_FILE, Corona::String(this->mtco_renderGlobals->gi_secondaryFile.asChar()));
 	context.settings->set(Corona::PARAM_HDCACHE_PRECOMP_DENSITY, this->mtco_renderGlobals->gi_hdCache_precompMult);
 	context.settings->set(Corona::PARAM_HDCACHE_INTERPOLATION_COUNT, this->mtco_renderGlobals->gi_hdCache_interpolationCount);
 	context.settings->set(Corona::PARAM_HDCACHE_RECORD_QUALITY, this->mtco_renderGlobals->gi_hdCache_ptSamples);
@@ -94,31 +94,31 @@ void CoronaRenderer::defineSettings()
 		context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, this->mtco_renderGlobals->colorMapping_contrast); 
 }
 
-void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 
-{
-    CASSERT(settings && "You must provide an instance of settings");
-    try {
-        // try to get the settings to see if the structure is not empty, and if the types match
-        for (int i = 0; i < Corona::PropertyDescriptor::descriptorsCount(); ++i) 
-		{
-            const Corona::PropertyDescriptor* desc = Corona::PropertyDescriptor::getNth(i);
-            if (!desc->coreParameter) 
-			{
-                continue;
-            }
-			logger.debug(MString("checking prop name: ") + desc->name);
-            const Corona::Abstract::Settings::Property actual = settings->get(desc->id);
-            CASSERT(desc->type == actual.getType() && "Property data type mismatch");
-            if (actual.getType() == Corona::T_INT) 
-			{
-                CASSERT(int(desc->valueMin) <= int(actual) && int(desc->valueMax) >= int(actual) && "Property out of range");
-            }
-            if (actual.getType() == Corona::T_FLOAT) 
-			{
-				CASSERT(float(desc->valueMin) <= float(actual) && float(desc->valueMax) >= float(actual) && "Property out of range");
-            }
-        }
-    }catch (Corona::Exception& ex){
-        CASSERT(!"One of required properties was not found in the settings:");
-    }
-}
+//void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 
+//{
+//    CASSERT(settings && "You must provide an instance of settings");
+//    try {
+//        // try to get the settings to see if the structure is not empty, and if the types match
+//        for (int i = 0; i < Corona::PropertyDescriptor::descriptorsCount(); ++i) 
+//		{
+//            const Corona::PropertyDescriptor* desc = Corona::PropertyDescriptor::getNth(i);
+//            if (!desc->coreParameter) 
+//			{
+//                continue;
+//            }
+//			logger.debug(MString("checking prop name: ") + desc->name);
+//            const Corona::Abstract::Settings::Property actual = settings->get(desc->id);
+//            CASSERT(desc->type == actual.getType() && "Property data type mismatch");
+//            if (actual.getType() == Corona::T_INT) 
+//			{
+//                CASSERT(int(desc->valueMin) <= int(actual) && int(desc->valueMax) >= int(actual) && "Property out of range");
+//            }
+//            if (actual.getType() == Corona::T_FLOAT) 
+//			{
+//				CASSERT(float(desc->valueMin) <= float(actual) && float(desc->valueMax) >= float(actual) && "Property out of range");
+//            }
+//        }
+//    }catch (Corona::Exception& ex){
+//        CASSERT(!"One of required properties was not found in the settings:");
+//    }
+//}

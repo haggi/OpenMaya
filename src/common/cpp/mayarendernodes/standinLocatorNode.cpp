@@ -1,11 +1,11 @@
 #include "standinLocatorNode.h"
 
-#include <maya/MFnStringData.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MGlobal.h>
-#include <maya/MDoubleArray.h>
-#include <maya/MSelectionList.h>
-#include "utilities/pystring.h"
+//#include <maya/MFnStringData.h>
+//#include <maya/MFnDependencyNode.h>
+//#include <maya/MGlobal.h>
+//#include <maya/MDoubleArray.h>
+//#include <maya/MSelectionList.h>
+//#include "utilities/pystring.h"
 
 MObject  StandinLocatorNode::bboxMin;
 MObject  StandinLocatorNode::bboxMax;

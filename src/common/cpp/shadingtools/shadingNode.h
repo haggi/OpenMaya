@@ -59,6 +59,9 @@ public:
 
 	void setMObject(MObject object);
 	void init(void);
+	bool isAttributeValid(MString attributeName);
+	bool isInPlugValid(MPlug plug);
+	bool isOutPlugValid(MPlug plug);
 	void getConnectedInputObjects(MObjectArray& objectArray);
 	void getConnectedOutputObjects(MObjectArray& objectArray);
 private:

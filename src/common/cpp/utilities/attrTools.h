@@ -13,7 +13,10 @@ enum ATTR_TYPE
 	ATTR_TYPE_NONE = 0,
 	ATTR_TYPE_COLOR = 1,
 	ATTR_TYPE_FLOAT = 2,
+	ATTR_TYPE_VECTOR = 3
 };
+
+int getChildId(MPlug& plug);
 
 float getFloatAttr(const char* plugName, MFnDependencyNode& dn, const float defaultValue);
 
@@ -69,6 +72,8 @@ MColor getColorAttr(const char *plugName, MFnDependencyNode& dn);
 
 bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
+MVector getVectorAttr(const char *plugName, MFnDependencyNode& dn);
+
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
@@ -76,5 +81,7 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
 bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value);
 
 ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn);
+
+ATTR_TYPE getPlugAttrType(MPlug plug);
 
 #endif

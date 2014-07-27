@@ -49,25 +49,101 @@ void ShadingNode::setMObject(MObject mobj)
 	}
 }
 
+bool ShadingNode::isInPlugValid(MPlug plug)
+{
+	MPlug tmpPlug = plug;
+
+	if (!tmpPlug.isDestination())
+		return false;
+
+	while (tmpPlug.isChild())
+		tmpPlug = tmpPlug.parent();
+	
+	MString plugName = getAttributeNameFromPlug(tmpPlug);
+
+	for (size_t inAttrId = 0; inAttrId < this->inputAttributes.size(); inAttrId++)
+	{
+		if (plugName == inputAttributes[inAttrId].name.c_str())
+			return true;
+	}
+	return false;
+}
+
+bool ShadingNode::isOutPlugValid(MPlug plug)
+{
+	MPlug tmpPlug = plug;
+
+	if (!tmpPlug.isSource())
+		return false;
+
+	while (tmpPlug.isChild())
+		tmpPlug = tmpPlug.parent();
+
+	MString plugName = getAttributeNameFromPlug(tmpPlug);
+
+	for (size_t attrId = 0; attrId < this->outputAttributes.size(); attrId++)
+	{
+		if (plugName == outputAttributes[attrId].name.c_str())
+			return true;
+	}
+	return false;
+}
+
+bool ShadingNode::isAttributeValid(MString attributeName)
+{
+	MStatus stat;
+	MFnDependencyNode depFn(this->mobject);
+	MPlugArray pa;
+	depFn.getConnections(pa);
+	for (uint pId = 0; pId < pa.length(); pId++)
+	{
+		if (pa[pId].isDestination())
+		{
+			MPlug parentPlug = pa[pId];
+			while (parentPlug.isChild())
+				parentPlug = parentPlug.parent();
+			MString plugName = getAttributeNameFromPlug(parentPlug);
+			if (plugName == attributeName)
+			{
+				for (size_t inAttrId = 0; inAttrId < this->inputAttributes.size(); inAttrId++)
+				{
+					if (attributeName == inputAttributes[inAttrId].name.c_str())
+						return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
 
 void ShadingNode::getConnectedInputObjects(MObjectArray& objectArray)
 {
 	MStatus stat;
 	MFnDependencyNode depFn(this->mobject);
 	MObjectArray objectList;
+	MPlugArray connections;
+	depFn.getConnections(connections);
 
-	for( size_t inAttrId = 0; inAttrId < this->inputAttributes.size(); inAttrId++)
+	for (uint connId = 0; connId < connections.length(); connId++)
 	{
-		ShaderAttribute att = inputAttributes[inAttrId];
-		MPlug inPlug = depFn.findPlug(att.name.c_str(), &stat);
-		if( stat )
-		{
-			getConnectedInNodes(inPlug, objectList);
-			makeUniqueArray(objectList);
-			
-		}else{
-			logger.debug(MString("Failed to get plug: ") + this->typeName + "." + att.name.c_str());
-		}
+		MPlug p = connections[connId];
+		if (!p.isDestination())
+			continue;
+		
+		// a connection can be a direct connection or a child connection e.g. colorR, colorG...
+		// but in a shader description file only the main attribute is listed so we go up until we have the main plug
+		MPlug mainPlug = p;
+		while (mainPlug.isChild())
+			mainPlug = mainPlug.parent();
+		MStringArray stringArray;
+		// name contains node.attributeName, so we have to get rid of the nodeName
+		mainPlug.name().split('.', stringArray);
+		MString plugName = stringArray[stringArray.length() - 1];
+		if (!this->isAttributeValid(plugName))
+			continue;
+		getConnectedInNodes(p, objectList);
+		makeUniqueArray(objectList);
 	}
 	objectArray = objectList;
 }

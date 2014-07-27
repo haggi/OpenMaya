@@ -1,16 +1,18 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.6dev
+# Compiled by oslc 1.5.7dev
 shader bump2d
-param	float	bumpValue	0 		 %read{0,0} %write{2147483647,-1}
+param	float	bumpValue	0 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	bumpDepth	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	int	bumpInterp	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	vector	outNormal	0 0 0 		 %read{2147483647,-1} %write{1,1}
-global	normal	N	 %read{1,1} %write{2147483647,-1}
+param	vector	normalCamera	0 0 0 		 %read{2147483647,-1} %write{0,0}
+oparam	vector	outNormal	1 1 1 		 %read{2147483647,-1} %write{1,1}
+global	normal	N	 %read{0,1} %write{2147483647,-1}
+code normalCamera
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:2
+# {
+	assign		normalCamera N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{2} %argrw{"wr"}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:4
-# 	outNormal = N;
-	displace	bumpValue 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{4} %argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:5
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:7
 # }
-	assign		outNormal N 	%line{5} %argrw{"wr"}
+	assign		outNormal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{7} %argrw{"wr"}
 	end

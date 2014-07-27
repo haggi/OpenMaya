@@ -39,11 +39,6 @@ void TheaRenderer::render()
 	else
 		this->scene = TheaSDK::Scene::New(fileName.asChar());
 
-	//std::string cpuDriver = TheaSDK::Kernel::Root().getPrestoCPUDriverFile();
-	//std::string gpuDriver = TheaSDK::Kernel::Root().getPrestoGPUDriverFile();
-	//logger.debug(MString("CPU Driver: ") + cpuDriver.c_str());
-	//logger.debug(MString("GPU Driver: ") + gpuDriver.c_str());
-
 	MString moduleDir = getRendererHome();
 	MString gpuDriver = moduleDir + "bin/Plugins/Presto/presto-x64.dll";
 	MString cpuDriver = moduleDir + "bin/Plugins/Presto/presto-x86-x64.dll";
@@ -97,7 +92,6 @@ void TheaRenderer::render()
 	pystring::split(imgFormatExt, fileParts, ".");
 	std::string ext = fileParts.back();
 	
-	//filename = filename + ".jpg";
 	logger.debug(MString("Saving image as ") +  filename);
 	TheaSDK::SaveImage(filename.asChar());
 

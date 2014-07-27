@@ -65,13 +65,17 @@ MString matrixToString(MMatrix& matrix);
 
 MObject getOtherSideNode(MString& plugName, MObject& thisObject);
 
+MObject getOtherSideSourceNode(MString& plugName, MObject& thisObject, bool checkChildren, MString& outPlugName);
+
 MObject getOtherSideNode(MString& plugName, MObject& thisObject, MString& otherSidePlugName);
 
 MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& otherSidePlugNames);
 
 MObject getOtherSideNode(MPlug& plug);
 
-bool isConnected(const char *attrName, MFnDependencyNode& depFn);
+bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild);
+
+bool isConnected(const char *attrName, MObject& node, bool dest);
 
 bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& otherSidePlugName);
 

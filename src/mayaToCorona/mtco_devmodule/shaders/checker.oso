@@ -1,11 +1,12 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.6dev
+# Compiled by oslc 1.5.7dev
 shader checker
 param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1}
 param	color	color1	1 0 0 		 %read{12,12} %write{2147483647,-1}
 param	color	color2	0 0 0 		 %read{14,14} %write{2147483647,-1}
 param	float	contrast	1 		 %read{12,13} %write{2147483647,-1}
-oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{21,21}
+oparam	float	outAlpha	1 		 %read{2147483647,-1} %write{22,22}
+oparam	color	outColor	0 0 0 		 %read{22,22} %write{21,21}
 global	float	u	 %read{6,6} %write{2147483647,-1}
 global	float	v	 %read{7,7} %write{2147483647,-1}
 local	float	s	 %read{8,8} %write{0,6}
@@ -19,13 +20,14 @@ temp	int	$tmp1	 %read{3,3} %write{2,2}
 const	int	$const2	0		 %read{4,4} %write{2147483647,-1}
 const	int	$const3	1		 %read{5,5} %write{2147483647,-1}
 temp	float	$tmp2	 %read{9,9} %write{8,8}
-const	float	$const5	2		 %read{8,19} %write{2147483647,-1}
+const	float	$const5	4		 %read{8,10} %write{2147483647,-1}
 temp	float	$tmp3	 %read{11,11} %write{10,10}
 const	float	$const6	1		 %read{13,13} %write{2147483647,-1}
 temp	float	$tmp4	 %read{14,14} %write{13,13}
 temp	float	$tmp5	 %read{21,21} %write{20,20}
 temp	float	$tmp6	 %read{17,20} %write{15,15}
-const	string	$const7	"mod"		 %read{16,16} %write{2147483647,-1}
+const	float	$const8	2		 %read{17,19} %write{2147483647,-1}
+const	string	$const9	"mod"		 %read{16,16} %write{2147483647,-1}
 temp	float	$tmp7	 %read{19,19} %write{18,18}
 temp	float	$tmp8	 %read{18,18} %write{17,17}
 temp	float	$tmp9	 %read{20,20} %write{19,19}
@@ -53,7 +55,7 @@ code ___main___
 # 	}
 	assign		t v 	%line{12} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:14
-# 	float tt = floor(t * 2);
+# 	float tt = floor(t * 4);
 	mul		$tmp2 s $const5 	%line{14} %argrw{"wrr"}
 	floor		ss $tmp2 	%argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:15
@@ -64,20 +66,23 @@ code ___main___
 # 	color contrastColor2 = color2 * (1.0 - contrast);
 	mul		contrastColor1 color1 contrast 	%line{17} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:18
-# 	
+#     outColor = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
 	sub		$tmp4 $const6 contrast 	%line{18} %argrw{"wrr"}
 	mul		contrastColor2 color2 $tmp4 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:20
-# }
-	add		$tmp6 ss tt 	%line{20} %argrw{"wrr"}
-	functioncall	$const7 21 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:19
+# 	outAlpha = luminance(outColor);
+	add		$tmp6 ss tt 	%line{19} %argrw{"wrr"}
+	functioncall	$const9 21 	%argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:135
-# PERCOMP1 (abs)
-	div		$tmp8 $tmp6 $const5 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{135} %argrw{"wrr"}
+# int abs (int x) BUILTIN;
+	div		$tmp8 $tmp6 $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{135} %argrw{"wrr"}
 	floor		$tmp7 $tmp8 	%argrw{"wr"}
-	mul		$tmp9 $const5 $tmp7 	%argrw{"wrr"}
+	mul		$tmp9 $const8 $tmp7 	%argrw{"wrr"}
 	sub		$tmp5 $tmp6 $tmp9 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:19
+# 	outAlpha = luminance(outColor);
+	mix		outColor contrastColor1 contrastColor2 $tmp5 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl"} %line{19} %argrw{"wrrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:20
-# }
-	mix		outColor contrastColor1 contrastColor2 $tmp5 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl"} %line{20} %argrw{"wrrr"}
+# 
+	luminance	outAlpha outColor 	%line{20} %argrw{"wr"}
 	end

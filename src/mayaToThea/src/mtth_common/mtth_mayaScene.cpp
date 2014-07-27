@@ -305,8 +305,6 @@ bool mtth_MayaScene::renderImage()
 
 	this->renderGlobals->getImageName();
 
-	//this->mtth_renderer.defineScene(this->renderGlobals, this->objectList, this->lightList, this->camList, this->instancerNodeElements);
-
 	//if( this->renderGlobals->exportXMLFile)
 	//	this->mtth_renderer.writeXML();
 

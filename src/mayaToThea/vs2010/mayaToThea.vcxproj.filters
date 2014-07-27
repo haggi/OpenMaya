@@ -352,6 +352,9 @@
     <ClInclude Include="..\src\shaders\DiffuseLightMaterial.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Thea\TheaDummy.h">
+      <Filter>Source Files\Thea</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">

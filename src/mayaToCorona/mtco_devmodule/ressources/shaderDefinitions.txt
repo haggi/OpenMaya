@@ -39,6 +39,7 @@ shader_start:bump2d
 	inatt:bumpValue:float
 	inatt:bumpDepth:float
 	inatt:bumpInterp:int
+	inatt:normalMap:color
 	outatt:outNormal:vector
 shader_end
 
@@ -47,6 +48,7 @@ shader_start:checker
 	inatt:color2:color
 	inatt:contrast:float
 	inatt:uvCoord:float2
+	outatt:outAlpha:float
 	outatt:outColor:color
 shader_end
 

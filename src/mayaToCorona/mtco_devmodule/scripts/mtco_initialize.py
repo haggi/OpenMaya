@@ -241,9 +241,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='gi_primarySolver', uiType='enum', displayName='Primary Solver', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='gi_secondarySolver', uiType='enum', displayName='Secondary Solver', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='gi_secondaryFile', uiType='string', displayName='Secondary File', default='"c:/secondarygi.dat"', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Saves Scondary GI', default='false', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='gi_loadSecondary', uiType = 'bool', displayName = 'Load Secondary GI', default='false', uiDict=uiDict)
                         # self.addRenderGlobalsUIElement(attName='gi_ic_hemisphereSubdiv', uiType='float', displayName='Hemi Subdiv', default='7', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
 #                with pm.frameLayout(label="Primary GI", collapsable=True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
@@ -251,6 +248,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         # self.addRenderGlobalsUIElement(attName='gi_ic_hemisphereSubdiv', uiType='float', displayName='Hemi Subdiv', default='7', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
                 with pm.frameLayout(label="Secondary GI ", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                        self.addRenderGlobalsUIElement(attName='gi_secondaryFile', uiType='string', displayName='HD Cache File', default='"c:/secondarygi.dat"', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Saves HD Cache', default='false', uiDict=uiDict)
+#                        self.addRenderGlobalsUIElement(attName='gi_loadSecondary', uiType = 'bool', displayName = 'Load Secondary GI', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_precompMult', uiType = 'float', displayName = 'Precom Density', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_interpolationCount', uiType = 'int', displayName = 'Interpolation Count', default='3', data='1:64', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_ptSamples', uiType = 'int', displayName = 'Record Quality', default='256', data='minmax:1:4096', uiDict=uiDict)
@@ -420,10 +420,16 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue=1.0)
-        
+
+        # displacement shader        
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMin", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMax", attributeType="float", defaultValue=0.01)
         
+        #bump map because the maya implementation is too strange
+        pm.addExtension( nodeType='bump2d', longName='normalMap', usedAsColor=True, attributeType='float3' )
+        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapR', attributeType='float', parent='mtco_normalMap' )
+        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapG', attributeType='float', parent='mtco_normalMap' )
+        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapB', attributeType='float', parent='mtco_normalMap' )        
         # testing ies
         pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         

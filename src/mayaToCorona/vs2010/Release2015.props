@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <CORONA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToCorona\devkit\CoronaApi</CORONA_ROOT>
+    <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-12.0</BOOST_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
+    <OSL>H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy_vs2012</OSL>
+    <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
+    <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\ilmbase_vs12</ILM_BASE>
+    <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\exr_vs12</OPENEXR>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.mll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;_USRDLL;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;AW_NEW_IOSTREAMS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="CORONA_ROOT">
+      <Value>$(CORONA_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_ROOT">
+      <Value>$(BOOST_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MAYA_ROOT">
+      <Value>$(MAYA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OSL">
+      <Value>$(OSL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OIIO">
+      <Value>$(OIIO)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILM_BASE">
+      <Value>$(ILM_BASE)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXR">
+      <Value>$(OPENEXR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

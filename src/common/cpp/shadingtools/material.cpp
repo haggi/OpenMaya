@@ -38,7 +38,9 @@ bool Material::alreadyDefined(ShadingNode& sn, ShadingNetwork& network)
 	return false;
 }
 
-// source is the node which is connected to the inputs of dest
+// "source" is the node which is connected to the inputs of "dest"
+// the dest connections are already checked previously so we only have to check the 
+// outgoing connections from "source" for validity
 bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest)
 {
 	MPlugArray connectedOutPlugs;
@@ -46,57 +48,76 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 	MFnDependencyNode destFn(dest.mobject);
 	MObjectArray objectList;
 	int connCount = 0;
-
-	for( size_t inAttrId = 0; inAttrId < dest.inputAttributes.size(); inAttrId++)
+	MPlugArray plugArray;
+	MPlugArray validPlugs;
+	destFn.getConnections(plugArray);
+	for (uint pId = 0; pId < plugArray.length(); pId++)
 	{
-		ShaderAttribute att = dest.inputAttributes[inAttrId];
-		//logger.debug(MString("Check in attribute of des: ") + dest.fullName + "." + att.name.c_str());
-		MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);		
-		if( stat )
+		if (dest.isInPlugValid(plugArray[pId]))
 		{
-			bool connectedSourceChildren = false;
-			bool connectedChildren = false;
-			if( inPlug.numConnectedChildren() > 0 )
-				if( !inPlug.isConnected() )
-					connectedChildren = true;
-			
-			inPlug.connectedTo(connectedOutPlugs, true, false);
-			for( uint outPlugId = 0; outPlugId < connectedOutPlugs.length(); outPlugId++)
-			{
-				//logger.debug(MString("Check output plug: ") + source.fullName + " - " + connectedOutPlugs[outPlugId].name());
-				if( connectedOutPlugs[outPlugId].node() == source.mobject)
-				{
-					logger.debug(MString("Source node is correct"));
-					MString plugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId]);
-					MString parentPlugName("----none---");
-					if( connectedOutPlugs[outPlugId].isChild() )
-						parentPlugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId].parent());
-
-					for( size_t outAttrId = 0; outAttrId < source.outputAttributes.size(); outAttrId++)
-					{
-						//logger.debug(MString("Compare: ") + plugName + " attname " + source.outputAttributes[outAttrId].name.c_str());
-						if( plugName == source.outputAttributes[outAttrId].name.c_str())
-						{
-							dest.inputAttributes[inAttrId].connected = true;
-							dest.inputAttributes[inAttrId].connectedMObject = connectedOutPlugs[outPlugId].node();
-							std::vector<std::string> parts;
-							pystring::split(connectedOutPlugs[outPlugId].name().asChar(), parts, ".");
-							dest.inputAttributes[inAttrId].connectedAttrName = parts[1];
-							dest.inputAttributes[inAttrId].connectedNodeName = parts[0];
-							connCount++;
-						}
-					}
-				}
-			}
-		}else{
-			logger.debug(MString("Failed to get plug: ") + att.name.c_str());
+			validPlugs.append(plugArray[pId]);
 		}
 	}
 
-	if( connCount > 0)
-		return true;
-	else
-		return false;
+	for (uint pId = 0; pId < validPlugs.length(); pId++)
+	{
+		MPlugArray sourcePlugs;
+		validPlugs[pId].connectedTo(sourcePlugs, true, false);
+		for (uint spId = 0; spId < sourcePlugs.length(); spId++)
+		{
+			if (source.isOutPlugValid(sourcePlugs[spId]))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+
+	//for( size_t inAttrId = 0; inAttrId < dest.inputAttributes.size(); inAttrId++)
+	//{
+	//	ShaderAttribute att = dest.inputAttributes[inAttrId];
+	//	//logger.debug(MString("Check in attribute of des: ") + dest.fullName + "." + att.name.c_str());
+	//	MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);		
+	//	if( stat )
+	//	{
+	//		inPlug.connectedTo(connectedOutPlugs, true, false);
+	//		for( uint outPlugId = 0; outPlugId < connectedOutPlugs.length(); outPlugId++)
+	//		{
+	//			//logger.debug(MString("Check output plug: ") + source.fullName + " - " + connectedOutPlugs[outPlugId].name());
+	//			if( connectedOutPlugs[outPlugId].node() == source.mobject)
+	//			{
+	//				logger.debug(MString("Source node is correct"));
+	//				MString plugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId]);
+	//				MString parentPlugName("----none---");
+	//				if( connectedOutPlugs[outPlugId].isChild() )
+	//					parentPlugName = getAttributeNameFromPlug(connectedOutPlugs[outPlugId].parent());
+
+	//				for( size_t outAttrId = 0; outAttrId < source.outputAttributes.size(); outAttrId++)
+	//				{
+	//					//logger.debug(MString("Compare: ") + plugName + " attname " + source.outputAttributes[outAttrId].name.c_str());
+	//					if( plugName == source.outputAttributes[outAttrId].name.c_str())
+	//					{
+	//						dest.inputAttributes[inAttrId].connected = true;
+	//						dest.inputAttributes[inAttrId].connectedMObject = connectedOutPlugs[outPlugId].node();
+	//						std::vector<std::string> parts;
+	//						pystring::split(connectedOutPlugs[outPlugId].name().asChar(), parts, ".");
+	//						dest.inputAttributes[inAttrId].connectedAttrName = parts[1];
+	//						dest.inputAttributes[inAttrId].connectedNodeName = parts[0];
+	//						connCount++;
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}else{
+	//		logger.debug(MString("Failed to get plug: ") + att.name.c_str());
+	//	}
+	//}
+
+	//if( connCount > 0)
+	//	return true;
+	//else
+	//	return false;
 }
 
 void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
@@ -109,7 +130,7 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
 		return;
 	}
 
-	// to avoid any dag node cycles
+	// to avoid any dg node cycles
 	if(alreadyDefined(sn, network))
 	{
 		logger.debug("Node is already defined, skipping.");
@@ -120,18 +141,12 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
 	sn.getConnectedInputObjects(connectedNodeList);
 	this->checkNodeList(connectedNodeList);
 
-	if( connectedNodeList.length() > 0)
-	{
-		logger.debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
-	}else{
-		logger.debug(MString("Node ") + sn.fullName + " has no input connections.");
-	}
+	logger.debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
 
 	for(uint i = 0; i < connectedNodeList.length(); i++)
 	{
 
 		MString connectedNode = getObjectName(connectedNodeList[i]);
-		//logger.debug(MString("connectedNode: ") + connectedNode);
 		ShadingNode source = findShadingNode(connectedNodeList[i]);
 		if( hasValidShadingNodeConnections(source, sn))
 		{
