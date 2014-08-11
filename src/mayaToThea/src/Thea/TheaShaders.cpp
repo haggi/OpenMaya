@@ -80,7 +80,8 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 	for( int idx = 0; idx < sn.inputAttributes.size(); idx++)
 	{
 		ShaderAttribute sa = sn.inputAttributes[idx];
-		if(!sa.connected)
+
+		if (!isConnected(sa.name.c_str(), sn.mobject, true))
 		{
 			if( sa.type == "color" )
 			{
@@ -130,11 +131,13 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 				o.parameterList.push_back(p);
 			}
 		}else{
-			logger.debug(MString("Search for connected obj ") + sa.connectedNodeName.c_str());
+			MPlug directPlug = getDirectConnectedPlug(sa.name.c_str(), depFn, true);
+			MString nodeName = getObjectName(directPlug.node());
+			logger.debug(MString("Search for connected obj ") + nodeName);
 			for( size_t oId = 0; oId < objList.size(); oId++)
 			{
 				Object co = objList[oId];
-				if(co.mayaName == sa.connectedNodeName.c_str())
+				if (co.mayaName == nodeName)
 				{
 					logger.debug(MString("Found connected obj ") + co.mayaName);
 					if(co.type == "Texture" )
