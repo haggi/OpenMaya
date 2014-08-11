@@ -318,6 +318,9 @@ global proc updateMayaImageFormatControl()
         pm.callbacks(addCallback=self.hyperShadePanelBuildCreateMenuCallback, hook='hyperShadePanelBuildCreateMenu', owner=self.pluginName)
         pm.callbacks(addCallback=self.hyperShadePanelBuildCreateSubMenuCallback, hook='hyperShadePanelBuildCreateSubMenu', owner=self.pluginName)
         pm.callbacks(addCallback=self.buildRenderNodeTreeListerContentCallback, hook='buildRenderNodeTreeListerContent', owner=self.pluginName)
+        pm.callbacks(addCallback=self.createRenderNodeCallback, hook='createRenderNodeCommand', owner=self.pluginName)
+        
+        
         
         aeTemplateName = "AE{0}NodeTemplate".format(self.rendererName.lower())
         aeTemplateImportName = aeTemplateName
@@ -333,6 +336,14 @@ global proc updateMayaImageFormatControl()
 #        log.debug("aeCallback: " + aeCallbackProc)
 #        pm.mel.eval(aeCallbackProc)
     
+    def createRenderNodeCallback(self, postCommand, nodeType):
+        #log.debug("createRenderNodeCallback postCmd {0} nodeType {1}".format(postCommand, nodeType))
+        for c in pm.getClassification(nodeType):
+            if self.rendererName.lower() in c:
+                #log.debug("Found {0} node: {1}".format(self.rendererName.lower(), nodeType))
+                buildNodeCmd = "import {0} as rcall; rcall.theRenderer().createRenderNode(nodeType=\\\"{1}\\\")".format(self.moduleName, nodeType)
+                buildNodeCmd = "string $cmd = \"{0}\"; python($cmd);".format(buildNodeCmd)
+                return buildNodeCmd
     
     def registerRenderer(self):
         log.debug("registerRenderer")

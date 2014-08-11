@@ -13,9 +13,14 @@ void CoronaRenderer::defineSettings()
     // lets change few parameters, for example resolution, and render stamp
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, this->mtco_renderGlobals->imgWidth);
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, this->mtco_renderGlobals->imgHeight);
-    context.settings->set(Corona::PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->imgWidth);
-    context.settings->set(Corona::PARAM_IMAGE_REGION_END_Y,  this->mtco_renderGlobals->imgHeight);
-	
+	if (this->mtco_renderGlobals->useRenderRegion)
+	{
+		context.settings->set(Corona::PARAM_IMAGE_REGION_START_X, this->mtco_renderGlobals->regionLeft);
+		context.settings->set(Corona::PARAM_IMAGE_REGION_START_Y, this->mtco_renderGlobals->regionBottom);
+		context.settings->set(Corona::PARAM_IMAGE_REGION_END_X, this->mtco_renderGlobals->regionRight);
+		context.settings->set(Corona::PARAM_IMAGE_REGION_END_Y, this->mtco_renderGlobals->regionTop);
+	}
+
 	if( this->mtco_renderGlobals->renderer == 0) // progressive
 		context.settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_PROGRESSIVE);
 	if( this->mtco_renderGlobals->renderer == 1) // bucket rendering

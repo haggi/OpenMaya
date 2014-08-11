@@ -406,6 +406,20 @@ class TheaRenderer(Renderer.MayaToRenderer):
             rl = lh.readlines()
             for l in rl:
                 sys.__stdout__.write(l)
+                
+    def createRenderNode(self, nodeType=None):
+        log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
+        if nodeType == "TheaMaterial":
+            mat = pm.shadingNode("TheaMaterial", asShader=True)
+            bsdf = pm.shadingNode("BasicBSDF", asShader=True)
+            bsdf.outColor >> mat.bsdf
+            shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+            mat.outColor >> shadingGroup.surfaceShader
+        else:
+            mat = pm.shadingNode(nodeType, asShader=True)
+            shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+            mat.outColor >> shadingGroup.surfaceShader
+            
             
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")

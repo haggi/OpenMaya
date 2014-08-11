@@ -80,6 +80,8 @@ bool getPoint(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value);
 
+MMatrix getMatrix(const char *plugName, MFnDependencyNode& dn);
+
 ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn);
 
 ATTR_TYPE getPlugAttrType(MPlug plug);

@@ -68,7 +68,7 @@
     <ClCompile>
       <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\include;H:/UserDatenHaggi/Documents/coding/oiio/deploy/include;H:/UserDatenHaggi/Documents/coding/openExr/depoly2.10/static/ilmbase/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -114,7 +114,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
       <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\include;H:/UserDatenHaggi/Documents/coding/oiio/deploy/include;H:/UserDatenHaggi/Documents/coding/openExr/depoly2.10/static/ilmbase/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -125,8 +125,8 @@
       <OutputFile>$(Configuration)\$(ProjectName).mll</OutputFile>
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib;H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy\MinSizeRelease\lib\*.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Half.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Iex-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\Imath-2_1.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\ilmbase\lib\IlmThread-2_1.lib;H:\UserDatenHaggi\Documents\coding\oiio\deploy\lib\OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy\lib\jpeg.lib;H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\static\exr\\lib\IlmImf-2_1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OIIO)\lib;$(OSL)\lib;$(OPENEXR)\lib;$(ILM_BASE)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy_vs2013\lib\*.lib;Half.lib;Iex.lib;Imath.lib;IlmThread.lib;OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vc10\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2010\lib\jpeg.lib;IlmImf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>

@@ -74,6 +74,10 @@ public:
 	void updateMesh(mtco_MayaObject *obj);
 	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	void defineDefaultMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
+	bool isOSLNodeAlreadyDefined(MObject& oslnode);
+	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn);
+	MString createOSLConversionNode(MPlug& thisPlug, MPlug& directPlug);
 	void createOSLShadingNode(ShadingNode& snode);
 	void createOSLHelperNodes(ShadingNode& snode);
 	void createPlugHelperNode(MPlug plug, bool outType);

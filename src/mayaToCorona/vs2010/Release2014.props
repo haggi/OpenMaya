@@ -3,15 +3,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <CORONA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToCorona\devkit\CoronaApi</CORONA_ROOT>
-    <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
+    <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-12.0</BOOST_ROOT>
     <MAYA_ROOT>C:\Program Files\Autodesk\Maya2014</MAYA_ROOT>
+    <OSL>H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy_vs2012</OSL>
+    <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
+    <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\ilmbase_vs12</ILM_BASE>
+    <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\depoly2.10\exr_vs12</OPENEXR>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT);$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -21,7 +25,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib64-msvc-10.0;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -44,6 +48,22 @@
     </BuildMacro>
     <BuildMacro Include="MAYA_ROOT">
       <Value>$(MAYA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OSL">
+      <Value>$(OSL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OIIO">
+      <Value>$(OIIO)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILM_BASE">
+      <Value>$(ILM_BASE)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXR">
+      <Value>$(OPENEXR)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

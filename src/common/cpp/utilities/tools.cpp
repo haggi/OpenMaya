@@ -400,6 +400,38 @@ bool isConnected(const char *attrName, MObject& node, bool dest)
 	return isConnected(attrName, depFn, true, true);
 }
 
+// gives the plug on the other side of this connected plug, children are ignored
+MPlug getDirectConnectedPlug(const char *attrName, MFnDependencyNode& depFn, bool dest)
+{
+	MPlug thisPlug = depFn.findPlug(attrName);
+	MPlug returnPlug;
+	MPlugArray pa;
+	thisPlug.connectedTo(pa, true, false);
+	if (pa.length() > 0)
+	{
+		returnPlug = pa[0];
+	}
+	return returnPlug;
+}
+
+// gives the plug on the other side of this connected plug, children are ignored
+MPlug getDirectConnectedPlug(MPlug& plug, bool dest)
+{
+	MPlug thisPlug = plug;
+	MPlug returnPlug;
+	MPlugArray pa;
+	thisPlug.connectedTo(pa, true, false);
+	if (pa.length() > 0)
+	{
+		returnPlug = pa[0];
+	}
+	return returnPlug;
+}
+
+void getConnectedChildrenPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& connectedChildren)
+{
+}
+
 bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild = false)
 {
 	MStatus stat;
@@ -537,6 +569,27 @@ bool getConnectedPlugs(MString& plugName, MObject& thisObject, MPlug& inPlug, MP
 	outPlug = otherSidePlug;
 	return true;
 }
+
+bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs, MPlugArray& otherSidePlugs)
+{
+	MStatus stat;
+	bool result = false;
+	MFnDependencyNode depFn(thisObject, &stat);	if (stat != MStatus::kSuccess) return result;
+	MPlugArray pa;
+	depFn.getConnections(pa);
+	for (uint i = 0; i < pa.length(); i++)
+		if (pa[i].isDestination())
+			inPlugs.append(pa[i]);
+
+	for (uint i = 0; i < inPlugs.length(); i++)
+	{
+		MPlug p = inPlugs[i];
+		p.connectedTo(pa, true, false);
+		otherSidePlugs.append(pa[0]);
+	}
+	return true;
+}
+
 
 bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs)
 {

@@ -12,6 +12,8 @@ shader_start:file
 	inatt:colorGain:color
 	inatt:colorOffset:color
 	inatt:uvCoord:float2
+	inatt:fromSRGB:bool
+	inatt:toSRGB:bool
 	outatt:outColor:color
 shader_end
 
@@ -25,14 +27,24 @@ shader_start:place2dTexture
 	inatt:offsetU:float
 	inatt:offsetV:float
 	inatt:rotateUV:float
-	outatt:outUV:float2
+	outatt:outUV:vector
+shader_end
+
+shader_start:place3dTexture
+	inatt:matrix:matrix
+	outatt:worldInverseMatrix:matrix
+shader_end
+
+shader_start:solidFractal
+	inatt:placementMatrix:matrix
+	outatt:outColor:color
 shader_end
 
 shader_start:blendColors
 	inatt:color1:color
 	inatt:color2:color
 	inatt:blender:float
-	outatt:outColor:color
+	outatt:output:color
 shader_end
 
 shader_start:bump2d
@@ -40,6 +52,7 @@ shader_start:bump2d
 	inatt:bumpDepth:float
 	inatt:bumpInterp:int
 	inatt:normalMap:color
+	inatt:normalCamera:vector
 	outatt:outNormal:vector
 shader_end
 
@@ -50,6 +63,25 @@ shader_start:checker
 	inatt:uvCoord:float2
 	outatt:outAlpha:float
 	outatt:outColor:color
+shader_end
+
+shader_start:samplerInfo
+	outatt:normalCamera:vector
+	outatt:pointWorld:vector
+	outatt:uvCoord:vector
+shader_end
+
+shader_start:contrast
+	inatt:value:vector
+	inatt:contrast:vector
+	inatt:bias:vector
+	outatt:outValue:vector
+shader_end
+
+shader_start:gammaCorrect
+	inatt:value:color
+	inatt:gamma:vector
+	outatt:outValue:color
 shader_end
 
 shader_start:OSLInterface
@@ -84,6 +116,7 @@ shader_start:CoronaSurface
 	inatt:refractionIndex:float
 	inatt:emissionDisableSampling:bool
 	inatt:attenuationDist:float
+	inatt:normalCamera:vector
 	outatt:outColor:color
 shader_end
 

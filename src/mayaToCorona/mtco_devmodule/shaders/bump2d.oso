@@ -3,16 +3,53 @@ OpenShadingLanguage 1.00
 shader bump2d
 param	float	bumpValue	0 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	bumpDepth	1 		 %read{2147483647,-1} %write{2147483647,-1}
-param	int	bumpInterp	0 		 %read{2147483647,-1} %write{2147483647,-1}
-param	vector	normalCamera	0 0 0 		 %read{2147483647,-1} %write{0,0}
-oparam	vector	outNormal	1 1 1 		 %read{2147483647,-1} %write{1,1}
-global	normal	N	 %read{0,1} %write{2147483647,-1}
-code normalCamera
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:2
-# {
-	assign		normalCamera N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{2} %argrw{"wr"}
+param	int	bumpInterp	0 		 %read{4,4} %write{2147483647,-1}
+param	vector	normalCamera	0 0 0 		 %read{1,3} %write{2147483647,-1}
+param	color	normalMap	0 0 0 		 %read{6,12} %write{2147483647,-1}
+oparam	vector	outNormal	1 1 1 		 %read{2147483647,-1} %write{14,14}
+global	normal	N	 %read{0,0} %write{2147483647,-1}
+local	normal	dNormal	 %read{14,14} %write{0,13}
+temp	int	$tmp1	 %read{2,2} %write{1,1}
+const	int	$const1	0		 %read{4,9} %write{2147483647,-1}
+temp	int	$tmp2	 %read{5,5} %write{4,4}
+temp	int	$tmp3	 %read{7,7} %write{6,6}
+temp	float	$tmp4	 %read{9,9} %write{8,8}
+const	int	$const2	1		 %read{10,11} %write{2147483647,-1}
+temp	float	$tmp5	 %read{11,11} %write{10,10}
+const	int	$const3	2		 %read{12,13} %write{2147483647,-1}
+temp	float	$tmp6	 %read{13,13} %write{12,12}
 code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:4
+#  	if( isconnected(normalCamera) )
+	assign		dNormal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{4} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:5
+# 	{
+	isconnected	$tmp1 normalCamera 	%line{5} %argrw{"wr"}
+	if		$tmp1 4 4 	%argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:7
+# 	}
+	assign		dNormal normalCamera 	%line{7} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:10
+# 	{
+	gt		$tmp2 bumpInterp $const1 	%line{10} %argrw{"wrr"}
+	if		$tmp2 14 14 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:12
+# 		{
+	isconnected	$tmp3 normalMap 	%line{12} %argrw{"wr"}
+	if		$tmp3 14 14 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:14
+# 			dNormal[1] = normalMap[1];
+	compref		$tmp4 normalMap $const1 	%line{14} %argrw{"wrr"}
+	compassign	dNormal $const1 $tmp4 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:15
+# 			dNormal[2] = normalMap[2];
+	compref		$tmp5 normalMap $const2 	%line{15} %argrw{"wrr"}
+	compassign	dNormal $const2 $tmp5 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:16
+# 		}
+	compref		$tmp6 normalMap $const3 	%line{16} %argrw{"wrr"}
+	compassign	dNormal $const3 $tmp6 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl:20
 # }
-	assign		outNormal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bump2d.osl"} %line{7} %argrw{"wr"}
+	assign		outNormal dNormal 	%line{20} %argrw{"wr"}
 	end

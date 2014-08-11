@@ -58,6 +58,7 @@ colorArray
 vectorArray
 floatRamp
 colorRamp
+matrix
 
 As a hint for the translator the values can have an prefix:
 

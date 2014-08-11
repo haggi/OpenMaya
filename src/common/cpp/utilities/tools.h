@@ -73,6 +73,12 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 
 MObject getOtherSideNode(MPlug& plug);
 
+MPlug getDirectConnectedPlug(const char *attrName, MFnDependencyNode& depFn, bool dest);
+
+MPlug getDirectConnectedPlug(MPlug& plug, bool dest);
+
+void getConnectedChildrenPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& connectedChildren);
+
 bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild);
 
 bool isConnected(const char *attrName, MObject& node, bool dest);
@@ -82,6 +88,8 @@ bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& other
 bool getConnectedPlugs(MString& plugName, MObject& thisObject, MPlug& inPlug, MPlug& outPlug);
 
 bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs);
+
+bool getConnectedInPlugs(MObject& thisObject, MPlugArray& inPlugs, MPlugArray& otherSidePlugs);
 
 bool getConnectedOutPlugs(MObject& thisObject, MPlugArray& outPlugs);
 
@@ -156,7 +164,6 @@ MObject getConnectedShadingEngine(MObject node);
 void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scale);
 
 void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, float inV, float& outU, float& outV);
-
 
 #endif
 

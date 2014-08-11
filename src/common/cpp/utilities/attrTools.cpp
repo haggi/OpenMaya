@@ -3,6 +3,8 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MPlugArray.h>
+#include <maya/MMatrix.h>
+#include <maya/MFnMatrixData.h>
 
 #include "attrTools.h"
 
@@ -417,6 +419,23 @@ bool getMsgObj(const char *plugName, MFnDependencyNode& dn, MObject& value)
 	return true;
 }
 
+MMatrix getMatrix(const char *plugName, MFnDependencyNode& dn)
+{
+	MMatrix m;
+	m.setToIdentity();
+	MStatus stat;
+	MPlug p = dn.findPlug(plugName, &stat);
+	if (stat)
+	{
+		MObject matrixObject;
+		p.getValue(matrixObject);
+		MFnMatrixData fnMat(matrixObject);
+		MMatrix mat = fnMat.matrix();
+		m = mat;
+	}
+	return m;
+}
+
 ATTR_TYPE getPlugAttrType(MPlug plug)
 {
 	MStatus stat = MS::kSuccess;
@@ -427,8 +446,19 @@ ATTR_TYPE getPlugAttrType(MPlug plug)
 		return ATTR_TYPE::ATTR_TYPE_NONE;
 	MString attName = att.name();
 
+	if (attName == "outValue")
+	{
+		if (plug.node().hasFn(MFn::kGammaCorrect))
+			return ATTR_TYPE::ATTR_TYPE_COLOR;
+	}
 	if (attName == "outColor")
 		return ATTR_TYPE::ATTR_TYPE_COLOR;
+
+	if (attName == "uvCoord")
+		return ATTR_TYPE::ATTR_TYPE_VECTOR;
+
+	if (attName == "outUV")
+		return ATTR_TYPE::ATTR_TYPE_VECTOR;
 
 	if (attName == "color")
 		return ATTR_TYPE::ATTR_TYPE_COLOR;

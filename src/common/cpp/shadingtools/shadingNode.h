@@ -22,7 +22,8 @@ struct ShaderAttribute
 		FLOAT,
 		COLOR,
 		STRING,
-		BOOL
+		BOOL,
+		MATRIX
 	};
 	std::string name;
 	std::string type;

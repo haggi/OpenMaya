@@ -10,6 +10,8 @@
 #include "utilities/pystring.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
+#include "shadingtools/shaderDefs.h"
+#include "shadingtools/shadingNode.h"
 #include "CoronaOSLMap.h"
 #include <maya/MFnAttribute.h>
 
@@ -20,6 +22,8 @@ static Logging logger;
 static std::vector<Corona::NativeMtlData> dataArray;
 static std::vector<MObject> shaderArray;
 static std::vector<MString> helperNodeArray;
+static std::vector<MObject> definedOSLNodes;
+static std::vector<Corona::IMaterial *> definedMaterials;
 
 bool CoronaRenderer::doesHelperNodeExist(MString helperNode)
 {
@@ -126,10 +130,59 @@ void CoronaRenderer::createPlugHelperNode(MPlug plug, bool outType = false)
 	//	success = this->oslRenderer.shadingsys->ConnectShaders(helperNodeName.asChar(), inAttName.asChar(), nodeName.asChar(), attName.asChar());
 	helperNodeArray.push_back(helperNodeName);
 }
+bool CoronaRenderer::isOSLNodeAlreadyDefined(MObject& oslNode)
+{
+	for (size_t i = 0; i < definedOSLNodes.size(); i++)
+	{
+		if (definedOSLNodes[i] == oslNode)
+			return true;
+	}
+	return false;
+}
 
 void CoronaRenderer::createOSLHelperNodes(ShadingNode& snode)
 {
+	const char *inAttributes[] = { "inX", "inY", "inZ" };
+	const char *outAttributes[] = { "outX", "outY", "outZ" };
+	std::string inAttribute;
+	std::string outAttribute;
+
 	MFnDependencyNode depFn(snode.mobject);
+	MPlugArray connectedInPlugs;
+	MPlugArray otherSidePlugs;
+	getConnectedInPlugs(snode.mobject, connectedInPlugs, otherSidePlugs);
+	// first create the other side output attributes
+	for (uint i = 0; i < snode.inputAttributes.size(); i++)
+	{
+		ShaderAttribute sa = snode.inputAttributes[i];
+		for (uint pId = 0; pId < otherSidePlugs.length(); pId++)
+		{
+			// if the other side plugs belong to a node which is not defined,
+			// the node on the other input side is not supported
+			MPlug otherSidePlug = otherSidePlugs[pId];
+			if (!isOSLNodeAlreadyDefined(otherSidePlug.node()))
+				continue;
+			if (!otherSidePlug.isChild())
+				continue;
+			MString outAttributeName = getAttributeNameFromPlug(otherSidePlug).asChar();
+			MPlug tmp = otherSidePlug;
+			while (tmp.isChild())
+				tmp = tmp.parent();
+			MPlug parentPlug = tmp;
+			int childId = getChildId(otherSidePlug);
+			if ((childId < 0) || (childId > 2))
+			{
+				logger.error(MString("Source plug ") + otherSidePlug.name() + " child id is wrong (<0 or >2): " + childId);
+				continue;
+			}
+			outAttribute = outAttributes[childId];
+			MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
+			if (!doesHelperNodeExist(outHelperNodeName))
+				createPlugHelperNode(parentPlug, true);
+		}
+
+	}
+
 	for (uint i = 0; i < snode.inputAttributes.size(); i++)
 	{
 		ShaderAttribute sa = snode.inputAttributes[i];
@@ -147,9 +200,9 @@ void CoronaRenderer::createOSLHelperNodes(ShadingNode& snode)
 			continue;
 
 		logger.debug(MString("Found connected child input attribute: ") + p.name());
-		MString typeName = "ftorgb";
-		if (sa.type == "vector")
-			typeName = "ftovec";
+		//MString typeName = "ftorgb";
+		//if (sa.type == "vector")
+		//	typeName = "ftovec";
 		//MString inHelperNodeName = createPlugHelperNodeName(p, false);
 		//bool helperNodeExists = doesHelperNodeExist(inHelperNodeName);
 		//if (!helperNodeExists)
@@ -175,11 +228,7 @@ void CoronaRenderer::createOSLHelperNodes(ShadingNode& snode)
 				continue;
 			}
 			MPlug connectedDestPlug = p.child(chId);
-
-			const char *inAttributes[] = { "inX", "inY", "inZ" };
-			const char *outAttributes[] = { "outX", "outY", "outZ" };
 			std::string inAttribute = inAttributes[chId];
-			std::string outAttribute; 
 
 			MPlugArray plugArray;
 			connectedDestPlug.connectedTo(plugArray, true, false);
@@ -189,47 +238,19 @@ void CoronaRenderer::createOSLHelperNodes(ShadingNode& snode)
 				continue;
 			}
 			MPlug connectedPlug = plugArray[0];
-			logger.error(MString("Source plug ") + connectedPlug.name());
-				
+			logger.error(MString("Source plug ") + connectedPlug.name());				
 			outAttribute = getAttributeNameFromPlug(connectedPlug).asChar();
 			MObject connectedNode = connectedPlug.node();
-			MPlug tmp = connectedPlug;
-			while (tmp.isChild())
-				tmp = tmp.parent();
-			MString outHelperNodeName = createPlugHelperNodeName(tmp, true);
+			MPlug parentPlug = connectedPlug;
+			while (parentPlug.isChild())
+				parentPlug = parentPlug.parent();
+			MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
 			std::string outNode = getObjectName(connectedNode).asChar();
-
-			if (connectedPlug.isChild())
-			{
-				MPlug tmp = connectedPlug;
-				while (tmp.isChild())
-					tmp = tmp.parent();
-				MPlug parentPlug = tmp;
-				
-				int childId = getChildId(connectedPlug);
-				if ((childId < 0) || (childId > 2))
-				{
-					logger.error(MString("Source plug ") + p.name() + " child id is wrong (<0 or >2): " + childId);
-					continue;
-				}
-
-				outAttribute = outAttributes[childId];
-				if(!doesHelperNodeExist(outHelperNodeName))
-					createPlugHelperNode(parentPlug, true);
-				outNode = outHelperNodeName.asChar();
-			}
-
 			MString inHelperNodeName = createPlugHelperNodeName(p, false);
-			bool helperNodeExists = doesHelperNodeExist(inHelperNodeName);
-			if (!helperNodeExists)
+			if(doesHelperNodeExist(inHelperNodeName))
 			{
 				logger.debug(MString("Inattribute Helper node does not yet exist: ") + inHelperNodeName + " creating a new one");
-
-				MPlug tmp = p;
-				while (tmp.isChild())
-					tmp = tmp.parent();
-				MPlug parentPlug = tmp;
-				createPlugHelperNode(parentPlug, false);
+				createPlugHelperNode(p, false);
 			}
 
 			std::string inNode = inHelperNodeName.asChar();
@@ -253,6 +274,8 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 	MString connectedObjectName = getObjectName(getOtherSideSourceNode(attributeName, thisMObject, true, outPlugName));
 
 	logger.debug(MString("getOslTexMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
+	MPlug shaderPlug = depFn.findPlug(attributeName);
+
 	for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
 	{
 		ShadingNode snode = sn.shaderList[shadingNodeId];
@@ -284,6 +307,10 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 							logger.debug(MString("Found helper node name."));
 							sourceParam = "outputValue";
 							sourceNode = helperNodeName;
+							if (getPlugAttrType(shaderPlug) == ATTR_TYPE::ATTR_TYPE_VECTOR)
+							{
+								destParam = "inVector";
+							}
 						}
 						destParam = "inColor";
 					}
@@ -309,8 +336,15 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 							logger.debug(MString("Found helper node name."));
 							sourceParam = "outputValue";
 							sourceNode = helperNodeName;
+							if (getPlugAttrType(shaderPlug) == ATTR_TYPE::ATTR_TYPE_COLOR)
+							{
+								destParam = "inColor";
+							}
 						}
 					}
+
+					if (sourceParam == "output")
+						sourceParam = "outOutput";
 
 					logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
 					bool success = this->oslRenderer.shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
@@ -334,7 +368,7 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 	oslMap->coronaRenderer = this;
 	oslMap->shaderGroup = shaderGroup;
 
-	if (attributeName == "bump")
+	if (attributeName == "normalCamera")
 	{
 		oslMap->bumpType = OSLMap::NONE;
 		// we only support direct bumpmap connections
@@ -362,7 +396,6 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 			}
 		}
 	}
-
 	return oslMap;
 }
 
@@ -376,72 +409,6 @@ void CoronaRenderer::defineAttribute(MString& attributeName, MFnDependencyNode& 
 	{
 		logger.debug(MString("it is connected"));
 		texmap = getOslTexMap(attributeName, depFn, sn);
-		//size_t numNodes = sn.shaderList.size();
-		//MString OSLInterfaceName = depFn.name() + "_" + attributeName + "_OSLInterface";
-		//MString shaderGroupName = depFn.name() + "_" + attributeName + "_OSLShadingGroup";
-		//OSL::ShaderGroupRef shaderGroup = this->oslRenderer.shadingsys->ShaderGroupBegin(shaderGroupName.asChar()); 		
-		//// we only need to define the shading nodes from start to the connected node
-		//MObject thisMObject = depFn.object();
-		//MString connectedObjectName = getObjectName(getOtherSideNode(attributeName, thisMObject));
-		//MString outPlugName;
-		//getOtherSideNode(attributeName, thisMObject, outPlugName);
-		//
-		//logger.debug(MString("defineColorOrMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
-		//for( int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++ )
-		//{
-		//	ShadingNode snode = sn.shaderList[shadingNodeId];
-		//	logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
-		//	this->createOSLShadingNode(sn.shaderList[shadingNodeId]);
-
-		//	if( snode.fullName == connectedObjectName.asChar())
-		//	{
-		//		logger.debug(MString("connected node found: ") + snode.fullName + " search output attr.");
-		//		
-		//		for( size_t outId = 0; outId < snode.outputAttributes.size(); outId++)
-		//		{
-		//			ShaderAttribute& sa = snode.outputAttributes[outId];
-		//			if( MString(sa.name.c_str()) == outPlugName )
-		//			{
-		//				logger.debug(MString("connected out attr found: ") + sa.name.c_str() + " ");
-		//				MString destParam;
-		//				if( sa.type == "color" )
-		//				{
-		//					destParam = "inColor";
-		//				}
-		//				if( sa.type == "float" )
-		//				{
-		//					destParam = "inFloat";
-		//				}
-		//				if( sa.type == "int" )
-		//				{
-		//					destParam = "inInt";
-		//				}
-		//				if( sa.type == "bool" )
-		//				{
-		//					destParam = "inBool";
-		//				}
-		//				if( sa.type == "vector" )
-		//				{
-		//					destParam = "inVector";
-		//				}
-		//				logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
-		//				bool success = this->oslRenderer.shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
-		//				logger.debug(MString("connecting ") + connectedObjectName + "." + outPlugName + " -> " + OSLInterfaceName + "." + destParam);
-		//				success = this->oslRenderer.shadingsys->ConnectShaders(connectedObjectName.asChar(), outPlugName.asChar(), OSLInterfaceName.asChar(), destParam.asChar());
-		//				break;
-		//			}
-		//		}
-		//		break;
-		//	}
-		//}
-		//if(!this->oslRenderer.shadingsys->ShaderGroupEnd())
-		//{
-		//	logger.debug("Problem finishing shader group");
-		//}
-		//OSLMap *oslMap = new OSLMap;
-		//oslMap->coronaRenderer = this;
-		//oslMap->shaderGroup = shaderGroup;
-		//texmap = oslMap;
 	}else{
 		if( getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR )
 		{
@@ -462,8 +429,9 @@ void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn
 	Corona::Abstract::Map *texmap = NULL;
 	if( isConnected("normalCamera", depFn, true, false))
 	{
+		MString normalCamName = "normalCamera";
 		logger.debug(MString("normal camera is connected"));
-		texmap = getOslTexMap(attributeName, depFn, sn);
+		texmap = getOslTexMap(normalCamName, depFn, sn);
 		logger.debug("Bump connected");
 		*bumpMap = texmap;
 	}
@@ -509,11 +477,23 @@ void CoronaRenderer::clearMaterialLists()
 {
 	shaderArray.clear();
 	dataArray.clear();
+	definedMaterials.clear();
+}
+
+void CoronaRenderer::defineDefaultMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
+{
+	Corona::NativeMtlData data;
+	data.components.diffuse.setColor(Corona::Rgb(.7,.7,.7));
+	Corona::IMaterial *mat = data.createMaterial();
+	dataArray.push_back(data);
+	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }
 
 void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
 {
-	Corona::NativeMtlData data;
+
+	definedOSLNodes.clear();
+
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
 		
 	if( obj->shadingGroups.length() > 0)
@@ -539,6 +519,8 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 			MFnDependencyNode depFn(ss.mobject);
 			if( ss.typeName == "CoronaSurface")
 			{
+				Corona::NativeMtlData data;
+
 				MColor overrideColor(1,1,1);
 				if( obj->attributes != NULL)
 					if( obj->attributes->hasColorOverride)
@@ -595,6 +577,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				// ---- emission ----
 				//this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
 				this->defineAttribute(MString("emissionColor"), depFn, data.emission.color, mat.surfaceShaderNet);
+				
 				
 				// ---- ies profiles -----
 				MStatus stat;
@@ -658,142 +641,299 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 				shaderArray.push_back(obj->shadingGroups[0]);
 				dataArray.push_back(data);
+				Corona::IMaterial *mat = data.createMaterial();
+				obj->instance->addMaterial(Corona::IMaterialSet(mat));
 
 			}else if(ss.typeName == "lambert"){
 				getColor("color", depFn, colorVal);
-				data.components.diffuse.setColor(Corona::Rgb(colorVal.r,colorVal.g,colorVal.b));
-			}else{
-				data.components.diffuse.setColor(Corona::Rgb(.2, .2, 1.0));
+				Corona::NativeMtlData data;
+				data.components.diffuse.setColor(Corona::Rgb(colorVal.r, colorVal.g, colorVal.b));
+				dataArray.push_back(data);
+				Corona::IMaterial *mat = data.createMaterial();
+				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+
+				obj->instance->addMaterial(Corona::IMaterialSet(mat));
+			}
+			else if (ss.typeName == "CoronaLayeredMaterial"){
+				defineDefaultMaterial(instance, obj);
+				Corona::LayeredMtlData data;
+				Corona::LayeredMtlData::MtlEntry entry;
+			}
+			else{
+				defineDefaultMaterial(instance, obj);
 			}
 		}else{
-			data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
+			defineDefaultMaterial(instance, obj);
 		}
 
 		MFnDependencyNode sn;
 
 	}else{
-		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
-	}
-		
-	Corona::IMaterial *mat = data.createMaterial();
-	obj->instance->addMaterial(Corona::IMaterialSet(mat));
+		defineDefaultMaterial(instance, obj);
+	}		
 }
 
+void CoronaRenderer::defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn)
+{
+	
+	if (sa.type == "string")
+	{
+		const OIIO::string_ref p = getString(sa.name.c_str(), depFn).asChar();
+		this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeString, &p);
+	}
+	if (sa.type == "float")
+	{
+		float value = getFloatAttr(sa.name.c_str(), depFn, 0.0f);
+		this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeFloat, &value);
+	}
+
+	// if we have connected children, we always have a floatToColor node with name node_att_floatToColor
+	if (sa.type == "color")
+	{
+		float color[3];
+		MString attrName = sa.name.c_str();
+		getColor(sa.name.c_str(), depFn, color);
+		if (sa.name == "color")
+			attrName = "inColor";
+		this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeColor, color);
+	}
+	if (sa.type == "int")
+	{
+		int value = getIntAttr(sa.name.c_str(), depFn, 0);
+		this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
+	}
+	if (sa.type == "bool")
+	{
+		int value = (int)getBoolAttr(sa.name.c_str(), depFn, false);
+		this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
+	}
+	if (sa.type == "matrix")
+	{
+		MMatrix value = getMatrix(sa.name.c_str(), depFn);
+		value *= this->mtco_renderGlobals->globalConversionMatrix;
+		value *= this->mtco_renderGlobals->sceneScaleMatrix.inverse();
+		float m[4][4];
+		value.get(m);
+		MString attrName = sa.name.c_str();
+		if (attrName == "matrix")
+			attrName = "inMatrix";
+		this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeMatrix, &m);
+	}
+	// if we have connected children, we always have a floatToColor node with name node_att_floatToVector
+	if (sa.type == "vector")
+	{
+		float vec[3];
+		MVector vector;
+		MString attrName = sa.name.c_str();
+		getVector(MString(sa.name.c_str()), depFn, vector);
+		if (sa.name == "vector")
+			attrName = "inVector";
+		vec[0] = vector.x;
+		vec[1] = vector.y;
+		vec[2] = vector.z;
+		this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeVector, vec);
+	}
+
+}
+
+MString CoronaRenderer::createOSLConversionNode(MPlug& thisPlug, MPlug& otherSidePlug)
+{
+	MString conversionNode = "";
+	if (getPlugAttrType(thisPlug) != getPlugAttrType(otherSidePlug))
+	{
+		if (getPlugAttrType(thisPlug) == ATTR_TYPE::ATTR_TYPE_COLOR)
+		{
+			MString ctvName = MString("vectorToColor_") + otherSidePlug.name() + "_" + thisPlug.name();
+			ctvName = pystring::replace(ctvName.asChar(), ".", "_").c_str();
+			logger.debug(MString("creating automatic vectorToColor conversion node: ") + ctvName);
+			this->oslRenderer.shadingsys->Shader("surface", "vectorToColor", ctvName.asChar());
+			this->oslRenderer.shadingsys->ConnectShaders(getObjectName(otherSidePlug.node()).asChar(), getAttributeNameFromPlug(otherSidePlug).asChar(), ctvName.asChar(), "inValue");
+			conversionNode = ctvName;
+		}
+		if (getPlugAttrType(thisPlug) == ATTR_TYPE::ATTR_TYPE_VECTOR)
+		{
+			MString ctvName = MString("colorToVector_") + otherSidePlug.name() + "_" + thisPlug.name();
+			ctvName = pystring::replace(ctvName.asChar(), ".", "_").c_str();
+			logger.debug(MString("creating automatic colorToVector conversion node: ") + ctvName);
+			this->oslRenderer.shadingsys->Shader("surface", "colorToVector", ctvName.asChar());
+			this->oslRenderer.shadingsys->ConnectShaders(getObjectName(otherSidePlug.node()).asChar(), getAttributeNameFromPlug(otherSidePlug).asChar(), ctvName.asChar(), "inValue");
+			conversionNode = ctvName;
+		}
+	}
+	return conversionNode;
+}
+
+
+struct Connection{
+	MString sourceNode;
+	MString sourceAttribute;
+	MString destNode;
+	MString destAttribute;
+};
 
 void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 {
 	MFnDependencyNode depFn(snode.mobject);	
+
+	const char *inAttributes[] = { "inX", "inY", "inZ" };
+	const char *outAttributes[] = { "outX", "outY", "outZ" };
+
+	std::vector<Connection> connectionList;
 	
-	// We cannot create a parameter and connect it in one go because for connections we need a shader. 
-	// So we first get all input parameters, then we create the shader and last we connect the connected inputs.
-	for( uint i = 0; i < snode.inputAttributes.size(); i++)
+	// we create all necessary nodes for input and output connections
+	// the problem is that we have to create the nodes in the correct order, 
+	// e.g. create node A, create node B connect B->A is not valid, only A->B
+	for (uint i = 0; i < snode.inputAttributes.size(); i++)
 	{
 		ShaderAttribute& sa = snode.inputAttributes[i];
-		if( sa.type == "string" )
-		{
-			const OIIO::string_ref p = getString(sa.name.c_str(), depFn).asChar();
-			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeString, &p);
-		}
-		if( sa.type == "float" )
-		{
-			float value = getFloatAttr(sa.name.c_str(), depFn, 0.0f);
-			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeFloat, &value);
-		}
 
-		// if we have connected children, we always have a floatToColor node with name node_att_floatToColor
-		if( sa.type == "color" )
-		{
-			float color[3];
-			MString attrName = sa.name.c_str();
-			getColor(sa.name.c_str(), depFn, color);
-			if( sa.name == "color" )
-				attrName = "inColor";
-			this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeColor, color);
-		}
-		if( sa.type == "int" )
-		{
-			int value = getIntAttr(sa.name.c_str(), depFn, 0);
-			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
-		}
-		if( sa.type == "bool" )
-		{
-			int value = (int)getBoolAttr(sa.name.c_str(), depFn, false);
-			this->oslRenderer.shadingsys->Parameter(sa.name.c_str(), OSL::TypeDesc::TypeInt, &value);
-		}
-		// if we have connected children, we always have a floatToColor node with name node_att_floatToVector
-		if (sa.type == "vector")
-		{
-			float vec[3];
-			MVector vector;
-			MString attrName = sa.name.c_str();
-			getVector(MString(sa.name.c_str()), depFn, vector);
-			if (sa.name == "vector")
-				attrName = "inVector";
-			vec[0] = vector.x;
-			vec[1] = vector.y;
-			vec[2] = vector.z;
-			this->oslRenderer.shadingsys->Parameter(attrName.asChar(), OSL::TypeDesc::TypeVector, vec);
-		}
-	}
+		MPlug thisPlug = depFn.findPlug(sa.name.c_str());
+		// isConnected checks if a plug or its primary children are connected as destination
+		if (!isConnected(sa.name.c_str(), snode.mobject, true))
+			continue;
 
-	logger.debug(MString("Register shader type") + snode.typeName + " named " + snode.fullName );
-	bool success;
-	success = this->oslRenderer.shadingsys->Shader("surface", snode.typeName.asChar(), snode.fullName.asChar());
-	if( !success )
-	{
-		logger.debug(MString("Failed to register shader ") + snode.fullName );
-	}
-
-
-	// create connections
-	// we have to possibilites: either the node is directly connected, or a component is connected
-	// there is no way to connect components directly in OSL so if we have a connected component we have created a 
-	// helper node previously to handle the component connection.
-	for( uint i = 0; i < snode.inputAttributes.size(); i++)
-	{
-		if (isConnected(snode.inputAttributes[i].name.c_str(), snode.mobject, true))
+		// check if we have connected child plugs or not
+		MPlug directPlug = getDirectConnectedPlug(sa.name.c_str(), depFn, true);
+		if (!directPlug.isNull())
 		{
-			std::string destAttr = snode.inputAttributes[i].name;
-			std::string destNode = snode.fullName.asChar();
-			std::string sourceAttr = "";
-			std::string sourceNode = "";
-			MPlugArray pa;
-			getConnectedInPlugs(snode.mobject, pa);
-			for (uint pId = 0; pId < pa.length(); pId++)
+			// we have a direct connection, if children and direct connections exist, the direct ones have priority
+			// find out if the other side is a valid node
+			ShadingNode otherSideNode = findShadingNode(directPlug.node());
+			if (otherSideNode.mobject != MObject::kNullObj)
 			{
-				MPlug connectedInPlug = pa[pId];
-				if (getAttributeNameFromPlug(connectedInPlug) != snode.inputAttributes[i].name.c_str())
-					continue;
-
-				// if we have a valid child connection, then we have a helper node
-				// so we handle here only direct connections
-				if (!connectedInPlug.isChild())
+				// node seems to be valid, let's see if the plug itself is valid
+				if (otherSideNode.isOutPlugValid(directPlug))
 				{
-					MPlugArray cpa;
-					connectedInPlug.connectedTo(cpa, true, false);
-					if (cpa.length() > 0)
+					Connection c;
+					c.destAttribute = getAttributeNameFromPlug(thisPlug);
+					c.destNode = getObjectName(thisPlug.node());
+					// now we have a valid outPlug->inPlug connection. We check if we need a conversion.
+					MString conversionNode = createOSLConversionNode(thisPlug, directPlug);
+					if (conversionNode == "")
 					{
-						sourceAttr = getAttributeNameFromPlug(cpa[0]).asChar();
-						sourceNode = getObjectName(cpa[0].node()).asChar();						
+						if (directPlug.isChild())
+						{
+							// we have a child node so I suppose we have a vector/color connection
+							// if yes, we will have a helper node
+							MString helperNodeName = createPlugHelperNodeName(directPlug, true);
+							if (doesHelperNodeExist(helperNodeName))
+							{
+								c.sourceAttribute = outAttributes[getChildId(directPlug)];
+								c.sourceNode = helperNodeName;
+							}
+							else{
+
+							}
+						}
+						else{
+							c.sourceAttribute = getAttributeNameFromPlug(directPlug);
+							c.sourceNode = getObjectName(directPlug.node());
+						}
 					}
+					else{
+						c.sourceAttribute = "outValue";
+						c.sourceNode = conversionNode;
+					}
+					connectionList.push_back(c);
 				}
 			}
+		}
+		// direct plug is null so we have one or more child connections
+		// if so, we need a helper node
+		else{
+			MString thisPlugHelperNodeName = createPlugHelperNodeName(thisPlug, false);
+			if (!doesHelperNodeExist(thisPlugHelperNodeName))
+				createPlugHelperNode(thisPlug, false);
 			
-			MString helperNodeName = createPlugHelperNodeName(snode.inputAttributes[i].name.c_str(), snode.mobject, false);
-			if (doesHelperNodeExist(helperNodeName))
+			// first save helperNode -> currentNode connection
+			Connection c;
+			c.sourceNode = thisPlugHelperNodeName;
+			c.sourceAttribute = "outValue";
+			c.destAttribute = getAttributeNameFromPlug(thisPlug);
+			c.destNode = getObjectName(thisPlug.node());
+			logger.debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
+			connectionList.push_back(c);
+
+			// we have a helper node, now we need to find out how the children are connected
+			for (uint chId = 0; chId < thisPlug.numChildren(); chId++)
 			{
-				sourceNode = helperNodeName.asChar();
-				sourceAttr = "outputValue";
+				Connection c;
+				c.destNode = thisPlugHelperNodeName;
+				c.destAttribute = inAttributes[chId];
+
+				MPlug otherSidePlug = getDirectConnectedPlug(sa.name.c_str(), depFn, true);
+				if (otherSidePlug.isNull())
+					continue;
+
+				ShadingNode otherSideNode = findShadingNode(otherSidePlug.node());
+				// check for invalid connections
+				if ((otherSideNode.mobject == MObject::kNullObj) || (!otherSideNode.isOutPlugValid(otherSidePlug)))
+					continue;
+
+				// the other side plug can be either a direct connection or a child
+				// and we all know, childs will have helper nodes
+				if (otherSidePlug.isChild())
+				{
+					MString otherSidePlugHelperNodeName = createPlugHelperNodeName(otherSidePlug, false);
+					if (!doesHelperNodeExist(otherSidePlugHelperNodeName))
+					{
+						logger.debug(MString("Problem: other side plug is child") + otherSidePlug.name() + " but no helper node exists");
+						continue;
+					}
+					c.sourceNode = otherSidePlugHelperNodeName;
+					c.sourceAttribute = outAttributes[getChildId(otherSidePlug)];
+				}
+				else{
+					c.sourceAttribute = getAttributeNameFromPlug(otherSidePlug);
+					c.sourceNode = getObjectName(otherSidePlug.node());
+				}
+				logger.debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
+				connectionList.push_back(c);
 			}
-			if (destAttr == "color")
-				destAttr = "inColor";
-			if (destAttr == "vector")
-				destAttr = "inVector";
-			
-			logger.debug(MString("Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
-			success = this->oslRenderer.shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
 		}
 	}
-	
+	for (uint i = 0; i < snode.inputAttributes.size(); i++)
+	{
+		ShaderAttribute& sa = snode.inputAttributes[i];
+		defineOSLParameter(sa, depFn);
+	}
+
+	// now create the current node
+	logger.debug(MString("Register shader type: ") + snode.typeName + " named: " + snode.fullName);
+	this->oslRenderer.shadingsys->Shader("surface", snode.typeName.asChar(), snode.fullName.asChar());
+	definedOSLNodes.push_back(snode.mobject);
+
+	// now we search for connected output attributes and create a helper node if necessary
+	for (uint i = 0; i < snode.outputAttributes.size(); i++)
+	{
+		ShaderAttribute& sa = snode.outputAttributes[i];
+		MPlug thisPlug = depFn.findPlug(sa.name.c_str());
+		// isConnected checks if a plug or its primary children are connected as destination
+		if (!isConnected(sa.name.c_str(), snode.mobject, false))
+			continue;
+		
+		if (thisPlug.numConnectedChildren() == 0)
+			continue;
+
+		MString outPlugHelperNodeName = createPlugHelperNodeName(thisPlug, true);
+		if (!doesHelperNodeExist(outPlugHelperNodeName))
+			createPlugHelperNode(thisPlug, true);
+	}
+
+	for (size_t cId = 0; cId < connectionList.size(); cId++)
+	{
+		std::string sourceAttr = connectionList[cId].sourceAttribute.asChar();
+		std::string sourceNode = connectionList[cId].sourceNode.asChar();
+		std::string destAttr = connectionList[cId].destAttribute.asChar();
+		std::string destNode = connectionList[cId].destNode.asChar();
+		if (destAttr == "color")
+			destAttr = "inColor";
+		if (destAttr == "vector")
+			destAttr = "inVector";
+		if (sourceAttr == "output")
+			sourceAttr = "outOutput";
+		logger.debug(MString("Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
+		this->oslRenderer.shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
+	}
 }
 

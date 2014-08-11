@@ -427,10 +427,15 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         
         #bump map because the maya implementation is too strange
         pm.addExtension( nodeType='bump2d', longName='normalMap', usedAsColor=True, attributeType='float3' )
-        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapR', attributeType='float', parent='mtco_normalMap' )
-        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapG', attributeType='float', parent='mtco_normalMap' )
-        pm.addExtension( nodeType='bump2d', longName='mtco_normalMapB', attributeType='float', parent='mtco_normalMap' )        
-        # testing ies
+        pm.addExtension( nodeType='bump2d', longName='normalMapR', attributeType='float', parent='normalMap' )
+        pm.addExtension( nodeType='bump2d', longName='normalMapG', attributeType='float', parent='normalMap' )
+        pm.addExtension( nodeType='bump2d', longName='normalMapB', attributeType='float', parent='normalMap' )        
+        
+        # gamma
+        pm.addExtension( nodeType='file', longName='fromSRGB', attributeType='bool', defaultValue=False) 
+        pm.addExtension( nodeType='file', longName='toSRGB', attributeType='bool', defaultValue=False) 
+
+        
         pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         
             

@@ -68,7 +68,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         return
     
     sourceDir = path.path(basePath + "/" +  shortCut + "_devmodule")
-    devDestDir = path.path("{0}/deployment/{1}".format(basePath, projectName))
+    devDestDir = path.path("{0}/deployment/{1}_{2}".format(basePath, projectName, mayaRelease))
     if devDestDir.exists():
         print "removing old {0} dir".format(devDestDir)
         shutil.rmtree(devDestDir)
@@ -96,7 +96,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
     mfh.close()
     mfh = open(devDestDir+"/mayaTo" + renderer.capitalize() + ".mod", "w")
     for c in content:
-        mfh.write(c.replace(shortCut +"_devmodule", "mayaTo" + renderer.capitalize()))
+        mfh.write(c.replace(shortCut +"_devmodule", "mayaTo" + renderer.capitalize() + "_{0}".format(mayaRelease)))
     mfh.close()
 
     
@@ -170,7 +170,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         f.remove()
 
     #common mel replacement scripts
-    scDir = path.path(sourceDir.parent.parent + "/common/mel/")
+    scDir = path.path(sourceDir.parent.parent + "/common/mel/maya{0}".format(mayaRelease))
     for f in scDir.listdir("*.mel"):
         f.copy("{destDir}/scripts/{melName}".format(destDir=devDestDir, melName=f.basename()))
 
@@ -206,4 +206,5 @@ def createDeployment(renderer, shortCut, mayaRelease):
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")    
     createDeployment("corona", "mtco", "2014")    
+    createDeployment("corona", "mtco", "2015")    
     #createDeployment("indigo", "mtin", "2014")

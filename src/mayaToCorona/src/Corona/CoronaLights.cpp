@@ -70,6 +70,7 @@ void CoronaRenderer::defineLights()
 				}
 				sunColor *= colorMultiplier * 10000.0;
 				Corona::Sun sun;
+
 				sun.active = true;
 				sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
 				sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);

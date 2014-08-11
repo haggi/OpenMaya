@@ -32,6 +32,13 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("normalMap", label="Normal Map")
         self.endLayout()
 
+    def buildFileTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("fromSRGB", label="Convert sRGB->Linear")
+        self.addControl("toSRGB", label="Convert Linear->sRGB")
+        self.endLayout()
+
     def buildDisplacementShaderTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
@@ -61,6 +68,8 @@ class AECoronaNodeTemplate(BaseTemplate):
             self.buildCameraTemplate(nodeName)
         if self.thisNode.type() == "bump2d":
             self.buildBum2dTemplate(nodeName)
+        if self.thisNode.type() == "file":
+            self.buildFileTemplate(nodeName)
             
     def buildBody(self, nodeName):
         self.buildCoronaTemplates(nodeName)
