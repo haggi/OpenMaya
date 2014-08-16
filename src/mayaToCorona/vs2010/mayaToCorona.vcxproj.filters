@@ -334,6 +334,9 @@
     <ClInclude Include="..\src\Corona\CoronaLights.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaSky.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">

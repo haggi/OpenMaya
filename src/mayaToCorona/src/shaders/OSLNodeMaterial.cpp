@@ -1,4 +1,4 @@
-#include "CoronaSurfaceMaterial.h"
+#include "OSLNodeMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -15,7 +15,6 @@
 #include <maya/MFloatVector.h>
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
-#include <maya/MDGModifier.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -28,93 +27,57 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	CoronaSurface::id( 0x0011CF57 );
+MTypeId	OSLNode::id( 0x0011EF59 );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void CoronaSurface::postConstructor( )
+void OSLNode::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
     // shared global data and should only use attributes in the datablock
     // to get input data and store output data.
     //
-	MStatus stat;
     setMPSafe( true );
-	MDGModifier modifier;
-	MPlug sourcePlug(this->thisMObject(), diffuse);
-	MPlug destPlug(this->thisMObject(), aColor);
-	if( !destPlug.isConnected() )
-		stat = modifier.connect(sourcePlug, destPlug);
-
-	sourcePlug = MPlug(this->thisMObject(), emissionColor);
-	destPlug = MPlug(this->thisMObject(), aIncandescence);
-	if( !destPlug.isConnected() )
-		stat = modifier.connect(sourcePlug, destPlug);
-
-	stat = modifier.doIt();
 }
 
 
 // DESCRIPTION: attribute information
 //
-MObject  CoronaSurface::aTranslucenceCoeff;
-MObject  CoronaSurface::aDiffuseReflectivity;
-MObject  CoronaSurface::aInTransparency;
-MObject  CoronaSurface::aColor;
-MObject  CoronaSurface::aIncandescence;
-MObject  CoronaSurface::aOutColor;
-MObject  CoronaSurface::aOutTransparency;
-MObject  CoronaSurface::aNormalCamera;
-MObject  CoronaSurface::aNormalCameraX;
-MObject  CoronaSurface::aNormalCameraY;
-MObject  CoronaSurface::aNormalCameraZ;
-MObject  CoronaSurface::aLightData;
-MObject  CoronaSurface::aLightDirection;
-MObject  CoronaSurface::aLightDirectionX;
-MObject  CoronaSurface::aLightDirectionY;
-MObject  CoronaSurface::aLightDirectionZ;
-MObject  CoronaSurface::aLightIntensity;
-MObject  CoronaSurface::aLightIntensityR;
-MObject  CoronaSurface::aLightIntensityG;
-MObject  CoronaSurface::aLightIntensityB;
-MObject  CoronaSurface::aLightAmbient;
-MObject  CoronaSurface::aLightDiffuse;
-MObject  CoronaSurface::aLightSpecular;
-MObject  CoronaSurface::aLightShadowFraction;
-MObject  CoronaSurface::aPreShadowIntensity;
-MObject  CoronaSurface::aLightBlindData;
+MObject  OSLNode::aTranslucenceCoeff;
+MObject  OSLNode::aDiffuseReflectivity;
+MObject  OSLNode::aInTransparency;
+MObject  OSLNode::aColor;
+MObject  OSLNode::aIncandescence;
+MObject  OSLNode::aOutColor;
+MObject  OSLNode::aOutTransparency;
+MObject  OSLNode::aNormalCamera;
+MObject  OSLNode::aNormalCameraX;
+MObject  OSLNode::aNormalCameraY;
+MObject  OSLNode::aNormalCameraZ;
+MObject  OSLNode::aLightData;
+MObject  OSLNode::aLightDirection;
+MObject  OSLNode::aLightDirectionX;
+MObject  OSLNode::aLightDirectionY;
+MObject  OSLNode::aLightDirectionZ;
+MObject  OSLNode::aLightIntensity;
+MObject  OSLNode::aLightIntensityR;
+MObject  OSLNode::aLightIntensityG;
+MObject  OSLNode::aLightIntensityB;
+MObject  OSLNode::aLightAmbient;
+MObject  OSLNode::aLightDiffuse;
+MObject  OSLNode::aLightSpecular;
+MObject  OSLNode::aLightShadowFraction;
+MObject  OSLNode::aPreShadowIntensity;
+MObject  OSLNode::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject CoronaSurface::emissionExponent;
-MObject CoronaSurface::fresnelIor;
-MObject CoronaSurface::roundCornersSamples;
-MObject CoronaSurface::emissionSharpnessFakePoint;
-MObject CoronaSurface::emissionSharpnessFake;
-MObject CoronaSurface::attenuationColor;
-MObject CoronaSurface::glassMode;
-MObject CoronaSurface::reflectivity;
-MObject CoronaSurface::castsShadows;
-MObject CoronaSurface::translucency;
-MObject CoronaSurface::volumeEmissionColor;
-MObject CoronaSurface::anisotropyRotation;
-MObject CoronaSurface::reflectionGlossiness;
-MObject CoronaSurface::volumeEmissionDist;
-MObject CoronaSurface::roundCornersRadius;
-MObject CoronaSurface::bgOverride;
-MObject CoronaSurface::refractionGlossiness;
-MObject CoronaSurface::diffuse;
-MObject CoronaSurface::refractivity;
-MObject CoronaSurface::brdfType;
-MObject CoronaSurface::emissionColor;
-MObject CoronaSurface::shadowCatcherMode;
-MObject CoronaSurface::anisotropy;
-MObject CoronaSurface::refractionIndex;
-MObject CoronaSurface::emissionDisableSampling;
-MObject CoronaSurface::attenuationDist;
+MObject OSLNode::color;
+MObject OSLNode::outColor;
+MObject OSLNode::script;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -122,8 +85,8 @@ MObject CoronaSurface::attenuationDist;
 // destruction
 //
 
-CoronaSurface::CoronaSurface() { }
-CoronaSurface::~CoronaSurface() { }
+OSLNode::OSLNode() { }
+OSLNode::~OSLNode() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -131,12 +94,12 @@ CoronaSurface::~CoronaSurface() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new CoronaSurface object.
+// In this case creator simply returns a new OSLNode object.
 //
 
-void* CoronaSurface::creator()
+void* OSLNode::creator()
 {
-    return new CoronaSurface();
+    return new OSLNode();
 }
 
 
@@ -146,7 +109,7 @@ void* CoronaSurface::creator()
 // want to connect to.
 //
 
-MStatus CoronaSurface::initialize()
+MStatus OSLNode::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -166,98 +129,16 @@ MStatus CoronaSurface::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( emissionExponent ));
+	color = nAttr.createColor("color", "color");
+	nAttr.setDefault(1,1,1);
+	CHECK_MSTATUS(addAttribute( color ));
 
-	fresnelIor = nAttr.create("fresnelIor", "fresnelIor",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( fresnelIor ));
+	outColor = nAttr.createColor("outColor", "outColor");
+	nAttr.setDefault(1,1,1);
+	CHECK_MSTATUS(addAttribute( outColor ));
 
-	roundCornersSamples = nAttr.create("roundCornersSamples", "roundCornersSamples",  MFnNumericData::kInt, 10);
-	CHECK_MSTATUS(addAttribute( roundCornersSamples ));
-
-	emissionSharpnessFake = nAttr.create("emissionSharpnessFake", "emissionSharpnessFake",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( emissionSharpnessFake ));
-
-	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( attenuationColor ));
-
-	glassMode = eAttr.create("glassMode", "glassMode", 0, &status);
-	status = eAttr.addField( "OneSided", 0 );
-	status = eAttr.addField( "TwoSided", 1 );
-	status = eAttr.addField( "Hybrid", 2 );
-	CHECK_MSTATUS(addAttribute( glassMode ));
-
-	reflectivity = nAttr.createColor("reflectivity", "reflectivity");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( reflectivity ));
-
-	castsShadows = nAttr.create("castsShadows", "castsShadows",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( castsShadows ));
-
-	translucency = nAttr.createColor("translucency", "translucency");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( translucency ));
-
-	volumeEmissionColor = nAttr.createColor("volumeEmissionColor", "volumeEmissionColor");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( volumeEmissionColor ));
-
-	anisotropyRotation = nAttr.create("anisotropyRotation", "anisotropyRotation",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( anisotropyRotation ));
-
-	reflectionGlossiness = nAttr.create("reflectionGlossiness", "reflectionGlossiness",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( reflectionGlossiness ));
-
-	volumeEmissionDist = nAttr.create("volumeEmissionDist", "volumeEmissionDist",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( volumeEmissionDist ));
-
-	roundCornersRadius = nAttr.create("roundCornersRadius", "roundCornersRadius",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( roundCornersRadius ));
-
-	bgOverride = nAttr.createColor("bgOverride", "bgOverride");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( bgOverride ));
-
-	refractionGlossiness = nAttr.create("refractionGlossiness", "refractionGlossiness",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( refractionGlossiness ));
-
-	diffuse = nAttr.createColor("diffuse", "diffuse");
-	nAttr.setDefault(0.7,0.7,0.7);
-	CHECK_MSTATUS(addAttribute( diffuse ));
-
-	refractivity = nAttr.createColor("refractivity", "refractivity");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( refractivity ));
-
-	brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
-	status = eAttr.addField( "Ashikmin", 0 );
-	status = eAttr.addField( "Fake Ward", 1 );
-	status = eAttr.addField( "Phong", 2 );
-	status = eAttr.addField( "Ward", 3 );
-	CHECK_MSTATUS(addAttribute( brdfType ));
-
-	emissionColor = nAttr.createColor("emissionColor", "emissionColor");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( emissionColor ));
-
-	shadowCatcherMode = eAttr.create("shadowCatcherMode", "shadowCatcherMode", 0, &status);
-	status = eAttr.addField( "Off", 0 );
-	status = eAttr.addField( "Final", 1 );
-	status = eAttr.addField( "Composite", 2 );
-	CHECK_MSTATUS(addAttribute( shadowCatcherMode ));
-
-	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( anisotropy ));
-
-	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.2);
-	CHECK_MSTATUS(addAttribute( refractionIndex ));
-
-	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));
-
-	attenuationDist = nAttr.create("attenuationDist", "attenuationDist",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( attenuationDist ));
+	script = tAttr.create("script", "script",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( script ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 
@@ -279,14 +160,12 @@ MStatus CoronaSurface::initialize()
 
     aColor = nAttr.createColor( "color", "c", &status );
     CHECK_MSTATUS( status );
-	CHECK_MSTATUS( nAttr.setHidden( true ) );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.58824f, 0.644f ) );
 
     aIncandescence = nAttr.createColor( "incandescence", "ic", &status );
     CHECK_MSTATUS( status );
-	CHECK_MSTATUS( nAttr.setHidden( true ) );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.0f, 0.0f ) );
@@ -510,8 +389,6 @@ MStatus CoronaSurface::initialize()
     //
     CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( diffuse, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( emissionColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
@@ -545,7 +422,7 @@ MStatus CoronaSurface::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
+MStatus OSLNode::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.
@@ -563,28 +440,11 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-        MFloatVector& diffuseColor = block.inputValue( diffuse, &status ).asFloatVector();
-        CHECK_MSTATUS( status );
-
-		//MPlug cplug(this->thisMObject(), aColor);
-		//cplug.child(0).setDouble(surfaceColor.x);
-		//cplug.child(1).setDouble(surfaceColor.y);
-		//cplug.child(2).setDouble(surfaceColor.z);
-
         MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
         float diffuseReflectivity = block.inputValue( aDiffuseReflectivity, &status ).asFloat();
         CHECK_MSTATUS( status );
-
-        MFloatVector& emissionColorV = block.inputValue( emissionColor,  &status ).asFloatVector();
-        CHECK_MSTATUS( status );
-
-		//MPlug eplug(this->thisMObject(), emissionColor);
-		//eplug.child(0).setDouble(emissionColorV.x);
-		//eplug.child(1).setDouble(emissionColorV.y);
-		//eplug.child(2).setDouble(emissionColorV.z);
-
 
 //      float translucenceCoeff = block.inputValue( aTranslucenceCoeff,
 //              &status ).asFloat();

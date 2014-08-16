@@ -113,3 +113,17 @@ displace_maxSubdiv, int, Displace_maxsubdiv, 100 ,minmax:1:9999
 renderstamp_use, bool, Renderstamp_use, true
 renderStamp, string, Renderstamp, "corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"
 bgColor, color, Background Color, 1.0:1.0:1.0
+usePhysicalSky, bool, Physical Sky, true
+pSkyModel, enum, Sky Model, 0, Preetham:Rawafake:Hosek
+pSkyMultiplier, float, Sky Multiplier, 1.0
+pSkyHorizBlur, float, Sky Horizon Blur, 0.1
+pSkyGroundColor, color, Ground Color, 0.25:0.25:0.25
+pSkyAffectGround, bool, Sky Affect Ground, true
+pSkyPreethamTurb, float, Turbidity, 2.5
+pSkySunFalloff, float, Sun Falloff, 3.0
+pSkyZenith, color, Zenith Color, 0.1:0.1:0.5
+pSkyHorizon, color, Horizon Color, 0.25:0.5:0.5
+pSkySunGlow, float, Sun Glow, 1.0
+pSkySunSideGlow, float, Sun Side Glow, 0.2
+pSkySunBleed, float, Sun Bleed, 1.0
+

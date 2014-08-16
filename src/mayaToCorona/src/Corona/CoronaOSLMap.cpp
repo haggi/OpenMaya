@@ -23,7 +23,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     // Set "object" space to be Mobj.  In a real renderer, this may be
     // different for each object.
     sg.object2common = OSL::TransformationPtr(&Mobj);
-
+	
     // Just make it look like all shades are the result of 'raytype' rays.
 	std::string raytype = "camera";
 	sg.raytype = this->coronaRenderer->oslRenderer.shadingsys->raytype_bit (OSL::ustring(raytype));
@@ -40,14 +40,28 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     sg.dPdx = OSL::Vec3 (sg.dudx, sg.dudy, 0.0f);
     sg.dPdy = OSL::Vec3 (sg.dvdx, sg.dvdy, 0.0f);
     sg.dPdz = OSL::Vec3 (0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
+
     // Tangents of P with respect to surface u,v
 	Corona::Dir duvw = context.dUvw(0);
 
-	sg.dPdu = OSL::Vec3(duvw.x(), duvw.y(), 0.0f);
-    sg.dPdv = OSL::Vec3 (0.0f, duvw.y(), 0.0f);
-
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
+
+	Corona::Matrix33 base = context.bumpBase(0);
+	Corona::Dir T = base.getColumn(0);
+	Corona::Dir No = base.getColumn(1);
+	Corona::Dir C = base.getColumn(2);
+
+	sg.dudx = duvw.x();
+	sg.dudy = duvw.y();
+
+	T *= duvw.x() * 0.01;
+	C *= duvw.y() * 0.01;
+
+	//sg.dPdv = OSL::Vec3(duvw.x(), duvw.y(), duvw.z());
+
+	sg.dPdu = OSL::Vec3(T.x(), T.y(), T.z());
+	sg.dPdv = OSL::Vec3(C.x(), C.y(), C.z());
 
     sg.N    = OSL::Vec3(N.x(), N.y(), N.z());
     sg.Ng   = OSL::Vec3(Ng.x(), Ng.y(), Ng.z());
@@ -86,15 +100,13 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 
 	float rgb[3] = {0,0,0};
 
-	if(this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
+	OSL::TypeDesc t;
+	if (this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
 	{
-		OSL::TypeDesc t;
-		const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol (*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
-		if (!data)
+		const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol(*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
+		if (data)
 		{
-			
-		}else{
-			if(t.basetype == OSL::TypeDesc::FLOAT)
+			if (t.basetype == OSL::TypeDesc::FLOAT)
 			{
 				float r, g, b;
 				float *d = (float *)data;
@@ -107,13 +119,9 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 			}
 		}
 	}
-
-	//this->coronaRenderer->oslRenderer.shadingsys->release_context(ctx);
-
     outAlpha = 1.f;
 	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
 	return col;	
-	//return Corona::Rgb::BLUE;
 }
 
 float OSLMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
@@ -153,7 +161,13 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 	}
 	if (this->bumpType == BUMP)
 	{
-		return context.getShadingNormal();
+		float outAlpha = 0.0f;
+		Corona::Rgb col = evalColor(context, cache, outAlpha);
+		Corona::Dir normal;
+		normal.x() = col.r();
+		normal.y() = col.g();
+		normal.z() = col.b();
+		return normal;
 	}
 }
 

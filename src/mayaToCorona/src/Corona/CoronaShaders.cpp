@@ -37,7 +37,11 @@ bool CoronaRenderer::doesHelperNodeExist(MString helperNode)
 
 MString CoronaRenderer::createPlugHelperNodeName(MPlug& plug, bool outType)
 {
-	ATTR_TYPE at = getPlugAttrType(plug);
+	MPlug p = plug;
+	while (p.isChild())
+		p = p.parent();
+
+	ATTR_TYPE at = getPlugAttrType(p);
 	MString plugHelperTypename = "rgbtof";
 	if (!outType)
 		plugHelperTypename = "ftorgb";
@@ -47,8 +51,8 @@ MString CoronaRenderer::createPlugHelperNodeName(MPlug& plug, bool outType)
 		if (!outType)
 			plugHelperTypename = "ftovec";
 	}
-	MPlug tmpPlug = plug;
-	MString plugname = pystring::replace(plug.name().asChar(), ".", "_").c_str();
+	MPlug tmpPlug = p;
+	MString plugname = pystring::replace(p.name().asChar(), ".", "_").c_str();
 	MString helperNodeName = plugname + "_" + plugHelperTypename;
 	return helperNodeName;
 }
@@ -467,7 +471,9 @@ bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *ob
 	{
 		logger.info(MString("Reusing material data."));
 		Corona::IMaterial *mat = dataArray[index].createMaterial();
-		obj->instance->addMaterial(Corona::IMaterialSet(mat));
+		Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+		setRenderStats(ms, obj);
+		obj->instance->addMaterial(ms);
 		return true;
 	}
 	return false;
@@ -498,179 +504,205 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		
 	if( obj->shadingGroups.length() > 0)
 	{
-		
-		if(assingExistingMat(obj->shadingGroups[0], obj))
-			return;
-
-		Material mat(obj->shadingGroups[0]);
-		size_t numNodes = mat.surfaceShaderNet.shaderList.size();
-		
-		if( numNodes > 0)
+		for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 		{
-			// give me the last node in the node list, this should be the surface shader
-			ShadingNode ss = mat.surfaceShaderNet.shaderList.back();
-			//ShadingNode ss = mat.surfaceShaderNet.shaderList[ mat.surfaceShaderNet.shaderList.size() - 1];
-			logger.debug(MString("Found surface shader ") + ss.fullName);
-			MColor colorVal;
-			
-			Corona::Rgb rgbColor;
-			Corona::ColorOrMap com;
+			MObject shadingGroup = obj->shadingGroups[sgId];
+			if (assingExistingMat(shadingGroup, obj))
+				return;
 
-			MFnDependencyNode depFn(ss.mobject);
-			if( ss.typeName == "CoronaSurface")
+			Material mat(shadingGroup);
+			size_t numNodes = mat.surfaceShaderNet.shaderList.size();
+
+			if (numNodes > 0)
 			{
-				Corona::NativeMtlData data;
+				// give me the last node in the node list, this should be the surface shader
+				ShadingNode ss = mat.surfaceShaderNet.shaderList.back();
+				//ShadingNode ss = mat.surfaceShaderNet.shaderList[ mat.surfaceShaderNet.shaderList.size() - 1];
+				logger.debug(MString("Found surface shader ") + ss.fullName);
+				MColor colorVal;
 
-				MColor overrideColor(1,1,1);
-				if( obj->attributes != NULL)
-					if( obj->attributes->hasColorOverride)
-						overrideColor = obj->attributes->colorOverride;
-				
-				//this->defineColorOrMap(MString("diffuse"), depFn, data.components.diffuse);
-				this->defineAttribute(MString("diffuse"), depFn, data.components.diffuse, mat.surfaceShaderNet);
+				Corona::Rgb rgbColor;
+				Corona::ColorOrMap com;
 
-				//this->defineColorOrMap(MString("translucency"), depFn, data.components.translucency);				
-				this->defineAttribute(MString("translucency"), depFn, data.components.translucency, mat.surfaceShaderNet);
-				
-				//this->defineColorOrMap(MString("reflectivity"), depFn, data.components.reflect);
-				this->defineAttribute(MString("reflectivity"), depFn, data.components.reflect, mat.surfaceShaderNet);
-
-				const Corona::BrdfLobeType brdfs[] = {Corona::BRDF_ASHIKHMIN, Corona::BRDF_FAKE_WARD, Corona::BRDF_PHONG, Corona::BRDF_WARD};
-				int id;
-				getEnum(MString("brdfType"), depFn, id);
-				data.reflect.brdfType = brdfs[id];
-
-				//this->defineFloatOrMap(MString("reflectionGlossiness"), depFn, data.reflect.glossiness);
-				this->defineAttribute(MString("reflectionGlossiness"), depFn, data.reflect.glossiness, mat.surfaceShaderNet);
-				//this->defineFloatOrMap(MString("fresnelIor"), depFn, data.reflect.fresnelIor);	
-				this->defineAttribute(MString("fresnelIor"), depFn, data.reflect.fresnelIor, mat.surfaceShaderNet);
-				//this->defineFloatOrMap(MString("anisotropy"), depFn, data.reflect.anisotropy);	
-				this->defineAttribute(MString("anisotropy"), depFn, data.reflect.anisotropy, mat.surfaceShaderNet);
-				//this->defineFloatOrMap(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation);	
-				this->defineAttribute(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation, mat.surfaceShaderNet);
-				
-				//this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);
-				this->defineAttribute(MString("refractivity"), depFn, data.components.refract, mat.surfaceShaderNet);
-				//-1
-				//this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
-				this->defineAttribute(MString("refractionIndex"), depFn, data.refract.ior, mat.surfaceShaderNet);
-				//this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
-				this->defineAttribute(MString("refractionGlossiness"), depFn,  data.refract.glossiness, mat.surfaceShaderNet);
-
-				// -- round corners -- 
-				float rcRadius = 0.0001;
-				getFloat(MString("roundCornersRadius"), depFn, rcRadius);
-				data.roundedCorners.radius = rcRadius * this->mtco_renderGlobals->scaleFactor;
-				getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
-
-				int glassMode = 0;
-				getEnum(MString("glassMode"), depFn, glassMode);
-				Corona::GlassMode glassModes[] = {Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID};
-				data.refract.glassMode = glassModes[glassMode];
-
-				// --- volume ----
-				this->defineColor(MString("attenuationColor"), depFn, data.volume.attenuationColor);				
-				this->defineFloat(MString("attenuationDist"), depFn, data.volume.attenuationDist);				
-				this->defineColor(MString("volumeEmissionColor"), depFn, data.volume.emissionColor);				
-				this->defineFloat(MString("volumeEmissionDist"), depFn, data.volume.emissionDist);				
-
-				// ---- emission ----
-				//this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
-				this->defineAttribute(MString("emissionColor"), depFn, data.emission.color, mat.surfaceShaderNet);
-				
-				
-				// ---- ies profiles -----
-				MStatus stat;
-				MPlug iesPlug = depFn.findPlug("mtco_mat_iesProfile", &stat);
-				if( stat )
+				MFnDependencyNode depFn(ss.mobject);
+				if (ss.typeName == "CoronaSurface")
 				{
-					//data.emission.gonioDiagram
-					MString iesFile = iesPlug.asString();
-					if( iesFile.length() > 4 )
+					Corona::NativeMtlData data;
+
+					MColor overrideColor(1, 1, 1);
+					if (obj->attributes != NULL)
+						if (obj->attributes->hasColorOverride)
+							overrideColor = obj->attributes->colorOverride;
+
+					//this->defineColorOrMap(MString("diffuse"), depFn, data.components.diffuse);
+					this->defineAttribute(MString("diffuse"), depFn, data.components.diffuse, mat.surfaceShaderNet);
+
+					//this->defineColorOrMap(MString("translucency"), depFn, data.components.translucency);				
+					this->defineAttribute(MString("translucency"), depFn, data.components.translucency, mat.surfaceShaderNet);
+
+					//this->defineColorOrMap(MString("reflectivity"), depFn, data.components.reflect);
+					this->defineAttribute(MString("reflectivity"), depFn, data.components.reflect, mat.surfaceShaderNet);
+
+					const Corona::BrdfLobeType brdfs[] = { Corona::BRDF_ASHIKHMIN, Corona::BRDF_FAKE_WARD, Corona::BRDF_PHONG, Corona::BRDF_WARD };
+					int id;
+					getEnum(MString("brdfType"), depFn, id);
+					data.reflect.brdfType = brdfs[id];
+
+					//this->defineFloatOrMap(MString("reflectionGlossiness"), depFn, data.reflect.glossiness);
+					this->defineAttribute(MString("reflectionGlossiness"), depFn, data.reflect.glossiness, mat.surfaceShaderNet);
+					//this->defineFloatOrMap(MString("fresnelIor"), depFn, data.reflect.fresnelIor);	
+					this->defineAttribute(MString("fresnelIor"), depFn, data.reflect.fresnelIor, mat.surfaceShaderNet);
+					//this->defineFloatOrMap(MString("anisotropy"), depFn, data.reflect.anisotropy);	
+					this->defineAttribute(MString("anisotropy"), depFn, data.reflect.anisotropy, mat.surfaceShaderNet);
+					//this->defineFloatOrMap(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation);	
+					this->defineAttribute(MString("anisotropicRotation"), depFn, data.reflect.anisoRotation, mat.surfaceShaderNet);
+
+					//this->defineColorOrMap(MString("refractivity"), depFn, data.components.refract);
+					this->defineAttribute(MString("refractivity"), depFn, data.components.refract, mat.surfaceShaderNet);
+					//-1
+					//this->defineFloatOrMap(MString("refractionIndex"), depFn, data.refract.ior);				
+					this->defineAttribute(MString("refractionIndex"), depFn, data.refract.ior, mat.surfaceShaderNet);
+					//this->defineFloatOrMap(MString("refractionGlossiness"), depFn, data.refract.glossiness);	
+					this->defineAttribute(MString("refractionGlossiness"), depFn, data.refract.glossiness, mat.surfaceShaderNet);
+
+					// -- round corners -- 
+					float rcRadius = 0.0001;
+					getFloat(MString("roundCornersRadius"), depFn, rcRadius);
+					data.roundedCorners.radius = rcRadius * this->mtco_renderGlobals->scaleFactor;
+					getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
+
+					int glassMode = 0;
+					getEnum(MString("glassMode"), depFn, glassMode);
+					Corona::GlassMode glassModes[] = { Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID };
+					data.refract.glassMode = glassModes[glassMode];
+
+					// --- volume ----
+					this->defineColor(MString("attenuationColor"), depFn, data.volume.attenuationColor);
+					this->defineFloat(MString("attenuationDist"), depFn, data.volume.attenuationDist);
+					this->defineColor(MString("volumeEmissionColor"), depFn, data.volume.emissionColor);
+					this->defineFloat(MString("volumeEmissionDist"), depFn, data.volume.emissionDist);
+
+					// ---- emission ----
+					//this->defineColorOrMap(MString("emissionColor"), depFn, data.emission.color);	
+					this->defineAttribute(MString("emissionColor"), depFn, data.emission.color, mat.surfaceShaderNet);
+
+
+					// ---- ies profiles -----
+					MStatus stat;
+					MPlug iesPlug = depFn.findPlug("mtco_mat_iesProfile", &stat);
+					if (stat)
 					{
-						Corona::IesParser iesParser;
-						//std::ifstream input(iesFile.asChar());
-						Corona::FileReader input;
-						Corona::String fn(iesFile.asChar());
-						input.open(fn);
-						if( !input.failed() )
+						//data.emission.gonioDiagram
+						MString iesFile = iesPlug.asString();
+						if (iesFile.length() > 4)
 						{
-						
-							try {
+							Corona::IesParser iesParser;
+							//std::ifstream input(iesFile.asChar());
+							Corona::FileReader input;
+							Corona::String fn(iesFile.asChar());
+							input.open(fn);
+							if (!input.failed())
+							{
 
-								const double rm[4][4] = {
-									{1.0, 0.0, 0.0, 0.0}, 
-									{0.0, 0.0, 1.0, 0.0}, 
-									{0.0,-1.0, 0.0, 0.0}, 
-									{0.0, 0.0, 0.0, 1.0} 							
-								};
-								MMatrix zup(rm);
+								try {
 
-								MMatrix tm = zup * obj->transformMatrices[0];
-								Corona::AnimatedAffineTm atm;
-								setAnimatedTransformationMatrix(atm, tm);
-								
-								const Corona::IesLight light = iesParser.parseIesLight(input);
-								data.emission.gonioDiagram = light.distribution;
-								Corona::Matrix33 m(atm[0].extractRotation());
-							
-								data.emission.emissionFrame = Corona::AnimatedMatrix33(m);
+									const double rm[4][4] = {
+										{ 1.0, 0.0, 0.0, 0.0 },
+										{ 0.0, 0.0, 1.0, 0.0 },
+										{ 0.0, -1.0, 0.0, 0.0 },
+										{ 0.0, 0.0, 0.0, 1.0 }
+									};
+									MMatrix zup(rm);
 
-							} catch (Corona::Exception& ex) {
-								logger.error(MString(ex.getMessage().cStr()));
+									MMatrix tm = zup * obj->transformMatrices[0];
+									Corona::AnimatedAffineTm atm;
+									setAnimatedTransformationMatrix(atm, tm);
+
+									const Corona::IesLight light = iesParser.parseIesLight(input);
+									data.emission.gonioDiagram = light.distribution;
+									Corona::Matrix33 m(atm[0].extractRotation());
+
+									data.emission.emissionFrame = Corona::AnimatedMatrix33(m);
+
+								}
+								catch (Corona::Exception& ex) {
+									logger.error(MString(ex.getMessage().cStr()));
+								}
 							}
-						}else{
-							logger.error(MString("Unable to read ies file .") + iesFile);
+							else{
+								logger.error(MString("Unable to read ies file .") + iesFile);
+							}
 						}
 					}
+
+					bool disableSampling = false;
+					getBool("emissionDisableSampling", depFn, disableSampling);
+					data.emission.disableSampling = disableSampling;
+
+					bool sharpnessFake = false;
+					getBool("emissionSharpnessFake", depFn, sharpnessFake);
+					data.emission.sharpnessFake = sharpnessFake;
+
+					MVector point(0, 0, 0);
+					getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
+					data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
+
+					defineBump(MString("bump"), depFn, mat.surfaceShaderNet, &data.bump);
+
+					data.castsShadows = getBoolAttr("castsShadows", depFn, true);
+
+					shaderArray.push_back(shadingGroup);
+					dataArray.push_back(data);
+					Corona::IMaterial *mat = data.createMaterial();
+					Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+					setRenderStats(ms, obj);
+					obj->instance->addMaterial(ms);
 				}
-
-				bool disableSampling = false;
-				getBool("emissionDisableSampling", depFn, disableSampling);
-				data.emission.disableSampling = disableSampling;
-
-				bool sharpnessFake = false;
-				getBool("emissionSharpnessFake", depFn, sharpnessFake);
-				data.emission.sharpnessFake = sharpnessFake;
-				
-				MVector point(0,0,0);
-				getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
-				data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));			
-
-				defineBump(MString("bump"), depFn, mat.surfaceShaderNet, &data.bump);
-
-				shaderArray.push_back(obj->shadingGroups[0]);
-				dataArray.push_back(data);
-				Corona::IMaterial *mat = data.createMaterial();
-				obj->instance->addMaterial(Corona::IMaterialSet(mat));
-
-			}else if(ss.typeName == "lambert"){
-				getColor("color", depFn, colorVal);
-				Corona::NativeMtlData data;
-				data.components.diffuse.setColor(Corona::Rgb(colorVal.r, colorVal.g, colorVal.b));
-				dataArray.push_back(data);
-				Corona::IMaterial *mat = data.createMaterial();
-				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
-
-				obj->instance->addMaterial(Corona::IMaterialSet(mat));
-			}
-			else if (ss.typeName == "CoronaLayeredMaterial"){
-				defineDefaultMaterial(instance, obj);
-				Corona::LayeredMtlData data;
-				Corona::LayeredMtlData::MtlEntry entry;
+				else if (ss.typeName == "lambert"){
+					getColor("color", depFn, colorVal);
+					Corona::NativeMtlData data;
+					data.components.diffuse.setColor(Corona::Rgb(colorVal.r, colorVal.g, colorVal.b));
+					dataArray.push_back(data);
+					Corona::IMaterial *mat = data.createMaterial();
+					Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+					setRenderStats(ms, obj);
+					obj->instance->addMaterial(ms);
+				}
+				else if (ss.typeName == "CoronaLayeredMaterial"){
+					defineDefaultMaterial(instance, obj);
+					Corona::LayeredMtlData data;
+					Corona::LayeredMtlData::MtlEntry entry;
+				}
+				else{
+					defineDefaultMaterial(instance, obj);
+				}
 			}
 			else{
 				defineDefaultMaterial(instance, obj);
 			}
-		}else{
-			defineDefaultMaterial(instance, obj);
+
+			MFnDependencyNode sn;
 		}
-
-		MFnDependencyNode sn;
-
 	}else{
 		defineDefaultMaterial(instance, obj);
 	}		
+}
+
+void CoronaRenderer::setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj)
+{
+	MFnDependencyNode depFn(obj->mobject);
+
+	if (!getBoolAttr("primaryVisibility", depFn, true))
+		ms.visibility.direct = false;
+
+	if (!getBoolAttr("visibleInReflections", depFn, true))
+		ms.visibility.reflect = false;
+
+	if (!getBoolAttr("visibleInRefractions", depFn, true))
+		ms.visibility.refract = false;
+
+	if (!getBoolAttr("mtco_visibleInGI", depFn, true))
+		ms.visibility.normal = false;
 }
 
 void CoronaRenderer::defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn)
@@ -932,6 +964,10 @@ void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 			destAttr = "inVector";
 		if (sourceAttr == "output")
 			sourceAttr = "outOutput";
+		if (sourceAttr == "min")
+			sourceAttr = "inMin";
+		if (sourceAttr == "max")
+			sourceAttr = "inMax";
 		logger.debug(MString("Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
 		this->oslRenderer.shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
 	}

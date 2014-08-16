@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.6dev
+# Compiled by oslc 1.5.7dev
 shader OSLInterface
 param	color	inColor	1 1 1 		 %read{0,2} %write{2147483647,-1}
 param	float	inFloat	0 		 %read{4,6} %write{2147483647,-1}
@@ -17,53 +17,53 @@ temp	float	$tmp6	 %read{17,17} %write{16,16}
 const	int	$const3	2		 %read{18,19} %write{2147483647,-1}
 temp	float	$tmp7	 %read{19,19} %write{18,18}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:4
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:8
 # 	{
-	isconnected	$tmp1 inColor 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl"} %line{4} %argrw{"wr"}
+	isconnected	$tmp1 inColor 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl"} %line{8} %argrw{"wr"}
 	if		$tmp1 4 4 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:6
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:10
 # 		return;
-	assign		Cout inColor 	%line{6} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:7
-# 	}
-	exit	%line{7}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:9
-# 	{
-	isconnected	$tmp2 inFloat 	%line{9} %argrw{"wr"}
-	if		$tmp2 8 8 	%argrw{"r"}
+	assign		Cout inColor 	%line{10} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:11
-# 		return;
-	assign		Cout inFloat 	%line{11} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:12
 # 	}
-	exit	%line{12}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:14
+	exit	%line{11}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:13
 # 	{
-	isconnected	$tmp3 inInt 	%line{14} %argrw{"wr"}
-	if		$tmp3 12 12 	%argrw{"r"}
+	isconnected	$tmp2 inFloat 	%line{13} %argrw{"wr"}
+	if		$tmp2 8 8 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:15
+# 		return;
+	assign		Cout inFloat 	%line{15} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:16
-# 		return;
-	assign		Cout inInt 	%line{16} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:17
 # 	}
-	exit	%line{17}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:19
+	exit	%line{16}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:18
 # 	{
-	isconnected	$tmp4 inVector 	%line{19} %argrw{"wr"}
-	if		$tmp4 21 21 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:21
-# 		Cout[1] = inVector[1];
-	compref		$tmp5 inVector $const1 	%line{21} %argrw{"wrr"}
-	compassign	Cout $const1 $tmp5 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:22
-# 		Cout[2] = inVector[2];
-	compref		$tmp6 inVector $const2 	%line{22} %argrw{"wrr"}
-	compassign	Cout $const2 $tmp6 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:23
+	isconnected	$tmp3 inInt 	%line{18} %argrw{"wr"}
+	if		$tmp3 12 12 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:20
 # 		return;
-	compref		$tmp7 inVector $const3 	%line{23} %argrw{"wrr"}
-	compassign	Cout $const3 $tmp7 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:24
+	assign		Cout inInt 	%line{20} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:21
 # 	}
-	exit	%line{24}
+	exit	%line{21}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:23
+# 	{
+	isconnected	$tmp4 inVector 	%line{23} %argrw{"wr"}
+	if		$tmp4 21 21 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:25
+# 		Cout[1] = inVector[1];
+	compref		$tmp5 inVector $const1 	%line{25} %argrw{"wrr"}
+	compassign	Cout $const1 $tmp5 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:26
+# 		Cout[2] = inVector[2];
+	compref		$tmp6 inVector $const2 	%line{26} %argrw{"wrr"}
+	compassign	Cout $const2 $tmp6 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:27
+# 		return;
+	compref		$tmp7 inVector $const3 	%line{27} %argrw{"wrr"}
+	compassign	Cout $const3 $tmp7 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:28
+# 	}
+	exit	%line{28}
 	end

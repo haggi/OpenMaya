@@ -230,6 +230,7 @@
     <ClInclude Include="..\src\Corona\CoronaRendererController.h" />
     <ClInclude Include="..\src\Corona\CoronaCallbacks.h" />
     <ClInclude Include="..\src\Corona\Corona.h" />
+    <ClInclude Include="..\src\Corona\CoronaSky.h" />
     <ClInclude Include="..\src\Corona\MyClasses.h" />
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />

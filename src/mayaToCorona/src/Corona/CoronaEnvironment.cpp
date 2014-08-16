@@ -6,8 +6,9 @@
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-
 #include "CoronaMap.h"
+
+#include "CoronaSky.h"
 
 static Logging logger;
 
@@ -34,7 +35,13 @@ void CoronaRenderer::defineEnvironment()
 			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
 		}
 	}else{
-		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb));
+		//Corona::Abstract::Map *texmap = new SkyMap;
+		SkyMap *texmap = new SkyMap;
+		texmap->coronaRenderer = this;
+
+		texmap->params->multiplier = 0.01;
+		texmap->initSky();
+		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
 	}
 }
 

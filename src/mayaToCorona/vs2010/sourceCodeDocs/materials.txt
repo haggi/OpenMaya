@@ -24,20 +24,9 @@ emissionSharpnessFakePoint, vector, Sharpness Fake Point, 0:0:0
 emissionDisableSampling, bool, Disable Sampling, false
 shadowCatcherMode, enum, Shadow Catcher Mode, 0, Off:Final:Composite
 bgOverride, color, BG Override, 0:0:0
-
-#LayeredMaterial
-baseMaterial, color, Base material, 0:0:0
-layers, color, Layers, 0:0:0
+castsShadows, bool, Casts Shadows, true
 
 #enviromentPortal
-
-#wireMaterial
-useWorldSpace
-showVertices
-showEdges
-allEdges
-edgeWidth, float
-vertexWidth, float
 
 #OSLNode
 color, color, Color, 1:1:1

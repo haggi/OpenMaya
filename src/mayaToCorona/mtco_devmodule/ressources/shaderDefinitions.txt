@@ -21,6 +21,66 @@ shader_start:displacementShader
 	outatt:displacement:float
 shader_end
 
+shader_start:luminance
+	inatt:value:color
+	outatt:outValue:float
+shader_end
+
+shader_start:projection
+	inatt:image:color
+	inatt:placementMatrix:matrix
+	outatt:outColor:color
+shader_end
+
+shader_start:rgbToHsv
+	inatt:inRgb:color
+	outatt:outHsv:color
+shader_end
+
+shader_start:hsvToRgb
+	inatt:inHsv:color
+	outatt:outRgb:color
+shader_end
+
+shader_start:grid
+	inatt:lineColor:color
+	inatt:fillerColor:color
+	inatt:uWidth:float
+	inatt:vWidth:float
+	inatt:contrast:float
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	outatt:outColor:color
+shader_end
+
+shader_start:condition
+	inatt:firstTerm:float
+	inatt:secondTerm:float
+	inatt:operation:int
+	inatt:colorIfTrue:color
+	inatt:colorIfFalse:color
+	outatt:outColor:color
+shader_end
+
+shader_start:clamp
+	inatt:min:vector
+	inatt:max:vector
+	inatt:input:vector
+	outatt:output:vector
+shader_end
+
+shader_start:bulge
+	inatt:uWidth:float
+	inatt:vWidth:float
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:uvCoord:float2
+	outatt:outColor:color
+shader_end
+
 shader_start:place2dTexture
 	inatt:repeatU:float
 	inatt:repeatV:float
@@ -56,6 +116,13 @@ shader_start:bump2d
 	outatt:outNormal:vector
 shader_end
 
+shader_start:multiplyDivide
+	inatt:operation:int
+	inatt:input1:vector
+	inatt:input2:vector
+	outatt:output:vector
+shader_end
+
 shader_start:checker
 	inatt:color1:color
 	inatt:color2:color
@@ -69,6 +136,9 @@ shader_start:samplerInfo
 	outatt:normalCamera:vector
 	outatt:pointWorld:vector
 	outatt:uvCoord:vector
+	outatt:facingRatio:float
+	outatt:outDPdu:vector
+	outatt:outDPdv:vector
 shader_end
 
 shader_start:contrast
@@ -92,6 +162,10 @@ shader_start:OSLInterface
 shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
+shader_start:enviromentPortal
+	outatt:outColor:color
+shader_end
+
 shader_start:CoronaSurface
 	inatt:emissionExponent:float
 	inatt:fresnelIor:float
@@ -101,29 +175,33 @@ shader_start:CoronaSurface
 	inatt:attenuationColor:color
 	inatt:glassMode:enum
 	inatt:reflectivity:color
+	inatt:castsShadows:bool
 	inatt:translucency:color
 	inatt:volumeEmissionColor:color
 	inatt:anisotropyRotation:float
 	inatt:reflectionGlossiness:float
 	inatt:volumeEmissionDist:float
 	inatt:roundCornersRadius:float
+	inatt:bgOverride:color
 	inatt:refractionGlossiness:float
 	inatt:diffuse:color
 	inatt:refractivity:color
 	inatt:brdfType:enum
 	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
 	inatt:anisotropy:float
 	inatt:refractionIndex:float
 	inatt:emissionDisableSampling:bool
 	inatt:attenuationDist:float
-	inatt:normalCamera:vector
 	outatt:outColor:color
 shader_end
 
-shader_start:CoronaOSL
+shader_start:OSLNode
 	inatt:color:color
-	inatt:string:script
+	inatt:outColor:color
+	inatt:script:string
 	outatt:outColor:color
 shader_end
+
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

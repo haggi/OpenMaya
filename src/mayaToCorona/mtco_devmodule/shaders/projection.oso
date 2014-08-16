@@ -1,0 +1,20 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader projection
+param	color	image	1 0 0 		 %read{2,2} %write{2147483647,-1}
+param	matrix	placementMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{2,2}
+local	vector	uvw	 %read{1,1} %write{0,0}
+const	vector	$const1	1 2 3		 %read{0,0} %write{2147483647,-1}
+const	string	$const2	"project_uv"		 %read{1,1} %write{2147483647,-1}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# 	setmessage("project_uv", uvw);
+	assign		uvw $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl"} %line{4} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:5
+# 	//int result = getmessage("project_uv", uvw);
+	setmessage	$const2 uvw 	%line{5} %argrw{"rr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:12
+# }
+	assign		outColor image 	%line{12} %argrw{"wr"}
+	end

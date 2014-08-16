@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.6dev
+# Compiled by oslc 1.5.7dev
 shader place2dTexture
 param	float	repeatU	1 		 %read{0,61} %write{2147483647,-1}
 param	float	repeatV	1 		 %read{1,64} %write{2147483647,-1}

@@ -230,7 +230,11 @@ void OSLShadingNetworkRenderer::setup()
 {
 	this->shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &this->errorHandler);
 	this->shadingsys->attribute("lockgeom", 1);
-	this->shadingsys->attribute ("searchpath:shader", this->shaderSearchPath);
+	this->shadingsys->attribute("searchpath:shader", this->shaderSearchPath);
+	//this->shadingsys->attribute("strict_messages", true);
+	//this->shadingsys->attribute("debug", 2);
+	//this->shadingsys->attribute("buffer_printf", 0);
+	
 	const char *n = "Cout";
 	shadingsys->attribute("renderer_outputs", TypeDesc(TypeDesc::STRING,1),&n);
 

@@ -6,6 +6,16 @@ release 0.27
 - OSL: basic support for place3dTexture node
 - OSL: start implementation of solidfractal
 - OSL: Added fromSRGB and toSRGB to the file node
+- added primary visibility, reflection, refraction, GI
+- addes CoronaSurface castsShadows
+- OSL: added condition node 
+- added per face shading
+- OSL: added clamp node
+- OSL: added bulge node
+- OSL: added luminance node
+- OSL: added hsvToRgb and rgbToHsv nodes
+- OSL: added grid node
+- OSL: added multiplyDivide node
 
 release 0.26
 - OSL: blendColors

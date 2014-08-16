@@ -16,3 +16,33 @@ color colorBalance( color c, color colorGain, color colorOffset)
 	return result;
 }
 
+#define WRAPMAX (1.000001)
+
+float integral(float t, float nedge)
+{
+   return ((1.0 - nedge) * floor(t) + max(0.0, t - floor(t) - nedge));
+}
+
+float filteredPulseTrain(float edge, float period, float x, float dx)
+{
+   float invPeriod = 1.0 / period;
+
+   float w = dx * invPeriod;
+   float x0 = x * invPeriod - 0.5 * w;
+   float x1 = x0 + w;
+   float nedge = edge * invPeriod;
+
+   float result;
+
+   if (x0 == x1)
+   {
+     result = (x0 - floor(x0) < nedge) ? 0.0 : 1.0;
+   }
+   else
+   {
+      result = (integral(x1, nedge) - integral(x0, nedge)) / w;
+   }
+
+   return result;
+}
+

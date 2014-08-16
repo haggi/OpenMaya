@@ -1,0 +1,30 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader luminance
+param	color	value	0 0 0 		 %read{0,5} %write{2147483647,-1}
+oparam	float	outValue	0 		 %read{2147483647,-1} %write{7,7}
+const	float	$const1	0.30000001		 %read{1,1} %write{2147483647,-1}
+const	int	$const2	0		 %read{0,0} %write{2147483647,-1}
+temp	float	$tmp1	 %read{1,1} %write{0,0}
+temp	float	$tmp2	 %read{4,4} %write{1,1}
+const	float	$const3	0.58999997		 %read{3,3} %write{2147483647,-1}
+const	int	$const4	1		 %read{2,2} %write{2147483647,-1}
+temp	float	$tmp3	 %read{3,3} %write{2,2}
+temp	float	$tmp4	 %read{4,4} %write{3,3}
+temp	float	$tmp5	 %read{7,7} %write{4,4}
+const	float	$const5	0.11		 %read{6,6} %write{2147483647,-1}
+const	int	$const6	2		 %read{5,5} %write{2147483647,-1}
+temp	float	$tmp6	 %read{6,6} %write{5,5}
+temp	float	$tmp7	 %read{7,7} %write{6,6}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\luminance.osl:4
+# }
+	compref		$tmp1 value $const2 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\luminance.osl"} %line{4} %argrw{"wrr"}
+	mul		$tmp2 $const1 $tmp1 	%argrw{"wrr"}
+	compref		$tmp3 value $const4 	%argrw{"wrr"}
+	mul		$tmp4 $const3 $tmp3 	%argrw{"wrr"}
+	add		$tmp5 $tmp2 $tmp4 	%argrw{"wrr"}
+	compref		$tmp6 value $const6 	%argrw{"wrr"}
+	mul		$tmp7 $const5 $tmp6 	%argrw{"wrr"}
+	add		outValue $tmp5 $tmp7 	%argrw{"wrr"}
+	end

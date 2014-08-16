@@ -1,0 +1,12 @@
+shader projection( color image = color(1,0,0), matrix placementMatrix = 0, output color outColor=0)
+{
+	vector uvw = vector(1,2,3);
+	setmessage("project_uv", uvw);
+	//int result = getmessage("project_uv", uvw);
+	//if( result == 0)
+	//	outColor = color(1,0,0);
+	//else
+	//	outColor = color(0,0,1);
+	//return;
+	outColor = image;
+}

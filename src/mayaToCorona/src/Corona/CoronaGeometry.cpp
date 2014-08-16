@@ -226,6 +226,10 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		faceIt.numTriangles(numTris);
 		faceIt.getVertices(faceVtxIds);
 
+		int perFaceShadingGroup = 0;
+		if (obj->perFaceAssignments.length() > 0)
+			perFaceShadingGroup = obj->perFaceAssignments[faceId];
+
 		MIntArray faceUVIndices;
 
 		faceNormalIds.clear();
@@ -291,7 +295,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				uvp[1] = uv1;
 				uvp[2] = uv2;
 				tri.t.push(uvp);
-				tri.materialId = 0;
+				tri.materialId = perFaceShadingGroup;
 				tri.displacement.min = displacementMin;
 				tri.displacement.max = displacementMax;
 				geom->addPrimitive(tri);			
@@ -315,7 +319,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				tri.t[0] = uvId0;
 				tri.t[1] = uvId1;
 				tri.t[2] = uvId2;
-				tri.materialId = 0;
+				tri.materialId = perFaceShadingGroup;
 				
 				geom->addPrimitive(tri);
 

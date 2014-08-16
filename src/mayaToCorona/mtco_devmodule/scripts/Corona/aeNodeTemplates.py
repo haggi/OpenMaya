@@ -45,6 +45,12 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("mtco_displacementMin", label="Displacement Min")
         self.addControl("mtco_displacementMax", label="Displacement Max")
         self.endLayout()
+
+    def buildMeshTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_visibleInGI", label="Visible in GI")
+        self.endLayout()
         
     def buildCameraTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
@@ -70,6 +76,8 @@ class AECoronaNodeTemplate(BaseTemplate):
             self.buildBum2dTemplate(nodeName)
         if self.thisNode.type() == "file":
             self.buildFileTemplate(nodeName)
+        if self.thisNode.type() == "mesh":
+            self.buildMeshTemplate(nodeName)
             
     def buildBody(self, nodeName):
         self.buildCoronaTemplates(nodeName)

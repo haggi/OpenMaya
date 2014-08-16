@@ -1,5 +1,9 @@
 shader OSLInterface(color inColor = 1, float inFloat = 0.0, int inInt = 0, vector inVector = 0, output color Cout = 0)
 {
+	//vector uvw = vector(1,2,3);
+	//int result = getmessage("project_uv", uvw);
+	//printf("result %d\n", result);
+	
 	if( isconnected(inColor) )
 	{
 		Cout = inColor ;

@@ -1,10 +1,6 @@
-shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, vector normalCamera = 0, color normalMap = color(0,0,0),output vector outNormal = 1)
+shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, vector normalCamera = N, color normalMap = color(0,0,0),output vector outNormal = 1)
 {
-	normal dNormal = N;
- 	if( isconnected(normalCamera) )
-	{
-		dNormal = normalCamera;
-	}
+	normal dNormal = normalCamera;
 	
 	if( bumpInterp > 0)
 	{
@@ -15,6 +11,30 @@ shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, v
 			dNormal[2] = normalMap[2];
 		}
 	}
+
+	if( bumpInterp == 0)
+	{
+		dNormal = normalize (calculatenormal(P + (bumpValue * dNormal)));	
+		//vector dPdx = dPdu;//Dx(P);
+		//vector dPdy = dPdv;//Dy(P);
 	
+		//vector Rx = cross(dPdy, dNormal);
+		//vector Ry = cross(dNormal, dPdx);
+
+		/* compute surface gradient and determinant */
+		//float det = dot(dPdx, Rx);
+		//vector surfgrad = Rx + Ry;
+
+		//float absdet = fabs(det);
+
+		//float strength = max(bumpValue, 0.0);
+		//float dist = bumpDepth;
+		
+		/* compute and output perturbed normal */
+		//dNormal = normalize(absdet * dNormal - dist * sign(det) * surfgrad);
+		//dNormal = normalize(strength * dNormal + (1.0 - strength) * dNormal);
+		//dNormal = bumpValue;
+	}
 	outNormal = dNormal;
 }
+

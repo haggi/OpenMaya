@@ -1,0 +1,156 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader bulge
+param	float	uWidth	0 		 %read{25,27} %write{2147483647,-1}
+param	float	vWidth	0 		 %read{32,34} %write{2147483647,-1}
+param	vector	uvCoord	0 0 0 		 %read{8,11} %write{2147483647,-1}
+param	color	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	color	colorGain	1 1 1 		 %read{45,45} %write{2147483647,-1}
+param	color	colorOffset	0 0 0 		 %read{46,46} %write{2147483647,-1}
+oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{4,48}
+global	float	u	 %read{12,12} %write{2147483647,-1}
+global	float	v	 %read{13,13} %write{2147483647,-1}
+local	color	___315_result	 %read{45,47} %write{44,46}
+local	vector	uvw	 %read{2147483647,-1} %write{0,0}
+local	float	s	 %read{16,29} %write{6,19}
+local	float	t	 %read{14,36} %write{7,24}
+local	float	a	 %read{39,39} %write{31,31}
+local	float	b	 %read{39,39} %write{38,38}
+local	color	C	 %read{44,48} %write{42,47}
+temp	int	$tmp1	 %read{1,1} %write{0,0}
+const	string	$const1	"project_uv"		 %read{0,0} %write{2147483647,-1}
+const	int	$const2	0		 %read{1,10} %write{2147483647,-1}
+temp	int	$tmp2	 %read{2,2} %write{1,1}
+const	string	$const3	"afsadfsf\n"		 %read{3,3} %write{2147483647,-1}
+const	color	$const4	1 0 0		 %read{4,4} %write{2147483647,-1}
+const	float	$const5	0		 %read{6,7} %write{2147483647,-1}
+temp	int	$tmp3	 %read{9,9} %write{8,8}
+const	int	$const6	1		 %read{11,11} %write{2147483647,-1}
+const	float	$const7	1		 %read{14,37} %write{2147483647,-1}
+const	float	$const8	1.000001		 %read{16,23} %write{2147483647,-1}
+const	string	$const9	"mod"		 %read{15,20} %write{2147483647,-1}
+temp	float	$tmp4	 %read{18,18} %write{17,17}
+temp	float	$tmp5	 %read{17,17} %write{16,16}
+temp	float	$tmp6	 %read{19,19} %write{18,18}
+temp	float	$tmp7	 %read{23,23} %write{22,22}
+temp	float	$tmp8	 %read{22,22} %write{21,21}
+temp	float	$tmp9	 %read{24,24} %write{23,23}
+temp	float	$tmp10	 %read{31,31} %write{26,26}
+temp	float	$tmp11	 %read{26,26} %write{25,25}
+const	float	$const11	2		 %read{25,34} %write{2147483647,-1}
+const	float	$const12	0.5		 %read{26,36} %write{2147483647,-1}
+temp	float	$tmp12	 %read{30,30} %write{29,29}
+temp	float	$tmp13	 %read{28,28} %write{27,27}
+temp	float	$tmp14	 %read{29,29} %write{28,28}
+temp	float	$tmp15	 %read{31,31} %write{30,30}
+temp	float	$tmp16	 %read{38,38} %write{33,33}
+temp	float	$tmp17	 %read{33,33} %write{32,32}
+temp	float	$tmp18	 %read{37,37} %write{36,36}
+temp	float	$tmp19	 %read{35,35} %write{34,34}
+temp	float	$tmp20	 %read{36,36} %write{35,35}
+temp	float	$tmp21	 %read{38,38} %write{37,37}
+temp	float	$tmp22	 %read{42,42} %write{41,41}
+temp	float	$tmp23	 %read{41,41} %write{40,40}
+temp	float	$tmp24	 %read{40,40} %write{39,39}
+const	string	$const13	"colorBalance"		 %read{43,43} %write{2147483647,-1}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:7
+# 	{
+	getmessage	$tmp1 $const1 uvw 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{7} %argrw{"wrw"}
+	neq		$tmp2 $tmp1 $const2 	%argrw{"wrr"}
+	if		$tmp2 6 6 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:9
+# 		outColor = color(1,0,0);
+	printf		$const3 	%line{9} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:10
+# 		return;
+	assign		outColor $const4 	%line{10} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:11
+# 	}
+	exit	%line{11}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:13
+# 	float t = 0.0;
+	assign		s $const5 	%line{13} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:14
+# 	if( isconnected(uvCoord))
+	assign		t $const5 	%line{14} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:15
+# 	{
+	isconnected	$tmp3 uvCoord 	%line{15} %argrw{"wr"}
+	if		$tmp3 12 14 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:17
+# 		t = uvCoord[1];
+	compref		s uvCoord $const2 	%line{17} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:18
+# 	}else{
+	compref		t uvCoord $const6 	%line{18} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:20
+# 		t = v;
+	assign		s u 	%line{20} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:21
+# 	}
+	assign		t v 	%line{21} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:23
+# 
+	sub		t $const7 t 	%line{23} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:25
+# 	t = mod(t, WRAPMAX);
+	functioncall	$const9 20 	%line{25} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:135
+# PERCOMP1 (logb)
+	div		$tmp5 s $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{135} %argrw{"wrr"}
+	floor		$tmp4 $tmp5 	%argrw{"wr"}
+	mul		$tmp6 $const8 $tmp4 	%argrw{"wrr"}
+	sub		s s $tmp6 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:26
+#     
+	functioncall	$const9 25 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{26} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:135
+# PERCOMP1 (log10)
+	div		$tmp8 t $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{135} %argrw{"wrr"}
+	floor		$tmp7 $tmp8 	%argrw{"wr"}
+	mul		$tmp9 $const8 $tmp7 	%argrw{"wrr"}
+	sub		t t $tmp9 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:28
+# 	float b = smoothstep(vWidth / 2, .5, t) * (1 - smoothstep(0.5, 1 - (vWidth / 2), t));
+	div		$tmp11 uWidth $const11 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{28} %argrw{"wrr"}
+	smoothstep	$tmp10 $tmp11 $const12 s 	%argrw{"wrrr"}
+	div		$tmp13 uWidth $const11 	%argrw{"wrr"}
+	sub		$tmp14 $const7 $tmp13 	%argrw{"wrr"}
+	smoothstep	$tmp12 $const12 $tmp14 s 	%argrw{"wrrr"}
+	sub		$tmp15 $const7 $tmp12 	%argrw{"wrr"}
+	mul		a $tmp10 $tmp15 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:29
+# 	color C = sqrt(abs(a * b));
+	div		$tmp17 vWidth $const11 	%line{29} %argrw{"wrr"}
+	smoothstep	$tmp16 $tmp17 $const12 t 	%argrw{"wrrr"}
+	div		$tmp19 vWidth $const11 	%argrw{"wrr"}
+	sub		$tmp20 $const7 $tmp19 	%argrw{"wrr"}
+	smoothstep	$tmp18 $const12 $tmp20 t 	%argrw{"wrrr"}
+	sub		$tmp21 $const7 $tmp18 	%argrw{"wrr"}
+	mul		b $tmp16 $tmp21 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:30
+# 	
+	mul		$tmp24 a b 	%line{30} %argrw{"wrr"}
+	abs		$tmp23 $tmp24 	%argrw{"wr"}
+	sqrt		$tmp22 $tmp23 	%argrw{"wr"}
+	assign		C $tmp22 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:32
+# 	outColor = C;
+	functioncall	$const13 48 	%line{32} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:13
+# 	color result = c;
+	assign		___315_result C 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{13} %argrw{"wr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:14
+# 	result *= colorGain;
+	mul		___315_result ___315_result colorGain 	%line{14} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:15
+# 	result += colorOffset;
+	add		___315_result ___315_result colorOffset 	%line{15} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:16
+# 	return result;
+	assign		C ___315_result 	%line{16} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:33
+# 		t = uvCoord[1];
+	assign		outColor C 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{33} %argrw{"wr"}
+	end

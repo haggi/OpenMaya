@@ -435,6 +435,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='file', longName='fromSRGB', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType='file', longName='toSRGB', attributeType='bool', defaultValue=False) 
 
+        #mesh
+        pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
         
         pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         
@@ -444,6 +446,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def showLogFile(self):
         pass
+    
+    def createRenderNode(self, nodeType=None):
+        log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
+        mat = pm.shadingNode(nodeType, asShader=True)
+        shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+        mat.outColor >> shadingGroup.surfaceShader
     
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")

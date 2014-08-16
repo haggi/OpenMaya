@@ -1,11 +1,7 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-#ifdef HAS_OVERRIDE
-#include "CoronaSurfaceOverride.h"
-#endif
-
-// Plugin CoronaSurface Shader Class //
+// Plugin OSLNode Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -13,11 +9,11 @@
 // type MPxNode
 //
 
-class CoronaSurface : public MPxNode
+class OSLNode : public MPxNode
 {
 public:
-                    CoronaSurface();
-    virtual         ~CoronaSurface();
+                    OSLNode();
+    virtual         ~OSLNode();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -43,32 +39,9 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject emissionExponent;
-	static    MObject fresnelIor;
-	static    MObject roundCornersSamples;
-	static    MObject emissionSharpnessFakePoint;
-	static    MObject emissionSharpnessFake;
-	static    MObject attenuationColor;
-	static    MObject glassMode;
-	static    MObject reflectivity;
-	static    MObject castsShadows;
-	static    MObject translucency;
-	static    MObject volumeEmissionColor;
-	static    MObject anisotropyRotation;
-	static    MObject reflectionGlossiness;
-	static    MObject volumeEmissionDist;
-	static    MObject roundCornersRadius;
-	static    MObject bgOverride;
-	static    MObject refractionGlossiness;
-	static    MObject diffuse;
-	static    MObject refractivity;
-	static    MObject brdfType;
-	static    MObject emissionColor;
-	static    MObject shadowCatcherMode;
-	static    MObject anisotropy;
-	static    MObject refractionIndex;
-	static    MObject emissionDisableSampling;
-	static    MObject attenuationDist;
+	static    MObject color;
+	static    MObject outColor;
+	static    MObject script;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient
