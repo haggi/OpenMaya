@@ -40,12 +40,14 @@ class OpenMayaCommonGlobals(object):
     def setImageSize(self, preset):
         for imgFormat in self.imageFormatData:
             if imgFormat[0] == preset:
+                print "---------- found preset", preset
                 self.defaultResolution.aspectLock.set(0)
                 self.defaultResolution.width.set(imgFormat[1])
                 self.defaultResolution.height.set(imgFormat[2])
                 self.defaultResolution.deviceAspectRatio.set(float(imgFormat[1])/float(imgFormat[2]))
     
     def updateImageSize(self, *args):
+        
         if not self.rendererTabUiDict.has_key('common'):
             return
         uiDict = self.rendererTabUiDict['common']
@@ -53,6 +55,8 @@ class OpenMayaCommonGlobals(object):
         w = self.defaultResolution.width.get()
         h = self.defaultResolution.height.get()
         dar = self.defaultResolution.deviceAspectRatio.get()
+        
+        print "----------- update image size with ", w, h, dar
         
         if args[0] == "width":
             if self.defaultResolution.aspectLock.get():
@@ -142,7 +146,7 @@ class OpenMayaCommonGlobals(object):
                         uiDict['imageSizePresets'] = pm.optionMenuGrp(label="Presets:", changeCommand=self.setImageSize)
                         for imgFormat in self.imageFormatData:
                             pm.menuItem(imgFormat[0])
-                        uiDict['imageSizePresets'].setSelect(12) 
+                        #uiDict['imageSizePresets'].setSelect(12) 
 
                         self.addRenderDefaultResGlobalsUIElement(attName='aspectLock', uiType='bool', displayName='Maintain aspect ratio', uiDict=uiDict)
                         self.addRenderDefaultResGlobalsUIElement(attName='width', uiType='int', displayName='Width:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "width"))
@@ -161,7 +165,7 @@ class OpenMayaCommonGlobals(object):
 
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[  (clo, "right", 0), (clo, "left", 0), (clo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ], attachControl = [(scLo, "top", 0, clo)])
-        self.setImageSize("HD_540") # set default
+        #self.setImageSize("HD_540") # set default
         self.OpenMayaCommonGlobalsUpdateTab()
         
 

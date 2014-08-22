@@ -124,6 +124,20 @@ MObject MayaToCoronaGlobals::displace_maxSubdiv;
 MObject MayaToCoronaGlobals::renderstamp_use;
 MObject MayaToCoronaGlobals::renderStamp;
 MObject MayaToCoronaGlobals::bgColor;
+MObject MayaToCoronaGlobals::bgType;
+MObject MayaToCoronaGlobals::pSkyModel;
+MObject MayaToCoronaGlobals::pSkyMultiplier;
+MObject MayaToCoronaGlobals::pSkyHorizBlur;
+MObject MayaToCoronaGlobals::pSkyGroundColor;
+MObject MayaToCoronaGlobals::pSkyAffectGround;
+MObject MayaToCoronaGlobals::pSkyPreethamTurb;
+MObject MayaToCoronaGlobals::pSkySunFalloff;
+MObject MayaToCoronaGlobals::pSkyZenith;
+MObject MayaToCoronaGlobals::pSkyHorizon;
+MObject MayaToCoronaGlobals::pSkySunGlow;
+MObject MayaToCoronaGlobals::pSkySunSideGlow;
+MObject MayaToCoronaGlobals::pSkySunBleed;
+MObject MayaToCoronaGlobals::sunSizeMulti;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -533,7 +547,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( colorMapping_exponent ));
 
 	colorMapping_gamma = nAttr.create("colorMapping_gamma", "colorMapping_gamma",  MFnNumericData::kFloat, 2.2);
-	nAttr.setMin(0.1);
+	nAttr.setMin(0.01);
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_gamma ));
 
@@ -581,7 +595,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( colorMapping_useContrast ));
 
 	colorMapping_highlightCompression = nAttr.create("colorMapping_highlightCompression", "colorMapping_highlightCompression",  MFnNumericData::kFloat, 1.0);
-	nAttr.setMin(0.0);
+	nAttr.setMin(0.01);
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_highlightCompression ));
 
@@ -634,6 +648,56 @@ MStatus	MayaToCoronaGlobals::initialize()
 	bgColor = nAttr.createColor("bgColor", "bgColor");
 	nAttr.setDefault(1.0,1.0,1.0);
 	CHECK_MSTATUS(addAttribute( bgColor ));
+
+	bgType = eAttr.create("bgType", "bgType", 0, &stat);
+	stat = eAttr.addField( "Color/Image", 0 );
+	stat = eAttr.addField( "PhysicalSky", 1 );
+	CHECK_MSTATUS(addAttribute( bgType ));
+
+	pSkyModel = eAttr.create("pSkyModel", "pSkyModel", 0, &stat);
+	stat = eAttr.addField( "Preetham", 0 );
+	stat = eAttr.addField( "Rawafake", 1 );
+	stat = eAttr.addField( "Hosek", 2 );
+	CHECK_MSTATUS(addAttribute( pSkyModel ));
+
+	pSkyMultiplier = nAttr.create("pSkyMultiplier", "pSkyMultiplier",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( pSkyMultiplier ));
+
+	pSkyHorizBlur = nAttr.create("pSkyHorizBlur", "pSkyHorizBlur",  MFnNumericData::kFloat, 0.1);
+	CHECK_MSTATUS(addAttribute( pSkyHorizBlur ));
+
+	pSkyGroundColor = nAttr.createColor("pSkyGroundColor", "pSkyGroundColor");
+	nAttr.setDefault(0.25,0.25,0.25);
+	CHECK_MSTATUS(addAttribute( pSkyGroundColor ));
+
+	pSkyAffectGround = nAttr.create("pSkyAffectGround", "pSkyAffectGround",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( pSkyAffectGround ));
+
+	pSkyPreethamTurb = nAttr.create("pSkyPreethamTurb", "pSkyPreethamTurb",  MFnNumericData::kFloat, 2.5);
+	CHECK_MSTATUS(addAttribute( pSkyPreethamTurb ));
+
+	pSkySunFalloff = nAttr.create("pSkySunFalloff", "pSkySunFalloff",  MFnNumericData::kFloat, 3.0);
+	CHECK_MSTATUS(addAttribute( pSkySunFalloff ));
+
+	pSkyZenith = nAttr.createColor("pSkyZenith", "pSkyZenith");
+	nAttr.setDefault(0.1,0.1,0.5);
+	CHECK_MSTATUS(addAttribute( pSkyZenith ));
+
+	pSkyHorizon = nAttr.createColor("pSkyHorizon", "pSkyHorizon");
+	nAttr.setDefault(0.25,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( pSkyHorizon ));
+
+	pSkySunGlow = nAttr.create("pSkySunGlow", "pSkySunGlow",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( pSkySunGlow ));
+
+	pSkySunSideGlow = nAttr.create("pSkySunSideGlow", "pSkySunSideGlow",  MFnNumericData::kFloat, 0.2);
+	CHECK_MSTATUS(addAttribute( pSkySunSideGlow ));
+
+	pSkySunBleed = nAttr.create("pSkySunBleed", "pSkySunBleed",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( pSkySunBleed ));
+
+	sunSizeMulti = nAttr.create("sunSizeMulti", "sunSizeMulti",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( sunSizeMulti ));
 
 //	------------- automatically created attributes end ----------- // 
 

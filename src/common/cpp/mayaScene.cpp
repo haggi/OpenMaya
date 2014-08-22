@@ -441,8 +441,25 @@ bool MayaScene::updateScene(MFn::Type updateElement)
 		obj->updateObject();
 		logger.feature(MString("updateObj ") + objId + ": " + obj->dagPath.fullPathName());
 
-		if( !this->renderGlobals->isMbStartStep )
-			if( !obj->motionBlurred )
+		if (!obj->motionBlurred)
+		{
+			if (this->renderGlobals->currentMbElement.elementType == MbElement::None)
+			{
+				logger.feature(MString("found non mb element type. Updating non mb objects.") + objId + ": " + obj->dagPath.fullPathName());
+				if (updateElement == MFn::kShape)
+					this->shapeUpdateCallback(obj);
+				if (updateElement == MFn::kTransform)
+				{
+					obj->transformMatrices.clear();
+					this->transformUpdateCallback(obj);
+					obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
+				}
+			}
+		}
+
+		//if( !this->renderGlobals->isMbStartStep )
+		// non mb objects will be exported only above
+		if( !obj->motionBlurred )
 				continue;
 
 		if(this->renderGlobals->isDeformStep())

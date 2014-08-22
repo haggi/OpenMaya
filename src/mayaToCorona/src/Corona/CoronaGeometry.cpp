@@ -27,16 +27,31 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 {
 	Corona::IGeometryGroup* geom = this->context.scene->addGeomGroup();
     
-    geom->getVertices().push(Corona::Pos(-1, 0, -1));
-    geom->getVertices().push(Corona::Pos(-1, 0,  1));
-    geom->getVertices().push(Corona::Pos( 1, 0,  1));
-    geom->getVertices().push(Corona::Pos( 1, 0, -1));
+    geom->getVertices().push(Corona::Pos(-1, -1, 0));
+    geom->getVertices().push(Corona::Pos(-1, 1,  0));
+    geom->getVertices().push(Corona::Pos( 1, 1,  0));
+    geom->getVertices().push(Corona::Pos( 1, -1, 0));
 
 
     geom->getNormals().push(Corona::Dir(0, 1, 0));
     geom->getMapCoords().push(Corona::Pos(0, 0, 0));
     geom->getMapCoordIndices().push(0);
 	
+	Corona::TriangleData tri;
+	tri.v[0][0] = 0;
+	tri.v[0][1] = 1;
+	tri.v[0][2] = 2;
+	tri.n[0][0] = 0;
+	tri.n[0][1] = 0;
+	tri.n[0][2] = 0;
+	tri.materialId = 0;
+	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+	geom->addPrimitive(tri);
+	tri.v[0][0] = 0;
+	tri.v[0][1] = 2;
+	tri.v[0][2] = 3;
+	geom->addPrimitive(tri);
+
 	return geom;
 }
 
@@ -85,9 +100,15 @@ void CoronaRenderer::getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObje
 }
 
 // for every motion blur step, the mesh geometry is saved to be able to generate a final
-// mesh description for corona.
+// mesh description for corona. If there is no motionblur, we have only one step
 void CoronaRenderer::updateMesh(mtco_MayaObject *obj)
 {
+	// if we have a bifrost velocity channel I suppose this is a bifost mesh and there is no need to 
+	// save the mesh motion steps because it has changing topology what does not work in most renderers
+	// so we save only the very first motion step
+	if (this->mtco_renderGlobals->doMb && (obj->meshDataArray.size() > 0) && this->hasBifrostVelocityChannel(obj))
+		return;
+
 	meshData md;
 	MFnMeshData meshData;
 	MObject mobject;
@@ -97,12 +118,68 @@ void CoronaRenderer::updateMesh(mtco_MayaObject *obj)
 		mobject = obj->mobject;
 	}
 	getMeshData(md.points, md.normals, mobject);
-	obj->meshDataArray.push_back(md);
+
+	MFnMesh meshFn(obj->mobject);
+	if (meshFn.hasColorChannels("bifrostVelocity"))
+	{
+		MColorArray colors;
+		MString colorSetName = "bifrostVelocity";
+		meshFn.getVertexColors(colors, &colorSetName);
+	}
+
+	// if we have a bifrost mesh, we only export at one mb step.
+	// the motionblur is done here with bifrost velocity
+	if (this->hasBifrostVelocityChannel(obj))
+	{
+		MFnMesh meshFn(obj->mobject);
+		MColorArray colors;
+		if (this->mtco_renderGlobals->doMb)
+		{
+			if (meshFn.hasColorChannels("bifrostVelocity"))
+			{
+				MString colorSetName = "bifrostVelocity";
+				meshFn.getVertexColors(colors, &colorSetName);
+			}
+			logger.debug(MString("Found bifrost velocity channel on mesh: ") + obj->shortName + " with " + colors.length() + " color entries. Number of vertices: " + md.points.length());
+			for (uint ptId = 0; ptId < md.points.length(); ptId++)
+			{
+				MColor c = colors[ptId];
+				MVector v = MVector(c.r, c.g, c.b);
+				md.points[ptId] -= v * 0.5 / 24.0;
+			}
+			obj->meshDataArray.push_back(md);
+			for (uint ptId = 0; ptId < md.points.length(); ptId++)
+			{
+				MColor c = colors[ptId];
+				MVector v = MVector(c.r, c.g, c.b);
+				md.points[ptId] += v * 0.5 / 24.0;
+			}
+			obj->meshDataArray.push_back(md);
+		}
+		else{
+			obj->meshDataArray.push_back(md);
+		}
+	}
+	else{
+		obj->meshDataArray.push_back(md);
+	}
 	logger.debug(MString("Adding ") + md.points.length() + " vertices to mesh data");
 	logger.debug(MString("Adding ") + md.normals.length() + " normals to mesh data");
-
 }
 
+bool CoronaRenderer::hasBifrostVelocityChannel(mtco_MayaObject *obj)
+{
+	MFnMesh meshFn(obj->mobject);
+	int numColorSets = meshFn.numColorSets();
+	MStringArray colorSetNames;
+	meshFn.getColorSetNames(colorSetNames);
+	for (uint i = 0; i < colorSetNames.length(); i++)
+	{
+		if (colorSetNames[i] == "bifrostVelocity")
+			return true;
+	}
+	return false;
+}
 
 void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 {
@@ -170,37 +247,48 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	int numSteps = (int)obj->meshDataArray.size();
 	uint numVertices = points.length();
 	uint numNormals = normals.length();
+	uint numUvs = uArray.length();
 
-	//logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
 
 	Corona::TriangleData td;
-	
 	Corona::IGeometryGroup* geom = NULL;
 	
 	geom = this->context.scene->addGeomGroup();
-	obj->geom = geom;
 
 	// to capture the vertex and normal positions, we capture the data during the motion steps
 	// and save them in a an std::vector. The uv's do not change, so we only sample them once.
+	// we always have at least one motionstep even if we have no motionblur
 	uint npts = 0;
 	for( int mbStep = 0; mbStep < numSteps; mbStep++)
 	{
 		meshData& md = obj->meshDataArray[mbStep];
+		if (md.points.length() != numVertices)
+		{
+			logger.debug(MString("Error there is a mismatch between point data length and num vertices."));
+			numSteps = 1;
+			return;
+		}
 		if( mbStep > 0)
 		{
 			uint npts1 = md.points.length();
-
+			if (npts1 != obj->meshDataArray[0].points.length())
+			{
+				logger.debug(MString("Error there is a mismatch between point data length between mb steps."));
+				numSteps = 1;
+				break;
+			}
 		}
 		npts = md.points.length();
-
+		//logger.debug(MString("Adding ") + npts + " points for step " + mbStep);
 		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
 		{
 			MPoint& p = md.points[vtxId];
 			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
 		}
 	
-		for( uint nId = 0; nId < md.normals.length(); nId++)
+		//logger.debug(MString("Adding ") + md.normals.length() + " normals for step " + mbStep);
+		for (uint nId = 0; nId < md.normals.length(); nId++)
 		{
 			MFloatVector& n =  md.normals[nId];
 			geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
@@ -212,6 +300,8 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		geom->getMapCoords().push(Corona::Pos(uArray[tId],vArray[tId],0.0f));
 		geom->getMapCoordIndices().push(geom->getMapCoordIndices().size());
 	}   
+
+	obj->geom = geom;
 
 	MPointArray triPoints;
 	MIntArray triVtxIds;
@@ -291,22 +381,27 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				Corona::Pos uv1(uArray[uvId1],vArray[uvId1],0.0);
 				Corona::Pos uv2(uArray[uvId2],vArray[uvId2],0.0);
 				Corona::StaticArray<Corona::Pos, 3> uvp;
-				uvp[0] = uv0;
-				uvp[1] = uv1;
-				uvp[2] = uv2;
-				tri.t.push(uvp);
+				if (numUvs > 0)
+				{
+					uvp[0] = uv0;
+					uvp[1] = uv1;
+					uvp[2] = uv2;
+					tri.t.push(uvp);
+				}
+				tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
 				tri.materialId = perFaceShadingGroup;
 				tri.displacement.min = displacementMin;
 				tri.displacement.max = displacementMax;
 				geom->addPrimitive(tri);			
-			}else{
+			}
+			else{
 
 				Corona::TriangleData tri;
-				
+
 				tri.v.setSegments(numSteps - 1);
 				tri.n.setSegments(numSteps - 1);
-								
-				for( int stepId = 0; stepId < numSteps; stepId++)
+
+				for (int stepId = 0; stepId < numSteps; stepId++)
 				{
 					tri.v[stepId][0] = vtxId0 + numVertices * stepId;
 					tri.v[stepId][1] = vtxId1 + numVertices * stepId;
@@ -316,18 +411,21 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 					tri.n[stepId][2] = normalId2 + numNormals * stepId;
 				}
 
-				tri.t[0] = uvId0;
-				tri.t[1] = uvId1;
-				tri.t[2] = uvId2;
+				if (numUvs > 0)
+				{
+					tri.t[0] = uvId0;
+					tri.t[1] = uvId1;
+					tri.t[2] = uvId2;
+				}
 				tri.materialId = perFaceShadingGroup;
-				
+				tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
 				geom->addPrimitive(tri);
-
 			}
 		}		
 	}
 
 	obj->meshDataArray.clear();
+
 }
 
 Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
@@ -379,7 +477,18 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		this->defineMaterial(obj->instance, obj);
+
+		MFnDependencyNode depFn(obj->mobject);
+		if (getBoolAttr("mtco_envPortal", depFn, false))
+		{
+			Corona::EnviroPortalMtlData data;
+			Corona::IMaterial *mat = data.createMaterial();
+			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+			obj->instance->addMaterial(ms);
+		}
+		else{
+			this->defineMaterial(obj->instance, obj);
+		}
 	}
 
 
@@ -399,7 +508,18 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, NULL, NULL);
-		this->defineMaterial(obj->instance, obj);
+
+		MFnDependencyNode depFn(obj->mobject);
+		if (getBoolAttr("mtco_envPortal", depFn, false))
+		{
+			Corona::EnviroPortalMtlData data;
+			Corona::IMaterial *mat = data.createMaterial();
+			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+			obj->instance->addMaterial(ms);
+		}
+		else{
+			this->defineMaterial(obj->instance, obj);
+		}
 	}
 }
 

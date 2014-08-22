@@ -71,6 +71,7 @@ public:
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject);
+	bool hasBifrostVelocityChannel(mtco_MayaObject *obj);
 	void updateMesh(mtco_MayaObject *obj);
 	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);

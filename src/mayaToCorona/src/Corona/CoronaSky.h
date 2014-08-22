@@ -23,7 +23,8 @@ public:
 
 void SkyMap::initSky()
 {
-	this->init(this->params);
+	Corona::Sun sun = this->coronaRenderer->context.scene->getSun();
+	this->init(this->params, &sun);
 }
 
 Corona::Rgb SkyMap::evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)

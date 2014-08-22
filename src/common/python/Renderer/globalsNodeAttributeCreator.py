@@ -368,7 +368,7 @@ if __name__ == "__main__":
     #attributeCreator("lux", "mtlu")
     #attributeCreator("fuji", "mtfu")
     #attributeCreator("indigo", "mtin")
-    #attributeCreator("corona", "mtco")
-    attributeCreator("thea", "mtth")
+    attributeCreator("corona", "mtco")
+    #attributeCreator("thea", "mtth")
     
     

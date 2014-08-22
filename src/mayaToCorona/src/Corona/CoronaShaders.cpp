@@ -461,6 +461,7 @@ bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *ob
 	int index = -1;
 	for( size_t i = 0; i < shaderArray.size(); i++)
 	{
+		logger.debug(MString("assingExistingMat search for ") + getObjectName(shadingGroup) + " current shaderArrayElement: " + getObjectName(shaderArray[i]));
 		if( shaderArray[i] == shadingGroup)
 		{
 			index = i;
@@ -469,8 +470,12 @@ bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *ob
 	}
 	if( index > -1)
 	{
-		logger.info(MString("Reusing material data."));
-		Corona::IMaterial *mat = dataArray[index].createMaterial();
+		logger.info(MString("Reusing material data from :") + getObjectName(shaderArray[index]));
+		Corona::NativeMtlData data = dataArray[index];
+		MFnDependencyNode depFn(obj->mobject);
+		if (!getBoolAttr("castsShadows", depFn, true))
+			data.castsShadows = false;
+		Corona::IMaterial *mat = data.createMaterial();
 		Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 		setRenderStats(ms, obj);
 		obj->instance->addMaterial(ms);
@@ -491,6 +496,7 @@ void CoronaRenderer::defineDefaultMaterial(Corona::IInstance* instance, mtco_May
 	Corona::NativeMtlData data;
 	data.components.diffuse.setColor(Corona::Rgb(.7,.7,.7));
 	Corona::IMaterial *mat = data.createMaterial();
+	shaderArray.push_back(MObject::kNullObj);
 	dataArray.push_back(data);
 	obj->instance->addMaterial(Corona::IMaterialSet(mat));
 }
@@ -507,6 +513,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 		{
 			MObject shadingGroup = obj->shadingGroups[sgId];
+			logger.debug(MString("---------- Check shading group: ") + getObjectName(shadingGroup) + " for existence on object named " +  obj->fullName);
 			if (assingExistingMat(shadingGroup, obj))
 				return;
 
@@ -662,6 +669,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 					getColor("color", depFn, colorVal);
 					Corona::NativeMtlData data;
 					data.components.diffuse.setColor(Corona::Rgb(colorVal.r, colorVal.g, colorVal.b));
+					shaderArray.push_back(shadingGroup);
 					dataArray.push_back(data);
 					Corona::IMaterial *mat = data.createMaterial();
 					Corona::IMaterialSet ms = Corona::IMaterialSet(mat);

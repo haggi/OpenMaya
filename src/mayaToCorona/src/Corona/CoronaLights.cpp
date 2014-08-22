@@ -77,7 +77,7 @@ void CoronaRenderer::defineLights()
 				sun.visibleDirect = true;
 				sun.visibleReflect = true;
 				sun.visibleRefract = true;
-				sun.sizeMultiplier = 2.0f;
+				sun.sizeMultiplier = this->mtco_renderGlobals->sunSizeMulti;
 				this->context.scene->getSun() = sun;
 			}
 		}
@@ -110,6 +110,7 @@ void CoronaRenderer::defineLights()
 			pl->lightColor = Corona::Rgb(col.r, col.g, col.b);
 			pl->lightIntensity = intensity;
 			getEnum(MString("decayRate"), depFn, pl->decayType);
+			pl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
 			this->context.scene->addLightShader(pl);
 		}
 		if( obj->mobject.hasFn(MFn::kSpotLight))
@@ -135,17 +136,22 @@ void CoronaRenderer::defineLights()
 			getFloat("coneAngle", depFn, sl->angle);
 			getFloat("penumbraAngle", depFn, sl->penumbraAngle);
 			getFloat("dropoff", depFn, sl->dropoff);
+			sl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
 			this->context.scene->addLightShader(sl);
 		}
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))
 		{
 			MVector lightDir(0, 0, -1);
+			MVector lightDirTangent(1, 0, 0);
+			MVector lightDirBiTangent(0, 1, 0);
 			MColor col;
 			getColor("color", depFn, col);
 			float intensity = 1.0f;
 			getFloat("intensity", depFn, intensity);
 			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			lightDir *= m;
+			lightDirTangent *= m;
+			lightDirBiTangent *= m;
 			lightDir.normalize();
 
 			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
@@ -154,6 +160,9 @@ void CoronaRenderer::defineLights()
 			dl->lightColor = Corona::Rgb(col.r, col.g, col.b);
 			dl->lightIntensity = intensity;
 			dl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
+			dl->LT = Corona::Dir(lightDirTangent.x, lightDirTangent.y, lightDirTangent.z);
+			dl->LBT = Corona::Dir(lightDirBiTangent.x, lightDirBiTangent.y, lightDirBiTangent.z);
+			dl->lightAngle = getFloatAttr("lightAngle", depFn, 0.0);
 			this->context.scene->addLightShader(dl);
 		}
 		if( obj->mobject.hasFn(MFn::kAreaLight))
@@ -164,8 +173,23 @@ void CoronaRenderer::defineLights()
 			Corona::AnimatedAffineTm atm;
 			this->setAnimatedTransformationMatrix(atm, obj);
 			obj->instance = obj->geom->addInstance(atm, NULL, NULL);
-			//this->defineMaterial(obj->instance, obj);
-
+			if (getBoolAttr("mtco_envPortal", depFn, false))
+			{
+				Corona::EnviroPortalMtlData data;
+				Corona::IMaterial *mat = data.createMaterial();
+				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+				obj->instance->addMaterial(ms);
+			}
+			else{
+				Corona::NativeMtlData data;
+				MColor lightColor = getColorAttr("color", depFn);
+				float intensity = getFloatAttr("intensity", depFn, 1.0f);
+				lightColor *= intensity;
+				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
+				Corona::IMaterial *mat = data.createMaterial();
+				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+				obj->instance->addMaterial(ms);
+			}
 		}
 	}
 

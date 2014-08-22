@@ -418,6 +418,48 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getColor(MString("bgColor"), CoronaGlobals, this->bgColor))
 			throw("problem reading coronaGlobals.bgColor");
 
+		if(!getEnum(MString("bgType"), CoronaGlobals, this->bgType))
+			throw("problem reading coronaGlobals.bgType");
+
+		if(!getEnum(MString("pSkyModel"), CoronaGlobals, this->pSkyModel))
+			throw("problem reading coronaGlobals.pSkyModel");
+
+		if(!getFloat(MString("pSkyMultiplier"), CoronaGlobals, this->pSkyMultiplier))
+			throw("problem reading coronaGlobals.pSkyMultiplier");
+
+		if(!getFloat(MString("pSkyHorizBlur"), CoronaGlobals, this->pSkyHorizBlur))
+			throw("problem reading coronaGlobals.pSkyHorizBlur");
+
+		if(!getColor(MString("pSkyGroundColor"), CoronaGlobals, this->pSkyGroundColor))
+			throw("problem reading coronaGlobals.pSkyGroundColor");
+
+		if(!getBool(MString("pSkyAffectGround"), CoronaGlobals, this->pSkyAffectGround))
+			throw("problem reading coronaGlobals.pSkyAffectGround");
+
+		if(!getFloat(MString("pSkyPreethamTurb"), CoronaGlobals, this->pSkyPreethamTurb))
+			throw("problem reading coronaGlobals.pSkyPreethamTurb");
+
+		if(!getFloat(MString("pSkySunFalloff"), CoronaGlobals, this->pSkySunFalloff))
+			throw("problem reading coronaGlobals.pSkySunFalloff");
+
+		if(!getColor(MString("pSkyZenith"), CoronaGlobals, this->pSkyZenith))
+			throw("problem reading coronaGlobals.pSkyZenith");
+
+		if(!getColor(MString("pSkyHorizon"), CoronaGlobals, this->pSkyHorizon))
+			throw("problem reading coronaGlobals.pSkyHorizon");
+
+		if(!getFloat(MString("pSkySunGlow"), CoronaGlobals, this->pSkySunGlow))
+			throw("problem reading coronaGlobals.pSkySunGlow");
+
+		if(!getFloat(MString("pSkySunSideGlow"), CoronaGlobals, this->pSkySunSideGlow))
+			throw("problem reading coronaGlobals.pSkySunSideGlow");
+
+		if(!getFloat(MString("pSkySunBleed"), CoronaGlobals, this->pSkySunBleed))
+			throw("problem reading coronaGlobals.pSkySunBleed");
+
+		if(!getFloat(MString("sunSizeMulti"), CoronaGlobals, this->sunSizeMulti))
+			throw("problem reading coronaGlobals.sunSizeMulti");
+
 //	------------- automatically created attributes end ----------- // 
 
 		if(!getInt(MString("filtertype"), CoronaGlobals, this->filterType))

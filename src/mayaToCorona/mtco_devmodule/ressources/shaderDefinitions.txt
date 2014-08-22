@@ -193,6 +193,7 @@ shader_start:CoronaSurface
 	inatt:refractionIndex:float
 	inatt:emissionDisableSampling:bool
 	inatt:attenuationDist:float
+	inatt:normalCamera:vector
 	outatt:outColor:color
 shader_end
 

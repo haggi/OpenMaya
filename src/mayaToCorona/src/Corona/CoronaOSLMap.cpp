@@ -37,10 +37,6 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Ray I = context.getRay();
 	sg.I = OSL::Vec3(I.direction.x(), I.direction.y(), I.direction.z());
 
-    sg.dPdx = OSL::Vec3 (sg.dudx, sg.dudy, 0.0f);
-    sg.dPdy = OSL::Vec3 (sg.dvdx, sg.dvdy, 0.0f);
-    sg.dPdz = OSL::Vec3 (0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
-
     // Tangents of P with respect to surface u,v
 	Corona::Dir duvw = context.dUvw(0);
 
@@ -52,11 +48,29 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Dir No = base.getColumn(1);
 	Corona::Dir C = base.getColumn(2);
 
-	sg.dudx = duvw.x();
-	sg.dudy = duvw.y();
+	float pixelWorldRatio = context.pixelToWorldRatio();
 
-	T *= duvw.x() * 0.01;
-	C *= duvw.y() * 0.01;
+	sg.dudx = duvw.x() * pixelWorldRatio;
+	sg.dudy = duvw.y() * pixelWorldRatio;
+	sg.dvdx = sg.dudx;
+	sg.dvdy = sg.dudy;
+
+	if (this->bumpType == GETU)
+		sg.u += sg.dudx;
+	if (this->bumpType == GETV)
+		sg.u += sg.dvdx;
+
+	//if ((this->bumpType == GETU) || (this->bumpType == GETV))
+	//	logger.debug(MString("diffU ") + (sg.u - uvw.x()) + " diffV " + (sg.v - uvw.y()));
+
+	//logger.debug(MString("du ") + duvw.x() + " pwr " + pixelWorldRatio + " prod " + (duvw.x() * pixelWorldRatio));
+
+	T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
+	C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
+
+	//sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
+	//sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);
+	//sg.dPdz = OSL::Vec3(0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
 
 	//sg.dPdv = OSL::Vec3(duvw.x(), duvw.y(), duvw.z());
 
@@ -119,8 +133,38 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 			}
 		}
 	}
+	//if (this->bumpType == GETU)
+	//{
+	//	//for (int i = 0; i < 20; i++)
+	//	//{
+	//		sg.u += 0.015;
+	//		if (this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
+	//		{
+	//			const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol(*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
+	//			if (data)
+	//			{
+	//				if (t.basetype == OSL::TypeDesc::FLOAT)
+	//				{
+	//					float r, g, b;
+	//					float *d = (float *)data;
+	//					r = *d++;
+	//					g = *d++;
+	//					b = *d;
+
+	//					if (rgb[0] != r)
+	//					{
+	//						logger.debug(MString("Found diff in eval"));
+	//						//logger.debug(MString("Found diff in eval at ") + sg.u + " diff " + (0.001 * i));
+	//						//break;
+	//					}
+	//				}
+	//			}
+	//		}
+	//	//}
+	//}
     outAlpha = 1.f;
 	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
+
 	return col;	
 }
 
@@ -161,13 +205,46 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 	}
 	if (this->bumpType == BUMP)
 	{
-		float outAlpha = 0.0f;
+		float outAlpha = 1.0f;
 		Corona::Rgb col = evalColor(context, cache, outAlpha);
-		Corona::Dir normal;
-		normal.x() = col.r();
-		normal.y() = col.g();
-		normal.z() = col.b();
-		return normal;
+		this->bumpType = GETU;
+		Corona::Rgb colU = evalColor(context, cache, outAlpha);
+		this->bumpType = GETV;
+		Corona::Rgb colV = evalColor(context, cache, outAlpha);
+
+		float ap = col.grayValue();
+		float au = colU.grayValue();
+		float av = colV.grayValue();
+
+		if ((ap != au) || (ap != av))
+			logger.debug(MString("unterschied gefunden."));
+
+		Corona::Matrix33 base = context.bumpBase(0);
+		Corona::Dir N = context.getShadingNormal();
+		Corona::Dir NN = N * ap;
+		Corona::Dir T = base.getColumn(0);
+		Corona::Dir C = base.getColumn(2);
+		const Corona::Dir dT = T + N * au;
+		Corona::Dir dC = C + N * av;
+		//Corona::Dir cr = Corona::cross(N,T);
+
+		//OSL::Vec3 a = OSL::Vec3(dT.x(), dT.y(), dT.z()).normalize();
+		//OSL::Vec3 b = OSL::Vec3(N.x(), N.y(), N.z()).normalize();
+		//OSL::Vec3 c = a.cross(b).normalize();
+		//OSL::Vec3 nn = c.cross(a);
+		
+		OSL::Vec3 nnt(T.x(), T.y(), T.z());
+		OSL::Vec3 nnc(C.x(), C.y(), C.z());
+		OSL::Vec3 nnp(N.x() * ap, N.y() * ap, N.z() * ap);
+		OSL::Vec3 nnu(N.x() * au, N.y() * au, N.z() * au);
+		OSL::Vec3 nnv(N.x() * av, N.y() * av, N.z() * av);
+		OSL::Vec3 pt = (nnt + nnu - nnp).normalize();
+		OSL::Vec3 pc = (nnc + nnv - nnp).normalize();
+		OSL::Vec3 crN = pt.cross(pc).normalize();
+		Corona::Dir nt(crN.x, crN.y, crN.z);
+		//Corona::Dir nt = base.transform(Corona::Dir(nn.x, nn.y, nn.z));
+		//normal = nt.getNormalized();
+		return N;
 	}
 }
 

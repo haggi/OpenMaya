@@ -619,7 +619,7 @@ entry['name'] = 'colorMapping_gamma'
 entry['type'] = 'float'
 entry['displayName'] = 'Colormapping_gamma'
 entry['default'] = '2.2'
-entry['addInfo'] = 'minmax:0.1:10.0'
+entry['addInfo'] = 'minmax:0.01:10.0'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'colorMapping_whiteMultiplier'
@@ -688,7 +688,7 @@ entry['name'] = 'colorMapping_highlightCompression'
 entry['type'] = 'float'
 entry['displayName'] = 'Highlight Compression'
 entry['default'] = '1.0'
-entry['addInfo'] = 'minmax:0.0:99.0'
+entry['addInfo'] = 'minmax:0.01:99.0'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'ppm_samplesPerIter'
@@ -774,5 +774,91 @@ entry = {}
 entry['name'] = 'bgColor'
 entry['type'] = 'color'
 entry['displayName'] = 'Background Color'
-entry['default'] = '0.4:0.4:1.0'
+entry['default'] = '1.0:1.0:1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'bgType'
+entry['type'] = 'enum'
+entry['displayName'] = 'Background'
+entry['default'] = '0'
+entry['addInfo'] = 'Color/Image:PhysicalSky'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyModel'
+entry['type'] = 'enum'
+entry['displayName'] = 'Sky Model'
+entry['default'] = '0'
+entry['addInfo'] = 'Preetham:Rawafake:Hosek'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyMultiplier'
+entry['type'] = 'float'
+entry['displayName'] = 'Sky Multiplier'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyHorizBlur'
+entry['type'] = 'float'
+entry['displayName'] = 'Sky Horizon Blur'
+entry['default'] = '0.1'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyGroundColor'
+entry['type'] = 'color'
+entry['displayName'] = 'Ground Color'
+entry['default'] = '0.25:0.25:0.25'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyAffectGround'
+entry['type'] = 'bool'
+entry['displayName'] = 'Sky Affect Ground'
+entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyPreethamTurb'
+entry['type'] = 'float'
+entry['displayName'] = 'Turbidity'
+entry['default'] = '2.5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkySunFalloff'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Falloff'
+entry['default'] = '3.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyZenith'
+entry['type'] = 'color'
+entry['displayName'] = 'Zenith Color'
+entry['default'] = '0.1:0.1:0.5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkyHorizon'
+entry['type'] = 'color'
+entry['displayName'] = 'Horizon Color'
+entry['default'] = '0.25:0.5:0.5'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkySunGlow'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Glow'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkySunSideGlow'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Side Glow'
+entry['default'] = '0.2'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'pSkySunBleed'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Bleed'
+entry['default'] = '1.0'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'sunSizeMulti'
+entry['type'] = 'float'
+entry['displayName'] = 'Sun Size Multiplier'
+entry['default'] = '1.0'
 tab['entries'].append(entry)

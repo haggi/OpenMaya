@@ -25,6 +25,12 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_sun_multiplier", label="Sun Intensity Multiplier")
         self.endLayout()
+        
+    def buildAreaLightTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_envPortal", label="Use as Environment Portal")
+        self.endLayout()
 
     def buildBum2dTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
@@ -50,6 +56,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_visibleInGI", label="Visible in GI")
+        self.addControl("mtco_envPortal", label="Use as Environment Portal")
         self.endLayout()
         
     def buildCameraTemplate(self, nodeName):
@@ -66,6 +73,8 @@ class AECoronaNodeTemplate(BaseTemplate):
             log.debug("AECoronaNodeTemplate:build camera AE")            
             self.beginLayout("Corona" ,collapse=1)
             self.endLayout()
+        if self.thisNode.type() == "areaLight":
+            self.buildAreaLightTemplate(nodeName)
         if self.thisNode.type() == "directionalLight":
             self.buildDirLightTemplate(nodeName)
         if self.thisNode.type() == "displacementShader":

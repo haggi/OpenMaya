@@ -132,6 +132,20 @@ static    MObject displace_maxSubdiv;
 static    MObject renderstamp_use;
 static    MObject renderStamp;
 static    MObject bgColor;
+static    MObject bgType;
+static    MObject pSkyModel;
+static    MObject pSkyMultiplier;
+static    MObject pSkyHorizBlur;
+static    MObject pSkyGroundColor;
+static    MObject pSkyAffectGround;
+static    MObject pSkyPreethamTurb;
+static    MObject pSkySunFalloff;
+static    MObject pSkyZenith;
+static    MObject pSkyHorizon;
+static    MObject pSkySunGlow;
+static    MObject pSkySunSideGlow;
+static    MObject pSkySunBleed;
+static    MObject sunSizeMulti;
 //	------------- automatically created attributes end ----------- // 
 
 };

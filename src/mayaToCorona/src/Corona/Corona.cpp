@@ -41,6 +41,7 @@ void CoronaRenderer::saveImage()
 	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
     Corona::Bitmap<float, false> alpha(this->context.fb->getImageSize());
 
+	
 	bool doToneMapping = true;
 	bool showRenderStamp = true;
     for(int i = 0; i < bitmap.getHeight(); ++i) 
@@ -48,6 +49,8 @@ void CoronaRenderer::saveImage()
         const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
         this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
     }
+	
+	//this->context.fb->dumpExr()
 
     //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
     //// in linear space (the "false" argument)
@@ -69,6 +72,7 @@ void CoronaRenderer::saveImage()
 		filename += ".exr";
 	}
 	Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
+	
 }
 
 void CoronaRenderer::createScene()

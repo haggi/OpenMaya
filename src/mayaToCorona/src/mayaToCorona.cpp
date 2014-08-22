@@ -57,6 +57,12 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		return MS::kFailure;
 	}
 
+	if (mayaScene->renderState == MayaScene::RENDERING)
+	{
+		MGlobal::displayError("\nThere is already a render process running... please stop current rendering first.\n");
+		return MS::kFailure;
+	}
+
 	if ( argData.isFlagSet("-width", &stat))
 	{
 		argData.getFlagArgument("-width", 0, width);
@@ -108,6 +114,8 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		logger.debug(MString("camera: ") + camera.fullPathName());
 		mayaScene->setCurrentCamera(camera);
 	}			
+	
+	mayaScene->renderState = MayaScene::RENDERING;
 
 	EventQueue::Event e;
 	e.type = EventQueue::Event::INITRENDER;

@@ -292,6 +292,13 @@ bool RenderGlobals::getMbSteps()
 	{	
 		this->mbElementList.push_back(*sortListIt);
 	}
+
+	// testing this is for non mb objects or changing topology objects
+	MbElement mbel;
+	mbel.elementType = MbElement::None;
+	mbel.time = 0;
+	this->mbElementList.push_back(mbel);
+
 	return true;
 }
 

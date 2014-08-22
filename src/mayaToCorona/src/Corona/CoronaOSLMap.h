@@ -7,7 +7,7 @@ class OSLMap : public Corona::Abstract::Map
 {
 public:
 	CoronaRenderer *coronaRenderer;
-	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD };
+	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, GETU, GETV };
 	BumpType bumpType;
 	OSL::ShaderGroupRef shaderGroup;
 	OSLMap();

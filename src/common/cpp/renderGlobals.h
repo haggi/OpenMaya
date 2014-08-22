@@ -57,7 +57,8 @@ public:
 	enum Type{
 		XForm,
 		Geo,
-		Both
+		Both,
+		None
 	};
 
 	MbElement::Type elementType;

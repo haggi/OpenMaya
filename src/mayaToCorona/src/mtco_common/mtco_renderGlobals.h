@@ -127,6 +127,20 @@ public:
 	bool renderstamp_use;
 	MString renderStamp;
 	MColor bgColor;
+	int bgType;
+	int pSkyModel;
+	float pSkyMultiplier;
+	float pSkyHorizBlur;
+	MColor pSkyGroundColor;
+	bool pSkyAffectGround;
+	float pSkyPreethamTurb;
+	float pSkySunFalloff;
+	MColor pSkyZenith;
+	MColor pSkyHorizon;
+	float pSkySunGlow;
+	float pSkySunSideGlow;
+	float pSkySunBleed;
+	float sunSizeMulti;
 //	------------- automatically created attributes end ----------- // 
 
 
