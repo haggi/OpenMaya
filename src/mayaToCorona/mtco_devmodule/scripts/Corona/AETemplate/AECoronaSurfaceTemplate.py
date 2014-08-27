@@ -30,7 +30,7 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         self.addControl("diffuse", label="Diffuse Color")
         self.addSeparator()
         self.addControl("translucency", label="Translucency")
-        self.addControl("castsShadows", label="Cast Shadows")
+        #self.addControl("castsShadows", label="Cast Shadows")
         self.endLayout()
         self.beginLayout("Round Corners" ,collapse=0)
         self.addControl("roundCornersRadius", label="Radius")

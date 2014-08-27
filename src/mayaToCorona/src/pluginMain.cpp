@@ -11,7 +11,8 @@
 
 static const MString CoronaSurfacesRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaSurfacesDrawDBClassification("drawdb/shader/surface/CoronaSurface");
-static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
+//static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification);
+static const MString CoronaSurfacesFullClassification("corona/material");
 
 static const MString CoronaOSLRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaOSLDrawDBClassification("drawdb/shader/surface/CoronaOSL");

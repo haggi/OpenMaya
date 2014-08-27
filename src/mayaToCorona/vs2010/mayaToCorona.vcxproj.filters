@@ -203,6 +203,9 @@
     <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\OSL\oslUtils.cpp">
+      <Filter>Source Files\OSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -336,6 +339,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaSky.h">
       <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\OSL\oslUtils.h">
+      <Filter>Source Files\OSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

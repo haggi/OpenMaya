@@ -26,8 +26,8 @@ void CoronaRenderer::framebufferCallback()
 		return;
 
 	Corona::Pixel p = this->context.fb->getImageSize();
-
-
+	const Corona::String rstamp = "Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr";
+	
 	int width = p.x;
 	int height = p.y;
 	size_t numPixels = width * height;
@@ -36,11 +36,12 @@ void CoronaRenderer::framebufferCallback()
 	//logger.debug(MString("Corona img width: ") + p.x + " height " + p.y);
 	uint numPixelsInRow = width;
 	bool doToneMapping = true;
-	bool showRenderStamp = true;
+	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_use;
 	Corona::Pixel firstPixelInRow(0,0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];
-	
+	this->context.fb->updateRenderStamp(rstamp, showRenderStamp);
+
 	for( uint rowId = 0; rowId < p.y; rowId++)
 	{
 		memset(outAlpha, 0, numPixelsInRow * sizeof(float));

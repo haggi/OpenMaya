@@ -10,7 +10,6 @@ static Logging logger;
 
 void CoronaRenderer::defineSettings()
 {
-    // lets change few parameters, for example resolution, and render stamp
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, this->mtco_renderGlobals->imgWidth);
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, this->mtco_renderGlobals->imgHeight);
 	if (this->mtco_renderGlobals->useRenderRegion)

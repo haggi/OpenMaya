@@ -174,9 +174,9 @@ public:
 		const Corona::Dir toLight = (tl).getNormalized();
 		const Corona::Dir rndT = LT * (context.generateRandom() - 0.5) * 2.0;
 		const Corona::Dir rndBT = LBT * (context.generateRandom() - 0.5) * 2.0;
-		const Corona::Dir newTo = (rndT + rndBT).getNormalized();
+		const Corona::Dir newTo = (rndT + rndBT);
 		float blendFac = lightAngle/180.0f;
-		const Corona::Dir finalDir = newTo * blendFac + (1.0 - blendFac) * toLight;
+		const Corona::Dir finalDir = (newTo * blendFac + (1.0 - blendFac) * toLight).getNormalized();
 		Corona::Pos dirLightPos = P + finalDir * 10.0;
 		transport = context.shadowTransmission(dirLightPos, Corona::RAY_NORMAL);
 		float dummy;

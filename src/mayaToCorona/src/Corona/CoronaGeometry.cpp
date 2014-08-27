@@ -77,16 +77,35 @@ void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothM
 		MGlobal::displayError(MString("defineSmoothMesh : could not get displaySmoothMesh attr "));
 		return;
 	}
+	// it is not working yet with per face shading
+
+	MFnMesh meshDp(obj->dagPath);
+	MFnMesh meshfn(meshDp.generateSmoothMesh());
+	MObjectArray shaders;
+	MIntArray indices;
+	stat = meshfn.getConnectedShaders(0, shaders, indices);
+	int nums = shaders.length();
+	int numi = indices.length();
+	return;
 
 	MObject meshDataObj = smoothMeshData.create();	
+#ifdef MAYA2015
+	MObject smoothMeshObj = mesh.generateSmoothMesh(MObject::kNullObj, NULL, &stat);
+	//MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, NULL, &stat);
+	//MObject smoothMeshObj = mesh.generateSmoothMesh(MFnDagNode(obj->dagPath).parent(0), NULL, &stat);
+#else
 	MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, &stat);
-
+#endif
 	if(!stat)
 	{
-		MGlobal::displayError(MString("defineSmoothMesh : failed"));
+		//MGlobal::displayError(MString("defineSmoothMesh : failed"));
 		return;
 	}
+
 	mobject = smoothMeshObj;
+
+	//MFnMesh meshfn(mobject);
+
 }
 
 void CoronaRenderer::getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshObject)
@@ -232,6 +251,13 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		meshObject = mobject;
 
 	MFnMesh meshFn(meshObject, &stat);
+
+	MObjectArray shaders;
+	MIntArray inices;
+	stat = meshFn.getConnectedShaders(0, shaders, inices);
+	int nums = shaders.length();
+	int numi = inices.length();
+
 	CHECK_MSTATUS(stat);
 
 	MItMeshPolygon faceIt(meshObject, &stat);

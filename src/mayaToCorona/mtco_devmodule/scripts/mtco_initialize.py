@@ -128,7 +128,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName='doMotionBlur', uiType='bool', displayName='Motion Blur:', default='True', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='xftimesamples', uiType='int', displayName='Mb Samples:', default='2', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         # self.addRenderGlobalsUIElement(attName = 'random_sampler', uiType = 'enum', displayName = 'Random_Sampler', default='5d_highd', data='5d_highd:Shared:Maximal_value', uiDict=uiDict)
-
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Dump and Resume', default='false', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Dump Exr File', default='""', uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp_use', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
                     
 
 # self.addRenderGlobalsUIElement(attName='adaptiveSampling', uiType='bool', displayName='Adaptive Sampling:', default='True', uiDict=uiDict)
@@ -152,8 +157,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 # self.addRenderGlobalsUIElement(attName = 'portals_sampleAmount', uiType = 'float', displayName = 'Portals_sampleamount', default='0.75', data='minmax:0.0:1.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'shadowBias', uiType = 'float', displayName = 'Shadowbias', default='-6.07', data='-8.0:-2.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'resumeRendering', uiType = 'bool', displayName = 'Resumerendering', default='false', uiDict=uiDict)
-# self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp_use', default='true', uiDict=uiDict)
-# self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
                 with pm.frameLayout(label="Displacement", collapsable=True, collapse=False):
                     self.addRenderGlobalsUIElement(attName='displace_maxSubdiv', uiType='int', displayName='Displace_maxsubdiv', default='100', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName='displace_useProjectionSize', uiType='bool', displayName='Use Camera Projection', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
@@ -314,16 +317,20 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def editSun(self, *args):
         uiDict = self.rendererTabUiDict['environment']    
-        suns = pm.ls("CoronaSun")
-        if len(suns) > 0:
-            pm.delete(suns)
-            uiDict['sunButton'].setLabel("Create Sun")
-        else:
-            sun = pm.createNode("directionalLight")
-            sun = sun.getParent()
-            sun.rename("CoronaSun")
-            sun.message >> self.renderGlobalsNode.sunLightConnection
-            uiDict['sunButton'].setLabel("Delete Sun")            
+        if self.renderGlobalsNode.useSunLightConnection.get():
+            if len(self.renderGlobalsNode.sunLightConnection.inputs()) > 0:
+                # maybe check the connection?
+                pass
+            else:
+                suns = pm.ls("CoronaSun")
+                sun = None
+                if len(suns) > 0:
+                    sun = suns[0]
+                else:
+                    sun = pm.createNode("directionalLight")
+                    sun = sun.getParent()
+                    sun.rename("CoronaSun")
+                sun.message >> self.renderGlobalsNode.sunLightConnection
                        
     def CoronaEnvironmentCreateTab(self):
         log.debug("CoronaEnvironmentCreateTab()")
@@ -344,17 +351,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 physSkyFrame = None
                 physSkyPreetham = None
                 physSkyRawafake = None
-                self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict)
-                buttonLabel = "Create Sun"
-                suns = pm.ls("CoronaSun")
-                if len(suns) > 0:
-                    buttonLabel = "Delete Sun"
-                uiDict['sunButton'] = pm.button(label=buttonLabel, command=self.editSun)
+                self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
                 self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
                 with pm.frameLayout(label="Color/Image", collapsable=False) as envLightingFrame:
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='bgColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
-                with pm.frameLayout(label="Physical Sky", collapsable=True) as physSkyFrame:
+                with pm.frameLayout(label="Physical Sky", collapsable=True, collapse=False) as physSkyFrame:
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName = 'pSkyModel', uiType = 'enum', displayName = 'Sky Model', default='0', data='Preetham:Rawafake:Hosek', uiDict=uiDict, callback=self.CoronaEnvironmentUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'pSkyMultiplier', uiType = 'float', displayName = 'Sky Multiplier', default='1.0', uiDict=uiDict)
@@ -473,6 +475,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue=1.0)
         pm.addExtension( nodeType='areaLight', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
+        pm.addExtension( nodeType='areaLight', longName='mtco_areaVisible', attributeType='bool', defaultValue=True) 
 
         # displacement shader        
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMin", attributeType="float", defaultValue=0.0)
@@ -491,6 +494,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         #mesh
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='mesh', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
+        pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
+
         
         pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         

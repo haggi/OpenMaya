@@ -231,8 +231,8 @@ void ShaderDefinitions::printShaderDefs()
 		logger.debug(MString("In Attributes: "));
 		for( uint p = 0; p < node.inputAttributes.size(); p++)
 		{
-			logger.debug(MString("\tInAttName: ") + node.inputAttributes[p].name.c_str());
-			logger.debug(MString("\tInAttType: ") + node.inputAttributes[p].type.c_str());
+			logger.debug(MString("\tinattName: ") + node.inputAttributes[p].name.c_str());
+			logger.debug(MString("\tinattType: ") + node.inputAttributes[p].type.c_str());
 		}
 		logger.debug(MString("Out Attributes: "));
 		for( uint p = 0; p < node.outputAttributes.size(); p++)

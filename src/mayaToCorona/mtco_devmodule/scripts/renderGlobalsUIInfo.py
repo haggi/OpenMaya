@@ -862,3 +862,15 @@ entry['type'] = 'float'
 entry['displayName'] = 'Sun Size Multiplier'
 entry['default'] = '1.0'
 tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'dumpAndResume'
+entry['type'] = 'bool'
+entry['displayName'] = 'Dump and Resume'
+entry['default'] = 'false'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'dumpExrFile'
+entry['type'] = 'string'
+entry['displayName'] = 'Dump Exr File'
+entry['default'] = '""'
+tab['entries'].append(entry)

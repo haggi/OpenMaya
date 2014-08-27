@@ -97,6 +97,8 @@ void getConnectedNodes(MObject& thisObject, MObjectArray& nodeList);
 
 MObject getConnectedInNode(MObject& thisObject, const char *attrName);
 
+MObject getConnectedInNode(MPlug& inPlug);
+
 void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList);
 
 void getConnectedInNodes(MString attribute, MObject& thisObject, MObjectArray& nodeList);
@@ -165,5 +167,6 @@ void getMatrixComponents(MMatrix& matrix, MPoint& pos, MPoint& rot, MPoint& scal
 
 void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, float inV, float& outU, float& outV);
 
+void uniqueMObjectArray(MObjectArray& cleanMe);
 #endif
 

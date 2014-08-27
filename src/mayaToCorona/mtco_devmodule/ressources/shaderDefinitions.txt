@@ -28,7 +28,13 @@ shader_end
 
 shader_start:projection
 	inatt:image:color
+	inatt:projType:int
+	inatt:transparency:color
+	inatt:uAngle:float
+	inatt:vAngle:float
 	inatt:placementMatrix:matrix
+	inatt:uvCoord:vector
+	outatt:outUVCoord:vector
 	outatt:outColor:color
 shader_end
 
@@ -82,6 +88,7 @@ shader_start:bulge
 shader_end
 
 shader_start:place2dTexture
+	inatt:uvCoord:vector
 	inatt:repeatU:float
 	inatt:repeatV:float
 	inatt:offsetU:float

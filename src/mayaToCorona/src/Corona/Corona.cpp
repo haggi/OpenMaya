@@ -50,20 +50,23 @@ void CoronaRenderer::saveImage()
         this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
     }
 	
-	//this->context.fb->dumpExr()
-
     //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
     //// in linear space (the "false" argument)
 	this->mtco_renderGlobals->getImageName();
 	Corona::String filename = this->mtco_renderGlobals->imageOutputFile.asChar();
 	logger.debug(MString("Saving image as ") +  this->mtco_renderGlobals->imageOutputFile);
-	
-	bool isLinear = false;
-	
+
 	std::string imgFormatExt = this->mtco_renderGlobals->imageOutputFile.toLowerCase().asChar();
 	std::vector<std::string> fileParts;
 	pystring::split(imgFormatExt, fileParts, ".");
 	std::string ext = fileParts.back();
+
+	Corona::String dumpFilename = (this->mtco_renderGlobals->imageOutputFile + ".dmp").asChar();
+	if (this->mtco_renderGlobals->dumpAndResume)
+		this->context.fb->dumpExr(dumpFilename);
+
+	bool isLinear = false;
+	
 
 	logger.debug(MString("Extension: ") + ext.c_str());
 	if( (ext != "exr") && (ext != "png") && (ext != "bmp") && (ext != "jpg"))
@@ -258,27 +261,25 @@ void CoronaRenderer::render()
     // create a new framebuffer, and init it before the rendering
 	logger.debug(MString("createFb..."));
     context.fb = context.core->createFb();
-
-	//colorMappingData = context.settings->getColorMapping();
-	//this->context.fb->setColorMapping(colorMappingData);
-
-    // the settings and render passes need to contain final parameters of the rendering at the time of the call
-	logger.debug(MString("initFb..."));
     context.fb->initFb(context.settings, context.renderPasses);
-	//Corona::ColorMappingData cmData;
-	//cmData.gamma = 1.0f;
-	//context.fb->setColorMapping(cmData);
-	logger.debug(MString("createScene..."));
 
+	this->mtco_renderGlobals->getImageName();
+	Corona::String dumpFilename = (this->mtco_renderGlobals->imageOutputFile + ".dmp").asChar();
+	if (this->mtco_renderGlobals->dumpAndResume)
+	{
+		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+		if (!context.fb->accumulateFromExr(dumpFilename))
+		{
+			logger.debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
+		}
+		else{
+			// random seed has to be 0 for resuming a render
+			context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
+			context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+		}
+	}
 	createScene();
-
-	logger.debug(MString("createScene done..."));
-
-    // test that the now ready scene and settings do not have any errors
-	logger.debug(MString("sanityCheck scene..."));
     context.core->sanityCheck(context.scene);
-	logger.debug(MString("sanityCheck settings..."));
-	//this->sanityCheck(context.settings);
     context.core->sanityCheck(context.settings);
 
 	Corona::String basePath = (this->mtco_renderGlobals->basePath + "/corona/").asChar();

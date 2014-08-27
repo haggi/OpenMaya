@@ -14,7 +14,7 @@
 #include "shadingtools/shadingNode.h"
 #include "CoronaOSLMap.h"
 #include <maya/MFnAttribute.h>
-
+#include "../OSL/oslUtils.h"
 #include "CoronaMap.h"
 
 static Logging logger;
@@ -23,6 +23,8 @@ static std::vector<Corona::NativeMtlData> dataArray;
 static std::vector<MObject> shaderArray;
 static std::vector<MString> helperNodeArray;
 static std::vector<MObject> definedOSLNodes;
+static std::vector<MObject> projectionConnectNodes;
+static std::vector<MObject> projectionNodes;
 static std::vector<Corona::IMaterial *> definedMaterials;
 
 bool CoronaRenderer::doesHelperNodeExist(MString helperNode)
@@ -264,6 +266,49 @@ void CoronaRenderer::createOSLHelperNodes(ShadingNode& snode)
 	}
 }
 
+void CoronaRenderer::createOSLProjectionNodes(MPlug& plug)
+{
+	OSL::ProjectionUtil projectionUtil;
+	MPlugArray pa;
+	plug.connectedTo(pa, true, false);
+	if (pa.length() > 0)
+	{
+		OSL::listProjectionHistory(pa[0].node(), projectionUtil);
+		if ((projectionUtil.leafNodes.length() == 0) || (projectionUtil.projectionNodes.length() == 0))
+			return;
+
+		for (uint pId = 0; pId < projectionUtil.projectionNodes.length(); pId++)
+		{
+			MString projectionNodeName = getObjectName(projectionUtil.projectionNodes[pId]);
+			MFnDependencyNode proNode(projectionUtil.projectionNodes[pId]);
+			MPlug pm = proNode.findPlug("placementMatrix");
+			MPlugArray pma;
+			pm.connectedTo(pma, true, false);
+			if (pma.length() == 0)
+				continue;
+			MObject placementNode = pma[0].node();
+
+			ShadingNode pn = findShadingNode(placementNode);
+			pn.fullName = pn.fullName + "_ProjUtil";
+			this->createOSLShadingNode(pn);
+
+			ShadingNode sn = findShadingNode(projectionUtil.projectionNodes[pId]);
+			sn.fullName = sn.fullName + "_ProjUtil";
+			this->createOSLShadingNode(sn);
+
+			this->oslRenderer.shadingsys->ConnectShaders(pn.fullName.asChar(), "worldInverseMatrix", sn.fullName.asChar(), "placementMatrix");
+
+			logger.debug(MString("Found projection node: ") + projectionNodeName);
+			for (uint lId = 0; lId < projectionUtil.leafNodes.length(); lId++)
+			{
+				logger.debug(projectionNodeName + " has to be connected to " + getObjectName(projectionUtil.leafNodes[lId]));
+				projectionNodes.push_back(projectionUtil.projectionNodes[pId]);
+				projectionConnectNodes.push_back(projectionUtil.leafNodes[lId]);
+			}
+		}
+	}
+
+}
 
 Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
 {
@@ -280,12 +325,27 @@ Corona::Abstract::Map *CoronaRenderer::getOslTexMap(MString& attributeName, MFnD
 	logger.debug(MString("getOslTexMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
 	MPlug shaderPlug = depFn.findPlug(attributeName);
 
+	createOSLProjectionNodes(shaderPlug);
+
 	for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
 	{
 		ShadingNode snode = sn.shaderList[shadingNodeId];
 		logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 		createOSLHelperNodes(sn.shaderList[shadingNodeId]);
 		this->createOSLShadingNode(sn.shaderList[shadingNodeId]);
+
+		for (size_t i = 0; i < projectionConnectNodes.size(); i++)
+		{
+			if (sn.shaderList[shadingNodeId].mobject == projectionConnectNodes[i])
+			{
+				logger.debug(MString("Place3dNode for projection input defined ") + sn.shaderList[shadingNodeId].fullName);
+				std::string sourceNode = (getObjectName(projectionNodes[i]) + "_ProjUtil").asChar();
+				std::string sourceAttr = "outUVCoord";
+				std::string destNode = sn.shaderList[shadingNodeId].fullName.asChar();
+				std::string destAttr = "uvCoord";
+				this->oslRenderer.shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
+			}
+		}
 
 		if (snode.fullName == connectedObjectName.asChar())
 		{
@@ -473,8 +533,21 @@ bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *ob
 		logger.info(MString("Reusing material data from :") + getObjectName(shaderArray[index]));
 		Corona::NativeMtlData data = dataArray[index];
 		MFnDependencyNode depFn(obj->mobject);
+		// this can be a problem because a user may turn off shadow casting for the shader itself what is possible but should not be used normally
+		// the default case is that the user turnes shadowCasting on/off on the geometry.
+		data.castsShadows = true;
 		if (!getBoolAttr("castsShadows", depFn, true))
 			data.castsShadows = false;
+		data.shadowCatcherMode = Corona::SC_DISABLED;
+		int shadowCatcherMode = getIntAttr("mtco_shadowCatcherMode", depFn, 0);
+		if (shadowCatcherMode > 0)
+		{
+			if (shadowCatcherMode == 1)
+				data.shadowCatcherMode = Corona::SC_ENABLED_FINAL;
+			if (shadowCatcherMode == 2)
+				data.shadowCatcherMode = Corona::SC_ENABLED_COMPOSITE;
+		}
+
 		Corona::IMaterial *mat = data.createMaterial();
 		Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 		setRenderStats(ms, obj);
@@ -505,6 +578,8 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 {
 
 	definedOSLNodes.clear();
+	projectionNodes.clear();
+	projectionConnectNodes.clear();
 
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
 		
@@ -656,8 +731,22 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 
 					defineBump(MString("bump"), depFn, mat.surfaceShaderNet, &data.bump);
 
+					MFnDependencyNode geoFn(obj->mobject);
+					// this attribute is not exposed in the UI by default but a advanced user can use it if he wants to
 					data.castsShadows = getBoolAttr("castsShadows", depFn, true);
-
+					if (data.castsShadows)
+					{
+						if (!getBoolAttr("castsShadows", geoFn, true))
+							data.castsShadows = false;
+					}
+					int shadowCatcherMode = getIntAttr("mtco_shadowCatcherMode", geoFn, 0);
+					if (shadowCatcherMode > 0)
+					{
+						if (shadowCatcherMode == 1)
+							data.shadowCatcherMode = Corona::SC_ENABLED_FINAL;
+						if (shadowCatcherMode == 2)
+							data.shadowCatcherMode = Corona::SC_ENABLED_COMPOSITE;
+					}
 					shaderArray.push_back(shadingGroup);
 					dataArray.push_back(data);
 					Corona::IMaterial *mat = data.createMaterial();
@@ -874,6 +963,13 @@ void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 						c.sourceAttribute = "outValue";
 						c.sourceNode = conversionNode;
 					}
+
+					// the projection helper will not have normal inputs
+					if (pystring::endswith(snode.fullName.asChar(), "_ProjUtil"))
+					{
+						if (c.destAttribute != "uvCoord")
+							continue;
+					}
 					connectionList.push_back(c);
 				}
 			}
@@ -976,6 +1072,7 @@ void CoronaRenderer::createOSLShadingNode(ShadingNode& snode)
 			sourceAttr = "inMin";
 		if (sourceAttr == "max")
 			sourceAttr = "inMax";
+
 		logger.debug(MString("Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
 		this->oslRenderer.shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
 	}

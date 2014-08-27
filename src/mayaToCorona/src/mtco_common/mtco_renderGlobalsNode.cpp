@@ -138,6 +138,8 @@ MObject MayaToCoronaGlobals::pSkySunGlow;
 MObject MayaToCoronaGlobals::pSkySunSideGlow;
 MObject MayaToCoronaGlobals::pSkySunBleed;
 MObject MayaToCoronaGlobals::sunSizeMulti;
+MObject MayaToCoronaGlobals::dumpAndResume;
+MObject MayaToCoronaGlobals::dumpExrFile;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -698,6 +700,12 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	sunSizeMulti = nAttr.create("sunSizeMulti", "sunSizeMulti",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( sunSizeMulti ));
+
+	dumpAndResume = nAttr.create("dumpAndResume", "dumpAndResume",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( dumpAndResume ));
+
+	dumpExrFile = tAttr.create("dumpExrFile", "dumpExrFile",  MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute( dumpExrFile ));
 
 //	------------- automatically created attributes end ----------- // 
 

@@ -8,12 +8,16 @@ log = logging
 
 START_ID = "automatically created attributes start"
 END_ID = "automatically created attributes end"
+START_STATIC_ID = "automatically created static attributes start"
+END_STATIC_ID = "automatically created static attributes end"
 
-START_NODE_ID = 0x0011CF60
+START_NODE_ID = 0x0011EF5E
 
 COMPILER_VERSION = "vs2010"
 baseDestPath = None
 baseSourcePath = None
+
+CODINGROOT = "H:/userDatenHaggi/documents/coding/"
 
 # an automatic attibute is defined as follows:
 # attributeName, type, displayName, defaultValue, options
@@ -22,409 +26,7 @@ baseSourcePath = None
 # filters, enum, Pixel Filter, 0, Mitchell:Gauss:Triangle
 # bgColor, color, Background Color, 0.4:0.5:0.7
 
-def makeEnum(att):
-    string = "\t{0} = eAttr.create(\"{0}\", \"{0}\", {1}, &status);\n".format(att[0], att[3])
-    for index, v in enumerate(att[4].split(":")):
-        string += "\tstatus = eAttr.addField( \"{0}\", {1} );\n".format(v, index) 
-    string += "\tMAKE_INPUT(eAttr);\n"
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeInt(att):
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(att[0], att[3])
-    string += "\tMAKE_INPUT(nAttr);\n"
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-    
-def makeFloat(att):
-    if att[0] == "luxOutFloat":
-        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat);\n".format(att[0])
-        string += "\tMAKE_OUTPUT(nAttr);\n"
-        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    else:
-        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(att[0], att[3])
-        if att[1].endswith("Array"):
-            string += "\tnAttr.setArray(true);\n"
-        string += "\tMAKE_INPUT(nAttr);\n"
-        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeFresnel(att):
-    if att[0] == "luxOutFresnel":
-        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat);\n".format(att[0])
-        string += "\tMAKE_OUTPUT(nAttr);\n"
-        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    else:
-        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(att[0], att[3])
-        string += "\tMAKE_INPUT(nAttr);\n"
-        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeBool(att):
-    ba = ["false", "true"]
-    string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(att[0], att[3])
-    string += "\tMAKE_INPUT(nAttr);\n"
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeString(att):
-#    exportXMLFileName = tAttr.create("exportXMLFileName", "exportXMLFileName",  MFnNumericData::kString);
-#    tAttr.setUsedAsFilename(true);
-#    CHECK_MSTATUS(addAttribute( exportXMLFileName ));
-#        
-    string = "\t{0} = tAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kString);\n".format(att[0])
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeColor(att):
-#    environmentColor = nAttr.createColor("environmentColor", "environmentColor");
-#    nAttr.setDefault(0.6f, 0.7f, 0.9f);
-#    nAttr.setConnectable(false);
-#    CHECK_MSTATUS(addAttribute( environmentColor ));
-
-    print att
-    string = "\t{0} = nAttr.createColor(\"{0}\", \"{0}\");\n".format(att[0])
-    if att[0] == "luxOutColor":
-        string += "\tMAKE_OUTPUT(nAttr);\n"
-    else:
-        string += "\tMAKE_INPUT(nAttr);\n"
-        if len(att[3].split(":")) == 1:
-            a = att[3].split(":")[0]
-            att[3] = "{0}:{0}:{0}".format(a)
-        string += "\tnAttr.setDefault({0});\n".format(",".join(att[3].split(":")))
-        if att[1].endswith("Array"):
-            string += "\tnAttr.setArray(true);\n"
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeMessage(att):
-    string = "\t{0} = mAttr.create(\"{0}\", \"{0}\");\n".format(att[0])
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-def makeVector(att):
-    string = "\tMObject {0}X = nAttr.create(\"{0}X\", \"{0}x\", MFnNumericData::kDouble, 0.0);\n".format(att[0])
-    string += "\tMObject {0}Y = nAttr.create(\"{0}Y\", \"{0}y\", MFnNumericData::kDouble, 0.0);\n".format(att[0])
-    string += "\tMObject {0}Z = nAttr.create(\"{0}Z\", \"{0}z\", MFnNumericData::kDouble, 0.0);\n".format(att[0])
-    string += "\t{0} = nAttr.create(\"{0}\", \"{0}\", {0}X, {0}Y, {0}Z);\n".format(att[0])
-    if len(att[3].split(":")) == 1:
-        a = att[3].split(":")[0]
-        att[3] = "{0}:{0}:{0}".format(a)
-    string += "\tMAKE_INPUT(nAttr);\n"
-    if att[1].endswith("Array"):
-        string += "\tnAttr.setArray(true);\n"
-    string += "\tnAttr.setDefault({0});\n".format(",".join(att[3].split(":")))
-    string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(att[0])
-    return string
-
-
-def pluginLoaders(attDict, renderer):
-    print "pluginLoaders"
-    
-    for key in attDict.keys():
-        if key == "all":
-            continue    
-        print '#include "textures/{0}Texture.h"'.format(key)
-        
-    for key in attDict.keys():
-        if key == "all":
-            continue    
-        print 'static const MString {0}sRegistrantId("{0}Plugin");'.format(key)
-        print 'static const MString {0}sDrawDBClassification("drawdb/shader/surface/{0}");'.format(key)
-        print 'static const MString {0}sFullClassification("{1}/texture:shader/surface:" + {0}sDrawDBClassification);'.format(key, renderer.lower())
-        
-    for key in attDict.keys():
-        if key == "all":
-            continue    
-        print 'CHECK_MSTATUS( plugin.registerNode( "{1}{2}", {0}::id, {0}::creator, {0}::initialize, MPxNode::kDependNode, &{0}sFullClassification ));'.format(key, renderer.lower(), key.capitalize())
-        #print 'CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( {0}sDrawDBClassification, {0}sRegistrantId,{0}Override::creator));'.format(key)
-
-    for key in attDict.keys():
-        if key == "all":
-            continue    
-        print 'CHECK_MSTATUS( plugin.deregisterNode( {0}::id ) );'.format(key)
-        #print 'CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator({0}sDrawDBClassification, {0}sRegistrantId));'.format(key)
-    
-
-def createNode(sourceFile, destFile, materialName):
-    print "Creating shader file for shader", materialName
-    
-    global START_NODE_ID
-    
-    sourceH = open(sourceFile, "r")
-    source = sourceH.readlines()
-    sourceH.close()
-    
-    if destFile.endswith(".cpp") and not "materialBaseOverride" in sourceFile:
-        START_NODE_ID += 1
-    nodeId = "0x%08X" % START_NODE_ID
-    
-    destH = open(destFile, "w")
-    for line in source:
-        line = line.replace("TextureBase", materialName)
-        line = line.replace("textureBase", materialName)
-        
-        if line.startswith("MTypeId"):
-            line = line.replace("0x00000", nodeId)
-        
-        destH.write(line)
-    destH.close()
-    
-
-def insertAttributes(destFileName, attDict, nodeName):    
-    destH = open(destFileName, "r")
-    content = destH.readlines()
-    destH.close()
-    
-    newContent = []
-    newContentI = []          
-    isH = destFileName.endswith(".h")
-    
-    start_index = -1
-    end_index = -1
-    start_indexI = -1
-    end_indexI = -1
-    
-    for index, value in enumerate(content):
-        if START_ID in value:
-            print "Start id found"
-            start_index = index
-            
-        if END_ID in value:
-            end_index = index
-            print "End id found"
-            break
-
-    firstInput = None            
-    outputs = []
-
-    # for .h header files    
-    if isH:
-        for key, v in attDict.iteritems():
-            if key == "out":
-                for outType in v[0].split(":"):
-                    attName = "luxOut" + outType.capitalize()
-                    attString = "\tstatic    MObject " + attName + ";\n"
-                    newContent.append(attString)                    
-            else:
-                attString = "\tstatic    MObject " + key + ";\n"
-                newContent.append(attString)                    
-            print attString
-    # and for .cpp files        
-    else:
-        
-        for index in range(end_index, len(content)):
-            value = content[index]
-            #print value
-            if START_ID in value:
-                print "Start id 2 found", index
-                start_indexI = index
-                
-            if END_ID in value:
-                end_indexI = index
-                print "End id 2 found", index
-                
-          
-        for key, v in attDict.iteritems():
-            if key == "out":
-                for outType in v[0].split(":"):
-                    attName = "luxOut" + outType.capitalize()
-                    attString = "MObject " + nodeName + "::" + attName + ";\n"
-                    newContent.append(attString)                    
-            else:
-                attString = "MObject " + nodeName + "::" + key + ";\n"
-                newContent.append(attString)
-            print attString
-
-        for key, v in attDict.iteritems():
-            att = [key]
-            if key == "out":
-                att.extend("color")
-                attString = ""
-                for outType in v[0].split(":"):
-                    att[0] = "luxOut" + outType.capitalize()
-                    att[1] = outType
-                    if att[1] == "float":
-                        attString += makeFloat(att)
-                    if att[1] == "color":
-                        attString += makeColor(att)
-                    if att[1] == "fresnel":
-                        attString += makeFresnel(att)
-                    outputs.append(outType)
-                    #print "Outputs", outputs
-            else:
-                att.extend(v)
-                attString = ""
-                if att[1] == "enum":
-                    attString = makeEnum(att)
-                if att[1] == "int":
-                    attString = makeInt(att)
-                if att[1] == "float":
-                    attString = makeFloat(att)
-                if att[1] == "floatArray":
-                    attString = makeFloat(att)
-                if att[1] == "bool":
-                    attString = makeBool(att)
-                if att[1] == "color":
-                    attString = makeColor(att)
-                if att[1] == "colorArray":
-                    attString = makeColor(att)
-                if att[1] == "message":
-                    attString = makeMessage(att)
-                if att[1] == "string":
-                    attString = makeString(att)
-                if att[1] == "vector":
-                    attString = makeVector(att)
-                if firstInput == None:
-                    firstInput = att[0]
-            newContentI.append(attString)                    
-        
-    outputContent = []
-    
-    if not isH:
-        print "NoH", outputs
-        for output in outputs:
-            outputString = "\tCHECK_MSTATUS ( attributeAffects( {0}, luxOut{1}));\n".format(firstInput, output.capitalize())
-            outputContent.append(outputString)
-        if firstInput is not None:
-            outputString = "\tCHECK_MSTATUS ( attributeAffects( {0}, {1}));\n".format(firstInput, "outColor")
-            outputContent.append(outputString)
-            
-    contentOut = content[:(start_index + 1)]
-    contentOut.extend(newContent)
-
-    if isH:
-        contentOut.extend(content[end_index:])
-    else:
-        contentOut.extend(content[end_index:start_indexI+1])
-        contentOut.extend(newContentI)
-        contentOut.extend(outputContent)
-        contentOut.extend(content[end_indexI:])
-    
-    destH = open(destFileName, "w")
-    destH.writelines(contentOut)
-    destH.close()
-
-def getPType(att):
-    if att == "enum":
-        return "ENUMSTRING"
-    if att == "int":
-        return "INT"
-    if att == "float":
-        return "FLOAT"
-    if att == "floatArray":
-        return "FLOATARRAY"
-    if att == "bool":
-        return "BOOL"
-    if att == "color":
-        return "COLOR"
-    if att == "colorArray":
-        return "COLORARRAY"
-    if att == "string":
-        return "STRING"
-    if att == "vector":
-        return "VECTOR"
-
-def attrIncludeCreator(attDict, renderer, shortCut):
-    global baseDestPath
-    
-    destAEPath = path.path(baseDestPath + "/src/{0}/{0}TextureInclude.h".format(renderer.capitalize()))
-    fh = open(destAEPath, "r")
-    content = fh.readlines()
-    fh.close()
-    
-    startIndex = 0
-    endIndex = 0
-    for index, line in enumerate(content):
-        if "automatically created attributes start" in line:
-            print "Start new content"
-            startIndex = index
-        if "automatically created attributes end" in line:
-            print "End new content"
-            endIndex = index
-    
-    allContent = []
-    
-#    for key in attDict.keys():        
-#        if key.lower() == "all":
-#            for attKey in attDict[key].keys():
-#                attName = attKey
-#                attDisplayName = attDict[key][attKey][1]
-#                allContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
-    
-    newContent = []
-    for key in attDict.keys():
-        
-        if key.lower() == "all":
-            continue
-        
-        attrs = attDict[key]
-
-#class GlassMaterial : public LuxMaterial
-#{
-#    GlassMaterial(MObject mObject, Instance l): LuxMaterial(mObject, l)
-#    {
-#        MFnDependencyNode dn(mObject);
-#        AttrParam p;
-#        p.paramName = "Kd";
-#        p.ptype = AttrParam::COLOR;
-#        this->params.push_back(p);
-#    }
-#    virtual void defineParams()
-#    {
-#        createParamsFromMayaNode(this->shaderParams, this->nodeObject, this->params);
-#    }
-#
-#    virtual void defineShader()
-#    {
-#        const char *type = "cloth";
-#        this->shaderParams->AddString("type", &type);
-#        this->lux->makeNamedMaterial(nodeName.asChar(),  boost::get_pointer(this->shaderParams));
-#    }
-#};        
-        cls = "class\t{0}Texture : public LuxTexture\n".format(key.capitalize())
-        cls += "{\npublic:\n"
-        cls += "\t{0}Texture(MObject mObject, Instance l) : LuxTexture(mObject, l)\n".format(key.capitalize())
-        cls += "\t" + "{\n"
-        cls += "\t\t" + "textureName = \"{0}\";\n".format(key)        
-        cls += "\t\t" + "MFnDependencyNode dn(mObject);\n"
-        cls += "\t\t" + "AttrParam p;\n"
-        for attKey in attrs.keys():
-            if attKey == "out":
-                continue
-            cls += "\t\t" + 'p.paramName = "{0}";\n'.format(attKey)
-            cls += "\t\t" + 'p.ptype = AttrParam::{0};\n'.format(getPType(attrs[attKey][0]))
-            cls += "\t\t" + 'this->params.push_back(p);\n'
-            
-        cls += "\t" + "}\n"
-        cls += "\t" + "virtual void defineParams()\n\t{\n\t\tcreateParamsFromMayaNode();\n\t}\n\n"
-        #cls += "\t" + "virtual void defineShader()\n\t{\n"
-        #cls += "\t\t" + 'this->lux->texture(nodeName.asChar(),  boost::get_pointer(this->shaderParams));\n\t}\n'   
-        #cls += "\t" + "\n\t}\n"     
-        cls += "\n};\n"
-        
-        newContent.append(cls)
-        #for attKey in attDict[key].keys():
-        #    attName = attKey
-        #    attDisplayName = attDict[key][attKey][1]
-        #    print '        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName)
-        #    newContent.append('        self.addControl("{0}", label="{1}")\n'.format(attName, attDisplayName))
-        
-    finalContent = []
-    finalContent.extend(content[:startIndex+1])   
-    finalContent.extend(allContent) 
-    finalContent.extend(newContent)    
-    finalContent.extend(content[endIndex:])    
-
-    print "Writing data to file", destAEPath
-    fh = open(destAEPath, "w")
-    content = fh.writelines(finalContent)
-    fh.close()
-    
-        #print finalContent
-
 def aeTemplateCreator(attDict, renderer, shortCut):
-    global baseDestPath
     
     sourceAEFile = baseSourcePath + "/mt@_devmodule/scripts/@/AETemplate/AE@shaderTemplate.py"
     destAEPath = path.path(baseDestPath + "/mt@_devmodule/scripts/@/AETemplate/".replace("mt@_", shortCut + "_").replace("@", renderer.capitalize()))
@@ -499,102 +101,304 @@ def aeTemplateCreator(attDict, renderer, shortCut):
         destHandle.writelines(finalContent)
         destHandle.close()
         
-def fillNodes(attDict):
     
-    sourceFileNameH = baseSourcePath + "/src/shaders/textureBase.h"
-  
-    allDict = {}
-    for key in attDict.keys():
-        if key == "all2d" or key == "all3d":
-            allDict = attDict[key]
-    for key in attDict.keys():
-        if key == "all":
-            continue
-        destFileNameH = path.path(baseDestPath + "/src/textures/" + key + "Texture.h")
-        sourceFileNameH = baseSourcePath + "/src/shaders/textureBase.h"
-        destFileNameC = path.path(baseDestPath + "/src/textures/" + key + "Texture.cpp")
-        sourceFileNameC = baseSourcePath + "/src/shaders/textureBase.cpp"
+class Attribute(object):
+    def __init__(self, aName, aType, aDisplayName, default, data=None):
+        self.name = aName
+        self.type = aType
+        self.displayName = aDisplayName
+        self.default = default
+        self.data = data
+        print "Attribute", self.name, self.type, self.displayName, self.default, self.data
+        print "make func", "make{0}".format(self.type.capitalize())
+
+    def getDefForDefFile(self):
+        return "inAtt:{0}:{1}".format(self.name, self.type)
+    
+    def getDefinition(self):
+        return "\tstatic    MObject {0};".format(self.name)
+    
+    def getAEDefinition(self):
+        return '        self.addControl("{0}", label="{1}")'.format(self.name, self.displayName)
+
+    def getStaticDefinition(self):
+        return "MObject\tTextureBase::{0};".format(self.name)
+
+    def getImplementation(self):
+        methodName = "make" + self.type.capitalize()
+        print "Calling", methodName, "for", self.name
+        return getattr(Attribute, methodName)(self)
+
+    def makeInt(self):
+        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kInt, {1});\n".format(self.name, self.default)
+        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(self.name)
+        return string
+
+    def makeBool(self):
+        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kBoolean, {1});\n".format(self.name, self.default)
+        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(self.name)
+        return string
+
+    def makeFloat(self):
+        string = "\t{0} = nAttr.create(\"{0}\", \"{0}\",  MFnNumericData::kFloat, {1});\n".format(self.name, self.default)
+        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(self.name)
+        return string
+
+    def makeColor(self):
+        string = "\t{0} = nAttr.createColor(\"{0}\", \"{0}\");\n".format(self.name)
+        if len(self.default.split(":")) == 1:
+            a = self.default.split(":")[0]
+            self.default = "{0}:{0}:{0}".format(a)
+        string += "\tnAttr.setDefault({0});\n".format(",".join(self.default.split(":")))
+        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(self.name)
+        return string
+    
+    def makeVector(self):
+        string = "\tMObject {0}X = nAttr.create(\"{0}X\", \"{0}x\", MFnNumericData::kDouble, 0.0);\n".format(self.name)
+        string += "\tMObject {0}Y = nAttr.create(\"{0}Y\", \"{0}y\", MFnNumericData::kDouble, 0.0);\n".format(self.name)
+        string += "\tMObject {0}Z = nAttr.create(\"{0}Z\", \"{0}z\", MFnNumericData::kDouble, 0.0);\n".format(self.name)
+        string += "\t{0} = nAttr.create(\"{0}\", \"{0}\", {0}X, {0}Y, {0}Z);\n".format(self.name)
+        if len(self.default.split(":")) == 1:
+            a = self.default.split(":")[0]
+            self.default = "{0}:{0}:{0}".format(a)
+        string += "\tMAKE_INPUT(nAttr);\n"
+        if self.type.endswith("Array"):
+            string += "\tnAttr.setArray(true);\n"
+        string += "\tnAttr.setDefault({0});\n".format(",".join(self.default.split(":")))
+        string += "\tCHECK_MSTATUS(addAttribute( {0} ));\n\n".format(self.name)
+        return string
+
+class ShaderNode(object):
+    def __init__(self, name):
+        self.name = name
+        self.attributeList = []
+        self.pluginId = 0
+        self.path = None
         
-#        destFileNameO = path.path(baseDestPath + "/src/shaders/" + key + "MaterialOverride.cpp")
-#        sourceFileNameO = baseSourcePath + "/src/shaders/materialBaseOverride.cpp"
-#        destFileNameOH = path.path(baseDestPath + "/src/shaders/" + key + "MaterialOverride.h")
-#        sourceFileNameOH = baseSourcePath + "/src/shaders/materialBaseOverride.h"
-
-#        if not destFileNameOH.exists():
-#            createNode(sourceFileNameOH, destFileNameOH, key)
-#        if not destFileNameO.exists():
-#            createNode(sourceFileNameO, destFileNameO, key)
+class TextureCreator(object):
+    def __init__(self, startId, name, shortcut):
+        self.pluginStartId = startId
+        self.rendererName = name
+        self.codingRoot = path.path(__file__).parent.parent.parent.parent
+        self.rendererCodingRoot = self.codingRoot + "/mayaTo" + self.rendererName.capitalize() + "/src"
+        self.capitalName = self.rendererName.capitalize()
+        self.shortCut = shortcut
+        self.baseDestination = path.path("{0}/mayaTo{1}".format(self.codingRoot , self.capitalName))
+        self.mayaToBaseTexH = "{0}/mayaToBase/src/shaders/textureBase.h".format(self.codingRoot )
+        self.mayaToBaseTexCPP = "{0}/mayaToBase/src/shaders/textureBase.cpp".format(self.codingRoot )
+        self.rendererMatDefs = path.path("{0}/mayaTo{1}/vs2010/sourceCodeDocs/textures.txt".format(self.codingRoot , self.capitalName))
+        self.destinationDir = path.path("{0}/mayaTo{1}/src/textures".format(self.codingRoot , self.capitalName))
+        self.nodesToCreate = []
+        self.texFileContent = None
+        self.textureFileHandle = None
+        self.mayaToBaseTexHContent = None
+        self.mayaToBaseTexCPPContent = None
+        fh = open(self.mayaToBaseTexH)
+        self.mayaToBaseTexHContent = fh.readlines()
+        fh.close()
+        fh = open(self.mayaToBaseTexCPP)
+        self.mayaToBaseTexCPPContent = fh.readlines()
+        fh.close()        
+        self.createTextureFiles()
+        self.printIdInfo()
+        self.printPluginLoadInfo()
+        self.createAETemplates()
+        self.printShaderDefinitions()
         
-        print "source", sourceFileNameH, "dest", destFileNameH
-        print "source", sourceFileNameC, "dest", destFileNameC
-        if not destFileNameH.exists():
-            createNode(sourceFileNameH, destFileNameH, key)
-        if not destFileNameC.exists():
-            createNode(sourceFileNameC, destFileNameC, key)
-
-        thisDict = attDict[key]
-        for k, v in allDict.iteritems():
-            thisDict[k] = v
-        insertAttributes(destFileNameH, thisDict, key)
-        insertAttributes(destFileNameC, thisDict, key)
-    
-    
-def textureCreator(renderer, shortCut):
-
-    global baseSourcePath
-    global baseDestPath
-    
-    if os.name == 'nt':
-        baseDestPath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaTo" + renderer.capitalize())
-        baseSourcePath = path.path("C:/users/haggi/coding/OpenMaya/src/mayaToBase")
-    else:
-        pass
+    def printShaderDefinitions(self):
+        for node in self.nodesToCreate:
+            print "shader_start:{0}".format(node.name)
+            for att in node.attributeList:
+                print "\t{0}".format(att.getDefForDefFile())
+            print "\toutAtt:outColor:color"
+            print "shader_end"
+#    outatt:displacement:float
+    def createAETemplates(self):
+        sourceAEFile = self.codingRoot + "/mayaToBase/mt@_devmodule/scripts/@/AETemplate/AE@shaderTemplate.py"
+        sourceContent = []
+        fh = open(sourceAEFile, "r")
+        sourceContent = fh.readlines()
+        fh.close()
+        
+        for node in self.nodesToCreate:
+            destAEPath = path.path(self.baseDestination + "/{0}_devmodule/scripts/{1}/AETemplate/AE{1}{2}Template.py".format(self.shortCut, self.rendererName.capitalize(), node.name.capitalize()))
+            content = sourceContent
+            newContent = []
+            if destAEPath.exists():
+                fh = open(destAEPath, "r")
+                content = fh.readlines()
+                fh.close()
+            replaceInProgress = False
+            for line in content:
+                line = line.replace('AE@shaderTemplate', "AE{0}{1}Template".format(self.rendererName.capitalize(), node.name.capitalize()))
+                if not replaceInProgress:
+                    newContent.append(line)
+                if "#autoAddBegin" in line:
+                    replaceInProgress = True
+                    for att in node.attributeList:
+                        newContent.append(att.getAEDefinition() + "\n")
+                if "#autoAddEnd" in line:
+                    replaceInProgress = False
+                    newContent.append(line)
+                    
+            fh = open(destAEPath, "w")
+            fh.writelines(newContent)
+            fh.close()
             
-    materialsFile = baseDestPath + "/" + COMPILER_VERSION + "/sourceCodeDocs/Textures.txt"
+            
+    def printPluginLoadInfo(self):
+        for node in self.nodesToCreate:
+            includeString = '#include "textures/{0}.h"'.format(node.name)
+            print includeString
+        print ""
+        for node in self.nodesToCreate:
+            regId = 'static const MString {1}Classification("{0}/texture/{0}{1}");'.format(self.rendererName.capitalize(), node.name.capitalize())
+            print regId
+        print ""
+        for node in self.nodesToCreate:
+            register = 'CHECK_MSTATUS( plugin.registerNode( "{1}{0}", {0}::id, {0}::creator, {0}::initialize, MPxNode::kDependNode, &{0}Classification ));'.format(node.name.capitalize(), self.rendererName.capitalize())
+            print register
+        print ""
+        for node in self.nodesToCreate:
+            deregister = 'CHECK_MSTATUS( plugin.deregisterNode({0}::id));'.format(node.name.capitalize())
+            print deregister
+        
+    def printIdInfo(self):
+        #0x0011EF55    0x0011EF55    mayaToLux    wrinkledTexture.cpp    H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToLux\src\textures\wrinkledTexture.cpp
+        for node in self.nodesToCreate:
+            print node.pluginId, "mayaTo"+self.rendererName.capitalize(), node.name+".cpp", node.path
+                
+    def createTextureFiles(self):
+        self.parseTextureDefinitions()
+        self.createCPPFiles()
+        
+    def createCPPFiles(self):
+        for node in self.nodesToCreate:
+            self.createHFile(node)
+            self.createCPPFile(node)
     
-#    baseMaterialDestNodeCpp = basePath + "/src/" + shortCut + "_common/" + shortCut + "_baseMaterial.cpp"
-    baseMaterialSourceNodeCpp = baseSourcePath + "/src/shaders/textureBase.cpp"
+    def createHFile(self, node):
+        print "Creating header file for node", node.name
+        destinationHeaderFile = self.destinationDir + "/" + node.name + ".h"
+        headerFileContent = self.mayaToBaseTexHContent
+        if destinationHeaderFile.exists():
+            print "Found existing header file"
+            fh = open(destinationHeaderFile)
+            headerFileContent = fh.readlines()
+            fh.close()
+            
+        newHFileContent = []
+        replaceInProgress = False
+        for index, line in enumerate(headerFileContent):
+            line = line.strip()
+            line = line.replace("MAYATO@_TextureBase", "{0}_{1}".format(self.shortCut, node.name))
+            line = line.replace("TextureBase", "{0}".format(node.name.capitalize()))
+            if not replaceInProgress:
+                newHFileContent.append(line)
+            if START_ID in line:
+                replaceInProgress = True
+                for att in node.attributeList:
+                    newHFileContent.append(att.getDefinition())
+            if replaceInProgress and not END_ID in line:
+                continue
+            if END_ID in line:
+                replaceInProgress = False
+                newHFileContent.append(line)
+        
+        print "Writing file", destinationHeaderFile
+        fh = open(destinationHeaderFile, "w")
+        for line in newHFileContent:
+            fh.write(line + "\n")        
+        fh.close()
+        
+    def createCPPFile(self, node):
+        print "Creating cpp file for node", node.name
+        self.pluginStartId += 1
+        nodeId = "0x%08X" % self.pluginStartId            
+        node.pluginId = nodeId
+        destinationCppFile = self.destinationDir + "/" + node.name + ".cpp"
+        node.path = destinationCppFile
+        cppFileContent = self.mayaToBaseTexCPPContent
+        if destinationCppFile.exists():
+            print "Found existing header file"
+            fh = open(destinationCppFile)
+            headerFileContent = fh.readlines()
+            fh.close()
+            
+        newCppFileContent = []
+        replaceInProgress = False
+        for index in range(len(cppFileContent)):
+            line = cppFileContent[index]
+            #line = line.strip()
+            line = line.replace("textureBase", node.name)
+            line = line.replace("TextureBase", node.name.capitalize())
+            line = line.replace("0x00000", nodeId)
 
-#    globalsCpp = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobals.cpp"
-#    globalsH = basePath + "/src/" + shortCut + "_common/" + shortCut + "_renderGlobals.h"
+            if not replaceInProgress:
+                newCppFileContent.append(line)
+            if START_STATIC_ID in line:
+                replaceInProgress = True
+                for att in node.attributeList:
+                    newCppFileContent.append(att.getStaticDefinition().replace("TextureBase", node.name.capitalize()) + "\n")
+                while not END_STATIC_ID in line:
+                    index += 1
+                    line = cppFileContent[index]
+                replaceInProgress = False
+                
+            if START_ID in line:
+                replaceInProgress = True
+                for att in node.attributeList:
+                    newCppFileContent.append(att.getImplementation() + "\n")
+            if replaceInProgress and not END_ID in line:
+                continue
+            if END_ID in line:
+                replaceInProgress = False
+                newCppFileContent.append(line)
+        
+        print "Writing file", destinationCppFile
+        #print newCppFileContent
+        fh = open(destinationCppFile, "w")
+        for line in newCppFileContent:
+            fh.write(line)
+        fh.close()
 
-#    pyGlobals = basePath + "/" + shortCut + "_devModule/scripts/renderGlobalsUIInfo.py"
-
+    def parseTextureDefinitions(self):
+        print "Load texture def file", self.rendererMatDefs
+        if not self.rendererMatDefs.exists():
+            print "File does not exist"
+            return
+        self.textureFileHandle = open(self.rendererMatDefs, "r")
+        self.texFileContent = self.textureFileHandle.readlines()
+        self.textureFileHandle.close()
     
-    fh = open(materialsFile, "r")
-    attributes = fh.readlines()
-    fh.close()
-
-    attArray = []
-    for att in attributes:
-        att = att.strip()
-        if att.startswith("//"):
-            continue
-        values = att.split(",")
-        values = [a.strip() for a in values]
-        #print values
-        if len(values) > 0:
-            if len(values[0]) > 0:
-                attArray.append(values)
-    
-    attrDict = {}
-    newDict = None
-    for att in attArray:
-        if att[0].startswith("#"):
-            newDict = {}
-            attrDict[att[0].replace("#", "").strip().split(" ")[0]] = newDict
-        else:
-            if newDict is not None:
-                newDict[att[0]] = att[1:]
-    
-    print attrDict
-    fillNodes(attrDict)
-    pluginLoaders(attrDict, renderer)    
-    #pyRGCreator(pyGlobals, attArray)
-    aeTemplateCreator(attrDict, renderer, shortCut)
-    attrIncludeCreator(attrDict, renderer, shortCut)
-    
+        currentTexture = None
+        for line in self.texFileContent:
+            line = line.strip()
+            if len(line) == 0:
+                continue
+            if line.startswith("//"):
+                continue
+            if line.startswith("#"):
+                if currentTexture is not None:
+                    self.nodesToCreate.append(currentTexture)
+                currentTexture = ShaderNode(line.replace("#", ""))
+                print "Found texture", line.replace("#", "")
+                continue
+            values = line.split(",")
+            values = [a.strip() for a in values]
+            if len(values) < 4:
+                print "Attribute needs at least 4 values", values
+                continue
+            data = None
+            if len(values) > 4:
+                data = ":".join(values[4:])
+            att = Attribute(values[0], values[1], values[2], values[3], data)
+            currentTexture.attributeList.append(att)
+        
+        
 if __name__ == "__main__":
-    textureCreator("lux", "mtlu")
-    global START_NODE_ID
-    print "ID: --> 0x%08X" % START_NODE_ID
+    tc = TextureCreator(0x0011EF5E, "thea", "mtth")
+    print "LastID", "0x%08X" % tc.pluginStartId
+    
+    #global START_NODE_ID
+    #print "ID: --> 0x%08X" % START_NODE_ID

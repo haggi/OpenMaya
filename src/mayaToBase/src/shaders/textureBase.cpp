@@ -15,8 +15,8 @@ MTypeId TextureBase::id( 0x00000 );
 MObject TextureBase::outColor;
 
 	
-//---------------------------- automatically created attributes start ------------------------------------
-//---------------------------- automatically created attributes end ------------------------------------
+//---------------------------- automatically created static attributes start ------------------------------------
+//---------------------------- automatically created static attributes end ------------------------------------
 	
 
 #define MAKE_INPUT(attr)                                \

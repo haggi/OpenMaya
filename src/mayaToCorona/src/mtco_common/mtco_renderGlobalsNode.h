@@ -146,6 +146,8 @@ static    MObject pSkySunGlow;
 static    MObject pSkySunSideGlow;
 static    MObject pSkySunBleed;
 static    MObject sunSizeMulti;
+static    MObject dumpAndResume;
+static    MObject dumpExrFile;
 //	------------- automatically created attributes end ----------- // 
 
 };

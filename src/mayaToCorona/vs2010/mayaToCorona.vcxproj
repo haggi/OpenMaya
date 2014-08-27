@@ -191,6 +191,7 @@
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\OSL\oslRenderer.cpp" />
+    <ClCompile Include="..\src\OSL\oslUtils.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\OSL\oslRenderer.h" />
+    <ClInclude Include="..\src\OSL\oslUtils.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />

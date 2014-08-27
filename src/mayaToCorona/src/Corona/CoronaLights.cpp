@@ -188,6 +188,10 @@ void CoronaRenderer::defineLights()
 				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
 				Corona::IMaterial *mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+				bool visible = getBoolAttr("mtco_areaVisible", depFn, true);
+				ms.visibility.direct = visible;
+				ms.visibility.reflect = visible;
+				ms.visibility.refract = visible;
 				obj->instance->addMaterial(ms);
 			}
 		}

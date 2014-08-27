@@ -1,20 +1,676 @@
 OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader projection
-param	color	image	1 0 0 		 %read{2,2} %write{2147483647,-1}
-param	matrix	placementMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{2,2}
-local	vector	uvw	 %read{1,1} %write{0,0}
-const	vector	$const1	1 2 3		 %read{0,0} %write{2147483647,-1}
-const	string	$const2	"project_uv"		 %read{1,1} %write{2147483647,-1}
+param	int	projType	0 		 %read{6,206} %write{2147483647,-1}
+param	color	transparency	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	uAngle	0 		 %read{29,59} %write{2147483647,-1}
+param	float	vAngle	0 		 %read{44,44} %write{2147483647,-1}
+param	color	image	1 0 0 		 %read{249,249} %write{2147483647,-1}
+param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1}
+param	matrix	placementMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{8,208} %write{2147483647,-1}
+oparam	vector	outUVCoord	0 0 0 		 %read{2147483647,-1} %write{248,248}
+oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{249,249}
+global	point	P	 %read{8,208} %write{2147483647,-1}
+global	normal	N	 %read{150,166} %write{2147483647,-1}
+global	float	u	 %read{0,0} %write{2147483647,-1}
+global	float	v	 %read{1,1} %write{2147483647,-1}
+local	vector	___316_st	 %read{20,20} %write{14,19}
+local	vector	___317_st	 %read{49,49} %write{33,48}
+local	vector	___317_v	 %read{26,39} %write{25,25}
+local	vector	___318_st	 %read{69,69} %write{63,68}
+local	vector	___318_v	 %read{55,64} %write{54,54}
+local	vector	___319_st	 %read{89,89} %write{83,88}
+local	vector	___319_v	 %read{75,84} %write{74,78}
+local	vector	___320_st	 %read{145,145} %write{138,144}
+local	float	___320_xAbs	 %read{103,123} %write{95,95}
+local	float	___320_yAbs	 %read{103,126} %write{97,97}
+local	float	___320_zAbs	 %read{106,130} %write{99,99}
+local	float	___320_s	 %read{134,134} %write{100,131}
+local	float	___320_t	 %read{140,140} %write{101,132}
+local	float	___320_a	 %read{133,139} %write{102,130}
+local	vector	___325_st	 %read{194,204} %write{176,203}
+local	float	___325_ax	 %read{168,179} %write{153,155}
+local	float	___325_ay	 %read{168,182} %write{159,161}
+local	float	___325_az	 %read{171,182} %write{165,167}
+local	vector	___329_st	 %read{247,247} %write{245,246}
+local	vector	___329_noisePoint	 %read{223,223} %write{222,222}
+local	float	___329_temp	 %read{246,246} %write{223,223}
+local	float	s	 %read{2147483647,-1} %write{0,4}
+local	float	t	 %read{2147483647,-1} %write{1,5}
+local	vector	uvw	 %read{248,248} %write{20,247}
+local	point	___331_PP	 %read{10,15} %write{8,8}
+local	point	___332_PP	 %read{25,25} %write{23,23}
+local	point	___333_PP	 %read{54,54} %write{52,52}
+local	point	___334_PP	 %read{74,74} %write{72,72}
+local	point	___335_PP	 %read{94,132} %write{92,92}
+local	point	___336_PP	 %read{175,192} %write{148,148}
+local	point	___337_PP	 %read{210,238} %write{208,208}
+temp	int	$tmp1	 %read{3,3} %write{2,2}
+const	int	$const1	0		 %read{4,246} %write{2147483647,-1}
+const	int	$const2	1		 %read{5,245} %write{2147483647,-1}
+temp	int	$tmp2	 %read{7,7} %write{6,6}
+const	string	$const3	"planarMapping"		 %read{9,9} %write{2147483647,-1}
+temp	float	$tmp3	 %read{14,14} %write{13,13}
+temp	float	$tmp4	 %read{12,12} %write{10,10}
+const	string	$const4	"setRange"		 %read{11,200} %write{2147483647,-1}
+const	float	$const5	0.5		 %read{13,244} %write{2147483647,-1}
+const	float	$const6	1		 %read{12,201} %write{2147483647,-1}
+temp	float	$tmp5	 %read{13,13} %write{12,12}
+temp	float	$tmp6	 %read{19,19} %write{18,18}
+temp	float	$tmp7	 %read{17,17} %write{15,15}
+temp	float	$tmp8	 %read{18,18} %write{17,17}
+const	int	$const7	2		 %read{21,238} %write{2147483647,-1}
+temp	int	$tmp9	 %read{22,22} %write{21,21}
+const	string	$const8	"sphericalMapping"		 %read{24,24} %write{2147483647,-1}
+temp	float	$tmp10	 %read{33,33} %write{32,32}
+temp	float	$tmp11	 %read{29,29} %write{28,28}
+temp	float	$tmp12	 %read{28,28} %write{26,26}
+temp	float	$tmp13	 %read{28,28} %write{27,27}
+temp	float	$tmp14	 %read{31,31} %write{29,29}
+temp	float	$tmp15	 %read{32,32} %write{31,31}
+temp	float	$tmp16	 %read{48,48} %write{47,47}
+temp	float	$tmp17	 %read{44,44} %write{43,43}
+temp	float	$tmp18	 %read{43,43} %write{34,34}
+temp	float	$tmp19	 %read{43,43} %write{42,42}
+temp	float	$tmp20	 %read{37,37} %write{35,35}
+temp	float	$tmp21	 %read{37,37} %write{36,36}
+temp	float	$tmp22	 %read{41,41} %write{37,37}
+temp	float	$tmp23	 %read{40,40} %write{38,38}
+temp	float	$tmp24	 %read{40,40} %write{39,39}
+temp	float	$tmp25	 %read{41,41} %write{40,40}
+temp	float	$tmp26	 %read{42,42} %write{41,41}
+temp	float	$tmp27	 %read{46,46} %write{44,44}
+temp	float	$tmp28	 %read{47,47} %write{46,46}
+const	int	$const9	3		 %read{50,50} %write{2147483647,-1}
+temp	int	$tmp29	 %read{51,51} %write{50,50}
+const	string	$const10	"cylindricalMapping"		 %read{53,53} %write{2147483647,-1}
+temp	float	$tmp30	 %read{63,63} %write{62,62}
+temp	float	$tmp31	 %read{58,58} %write{57,57}
+temp	float	$tmp32	 %read{57,57} %write{55,55}
+temp	float	$tmp33	 %read{57,57} %write{56,56}
+const	float	$const11	2		 %read{58,58} %write{2147483647,-1}
+temp	float	$tmp34	 %read{59,59} %write{58,58}
+temp	float	$tmp35	 %read{61,61} %write{59,59}
+temp	float	$tmp36	 %read{62,62} %write{61,61}
+temp	float	$tmp37	 %read{68,68} %write{67,67}
+temp	float	$tmp38	 %read{66,66} %write{64,64}
+temp	float	$tmp39	 %read{67,67} %write{66,66}
+const	int	$const12	4		 %read{70,70} %write{2147483647,-1}
+temp	int	$tmp40	 %read{71,71} %write{70,70}
+const	string	$const13	"ballMapping"		 %read{73,73} %write{2147483647,-1}
+temp	float	$tmp41	 %read{76,76} %write{75,75}
+temp	float	$tmp42	 %read{77,77} %write{76,76}
+temp	float	$tmp43	 %read{83,83} %write{82,82}
+temp	float	$tmp44	 %read{81,81} %write{79,79}
+temp	float	$tmp45	 %read{82,82} %write{81,81}
+temp	float	$tmp46	 %read{88,88} %write{87,87}
+temp	float	$tmp47	 %read{86,86} %write{84,84}
+temp	float	$tmp48	 %read{87,87} %write{86,86}
+const	int	$const14	5		 %read{90,90} %write{2147483647,-1}
+temp	int	$tmp49	 %read{91,91} %write{90,90}
+const	string	$const15	"cubicMapping"		 %read{93,93} %write{2147483647,-1}
+temp	float	$tmp50	 %read{95,95} %write{94,94}
+temp	float	$tmp51	 %read{97,97} %write{96,96}
+temp	float	$tmp52	 %read{99,99} %write{98,98}
+temp	int	$tmp53	 %read{104,104} %write{103,103}
+temp	int	$tmp54	 %read{105,109} %write{104,108}
+temp	int	$tmp55	 %read{107,107} %write{106,106}
+temp	int	$tmp56	 %read{108,108} %write{107,107}
+temp	int	$tmp57	 %read{114,114} %write{113,113}
+temp	int	$tmp58	 %read{115,119} %write{114,118}
+temp	int	$tmp59	 %read{117,117} %write{116,116}
+temp	int	$tmp60	 %read{118,118} %write{117,117}
+temp	int	$tmp61	 %read{124,124} %write{123,123}
+temp	int	$tmp62	 %read{125,129} %write{124,128}
+temp	int	$tmp63	 %read{127,127} %write{126,126}
+temp	int	$tmp64	 %read{128,128} %write{127,127}
+temp	float	$tmp65	 %read{138,138} %write{137,137}
+const	float	$const16	1e-006		 %read{133,139} %write{2147483647,-1}
+temp	float	$tmp66	 %read{134,134} %write{133,133}
+temp	float	$tmp67	 %read{136,136} %write{134,134}
+temp	float	$tmp68	 %read{137,137} %write{136,136}
+temp	float	$tmp69	 %read{144,144} %write{143,143}
+temp	float	$tmp70	 %read{140,140} %write{139,139}
+temp	float	$tmp71	 %read{142,142} %write{140,140}
+temp	float	$tmp72	 %read{143,143} %write{142,142}
+const	int	$const17	6		 %read{146,146} %write{2147483647,-1}
+temp	int	$tmp73	 %read{147,147} %write{146,146}
+const	string	$const18	"triPlanarMapping"		 %read{149,149} %write{2147483647,-1}
+temp	float	$tmp74	 %read{151,151} %write{150,150}
+const	float	$const19	0		 %read{151,163} %write{2147483647,-1}
+temp	int	$tmp75	 %read{152,152} %write{151,151}
+temp	float	$tmp76	 %read{155,155} %write{154,154}
+temp	float	$tmp77	 %read{157,157} %write{156,156}
+temp	int	$tmp78	 %read{158,158} %write{157,157}
+temp	float	$tmp79	 %read{161,161} %write{160,160}
+temp	float	$tmp80	 %read{163,163} %write{162,162}
+temp	int	$tmp81	 %read{164,164} %write{163,163}
+temp	float	$tmp82	 %read{167,167} %write{166,166}
+temp	int	$tmp83	 %read{169,169} %write{168,168}
+temp	int	$tmp84	 %read{170,174} %write{169,173}
+temp	int	$tmp85	 %read{172,172} %write{171,171}
+temp	int	$tmp86	 %read{173,173} %write{172,172}
+temp	float	$tmp87	 %read{176,176} %write{175,175}
+temp	float	$tmp88	 %read{178,178} %write{177,177}
+temp	int	$tmp89	 %read{180,180} %write{179,179}
+temp	int	$tmp90	 %read{181,185} %write{180,184}
+temp	int	$tmp91	 %read{183,183} %write{182,182}
+temp	int	$tmp92	 %read{184,184} %write{183,183}
+temp	float	$tmp93	 %read{187,187} %write{186,186}
+temp	float	$tmp94	 %read{189,189} %write{188,188}
+temp	float	$tmp95	 %read{191,191} %write{190,190}
+temp	float	$tmp96	 %read{193,193} %write{192,192}
+temp	float	$tmp97	 %read{198,198} %write{197,197}
+temp	float	$tmp98	 %read{196,196} %write{194,194}
+temp	float	$tmp99	 %read{197,197} %write{196,196}
+temp	float	$tmp100	 %read{203,203} %write{202,202}
+temp	float	$tmp101	 %read{201,201} %write{199,199}
+temp	float	$tmp102	 %read{202,202} %write{201,201}
+const	int	$const20	7		 %read{206,206} %write{2147483647,-1}
+temp	int	$tmp103	 %read{207,207} %write{206,206}
+const	string	$const21	"concentricMapping"		 %read{209,209} %write{2147483647,-1}
+const	float	$const22	0.0099999998		 %read{213,221} %write{2147483647,-1}
+temp	int	$tmp104	 %read{212,212} %write{211,211}
+temp	float	$tmp105	 %read{211,211} %write{210,210}
+temp	float	$tmp106	 %read{222,222} %write{213,213}
+temp	float	$tmp107	 %read{213,213} %write{212,212}
+temp	int	$tmp108	 %read{216,216} %write{215,215}
+temp	float	$tmp109	 %read{215,215} %write{214,214}
+temp	float	$tmp110	 %read{222,222} %write{217,217}
+temp	float	$tmp111	 %read{217,217} %write{216,216}
+temp	int	$tmp112	 %read{220,220} %write{219,219}
+temp	float	$tmp113	 %read{219,219} %write{218,218}
+temp	float	$tmp114	 %read{222,222} %write{221,221}
+temp	float	$tmp115	 %read{221,221} %write{220,220}
+const	string	$const23	"perlin"		 %read{223,223} %write{2147483647,-1}
+temp	float	$tmp116	 %read{236,236} %write{229,229}
+temp	float	$tmp117	 %read{227,227} %write{224,224}
+temp	float	$tmp118	 %read{227,227} %write{226,226}
+temp	float	$tmp119	 %read{226,226} %write{225,225}
+temp	float	$tmp120	 %read{228,228} %write{227,227}
+temp	float	$tmp121	 %read{229,229} %write{228,228}
+temp	float	$tmp122	 %read{236,236} %write{235,235}
+temp	float	$tmp123	 %read{233,233} %write{230,230}
+temp	float	$tmp124	 %read{233,233} %write{232,232}
+temp	float	$tmp125	 %read{232,232} %write{231,231}
+temp	float	$tmp126	 %read{234,234} %write{233,233}
+temp	float	$tmp127	 %read{235,235} %write{234,234}
+temp	float	$tmp128	 %read{243,243} %write{236,236}
+temp	float	$tmp129	 %read{243,243} %write{242,242}
+temp	float	$tmp130	 %read{240,240} %write{237,237}
+temp	float	$tmp131	 %read{240,240} %write{239,239}
+temp	float	$tmp132	 %read{239,239} %write{238,238}
+temp	float	$tmp133	 %read{241,241} %write{240,240}
+temp	float	$tmp134	 %read{242,242} %write{241,241}
+temp	float	$tmp135	 %read{244,244} %write{243,243}
+temp	float	$tmp136	 %read{245,245} %write{244,244}
 code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:126
+# 	float t = v;
+	assign		s u 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl"} %line{126} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:127
+# 	if( isconnected(uvCoord))
+	assign		t v 	%line{127} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:128
+# 	{
+	isconnected	$tmp1 uvCoord 	%line{128} %argrw{"wr"}
+	if		$tmp1 6 6 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:130
+# 		t = uvCoord[1];
+	compref		s uvCoord $const1 	%line{130} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:131
+# 	}
+	compref		t uvCoord $const2 	%line{131} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:135
+# 	{
+	eq		$tmp2 projType $const2 	%line{135} %argrw{"wrr"}
+	if		$tmp2 21 21 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:137
+# 		uvw = planarMapping(PP);
+	transform	___331_PP placementMatrix P 	%line{137} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:138
+# 	}
+	functioncall	$const3 21 	%line{138} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:9
+#    st[1] = setRange(v[1]);
+	compref		$tmp4 ___331_PP $const1 	%line{9} %argrw{"wrr"}
+	functioncall	$const4 14 	%argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
-# 	setmessage("project_uv", uvw);
-	assign		uvw $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl"} %line{4} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:5
-# 	//int result = getmessage("project_uv", uvw);
-	setmessage	$const2 uvw 	%line{5} %argrw{"rr"}
+# }
+	add		$tmp5 $const6 $tmp4 	%line{4} %argrw{"wrr"}
+	mul		$tmp3 $const5 $tmp5 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:9
+#    st[1] = setRange(v[1]);
+	compassign	___316_st $const1 $tmp3 	%line{9} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:10
+# 
+	compref		$tmp7 ___331_PP $const2 	%line{10} %argrw{"wrr"}
+	functioncall	$const4 19 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp8 $const6 $tmp7 	%line{4} %argrw{"wrr"}
+	mul		$tmp6 $const5 $tmp8 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:10
+# 
+	compassign	___316_st $const2 $tmp6 	%line{10} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:12
 # }
-	assign		outColor image 	%line{12} %argrw{"wr"}
+	assign		uvw ___316_st 	%line{12} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:140
+# 	{
+	eq		$tmp9 projType $const7 	%line{140} %argrw{"wrr"}
+	if		$tmp9 50 50 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:142
+# 		uvw = sphericalMapping(PP, uAngle, vAngle);
+	transform	___332_PP placementMatrix P 	%line{142} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:143
+# 	}
+	functioncall	$const8 50 	%line{143} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:18
+# 
+	normalize	___317_v ___332_PP 	%line{18} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:20
+#    st[1] = setRange(atan2(v[1], sqrt(v[0]*v[0] + v[2]*v[2])) / vAngle);
+	compref		$tmp12 ___317_v $const1 	%line{20} %argrw{"wrr"}
+	compref		$tmp13 ___317_v $const7 	%argrw{"wrr"}
+	atan2		$tmp11 $tmp12 $tmp13 	%argrw{"wrr"}
+	div		$tmp14 $tmp11 uAngle 	%argrw{"wrr"}
+	functioncall	$const4 33 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp15 $const6 $tmp14 	%line{4} %argrw{"wrr"}
+	mul		$tmp10 $const5 $tmp15 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:20
+#    st[1] = setRange(atan2(v[1], sqrt(v[0]*v[0] + v[2]*v[2])) / vAngle);
+	compassign	___317_st $const1 $tmp10 	%line{20} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:21
+# 
+	compref		$tmp18 ___317_v $const2 	%line{21} %argrw{"wrr"}
+	compref		$tmp20 ___317_v $const1 	%argrw{"wrr"}
+	compref		$tmp21 ___317_v $const1 	%argrw{"wrr"}
+	mul		$tmp22 $tmp20 $tmp21 	%argrw{"wrr"}
+	compref		$tmp23 ___317_v $const7 	%argrw{"wrr"}
+	compref		$tmp24 ___317_v $const7 	%argrw{"wrr"}
+	mul		$tmp25 $tmp23 $tmp24 	%argrw{"wrr"}
+	add		$tmp26 $tmp22 $tmp25 	%argrw{"wrr"}
+	sqrt		$tmp19 $tmp26 	%argrw{"wr"}
+	atan2		$tmp17 $tmp18 $tmp19 	%argrw{"wrr"}
+	div		$tmp27 $tmp17 vAngle 	%argrw{"wrr"}
+	functioncall	$const4 48 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp28 $const6 $tmp27 	%line{4} %argrw{"wrr"}
+	mul		$tmp16 $const5 $tmp28 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:21
+# 
+	compassign	___317_st $const2 $tmp16 	%line{21} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:23
+# }
+	assign		uvw ___317_st 	%line{23} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:145
+# 	{
+	eq		$tmp29 projType $const9 	%line{145} %argrw{"wrr"}
+	if		$tmp29 70 70 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:147
+# 		uvw = cylindricalMapping(PP, uAngle);
+	transform	___333_PP placementMatrix P 	%line{147} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:148
+# 	}
+	functioncall	$const10 70 	%line{148} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:29
+#    st[0] = setRange(atan2(v[0], v[2]) * 2.0/uAngle);
+	normalize	___318_v ___333_PP 	%line{29} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:30
+#    st[1] = setRange(v[1]);
+	compref		$tmp32 ___318_v $const1 	%line{30} %argrw{"wrr"}
+	compref		$tmp33 ___318_v $const7 	%argrw{"wrr"}
+	atan2		$tmp31 $tmp32 $tmp33 	%argrw{"wrr"}
+	mul		$tmp34 $tmp31 $const11 	%argrw{"wrr"}
+	div		$tmp35 $tmp34 uAngle 	%argrw{"wrr"}
+	functioncall	$const4 63 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp36 $const6 $tmp35 	%line{4} %argrw{"wrr"}
+	mul		$tmp30 $const5 $tmp36 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:30
+#    st[1] = setRange(v[1]);
+	compassign	___318_st $const1 $tmp30 	%line{30} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:31
+#    return st;
+	compref		$tmp38 ___318_v $const2 	%line{31} %argrw{"wrr"}
+	functioncall	$const4 68 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp39 $const6 $tmp38 	%line{4} %argrw{"wrr"}
+	mul		$tmp37 $const5 $tmp39 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:31
+#    return st;
+	compassign	___318_st $const2 $tmp37 	%line{31} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:32
+# }
+	assign		uvw ___318_st 	%line{32} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:150
+# 	{
+	eq		$tmp40 projType $const12 	%line{150} %argrw{"wrr"}
+	if		$tmp40 90 90 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:152
+# 		uvw = ballMapping(PP);
+	transform	___334_PP placementMatrix P 	%line{152} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:153
+# 	}
+	functioncall	$const13 90 	%line{153} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:38
+#    v[2] += 1.0;
+	normalize	___319_v ___334_PP 	%line{38} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:39
+#    v = normalize(v);
+	compref		$tmp41 ___319_v $const7 	%line{39} %argrw{"wrr"}
+	add		$tmp42 $tmp41 $const6 	%argrw{"wrr"}
+	compassign	___319_v $const7 $tmp42 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:40
+#    st[0] = setRange(v[0]);
+	normalize	___319_v ___319_v 	%line{40} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:41
+#    st[1] = setRange(v[1]);
+	compref		$tmp44 ___319_v $const1 	%line{41} %argrw{"wrr"}
+	functioncall	$const4 83 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp45 $const6 $tmp44 	%line{4} %argrw{"wrr"}
+	mul		$tmp43 $const5 $tmp45 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:41
+#    st[1] = setRange(v[1]);
+	compassign	___319_st $const1 $tmp43 	%line{41} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:42
+#    return st;
+	compref		$tmp47 ___319_v $const2 	%line{42} %argrw{"wrr"}
+	functioncall	$const4 88 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp48 $const6 $tmp47 	%line{4} %argrw{"wrr"}
+	mul		$tmp46 $const5 $tmp48 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:42
+#    return st;
+	compassign	___319_st $const2 $tmp46 	%line{42} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:43
+# }
+	assign		uvw ___319_st 	%line{43} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:155
+# 	{
+	eq		$tmp49 projType $const14 	%line{155} %argrw{"wrr"}
+	if		$tmp49 146 146 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:157
+# 		uvw = cubicMapping(PP);
+	transform	___335_PP placementMatrix P 	%line{157} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:158
+# 	}
+	functioncall	$const15 146 	%line{158} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:49
+#    float yAbs = abs(v[1]);
+	compref		$tmp50 ___335_PP $const1 	%line{49} %argrw{"wrr"}
+	abs		___320_xAbs $tmp50 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:50
+#    float zAbs = abs(v[2]);
+	compref		$tmp51 ___335_PP $const2 	%line{50} %argrw{"wrr"}
+	abs		___320_yAbs $tmp51 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:51
+# 
+	compref		$tmp52 ___335_PP $const7 	%line{51} %argrw{"wrr"}
+	abs		___320_zAbs $tmp52 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:53
+#    float t = 0;
+	assign		___320_s $const1 	%line{53} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:54
+#    float a = 0;
+	assign		___320_t $const1 	%line{54} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:55
+# 
+	assign		___320_a $const1 	%line{55} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:57
+#    {
+	ge		$tmp53 ___320_xAbs ___320_yAbs 	%line{57} %argrw{"wrr"}
+	neq		$tmp54 $tmp53 $const1 	%argrw{"wrr"}
+	if		$tmp54 109 109 	%argrw{"r"}
+	ge		$tmp55 ___320_xAbs ___320_zAbs 	%argrw{"wrr"}
+	neq		$tmp56 $tmp55 $const1 	%argrw{"wrr"}
+	assign		$tmp54 $tmp56 	%argrw{"wr"}
+	if		$tmp54 113 133 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:59
+#       s = v[2];
+	assign		___320_a ___320_xAbs 	%line{59} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:60
+#       t = v[1];
+	compref		___320_s ___335_PP $const7 	%line{60} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:61
+#    }
+	compref		___320_t ___335_PP $const2 	%line{61} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:63
+#    {
+	ge		$tmp57 ___320_yAbs ___320_xAbs 	%line{63} %argrw{"wrr"}
+	neq		$tmp58 $tmp57 $const1 	%argrw{"wrr"}
+	if		$tmp58 119 119 	%argrw{"r"}
+	ge		$tmp59 ___320_yAbs ___320_zAbs 	%argrw{"wrr"}
+	neq		$tmp60 $tmp59 $const1 	%argrw{"wrr"}
+	assign		$tmp58 $tmp60 	%argrw{"wr"}
+	if		$tmp58 123 133 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:65
+#       s = v[0];
+	assign		___320_a ___320_yAbs 	%line{65} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:66
+#       t = v[2];
+	compref		___320_s ___335_PP $const1 	%line{66} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:67
+#    }
+	compref		___320_t ___335_PP $const7 	%line{67} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:69
+#    {
+	ge		$tmp61 ___320_zAbs ___320_xAbs 	%line{69} %argrw{"wrr"}
+	neq		$tmp62 $tmp61 $const1 	%argrw{"wrr"}
+	if		$tmp62 129 129 	%argrw{"r"}
+	ge		$tmp63 ___320_zAbs ___320_yAbs 	%argrw{"wrr"}
+	neq		$tmp64 $tmp63 $const1 	%argrw{"wrr"}
+	assign		$tmp62 $tmp64 	%argrw{"wr"}
+	if		$tmp62 133 133 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:71
+#       s = v[0];
+	assign		___320_a ___320_zAbs 	%line{71} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:72
+#       t = v[1];
+	compref		___320_s ___335_PP $const1 	%line{72} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:73
+#    }
+	compref		___320_t ___335_PP $const2 	%line{73} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:81
+#    st[1] = setRange(t / (a + 0.000001));
+	add		$tmp66 ___320_a $const16 	%line{81} %argrw{"wrr"}
+	div		$tmp67 ___320_s $tmp66 	%argrw{"wrr"}
+	functioncall	$const4 138 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp68 $const6 $tmp67 	%line{4} %argrw{"wrr"}
+	mul		$tmp65 $const5 $tmp68 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:81
+#    st[1] = setRange(t / (a + 0.000001));
+	compassign	___320_st $const1 $tmp65 	%line{81} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:82
+# 
+	add		$tmp70 ___320_a $const16 	%line{82} %argrw{"wrr"}
+	div		$tmp71 ___320_t $tmp70 	%argrw{"wrr"}
+	functioncall	$const4 144 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp72 $const6 $tmp71 	%line{4} %argrw{"wrr"}
+	mul		$tmp69 $const5 $tmp72 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:82
+# 
+	compassign	___320_st $const2 $tmp69 	%line{82} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:84
+# }
+	assign		uvw ___320_st 	%line{84} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:160
+# 	{
+	eq		$tmp73 projType $const17 	%line{160} %argrw{"wrr"}
+	if		$tmp73 206 206 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:162
+# 		uvw = triPlanarMapping(PP, N);
+	transform	___336_PP placementMatrix P 	%line{162} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:163
+# 	}
+	functioncall	$const18 206 	%line{163} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:90
+#    float ay = N[1] > 0.0 ? N[1] : -N[1];
+	compref		$tmp74 N $const1 	%line{90} %argrw{"wrr"}
+	gt		$tmp75 $tmp74 $const19 	%argrw{"wrr"}
+	if		$tmp75 154 156 	%argrw{"r"}
+	compref		___325_ax N $const1 	%argrw{"wrr"}
+	compref		$tmp76 N $const1 	%argrw{"wrr"}
+	neg		___325_ax $tmp76 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:91
+#    float az = N[2] > 0.0 ? N[2] : -N[2];
+	compref		$tmp77 N $const2 	%line{91} %argrw{"wrr"}
+	gt		$tmp78 $tmp77 $const19 	%argrw{"wrr"}
+	if		$tmp78 160 162 	%argrw{"r"}
+	compref		___325_ay N $const2 	%argrw{"wrr"}
+	compref		$tmp79 N $const2 	%argrw{"wrr"}
+	neg		___325_ay $tmp79 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:92
+# 
+	compref		$tmp80 N $const7 	%line{92} %argrw{"wrr"}
+	gt		$tmp81 $tmp80 $const19 	%argrw{"wrr"}
+	if		$tmp81 166 168 	%argrw{"r"}
+	compref		___325_az N $const7 	%argrw{"wrr"}
+	compref		$tmp82 N $const7 	%argrw{"wrr"}
+	neg		___325_az $tmp82 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:94
+#    {
+	gt		$tmp83 ___325_ax ___325_ay 	%line{94} %argrw{"wrr"}
+	neq		$tmp84 $tmp83 $const1 	%argrw{"wrr"}
+	if		$tmp84 174 174 	%argrw{"r"}
+	gt		$tmp85 ___325_ax ___325_az 	%argrw{"wrr"}
+	neq		$tmp86 $tmp85 $const1 	%argrw{"wrr"}
+	assign		$tmp84 $tmp86 	%argrw{"wr"}
+	if		$tmp84 179 194 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:96
+#       st[1] = v[1];
+	compref		$tmp87 ___336_PP $const7 	%line{96} %argrw{"wrr"}
+	compassign	___325_st $const1 $tmp87 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:97
+#    }
+	compref		$tmp88 ___336_PP $const2 	%line{97} %argrw{"wrr"}
+	compassign	___325_st $const2 $tmp88 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:99
+#    {
+	gt		$tmp89 ___325_ay ___325_ax 	%line{99} %argrw{"wrr"}
+	neq		$tmp90 $tmp89 $const1 	%argrw{"wrr"}
+	if		$tmp90 185 185 	%argrw{"r"}
+	gt		$tmp91 ___325_ay ___325_az 	%argrw{"wrr"}
+	neq		$tmp92 $tmp91 $const1 	%argrw{"wrr"}
+	assign		$tmp90 $tmp92 	%argrw{"wr"}
+	if		$tmp90 190 194 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:101
+#       st[1] = v[2];
+	compref		$tmp93 ___336_PP $const1 	%line{101} %argrw{"wrr"}
+	compassign	___325_st $const1 $tmp93 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:102
+#    }
+	compref		$tmp94 ___336_PP $const7 	%line{102} %argrw{"wrr"}
+	compassign	___325_st $const2 $tmp94 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:106
+#       st[1] = v[1];
+	compref		$tmp95 ___336_PP $const1 	%line{106} %argrw{"wrr"}
+	compassign	___325_st $const1 $tmp95 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:107
+#    }
+	compref		$tmp96 ___336_PP $const2 	%line{107} %argrw{"wrr"}
+	compassign	___325_st $const2 $tmp96 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:110
+#    st[1] = setRange(st[1]);
+	compref		$tmp98 ___325_st $const1 	%line{110} %argrw{"wrr"}
+	functioncall	$const4 198 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp99 $const6 $tmp98 	%line{4} %argrw{"wrr"}
+	mul		$tmp97 $const5 $tmp99 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:110
+#    st[1] = setRange(st[1]);
+	compassign	___325_st $const1 $tmp97 	%line{110} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:111
+# 
+	compref		$tmp101 ___325_st $const2 	%line{111} %argrw{"wrr"}
+	functioncall	$const4 203 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:4
+# }
+	add		$tmp102 $const6 $tmp101 	%line{4} %argrw{"wrr"}
+	mul		$tmp100 $const5 $tmp102 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:111
+# 
+	compassign	___325_st $const2 $tmp100 	%line{111} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:113
+# }
+	assign		uvw ___325_st 	%line{113} %argrw{"wr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:165
+# 	{
+	eq		$tmp103 projType $const20 	%line{165} %argrw{"wrr"}
+	if		$tmp103 248 248 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:167
+# 		uvw = concentricMapping(PP);
+	transform	___337_PP placementMatrix P 	%line{167} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:168
+# 	}
+	functioncall	$const21 248 	%line{168} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:118
+#   float	temp = noise("perlin", noisePoint);
+	compref		$tmp105 ___337_PP $const1 	%line{118} %argrw{"wrr"}
+	assign		$tmp104 $tmp105 	%argrw{"wr"}
+	assign		$tmp107 $tmp104 	%argrw{"wr"}
+	mul		$tmp106 $const22 $tmp107 	%argrw{"wrr"}
+	compref		$tmp109 ___337_PP $const2 	%argrw{"wrr"}
+	assign		$tmp108 $tmp109 	%argrw{"wr"}
+	assign		$tmp111 $tmp108 	%argrw{"wr"}
+	mul		$tmp110 $const22 $tmp111 	%argrw{"wrr"}
+	compref		$tmp113 ___337_PP $const7 	%argrw{"wrr"}
+	assign		$tmp112 $tmp113 	%argrw{"wr"}
+	assign		$tmp115 $tmp112 	%argrw{"wr"}
+	mul		$tmp114 $const22 $tmp115 	%argrw{"wrr"}
+	vector		___329_noisePoint $tmp106 $tmp110 $tmp114 	%argrw{"wrrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:119
+#   st[1] = 0.5 + sin((p[0] - floor(p[0])) * 0.5) * sin((p[1] - floor(p[1])) * 0.5) * sin((p[2] - floor(p[2])) * 0.5);
+	noise		___329_temp $const23 ___329_noisePoint 	%line{119} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:120
+#   st[0] = temp;
+	compref		$tmp117 ___337_PP $const1 	%line{120} %argrw{"wrr"}
+	compref		$tmp119 ___337_PP $const1 	%argrw{"wrr"}
+	floor		$tmp118 $tmp119 	%argrw{"wr"}
+	sub		$tmp120 $tmp117 $tmp118 	%argrw{"wrr"}
+	mul		$tmp121 $tmp120 $const5 	%argrw{"wrr"}
+	sin		$tmp116 $tmp121 	%argrw{"wr"}
+	compref		$tmp123 ___337_PP $const2 	%argrw{"wrr"}
+	compref		$tmp125 ___337_PP $const2 	%argrw{"wrr"}
+	floor		$tmp124 $tmp125 	%argrw{"wr"}
+	sub		$tmp126 $tmp123 $tmp124 	%argrw{"wrr"}
+	mul		$tmp127 $tmp126 $const5 	%argrw{"wrr"}
+	sin		$tmp122 $tmp127 	%argrw{"wr"}
+	mul		$tmp128 $tmp116 $tmp122 	%argrw{"wrr"}
+	compref		$tmp130 ___337_PP $const7 	%argrw{"wrr"}
+	compref		$tmp132 ___337_PP $const7 	%argrw{"wrr"}
+	floor		$tmp131 $tmp132 	%argrw{"wr"}
+	sub		$tmp133 $tmp130 $tmp131 	%argrw{"wrr"}
+	mul		$tmp134 $tmp133 $const5 	%argrw{"wrr"}
+	sin		$tmp129 $tmp134 	%argrw{"wr"}
+	mul		$tmp135 $tmp128 $tmp129 	%argrw{"wrr"}
+	add		$tmp136 $const5 $tmp135 	%argrw{"wrr"}
+	compassign	___329_st $const2 $tmp136 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:121
+#   return st;
+	compassign	___329_st $const1 ___329_temp 	%line{121} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:122
+# }
+	assign		uvw ___329_st 	%line{122} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:170
+# 	
+	assign		outUVCoord uvw 	%line{170} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\projection.osl:172
+# }
+	assign		outColor image 	%line{172} %argrw{"wr"}
 	end

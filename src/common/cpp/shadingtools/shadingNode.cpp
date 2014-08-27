@@ -59,11 +59,15 @@ bool ShadingNode::isInPlugValid(MPlug plug)
 	while (tmpPlug.isChild())
 		tmpPlug = tmpPlug.parent();
 	
+	// if we have an array, check the main plug
+	if (tmpPlug.isElement())
+		tmpPlug = tmpPlug.array();
+
 	MString plugName = getAttributeNameFromPlug(tmpPlug);
 
-	for (size_t inAttrId = 0; inAttrId < this->inputAttributes.size(); inAttrId++)
+	for (size_t inattrId = 0; inattrId < this->inputAttributes.size(); inattrId++)
 	{
-		if (plugName == inputAttributes[inAttrId].name.c_str())
+		if (plugName == inputAttributes[inattrId].name.c_str())
 			return true;
 	}
 	return false;
@@ -78,6 +82,10 @@ bool ShadingNode::isOutPlugValid(MPlug plug)
 
 	while (tmpPlug.isChild())
 		tmpPlug = tmpPlug.parent();
+
+	// if we have an array, check the main plug
+	if (tmpPlug.isElement())
+		tmpPlug = tmpPlug.array();
 
 	MString plugName = getAttributeNameFromPlug(tmpPlug);
 
@@ -105,9 +113,9 @@ bool ShadingNode::isAttributeValid(MString attributeName)
 			MString plugName = getAttributeNameFromPlug(parentPlug);
 			if (plugName == attributeName)
 			{
-				for (size_t inAttrId = 0; inAttrId < this->inputAttributes.size(); inAttrId++)
+				for (size_t inattrId = 0; inattrId < this->inputAttributes.size(); inattrId++)
 				{
-					if (attributeName == inputAttributes[inAttrId].name.c_str())
+					if (attributeName == inputAttributes[inattrId].name.c_str())
 						return true;
 				}
 			}
@@ -136,6 +144,8 @@ void ShadingNode::getConnectedInputObjects(MObjectArray& objectArray)
 		MPlug mainPlug = p;
 		while (mainPlug.isChild())
 			mainPlug = mainPlug.parent();
+		if (mainPlug.isElement())
+			mainPlug = mainPlug.array();
 		MStringArray stringArray;
 		// name contains node.attributeName, so we have to get rid of the nodeName
 		mainPlug.name().split('.', stringArray);

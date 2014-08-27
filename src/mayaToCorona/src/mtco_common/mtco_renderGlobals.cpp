@@ -460,6 +460,12 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getFloat(MString("sunSizeMulti"), CoronaGlobals, this->sunSizeMulti))
 			throw("problem reading coronaGlobals.sunSizeMulti");
 
+		if(!getBool(MString("dumpAndResume"), CoronaGlobals, this->dumpAndResume))
+			throw("problem reading coronaGlobals.dumpAndResume");
+
+		if(!getString(MString("dumpExrFile"), CoronaGlobals, this->dumpExrFile))
+			throw("problem reading coronaGlobals.dumpExrFile");
+
 //	------------- automatically created attributes end ----------- // 
 
 		if(!getInt(MString("filtertype"), CoronaGlobals, this->filterType))

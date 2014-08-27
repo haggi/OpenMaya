@@ -30,6 +30,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_envPortal", label="Use as Environment Portal")
+        self.addControl("mtco_areaVisible", label="Visible Geometry")
         self.endLayout()
 
     def buildBum2dTemplate(self, nodeName):
@@ -57,6 +58,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_visibleInGI", label="Visible in GI")
         self.addControl("mtco_envPortal", label="Use as Environment Portal")
+        self.addControl("mtco_shadowCatcherMode", label="Shadow Catcher Mode")
         self.endLayout()
         
     def buildCameraTemplate(self, nodeName):

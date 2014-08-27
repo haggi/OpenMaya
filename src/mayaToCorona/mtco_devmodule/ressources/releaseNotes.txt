@@ -1,8 +1,12 @@
 release 0.28
 - added soft shadows to point light and spot light and directional light - sort of
 - added maya area light, but without texuring
-- added per mesh shadow casting
+- added per mesh shadow casting - removed from shader
 - implemented portal lights for area lights and meshes
+- added shadow catcher mode for meshes
+- added render stamp option
+- implemented dump and resume
+- OSL: projection node with projection types planar:spherical:ball:cylindrical:triplanar:cubic:concentric 
 
 release 0.27
 - OSL: contrast node

@@ -453,6 +453,8 @@ bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool
 		if (primaryChild)
 			while (plug.isChild())
 				plug = plug.parent();
+		if (plug.isElement())
+			plug = plug.array();
 		if ((getAttributeNameFromPlug(plug) == attrName))
 			return true;
 	}
@@ -460,6 +462,19 @@ bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool
 }
 
 
+MObject getConnectedInNode(MPlug& inPlug)
+{
+	MObject result = MObject::kNullObj;
+	if (!inPlug.isConnected())
+		return result;
+
+	MPlugArray connectedPlugs;
+	inPlug.connectedTo(connectedPlugs, true, false);
+	if (connectedPlugs.length() == 0)
+		return result;
+
+	return connectedPlugs[0].node();
+}
 
 MObject getConnectedInNode(MObject& thisObject, const char *attrName)
 {
@@ -503,11 +518,13 @@ void getConnectedInNodes(MPlug& plug, MObjectArray& nodeList)
 {
 	MPlugArray connectedPlugs;
 	plug.connectedTo(connectedPlugs, true, false);
+	MString plugname = plug.name();
 	int numConnections = connectedPlugs.length();
 
 	for( int i = 0; i <  numConnections; i++)
 	{
-		MObject plugObject = getOtherSideNode(plug);
+		MString otherSidePlug = connectedPlugs[i].name();
+		MObject plugObject = connectedPlugs[i].node();
 		if( plugObject != MObject::kNullObj)
 			nodeList.append(plugObject);
 	}
@@ -1174,4 +1191,24 @@ void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, 
 
 	outU = uv.x;
 	outV = uv.y;
+}
+
+void uniqueMObjectArray(MObjectArray& cleanMe)
+{
+	MObjectArray tmpArray;
+	for (uint i = 0; i < cleanMe.length(); i++)
+	{
+		bool found = false;
+		for (uint k = 0; k < tmpArray.length(); k++)
+		{
+			if (cleanMe[i] == tmpArray[k])
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			tmpArray.append(cleanMe[i]);
+	}
+	cleanMe = tmpArray;
 }

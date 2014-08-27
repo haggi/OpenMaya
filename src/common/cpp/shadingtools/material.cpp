@@ -53,6 +53,7 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 	destFn.getConnections(plugArray);
 	for (uint pId = 0; pId < plugArray.length(); pId++)
 	{
+		MString pname = plugArray[pId].name();
 		if (dest.isInPlugValid(plugArray[pId]))
 		{
 			validPlugs.append(plugArray[pId]);
@@ -65,6 +66,7 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 		validPlugs[pId].connectedTo(sourcePlugs, true, false);
 		for (uint spId = 0; spId < sourcePlugs.length(); spId++)
 		{
+			MString pname = sourcePlugs[spId].name();
 			if (source.isOutPlugValid(sourcePlugs[spId]))
 			{
 				return true;
@@ -74,9 +76,9 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 
 	return false;
 
-	//for( size_t inAttrId = 0; inAttrId < dest.inputAttributes.size(); inAttrId++)
+	//for( size_t inattrId = 0; inattrId < dest.inputAttributes.size(); inattrId++)
 	//{
-	//	ShaderAttribute att = dest.inputAttributes[inAttrId];
+	//	ShaderAttribute att = dest.inputAttributes[inattrId];
 	//	//logger.debug(MString("Check in attribute of des: ") + dest.fullName + "." + att.name.c_str());
 	//	MPlug inPlug = destFn.findPlug(att.name.c_str(), &stat);		
 	//	if( stat )
@@ -98,12 +100,12 @@ bool Material::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& 
 	//					//logger.debug(MString("Compare: ") + plugName + " attname " + source.outputAttributes[outAttrId].name.c_str());
 	//					if( plugName == source.outputAttributes[outAttrId].name.c_str())
 	//					{
-	//						dest.inputAttributes[inAttrId].connected = true;
-	//						dest.inputAttributes[inAttrId].connectedMObject = connectedOutPlugs[outPlugId].node();
+	//						dest.inputAttributes[inattrId].connected = true;
+	//						dest.inputAttributes[inattrId].connectedMObject = connectedOutPlugs[outPlugId].node();
 	//						std::vector<std::string> parts;
 	//						pystring::split(connectedOutPlugs[outPlugId].name().asChar(), parts, ".");
-	//						dest.inputAttributes[inAttrId].connectedAttrName = parts[1];
-	//						dest.inputAttributes[inAttrId].connectedNodeName = parts[0];
+	//						dest.inputAttributes[inattrId].connectedAttrName = parts[1];
+	//						dest.inputAttributes[inattrId].connectedNodeName = parts[0];
 	//						connCount++;
 	//					}
 	//				}

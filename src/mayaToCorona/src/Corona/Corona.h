@@ -80,6 +80,7 @@ public:
 	bool isOSLNodeAlreadyDefined(MObject& oslnode);
 	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn);
 	MString createOSLConversionNode(MPlug& thisPlug, MPlug& directPlug);
+	void createOSLProjectionNodes(MPlug& plug);
 	void createOSLShadingNode(ShadingNode& snode);
 	void createOSLHelperNodes(ShadingNode& snode);
 	void createPlugHelperNode(MPlug plug, bool outType);

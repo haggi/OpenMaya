@@ -141,6 +141,8 @@ public:
 	float pSkySunSideGlow;
 	float pSkySunBleed;
 	float sunSizeMulti;
+	bool dumpAndResume;
+	MString dumpExrFile;
 //	------------- automatically created attributes end ----------- // 
 
 
