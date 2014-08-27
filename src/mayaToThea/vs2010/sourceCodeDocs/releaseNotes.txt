@@ -1,3 +1,10 @@
+release 0.02
+- maya 2015 version
+- automatic shading network creation with thea mat an simple brdf
+- fixed normal export problem
+- added procedural textures
+- added layered shading
+
 release 0.01:
 - first release
 - instancing

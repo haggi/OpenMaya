@@ -119,6 +119,7 @@ shader_start:DiffuseLight
 shader_end
 
 shader_start:TheaMaterial
+	inatt:layers:float
 	inatt:emitterAccuracy:float
 	inatt:ambientEmitter:bool
 	inatt:twosided:bool
@@ -132,6 +133,84 @@ shader_start:TheaMaterial
 	inatt:emitter:message
 	inatt:ambientLevel:float
 	inatt:activeDirt:bool
+	outatt:outColor:color
+shader_end
+
+shader_start:TheaChecker
+	inatt:high:color
+	inatt:low:color
+	outatt:outColor:color
+shader_end
+shader_start:TheaConcentric
+	outatt:outColor:color
+shader_end
+shader_start:TheaCurl
+	outatt:outColor:color
+shader_end
+shader_start:TheaMarble
+	inatt:high:color
+	inatt:low:color
+	inatt:octaves:int
+	inatt:omega:float
+	inatt:variation:float
+	outatt:outColor:color
+shader_end
+shader_start:TheaGradient
+	inatt:high:color
+	inatt:low:color
+	inatt:direction:vector
+	outatt:outColor:color
+shader_end
+shader_start:TheaPerlin
+	inatt:high:color
+	inatt:low:color
+	inatt:octaves:int
+	inatt:omega:float
+	inatt:turbulence:bool
+	outatt:outColor:color
+shader_end
+shader_start:TheaVoronoi
+	inatt:cellColor:color
+	inatt:ridgeColor:color
+	inatt:plateauColor:color
+	inatt:ridge:float
+	inatt:plateau:float
+	outatt:outColor:color
+shader_end
+shader_start:TheaWindy
+	inatt:high:color
+	inatt:low:color
+	inatt:strengthOctaves:int
+	inatt:strengthOmega:float
+	inatt:heightOctaves:int
+	inatt:heightOmega:float
+	inatt:symmetric:bool
+	outatt:outColor:color
+shader_end
+shader_start:TheaWireframe
+	inatt:innerColor:color
+	inatt:wireColor:color
+	inatt:thickness:float
+	inatt:fadeout:float
+	inatt:angle:float
+	outatt:outColor:color
+shader_end
+shader_start:TheaWood
+	inatt:high:color
+	inatt:low:color
+	outatt:outColor:color
+shader_end
+shader_start:TheaWeight
+	outatt:outColor:color
+shader_end
+shader_start:TheaCombine
+	outatt:outColor:color
+shader_end
+shader_start:TheaSynthesis
+	outatt:outColor:color
+shader_end
+shader_start:TheaBlackBody
+	inatt:temperature:float
 	outatt:outColor:color
 shader_end
 

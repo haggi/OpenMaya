@@ -13,6 +13,21 @@
 #include "shaders/TheaMaterialMaterial.h"
 #include "shaders/DiffuseLightMaterial.h"
 
+#include "textures/checker.h"
+#include "textures/concentric.h"
+#include "textures/curl.h"
+#include "textures/marble.h"
+#include "textures/gradient.h"
+#include "textures/perlin.h"
+#include "textures/voronoi.h"
+#include "textures/windy.h"
+#include "textures/wireframe.h"
+#include "textures/wood.h"
+#include "textures/weight.h"
+#include "textures/combine.h"
+#include "textures/synthesis.h"
+#include "textures/blackBody.h"
+
 static const MString BssdfBSDFsRegistrantId("BssdfBSDFPlugin");
 static const MString BssdfBSDFsDrawDBClassification("drawdb/shader/surface/BssdfBSDF");
 static const MString BssdfBSDFsFullClassification("thea/material:shader/surface:" + BssdfBSDFsDrawDBClassification);
@@ -35,6 +50,20 @@ static const MString DiffuseLightsRegistrantId("DiffuseLightPlugin");
 static const MString DiffuseLightsDrawDBClassification("drawdb/shader/surface/DiffuseLight");
 static const MString DiffuseLightsFullClassification("thea/material:shader/surface:" + DiffuseLightsDrawDBClassification);
 
+static const MString CheckerClassification("Thea/texture/TheaChecker");
+static const MString ConcentricClassification("Thea/texture/TheaConcentric");
+static const MString CurlClassification("Thea/texture/TheaCurl");
+static const MString MarbleClassification("Thea/texture/TheaMarble");
+static const MString GradientClassification("Thea/texture/TheaGradient");
+static const MString PerlinClassification("Thea/texture/TheaPerlin");
+static const MString VoronoiClassification("Thea/texture/TheaVoronoi");
+static const MString WindyClassification("Thea/texture/TheaWindy");
+static const MString WireframeClassification("Thea/texture/TheaWireframe");
+static const MString WoodClassification("Thea/texture/TheaWood");
+static const MString WeightClassification("Thea/texture/TheaWeight");
+static const MString CombineClassification("Thea/texture/TheaCombine");
+static const MString SynthesisClassification("Thea/texture/TheaSynthesis");
+static const MString BlackbodyClassification("Thea/texture/TheaBlackbody");
 
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.01"
@@ -64,6 +93,22 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS( plugin.registerNode( "ThinFilmBSDF", ThinFilmBSDF::id, ThinFilmBSDF::creator, ThinFilmBSDF::initialize, MPxNode::kDependNode, &ThinFilmBSDFsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "TheaMaterial", TheaMaterial::id, TheaMaterial::creator, TheaMaterial::initialize, MPxNode::kDependNode, &TheaMaterialsFullClassification ));
 	CHECK_MSTATUS( plugin.registerNode( "DiffuseLight", DiffuseLight::id, DiffuseLight::creator, DiffuseLight::initialize, MPxNode::kDependNode, &DiffuseLightsFullClassification ));
+
+	CHECK_MSTATUS(plugin.registerNode("TheaChecker", Checker::id, Checker::creator, Checker::initialize, MPxNode::kDependNode, &CheckerClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaConcentric", Concentric::id, Concentric::creator, Concentric::initialize, MPxNode::kDependNode, &ConcentricClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaCurl", Curl::id, Curl::creator, Curl::initialize, MPxNode::kDependNode, &CurlClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaMarble", Marble::id, Marble::creator, Marble::initialize, MPxNode::kDependNode, &MarbleClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaGradient", Gradient::id, Gradient::creator, Gradient::initialize, MPxNode::kDependNode, &GradientClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaPerlin", Perlin::id, Perlin::creator, Perlin::initialize, MPxNode::kDependNode, &PerlinClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaVoronoi", Voronoi::id, Voronoi::creator, Voronoi::initialize, MPxNode::kDependNode, &VoronoiClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaWindy", Windy::id, Windy::creator, Windy::initialize, MPxNode::kDependNode, &WindyClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaWireframe", Wireframe::id, Wireframe::creator, Wireframe::initialize, MPxNode::kDependNode, &WireframeClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaWood", Wood::id, Wood::creator, Wood::initialize, MPxNode::kDependNode, &WoodClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaWeight", Weight::id, Weight::creator, Weight::initialize, MPxNode::kDependNode, &WeightClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaCombine", Combine::id, Combine::creator, Combine::initialize, MPxNode::kDependNode, &CombineClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaSynthesis", Synthesis::id, Synthesis::creator, Synthesis::initialize, MPxNode::kDependNode, &SynthesisClassification));
+	CHECK_MSTATUS(plugin.registerNode("TheaBlackbody", Blackbody::id, Blackbody::creator, Blackbody::initialize, MPxNode::kDependNode, &BlackbodyClassification));
+
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToThea::creator, MayaToThea::newSyntax );
 	if (!status) {
@@ -129,6 +174,20 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS( plugin.deregisterNode( TheaMaterial::id ) );
 	CHECK_MSTATUS( plugin.deregisterNode( DiffuseLight::id ) );
 
+	CHECK_MSTATUS(plugin.deregisterNode(Checker::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Concentric::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Curl::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Marble::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Gradient::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Perlin::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Voronoi::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Windy::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Wireframe::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Wood::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Weight::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Combine::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Synthesis::id));
+	CHECK_MSTATUS(plugin.deregisterNode(Blackbody::id));
 
 	std::cout << "deregister mtth globals\n";
 	status = plugin.deregisterNode( MayaToTheaGlobals::id );

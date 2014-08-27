@@ -415,10 +415,11 @@ class TheaRenderer(Renderer.MayaToRenderer):
             bsdf.outColor >> mat.bsdf
             shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
             mat.outColor >> shadingGroup.surfaceShader
-        else:
-            mat = pm.shadingNode(nodeType, asShader=True)
-            shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
-            mat.outColor >> shadingGroup.surfaceShader
+            return
+        
+        mat = pm.shadingNode(nodeType, asShader=True)
+        shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+        mat.outColor >> shadingGroup.surfaceShader
             
             
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):

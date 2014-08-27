@@ -84,7 +84,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 	for( vertexIt.reset(); !vertexIt.isDone(); vertexIt.next())
 	{
 		MVector n;
-		MStatus s = vertexIt.getNormal(n, MSpace::kWorld);
+		MStatus s = vertexIt.getNormal(n, MSpace::kObject);
 		float2 uv;
 		if( !s )
 		{
@@ -123,6 +123,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 		{
 			obj->xmlMesh->pointList.push_back(TheaSDK::MeshPoint3D(points[ptId].x,points[ptId].y,points[ptId].z));
 			obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(vertexNormals[ptId].x,vertexNormals[ptId].y,vertexNormals[ptId].z));
+			logger.debug(MString("pt ") + ptId + " normal: " + vertexNormals[ptId].x + " " + vertexNormals[ptId].y + " " + vertexNormals[ptId].z);
 			if( validUvs )
 				obj->xmlMesh->uvMap[0].push_back(TheaSDK::UVPair(vtxU[ptId], vtxV[ptId]));
 		}

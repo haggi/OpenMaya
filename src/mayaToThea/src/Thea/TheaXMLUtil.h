@@ -41,6 +41,9 @@ struct Parameter{
 struct Object{
 	std::vector<Object> childObjectList;
 	std::vector<Parameter> parameterList;
+	std::vector<Object> LayerList;
+	std::vector<Parameter> LayerWeightList;
+	std::vector<Object> LayerTextureList;
 
 	MString mayaName;
 	MString name;
@@ -59,6 +62,29 @@ struct Object{
 		MString o;
 		if( !this->integrate)
 			o = MString("<Object Identifier=\"") + identifier + "\" Label=\"" + label + "\" Name=\"" + name + "\" Type=\"" + type + "\">\n";
+
+		if (this->LayerList.size() > 0)
+		{
+			o = MString("<Object Identifier=\"") + "Physically Layered Material" + "\" Label=\"" + "Physically Layered Material" + "\" Name=\"" + name + "_PhysLayerMat\" Type=\"" + "Material" + "\">\n";
+			for (size_t i = 0; i < LayerList.size(); i++)
+			{
+				o += LayerList[i].get();
+			}
+			for (size_t i = 0; i < this->LayerTextureList.size(); i++)
+			{
+				if (this->LayerTextureList[i].name != "Dummy")
+					o += LayerTextureList[i].get();
+			}
+			for (size_t i = 0; i < this->LayerWeightList.size(); i++)
+			{
+				o += LayerWeightList[i].get() + "\n";
+			}
+			MString numLayers = MString("") + (LayerList.size() - 1);
+			o += "<Parameter Name = \"Stacks\" Type = \"Integer\" Value = \"" + numLayers;
+			o += "\" />\n";
+			o += "</Object>\n";
+		}
+
 		for( size_t i=0; i<childObjectList.size();i++)
 			o += childObjectList[i].get() + "\n";
 		for( size_t i=0; i<parameterList.size();i++)

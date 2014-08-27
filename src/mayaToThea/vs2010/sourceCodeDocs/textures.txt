@@ -1,0 +1,64 @@
+#checker
+high, color, Color1, 0:0:0
+low, color, Color2, 1:1:1
+
+#concentric
+
+#curl
+
+#marble
+high, color, Color1, 0:0:0
+low, color, Color2, 1:1:1
+octaves, int, Octaves, 8
+omega, float, Omega, 0.5
+variation, float, Variation, 1.0
+
+#gradient
+high, color, Color1, 0:0:0
+low, color, Color2, 1:1:1
+direction, vector, Direction, 1:0:0
+
+#perlin
+high, color, Color1, 0:0:0
+low, color, Color2, 1:1:1
+octaves, int, Octaves, 8
+omega, float, Omega, 0.5
+turbulence, bool, Turbulence, false
+
+#voronoi
+cellColor, color, Cell Color, 0:0:0
+ridgeColor, color, Ridge Color, 0.5:0.5:0.5
+plateauColor, color, Plateau Color, 1:1:1
+ridge, float, Ridge, 0.06
+plateau, float, Plateau, 0.03
+
+#windy
+high, color, Color1, 0:0:0
+low, color, Color2, 1:1:1
+strengthOctaves, int, Strength Octaves, 3
+strengthOmega, float, Strength Omega, 0.5
+heightOctaves, int, Height Octaves, 6
+heightOmega, float, Height Omega, 0.5
+symmetric, bool, Symmetric, false
+
+#wireframe
+innerColor, color, Inner Color, 0:0:0
+wireColor, color, Wire Color, 1:1:1
+thickness, float, Thickness, 0.01
+fadeout, float, Fadeout, 0.01
+angle, float, Angle, 45.0
+
+#wood
+high, color, Color1, 0.4:0.4:0.4
+low, color, Color2, 0.95:0.95:0.95
+
+#weight
+
+#combine
+
+#synthesis
+
+#blackBody
+temperature, float, Temperature, 6500.0
+
+#tile

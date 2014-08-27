@@ -10,7 +10,11 @@ MString Parameter::get()
 	MString pnm = paramNameMap[name.asChar()].c_str();
 	if( pnm == "" )
 		pnm = MString("[UNDEF: ") + name + "]";
-	MString p = MString("<Parameter Name=\"") + pnm + "\" Type=\"" + typeMap[type.asChar()].c_str() + "\" Value=\"" + value + "\"/>";
+	MString p;
+	if (name.substring(0, MString("./Weight").length() - 1) == "./Weight")
+		p = MString("<Parameter Name=\"") + name + "\" Type=\"" + typeMap[type.asChar()].c_str() + "\" Value=\"" + value + "\"/>";
+	else
+		p = MString("<Parameter Name=\"") + pnm + "\" Type=\"" + typeMap[type.asChar()].c_str() + "\" Value=\"" + value + "\"/>";
 	return p;
 };
 
@@ -37,7 +41,6 @@ void initMaps()
 	typeMap["string"] = "String";
 	typeMap["int"] = "Integer";
 	typeMap["file"] = "File";
-
 
 	paramNameMap["emitterMinRays"] = "Emitter Min Rays";
 	paramNameMap["emitterMaxRays"] = "Emitter Max Rays";
@@ -95,13 +98,33 @@ void initMaps()
 	paramNameMap["unit"] = "Unit";
 	paramNameMap["efficacy"] = "Efficacy";
 
+	paramNameMap["high"] = "High Color";
+	paramNameMap["low"] = "Low Color";
+	paramNameMap["strengthOctaves"] = "Strength Octaves";
+	paramNameMap["strengthOmega"] = "Strength Omega";
+	paramNameMap["heightOctaves"] = "Height Octaves";
+	paramNameMap["heighthOmega"] = "Height Omega";
+	paramNameMap["symmetric"] = "Symmetric";
+	paramNameMap["cellColor"] = "Cell Color";
+	paramNameMap["ridgeColor"] = "Ridge Color";
+	paramNameMap["plateauColor"] = "Plateau Color";
+	paramNameMap["ridge"] = "Ridge";
+	paramNameMap["plateau"] = "Plateau";
+	paramNameMap["innerColor"] = "Inner Color";
+	paramNameMap["wireColor"] = "Wire Color";
+	paramNameMap["thickness"] = "Thickness";
+	paramNameMap["fadeout"] = "Fadeout";
+	paramNameMap["angle"] = "Angle";
+
+
 	texObjMap["color"] = "Color";
 	texObjMap["diffuseColor"] = "Diffuse";
 	texObjMap["translucentColor"] = "Translucent";
 	texObjMap["reflectanceColor"] = "Reflectance 0";
 	texObjMap["reflectance90Deg"] = "Reflectance 90";
 	texObjMap["transmittanceColor"] = "Transmittance";
-	
+
+
 }
 
 MString getType(std::string att)

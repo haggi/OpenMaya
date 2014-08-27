@@ -1,4 +1,4 @@
-#include "TheaMaterialMaterial.h"
+#include "LayeredMaterialMaterial.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -8,7 +8,6 @@
 #include <maya/MArrayDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnLightDataAttribute.h>
-#include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMessageAttribute.h>
 #include <maya/MFnGenericAttribute.h>
@@ -28,14 +27,14 @@
 // Autodesk Support. You will be assigned a unique range that you
 // can manage on your own.
 //
-MTypeId	TheaMaterial::id( 0x0011EF5E );
+MTypeId	LayeredMaterial::id( 0x0011EF58 );
 
 
 // the postConstructor() function is called immediately after the objects
 // constructor. It is not safe to call MPxNode member functions from the
 // constructor, instead they should be called here.
 //
-void TheaMaterial::postConstructor( )
+void LayeredMaterial::postConstructor( )
 {
     // setMPSafe indicates that this shader can be used for multiprocessor
     // rendering. For a shading node to be MP safe, it cannot access any
@@ -48,52 +47,34 @@ void TheaMaterial::postConstructor( )
 
 // DESCRIPTION: attribute information
 //
-MObject  TheaMaterial::aTranslucenceCoeff;
-MObject  TheaMaterial::aDiffuseReflectivity;
-MObject  TheaMaterial::aInTransparency;
-MObject  TheaMaterial::aColor;
-MObject  TheaMaterial::aIncandescence;
-MObject  TheaMaterial::aOutColor;
-MObject  TheaMaterial::aOutTransparency;
-MObject  TheaMaterial::aNormalCamera;
-MObject  TheaMaterial::aNormalCameraX;
-MObject  TheaMaterial::aNormalCameraY;
-MObject  TheaMaterial::aNormalCameraZ;
-MObject  TheaMaterial::aLightData;
-MObject  TheaMaterial::aLightDirection;
-MObject  TheaMaterial::aLightDirectionX;
-MObject  TheaMaterial::aLightDirectionY;
-MObject  TheaMaterial::aLightDirectionZ;
-MObject  TheaMaterial::aLightIntensity;
-MObject  TheaMaterial::aLightIntensityR;
-MObject  TheaMaterial::aLightIntensityG;
-MObject  TheaMaterial::aLightIntensityB;
-MObject  TheaMaterial::aLightAmbient;
-MObject  TheaMaterial::aLightDiffuse;
-MObject  TheaMaterial::aLightSpecular;
-MObject  TheaMaterial::aLightShadowFraction;
-MObject  TheaMaterial::aPreShadowIntensity;
-MObject  TheaMaterial::aLightBlindData;
-
-MObject  TheaMaterial::layerWeight;
-MObject  TheaMaterial::layerTexture;
-MObject  TheaMaterial::layerShader;
-MObject  TheaMaterial::layers;
+MObject  LayeredMaterial::aTranslucenceCoeff;
+MObject  LayeredMaterial::aDiffuseReflectivity;
+MObject  LayeredMaterial::aInTransparency;
+MObject  LayeredMaterial::aColor;
+MObject  LayeredMaterial::aIncandescence;
+MObject  LayeredMaterial::aOutColor;
+MObject  LayeredMaterial::aOutTransparency;
+MObject  LayeredMaterial::aNormalCamera;
+MObject  LayeredMaterial::aNormalCameraX;
+MObject  LayeredMaterial::aNormalCameraY;
+MObject  LayeredMaterial::aNormalCameraZ;
+MObject  LayeredMaterial::aLightData;
+MObject  LayeredMaterial::aLightDirection;
+MObject  LayeredMaterial::aLightDirectionX;
+MObject  LayeredMaterial::aLightDirectionY;
+MObject  LayeredMaterial::aLightDirectionZ;
+MObject  LayeredMaterial::aLightIntensity;
+MObject  LayeredMaterial::aLightIntensityR;
+MObject  LayeredMaterial::aLightIntensityG;
+MObject  LayeredMaterial::aLightIntensityB;
+MObject  LayeredMaterial::aLightAmbient;
+MObject  LayeredMaterial::aLightDiffuse;
+MObject  LayeredMaterial::aLightSpecular;
+MObject  LayeredMaterial::aLightShadowFraction;
+MObject  LayeredMaterial::aPreShadowIntensity;
+MObject  LayeredMaterial::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
-MObject TheaMaterial::emitterAccuracy;
-MObject TheaMaterial::ambientEmitter;
-MObject TheaMaterial::twosided;
-MObject TheaMaterial::emitterMaxRays;
-MObject TheaMaterial::shadowCatcher;
-MObject TheaMaterial::tracingDepth;
-MObject TheaMaterial::passiveEmitter;
-MObject TheaMaterial::bsdf;
-MObject TheaMaterial::perceptualLevel;
-MObject TheaMaterial::emitterMinRays;
-MObject TheaMaterial::emitter;
-MObject TheaMaterial::ambientLevel;
-MObject TheaMaterial::activeDirt;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -101,8 +82,8 @@ MObject TheaMaterial::activeDirt;
 // destruction
 //
 
-TheaMaterial::TheaMaterial() { }
-TheaMaterial::~TheaMaterial() { }
+LayeredMaterial::LayeredMaterial() { }
+LayeredMaterial::~LayeredMaterial() { }
 
 
 // The creator() method allows Maya to instantiate instances of this node.
@@ -110,12 +91,12 @@ TheaMaterial::~TheaMaterial() { }
 // either the createNode command or the MFnDependencyNode::create()
 // method.
 //
-// In this case creator simply returns a new TheaMaterial object.
+// In this case creator simply returns a new LayeredMaterial object.
 //
 
-void* TheaMaterial::creator()
+void* LayeredMaterial::creator()
 {
-    return new TheaMaterial();
+    return new LayeredMaterial();
 }
 
 
@@ -125,7 +106,7 @@ void* TheaMaterial::creator()
 // want to connect to.
 //
 
-MStatus TheaMaterial::initialize()
+MStatus LayeredMaterial::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -133,7 +114,6 @@ MStatus TheaMaterial::initialize()
 	MFnGenericAttribute gAttr;
 	MFnEnumAttribute eAttr;
 	MFnMessageAttribute mAttr;
-	MFnCompoundAttribute cAttr;
 
     MStatus status; // Status will be used to hold the MStatus value
                     // returned by each api function call. It is important
@@ -146,64 +126,7 @@ MStatus TheaMaterial::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
-	emitterAccuracy = nAttr.create("emitterAccuracy", "emitterAccuracy",  MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( emitterAccuracy ));
-
-	ambientEmitter = nAttr.create("ambientEmitter", "ambientEmitter",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( ambientEmitter ));
-
-	twosided = nAttr.create("twosided", "twosided",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( twosided ));
-
-	emitterMaxRays = nAttr.create("emitterMaxRays", "emitterMaxRays",  MFnNumericData::kInt, 100);
-	CHECK_MSTATUS(addAttribute( emitterMaxRays ));
-
-	shadowCatcher = nAttr.create("shadowCatcher", "shadowCatcher",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( shadowCatcher ));
-
-	tracingDepth = nAttr.create("tracingDepth", "tracingDepth",  MFnNumericData::kInt, -1);
-	CHECK_MSTATUS(addAttribute( tracingDepth ));
-
-	passiveEmitter = nAttr.create("passiveEmitter", "passiveEmitter",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( passiveEmitter ));
-
-	bsdf = mAttr.create("bsdf", "bsdf");
-	CHECK_MSTATUS(addAttribute( bsdf ));
-
-	perceptualLevel = nAttr.create("perceptualLevel", "perceptualLevel",  MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( perceptualLevel ));
-
-	emitterMinRays = nAttr.create("emitterMinRays", "emitterMinRays",  MFnNumericData::kInt, 8);
-	CHECK_MSTATUS(addAttribute( emitterMinRays ));
-
-	emitter = mAttr.create("emitter", "emitter");
-	CHECK_MSTATUS(addAttribute( emitter ));
-
-	ambientLevel = nAttr.create("ambientLevel", "ambientLevel",  MFnNumericData::kFloat, 1.0f);
-	CHECK_MSTATUS(addAttribute( ambientLevel ));
-
-	activeDirt = nAttr.create("activeDirt", "activeDirt",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( activeDirt ));
-
 //---------------------------- automatically created attributes end ------------------------------------
-
-	layerWeight = nAttr.create("layerWeight", "layerWeight", MFnNumericData::kFloat, 100.0f, &status);
-	//CHECK_MSTATUS(addAttribute(layerWeight));
-
-	layerTexture = nAttr.createColor("layerTexture", "layerTexture");
-	//CHECK_MSTATUS(addAttribute(layerTexture));
-
-	layerShader = nAttr.createColor("layerShader", "layerShader");
-	//CHECK_MSTATUS(addAttribute(layerShader));
-
-	layers = cAttr.create("layers", "layers");
-	cAttr.addChild(layerWeight);
-	cAttr.addChild(layerTexture);
-	cAttr.addChild(layerShader);
-	cAttr.setArray(true);
-	CHECK_MSTATUS(addAttribute(layers));
-
-
 
     // Input Attributes
     //
@@ -485,7 +408,7 @@ MStatus TheaMaterial::initialize()
 // - Data provides handles to all of the nodes attributes, only these
 //   handles should be used when performing computations.
 //
-MStatus TheaMaterial::compute( const MPlug& plug, MDataBlock& block )
+MStatus LayeredMaterial::compute( const MPlug& plug, MDataBlock& block )
 {
     // The plug parameter will allow us to determine which output attribute
     // needs to be calculated.

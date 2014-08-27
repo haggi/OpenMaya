@@ -1,7 +1,7 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-// Plugin TheaMaterial Shader Class //
+// Plugin LayeredMaterial Shader Class //
 
 
 // This class will create a new shader. Shaders are custom dependency
@@ -9,11 +9,11 @@
 // type MPxNode
 //
 
-class TheaMaterial : public MPxNode
+class LayeredMaterial : public MPxNode
 {
 public:
-                    TheaMaterial();
-    virtual         ~TheaMaterial();
+                    LayeredMaterial();
+    virtual         ~LayeredMaterial();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
@@ -38,26 +38,7 @@ public:
 
 protected:
 
-// layering
-	static MObject  layerWeight;
-	static MObject  layerTexture;
-	static MObject  layerShader;
-	static MObject  layers;
-
 //---------------------------- automatically created attributes start ------------------------------------
-	static    MObject emitterAccuracy;
-	static    MObject ambientEmitter;
-	static    MObject twosided;
-	static    MObject emitterMaxRays;
-	static    MObject shadowCatcher;
-	static    MObject tracingDepth;
-	static    MObject passiveEmitter;
-	static    MObject bsdf;
-	static    MObject perceptualLevel;
-	static    MObject emitterMinRays;
-	static    MObject emitter;
-	static    MObject ambientLevel;
-	static    MObject activeDirt;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

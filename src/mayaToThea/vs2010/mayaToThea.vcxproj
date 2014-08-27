@@ -130,6 +130,20 @@
     <ClCompile Include="..\src\shaders\TheaMaterialMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\ThinFilmBSDFMaterial.cpp" />
     <ClCompile Include="..\src\shaders\ThinFilmBSDFMaterialOverride.cpp" />
+    <ClCompile Include="..\src\textures\blackBody.cpp" />
+    <ClCompile Include="..\src\textures\checker.cpp" />
+    <ClCompile Include="..\src\textures\combine.cpp" />
+    <ClCompile Include="..\src\textures\concentric.cpp" />
+    <ClCompile Include="..\src\textures\curl.cpp" />
+    <ClCompile Include="..\src\textures\gradient.cpp" />
+    <ClCompile Include="..\src\textures\marble.cpp" />
+    <ClCompile Include="..\src\textures\perlin.cpp" />
+    <ClCompile Include="..\src\textures\synthesis.cpp" />
+    <ClCompile Include="..\src\textures\voronoi.cpp" />
+    <ClCompile Include="..\src\textures\weight.cpp" />
+    <ClCompile Include="..\src\textures\windy.cpp" />
+    <ClCompile Include="..\src\textures\wireframe.cpp" />
+    <ClCompile Include="..\src\textures\wood.cpp" />
     <ClCompile Include="..\src\Thea\TestRenderer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
@@ -211,6 +225,20 @@
     <ClInclude Include="..\src\shaders\TheaMaterialMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\ThinFilmBSDFMaterial.h" />
     <ClInclude Include="..\src\shaders\ThinFilmBSDFMaterialOverride.h" />
+    <ClInclude Include="..\src\textures\blackBody.h" />
+    <ClInclude Include="..\src\textures\checker.h" />
+    <ClInclude Include="..\src\textures\combine.h" />
+    <ClInclude Include="..\src\textures\concentric.h" />
+    <ClInclude Include="..\src\textures\curl.h" />
+    <ClInclude Include="..\src\textures\gradient.h" />
+    <ClInclude Include="..\src\textures\marble.h" />
+    <ClInclude Include="..\src\textures\perlin.h" />
+    <ClInclude Include="..\src\textures\synthesis.h" />
+    <ClInclude Include="..\src\textures\voronoi.h" />
+    <ClInclude Include="..\src\textures\weight.h" />
+    <ClInclude Include="..\src\textures\windy.h" />
+    <ClInclude Include="..\src\textures\wireframe.h" />
+    <ClInclude Include="..\src\textures\wood.h" />
     <ClInclude Include="..\src\Thea\TheaDummy.h" />
     <ClInclude Include="..\src\Thea\TheaRendererController.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
@@ -239,6 +267,9 @@
     <None Include="sourceCodeDocs\materials.txt" />
     <None Include="sourceCodeDocs\releaseNotes.txt" />
     <None Include="sourceCodeDocs\theainfos.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="sourceCodeDocs\textures.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

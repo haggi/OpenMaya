@@ -105,8 +105,24 @@ Thea:
 0x0011EF56	0x0011EF56	mayaToThea	mtth_renderGlobalsNode.cpp
 //0x0011EF57	0x0011EF57	mayaToCorona	coronaOSLNode.cpp
 0x0011EF58 - 0x0011EF5E mayaToThea shaderNodes
+0x0011EF5F mayaToThea checker.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/checker.cpp
+0x0011EF60 mayaToThea concentric.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/concentric.cpp
+0x0011EF61 mayaToThea curl.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/curl.cpp
+0x0011EF62 mayaToThea marble.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/marble.cpp
+0x0011EF63 mayaToThea gradient.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/gradient.cpp
+0x0011EF64 mayaToThea perlin.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/perlin.cpp
+0x0011EF65 mayaToThea voronoi.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/voronoi.cpp
+0x0011EF66 mayaToThea windy.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/windy.cpp
+0x0011EF67 mayaToThea wireframe.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/wireframe.cpp
+0x0011EF68 mayaToThea wood.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/wood.cpp
+0x0011EF69 mayaToThea weight.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/weight.cpp
+0x0011EF6A mayaToThea combine.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/combine.cpp
+0x0011EF6B mayaToThea synthesis.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/synthesis.cpp
+0x0011EF6C mayaToThea blackBody.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/textures/blackBody.cpp
 
-last one 0x0011EF5E
+0x0011EF6D mayaToThea layered.cpp H:/userDatenHaggi/documents/coding//OpenMaya/src/mayaToThea/src/shader/layered.cpp
+
+last one 0x0011EF6D
 
 
 

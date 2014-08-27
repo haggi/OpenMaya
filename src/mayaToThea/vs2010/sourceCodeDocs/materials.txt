@@ -105,3 +105,5 @@ backSide, bool, Back Side, false
 efficacy, float, Efficacy, 70.0
 power, float, Power, 500.0
 unit, enum, Unit, Watts, Watts:Lumens
+
+#Layered
