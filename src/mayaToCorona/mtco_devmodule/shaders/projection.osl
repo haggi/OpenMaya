@@ -1,3 +1,4 @@
+#include "mayaUtils.h"
 
 #define EPSILON 0.000001
 
@@ -117,7 +118,16 @@ vector concentric(vector p)
   st[0] = temp;
   return st;
 }
-shader projection( int projType = 0, color transparency=0, float uAngle=0, float vAngle=0, color image = color(1,0,0), vector uvCoord=0, matrix placementMatrix = 0, output vector outUVCoord=0, output color outColor=0)
+shader projection( int projType = 0, 
+				   color transparency=0, 
+				   float uAngle=0, 
+				   float vAngle=0, 
+				   color image = color(1,0,0), 
+				   vector uvCoord=0, 
+				   matrix placementMatrix = 0, 
+				   output vector outUVCoord=0, 
+				   MAYA_COLORBALANCE,
+				   MAYA_DEFAULT_OUTPUT)
 {
 	float s = u;
 	float t = v;
@@ -165,5 +175,5 @@ shader projection( int projType = 0, color transparency=0, float uAngle=0, float
 	}
 	outUVCoord = uvw;
 	
-	outColor = image;
+	outColor = colorBalance(image, colorGain, colorOffset);
 }

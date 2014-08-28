@@ -316,6 +316,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
 
     def editSun(self, *args):
+        if not self.rendererTabUiDict.has_key('environment'):
+            return
         uiDict = self.rendererTabUiDict['environment']    
         if self.renderGlobalsNode.useSunLightConnection.get():
             if len(self.renderGlobalsNode.sunLightConnection.inputs()) > 0:
@@ -377,8 +379,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 uiDict['physSkyPreetham'] = physSkyPreetham
                 uiDict['physSkyRawafake'] = physSkyRawafake
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
-        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])
+        pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])        
         self.CoronaEnvironmentUpdateTab()
+
         
     def CoronaEnvironmentUpdateTab(self):
         self.createGlobalsNode()
@@ -488,7 +491,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='bump2d', longName='normalMapB', attributeType='float', parent='normalMap' )        
         
         # gamma
-        pm.addExtension( nodeType='file', longName='fromSRGB', attributeType='bool', defaultValue=False) 
+        pm.addExtension( nodeType='file', longName='fromSRGB', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='file', longName='toSRGB', attributeType='bool', defaultValue=False) 
 
         #mesh

@@ -50,23 +50,17 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 
 	float pixelWorldRatio = context.pixelToWorldRatio();
 
-	sg.dudx = duvw.x() * pixelWorldRatio;
-	sg.dudy = duvw.y() * pixelWorldRatio;
-	sg.dvdx = sg.dudx;
-	sg.dvdy = sg.dudy;
-
-	if (this->bumpType == GETU)
-		sg.u += sg.dudx;
-	if (this->bumpType == GETV)
-		sg.u += sg.dvdx;
-
-	//if ((this->bumpType == GETU) || (this->bumpType == GETV))
-	//	logger.debug(MString("diffU ") + (sg.u - uvw.x()) + " diffV " + (sg.v - uvw.y()));
-
-	//logger.debug(MString("du ") + duvw.x() + " pwr " + pixelWorldRatio + " prod " + (duvw.x() * pixelWorldRatio));
-
 	T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
 	C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
+
+	//sg.dudx = duvw.x() * pixelWorldRatio;
+	//sg.dudy = duvw.y() * pixelWorldRatio;
+
+	sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length();
+	sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length();
+
+	sg.dvdx = sg.dudx;
+	sg.dvdy = sg.dudy;
 
 	//sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
 	//sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);
@@ -103,10 +97,6 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 	}
 	ctx = this->coronaRenderer->oslRenderer.ctx[threadId];
 
-	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
-	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.shadingsys->get_context();
-	//OSL::ShadingContext *ctx = this->coronaRenderer->oslRenderer.ctx[threadId];
-
 	OSL::Matrix44 Mshad;
 	OSL::Matrix44 Mobj;
 	OSL::ShaderGlobals sg;
@@ -133,35 +123,6 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 			}
 		}
 	}
-	//if (this->bumpType == GETU)
-	//{
-	//	//for (int i = 0; i < 20; i++)
-	//	//{
-	//		sg.u += 0.015;
-	//		if (this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
-	//		{
-	//			const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol(*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
-	//			if (data)
-	//			{
-	//				if (t.basetype == OSL::TypeDesc::FLOAT)
-	//				{
-	//					float r, g, b;
-	//					float *d = (float *)data;
-	//					r = *d++;
-	//					g = *d++;
-	//					b = *d;
-
-	//					if (rgb[0] != r)
-	//					{
-	//						logger.debug(MString("Found diff in eval"));
-	//						//logger.debug(MString("Found diff in eval at ") + sg.u + " diff " + (0.001 * i));
-	//						//break;
-	//					}
-	//				}
-	//			}
-	//		}
-	//	//}
-	//}
     outAlpha = 1.f;
 	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
 

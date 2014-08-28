@@ -50,22 +50,16 @@ shader file (vector uvCoord = 0,
 			 MAYA_COLORBALANCE,
 			 output color outColor = 0)
 {
-	outColor = color(1,0,1);
-	return;
-	
-	float s = 0.0;
-	float t = 0.0;
+	float s = u;
+	float t = v;
 	if( isconnected(uvCoord))
 	{
 		s = uvCoord[0];
 		t = uvCoord[1];
-	}else{
-		s = u;
-		t = v;
 	}
+	
 	t = 1.0 - t;
 	color C = texture(fileTextureName, s, t, "wrap", "periodic");
-	
 	if( fromSRGB > 0)
 	{
 		C = fromSRGBToLinear(C);
@@ -74,8 +68,6 @@ shader file (vector uvCoord = 0,
 	{
 		C = fromLinearToSRGB(C);
 	}
-	
-	C = colorBalance(C, colorGain, colorOffset);
-	
+	C = colorBalance(C, colorGain, colorOffset);	
 	outColor = C;
 }
