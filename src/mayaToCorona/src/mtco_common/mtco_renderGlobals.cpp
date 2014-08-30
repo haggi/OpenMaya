@@ -343,38 +343,26 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 		if(!getInt(MString("bvh_leafSizeMax"), CoronaGlobals, this->bvh_leafSizeMax))
 			throw("problem reading coronaGlobals.bvh_leafSizeMax");
 
-		if(!getFloat(MString("colorMapping_exponent"), CoronaGlobals, this->colorMapping_exponent))
-			throw("problem reading coronaGlobals.colorMapping_exponent");
-
 		if(!getFloat(MString("colorMapping_gamma"), CoronaGlobals, this->colorMapping_gamma))
 			throw("problem reading coronaGlobals.colorMapping_gamma");
 
-		if(!getFloat(MString("colorMapping_whiteMultiplier"), CoronaGlobals, this->colorMapping_whiteMultiplier))
-			throw("problem reading coronaGlobals.colorMapping_whiteMultiplier");
+		if(!getFloat(MString("colorMapping_colorTemperature"), CoronaGlobals, this->colorMapping_colorTemperature))
+			throw("problem reading coronaGlobals.colorMapping_colorTemperature");
 
-		if(!getFloat(MString("colorMapping_displayTemperature"), CoronaGlobals, this->colorMapping_displayTemperature))
-			throw("problem reading coronaGlobals.colorMapping_displayTemperature");
+		if(!getBool(MString("colorMapping_useSimpleExposure"), CoronaGlobals, this->colorMapping_useSimpleExposure))
+			throw("problem reading coronaGlobals.colorMapping_useSimpleExposure");
 
-		if(!getFloat(MString("colorMapping_sceneTemperature"), CoronaGlobals, this->colorMapping_sceneTemperature))
-			throw("problem reading coronaGlobals.colorMapping_sceneTemperature");
+		if(!getFloat(MString("colorMapping_simpleExposure"), CoronaGlobals, this->colorMapping_simpleExposure))
+			throw("problem reading coronaGlobals.colorMapping_simpleExposure");
 
-		if(!getFloat(MString("colorMapping_rBalance"), CoronaGlobals, this->colorMapping_rBalance))
-			throw("problem reading coronaGlobals.colorMapping_rBalance");
-
-		if(!getFloat(MString("colorMapping_gBalance"), CoronaGlobals, this->colorMapping_gBalance))
-			throw("problem reading coronaGlobals.colorMapping_gBalance");
-
-		if(!getFloat(MString("colorMapping_bBalance"), CoronaGlobals, this->colorMapping_bBalance))
-			throw("problem reading coronaGlobals.colorMapping_bBalance");
-
-		if(!getEnum(MString("colorMapping_workingSpace"), CoronaGlobals, this->colorMapping_workingSpace))
-			throw("problem reading coronaGlobals.colorMapping_workingSpace");
-
-		if(!getFloat(MString("colorMapping_contrast"), CoronaGlobals, this->colorMapping_contrast))
-			throw("problem reading coronaGlobals.colorMapping_contrast");
+		if(!getColor(MString("colorMapping_tint"), CoronaGlobals, this->colorMapping_tint))
+			throw("problem reading coronaGlobals.colorMapping_tint");
 
 		if(!getBool(MString("colorMapping_useContrast"), CoronaGlobals, this->colorMapping_useContrast))
 			throw("problem reading coronaGlobals.colorMapping_useContrast");
+
+		if(!getFloat(MString("colorMapping_contrast"), CoronaGlobals, this->colorMapping_contrast))
+			throw("problem reading coronaGlobals.colorMapping_contrast");
 
 		if(!getFloat(MString("colorMapping_highlightCompression"), CoronaGlobals, this->colorMapping_highlightCompression))
 			throw("problem reading coronaGlobals.colorMapping_highlightCompression");
@@ -411,6 +399,9 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 
 		if(!getBool(MString("renderstamp_use"), CoronaGlobals, this->renderstamp_use))
 			throw("problem reading coronaGlobals.renderstamp_use");
+
+		if(!getBool(MString("renderstamp_inFile"), CoronaGlobals, this->renderstamp_inFile))
+			throw("problem reading coronaGlobals.renderstamp_inFile");
 
 		if(!getString(MString("renderStamp"), CoronaGlobals, this->renderStamp))
 			throw("problem reading coronaGlobals.renderStamp");

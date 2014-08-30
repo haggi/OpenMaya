@@ -77,6 +77,8 @@ MPlug getDirectConnectedPlug(const char *attrName, MFnDependencyNode& depFn, boo
 
 MPlug getDirectConnectedPlug(MPlug& plug, bool dest);
 
+void getDirectConnectedPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs);
+
 void getConnectedChildrenPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& connectedChildren);
 
 bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild);

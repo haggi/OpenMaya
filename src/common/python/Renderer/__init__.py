@@ -228,6 +228,7 @@ global proc updateMayaImageFormatControl()
                 self.renderGlobalsNode = pm.ls(self.renderGlobalsNodeName)[0]
                 log.debug("Globals node replaced.")
                 self.afterGlobalsNodeReplacement()
+                self.renderGlobalsNode.setLocked(True)
             else:
                 self.renderGlobalsNode = pm.createNode(self.renderGlobalsNodeName)
                 self.renderGlobalsNode.rename(self.renderGlobalsNodeName)
@@ -239,6 +240,7 @@ global proc updateMayaImageFormatControl()
                     optimizedPath.makedirs()
                 self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
                 self.afterGlobalsNodeReplacement()
+                self.renderGlobalsNode.setLocked(True)
         else:
             log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
         pm.select(selection)

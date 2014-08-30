@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <INDIGO_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToIndigo\devkit\IndigoSDK</INDIGO_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-11.0</BOOST_ROOT>
-    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2014</MAYA_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
@@ -14,7 +14,7 @@
       <AdditionalIncludeDirectories>$(INDIGO_ROOT)\include;$(BOOST_ROOT)\include;$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PreprocessorDefinitions>MAYA2014;WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;_USRDLL;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;AW_NEW_IOSTREAMS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAYA2015;WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;_USRDLL;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;AW_NEW_IOSTREAMS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
@@ -29,9 +29,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-    <PostBuildEvent />
     <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2015.mll
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

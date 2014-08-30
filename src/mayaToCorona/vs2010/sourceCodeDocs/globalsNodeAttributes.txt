@@ -88,18 +88,15 @@ bvh_cost_iteration, float, Bvh_cost_iteration, 1.0 ,minmax:0.01:1000.0
 bvh_cost_triangle, float, Bvh_cost_triangle, 1.0 ,minmax:0.01:1000.0
 bvh_leafSizeMin, int, Bvh_leafsizemin, 2 ,minmax:1:1000
 bvh_leafSizeMax, int, Bvh_leafsizemax, 6 ,minmax:2:1000
-colorMapping_exponent, float, Colormapping_exponent, 0.0 ,minmax:-100.0:100.0
 colorMapping_gamma, float, Colormapping_gamma, 2.2 ,minmax:0.01:10.0
-colorMapping_whiteMultiplier, float, Colormapping_whitemultiplier, 1.0 ,minmax:0.01:999.0
-colorMapping_displayTemperature, float, Colormapping_displaytemperature, 6500.0 ,minmax:1000.0:99999.0
-colorMapping_sceneTemperature, float, Colormapping_scenetemperature, 6500.0 ,minmax:1000.0:99999.0
-colorMapping_rBalance, float, Colormapping_rbalance, 1.0 ,minmax:0.0:999.0
-colorMapping_gBalance, float, Colormapping_gbalance, 1.0 ,minmax:0.0:999.0
-colorMapping_bBalance, float, Colormapping_bbalance, 1.0 ,minmax:0.0:999.0
-colorMapping_workingSpace, enum, Colormapping Workingspace, Rgb ,Lms:Rgb
-colorMapping_contrast, float, Colormapping_contrast, 1.0 ,minmax:1.0:99.0
+colorMapping_colorTemperature, float, Color Temperature, 6500.0 ,minmax:1000.0:99999.0
+colorMapping_useSimpleExposure, bool, Use Simple Exposure, true
+colorMapping_simpleExposure, float, Simple Exposure, 1.0
+colorMapping_tint, color, Tint, 1.0:1.0:1.0
 colorMapping_useContrast, bool, Color Mapping Use Contrast, false
+colorMapping_contrast, float, Colormapping_contrast, 1.0 ,minmax:1.0:99.0
 colorMapping_highlightCompression, float, Highlight Compression, 1.0 ,minmax:0.01:99.0
+
 ppm_samplesPerIter, int, Ppm_samplesperiter, 1 ,minmax:1:50
 ppm_photonsPerIter, int, Ppm_photonsperiter, 5000 ,minmax:1000:99000000
 ppm_alpha, float, Ppm_alpha, 0.666 ,minmax:0.01:1.0
@@ -111,6 +108,7 @@ displace_maxProjectSize, float, Displace_maxprojectsize, 2.0 ,minmax:0.01:100.0
 displace_maxWorldSize, float, Displace_maxworldsize, 1.0 ,minmax:0.00001:10000000
 displace_maxSubdiv, int, Displace_maxsubdiv, 100 ,minmax:1:9999
 renderstamp_use, bool, Renderstamp_use, true
+renderstamp_inFile, bool, Save Renderstamp, false
 renderStamp, string, Renderstamp, "corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"
 bgColor, color, Background Color, 1.0:1.0:1.0
 bgType, enum, Background, 0, Color/Image:PhysicalSky

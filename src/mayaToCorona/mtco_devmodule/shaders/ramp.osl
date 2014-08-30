@@ -1,0 +1,114 @@
+#include "mayaUtils.h"
+
+#define MAXENTRIES 10
+#define RAMPCOLORIN vector col0=0,vector col1=0, vector col2=0, vector col3=0, vector col4=0, vector col5=0, vector col6=0, vector col7=0, vector col8=0, vector col9=0
+#define RAMPPOSIN float pos0=0,float pos1=0, float pos2=0, float pos3=0, float pos4=0, float pos5=0, float pos6=0, float pos7=0, float pos8=0, float pos9=0
+
+color interpolateColors( float first, float second, color firstColor, color secondColor, float pos[], float value, int interpolation)
+{
+	color outColor = 0;
+	if( value >= 1.0)
+	{
+		outColor = secondColor;
+	}
+	if( value <= 0.0)
+	{
+		outColor = firstColor;
+	}
+	float diff = second - first;
+	if( diff == 0.0 )
+	{
+		outColor = firstColor;
+	}else{
+	{
+		if( interpolation == 0) // none
+		{
+			outColor = firstColor;
+		}
+		if( interpolation == 1) // linear
+		{
+			float per = (value - first) / diff;
+			outColor = firstColor * (1.0 - per) + secondColor * per;
+		}
+	}
+	
+	return outColor;
+}
+
+void getColorsAtPos( color col[], float pos[], int interpolation, float value)
+{
+	float first=-1.0, second=2.0;
+	color firstColor = 0;
+	color secondColor = 0;
+	for( int i = 0; i < MAXENTRIES; i++)
+	{
+		float p = pos[i];
+		p = clamp(p, 0.0, 1.0);
+        if(( p <= value )&&( p > first ))
+        {
+            first = p;
+            firstColor = col[i];
+        }
+        if(( p >= value )&&( p < second ))
+        {
+            second = p;
+            secondColor = col[i];
+        }	
+	}
+	interpolateColors(first, second, fistColor, secondColor, value, interpolation);
+}
+
+shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpolation=0, vector uvCoord=0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
+{
+	outColor = color(0,0,0);
+	
+	float s = u;
+	float t = v;
+	if( isconnected(uvCoord))
+	{
+		s = uvCoord[0];
+		t = uvCoord[1];
+	}
+	float pos[MAXENTRIES];
+	color col[MAXENTRIES];
+	
+	col[0] = col0;
+	col[1] = col1;
+	col[2] = col2;
+	col[3] = col3;
+	col[4] = col4;
+	col[5] = col5;
+	col[6] = col6;
+	col[7] = col7;
+	col[8] = col8;
+	col[9] = col9;
+
+	pos[0] = pos0;
+	pos[1] = pos1;
+	pos[2] = pos2;
+	pos[3] = pos3;
+	pos[4] = pos4;
+	pos[5] = pos5;
+	pos[6] = pos6;
+	pos[7] = pos7;
+	pos[8] = pos8;
+	pos[9] = pos9;
+	
+	if( numEntries == 0)
+	{
+		outColor = color(0,0,0);
+	}
+	
+	if( numEntries == 1)
+	{
+		outColor = col0;
+	}
+	
+	if( numEntries > 1)
+	{
+		if(type == 0) // v-ramp
+		{
+			getColorsAtPos(col, pos, interpolation, t); 
+		}
+	}
+}

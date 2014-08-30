@@ -18,4 +18,5 @@ public:
     virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);
     virtual Corona::Dir evalBump(const Corona::IShadeContext&, Corona::TextureCache*);
     virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
+	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
 };

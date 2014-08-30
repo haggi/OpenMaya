@@ -43,8 +43,8 @@ void CoronaRenderer::saveImage()
 
 	
 	bool doToneMapping = true;
-	bool showRenderStamp = true;
-    for(int i = 0; i < bitmap.getHeight(); ++i) 
+	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_inFile;
+    for(int i = 0; i < bitmap.getHeight(); ++i)
 	{
         const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
         this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);

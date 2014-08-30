@@ -102,6 +102,15 @@ shader_start:place3dTexture
 	outatt:worldInverseMatrix:matrix
 shader_end
 
+shader_start:ramp
+	inatt:colorEntryList:color
+	inatt:type:int
+	inatt:interpolation:int
+	inatt:uvCoord:float2
+	outatt:outAlpha:float
+	outatt:outColor:color
+shader_end
+
 shader_start:solidFractal
 	inatt:placementMatrix:matrix
 	outatt:outColor:color
@@ -169,18 +178,15 @@ shader_start:OSLInterface
 shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
-shader_start:enviromentPortal
-	outatt:outColor:color
-shader_end
-
 shader_start:CoronaSurface
 	inatt:emissionExponent:float
+	inatt:volumeScatteringAlbedo:color
 	inatt:fresnelIor:float
 	inatt:roundCornersSamples:int
 	inatt:emissionSharpnessFakePoint:vector
-	inatt:emissionSharpnessFake:bool
-	inatt:attenuationColor:color
 	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
 	inatt:reflectivity:color
 	inatt:castsShadows:bool
 	inatt:translucency:color
@@ -197,10 +203,12 @@ shader_start:CoronaSurface
 	inatt:emissionColor:color
 	inatt:shadowCatcherMode:enum
 	inatt:anisotropy:float
+	inatt:volumeMeanCosine:float
 	inatt:refractionIndex:float
 	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
 	inatt:attenuationDist:float
-	inatt:normalCamera:vector
+	inatt:volumeSSSMode:bool
 	outatt:outColor:color
 shader_end
 

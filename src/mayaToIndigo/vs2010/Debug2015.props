@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <INDIGO_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToIndigo\devkit\IndigoSDK</INDIGO_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-11.0</BOOST_ROOT>
-    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2014</MAYA_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
@@ -16,17 +16,17 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <PreprocessorDefinitions>MAYA2014;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAYA2015;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib/vs2010_64_debug;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib/vs2012_64_debug;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
+#include "utilities/attrTools.h"
 
 static Logging logger;
 
@@ -94,8 +95,30 @@ void CoronaRenderer::defineSettings()
 
 	context.settings->set(Corona::PARAM_COLORMAP_GAMMA, this->mtco_renderGlobals->colorMapping_gamma); 
 	context.settings->set(Corona::PARAM_COLORMAP_HIGHLIGHT_COMPRESSION, this->mtco_renderGlobals->colorMapping_highlightCompression); 
+
 	if(  this->mtco_renderGlobals->colorMapping_useContrast)
 		context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, this->mtco_renderGlobals->colorMapping_contrast); 
+
+	context.settings->set(Corona::PARAM_COLORMAP_COLOR_TEMP, this->mtco_renderGlobals->colorMapping_colorTemperature);
+	context.settings->set(Corona::PARAM_COLORMAP_SIMPLE_EXPOSURE, this->mtco_renderGlobals->colorMapping_simpleExposure);
+	Corona::Rgb tintColor(this->mtco_renderGlobals->colorMapping_tint.r, this->mtco_renderGlobals->colorMapping_tint.g, this->mtco_renderGlobals->colorMapping_tint.b);
+	context.settings->set(Corona::PARAM_COLORMAP_TINT, tintColor);
+	context.settings->set(Corona::PARAM_COLORMAP_USE_PHOTOGRAPHIC, !this->mtco_renderGlobals->colorMapping_useSimpleExposure);
+
+	// v2.8 exposure from camera
+	for (int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
+	{
+		mtco_MayaObject *cam = (mtco_MayaObject *)this->mtco_scene->camList[objId];
+		if (!this->mtco_scene->isCameraRenderable(cam->mobject) && (!(cam->dagPath == this->mtco_scene->uiCamera)))
+		{
+			continue;
+		}
+		MFnDependencyNode camFn(cam->mobject);
+		float exposure = 1.0f;
+		context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
+		context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
+		context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f/getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+	}
 }
 
 //void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 

@@ -99,17 +99,13 @@ MObject MayaToCoronaGlobals::bvh_cost_iteration;
 MObject MayaToCoronaGlobals::bvh_cost_triangle;
 MObject MayaToCoronaGlobals::bvh_leafSizeMin;
 MObject MayaToCoronaGlobals::bvh_leafSizeMax;
-MObject MayaToCoronaGlobals::colorMapping_exponent;
 MObject MayaToCoronaGlobals::colorMapping_gamma;
-MObject MayaToCoronaGlobals::colorMapping_whiteMultiplier;
-MObject MayaToCoronaGlobals::colorMapping_displayTemperature;
-MObject MayaToCoronaGlobals::colorMapping_sceneTemperature;
-MObject MayaToCoronaGlobals::colorMapping_rBalance;
-MObject MayaToCoronaGlobals::colorMapping_gBalance;
-MObject MayaToCoronaGlobals::colorMapping_bBalance;
-MObject MayaToCoronaGlobals::colorMapping_workingSpace;
-MObject MayaToCoronaGlobals::colorMapping_contrast;
+MObject MayaToCoronaGlobals::colorMapping_colorTemperature;
+MObject MayaToCoronaGlobals::colorMapping_useSimpleExposure;
+MObject MayaToCoronaGlobals::colorMapping_simpleExposure;
+MObject MayaToCoronaGlobals::colorMapping_tint;
 MObject MayaToCoronaGlobals::colorMapping_useContrast;
+MObject MayaToCoronaGlobals::colorMapping_contrast;
 MObject MayaToCoronaGlobals::colorMapping_highlightCompression;
 MObject MayaToCoronaGlobals::ppm_samplesPerIter;
 MObject MayaToCoronaGlobals::ppm_photonsPerIter;
@@ -122,6 +118,7 @@ MObject MayaToCoronaGlobals::displace_maxProjectSize;
 MObject MayaToCoronaGlobals::displace_maxWorldSize;
 MObject MayaToCoronaGlobals::displace_maxSubdiv;
 MObject MayaToCoronaGlobals::renderstamp_use;
+MObject MayaToCoronaGlobals::renderstamp_inFile;
 MObject MayaToCoronaGlobals::renderStamp;
 MObject MayaToCoronaGlobals::bgColor;
 MObject MayaToCoronaGlobals::bgType;
@@ -543,58 +540,33 @@ MStatus	MayaToCoronaGlobals::initialize()
 	bvh_leafSizeMax = nAttr.create("bvh_leafSizeMax", "bvh_leafSizeMax",  MFnNumericData::kInt, 6);
 	CHECK_MSTATUS(addAttribute( bvh_leafSizeMax ));
 
-	colorMapping_exponent = nAttr.create("colorMapping_exponent", "colorMapping_exponent",  MFnNumericData::kFloat, 0.0);
-	nAttr.setMin(-100.0);
-	nAttr.setMax(100.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_exponent ));
-
 	colorMapping_gamma = nAttr.create("colorMapping_gamma", "colorMapping_gamma",  MFnNumericData::kFloat, 2.2);
 	nAttr.setMin(0.01);
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_gamma ));
 
-	colorMapping_whiteMultiplier = nAttr.create("colorMapping_whiteMultiplier", "colorMapping_whiteMultiplier",  MFnNumericData::kFloat, 1.0);
-	nAttr.setMin(0.01);
-	nAttr.setMax(999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_whiteMultiplier ));
-
-	colorMapping_displayTemperature = nAttr.create("colorMapping_displayTemperature", "colorMapping_displayTemperature",  MFnNumericData::kFloat, 6500.0);
+	colorMapping_colorTemperature = nAttr.create("colorMapping_colorTemperature", "colorMapping_colorTemperature",  MFnNumericData::kFloat, 6500.0);
 	nAttr.setMin(1000.0);
 	nAttr.setMax(99999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_displayTemperature ));
+	CHECK_MSTATUS(addAttribute( colorMapping_colorTemperature ));
 
-	colorMapping_sceneTemperature = nAttr.create("colorMapping_sceneTemperature", "colorMapping_sceneTemperature",  MFnNumericData::kFloat, 6500.0);
-	nAttr.setMin(1000.0);
-	nAttr.setMax(99999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_sceneTemperature ));
+	colorMapping_useSimpleExposure = nAttr.create("colorMapping_useSimpleExposure", "colorMapping_useSimpleExposure",  MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute( colorMapping_useSimpleExposure ));
 
-	colorMapping_rBalance = nAttr.create("colorMapping_rBalance", "colorMapping_rBalance",  MFnNumericData::kFloat, 1.0);
-	nAttr.setMin(0.0);
-	nAttr.setMax(999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_rBalance ));
+	colorMapping_simpleExposure = nAttr.create("colorMapping_simpleExposure", "colorMapping_simpleExposure",  MFnNumericData::kFloat, 1.0);
+	CHECK_MSTATUS(addAttribute( colorMapping_simpleExposure ));
 
-	colorMapping_gBalance = nAttr.create("colorMapping_gBalance", "colorMapping_gBalance",  MFnNumericData::kFloat, 1.0);
-	nAttr.setMin(0.0);
-	nAttr.setMax(999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_gBalance ));
+	colorMapping_tint = nAttr.createColor("colorMapping_tint", "colorMapping_tint");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( colorMapping_tint ));
 
-	colorMapping_bBalance = nAttr.create("colorMapping_bBalance", "colorMapping_bBalance",  MFnNumericData::kFloat, 1.0);
-	nAttr.setMin(0.0);
-	nAttr.setMax(999.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_bBalance ));
-
-	colorMapping_workingSpace = eAttr.create("colorMapping_workingSpace", "colorMapping_workingSpace", 1, &stat);
-	stat = eAttr.addField( "Lms", 0 );
-	stat = eAttr.addField( "Rgb", 1 );
-	CHECK_MSTATUS(addAttribute( colorMapping_workingSpace ));
+	colorMapping_useContrast = nAttr.create("colorMapping_useContrast", "colorMapping_useContrast",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( colorMapping_useContrast ));
 
 	colorMapping_contrast = nAttr.create("colorMapping_contrast", "colorMapping_contrast",  MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(1.0);
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_contrast ));
-
-	colorMapping_useContrast = nAttr.create("colorMapping_useContrast", "colorMapping_useContrast",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( colorMapping_useContrast ));
 
 	colorMapping_highlightCompression = nAttr.create("colorMapping_highlightCompression", "colorMapping_highlightCompression",  MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.01);
@@ -643,6 +615,9 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	renderstamp_use = nAttr.create("renderstamp_use", "renderstamp_use",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( renderstamp_use ));
+
+	renderstamp_inFile = nAttr.create("renderstamp_inFile", "renderstamp_inFile",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( renderstamp_inFile ));
 
 	renderStamp = tAttr.create("renderStamp", "renderStamp",  MFnNumericData::kString);
 	CHECK_MSTATUS(addAttribute( renderStamp ));

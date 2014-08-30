@@ -414,6 +414,53 @@ MPlug getDirectConnectedPlug(const char *attrName, MFnDependencyNode& depFn, boo
 	return returnPlug;
 }
 
+void getDirectConnectedPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs)
+{
+	MPlug thisPlug = depFn.findPlug(attrName);
+	if (!thisPlug.array())
+	{
+		if (thisPlug.isConnected())
+		{
+			thisNodePlugs.append(thisPlug);
+			otherSidePlugs.append(getDirectConnectedPlug(thisPlug, dest));
+			return;
+		}
+	}
+	for (uint i = 0; i < thisPlug.numElements(); i++)
+	{
+		if (thisPlug.isCompound())
+		{
+			// we only support simple compounds like colorListEntry
+			if (attrName == "colorEntryList")
+			{
+				if (thisPlug.child(0).isConnected())
+				{
+					MPlug connectedPlug = thisPlug.child(0);
+					thisNodePlugs.append(connectedPlug);
+					otherSidePlugs.append(getDirectConnectedPlug(connectedPlug, dest));
+				}
+				if (thisPlug.child(1).isConnected())
+				{
+					MPlug connectedPlug = thisPlug.child(1);
+					thisNodePlugs.append(connectedPlug);
+					otherSidePlugs.append(getDirectConnectedPlug(connectedPlug, dest));
+				}
+			}
+		}
+		else{
+			if (!thisPlug[i].isConnected())
+			{
+				continue;
+			}
+			MPlug connectedPlug = thisPlug[i];
+			thisNodePlugs.append(connectedPlug);
+			otherSidePlugs.append(getDirectConnectedPlug(connectedPlug, dest));
+		}
+	}
+
+}
+
+
 // gives the plug on the other side of this connected plug, children are ignored
 MPlug getDirectConnectedPlug(MPlug& plug, bool dest)
 {

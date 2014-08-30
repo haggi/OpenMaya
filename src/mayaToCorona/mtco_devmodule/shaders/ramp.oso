@@ -1,0 +1,40 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader ramp
+param	vector	col0	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col1	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col2	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col3	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col4	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col5	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col6	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col7	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col8	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	col9	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos0	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos1	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos2	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos3	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos4	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos5	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos6	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos7	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos8	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	pos9	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	numEntries	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	type	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	interpolation	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	uvCoord	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	color	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	color	colorGain	1 1 1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	color	colorOffset	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{0,0}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{2147483647,-1}
+const	color	$const1	0 0 1		 %read{0,0} %write{2147483647,-1}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\ramp.osl:10
+# }
+	assign		outColor $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\ramp.osl"} %line{10} %argrw{"wr"}
+	end

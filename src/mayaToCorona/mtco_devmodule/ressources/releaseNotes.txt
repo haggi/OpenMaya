@@ -1,3 +1,10 @@
+release 0.29
+- Option to save renderstamp to file 
+- switched to new api
+- added volume shader attributes for sss
+- added alpha mode for corona shader
+- updated color mapping methods
+
 release 0.28
 - added soft shadows to point light and spot light and directional light - sort of
 - added maya area light, but without texuring

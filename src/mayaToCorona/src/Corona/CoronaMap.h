@@ -63,7 +63,7 @@ public:
             virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) 
 			{
                 outAlpha = 1.f;
-				Corona::Rgb result = shader.eval(context);
+				Corona::Rgb result = shader.eval(context, false);
 				result.r() *= colorGain.r; 
 				result.r() += colorOffset.r; 
 				result.g() *= colorGain.g; 
@@ -80,7 +80,7 @@ public:
             virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) 
 			{
                 outAlpha = 1.f;
-                return shader.eval(context).grayValue();
+                return shader.eval(context, false).grayValue();
             }
 
             /// \brief Evaluates bump mapping for this texture and returns a vector that have to be added to the
@@ -100,7 +100,7 @@ public:
 			{
                 return "TextureMap";
             }
-
+			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
         };
 		TextureMap *tm = new TextureMap(data, 0);
 		tm->colorGain = colorGain;
@@ -131,13 +131,13 @@ public:
             virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
                 outAlpha = 1.f;
 				
-                return shader.eval(context);
+                return shader.eval(context, false);
             }
 
             /// \brief Same as evalColor, only scalar value is returned
             virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
                 outAlpha = 1.f;
-                return shader.eval(context).grayValue();
+                return shader.eval(context, false).grayValue();
             }
 
             /// \brief Evaluates bump mapping for this texture and returns a vector that have to be added to the
@@ -154,7 +154,7 @@ public:
             virtual Corona::String name() const {
                 return "TextureMap";
             }
-
+			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
         };
 
         return new TextureMap(data, 0);

@@ -608,13 +608,6 @@ entry['default'] = '6'
 entry['addInfo'] = 'minmax:2:1000'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_exponent'
-entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_exponent'
-entry['default'] = '0.0'
-entry['addInfo'] = 'minmax:-100.0:100.0'
-tab['entries'].append(entry)
-entry = {}
 entry['name'] = 'colorMapping_gamma'
 entry['type'] = 'float'
 entry['displayName'] = 'Colormapping_gamma'
@@ -622,53 +615,35 @@ entry['default'] = '2.2'
 entry['addInfo'] = 'minmax:0.01:10.0'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_whiteMultiplier'
+entry['name'] = 'colorMapping_colorTemperature'
 entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_whitemultiplier'
-entry['default'] = '1.0'
-entry['addInfo'] = 'minmax:0.01:999.0'
-tab['entries'].append(entry)
-entry = {}
-entry['name'] = 'colorMapping_displayTemperature'
-entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_displaytemperature'
+entry['displayName'] = 'Color Temperature'
 entry['default'] = '6500.0'
 entry['addInfo'] = 'minmax:1000.0:99999.0'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_sceneTemperature'
-entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_scenetemperature'
-entry['default'] = '6500.0'
-entry['addInfo'] = 'minmax:1000.0:99999.0'
+entry['name'] = 'colorMapping_useSimpleExposure'
+entry['type'] = 'bool'
+entry['displayName'] = 'Use Simple Exposure'
+entry['default'] = 'true'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_rBalance'
+entry['name'] = 'colorMapping_simpleExposure'
 entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_rbalance'
+entry['displayName'] = 'Simple Exposure'
 entry['default'] = '1.0'
-entry['addInfo'] = 'minmax:0.0:999.0'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_gBalance'
-entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_gbalance'
-entry['default'] = '1.0'
-entry['addInfo'] = 'minmax:0.0:999.0'
+entry['name'] = 'colorMapping_tint'
+entry['type'] = 'color'
+entry['displayName'] = 'Tint'
+entry['default'] = '1.0:1.0:1.0'
 tab['entries'].append(entry)
 entry = {}
-entry['name'] = 'colorMapping_bBalance'
-entry['type'] = 'float'
-entry['displayName'] = 'Colormapping_bbalance'
-entry['default'] = '1.0'
-entry['addInfo'] = 'minmax:0.0:999.0'
-tab['entries'].append(entry)
-entry = {}
-entry['name'] = 'colorMapping_workingSpace'
-entry['type'] = 'enum'
-entry['displayName'] = 'Colormapping Workingspace'
-entry['default'] = 'Rgb'
-entry['addInfo'] = 'Lms:Rgb'
+entry['name'] = 'colorMapping_useContrast'
+entry['type'] = 'bool'
+entry['displayName'] = 'Color Mapping Use Contrast'
+entry['default'] = 'false'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'colorMapping_contrast'
@@ -676,12 +651,6 @@ entry['type'] = 'float'
 entry['displayName'] = 'Colormapping_contrast'
 entry['default'] = '1.0'
 entry['addInfo'] = 'minmax:1.0:99.0'
-tab['entries'].append(entry)
-entry = {}
-entry['name'] = 'colorMapping_useContrast'
-entry['type'] = 'bool'
-entry['displayName'] = 'Color Mapping Use Contrast'
-entry['default'] = 'false'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'colorMapping_highlightCompression'
@@ -763,6 +732,12 @@ entry['name'] = 'renderstamp_use'
 entry['type'] = 'bool'
 entry['displayName'] = 'Renderstamp_use'
 entry['default'] = 'true'
+tab['entries'].append(entry)
+entry = {}
+entry['name'] = 'renderstamp_inFile'
+entry['type'] = 'bool'
+entry['displayName'] = 'Save Renderstamp'
+entry['default'] = 'false'
 tab['entries'].append(entry)
 entry = {}
 entry['name'] = 'renderStamp'

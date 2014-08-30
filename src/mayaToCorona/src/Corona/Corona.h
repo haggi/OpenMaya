@@ -81,6 +81,7 @@ public:
 	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn);
 	MString createOSLConversionNode(MPlug& thisPlug, MPlug& directPlug);
 	void createOSLProjectionNodes(MPlug& plug);
+	void createOSLRampShadingNode(ShadingNode& snode);
 	void createOSLShadingNode(ShadingNode& snode);
 	void createOSLHelperNodes(ShadingNode& snode);
 	void createPlugHelperNode(MPlug plug, bool outType);
@@ -93,7 +94,7 @@ public:
 	Corona::Abstract::Map *getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
-	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::Abstract::Map **bumpMap);
+	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	bool isSunLight(mtco_MayaObject *obj);
 	virtual void defineLights();

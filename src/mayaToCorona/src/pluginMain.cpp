@@ -19,7 +19,7 @@ static const MString CoronaOSLDrawDBClassification("drawdb/shader/surface/Corona
 static const MString CoronaOSLFullClassification("corona/utility:shader/utility:" + CoronaOSLDrawDBClassification);
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.28"
+#define VERSION "0.29"
 
 MStatus initializePlugin( MObject obj )
 {

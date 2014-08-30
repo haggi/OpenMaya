@@ -106,16 +106,13 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
                 with pm.frameLayout(label="Color Mapping", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-#                        self.addRenderGlobalsUIElement(attName = 'colorMapping_exponent', uiType = 'float', displayName = 'Colormapping_exponent', default='0.0', data='minmax:-100.0:100.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_highlightCompression', uiType = 'float', displayName = 'Highlight Compression', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_gamma', uiType = 'float', displayName = 'Gamma', default='2.2', data='minmax:0.001:10.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_whiteMultiplier', uiType = 'float', displayName = 'Colormapping_whitemultiplier', default='1.0', data='minmax:0.01:999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_displayTemperature', uiType = 'float', displayName = 'Colormapping_displaytemperature', default='6500.0', data='minmax:1000.0:99999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_sceneTemperature', uiType = 'float', displayName = 'Colormapping_scenetemperature', default='6500.0', data='minmax:1000.0:99999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_rBalance', uiType = 'float', displayName = 'Colormapping_rbalance', default='1.0', data='minmax:0.0:999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_gBalance', uiType = 'float', displayName = 'Colormapping_gbalance', default='1.0', data='minmax:0.0:999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_bBalance', uiType = 'float', displayName = 'Colormapping_bbalance', default='1.0', data='minmax:0.0:999.0', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'colorMapping_workingSpace', uiType = 'enum', displayName = 'Colormapping Workingspace', default='Rgb', data='Lms:Rgb', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_gamma', uiType = 'float', displayName = 'Colormapping_gamma', default='2.2', data='minmax:0.01:10.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_highlightCompression', uiType = 'float', displayName = 'Highlight Compression', default='1.0', data='minmax:0.01:99.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_colorTemperature', uiType = 'float', displayName = 'Color Temperature', default='6500.0', data='minmax:1000.0:99999.0', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_tint', uiType = 'color', displayName = 'Tint', default='1.0:1.0:1.0', uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_simpleExposure', uiType = 'float', displayName = 'Simple Exposure', default='1.0', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_useContrast', uiType = 'bool', displayName = 'Use Contrast', default='false', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
@@ -132,7 +129,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Dump and Resume', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Dump Exr File', default='""', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp_use', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'renderstamp_inFile', uiType = 'bool', displayName = 'Save File with Stamp', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
                     
 
@@ -218,6 +216,19 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         uiDict['colorMapping_contrast'].setEnable(False)
         if self.renderGlobalsNode.colorMapping_useContrast.get():
             uiDict['colorMapping_contrast'].setEnable(True)
+        uiDict['colorMapping_contrast'].setEnable(False)
+        
+        uiDict['colorMapping_simpleExposure'].setEnable(False)
+        if self.renderGlobalsNode.colorMapping_useSimpleExposure.get():
+            uiDict['colorMapping_simpleExposure'].setEnable(True)
+            
+        uiDict['renderstamp_inFile'].setEnable(False)
+        uiDict['renderstamp'].setEnable(False)
+        if self.renderGlobalsNode.renderstamp_use.get():
+            uiDict['renderstamp_inFile'].setEnable(True)
+            uiDict['renderstamp'].setEnable(True)
+            
+            
 
     def CoronaGiCreateTab(self):
         log.debug("CoronaGiCreateTab()")
@@ -471,7 +482,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Corona specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        pm.addExtension(nodeType="camera", longName="mtco_controls_exposure", attributeType="bool", defaultValue=False)
         pm.addExtension(nodeType="camera", longName="mtco_iso", attributeType="float", defaultValue=100.0)
         pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0, minValue=0.001, softMaxValue=2048.0)
         

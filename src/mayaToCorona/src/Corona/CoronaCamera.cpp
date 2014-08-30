@@ -57,10 +57,6 @@ void CoronaRenderer::defineCamera()
 		
 		Corona::CameraData cameraData;
 		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);
-		getBool(MString("mtco_controls_exposure"), camera, cameraData.controlsExposure);
-		getFloat(MString("mtco_iso"), camera, cameraData.iso);
-		getFloat(MString("mtco_shutterSpeed"), camera, cameraData.shutterSpeed);
-		cameraData.shutterSpeed = 1.0f/cameraData.shutterSpeed;
 
 		Corona::AnimatedFloat focalDist(focusDistance);
 		cameraData.perspective.focalDist = focalDist;

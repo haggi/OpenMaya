@@ -642,9 +642,9 @@ def shaderCreator(renderer, shortCut, mtype):
     createShaderDefinitionFile(attrDict, renderer, shortCut, mtype == "volumes")
     
 if __name__ == "__main__":
-    #shaderCreator("Corona", "mtco", "materials")
+    shaderCreator("Corona", "mtco", "materials")
     #shaderCreator("Indigo", "mtin", "materials")
     #shaderCreator("Indigo", "mtin", "volumes")
-    shaderCreator("Thea", "mtth", "materials")
+    #shaderCreator("Thea", "mtth", "materials")
     #START_NODE_ID
     print "ID: --> 0x%08X" % START_NODE_ID

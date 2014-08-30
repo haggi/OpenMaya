@@ -167,7 +167,6 @@ void CoronaRenderer::defineLights()
 		}
 		if( obj->mobject.hasFn(MFn::kAreaLight))
 		{
-			logger.warning(MString("Area light: ") + obj->shortName + " not yet supported.");
 			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			obj->geom = defineStdPlane();
 			Corona::AnimatedAffineTm atm;
@@ -176,7 +175,7 @@ void CoronaRenderer::defineLights()
 			if (getBoolAttr("mtco_envPortal", depFn, false))
 			{
 				Corona::EnviroPortalMtlData data;
-				Corona::IMaterial *mat = data.createMaterial();
+				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 				obj->instance->addMaterial(ms);
 			}
@@ -186,7 +185,7 @@ void CoronaRenderer::defineLights()
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
 				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
-				Corona::IMaterial *mat = data.createMaterial();
+				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 				bool visible = getBoolAttr("mtco_areaVisible", depFn, true);
 				ms.visibility.direct = visible;

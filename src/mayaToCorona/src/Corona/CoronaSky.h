@@ -19,6 +19,7 @@ public:
 	virtual Corona::Dir evalBump(const Corona::IShadeContext&, Corona::TextureCache*);
 	virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
 	void initSky();
+	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
 };
 
 void SkyMap::initSky()

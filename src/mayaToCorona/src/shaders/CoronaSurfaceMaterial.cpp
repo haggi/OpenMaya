@@ -90,12 +90,13 @@ MObject  CoronaSurface::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject CoronaSurface::emissionExponent;
+MObject CoronaSurface::volumeScatteringAlbedo;
 MObject CoronaSurface::fresnelIor;
 MObject CoronaSurface::roundCornersSamples;
 MObject CoronaSurface::emissionSharpnessFakePoint;
-MObject CoronaSurface::emissionSharpnessFake;
-MObject CoronaSurface::attenuationColor;
 MObject CoronaSurface::glassMode;
+MObject CoronaSurface::attenuationColor;
+MObject CoronaSurface::emissionSharpnessFake;
 MObject CoronaSurface::reflectivity;
 MObject CoronaSurface::castsShadows;
 MObject CoronaSurface::translucency;
@@ -112,9 +113,12 @@ MObject CoronaSurface::brdfType;
 MObject CoronaSurface::emissionColor;
 MObject CoronaSurface::shadowCatcherMode;
 MObject CoronaSurface::anisotropy;
+MObject CoronaSurface::volumeMeanCosine;
 MObject CoronaSurface::refractionIndex;
 MObject CoronaSurface::emissionDisableSampling;
+MObject CoronaSurface::alphaMode;
 MObject CoronaSurface::attenuationDist;
+MObject CoronaSurface::volumeSSSMode;
 //---------------------------- automatically created attributes end ------------------------------------
 
 
@@ -169,24 +173,28 @@ MStatus CoronaSurface::initialize()
 	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( emissionExponent ));
 
+	volumeScatteringAlbedo = nAttr.createColor("volumeScatteringAlbedo", "volumeScatteringAlbedo");
+	nAttr.setDefault(0.5,0.5,0.5);
+	CHECK_MSTATUS(addAttribute( volumeScatteringAlbedo ));
+
 	fresnelIor = nAttr.create("fresnelIor", "fresnelIor",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( fresnelIor ));
 
 	roundCornersSamples = nAttr.create("roundCornersSamples", "roundCornersSamples",  MFnNumericData::kInt, 10);
 	CHECK_MSTATUS(addAttribute( roundCornersSamples ));
 
-	emissionSharpnessFake = nAttr.create("emissionSharpnessFake", "emissionSharpnessFake",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( emissionSharpnessFake ));
-
-	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
-	nAttr.setDefault(0,0,0);
-	CHECK_MSTATUS(addAttribute( attenuationColor ));
-
 	glassMode = eAttr.create("glassMode", "glassMode", 0, &status);
 	status = eAttr.addField( "OneSided", 0 );
 	status = eAttr.addField( "TwoSided", 1 );
 	status = eAttr.addField( "Hybrid", 2 );
 	CHECK_MSTATUS(addAttribute( glassMode ));
+
+	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
+	nAttr.setDefault(0,0,0);
+	CHECK_MSTATUS(addAttribute( attenuationColor ));
+
+	emissionSharpnessFake = nAttr.create("emissionSharpnessFake", "emissionSharpnessFake",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( emissionSharpnessFake ));
 
 	reflectivity = nAttr.createColor("reflectivity", "reflectivity");
 	nAttr.setDefault(0,0,0);
@@ -250,14 +258,26 @@ MStatus CoronaSurface::initialize()
 	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.5);
 	CHECK_MSTATUS(addAttribute( anisotropy ));
 
+	volumeMeanCosine = nAttr.create("volumeMeanCosine", "volumeMeanCosine",  MFnNumericData::kFloat, 0.0);
+	CHECK_MSTATUS(addAttribute( volumeMeanCosine ));
+
 	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.2);
 	CHECK_MSTATUS(addAttribute( refractionIndex ));
 
 	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));
 
+	alphaMode = eAttr.create("alphaMode", "alphaMode", 0, &status);
+	status = eAttr.addField( "Default", 0 );
+	status = eAttr.addField( "Solid", 1 );
+	status = eAttr.addField( "Transparent", 2 );
+	CHECK_MSTATUS(addAttribute( alphaMode ));
+
 	attenuationDist = nAttr.create("attenuationDist", "attenuationDist",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( attenuationDist ));
+
+	volumeSSSMode = nAttr.create("volumeSSSMode", "volumeSSSMode",  MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute( volumeSSSMode ));
 
 //---------------------------- automatically created attributes end ------------------------------------
 

@@ -64,7 +64,6 @@ class AECoronaNodeTemplate(BaseTemplate):
     def buildCameraTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
-        self.addControl("mtco_controls_exposure", label="Controls Exposure")
         self.addControl("mtco_iso", label="Iso")
         self.addControl("mtco_shutterSpeed", label="Shutter Speed")
         self.endLayout()

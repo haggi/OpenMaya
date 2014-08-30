@@ -44,12 +44,13 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject emissionExponent;
+	static    MObject volumeScatteringAlbedo;
 	static    MObject fresnelIor;
 	static    MObject roundCornersSamples;
 	static    MObject emissionSharpnessFakePoint;
-	static    MObject emissionSharpnessFake;
-	static    MObject attenuationColor;
 	static    MObject glassMode;
+	static    MObject attenuationColor;
+	static    MObject emissionSharpnessFake;
 	static    MObject reflectivity;
 	static    MObject castsShadows;
 	static    MObject translucency;
@@ -66,9 +67,12 @@ protected:
 	static    MObject emissionColor;
 	static    MObject shadowCatcherMode;
 	static    MObject anisotropy;
+	static    MObject volumeMeanCosine;
 	static    MObject refractionIndex;
 	static    MObject emissionDisableSampling;
+	static    MObject alphaMode;
 	static    MObject attenuationDist;
+	static    MObject volumeSSSMode;
 //---------------------------- automatically created attributes end ------------------------------------
 
    // Translucence coefficient

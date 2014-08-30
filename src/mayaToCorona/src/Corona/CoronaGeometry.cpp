@@ -508,7 +508,7 @@ void CoronaRenderer::defineGeometry()
 		if (getBoolAttr("mtco_envPortal", depFn, false))
 		{
 			Corona::EnviroPortalMtlData data;
-			Corona::IMaterial *mat = data.createMaterial();
+			Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 			obj->instance->addMaterial(ms);
 		}
@@ -539,7 +539,7 @@ void CoronaRenderer::defineGeometry()
 		if (getBoolAttr("mtco_envPortal", depFn, false))
 		{
 			Corona::EnviroPortalMtlData data;
-			Corona::IMaterial *mat = data.createMaterial();
+			Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 			obj->instance->addMaterial(ms);
 		}
