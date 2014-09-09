@@ -23,7 +23,32 @@ class AETheaMaterialTemplate(BaseTemplate):
         self.buildBody(nodeName)
         self.addExtraControls("ExtraControls")
         self.endScrollLayout()
+
+    def layerCreate(self, attribute):
+        print "layerCreate attr", attribute
+        pmAttr = pm.Attribute(attribute)
+        self.thisNode = pmAttr.node()
+        parent = pm.setParent(query=True)
+        with pm.columnLayout(adjustableColumn=True, parent=parent):                    
+            pm.button(label="Create New Layer")
+            with pm.columnLayout(adjustableColumn=True):                    
+                for i in range(pmAttr.numElements()):
+                    with pm.frameLayout(collapsable=False, label="Layer {0}".format(i)):
+                        with pm.columnLayout(adjustableColumn=True):                    
+                            nameCtrl = pm.textFieldGrp(label="Name")
+                            pm.connectControl(nameCtrl, pmAttr[i].layerName, index = 2)
+                            weightCtrl = pm.floatFieldGrp(label="Weight", value1=0.0)
+                            pm.connectControl(weightCtrl, pmAttr[i].layerWeight, index = 2)
+                            texCtrl = pm.attrColorSliderGrp(at=pmAttr[i].layerTexture, label="Texture");
+                            shdCtrl = pm.attrColorSliderGrp(at = pmAttr[i].layerShader, label="Shader");
+                
         
+    def layerUpdate(self, attribute):
+        pmAttr = pm.Attribute(attribute)
+        self.thisNode = pmAttr.node()
+        parent = pm.setParent(query=True)
+        print "layerUpdate attr", attribute
+            
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Base Layer" ,collapse=0)
@@ -38,6 +63,7 @@ class AETheaMaterialTemplate(BaseTemplate):
         self.addControl("passiveEmitter", label="PassiveEmitter")
         self.endLayout()
         self.beginLayout("Layers" ,collapse=0)
+        self.callCustom(self.layerCreate, self.layerUpdate, 'layers')
         self.endLayout()
         self.beginLayout("Material General Settings" ,collapse=0)
         self.beginNoOptimize()

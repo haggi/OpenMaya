@@ -42,6 +42,7 @@ protected:
 	static MObject  layerWeight;
 	static MObject  layerTexture;
 	static MObject  layerShader;
+	static MObject  layerName;
 	static MObject  layers;
 
 //---------------------------- automatically created attributes start ------------------------------------

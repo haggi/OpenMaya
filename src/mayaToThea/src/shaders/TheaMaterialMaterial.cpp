@@ -78,6 +78,7 @@ MObject  TheaMaterial::aLightBlindData;
 MObject  TheaMaterial::layerWeight;
 MObject  TheaMaterial::layerTexture;
 MObject  TheaMaterial::layerShader;
+MObject  TheaMaterial::layerName;
 MObject  TheaMaterial::layers;
 
 //---------------------------- automatically created attributes start ------------------------------------
@@ -188,18 +189,20 @@ MStatus TheaMaterial::initialize()
 //---------------------------- automatically created attributes end ------------------------------------
 
 	layerWeight = nAttr.create("layerWeight", "layerWeight", MFnNumericData::kFloat, 100.0f, &status);
-	//CHECK_MSTATUS(addAttribute(layerWeight));
-
+	CHECK_MSTATUS(addAttribute(layerWeight));
 	layerTexture = nAttr.createColor("layerTexture", "layerTexture");
-	//CHECK_MSTATUS(addAttribute(layerTexture));
-
+	nAttr.setConnectable(true);
+	CHECK_MSTATUS(addAttribute(layerTexture));
 	layerShader = nAttr.createColor("layerShader", "layerShader");
-	//CHECK_MSTATUS(addAttribute(layerShader));
+	CHECK_MSTATUS(addAttribute(layerShader));
+	layerName = tAttr.create("layerName", "layerName", MFnNumericData::kString);
+	CHECK_MSTATUS(addAttribute(layerName));
 
 	layers = cAttr.create("layers", "layers");
 	cAttr.addChild(layerWeight);
 	cAttr.addChild(layerTexture);
 	cAttr.addChild(layerShader);
+	cAttr.addChild(layerName);
 	cAttr.setArray(true);
 	CHECK_MSTATUS(addAttribute(layers));
 

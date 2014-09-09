@@ -107,6 +107,7 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -203,6 +204,9 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />

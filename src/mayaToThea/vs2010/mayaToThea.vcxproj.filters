@@ -48,6 +48,9 @@
     <Filter Include="Source Files\textures">
       <UniqueIdentifier>{a9722b40-1188-41b7-9929-cc1569830698}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\swatchesRenderer">
+      <UniqueIdentifier>{55d40bc4-3d18-4fa7-9b66-5ddebb3ea6fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -257,6 +260,9 @@
     <ClCompile Include="..\src\textures\wood.cpp">
       <Filter>Source Files\textures</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -441,6 +447,15 @@
     </ClInclude>
     <ClInclude Include="..\src\textures\wood.h">
       <Filter>Source Files\textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h">
+      <Filter>common\swatchesRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

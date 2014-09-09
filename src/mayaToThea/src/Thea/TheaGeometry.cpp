@@ -75,7 +75,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 	MPointArray points;
 	meshFn.getPoints(points);
 	MFloatVectorArray normals, vertexNormals;
-	meshFn.getNormals( normals, MSpace::kWorld );
+	meshFn.getNormals( normals, MSpace::kObject );
 
 	MVectorArray vtxNormals;
 	MFloatArray vtxU, vtxV;
@@ -122,8 +122,8 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 		for( uint ptId = 0; ptId < points.length(); ptId++)
 		{
 			obj->xmlMesh->pointList.push_back(TheaSDK::MeshPoint3D(points[ptId].x,points[ptId].y,points[ptId].z));
-			obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(vertexNormals[ptId].x,vertexNormals[ptId].y,vertexNormals[ptId].z));
-			logger.debug(MString("pt ") + ptId + " normal: " + vertexNormals[ptId].x + " " + vertexNormals[ptId].y + " " + vertexNormals[ptId].z);
+			//obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(vertexNormals[ptId].x,vertexNormals[ptId].y,vertexNormals[ptId].z));
+			//logger.debug(MString("pt ") + ptId + " normal: " + vertexNormals[ptId].x + " " + vertexNormals[ptId].y + " " + vertexNormals[ptId].z);
 			if( validUvs )
 				obj->xmlMesh->uvMap[0].push_back(TheaSDK::UVPair(vtxU[ptId], vtxV[ptId]));
 		}
@@ -175,6 +175,10 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 				uint uvId0 = faceUVIndices[faceRelIds[0]];
 				uint uvId1 = faceUVIndices[faceRelIds[1]];
 				uint uvId2 = faceUVIndices[faceRelIds[2]];
+
+				obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(normals[normalId0].x, normals[normalId0].y, normals[normalId0].z));
+				obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(normals[normalId1].x, normals[normalId1].y, normals[normalId1].z));
+				obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(normals[normalId2].x, normals[normalId2].y, normals[normalId2].z));
 
 				obj->xmlMesh->indexList.push_back(TheaSDK::TriangleIndex(vtxId0, vtxId1, vtxId2));
 

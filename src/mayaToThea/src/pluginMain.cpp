@@ -1,9 +1,11 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
+#include <maya/MSwatchRenderRegister.h>
 
 #include "mayatoThea.h"
 #include "utilities/tools.h"
 #include "mtth_common/mtth_renderGlobalsNode.h"
+#include "swatchesRenderer\swatchRenderer.h"
 
 #include "shaders/BssdfBSDFMaterial.h"
 #include "shaders/GlossyBSDFMaterial.h"
@@ -28,6 +30,9 @@
 #include "textures/synthesis.h"
 #include "textures/blackBody.h"
 
+static const MString swatchName("TheaRenderSwatch");
+static const MString swatchFullName(":swatch/TheaRenderSwatch");
+
 static const MString BssdfBSDFsRegistrantId("BssdfBSDFPlugin");
 static const MString BssdfBSDFsDrawDBClassification("drawdb/shader/surface/BssdfBSDF");
 static const MString BssdfBSDFsFullClassification("thea/material:shader/surface:" + BssdfBSDFsDrawDBClassification);
@@ -45,7 +50,7 @@ static const MString ThinFilmBSDFsDrawDBClassification("drawdb/shader/surface/Th
 static const MString ThinFilmBSDFsFullClassification("thea/material:shader/surface:" + ThinFilmBSDFsDrawDBClassification);
 static const MString TheaMaterialsRegistrantId("TheaMaterialPlugin");
 static const MString TheaMaterialsDrawDBClassification("drawdb/shader/surface/TheaMaterial");
-static const MString TheaMaterialsFullClassification("thea/material:shader/surface:" + TheaMaterialsDrawDBClassification);
+static const MString TheaMaterialsFullClassification("thea/material:shader/surface:" + TheaMaterialsDrawDBClassification + swatchFullName);
 static const MString DiffuseLightsRegistrantId("DiffuseLightPlugin");
 static const MString DiffuseLightsDrawDBClassification("drawdb/shader/surface/DiffuseLight");
 static const MString DiffuseLightsFullClassification("thea/material:shader/surface:" + DiffuseLightsDrawDBClassification);
@@ -127,6 +132,11 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	if (MGlobal::mayaState() != MGlobal::kBatch)
+	{
+		MSwatchRenderRegister::registerSwatchRender(swatchName, SwatchRenderer::creator);
+	}
+
 	setRendererName("Thea");
 	setRendererShortCutName("mtThea");
 	setRendererHome(getenv("MTThea_HOME"));
@@ -149,7 +159,10 @@ MStatus uninitializePlugin( MObject obj)
 	MFnPlugin plugin( obj );
 
 	const MString UserClassify( "shader/surface" );
-	
+
+	if (MGlobal::mayaState() != MGlobal::kBatch)
+		MSwatchRenderRegister::unregisterSwatchRender(swatchName);
+
 	std::cout << "deregister mtth cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {

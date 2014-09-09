@@ -4,6 +4,7 @@ release 0.02
 - fixed normal export problem
 - added procedural textures
 - added layered shading
+- added normal per face vertex
 
 release 0.01:
 - first release
