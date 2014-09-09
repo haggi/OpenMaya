@@ -1,4 +1,4 @@
-shader blendColors (color color1 = color(1,0,0), color color2 = color(0,0,1), float blender = 0.5, output color outOutput = color(0,0,0))
+shader blendColors (vector color1 = vector(1,0,0), vector color2 = vector(0,0,1), float blender = 0.5, output vector outOutput = vector(0,0,0))
 {
 	outOutput = color1 * blender + color2 * (1 - blender);
 }

@@ -2,19 +2,19 @@ OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader checker
 param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1}
-param	color	color1	1 0 0 		 %read{12,12} %write{2147483647,-1}
-param	color	color2	0 0 0 		 %read{14,14} %write{2147483647,-1}
+param	vector	color1	1 1 1 		 %read{12,12} %write{2147483647,-1}
+param	vector	color2	0 0 0 		 %read{14,14} %write{2147483647,-1}
 param	float	contrast	1 		 %read{12,13} %write{2147483647,-1}
-oparam	float	outAlpha	1 		 %read{2147483647,-1} %write{22,22}
-oparam	color	outColor	0 0 0 		 %read{22,22} %write{21,21}
+oparam	float	outAlpha	1 		 %read{2147483647,-1} %write{23,23}
+oparam	vector	outColor	0 0 0 		 %read{22,22} %write{21,21}
 global	float	u	 %read{6,6} %write{2147483647,-1}
 global	float	v	 %read{7,7} %write{2147483647,-1}
 local	float	s	 %read{8,8} %write{0,6}
 local	float	t	 %read{10,10} %write{1,7}
 local	float	ss	 %read{15,15} %write{9,9}
 local	float	tt	 %read{15,15} %write{11,11}
-local	color	contrastColor1	 %read{21,21} %write{12,12}
-local	color	contrastColor2	 %read{21,21} %write{14,14}
+local	vector	contrastColor1	 %read{21,21} %write{12,12}
+local	vector	contrastColor2	 %read{21,21} %write{14,14}
 const	float	$const1	0		 %read{0,1} %write{2147483647,-1}
 temp	int	$tmp1	 %read{3,3} %write{2,2}
 const	int	$const2	0		 %read{4,4} %write{2147483647,-1}
@@ -31,6 +31,7 @@ const	string	$const9	"mod"		 %read{16,16} %write{2147483647,-1}
 temp	float	$tmp7	 %read{19,19} %write{18,18}
 temp	float	$tmp8	 %read{18,18} %write{17,17}
 temp	float	$tmp9	 %read{20,20} %write{19,19}
+temp	color	$tmp10	 %read{23,23} %write{22,22}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:4
 # 	float t = 0.0;
@@ -63,14 +64,14 @@ code ___main___
 	mul		$tmp3 t $const5 	%line{15} %argrw{"wrr"}
 	floor		tt $tmp3 	%argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:17
-# 	color contrastColor2 = color2 * (1.0 - contrast);
+# 	vector contrastColor2 = color2 * (1.0 - contrast);
 	mul		contrastColor1 color1 contrast 	%line{17} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:18
 #     outColor = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
 	sub		$tmp4 $const6 contrast 	%line{18} %argrw{"wrr"}
 	mul		contrastColor2 color2 $tmp4 	%argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:19
-# 	outAlpha = luminance(outColor);
+# 	outAlpha = luminance(color(outColor));
 	add		$tmp6 ss tt 	%line{19} %argrw{"wrr"}
 	functioncall	$const9 21 	%argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:135
@@ -80,9 +81,10 @@ code ___main___
 	mul		$tmp9 $const8 $tmp7 	%argrw{"wrr"}
 	sub		$tmp5 $tmp6 $tmp9 	%argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:19
-# 	outAlpha = luminance(outColor);
+# 	outAlpha = luminance(color(outColor));
 	mix		outColor contrastColor1 contrastColor2 $tmp5 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl"} %line{19} %argrw{"wrrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\checker.osl:20
-# 
-	luminance	outAlpha outColor 	%line{20} %argrw{"wr"}
+# }
+	assign		$tmp10 outColor 	%line{20} %argrw{"wr"}
+	luminance	outAlpha $tmp10 	%argrw{"wr"}
 	end

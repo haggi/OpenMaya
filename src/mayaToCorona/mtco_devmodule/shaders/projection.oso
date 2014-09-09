@@ -2,25 +2,25 @@ OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader projection
 param	int	projType	0 		 %read{6,206} %write{2147483647,-1}
-param	color	transparency	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	transparency	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	uAngle	0 		 %read{29,59} %write{2147483647,-1}
 param	float	vAngle	0 		 %read{44,44} %write{2147483647,-1}
-param	color	image	1 0 0 		 %read{250,250} %write{2147483647,-1}
+param	vector	image	1 0 0 		 %read{250,250} %write{2147483647,-1}
 param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1}
 param	matrix	placementMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{8,208} %write{2147483647,-1}
 oparam	vector	outUVCoord	0 0 0 		 %read{2147483647,-1} %write{248,248}
-param	color	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
-param	color	colorGain	1 1 1 		 %read{251,251} %write{2147483647,-1}
-param	color	colorOffset	0 0 0 		 %read{252,252} %write{2147483647,-1}
+param	vector	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorGain	1 1 1 		 %read{251,251} %write{2147483647,-1}
+param	vector	colorOffset	0 0 0 		 %read{252,252} %write{2147483647,-1}
 param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{253,253}
+oparam	vector	outColor	0 0 0 		 %read{2147483647,-1} %write{253,253}
 oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{2147483647,-1}
 global	point	P	 %read{8,208} %write{2147483647,-1}
 global	normal	N	 %read{150,166} %write{2147483647,-1}
 global	float	u	 %read{0,0} %write{2147483647,-1}
 global	float	v	 %read{1,1} %write{2147483647,-1}
-local	color	___315_result	 %read{251,253} %write{250,252}
+local	vector	___315_result	 %read{251,253} %write{250,252}
 local	vector	___321_st	 %read{20,20} %write{14,19}
 local	vector	___322_st	 %read{49,49} %write{33,48}
 local	vector	___322_v	 %read{26,39} %write{25,25}
@@ -682,7 +682,7 @@ code ___main___
 # }
 	functioncall	$const24 254 	%line{179} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:18
-# 	color result = c;
+# 	vector result = c;
 	assign		___315_result image 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{18} %argrw{"wr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:19
 # 	result *= colorGain;

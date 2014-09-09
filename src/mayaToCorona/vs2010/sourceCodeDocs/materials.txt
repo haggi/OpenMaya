@@ -29,6 +29,7 @@ shadowCatcherMode, enum, Shadow Catcher Mode, 0, Off:Final:Composite
 bgOverride, color, BG Override, 0:0:0
 castsShadows, bool, Casts Shadows, true
 alphaMode, enum, Alpha Mode, 0, Default:Solid:Transparent
+opacity, color, Opacity, 1:1:1
 
 #OSLNode
 color, color, Color, 1:1:1

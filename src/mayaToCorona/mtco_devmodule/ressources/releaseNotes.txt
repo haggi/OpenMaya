@@ -2,8 +2,9 @@ release 0.29
 - Option to save renderstamp to file 
 - switched to new api
 - added volume shader attributes for sss
-- added alpha mode for corona shader
+- added alpha mode and opactiy for corona shader
 - updated color mapping methods
+- OSL: added ramp node
 
 release 0.28
 - added soft shadows to point light and spot light and directional light - sort of

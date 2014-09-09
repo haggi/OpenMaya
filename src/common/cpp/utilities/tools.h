@@ -77,6 +77,10 @@ MPlug getDirectConnectedPlug(const char *attrName, MFnDependencyNode& depFn, boo
 
 MPlug getDirectConnectedPlug(MPlug& plug, bool dest);
 
+void getConnectedChildPlugs(MPlug& plug, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs);
+
+void getConnectedChildPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs);
+
 void getDirectConnectedPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs);
 
 void getConnectedChildrenPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& connectedChildren);
@@ -84,6 +88,8 @@ void getConnectedChildrenPlugs(const char *attrName, MFnDependencyNode& depFn, b
 bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool primaryChild);
 
 bool isConnected(const char *attrName, MObject& node, bool dest);
+
+int physicalIndex(MPlug& p);
 
 bool getOtherSidePlugName(MString& plugName, MObject& thisObject, MString& otherSidePlugName);
 

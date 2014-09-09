@@ -1,11 +1,5 @@
 #include "mayaUtils.h"
 
-/*
-#define MAYA_COLORBALANCE color defaultColor = color(.5,.5,.5), \
-						  color colorGain = color(1.0,1.0,1.0), \
-						  color colorOffset = color(.0,.0,.0)
-*/
-
 float floatFromSRGB( float srgbFloat)
 {
 	float f = clamp(srgbFloat, 0.0, 1.0);
@@ -48,7 +42,7 @@ shader file (vector uvCoord = 0,
 			 int fromSRGB = 0,
 			 int toSRGB = 0,
 			 MAYA_COLORBALANCE,
-			 output color outColor = 0)
+			 MAYA_DEFAULT_OUTPUT)
 {
 	float s = u;
 	float t = v;
@@ -58,7 +52,6 @@ shader file (vector uvCoord = 0,
 		t = uvCoord[1];
 	}
 	
-	t = 1.0 - t;
 	color C = texture(fileTextureName, s, t, "wrap", "periodic");
 	if( fromSRGB > 0)
 	{
@@ -68,6 +61,6 @@ shader file (vector uvCoord = 0,
 	{
 		C = fromLinearToSRGB(C);
 	}
-	C = colorBalance(C, colorGain, colorOffset);	
-	outColor = C;
+	vector CB = colorBalance(vector(C), colorGain, colorOffset);	
+	outColor = CB;
 }

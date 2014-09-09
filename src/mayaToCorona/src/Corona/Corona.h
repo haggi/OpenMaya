@@ -91,7 +91,7 @@ public:
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
 	void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
-	Corona::Abstract::Map *getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
+	Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 	void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
 	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);

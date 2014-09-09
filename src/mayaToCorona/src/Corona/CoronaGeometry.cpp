@@ -9,6 +9,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MTransformationMatrix.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MDataHandle.h>
 
 #include "utilities/logging.h"
 #include "utilities/tools.h"
@@ -79,13 +80,25 @@ void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothM
 	}
 	// it is not working yet with per face shading
 
-	MFnMesh meshDp(obj->dagPath);
-	MFnMesh meshfn(meshDp.generateSmoothMesh());
+	//MFnMesh meshDp(obj->dagPath);
+	//MFnMesh meshfn(meshDp.generateSmoothMesh());
 	MObjectArray shaders;
 	MIntArray indices;
-	stat = meshfn.getConnectedShaders(0, shaders, indices);
-	int nums = shaders.length();
-	int numi = indices.length();
+	
+	MFnMesh me(obj->dagPath);
+	MPlug plug = me.findPlug("outSmoothMesh", &stat);	
+	MDataHandle handle = plug.asMDataHandle();
+	MObject meshObj = handle.asMesh();
+	//stat = plug.getValue(meshObj);
+	MFnMesh smMesh(meshObj, &stat);
+
+	MObjectArray sets, comps;
+	smMesh.getConnectedSetsAndMembers(0, sets, comps, true);
+
+	//stat = smMesh.getConnectedShaders(0, shaders, indices);
+	int nums = sets.length();
+	int numi = comps.length();
+
 	return;
 
 	MObject meshDataObj = smoothMeshData.create();	
@@ -206,7 +219,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	MStatus stat = MStatus::kSuccess;
 	
 	bool hasDisplacement = false;
-	Corona::Abstract::Map *displacementMap = NULL;
+	Corona::SharedPtr<Corona::Abstract::Map> displacementMap = NULL;
 	float displacementMin = 0.0f;
 	float displacementMax = 0.01f;
 

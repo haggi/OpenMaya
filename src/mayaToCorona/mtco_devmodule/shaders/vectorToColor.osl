@@ -1,6 +1,0 @@
-shader vectorToColor( vector inValue = 0, output color outValue= 0)
-{
-	outValue[0] = inValue[0];
-	outValue[1] = inValue[1];
-	outValue[2] = inValue[2];
-}

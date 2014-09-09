@@ -29,8 +29,8 @@ void CoronaRenderer::defineEnvironment()
 				return;
 			}
 			MapLoader loader;
-			Corona::Abstract::Map *texmap = loader.loadBitmap(fileName);
-			if (texmap == NULL)
+			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
+			if (texmap.getReference() == NULL)
 			{
 				logger.error(MString("Unable to read bg file: ") + texName);
 			}

@@ -1,14 +1,8 @@
 #include "mayaUtils.h"
 
-shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALANCE, output color outColor=0)
+shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
 {
 	vector uvw;
-	if( getmessage("project_uv", uvw) != 0)
-	{
-		printf("afsadfsf\n");
-		outColor = color(1,0,0);
-		return;
-	}
 	float s = 0.0;
 	float t = 0.0;
 	if( isconnected(uvCoord))
@@ -26,7 +20,7 @@ shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALAN
     
 	float a = smoothstep(uWidth / 2, .5, s) * (1 - smoothstep(0.5, 1 - (uWidth / 2), s));
 	float b = smoothstep(vWidth / 2, .5, t) * (1 - smoothstep(0.5, 1 - (vWidth / 2), t));
-	color C = sqrt(abs(a * b));
+	vector C = sqrt(abs(a * b));
 	
 	C = colorBalance(C, colorGain, colorOffset);
 	outColor = C;

@@ -27,6 +27,8 @@ void CoronaRenderer::defineSettings()
 		context.settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_BUCKET);
 	if( this->mtco_renderGlobals->renderer == 2) // vcm rendering
 		context.settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_VCM);
+
+	context.settings->set(Corona::PARAM_RESUME_RENDERING, false);
 	
 	context.settings->set(Corona::PARAM_BUCKET_SIZE, this->mtco_renderGlobals->image_bucketSize);
 	context.settings->set(Corona::PARAM_BUCKET_INITIAL_SAMPLES, this->mtco_renderGlobals->buckets_initialSamples);

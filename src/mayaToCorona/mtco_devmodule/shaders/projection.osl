@@ -119,10 +119,10 @@ vector concentric(vector p)
   return st;
 }
 shader projection( int projType = 0, 
-				   color transparency=0, 
+				   vector transparency=0, 
 				   float uAngle=0, 
 				   float vAngle=0, 
-				   color image = color(1,0,0), 
+				   vector image = vector(1,0,0), 
 				   vector uvCoord=0, 
 				   matrix placementMatrix = 0, 
 				   output vector outUVCoord=0, 

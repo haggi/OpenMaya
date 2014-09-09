@@ -293,7 +293,6 @@ void CoronaRenderer::render()
     context.core->renderFrame();
 	context.isCancelled = true;
     context.core->endSession();
-    
 	this->saveImage();
 
     // delete what we have created and call deallocation functions for objects the core has created

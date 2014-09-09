@@ -56,8 +56,8 @@ void CoronaRenderer::defineCamera()
 		//Corona::AnimatedFloat fieldOfView(Corona::DEG_TO_RAD(45.f));
 		
 		Corona::CameraData cameraData;
+		//cameraData.type
 		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);
-
 		Corona::AnimatedFloat focalDist(focusDistance);
 		cameraData.perspective.focalDist = focalDist;
 		cameraData.perspective.fStop = fStop;

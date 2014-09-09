@@ -43,6 +43,7 @@ public:
 protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
+	static    MObject opacity;
 	static    MObject emissionExponent;
 	static    MObject volumeScatteringAlbedo;
 	static    MObject fresnelIor;

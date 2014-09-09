@@ -89,6 +89,7 @@ MObject  CoronaSurface::aPreShadowIntensity;
 MObject  CoronaSurface::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
+MObject CoronaSurface::opacity;
 MObject CoronaSurface::emissionExponent;
 MObject CoronaSurface::volumeScatteringAlbedo;
 MObject CoronaSurface::fresnelIor;
@@ -170,6 +171,10 @@ MStatus CoronaSurface::initialize()
                     //
 
 //---------------------------- automatically created attributes start ------------------------------------
+	opacity = nAttr.createColor("opacity", "opacity");
+	nAttr.setDefault(1.0,1.0,1.0);
+	CHECK_MSTATUS(addAttribute( opacity ));
+
 	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute( emissionExponent ));
 
@@ -240,9 +245,8 @@ MStatus CoronaSurface::initialize()
 
 	brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
 	status = eAttr.addField( "Ashikmin", 0 );
-	status = eAttr.addField( "Fake Ward", 1 );
-	status = eAttr.addField( "Phong", 2 );
-	status = eAttr.addField( "Ward", 3 );
+	status = eAttr.addField( "Phong", 1 );
+	status = eAttr.addField( "Ward", 2 );
 	CHECK_MSTATUS(addAttribute( brdfType ));
 
 	emissionColor = nAttr.createColor("emissionColor", "emissionColor");

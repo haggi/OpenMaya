@@ -1,4 +1,4 @@
-shader gammaCorrect (color value = 0, vector gamma = 0, output color outValue = 0)
+shader gammaCorrect (vector value = 0, vector gamma = 0, output vector outValue = 0)
 {
 	if( gamma[0] > 0.0 )
 	{

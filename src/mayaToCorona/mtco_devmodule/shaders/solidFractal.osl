@@ -1,4 +1,6 @@
-shader solidFractal(matrix placementMatrix = 0, output color outColor = 0)
+#include "mayaUtils.h"
+
+shader solidFractal(matrix placementMatrix = 0, MAYA_DEFAULT_OUTPUT)
 {
 	matrix m = 1;
 	if( isconnected(placementMatrix))
@@ -8,5 +10,5 @@ shader solidFractal(matrix placementMatrix = 0, output color outColor = 0)
 	
 	point PP = transform(m, P);
 	color nc = noise("noise", PP);
-	outColor = nc;
+	outColor = vector(nc);
 }

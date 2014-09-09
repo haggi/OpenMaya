@@ -451,6 +451,10 @@ ATTR_TYPE getPlugAttrType(MPlug plug)
 		return ATTR_TYPE::ATTR_TYPE_NONE;
 	MString attName = att.name();
 
+	// all 3 child attributes are vectors for osl
+	if (p.numChildren() == 3)
+		return ATTR_TYPE::ATTR_TYPE_VECTOR;
+
 	if (attName == "input1")
 	{
 		if (plug.node().hasFn(MFn::kMultiplyDivide))

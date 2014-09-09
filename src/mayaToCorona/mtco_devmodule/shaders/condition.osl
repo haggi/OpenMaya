@@ -1,6 +1,5 @@
-shader condition( float firstTerm = 0, float secondTerm = 0, int operation = 0, color colorIfTrue = 0, color colorIfFalse = 0, output color outColor= 0)
+shader condition( float firstTerm = 0, float secondTerm = 0, int operation = 0, vector colorIfTrue = 0, vector colorIfFalse = 0, output vector outColor= 0)
 {
-	printf("op:  %d\n", operation);
 	outColor = colorIfFalse;
 	if( operation == 0)
 	{
@@ -16,7 +15,6 @@ shader condition( float firstTerm = 0, float secondTerm = 0, int operation = 0, 
 	}
 	if( operation == 2)
 	{
-		printf("greater than op %f - %f\n", firstTerm, secondTerm);
 		if( firstTerm > secondTerm )
 			outColor = colorIfTrue;
 		return;

@@ -1,7 +1,7 @@
 OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader luminance
-param	color	value	0 0 0 		 %read{0,5} %write{2147483647,-1}
+param	vector	value	0 0 0 		 %read{0,5} %write{2147483647,-1}
 oparam	float	outValue	0 		 %read{2147483647,-1} %write{7,7}
 const	float	$const1	0.30000001		 %read{1,1} %write{2147483647,-1}
 const	int	$const2	0		 %read{0,0} %write{2147483647,-1}

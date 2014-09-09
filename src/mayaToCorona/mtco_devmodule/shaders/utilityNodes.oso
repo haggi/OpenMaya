@@ -1,7 +1,7 @@
 OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader colorToFloat
-param	color	inColor	1 1 1 		 %read{0,2} %write{2147483647,-1}
+param	vector	inColor	1 1 1 		 %read{0,2} %write{2147483647,-1}
 oparam	float	outX	0 		 %read{2147483647,-1} %write{0,0}
 oparam	float	outY	0 		 %read{2147483647,-1} %write{1,1}
 oparam	float	outZ	0 		 %read{2147483647,-1} %write{2,2}

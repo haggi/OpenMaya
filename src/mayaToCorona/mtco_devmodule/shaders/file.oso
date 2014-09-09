@@ -2,305 +2,306 @@ OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader file
 param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1} %derivs
-param	string	fileTextureName	"" 		 %read{7,7} %write{2147483647,-1}
-param	int	fromSRGB	0 		 %read{8,8} %write{2147483647,-1}
-param	int	toSRGB	0 		 %read{58,58} %write{2147483647,-1}
-param	color	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
-param	color	colorGain	1 1 1 		 %read{104,104} %write{2147483647,-1}
-param	color	colorOffset	0 0 0 		 %read{105,105} %write{2147483647,-1}
+param	string	fileTextureName	"" 		 %read{6,6} %write{2147483647,-1}
+param	int	fromSRGB	0 		 %read{7,7} %write{2147483647,-1}
+param	int	toSRGB	0 		 %read{57,57} %write{2147483647,-1}
+param	vector	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorGain	1 1 1 		 %read{104,104} %write{2147483647,-1}
+param	vector	colorOffset	0 0 0 		 %read{105,105} %write{2147483647,-1}
 param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	color	outColor	0 0 0 		 %read{2147483647,-1} %write{107,107}
+oparam	vector	outColor	0 0 0 		 %read{2147483647,-1} %write{107,107}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{2147483647,-1}
 global	float	u	 %read{0,0} %write{2147483647,-1} %derivs
 global	float	v	 %read{1,1} %write{2147483647,-1} %derivs
-local	color	___315_result	 %read{104,106} %write{103,105}
-local	float	___320_f	 %read{17,51} %write{16,46}
-local	color	___324_outColor	 %read{62,101} %write{61,100}
-local	color	___325_outColor	 %read{12,57} %write{11,56}
-local	float	s	 %read{7,7} %write{0,4} %derivs
-local	float	t	 %read{6,7} %write{1,6} %derivs
-local	color	C	 %read{11,107} %write{7,106}
+local	vector	___315_result	 %read{104,106} %write{103,105}
+local	float	___320_f	 %read{16,50} %write{15,45}
+local	color	___324_outColor	 %read{61,100} %write{60,99}
+local	color	___325_outColor	 %read{11,56} %write{10,55}
+local	float	s	 %read{6,6} %write{0,4} %derivs
+local	float	t	 %read{6,6} %write{1,5} %derivs
+local	color	C	 %read{10,101} %write{6,100}
+local	vector	CB	 %read{107,107} %write{106,106}
 temp	int	$tmp1	 %read{3,3} %write{2,2}
-const	int	$const1	0		 %read{4,74} %write{2147483647,-1}
-const	int	$const2	1		 %read{5,87} %write{2147483647,-1}
-const	float	$const3	1		 %read{6,94} %write{2147483647,-1}
-const	string	$const4	"wrap"		 %read{7,7} %write{2147483647,-1}
-const	string	$const5	"periodic"		 %read{7,7} %write{2147483647,-1}
-temp	int	$tmp2	 %read{9,9} %write{8,8}
-const	string	$const6	"fromSRGBToLinear"		 %read{10,10} %write{2147483647,-1}
-temp	float	$tmp3	 %read{26,26} %write{19,25}
-temp	float	$tmp4	 %read{15,15} %write{12,12}
-const	string	$const7	"floatFromSRGB"		 %read{13,43} %write{2147483647,-1}
-const	float	$const8	0		 %read{16,46} %write{2147483647,-1}
-const	string	$const9	"clamp"		 %read{14,44} %write{2147483647,-1}
-temp	float	$tmp5	 %read{16,16} %write{15,15}
-const	float	$const10	0.039280001		 %read{17,47} %write{2147483647,-1}
-temp	int	$tmp6	 %read{18,18} %write{17,17}
-const	float	$const11	12.92		 %read{19,92} %write{2147483647,-1}
-const	float	$const12	2.4000001		 %read{24,94} %write{2147483647,-1}
-temp	float	$tmp7	 %read{24,24} %write{23,23}
-const	float	$const13	0.055		 %read{21,99} %write{2147483647,-1}
-temp	float	$tmp8	 %read{22,22} %write{21,21}
-const	float	$const14	1.0549999		 %read{22,98} %write{2147483647,-1}
-temp	float	$tmp9	 %read{23,23} %write{22,22}
-temp	float	$tmp10	 %read{25,25} %write{24,24}
-temp	float	$tmp11	 %read{41,41} %write{34,40}
-temp	float	$tmp12	 %read{30,30} %write{27,27}
-temp	float	$tmp13	 %read{31,31} %write{30,30}
-temp	int	$tmp14	 %read{33,33} %write{32,32}
-temp	float	$tmp15	 %read{39,39} %write{38,38}
-temp	float	$tmp16	 %read{37,37} %write{36,36}
-temp	float	$tmp17	 %read{38,38} %write{37,37}
-temp	float	$tmp18	 %read{40,40} %write{39,39}
-temp	float	$tmp19	 %read{56,56} %write{49,55}
-const	int	$const15	2		 %read{42,100} %write{2147483647,-1}
-temp	float	$tmp20	 %read{45,45} %write{42,42}
-temp	float	$tmp21	 %read{46,46} %write{45,45}
-temp	int	$tmp22	 %read{48,48} %write{47,47}
-temp	float	$tmp23	 %read{54,54} %write{53,53}
-temp	float	$tmp24	 %read{52,52} %write{51,51}
-temp	float	$tmp25	 %read{53,53} %write{52,52}
-temp	float	$tmp26	 %read{55,55} %write{54,54}
-temp	int	$tmp27	 %read{59,59} %write{58,58}
-const	string	$const16	"fromLinearToSRGB"		 %read{60,60} %write{2147483647,-1}
-temp	float	$tmp28	 %read{74,74} %write{66,73}
-temp	float	$tmp29	 %read{64,69} %write{62,62}
-const	string	$const17	"floatToSRGB"		 %read{63,89} %write{2147483647,-1}
-const	float	$const18	0.0031308001		 %read{64,90} %write{2147483647,-1}
-temp	int	$tmp30	 %read{65,65} %write{64,64}
-temp	float	$tmp31	 %read{72,72} %write{71,71}
-temp	float	$tmp32	 %read{70,70} %write{68,68}
-temp	float	$tmp33	 %read{70,70} %write{69,69}
-temp	float	$tmp34	 %read{71,71} %write{70,70}
-temp	float	$tmp35	 %read{73,73} %write{72,72}
-temp	float	$tmp36	 %read{87,87} %write{79,86}
-temp	float	$tmp37	 %read{77,82} %write{75,75}
-temp	int	$tmp38	 %read{78,78} %write{77,77}
-temp	float	$tmp39	 %read{85,85} %write{84,84}
-temp	float	$tmp40	 %read{83,83} %write{81,81}
-temp	float	$tmp41	 %read{83,83} %write{82,82}
-temp	float	$tmp42	 %read{84,84} %write{83,83}
-temp	float	$tmp43	 %read{86,86} %write{85,85}
-temp	float	$tmp44	 %read{100,100} %write{92,99}
-temp	float	$tmp45	 %read{90,95} %write{88,88}
-temp	int	$tmp46	 %read{91,91} %write{90,90}
-temp	float	$tmp47	 %read{98,98} %write{97,97}
-temp	float	$tmp48	 %read{96,96} %write{94,94}
-temp	float	$tmp49	 %read{96,96} %write{95,95}
-temp	float	$tmp50	 %read{97,97} %write{96,96}
-temp	float	$tmp51	 %read{99,99} %write{98,98}
+const	int	$const1	0		 %read{4,73} %write{2147483647,-1}
+const	int	$const2	1		 %read{5,86} %write{2147483647,-1}
+const	string	$const3	"wrap"		 %read{6,6} %write{2147483647,-1}
+const	string	$const4	"periodic"		 %read{6,6} %write{2147483647,-1}
+temp	int	$tmp2	 %read{8,8} %write{7,7}
+const	string	$const5	"fromSRGBToLinear"		 %read{9,9} %write{2147483647,-1}
+temp	float	$tmp3	 %read{25,25} %write{18,24}
+temp	float	$tmp4	 %read{14,14} %write{11,11}
+const	string	$const6	"floatFromSRGB"		 %read{12,42} %write{2147483647,-1}
+const	float	$const7	0		 %read{15,45} %write{2147483647,-1}
+const	float	$const8	1		 %read{14,93} %write{2147483647,-1}
+const	string	$const9	"clamp"		 %read{13,43} %write{2147483647,-1}
+temp	float	$tmp5	 %read{15,15} %write{14,14}
+const	float	$const10	0.039280001		 %read{16,46} %write{2147483647,-1}
+temp	int	$tmp6	 %read{17,17} %write{16,16}
+const	float	$const11	12.92		 %read{18,91} %write{2147483647,-1}
+const	float	$const12	2.4000001		 %read{23,93} %write{2147483647,-1}
+temp	float	$tmp7	 %read{23,23} %write{22,22}
+const	float	$const13	0.055		 %read{20,98} %write{2147483647,-1}
+temp	float	$tmp8	 %read{21,21} %write{20,20}
+const	float	$const14	1.0549999		 %read{21,97} %write{2147483647,-1}
+temp	float	$tmp9	 %read{22,22} %write{21,21}
+temp	float	$tmp10	 %read{24,24} %write{23,23}
+temp	float	$tmp11	 %read{40,40} %write{33,39}
+temp	float	$tmp12	 %read{29,29} %write{26,26}
+temp	float	$tmp13	 %read{30,30} %write{29,29}
+temp	int	$tmp14	 %read{32,32} %write{31,31}
+temp	float	$tmp15	 %read{38,38} %write{37,37}
+temp	float	$tmp16	 %read{36,36} %write{35,35}
+temp	float	$tmp17	 %read{37,37} %write{36,36}
+temp	float	$tmp18	 %read{39,39} %write{38,38}
+temp	float	$tmp19	 %read{55,55} %write{48,54}
+const	int	$const15	2		 %read{41,99} %write{2147483647,-1}
+temp	float	$tmp20	 %read{44,44} %write{41,41}
+temp	float	$tmp21	 %read{45,45} %write{44,44}
+temp	int	$tmp22	 %read{47,47} %write{46,46}
+temp	float	$tmp23	 %read{53,53} %write{52,52}
+temp	float	$tmp24	 %read{51,51} %write{50,50}
+temp	float	$tmp25	 %read{52,52} %write{51,51}
+temp	float	$tmp26	 %read{54,54} %write{53,53}
+temp	int	$tmp27	 %read{58,58} %write{57,57}
+const	string	$const16	"fromLinearToSRGB"		 %read{59,59} %write{2147483647,-1}
+temp	float	$tmp28	 %read{73,73} %write{65,72}
+temp	float	$tmp29	 %read{63,68} %write{61,61}
+const	string	$const17	"floatToSRGB"		 %read{62,88} %write{2147483647,-1}
+const	float	$const18	0.0031308001		 %read{63,89} %write{2147483647,-1}
+temp	int	$tmp30	 %read{64,64} %write{63,63}
+temp	float	$tmp31	 %read{71,71} %write{70,70}
+temp	float	$tmp32	 %read{69,69} %write{67,67}
+temp	float	$tmp33	 %read{69,69} %write{68,68}
+temp	float	$tmp34	 %read{70,70} %write{69,69}
+temp	float	$tmp35	 %read{72,72} %write{71,71}
+temp	float	$tmp36	 %read{86,86} %write{78,85}
+temp	float	$tmp37	 %read{76,81} %write{74,74}
+temp	int	$tmp38	 %read{77,77} %write{76,76}
+temp	float	$tmp39	 %read{84,84} %write{83,83}
+temp	float	$tmp40	 %read{82,82} %write{80,80}
+temp	float	$tmp41	 %read{82,82} %write{81,81}
+temp	float	$tmp42	 %read{83,83} %write{82,82}
+temp	float	$tmp43	 %read{85,85} %write{84,84}
+temp	float	$tmp44	 %read{99,99} %write{91,98}
+temp	float	$tmp45	 %read{89,94} %write{87,87}
+temp	int	$tmp46	 %read{90,90} %write{89,89}
+temp	float	$tmp47	 %read{97,97} %write{96,96}
+temp	float	$tmp48	 %read{95,95} %write{93,93}
+temp	float	$tmp49	 %read{95,95} %write{94,94}
+temp	float	$tmp50	 %read{96,96} %write{95,95}
+temp	float	$tmp51	 %read{98,98} %write{97,97}
+temp	vector	$tmp52	 %read{103,103} %write{101,101}
 const	string	$const19	"colorBalance"		 %read{102,102} %write{2147483647,-1}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:54
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:48
 # 	float t = v;
-	assign		s u 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{54} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:55
+	assign		s u 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{48} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:49
 # 	if( isconnected(uvCoord))
-	assign		t v 	%line{55} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:56
+	assign		t v 	%line{49} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:50
 # 	{
-	isconnected	$tmp1 uvCoord 	%line{56} %argrw{"wr"}
+	isconnected	$tmp1 uvCoord 	%line{50} %argrw{"wr"}
 	if		$tmp1 6 6 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:58
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:52
 # 		t = uvCoord[1];
-	compref		s uvCoord $const1 	%line{58} %argrw{"wrr"}
+	compref		s uvCoord $const1 	%line{52} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:53
+# 	}
+	compref		t uvCoord $const2 	%line{53} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:56
+# 	if( fromSRGB > 0)
+	texture		C fileTextureName s t $const3 $const4 	%line{56} %argrw{"wrrrrr"} %argderivs{2,3}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:57
+# 	{
+	gt		$tmp2 fromSRGB $const1 	%line{57} %argrw{"wrr"}
+	if		$tmp2 57 57 	%argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:59
 # 	}
-	compref		t uvCoord $const2 	%line{59} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:62
-# 	color C = texture(fileTextureName, s, t, "wrap", "periodic");
-	sub		t $const3 t 	%line{62} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:63
-# 	if( fromSRGB > 0)
-	texture		C fileTextureName s t $const4 $const5 	%line{63} %argrw{"wrrrrr"} %argderivs{2,3}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:64
-# 	{
-	gt		$tmp2 fromSRGB $const1 	%line{64} %argrw{"wrr"}
-	if		$tmp2 58 58 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:66
-# 	}
-	functioncall	$const6 58 	%line{66} %argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:40
+	functioncall	$const5 57 	%line{59} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:34
 # 	outColor[0] = floatFromSRGB(outColor[0]);
-	assign		___325_outColor C 	%line{40} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:41
+	assign		___325_outColor C 	%line{34} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:35
 # 	outColor[1] = floatFromSRGB(outColor[1]);
-	compref		$tmp4 ___325_outColor $const1 	%line{41} %argrw{"wrr"}
-	functioncall	$const7 26 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:12
+	compref		$tmp4 ___325_outColor $const1 	%line{35} %argrw{"wrr"}
+	functioncall	$const6 25 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:6
 #     if (f <= 0.03928)
-	functioncall	$const9 17 	%line{12} %argrw{"r"}
+	functioncall	$const9 16 	%line{6} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:144
-# vector mod (vector a, float  b) { return a - b*floor(a/b); }
-	min		$tmp5 $tmp4 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
-	max		___320_f $tmp5 $const8 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:13
+# PERCOMP2 (max)
+	min		$tmp5 $tmp4 $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
+	max		___320_f $tmp5 $const7 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:7
 # 	{
-	le		$tmp6 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{13} %argrw{"wrr"}
-	if		$tmp6 21 21 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:15
+	le		$tmp6 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp6 20 20 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:9
 # 	}
-	div		$tmp3 ___320_f $const11 	%line{15} %argrw{"wrr"}
+	div		$tmp3 ___320_f $const11 	%line{9} %argrw{"wrr"}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:17
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:11
 # }
-	add		$tmp8 ___320_f $const13 	%line{17} %argrw{"wrr"}
+	add		$tmp8 ___320_f $const13 	%line{11} %argrw{"wrr"}
 	div		$tmp9 $tmp8 $const14 	%argrw{"wrr"}
 	log		$tmp7 $tmp9 	%argrw{"wr"}
 	mul		$tmp10 $const12 $tmp7 	%argrw{"wrr"}
 	exp		$tmp3 $tmp10 	%argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:41
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:35
 # 	outColor[1] = floatFromSRGB(outColor[1]);
-	compassign	___325_outColor $const1 $tmp3 	%line{41} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:42
+	compassign	___325_outColor $const1 $tmp3 	%line{35} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:36
 # 	outColor[2] = floatFromSRGB(outColor[2]);
-	compref		$tmp12 ___325_outColor $const2 	%line{42} %argrw{"wrr"}
-	functioncall	$const7 41 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:12
+	compref		$tmp12 ___325_outColor $const2 	%line{36} %argrw{"wrr"}
+	functioncall	$const6 40 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:6
 #     if (f <= 0.03928)
-	functioncall	$const9 32 	%line{12} %argrw{"r"}
+	functioncall	$const9 31 	%line{6} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:144
-# vector mod (vector a, float  b) { return a - b*floor(a/b); }
-	min		$tmp13 $tmp12 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
-	max		___320_f $tmp13 $const8 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:13
+# PERCOMP2 (max)
+	min		$tmp13 $tmp12 $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
+	max		___320_f $tmp13 $const7 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:7
 # 	{
-	le		$tmp14 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{13} %argrw{"wrr"}
-	if		$tmp14 36 36 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:15
+	le		$tmp14 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp14 35 35 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:9
 # 	}
-	div		$tmp11 ___320_f $const11 	%line{15} %argrw{"wrr"}
+	div		$tmp11 ___320_f $const11 	%line{9} %argrw{"wrr"}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:17
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:11
 # }
-	add		$tmp16 ___320_f $const13 	%line{17} %argrw{"wrr"}
+	add		$tmp16 ___320_f $const13 	%line{11} %argrw{"wrr"}
 	div		$tmp17 $tmp16 $const14 	%argrw{"wrr"}
 	log		$tmp15 $tmp17 	%argrw{"wr"}
 	mul		$tmp18 $const12 $tmp15 	%argrw{"wrr"}
 	exp		$tmp11 $tmp18 	%argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:42
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:36
 # 	outColor[2] = floatFromSRGB(outColor[2]);
-	compassign	___325_outColor $const2 $tmp11 	%line{42} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:43
+	compassign	___325_outColor $const2 $tmp11 	%line{36} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:37
 # 	return outColor;
-	compref		$tmp20 ___325_outColor $const15 	%line{43} %argrw{"wrr"}
-	functioncall	$const7 56 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:12
+	compref		$tmp20 ___325_outColor $const15 	%line{37} %argrw{"wrr"}
+	functioncall	$const6 55 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:6
 #     if (f <= 0.03928)
-	functioncall	$const9 47 	%line{12} %argrw{"r"}
+	functioncall	$const9 46 	%line{6} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:144
-# vector mod (vector a, float  b) { return a - b*floor(a/b); }
-	min		$tmp21 $tmp20 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
-	max		___320_f $tmp21 $const8 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:13
+# PERCOMP2 (max)
+	min		$tmp21 $tmp20 $const8 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{144} %argrw{"wrr"}
+	max		___320_f $tmp21 $const7 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:7
 # 	{
-	le		$tmp22 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{13} %argrw{"wrr"}
-	if		$tmp22 51 51 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:15
+	le		$tmp22 ___320_f $const10 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp22 50 50 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:9
 # 	}
-	div		$tmp19 ___320_f $const11 	%line{15} %argrw{"wrr"}
+	div		$tmp19 ___320_f $const11 	%line{9} %argrw{"wrr"}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:17
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:11
 # }
-	add		$tmp24 ___320_f $const13 	%line{17} %argrw{"wrr"}
+	add		$tmp24 ___320_f $const13 	%line{11} %argrw{"wrr"}
 	div		$tmp25 $tmp24 $const14 	%argrw{"wrr"}
 	log		$tmp23 $tmp25 	%argrw{"wr"}
 	mul		$tmp26 $const12 $tmp23 	%argrw{"wrr"}
 	exp		$tmp19 $tmp26 	%argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:43
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:37
 # 	return outColor;
-	compassign	___325_outColor $const15 $tmp19 	%line{43} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:44
+	compassign	___325_outColor $const15 $tmp19 	%line{37} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:38
 # }
-	assign		C ___325_outColor 	%line{44} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:68
+	assign		C ___325_outColor 	%line{38} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:61
 # 	{
-	gt		$tmp27 toSRGB $const1 	%line{68} %argrw{"wrr"}
-	if		$tmp27 102 102 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:70
+	gt		$tmp27 toSRGB $const1 	%line{61} %argrw{"wrr"}
+	if		$tmp27 101 101 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:63
 # 	}
-	functioncall	$const16 102 	%line{70} %argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:31
+	functioncall	$const16 101 	%line{63} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:25
 # 	outColor[0] = floatToSRGB(outColor[0]);
-	assign		___324_outColor C 	%line{31} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:32
-# 	outColor[1] = floatToSRGB(outColor[1]);
-	compref		$tmp29 ___324_outColor $const1 	%line{32} %argrw{"wrr"}
-	functioncall	$const17 74 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:22
-# 	{
-	le		$tmp30 $tmp29 $const18 	%line{22} %argrw{"wrr"}
-	if		$tmp30 68 68 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:24
-# 	}
-	mul		$tmp28 $tmp29 $const11 	%line{24} %argrw{"wrr"}
-	return
+	assign		___324_outColor C 	%line{25} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:26
+# 	outColor[1] = floatToSRGB(outColor[1]);
+	compref		$tmp29 ___324_outColor $const1 	%line{26} %argrw{"wrr"}
+	functioncall	$const17 73 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:16
+# 	{
+	le		$tmp30 $tmp29 $const18 	%line{16} %argrw{"wrr"}
+	if		$tmp30 67 67 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:18
+# 	}
+	mul		$tmp28 $tmp29 $const11 	%line{18} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:20
 # }
-	div		$tmp32 $const3 $const12 	%line{26} %argrw{"wrr"}
+	div		$tmp32 $const8 $const12 	%line{20} %argrw{"wrr"}
 	log		$tmp33 $tmp29 	%argrw{"wr"}
 	mul		$tmp34 $tmp32 $tmp33 	%argrw{"wrr"}
 	exp		$tmp31 $tmp34 	%argrw{"wr"}
 	mul		$tmp35 $const14 $tmp31 	%argrw{"wrr"}
 	sub		$tmp28 $tmp35 $const13 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:32
-# 	outColor[1] = floatToSRGB(outColor[1]);
-	compassign	___324_outColor $const1 $tmp28 	%line{32} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:33
-# 	outColor[2] = floatToSRGB(outColor[2]);
-	compref		$tmp37 ___324_outColor $const2 	%line{33} %argrw{"wrr"}
-	functioncall	$const17 87 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:22
-# 	{
-	le		$tmp38 $tmp37 $const18 	%line{22} %argrw{"wrr"}
-	if		$tmp38 81 81 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:24
-# 	}
-	mul		$tmp36 $tmp37 $const11 	%line{24} %argrw{"wrr"}
-	return
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:26
+# 	outColor[1] = floatToSRGB(outColor[1]);
+	compassign	___324_outColor $const1 $tmp28 	%line{26} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:27
+# 	outColor[2] = floatToSRGB(outColor[2]);
+	compref		$tmp37 ___324_outColor $const2 	%line{27} %argrw{"wrr"}
+	functioncall	$const17 86 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:16
+# 	{
+	le		$tmp38 $tmp37 $const18 	%line{16} %argrw{"wrr"}
+	if		$tmp38 80 80 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:18
+# 	}
+	mul		$tmp36 $tmp37 $const11 	%line{18} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:20
 # }
-	div		$tmp40 $const3 $const12 	%line{26} %argrw{"wrr"}
+	div		$tmp40 $const8 $const12 	%line{20} %argrw{"wrr"}
 	log		$tmp41 $tmp37 	%argrw{"wr"}
 	mul		$tmp42 $tmp40 $tmp41 	%argrw{"wrr"}
 	exp		$tmp39 $tmp42 	%argrw{"wr"}
 	mul		$tmp43 $const14 $tmp39 	%argrw{"wrr"}
 	sub		$tmp36 $tmp43 $const13 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:33
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:27
 # 	outColor[2] = floatToSRGB(outColor[2]);
-	compassign	___324_outColor $const2 $tmp36 	%line{33} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:34
+	compassign	___324_outColor $const2 $tmp36 	%line{27} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:28
 # 	return outColor;
-	compref		$tmp45 ___324_outColor $const15 	%line{34} %argrw{"wrr"}
-	functioncall	$const17 100 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:22
+	compref		$tmp45 ___324_outColor $const15 	%line{28} %argrw{"wrr"}
+	functioncall	$const17 99 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:16
 # 	{
-	le		$tmp46 $tmp45 $const18 	%line{22} %argrw{"wrr"}
-	if		$tmp46 94 94 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:24
+	le		$tmp46 $tmp45 $const18 	%line{16} %argrw{"wrr"}
+	if		$tmp46 93 93 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:18
 # 	}
-	mul		$tmp44 $tmp45 $const11 	%line{24} %argrw{"wrr"}
+	mul		$tmp44 $tmp45 $const11 	%line{18} %argrw{"wrr"}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:26
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:20
 # }
-	div		$tmp48 $const3 $const12 	%line{26} %argrw{"wrr"}
+	div		$tmp48 $const8 $const12 	%line{20} %argrw{"wrr"}
 	log		$tmp49 $tmp45 	%argrw{"wr"}
 	mul		$tmp50 $tmp48 $tmp49 	%argrw{"wrr"}
 	exp		$tmp47 $tmp50 	%argrw{"wr"}
 	mul		$tmp51 $const14 $tmp47 	%argrw{"wrr"}
 	sub		$tmp44 $tmp51 $const13 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:34
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:28
 # 	return outColor;
-	compassign	___324_outColor $const15 $tmp44 	%line{34} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:35
+	compassign	___324_outColor $const15 $tmp44 	%line{28} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:29
 # }
-	assign		C ___324_outColor 	%line{35} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:72
-# 	outColor = C;
-	functioncall	$const19 107 	%line{72} %argrw{"r"}
+	assign		C ___324_outColor 	%line{29} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:65
+# 	outColor = CB;
+	assign		$tmp52 C 	%line{65} %argrw{"wr"}
+	functioncall	$const19 107 	%argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:18
-# 	color result = c;
-	assign		___315_result C 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{18} %argrw{"wr"}
+# 	vector result = c;
+	assign		___315_result $tmp52 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{18} %argrw{"wr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:19
 # 	result *= colorGain;
 	mul		___315_result ___315_result colorGain 	%line{19} %argrw{"wrr"}
@@ -309,8 +310,8 @@ code ___main___
 	add		___315_result ___315_result colorOffset 	%line{20} %argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:21
 # 	return result;
-	assign		C ___315_result 	%line{21} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:73
-# {
-	assign		outColor C 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{73} %argrw{"wr"}
+	assign		CB ___315_result 	%line{21} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:66
+# 			 MAYA_DEFAULT_OUTPUT)
+	assign		outColor CB 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{66} %argrw{"wr"}
 	end

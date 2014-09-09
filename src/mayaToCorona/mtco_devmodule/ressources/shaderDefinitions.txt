@@ -179,6 +179,7 @@ shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
 shader_start:CoronaSurface
+	inatt:opacity:color
 	inatt:emissionExponent:float
 	inatt:volumeScatteringAlbedo:color
 	inatt:fresnelIor:float

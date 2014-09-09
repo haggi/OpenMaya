@@ -1,14 +1,14 @@
 OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader blendColors
-param	color	color1	1 0 0 		 %read{0,0} %write{2147483647,-1}
-param	color	color2	0 0 1 		 %read{2,2} %write{2147483647,-1}
+param	vector	color1	1 0 0 		 %read{0,0} %write{2147483647,-1}
+param	vector	color2	0 0 1 		 %read{2,2} %write{2147483647,-1}
 param	float	blender	0.5 		 %read{0,1} %write{2147483647,-1}
-oparam	color	outOutput	0 0 0 		 %read{2147483647,-1} %write{3,3}
-temp	color	$tmp1	 %read{3,3} %write{0,0}
+oparam	vector	outOutput	0 0 0 		 %read{2147483647,-1} %write{3,3}
+temp	vector	$tmp1	 %read{3,3} %write{0,0}
 temp	float	$tmp2	 %read{2,2} %write{1,1}
 const	float	$const2	1		 %read{1,1} %write{2147483647,-1}
-temp	color	$tmp3	 %read{3,3} %write{2,2}
+temp	vector	$tmp3	 %read{3,3} %write{2,2}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\blendColors.osl:4
 # }

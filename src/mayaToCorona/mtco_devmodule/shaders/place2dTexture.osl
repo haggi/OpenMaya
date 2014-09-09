@@ -8,7 +8,7 @@ shader place2dTexture ( float repeatU = 1.0,
 {
 
 	float ss = u;
-	float tt = v;
+	float tt = 1.0 - v;
 	if( isconnected(uvCoord))
 	{
 		ss = uvCoord[0];
@@ -22,7 +22,7 @@ shader place2dTexture ( float repeatU = 1.0,
 	point p1 = point(0,1,0);
 	point pRot = point(s - 0.5 * repeatU, 0.0, t - 0.5 * repeatV);
 	point result = rotate(pRot, rotateUV, p0, p1); 
-	//printf( "orig x %f rotate x %f\n", pRot[0], result[0]);
+	
 	s = result[0] + 0.5 * repeatU;
 	t = result[2] + 0.5 * repeatV;
 	

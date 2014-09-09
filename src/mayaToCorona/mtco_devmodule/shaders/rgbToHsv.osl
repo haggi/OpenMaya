@@ -1,6 +1,6 @@
-shader rgbToHsv( color inRgb = 0, output color outHsv = 0)
+shader rgbToHsv( vector inRgb = 0, output vector outHsv = 0)
 {
-	outHsv = transformc("rgb", "hsv", inRgb);
+	outHsv = vector(transformc("rgb", "hsv", color(inRgb)));
 }
 
 

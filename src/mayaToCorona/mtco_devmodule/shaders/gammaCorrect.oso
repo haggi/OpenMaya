@@ -1,9 +1,9 @@
 OpenShadingLanguage 1.00
 # Compiled by oslc 1.5.7dev
 shader gammaCorrect
-param	color	value	0 0 0 		 %read{3,19} %write{2147483647,-1}
+param	vector	value	0 0 0 		 %read{3,19} %write{2147483647,-1}
 param	vector	gamma	0 0 0 		 %read{0,20} %write{2147483647,-1}
-oparam	color	outValue	0 0 0 		 %read{2147483647,-1} %write{7,23}
+oparam	vector	outValue	0 0 0 		 %read{2147483647,-1} %write{7,23}
 const	int	$const1	0		 %read{0,7} %write{2147483647,-1}
 temp	float	$tmp1	 %read{1,1} %write{0,0}
 const	float	$const2	0		 %read{1,17} %write{2147483647,-1}

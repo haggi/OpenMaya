@@ -223,10 +223,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             uiDict['colorMapping_simpleExposure'].setEnable(True)
             
         uiDict['renderstamp_inFile'].setEnable(False)
-        uiDict['renderstamp'].setEnable(False)
         if self.renderGlobalsNode.renderstamp_use.get():
             uiDict['renderstamp_inFile'].setEnable(True)
-            uiDict['renderstamp'].setEnable(True)
             
             
 
