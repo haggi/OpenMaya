@@ -33,6 +33,8 @@ class mtap_IRendererController : public asr::IRendererController
     // This method is called continuously during rendering.
     Status on_progress();
 
+	void release(){};
+
 	volatile Status status;
 
 	void (*entityUpdateProc)();
