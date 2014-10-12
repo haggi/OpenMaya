@@ -22,6 +22,7 @@
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
 #include "threads/renderQueueWorker.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -876,6 +877,7 @@ void MayaScene::startRenderThread()
 bool MayaScene::renderScene()
 {
 	logger.info("MayaScene::renderScene()");
+	getWorldPtr()->state = MayaToWorld::UIRENDER;
 	this->getPasses();
 
 	if( this->renderType == IPR )
@@ -921,7 +923,7 @@ bool MayaScene::renderScene()
 		return false;
 	}
 
-
+	getWorldPtr()->state = MayaToWorld::NONE;
 	return true;
 }
 
