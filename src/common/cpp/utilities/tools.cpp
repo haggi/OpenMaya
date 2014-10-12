@@ -1321,3 +1321,11 @@ void uniqueMObjectArray(MObjectArray& cleanMe)
 	}
 	cleanMe = tmpArray;
 }
+
+MPlug getParentPlug(MPlug& p)
+{
+	MPlug tmp = p;
+	while (tmp.isChild())
+		tmp = tmp.parent();
+	return tmp;
+}
