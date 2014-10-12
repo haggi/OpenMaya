@@ -95,7 +95,17 @@ class ShadingNetwork
 {
 public:
 	SNODE_LIST shaderList;
+	MObject rootNode;
+	MString rootNodeName;
+	ShadingNetwork();
+	ShadingNetwork(MObject& node);
+	~ShadingNetwork(){};
+	void parseNetwork(MObject& node);
+	bool alreadyDefined(ShadingNode& sn);
+	void checkNodeList(MObjectArray& mobjectArray);
+	bool hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest);
 };
+
 
 class Material
 {
@@ -123,9 +133,6 @@ private:
 	bool alreadyDefined(ShadingNode& sn, ShadingNetwork& network);
 	void checkNodeList(MObjectArray& nodeList);
 	bool hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest);
-	//virtual bool shadingNodeSupported(MObject& snode) = 0;
-	//virtual ShadingNode *shadingNodeCreator() = 0;
-	//virtual ShadingNode *shadingNodeCreator(MObject& snode) = 0;
 };
 
 #endif

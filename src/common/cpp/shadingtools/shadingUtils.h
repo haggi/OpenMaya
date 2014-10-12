@@ -7,8 +7,10 @@
 #include <maya/MIntArray.h>
 
 bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups);
-
 bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup);
 bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId);
+
+
+
 
 #endif

@@ -124,31 +124,45 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
     if(shapeObjectDP.node().hasFn(MFn::kMesh))
     {
         // Find the Shading Engines Connected to the SourceNode 
-        MFnMesh fnMesh(shapeObjectDP.node());
+        MFnMesh meshFn(shapeObjectDP.node());
 
 		perFaceAssignments.clear();
 		shadingGroups.clear();
 
-		perFaceAssignments.setLength(fnMesh.numPolygons());
+		MIntArray indices;
+		meshFn.getConnectedShaders(shapeObjectDP.instanceNumber(), shadingGroups, indices);
+		perFaceAssignments = indices;
 
-        // A ShadingGroup will have a MFnSet 
-        MObjectArray sets, comps;
-        fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
-		logger.debug(MString("getConnectedSetsAndMembers done"));
+		int subdivs = 0;
+		int multiplier = 0;
 
-        // Each set is a Shading Group. Loop through them.
-        for(unsigned int i = 0; i < sets.length(); ++i)
-        {
-            MFnDependencyNode fnDepSGNode(sets[i]);
-			MItMeshPolygon faceIt(shapeObjectDP, comps[i] );
-			
-			shadingGroups.append(sets[i]);
-
-            for ( faceIt.reset() ; !faceIt.isDone() ; faceIt.next() )
+		if (meshFn.findPlug("displaySmoothMesh").asBool())
+		{
+			MMeshSmoothOptions options;
+			MStatus status = meshFn.getSmoothMeshDisplayOptions(options);
+			if (status)
 			{
-				perFaceAssignments[faceIt.index()] = i;
-            }
-        }
+				subdivs = options.divisions();
+				if (subdivs > 0)
+					multiplier = static_cast<int> (pow(4.0f, (subdivs - 1)));
+			}
+		}
+
+		if (multiplier > 0)
+			perFaceAssignments.clear();
+
+		for (unsigned int i = 0; i < indices.length(); i++)
+		{
+			int subdivisions = multiplier * meshFn.polygonVertexCount(i);
+			int index = max(0, indices[i]); // non assigned has -1, but we want 0
+			perFaceAssignments.append(index);
+
+			// simply replicate the index for all subdiv faces
+			for (int k = 0; k < subdivisions - 1; k++)
+			{
+				perFaceAssignments.append(index);
+			}
+		}
 		return true;
     }
 
