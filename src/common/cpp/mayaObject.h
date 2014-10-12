@@ -4,6 +4,10 @@
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MIntArray.h>
+#include <maya/MFloatArray.h>
+#include <maya/MPointArray.h>
+#include <maya/MVectorArray.h>
+#include <maya/MFloatVectorArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MBoundingBox.h>
 #include <maya/MString.h>
@@ -15,6 +19,15 @@
 
 class MayaScene;
 class Material;
+
+// not all renderers can define a mesh and then upate it later in the
+// translation process. e.g. Corona needs all motion mesh informations during 
+// mesh definition and cannot modify it with additional motion steps.
+// So we use this struct to collect the necessary deform informations.
+struct MeshData{
+	MPointArray points;
+	MFloatVectorArray normals;
+};
 
 class ObjectAttributes
 {
@@ -51,6 +64,7 @@ public:
 	std::vector<MMatrix> transformMatrices; // for every xmb step I have one matrix
 	std::vector<MString> shadowMapFiles; // file paths for a shadow map creating light
 
+	std::vector<MeshData> meshDataList;
 	MObjectArray shadingGroups;
 	MIntArray perFaceAssignments;	
 	std::vector<Material *> materialList; // for every shading group connected to the shape, we have a material
@@ -82,6 +96,12 @@ public:
 	bool isVisiblityAnimated();
 	bool isInstanced();
 	void getShadingGroups();
+	bool hasBifrostVelocityChannel();
+	void addMeshData(); // add point/normals to the meshDataList for motionsteps
+	void getMeshData(MPointArray& point, MFloatVectorArray& normals);
+	void getMeshData(MPointArray& point, MFloatVectorArray& normals, MFloatArray& u, 
+					MFloatArray& v, MIntArray& triPointIndices, MIntArray& triNormalIndices, 
+					MIntArray& triUvIndices, MIntArray& triMatIndices); // all triIndices contain per vertex indices except the triMatIndices, this is per face
 	virtual bool geometryShapeSupported();
 	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
 	virtual void getMaterials() = 0;
