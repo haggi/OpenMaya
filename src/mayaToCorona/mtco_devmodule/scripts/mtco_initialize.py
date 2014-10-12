@@ -509,6 +509,11 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
         
         pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
+        # dummy color for legacy viewport
+        pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3' )
+        pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )
+        pm.addExtension( nodeType='CoronaSurface', longName='colorG', attributeType='float', parent='color', defaultValue = 0.7 )
+        pm.addExtension( nodeType='CoronaSurface', longName='colorB', attributeType='float', parent='color', defaultValue = 0.7 )  
         
         pm.addExtension( nodeType='samplerInfo', longName='outDPdu', usedAsColor=True, attributeType='float3' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPduR', attributeType='float', parent='outDPdu' )
@@ -519,6 +524,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvR', attributeType='float', parent='outDPdv' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvG', attributeType='float', parent='outDPdv' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvB', attributeType='float', parent='outDPdv' )        
+
+
             
     def removeLogFile(self):
         pass

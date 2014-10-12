@@ -8,6 +8,7 @@
 #include "utilities/pystring.h"
 #include "MyClasses.h"
 #include "CoronaMap.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -213,11 +214,14 @@ void CoronaRenderer::createScene()
 
 void CoronaRenderer::render()
 {
-
-	std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
-	logger.debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
-	this->oslRenderer.setShaderSearchPath(oslShaderPath);
-	this->oslRenderer.setup();
+	OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)getObjPtr("oslRenderer");
+	if (r == NULL)
+	{
+		std::cerr << "error CoronaRenderer::render: OSL renderer == NULL\n";
+		return;
+	}
+	this->oslRenderer = r;
+	r->setup(); // delete existing shadingsys and reinit all
 
 	//doit();
 	//return;
@@ -237,7 +241,7 @@ void CoronaRenderer::render()
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////  SETTINGS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    context.settings = new MySettings();
+    context.settings = new Settings();
 
     // populate the settings with parameters from a configuration file. If the file does not exist, a new one 
     // is created with default values.

@@ -38,6 +38,7 @@ public:
 
 private:
 	CoronaSurfaceOverride(const MObject& obj);
+	MString mfragmentName;
 };
 
 #endif // _CoronaSurfaceOverride

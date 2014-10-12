@@ -1,20 +1,146 @@
 #ifndef mtco_SWATCH_RENDERER
 #define mtco_SWATCH_RENDERER
 
-#include <maya/MSwatchRenderBase.h> 
+#include <maya/MMatrix.h>
+#include "swatchesRenderer/SwatchRendererInterface.h"
+#include <map>
+#include "CoronaCore/api/Api.h"
 
-class mtco_SwatchGenerator : public MSwatchRenderBase
-{
 
+void coronaMatrix(Corona::AffineTm& atm, MMatrix& origMatrix, MMatrix& conversionMatrix);
+
+
+class Light : public Corona::Abstract::LightShader, public Corona::Noncopyable {
 public:
-   mtco_SwatchGenerator(MObject dependNode, MObject renderNode, int imageResolution);
-   ~mtco_SwatchGenerator();
 
-   static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
+	const Corona::Pos LIGHT_POS;
 
-   virtual bool doIteration();
+	Light() : LIGHT_POS(Corona::Pos(-4.4, -6.4, 4.4)) { }
 
+	// simulate spot light with colorful directional falloff
+	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const {
+
+		float distance;
+		Corona::BsdfComponents brdf;
+		const Corona::Pos P = context.getPosition();
+		const Corona::Dir toLight = (LIGHT_POS - P).getNormalized(distance);
+		//if (false)
+		//	transport = context.shadowTransmission(LIGHT_POS, Corona::RAY_NORMAL);
+		//else
+		transport = Corona::Spectrum(1.0, 1.0, 1.0);
+		float dummy;
+		float decay = 1.0;
+
+		context.forwardBsdfCos(toLight, brdf, dummy);
+		const float dotSurface = absDot(context.getShadingNormal(), toLight);
+		return brdf * (dotSurface * Corona::PI) * 2.0;
+	}
 };
 
+class CheckerMap : public Corona::Abstract::Map {
+public:
+	virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+		const Corona::Pos pos = context.getPosition() * 1.0f;
+		const int tmp = int(floor(pos.x())) + int(floor(pos.y())) + int(floor(pos.z()));
+		outAlpha = 1.f;
+		if (tmp % 2) {
+			return Corona::Rgb::BLACK;
+		}
+		else {
+			return Corona::Rgb::WHITE;
+		}
+	}
 
+	virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+		return evalColor(context, cache, outAlpha).grayValue();
+	}
+
+	virtual Corona::Dir evalBump(const Corona::IShadeContext&, Corona::TextureCache*) {
+		STOP; //currently not supported
+	}
+
+	virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
+		STOP; //currently not supported
+	}
+	virtual void getChildren(Corona::Stack<Resource*>& output) { }
+};
+
+class mtco_Logger : public Corona::Abstract::Logger
+{
+public:
+
+	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
+
+	virtual void logMsg(const Corona::String& message, const Corona::LogType type)
+	{
+		std::cout << message << std::endl;
+	}
+	virtual void setProgress(const float progress)
+	{
+		std::cout << "Progress: " << progress << std::endl;
+	}
+};
+
+class Settings : public Corona::Abstract::Settings {
+protected:
+	std::map<int, Corona::Abstract::Settings::Property> values;
+public:
+	virtual Corona::Abstract::Settings::Property get(const int id) const {
+		const std::map<int, Corona::Abstract::Settings::Property>::const_iterator result = values.find(id);
+		if (result != values.end()) {
+			return result->second;
+		}
+		else {
+			throw Corona::Exception::propertyNotFound(Corona::PropertyDescriptor::get(id)->name);
+		}
+	}
+	virtual void set(const int id, const Corona::Abstract::Settings::Property& property) {
+		values[id] = property;
+	}
+};
+
+struct Context {
+	Context()
+	{
+		isCancelled = false;
+		isRendering = false;
+	}
+	Corona::ICore* core;
+	Corona::IFrameBuffer* fb;
+	Corona::IScene* scene;
+	mtco_Logger* logger;
+	Corona::Abstract::Settings* settings;
+	Corona::Stack<Corona::IRenderPass*> renderPasses;
+	bool isCancelled;
+	bool isRendering;
+};
+
+static Context swatchRendererContext;
+
+class mtco_SwatchRendererInterface : SwatchRendererInterface
+{
+public:
+	mtco_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution);
+	~mtco_SwatchRendererInterface();
+	MObject renderNode;
+	MObject dependNode;
+
+	virtual void init();
+	virtual void loadGeometry();
+	virtual void renderSwatch();
+	virtual void getImage(MImage& imageRef);
+	virtual void getImageData(MImage& imageRef);
+
+	virtual void fillDummySwatch(MImage& image);
+
+	// corona specific
+
+	Context context;
+	void defineSettings();
+	void createCoronaScene();
+	void saveImageData();
+	static void initializeStaticData();
+	static void cleanUpStaticData();
+	static void swatchRenderThread(mtco_SwatchRendererInterface* me);
+};
 #endif

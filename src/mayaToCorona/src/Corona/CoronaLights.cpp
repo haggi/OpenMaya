@@ -111,6 +111,9 @@ void CoronaRenderer::defineLights()
 			pl->lightIntensity = intensity;
 			getEnum(MString("decayRate"), depFn, pl->decayType);
 			pl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
+			pl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
+			col = getColorAttr("shadowColor", depFn);
+			pl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
 			this->context.scene->addLightShader(pl);
 		}
 		if( obj->mobject.hasFn(MFn::kSpotLight))
@@ -137,6 +140,10 @@ void CoronaRenderer::defineLights()
 			getFloat("penumbraAngle", depFn, sl->penumbraAngle);
 			getFloat("dropoff", depFn, sl->dropoff);
 			sl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
+			sl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
+			col = getColorAttr("shadowColor", depFn);
+			sl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+
 			this->context.scene->addLightShader(sl);
 		}
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))
@@ -163,6 +170,10 @@ void CoronaRenderer::defineLights()
 			dl->LT = Corona::Dir(lightDirTangent.x, lightDirTangent.y, lightDirTangent.z);
 			dl->LBT = Corona::Dir(lightDirBiTangent.x, lightDirBiTangent.y, lightDirBiTangent.z);
 			dl->lightAngle = getFloatAttr("lightAngle", depFn, 0.0);
+			dl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
+			col = getColorAttr("shadowColor", depFn);
+			dl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+
 			this->context.scene->addLightShader(dl);
 		}
 		if( obj->mobject.hasFn(MFn::kAreaLight))

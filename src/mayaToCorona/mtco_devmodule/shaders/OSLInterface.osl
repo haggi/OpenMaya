@@ -1,29 +1,19 @@
-shader OSLInterface(color inColor = 1, float inFloat = 0.0, int inInt = 0, vector inVector = 0, output color Cout = 0)
-{
-	//vector uvw = vector(1,2,3);
-	//int result = getmessage("project_uv", uvw);
-	//printf("result %d\n", result);
-	
+shader OSLInterface(vector inColor = 1, float inFloat = 0.0, int inInt = 0, vector inVector = 0, output color Cout = 0)
+{	
 	if( isconnected(inColor) )
 	{
-		Cout = inColor ;
-		return;
+		Cout = color(inColor) ;
 	}
 	if( isconnected(inFloat) )
 	{
 		Cout = inFloat;
-		return;
 	}
 	if( isconnected(inInt) )
 	{
 		Cout = inInt;
-		return;
 	}
 	if( isconnected(inVector) )
 	{
-		Cout[0] = inVector[0];
-		Cout[1] = inVector[1];
-		Cout[2] = inVector[2];
-		return;
+		Cout = color(inVector);
 	}
 }

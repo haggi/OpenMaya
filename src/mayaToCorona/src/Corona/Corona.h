@@ -8,7 +8,7 @@
 #include <maya/MFloatVectorArray.h>
 #include "rendering/renderer.h"
 #include "CoronaCore/api/Api.h"
-#include "../OSL/oslRenderer.h"
+#include "../coronaOSL/oslRenderer.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 
@@ -17,6 +17,24 @@ class mtco_RenderGlobals;
 class mtco_MayaObject;
 class MFnDependencyNode;
 class MString;
+
+class Settings : public Corona::Abstract::Settings {
+protected:
+	std::map<int, Corona::Abstract::Settings::Property> values;
+public:
+	virtual Corona::Abstract::Settings::Property get(const int id) const {
+		const std::map<int, Corona::Abstract::Settings::Property>::const_iterator result = values.find(id);
+		if (result != values.end()) {
+			return result->second;
+		}
+		else {
+			throw Corona::Exception::propertyNotFound(Corona::PropertyDescriptor::get(id)->name);
+		}
+	}
+	virtual void set(const int id, const Corona::Abstract::Settings::Property& property) {
+		values[id] = property;
+	}
+};
 
 // simple implementation of the Logger class from the API. Simply outputs all messages to the standard output.
 class mtco_Logger : public Corona::Abstract::Logger 
@@ -45,6 +63,7 @@ struct Context {
 	bool isCancelled;
 };
 
+
 class CoronaRenderer : public MayaTo::Renderer
 {
 public:
@@ -55,7 +74,7 @@ public:
 	std::vector<mtco_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
 
-	OSL::OSLShadingNetworkRenderer oslRenderer;
+	OSL::OSLShadingNetworkRenderer *oslRenderer;
 
 	Context context;
 
@@ -70,24 +89,10 @@ public:
 	//void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
 	virtual void defineMesh(mtco_MayaObject *obj);
-	void CoronaRenderer::defineSmoothMesh(mtco_MayaObject *obj, MFnMeshData& smoothMeshData, MObject& mobject);
-	bool hasBifrostVelocityChannel(mtco_MayaObject *obj);
 	void updateMesh(mtco_MayaObject *obj);
-	void getMeshData(MPointArray& pts, MFloatVectorArray& nrm, MObject& meshMObject);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void defineDefaultMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj);
-	bool isOSLNodeAlreadyDefined(MObject& oslnode);
-	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn);
-	MString createOSLConversionNode(MPlug& thisPlug, MPlug& directPlug);
-	void createOSLProjectionNodes(MPlug& plug);
-	void createOSLRampShadingNode(ShadingNode& snode);
-	void createOSLShadingNode(ShadingNode& snode);
-	void createOSLHelperNodes(ShadingNode& snode);
-	void createPlugHelperNode(MPlug plug, bool outType);
-	bool doesHelperNodeExist(MString helperNode);
-	MString createPlugHelperNodeName(MPlug& plug, bool outType);
-	MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
 	void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);

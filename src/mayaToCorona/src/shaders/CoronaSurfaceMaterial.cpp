@@ -43,19 +43,7 @@ void CoronaSurface::postConstructor( )
     // to get input data and store output data.
     //
 	MStatus stat;
-    setMPSafe( true );
-	MDGModifier modifier;
-	MPlug sourcePlug(this->thisMObject(), diffuse);
-	MPlug destPlug(this->thisMObject(), aColor);
-	if( !destPlug.isConnected() )
-		stat = modifier.connect(sourcePlug, destPlug);
-
-	sourcePlug = MPlug(this->thisMObject(), emissionColor);
-	destPlug = MPlug(this->thisMObject(), aIncandescence);
-	if( !destPlug.isConnected() )
-		stat = modifier.connect(sourcePlug, destPlug);
-
-	stat = modifier.doIt();
+	setMPSafe( true );
 }
 
 
@@ -64,8 +52,8 @@ void CoronaSurface::postConstructor( )
 MObject  CoronaSurface::aTranslucenceCoeff;
 MObject  CoronaSurface::aDiffuseReflectivity;
 MObject  CoronaSurface::aInTransparency;
-MObject  CoronaSurface::aColor;
-MObject  CoronaSurface::aIncandescence;
+//MObject  CoronaSurface::aColor;
+//MObject  CoronaSurface::aIncandescence;
 MObject  CoronaSurface::aOutColor;
 MObject  CoronaSurface::aOutTransparency;
 MObject  CoronaSurface::aNormalCamera;
@@ -301,19 +289,19 @@ MStatus CoronaSurface::initialize()
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.8f ) );
 
-    aColor = nAttr.createColor( "color", "c", &status );
-    CHECK_MSTATUS( status );
-	CHECK_MSTATUS( nAttr.setHidden( true ) );
-    CHECK_MSTATUS( nAttr.setKeyable( true ) );
-    CHECK_MSTATUS( nAttr.setStorable( true ) );
-    CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.58824f, 0.644f ) );
+ //   aColor = nAttr.createColor( "color", "c", &status );
+ //   CHECK_MSTATUS( status );
+	//CHECK_MSTATUS( nAttr.setHidden( true ) );
+ //   CHECK_MSTATUS( nAttr.setKeyable( true ) );
+ //   CHECK_MSTATUS( nAttr.setStorable( true ) );
+ //   CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.58824f, 0.644f ) );
 
-    aIncandescence = nAttr.createColor( "incandescence", "ic", &status );
-    CHECK_MSTATUS( status );
-	CHECK_MSTATUS( nAttr.setHidden( true ) );
-    CHECK_MSTATUS( nAttr.setKeyable( true ) );
-    CHECK_MSTATUS( nAttr.setStorable( true ) );
-    CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.0f, 0.0f ) );
+ //   aIncandescence = nAttr.createColor( "incandescence", "ic", &status );
+ //   CHECK_MSTATUS( status );
+	//CHECK_MSTATUS( nAttr.setHidden( true ) );
+ //   CHECK_MSTATUS( nAttr.setKeyable( true ) );
+ //   CHECK_MSTATUS( nAttr.setStorable( true ) );
+ //   CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.0f, 0.0f ) );
 
     aInTransparency = nAttr.createColor( "transparency", "it", &status );
     CHECK_MSTATUS( status );
@@ -322,7 +310,7 @@ MStatus CoronaSurface::initialize()
     CHECK_MSTATUS( nAttr.setDefault( 0.0f, 0.0f, 0.0f ) );
 
     // Color Output
-    //
+    
     aOutColor = nAttr.createColor( "outColor", "oc", &status );
     CHECK_MSTATUS( status );
 
@@ -516,8 +504,8 @@ MStatus CoronaSurface::initialize()
     //
     CHECK_MSTATUS( addAttribute( aTranslucenceCoeff ) );
     CHECK_MSTATUS( addAttribute( aDiffuseReflectivity ) );
-    CHECK_MSTATUS( addAttribute( aColor ) );
-    CHECK_MSTATUS( addAttribute( aIncandescence ) );
+    //CHECK_MSTATUS( addAttribute( aColor ) );
+    //CHECK_MSTATUS( addAttribute( aIncandescence ) );
     CHECK_MSTATUS( addAttribute( aInTransparency ) );
     CHECK_MSTATUS( addAttribute( aOutColor ) );
     CHECK_MSTATUS( addAttribute( aOutTransparency ) );
@@ -536,10 +524,10 @@ MStatus CoronaSurface::initialize()
     CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( diffuse, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( emissionColor, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
+    //CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutTransparency ) );
     CHECK_MSTATUS( attributeAffects( aInTransparency, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( aIncandescence, aOutColor ) );
+    //CHECK_MSTATUS( attributeAffects( aIncandescence, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aLightIntensityR, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aLightIntensityB, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( aLightIntensityG, aOutColor ) );
@@ -584,8 +572,8 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
         MFloatVector& surfaceNormal = block.inputValue( aNormalCamera, &status ).asFloatVector();
         CHECK_MSTATUS( status );
 
-        MFloatVector& surfaceColor = block.inputValue( aColor, &status ).asFloatVector();
-        CHECK_MSTATUS( status );
+        //MFloatVector& emissionColor = block.inputValue( emissionColor, &status ).asFloatVector();
+        //CHECK_MSTATUS( status );
 
         MFloatVector& diffuseColor = block.inputValue( diffuse, &status ).asFloatVector();
         CHECK_MSTATUS( status );
@@ -595,25 +583,14 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
 		//cplug.child(1).setDouble(surfaceColor.y);
 		//cplug.child(2).setDouble(surfaceColor.z);
 
-        MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
-        CHECK_MSTATUS( status );
+        //MFloatVector& incandescence = block.inputValue( aIncandescence,  &status ).asFloatVector();
+        //CHECK_MSTATUS( status );
 
         float diffuseReflectivity = block.inputValue( aDiffuseReflectivity, &status ).asFloat();
         CHECK_MSTATUS( status );
 
-        MFloatVector& emissionColorV = block.inputValue( emissionColor,  &status ).asFloatVector();
+		MFloatVector& incandescence = block.inputValue(emissionColor, &status).asFloatVector();
         CHECK_MSTATUS( status );
-
-		//MPlug eplug(this->thisMObject(), emissionColor);
-		//eplug.child(0).setDouble(emissionColorV.x);
-		//eplug.child(1).setDouble(emissionColorV.y);
-		//eplug.child(2).setDouble(emissionColorV.z);
-
-
-//      float translucenceCoeff = block.inputValue( aTranslucenceCoeff,
-//              &status ).asFloat();
-//      CHECK_MSTATUS( status );
-
 
         // Get light list
         //
@@ -675,9 +652,9 @@ MStatus CoronaSurface::compute( const MPlug& plug, MDataBlock& block )
 
         // Factor incident light with surface color and add incandescence
         //
-        resultColor[0] = resultColor[0] * surfaceColor[0] + incandescence[0];
-        resultColor[1] = resultColor[1] * surfaceColor[1] + incandescence[1];
-        resultColor[2] = resultColor[2] * surfaceColor[2] + incandescence[2];
+		resultColor[0] = resultColor[0] * diffuseColor[0] + incandescence[0];
+		resultColor[1] = resultColor[1] * diffuseColor[1] + incandescence[1];
+		resultColor[2] = resultColor[2] * diffuseColor[2] + incandescence[2];
 
 
         // Set ouput color attribute

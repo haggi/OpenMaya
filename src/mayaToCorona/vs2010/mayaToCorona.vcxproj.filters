@@ -45,11 +45,20 @@
     <Filter Include="common\translators">
       <UniqueIdentifier>{2a28f46a-b40f-4722-b926-505c84b0ed12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OSL">
-      <UniqueIdentifier>{267da3f8-bcc1-4f30-99cc-870a056014c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\OSLShaders">
       <UniqueIdentifier>{9034adb2-f947-46c8-87d6-bfd0e3509064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\coronaOSL">
+      <UniqueIdentifier>{267da3f8-bcc1-4f30-99cc-870a056014c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\osl">
+      <UniqueIdentifier>{51255df3-650c-457f-bb65-9802b448f7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\swatchesRenderer">
+      <UniqueIdentifier>{b98b76ea-0a5e-4e6e-8036-0c45bc102238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\xml">
+      <UniqueIdentifier>{74908600-2eb0-4288-ac8d-b3d325e5ae50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +137,6 @@
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaShaders.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
@@ -167,9 +173,6 @@
     <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp">
-      <Filter>mtco_common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
@@ -197,14 +200,44 @@
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\OSL\oslRenderer.cpp">
-      <Filter>Source Files\OSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\OSL\oslUtils.cpp">
-      <Filter>Source Files\OSL</Filter>
+    <ClCompile Include="..\src\coronaOSL\oslRenderer.cpp">
+      <Filter>Source Files\coronaOSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp">
+      <Filter>common\osl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaWorld.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\world.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_swatchRendererInterfaceFactory.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaShaders.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\TestShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\coronaOSL\coronaOSLMapUtil.cpp">
+      <Filter>Source Files\coronaOSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,9 +334,6 @@
     <ClInclude Include="..\..\common\cpp\translators\meshTranslator.h">
       <Filter>common\translators</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h">
-      <Filter>mtco_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
       <Filter>common\shadingTools</Filter>
     </ClInclude>
@@ -328,9 +358,6 @@
     <ClInclude Include="..\src\shaders\coronaOSLNode.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\OSL\oslRenderer.h">
-      <Filter>Source Files\OSL</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
@@ -340,8 +367,35 @@
     <ClInclude Include="..\src\Corona\CoronaSky.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\OSL\oslUtils.h">
-      <Filter>Source Files\OSL</Filter>
+    <ClInclude Include="..\src\coronaOSL\oslRenderer.h">
+      <Filter>Source Files\coronaOSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\osl\oslUtils.h">
+      <Filter>common\osl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\world.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h">
+      <Filter>mtco_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaShaders.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\TestShader.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h">
+      <Filter>Source Files\coronaOSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -378,5 +432,31 @@
     <None Include="..\mtco_devmodule\shaders\CoronaOSL.osl">
       <Filter>Source Files\OSLShaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaCombiner.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaDiffuse.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaGeom.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaPassThrough.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaSpecular.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaLightAccum.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaOutput.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

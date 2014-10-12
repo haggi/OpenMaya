@@ -19,11 +19,6 @@ public:
 	MMatrix objectMatrix;
 };
 
-struct meshData{
-	MPointArray points;
-	MFloatVectorArray normals;
-};
-
 class mtco_MayaObject : public MayaObject
 {
 public:
@@ -37,7 +32,6 @@ public:
 	virtual mtco_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
 	virtual void getMaterials();
 
-	std::vector<meshData> meshDataArray;
 };
 
 #endif

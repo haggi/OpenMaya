@@ -11,7 +11,7 @@ OSLMap::OSLMap()
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
 {
-	//this->coronaRenderer->oslRenderer.renderer.setup_transformations(Mshad, Mobj);
+	//this->oslRenderer->renderer.setup_transformations(Mshad, Mobj);
 
     // Just zero the whole thing out to start
     memset(&sg, 0, sizeof(OSL::ShaderGlobals));
@@ -26,7 +26,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	
     // Just make it look like all shades are the result of 'raytype' rays.
 	std::string raytype = "camera";
-	sg.raytype = this->coronaRenderer->oslRenderer.shadingsys->raytype_bit (OSL::ustring(raytype));
+	sg.raytype = this->oslRenderer->shadingsys->raytype_bit (OSL::ustring(raytype));
 	
 	Corona::Pos uvw = context.getMapCoords(0);
 	Corona::Pos pos = context.getPosition();
@@ -85,17 +85,17 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 
 	int threadId = context.getThreadId();
 	OSL::PerThreadInfo *thread_info = NULL;
-	if( this->coronaRenderer->oslRenderer.thread_info[threadId] == NULL)
+	if( this->oslRenderer->thread_info[threadId] == NULL)
 	{
-		this->coronaRenderer->oslRenderer.thread_info[threadId] = this->coronaRenderer->oslRenderer.shadingsys->create_thread_info();
+		this->oslRenderer->thread_info[threadId] = this->oslRenderer->shadingsys->create_thread_info();
 	}
-	thread_info = this->coronaRenderer->oslRenderer.thread_info[threadId];
+	thread_info = this->oslRenderer->thread_info[threadId];
 	OSL::ShadingContext *ctx = NULL;
-	if( this->coronaRenderer->oslRenderer.ctx[threadId] == NULL)
+	if( this->oslRenderer->ctx[threadId] == NULL)
 	{
-		this->coronaRenderer->oslRenderer.ctx[threadId] = this->coronaRenderer->oslRenderer.shadingsys->get_context(thread_info);
+		this->oslRenderer->ctx[threadId] = this->oslRenderer->shadingsys->get_context(thread_info);
 	}
-	ctx = this->coronaRenderer->oslRenderer.ctx[threadId];
+	ctx = this->oslRenderer->ctx[threadId];
 
 	OSL::Matrix44 Mshad;
 	OSL::Matrix44 Mobj;
@@ -105,9 +105,9 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 	float rgb[3] = {0,0,0};
 
 	OSL::TypeDesc t;
-	if (this->coronaRenderer->oslRenderer.shadingsys->execute(*ctx, *this->shaderGroup, sg))
+	if (this->oslRenderer->shadingsys->execute(*ctx, *this->shaderGroup, sg))
 	{
-		const void *data = this->coronaRenderer->oslRenderer.shadingsys->get_symbol(*ctx, this->coronaRenderer->oslRenderer.outputVar, t);
+		const void *data = this->oslRenderer->shadingsys->get_symbol(*ctx, this->oslRenderer->outputVar, t);
 		if (data)
 		{
 			if (t.basetype == OSL::TypeDesc::FLOAT)
@@ -207,6 +207,7 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 		//normal = nt.getNormalized();
 		return N;
 	}
+	return context.getShadingNormal();
 }
 
 void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output) 

@@ -13,8 +13,9 @@ shader checker (vector uvCoord = 0, vector color1 = 1, vector color2 = 0, float 
 	float ss = floor(s * 4);
 	float tt = floor(t * 4);
 	
-	vector contrastColor1 = color1 * contrast;
-	vector contrastColor2 = color2 * (1.0 - contrast);
+	vector mixColor = mix(color1, color2, 0.5);
+	vector contrastColor1 = color1 * contrast + (1.0 - contrast) * mixColor;
+	vector contrastColor2 = color2 * contrast + (1.0 - contrast) * mixColor;
     outColor = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
 	outAlpha = luminance(color(outColor));
 }

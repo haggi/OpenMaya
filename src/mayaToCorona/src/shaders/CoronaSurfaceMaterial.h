@@ -2,7 +2,7 @@
 #include <maya/MTypeId.h>
 
 #ifdef HAS_OVERRIDE
-#include "CoronaSurfaceOverride.h"
+#include "CoronaSurfaceMaterialOverride.h"
 #endif
 
 // Plugin CoronaSurface Shader Class //
@@ -83,10 +83,10 @@ protected:
    static MObject  aDiffuseReflectivity;
 
    // Surface color
-   static MObject  aColor;
+   //static MObject  aColor;
 
    // Incandescence
-   static MObject  aIncandescence;
+   //static MObject  aIncandescence;
 
    // Surface transparency
    static MObject  aInTransparency;

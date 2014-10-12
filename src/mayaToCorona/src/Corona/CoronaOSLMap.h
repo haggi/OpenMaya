@@ -1,12 +1,14 @@
 #include "CoronaCore/api/Api.h"
 #include "OSL/oslexec.h"
+#include "../coronaOSL/oslRenderer.h"
 
 class CoronaRenderer;
 // basic map class as interface for OSL calls
 class OSLMap : public Corona::Abstract::Map 
 {
 public:
-	CoronaRenderer *coronaRenderer;
+	//CoronaRenderer *coronaRenderer;
+	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, GETU, GETV };
 	BumpType bumpType;
 	OSL::ShaderGroupRef shaderGroup;

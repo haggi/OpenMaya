@@ -92,7 +92,7 @@
       <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAS_OVERRIDE;CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -156,12 +156,15 @@
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
+    <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -171,6 +174,9 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\..\common\cpp\world.cpp" />
+    <ClCompile Include="..\src\coronaOSL\coronaOSLMapUtil.cpp" />
+    <ClCompile Include="..\src\coronaOSL\oslRenderer.cpp" />
     <ClCompile Include="..\src\Corona\CoronaCamera.cpp" />
     <ClCompile Include="..\src\Corona\CoronaMap.cpp" />
     <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp" />
@@ -182,22 +188,24 @@
     <ClCompile Include="..\src\Corona\CoronaLights.cpp" />
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp" />
     <ClCompile Include="..\src\Corona\CoronaShaders.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp" />
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaWorld.cpp" />
     <ClCompile Include="..\src\mayaToCorona.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaSceneFactory.cpp" />
-    <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaScene.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
-    <ClCompile Include="..\src\OSL\oslRenderer.cpp" />
-    <ClCompile Include="..\src\OSL\oslUtils.cpp" />
+    <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp" />
+    <ClCompile Include="..\src\mtco_common\mtco_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
+    <ClCompile Include="..\src\shaders\TestShader.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
     <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp" />
   </ItemGroup>
@@ -210,12 +218,16 @@
     <ClInclude Include="..\..\common\cpp\mayaScene.h" />
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
+    <ClInclude Include="..\..\common\cpp\osl\oslUtils.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
@@ -225,27 +237,30 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\..\common\cpp\world.h" />
+    <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h" />
+    <ClInclude Include="..\src\coronaOSL\oslRenderer.h" />
     <ClInclude Include="..\src\Corona\CoronaLights.h" />
     <ClInclude Include="..\src\Corona\CoronaMap.h" />
     <ClInclude Include="..\src\Corona\CoronaOSLMap.h" />
     <ClInclude Include="..\src\Corona\CoronaRendererController.h" />
     <ClInclude Include="..\src\Corona\CoronaCallbacks.h" />
     <ClInclude Include="..\src\Corona\Corona.h" />
+    <ClInclude Include="..\src\Corona\CoronaShaders.h" />
     <ClInclude Include="..\src\Corona\CoronaSky.h" />
     <ClInclude Include="..\src\Corona\MyClasses.h" />
     <ClInclude Include="..\src\mayaToCorona.h" />
-    <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
-    <ClInclude Include="..\src\OSL\oslRenderer.h" />
-    <ClInclude Include="..\src\OSL\oslUtils.h" />
+    <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\materialBase.h" />
     <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
+    <ClInclude Include="..\src\shaders\TestShader.h" />
     <ClInclude Include="..\src\shaders\textureBase.h" />
   </ItemGroup>
   <ItemGroup>
@@ -260,6 +275,16 @@
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
     <None Include="sourceCodeDocs\materials.txt" />
     <None Include="sourceCodeDocs\todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaLightAccum.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaOutput.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaCombiner.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaDiffuse.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaGeom.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaPassThrough.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\coronaSpecular.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
