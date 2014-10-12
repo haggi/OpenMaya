@@ -2,68 +2,57 @@
 #include <maya/MImage.h>
 #include <maya/MGlobal.h>
 #include <assert.h>
-#include <string.h> // for memset.
+#include <string.h>
 #include <string>
 #include <algorithm>
 
 #include "utilities/tools.h"
+#include "swatchRendererInterfaceFactory.h"
+#include "../world.h"
 
 MSwatchRenderBase* SwatchRenderer::creator(MObject dependNode, MObject renderNode, int imageResolution)
 {
 	return new SwatchRenderer(dependNode, renderNode, imageResolution);
 }
 
-SwatchRenderer::SwatchRenderer(MObject dependNode, MObject renderNode, int imageResolution) : MSwatchRenderBase(dependNode, renderNode,	imageResolution)
+SwatchRenderer::SwatchRenderer(MObject dependNode, MObject renderNode, int imageResolution) : MSwatchRenderBase(dependNode, renderNode, imageResolution)
 {
-	MGlobal::displayInfo(MString("SwatchRenderer dependNode ") + getObjectName(dependNode));
-	MGlobal::displayInfo(MString("SwatchRenderer renderNode ") + getObjectName(renderNode));
+	MGlobal::displayInfo(MString("SwatchRenderer called with dependNode ") + getObjectName(dependNode) + " and renderNode " + getObjectName(renderNode));
+	this->renderInterface = SwatchRendererInterfaceFactory().createSwatchRendererInterface(dependNode, renderNode, imageResolution);
 }
 
 SwatchRenderer::~SwatchRenderer()
 {
-}
-
-void SwatchRenderer::fillSwatch()
-{
-	const int res(resolution());	
-	float *pixels = image().floatPixels();
-	int index = 0;
-	for (int y = 0; y < res; y++)
-	{
-		for (int x = 0; x < res; x++)
-		{
-			float fac = float(y) / res;
-			pixels[index++] = fac * rndR;
-			pixels[index++] = fac * rndG;
-			pixels[index++] = fac * rndB;
-			pixels[index++] = 1.0f;
-		}
-	}
+	if ( this->renderInterface != 0)
+		SwatchRendererInterfaceFactory().deleteSwatchRendererInterface(this->renderInterface);
+	this->renderInterface = NULL;
 }
 
 bool SwatchRenderer::doIteration()
 {
 	MStatus status;
 	MGlobal::displayInfo("doIteration called.");
-	float rm = (float)RAND_MAX;
-	float r = (float)rand();
-	rndR = float(r)/rm;
-	r = (float)rand();
-	rndG = float(r) / rm;
-	r = (float)rand();
-	rndB = float(r) / rm;
-
 	image().create(resolution(), resolution(), 4, MImage::kFloat);
 
-#ifndef NDEBUG
-		unsigned int iWidth, iHeight;
-		image().getSize(iWidth, iHeight);
-		assert(resolution() == (int)iWidth);
-		assert(resolution() == (int)iHeight);
-		assert(MImage::kFloat == image().pixelType());
-#endif
-	fillSwatch();
-	image().convertPixelFormat(MImage::kByte);
-	return true;
+//#ifndef NDEBUG
+//		unsigned int iWidth, iHeight;
+//		image().getSize(iWidth, iHeight);
+//		assert(resolution() == (int)iWidth);
+//		assert(resolution() == (int)iHeight);
+//		assert(MImage::kFloat == image().pixelType());
+//#endif
+
+
+		if (getWorldPtr()->state == MayaToWorld::UIRENDER)
+		{
+			this->renderInterface->getImageData(this->image()); // copy empty image
+			image().convertPixelFormat(MImage::kByte);
+			return true;
+		}
+
+		this->renderInterface->renderSwatch();
+		this->renderInterface->getImageData(this->image());
+		image().convertPixelFormat(MImage::kByte);
+		return true;
 }
 

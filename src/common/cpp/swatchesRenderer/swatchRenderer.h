@@ -5,7 +5,9 @@
 #include <maya/MString.h>
 #include <maya/MPlugArray.h>
 
-#include "swatchGeometry.h"
+#include "boost/shared_ptr.hpp"
+
+class SwatchRendererInterface;
 
 class SwatchRenderer: public MSwatchRenderBase
 {
@@ -17,11 +19,7 @@ public:
 	virtual bool doIteration();
 
 public:
-	//void loadSwatchScene();
-	void fillSwatch();
-	float rndR;
-	float rndG;
-	float rndB;
+	SwatchRendererInterface *renderInterface;
 };
 
 #endif
