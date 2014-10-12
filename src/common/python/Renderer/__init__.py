@@ -280,15 +280,14 @@ global proc updateMayaImageFormatControl()
 #        $mrNodeTypeInfo[$index++] = "mrMaterials";
 #        $mrNodeTypeInfo[$index++] = "rendernode/mentalray/material";
 #        $mrNodeTypeInfo[$index++] = "-asShader";
-
-        # this is necessary for < maya2014 because in these versions the mentalray plugin somehow destroys the callback call
-        if len(tl) > 0:
-            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", self.rendererName.lower() + "/material", "-asShader", "")
-            # melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
-            log.debug("Treelister cmd " + melCmd)
-            pm.mel.eval(melCmd)
-            melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", self.rendererName.lower() + "/texture", "-asUtility", "")
-            pm.mel.eval(melCmd)
+        print "filterString", filterString, "postCommand", postCommand
+        
+        melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Materials", self.rendererName.lower() + "/material", "-asShader", "")
+        # melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", "lux/shader/texture", "-asUtility", "")
+        log.debug("Treelister cmd " + melCmd)
+        pm.mel.eval(melCmd)
+        melCmd = 'addToRenderNodeTreeLister( "{0}", "{1}", "{2}", "{3}", "{4}", "{5}");'.format(tl, postCommand, self.rendererName + "/Textures", self.rendererName.lower() + "/texture", "-asUtility", "")
+        pm.mel.eval(melCmd)
 #        global proc addToRenderNodeTreeLister(
 #            string $renderNodeTreeLister,
 #            string $postCommand,

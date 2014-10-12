@@ -41,6 +41,12 @@ class AETheaMaterialTemplate(BaseTemplate):
                             pm.connectControl(weightCtrl, pmAttr[i].layerWeight, index = 2)
                             texCtrl = pm.attrColorSliderGrp(at=pmAttr[i].layerTexture, label="Texture");
                             shdCtrl = pm.attrColorSliderGrp(at = pmAttr[i].layerShader, label="Shader");
+                        with pm.columnLayout(adjustableColumn=True):
+                            with pm.rowLayout(nc=3):
+                                pm.button(label="Up")
+                                pm.button(label="Delete")
+                                pm.button(label="Down")
+                                               
                 
         
     def layerUpdate(self, attribute):
