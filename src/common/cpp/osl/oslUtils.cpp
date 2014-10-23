@@ -275,30 +275,37 @@ namespace MAYATO_OSL{
 		for (uint i = 0; i < snode.inputAttributes.size(); i++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[i];
-			for (uint pId = 0; pId < otherSidePlugs.length(); pId++)
+			for (uint ipId = 0; ipId < connectedInPlugs.length(); ipId++)
 			{
-				// if the other side plugs belong to a node which is not defined,
-				// the node on the other input side is not supported
-				MPlug otherSidePlug = otherSidePlugs[pId];
-				if (!doesOSLNodeAlreadyExist(otherSidePlug.node()))
+				MString inplugName = getAttributeNameFromPlug(connectedInPlugs[ipId]);
+				if (inplugName != sa.name.c_str())
 					continue;
-				// if the output is not a child output, we do not need a output helper node
-				if (!otherSidePlug.isChild())
-					continue;
-				MString outAttributeName = getAttributeNameFromPlug(otherSidePlug).asChar();
-				MPlug parentPlug = getParentPlug(otherSidePlug);
-				int childId = getChildId(otherSidePlug);
-				if ((childId < 0) || (childId > 2))
-				{
-					logger.error(MString("Source plug ") + otherSidePlug.name() + " child id is wrong (<0 or >2): " + childId);
-					continue;
-				}
-				outAttribute = outAttributes[childId];
-				MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
-				if (!doesHelperNodeExist(outHelperNodeName))
-					createPlugHelperNode(parentPlug, true);
+				uint pId = ipId;
+				//for (uint pId = 0; pId < otherSidePlugs.length(); pId++)
+				//{
+					// if the other side plugs belong to a node which is not defined,
+					// the node on the other input side is not supported
+					MPlug otherSidePlug = otherSidePlugs[pId];
+					if (!doesOSLNodeAlreadyExist(otherSidePlug.node()))
+						continue;
+					// if the output is not a child output, we do not need a output helper node
+					if (!otherSidePlug.isChild())
+						continue;
+					MString outAttributeName = getAttributeNameFromPlug(otherSidePlug).asChar();
+
+					MPlug parentPlug = getParentPlug(otherSidePlug);
+					int childId = getChildId(otherSidePlug);
+					if ((childId < 0) || (childId > 2))
+					{
+						logger.error(MString("Source plug ") + otherSidePlug.name() + " child id is wrong (<0 or >2): " + childId);
+						continue;
+					}
+					outAttribute = outAttributes[childId];
+					MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
+					if (!doesHelperNodeExist(outHelperNodeName))
+						createPlugHelperNode(parentPlug, true);
+				//}
 			}
-	
 		}
 	
 		for (uint i = 0; i < snode.inputAttributes.size(); i++)

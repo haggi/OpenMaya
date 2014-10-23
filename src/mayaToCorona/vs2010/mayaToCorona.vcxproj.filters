@@ -397,6 +397,9 @@
     <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h">
       <Filter>Source Files\coronaOSL</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaUtils.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">

@@ -65,7 +65,7 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         self.beginNoOptimize()
         self.addControl("emissionColor", label="Emission Color")
         #self.addControl("emissionIesProfile", label="IES Profile")
-        self.addControl("mtco_mat_iesProfile", label="IES Profile")
+        self.addControl("iesProfile", label="IES Profile")
         self.addControl("emissionDisableSampling", label="Disable Sampling")
         self.addControl("emissionSharpnessFake", label="Sharpness Fake")
         self.addControl("emissionSharpnessFakePoint", label="Sharpness Fake Point")

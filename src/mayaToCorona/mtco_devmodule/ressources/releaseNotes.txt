@@ -8,13 +8,15 @@ release 0.29
 - OSL: removed color from nodes, vector only now
 - fixed smooth mesh bug with multiple shaders
 - refactoring of mesh/smooth mesh handling
-- removed automatic error prone diffuse->color connection
+- removed automatic error prone internal diffuse->color connection
 - internal rebuild for independet OSL usage (swatches rendering)
 - added fix for missing uv's. Warning will be printed.
 - added warning for malformed Normals.
 - OSL: fixed contrast in checker node
 - implemented swatch rendering
 - added viewport 2.0 diffuse implementation openGL only
+- renamed iesProfile attribute
+- bifrost motionblur seems to work now
 
 release 0.28
 - added soft shadows to point light and spot light and directional light - sort of

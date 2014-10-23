@@ -59,56 +59,6 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 void CoronaRenderer::updateMesh(mtco_MayaObject *obj)
 {
 	obj->addMeshData();
-
-	// if we have a bifrost velocity channel I suppose this is a bifost mesh and there is no need to 
-	// save the mesh motion steps because it has changing topology what does not work in most renderers
-	// so we save only the very first motion step
-	//MFnMesh meshFn(obj->mobject);
-	//if (meshFn.hasColorChannels("bifrostVelocity"))
-	//{
-	//	MColorArray colors;
-	//	MString colorSetName = "bifrostVelocity";
-	//	meshFn.getVertexColors(colors, &colorSetName);
-	//}
-
-	//// if we have a bifrost mesh, we only export at one mb step.
-	//// the motionblur is done here with bifrost velocity
-	//if (this->hasBifrostVelocityChannel(obj))
-	//{
-	//	MFnMesh meshFn(obj->mobject);
-	//	MColorArray colors;
-	//	if (this->mtco_renderGlobals->doMb)
-	//	{
-	//		if (meshFn.hasColorChannels("bifrostVelocity"))
-	//		{
-	//			MString colorSetName = "bifrostVelocity";
-	//			meshFn.getVertexColors(colors, &colorSetName);
-	//		}
-	//		logger.debug(MString("Found bifrost velocity channel on mesh: ") + obj->shortName + " with " + colors.length() + " color entries. Number of vertices: " + md.points.length());
-	//		for (uint ptId = 0; ptId < md.points.length(); ptId++)
-	//		{
-	//			MColor c = colors[ptId];
-	//			MVector v = MVector(c.r, c.g, c.b);
-	//			md.points[ptId] -= v * 0.5 / 24.0;
-	//		}
-	//		obj->meshDataArray.push_back(md);
-	//		for (uint ptId = 0; ptId < md.points.length(); ptId++)
-	//		{
-	//			MColor c = colors[ptId];
-	//			MVector v = MVector(c.r, c.g, c.b);
-	//			md.points[ptId] += v * 0.5 / 24.0;
-	//		}
-	//		obj->meshDataArray.push_back(md);
-	//	}
-	//	else{
-	//		obj->meshDataArray.push_back(md);
-	//	}
-	//}
-	//else{
-	//	obj->meshDataArray.push_back(md);
-	//}
-	//logger.debug(MString("Adding ") + md.points.length() + " vertices to mesh data");
-	//logger.debug(MString("Adding ") + md.normals.length() + " normals to mesh data");
 }
 
 void CoronaRenderer::defineMesh(mtco_MayaObject *obj)

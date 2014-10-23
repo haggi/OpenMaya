@@ -7,6 +7,7 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "mtco_mayaScene.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -23,6 +24,7 @@ mtco_MayaScene::mtco_MayaScene():MayaScene()
 mtco_MayaScene::~mtco_MayaScene()
 {
 	logger.debug("mtco maya scene destructor.");
+	getWorldPtr()->worldRenderGlobals = NULL;
 }
 
 void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
@@ -108,6 +110,7 @@ void mtco_MayaScene::getRenderGlobals()
 {
 	this->renderGlobals = new mtco_RenderGlobals();
 	MayaScene::renderGlobals = renderGlobals;
+	getWorldPtr()->worldRenderGlobals = this->renderGlobals;
 }
 
 

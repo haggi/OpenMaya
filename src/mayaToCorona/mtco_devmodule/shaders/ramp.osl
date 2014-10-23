@@ -117,6 +117,10 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 		s = uvCoord[0];
 		t = uvCoord[1];
 	}
+	
+	s = (s > 1.0 || s < 0.0) ? s - floor(s) : s;
+	t = (t > 1.0 || t < 0.0) ? t - floor(t) : t;
+	
 	float pos[MAXENTRIES];
 	color col[MAXENTRIES];
 	

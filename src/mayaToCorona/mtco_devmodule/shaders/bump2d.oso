@@ -5,7 +5,7 @@ param	float	bumpValue	0 		 %read{14,14} %write{2147483647,-1}
 param	float	bumpDepth	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	int	bumpInterp	0 		 %read{2,12} %write{2147483647,-1}
 param	vector	normalCamera	0 0 0 		 %read{1,1} %write{0,0}
-param	color	normalMap	0 0 0 		 %read{4,10} %write{2147483647,-1}
+param	vector	normalMap	0 0 0 		 %read{4,10} %write{2147483647,-1}
 oparam	vector	outNormal	1 1 1 		 %read{2147483647,-1} %write{15,15}
 global	normal	N	 %read{0,0} %write{2147483647,-1}
 local	normal	dNormal	 %read{15,15} %write{1,14}

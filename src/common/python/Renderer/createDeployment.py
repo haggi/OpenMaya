@@ -103,7 +103,13 @@ def createDeployment(renderer, shortCut, mayaRelease):
     #mll
     print "copy ", sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + ".mll"
     shutil.copy(sourceDir + "/plug-ins/mayato" + renderer + "_maya"+ mayaRelease + ".mll", devDestDir + "/plug-ins/mayato" + renderer + ".mll")
-
+    plugInDir = sourceDir + "/plug-ins"
+    print "-------------- plugInDir ------------------", plugInDir
+    files = plugInDir.listdir("*.xml")
+    for xmlFile in files:
+        print "Copy xml file", xmlFile
+        shutil.copy(xmlFile, devDestDir + "/plug-ins/")
+    
     #ressources
     scDir = path.path(sourceDir + "/ressources")
     shutil.copytree(scDir, devDestDir + "/ressources")

@@ -3,6 +3,9 @@
 #include <maya/MDrawRegistry.h>
 #include <maya/MSwatchRenderRegister.h>
 
+#include "OpenImageIO/oiioversion.h"
+#include "OSL/oslversion.h"
+
 #include "CoronaCore/api/Api.h"
 #include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
@@ -40,7 +43,9 @@ static const MString TestShaderClassification("shader/surface:");
 
 MStatus initializePlugin( MObject obj )
 {
-	MGlobal::displayInfo(MString("Loading plugin MayaToCorona version: ") + MString(VERSION));
+	std::string oiio = OIIO_VERSION_STRING;
+	std::string oslVersion = OSL_LIBRARY_VERSION_STRING;
+	MGlobal::displayInfo(MString("MayaToCorona version: ") + MString(VERSION) + " using OIIO " + oiio.c_str() + " and osl " + oslVersion.c_str());
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 

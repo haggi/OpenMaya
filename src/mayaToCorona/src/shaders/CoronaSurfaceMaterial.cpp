@@ -109,7 +109,7 @@ MObject CoronaSurface::alphaMode;
 MObject CoronaSurface::attenuationDist;
 MObject CoronaSurface::volumeSSSMode;
 //---------------------------- automatically created attributes end ------------------------------------
-
+MObject CoronaSurface::iesProfile;
 
 // This node does not need to perform any special actions on creation or
 // destruction
@@ -132,13 +132,6 @@ void* CoronaSurface::creator()
     return new CoronaSurface();
 }
 
-
-// The initialize method is called only once when the node is first
-// registered with Maya. In this method you define the attributes of the
-// node, what data comes in and goes out of the node that other nodes may
-// want to connect to.
-//
-
 MStatus CoronaSurface::initialize()
 {
 	MFnNumericAttribute nAttr;
@@ -148,16 +141,7 @@ MStatus CoronaSurface::initialize()
 	MFnEnumAttribute eAttr;
 	MFnMessageAttribute mAttr;
 
-    MStatus status; // Status will be used to hold the MStatus value
-                    // returned by each api function call. It is important
-                    // to check the status returned by a call to aid in
-                    // debugging. Failed API calls can result in subtle
-                    // errors that can be difficult to track down, you may
-                    // wish to use the CHECK_MSTATUS macro for any API
-                    // call where you do not need to provide your own
-                    // error handling.
-                    //
-
+    MStatus status; 
 //---------------------------- automatically created attributes start ------------------------------------
 	opacity = nAttr.createColor("opacity", "opacity");
 	nAttr.setDefault(1.0,1.0,1.0);
@@ -272,6 +256,10 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( volumeSSSMode ));
 
 //---------------------------- automatically created attributes end ------------------------------------
+
+	iesProfile = tAttr.create("iesProfile", "iesProfile", MFnNumericData::kString);
+	tAttr.setUsedAsFilename(true);
+	CHECK_MSTATUS(addAttribute(iesProfile));
 
     // Input Attributes
     //
@@ -520,8 +508,9 @@ MStatus CoronaSurface::initialize()
     // there may be several inputs and outputs, but not all the inputs
     // affect all the outputs.
     //
-    CHECK_MSTATUS( attributeAffects( aTranslucenceCoeff, aOutColor ) );
-    CHECK_MSTATUS( attributeAffects( aDiffuseReflectivity, aOutColor ) );
+	CHECK_MSTATUS(attributeAffects(iesProfile, aOutColor));
+	CHECK_MSTATUS(attributeAffects(aTranslucenceCoeff, aOutColor));
+	CHECK_MSTATUS(attributeAffects(aDiffuseReflectivity, aOutColor));
     CHECK_MSTATUS( attributeAffects( diffuse, aOutColor ) );
     CHECK_MSTATUS( attributeAffects( emissionColor, aOutColor ) );
     //CHECK_MSTATUS( attributeAffects( aColor, aOutColor ) );

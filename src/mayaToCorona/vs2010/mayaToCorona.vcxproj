@@ -115,7 +115,7 @@
     <ClCompile>
       <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -126,7 +126,6 @@
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(OIIO)\lib;$(OSL)\lib;$(OPENEXR)\lib;$(ILM_BASE)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy_vs2013\lib\*.lib;Half.lib;Iex.lib;Imath.lib;IlmThread.lib;OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vc10\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2010\lib\jpeg.lib;IlmImf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -134,7 +133,7 @@
     <ClCompile>
       <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;OSL_LLVM_VERSION=34;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAS_OVERRIDE;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
@@ -144,7 +143,6 @@
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(OIIO)\lib;$(OSL)\lib;$(OPENEXR)\lib;$(ILM_BASE)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\llvm-3.4Deploy_vs2013\lib\*.lib;Half.lib;Iex.lib;Imath.lib;IlmThread.lib;OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vc10\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2010\lib\jpeg.lib;IlmImf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -248,6 +246,7 @@
     <ClInclude Include="..\src\Corona\Corona.h" />
     <ClInclude Include="..\src\Corona\CoronaShaders.h" />
     <ClInclude Include="..\src\Corona\CoronaSky.h" />
+    <ClInclude Include="..\src\Corona\CoronaUtils.h" />
     <ClInclude Include="..\src\Corona\MyClasses.h" />
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />

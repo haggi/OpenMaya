@@ -506,9 +506,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='mesh', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
-
         
-        pm.addExtension(nodeType="CoronaSurface", longName="mtco_mat_iesProfile", dataType="string", usedAsFilename=True)
         # dummy color for legacy viewport
         pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3' )
         pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )

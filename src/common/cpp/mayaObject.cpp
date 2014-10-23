@@ -10,6 +10,8 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "shadingtools/shadingUtils.h"
+#include "world.h"
+#include "renderGlobals.h"
 
 static Logging logger;
 
@@ -343,8 +345,62 @@ bool MayaObject::hasBifrostVelocityChannel()
 void MayaObject::addMeshData()
 {
 	MeshData mdata;
-	this->getMeshData(mdata.points, mdata.normals);
-	this->meshDataList.push_back(mdata);
+
+	if (this->hasBifrostVelocityChannel())
+	{
+		bool doMb = this->motionBlurred;
+		if (getWorldPtr()->worldRenderGlobals != NULL)
+			doMb = doMb && getWorldPtr()->worldRenderGlobals->doMb;
+
+		logger.debug(MString("Found bifrost velocity data for object: ") + this->shortName);
+		if ((this->meshDataList.size() == 2) || !doMb)
+		{
+			logger.debug("Bifrost mesh already has two motion steps or mb is turned off for it -> skipping");
+			return;
+		}
+
+		this->getMeshData(mdata.points, mdata.normals);
+
+		// if we have a bifrost velocity channel I suppose this is a bifost mesh and there is no need to 
+		// save the mesh motion steps because it has changing topology what does not work in most renderers
+		// so we save only the very first motion step and derive the other steps from velocity channel.
+		// and we simply produce two steps only because everything else would not make sense.
+
+		MFnMesh meshFn(this->mobject);
+		if (meshFn.hasColorChannels("bifrostVelocity"))
+		{
+			MColorArray colors;
+			MString colorSetName = "bifrostVelocity";
+			meshFn.getVertexColors(colors, &colorSetName);
+
+			if (colors.length() == mdata.points.length())
+			{
+				for (uint ptId = 0; ptId < mdata.points.length(); ptId++)
+				{
+					MColor c = colors[ptId];
+					MVector v = MVector(c.r, c.g, c.b);
+					mdata.points[ptId] -= v * 0.5 / 24.0;
+				}
+				this->meshDataList.push_back(mdata);
+				for (uint ptId = 0; ptId < mdata.points.length(); ptId++)
+				{
+					MColor c = colors[ptId];
+					MVector v = MVector(c.r, c.g, c.b);
+					mdata.points[ptId] += v * 0.5 / 24.0;
+				}
+				this->meshDataList.push_back(mdata);
+			}
+		}else{
+			logger.debug("Bifrost mesh has no velocity data, no motionblur.");
+			if (this->meshDataList.size() == 0)
+				this->meshDataList.push_back(mdata);
+		}
+	}
+	else{
+		this->getMeshData(mdata.points, mdata.normals);
+		this->meshDataList.push_back(mdata);
+	}
+
 }
 
 void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals)

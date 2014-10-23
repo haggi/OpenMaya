@@ -1,17 +1,7 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-#ifdef HAS_OVERRIDE
-#include "CoronaSurfaceMaterialOverride.h"
-#endif
-
 // Plugin CoronaSurface Shader Class //
-
-
-// This class will create a new shader. Shaders are custom dependency
-// graph objects so we will derive this class from the basic DG node
-// type MPxNode
-//
 
 class CoronaSurface : public MPxNode
 {
@@ -23,22 +13,9 @@ public:
     virtual MStatus compute( const MPlug&, MDataBlock& );
     static  MStatus initialize();
 
-
-    // postConstructor:
-    // The postConstructor method allows us to call MPxNode member
-    // functions during initialization. Internally maya creates two
-    // objects when a user defined node is created, the internal MObject
-    // and the user derived object. The association between the these
-    // two objects is not made until after the MPxNode constructor is
-    // called. This implies that no MPxNode member function can be called
-    // from the MPxNode constructor. The postConstructor will get called
-    // immediately after the constructor when it is safe to call any
-    // MPxNode member function.
-    //
-
     virtual void    postConstructor();
 
-    static  MTypeId   id;  // The IFF type id
+    static  MTypeId   id;
 
 protected:
 
@@ -75,6 +52,7 @@ protected:
 	static    MObject attenuationDist;
 	static    MObject volumeSSSMode;
 //---------------------------- automatically created attributes end ------------------------------------
+	static    MObject iesProfile;
 
    // Translucence coefficient
    static MObject  aTranslucenceCoeff;

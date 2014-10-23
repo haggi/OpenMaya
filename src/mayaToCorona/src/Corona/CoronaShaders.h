@@ -6,10 +6,13 @@
 #include "CoronaCore/api/Api.h"
 #include "shadingtools/material.h"
 
+class mtco_MayaObject;
+
 Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
+Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 Corona::Rgb defineColor(MString& attributeName, MFnDependencyNode& depFn);
 float defineFloat(MString& attributeName, MFnDependencyNode& depFn);
-Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& shadingGroup);
+Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& shadingGroup, mtco_MayaObject *obj = NULL);
 Corona::SharedPtr<Corona::IMaterial> defineDefaultMaterial();
 
 #endif

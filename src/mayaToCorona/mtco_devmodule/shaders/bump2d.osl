@@ -1,4 +1,4 @@
-shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, vector normalCamera = N, color normalMap = color(0,0,0),output vector outNormal = 1)
+shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, vector normalCamera = N, vector normalMap = vector(0,0,0),output vector outNormal = 1)
 {
 	normal dNormal = normalCamera;
 	

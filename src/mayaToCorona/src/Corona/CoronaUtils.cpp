@@ -5,6 +5,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MTransformationMatrix.h>
 #include "utilities/logging.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -65,6 +66,63 @@ void CoronaRenderer::setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& a
 		Corona::Float4 row1(t[0][0], t[0][1], t[0][2], t[0][3]);
 		Corona::Float4 row2(t[1][0],t[1][1],t[1][2],t[1][3]);
 		Corona::Float4 row3(t[2][0],t[2][1],t[2][2],t[2][3]);
+		tm = Corona::AffineTm(row1, row2, row3);
+		atm[mId] = Corona::AffineTm::IDENTITY;
+		atm[mId] = tm;
+	}
+}
+
+void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj)
+{
+	MMatrix to, from;
+
+	// a segment contains start and end, 2 mb steps are one segment, 3 mb steps are 2 segments
+	bool doMb = false;
+	MMatrix globalConversionMatrix;
+	globalConversionMatrix.setToIdentity();
+
+	if (getWorldPtr()->worldRenderGlobals != NULL)
+	{
+		doMb = getWorldPtr()->worldRenderGlobals->doMb;
+		globalConversionMatrix = getWorldPtr()->worldRenderGlobals->globalConversionMatrix;
+	}
+	int numSegments = (obj->transformMatrices.size() - 1) * ((int)doMb);
+	atm.setSegments(numSegments);
+
+	for (size_t mId = 0; mId < (numSegments + 1); mId++)
+	{
+		MMatrix t = (obj->transformMatrices[mId] * globalConversionMatrix).transpose();
+		Corona::AffineTm tm;
+		Corona::Float4 row1(t[0][0], t[0][1], t[0][2], t[0][3]);
+		Corona::Float4 row2(t[1][0], t[1][1], t[1][2], t[1][3]);
+		Corona::Float4 row3(t[2][0], t[2][1], t[2][2], t[2][3]);
+		tm = Corona::AffineTm(row1, row2, row3);
+		atm[mId] = Corona::AffineTm::IDENTITY;
+		atm[mId] = tm;
+	}
+}
+
+void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat)
+{
+	MMatrix to, from;
+	int numSegments = 0;
+	atm.setSegments(numSegments);
+	MMatrix globalConversionMatrix;
+	globalConversionMatrix.setToIdentity();
+
+	if (getWorldPtr()->worldRenderGlobals != NULL)
+	{
+		globalConversionMatrix = getWorldPtr()->worldRenderGlobals->globalConversionMatrix;
+	}
+
+
+	for (size_t mId = 0; mId < (numSegments + 1); mId++)
+	{
+		MMatrix t = (mat * globalConversionMatrix).transpose();
+		Corona::AffineTm tm;
+		Corona::Float4 row1(t[0][0], t[0][1], t[0][2], t[0][3]);
+		Corona::Float4 row2(t[1][0], t[1][1], t[1][2], t[1][3]);
+		Corona::Float4 row3(t[2][0], t[2][1], t[2][2], t[2][3]);
 		tm = Corona::AffineTm(row1, row2, row3);
 		atm[mId] = Corona::AffineTm::IDENTITY;
 		atm[mId] = tm;
