@@ -397,7 +397,7 @@ MObject getOtherSideNode(MString& plugName, MObject& thisObject, MStringArray& o
 bool isConnected(const char *attrName, MObject& node, bool dest)
 {
 	MFnDependencyNode depFn(node);
-	return isConnected(attrName, depFn, true, true);
+	return isConnected(attrName, depFn, dest, true);
 }
 
 // gives the plug on the other side of this connected plug, children are ignored
@@ -432,7 +432,7 @@ void getConnectedChildPlugs(MPlug& plug, bool dest, MPlugArray& thisNodePlugs, M
 void getConnectedChildPlugs(const char *attrName, MFnDependencyNode& depFn, bool dest, MPlugArray& thisNodePlugs, MPlugArray& otherSidePlugs)
 {
 	MPlug p = depFn.findPlug(attrName);
-	if (!p.isCompound() && !p.isArray())
+	if (p.isCompound() && !p.isArray())
 	{
 		getConnectedChildPlugs(p, dest, thisNodePlugs, otherSidePlugs);
 		return;
@@ -862,7 +862,7 @@ float shadowColorIntensity(MFnDependencyNode& depFn)
 	return shadowI;
 }
 
-MObject objectFromName(MString& name)
+MObject objectFromName(MString name)
 {
     MObject obj;
     MStatus stat;

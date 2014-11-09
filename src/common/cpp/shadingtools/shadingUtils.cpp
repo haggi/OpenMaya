@@ -154,7 +154,7 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
 		for (unsigned int i = 0; i < indices.length(); i++)
 		{
 			int subdivisions = multiplier * meshFn.polygonVertexCount(i);
-			int index = max(0, indices[i]); // non assigned has -1, but we want 0
+			int index = 0 > indices[i] ? 0 : indices[i]; // non assigned has -1, but we want 0
 			perFaceAssignments.append(index);
 
 			// simply replicate the index for all subdiv faces

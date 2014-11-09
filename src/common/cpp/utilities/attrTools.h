@@ -54,6 +54,8 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value);
 
 bool getEnum(const char *plugName, MFnDependencyNode& dn, int& id, MString& value);
 
+MString getEnumString(MString plugName, MFnDependencyNode& dn);
+
 bool getInt2(MString& plugName, MFnDependencyNode& dn, int2& value);
 
 bool getLong(MString& plugName, MFnDependencyNode& dn, long& value);

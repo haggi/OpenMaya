@@ -214,6 +214,25 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value)
 	return result;
 }
 
+MString getEnumString(MString plugName, MFnDependencyNode& dn)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if (!stat)
+		return "";
+	int id = plug.asShort(ctx, &stat);
+	if (!stat)
+		return "";
+	MFnEnumAttribute eAttr(plug.attribute(&stat));
+	if (!stat)
+		return "";
+	MString value = eAttr.fieldName(id, &stat);
+	if (!stat)
+		return "";
+	return value;
+}
 bool getEnum(MString& plugName, MFnDependencyNode& dn, int& id, MString& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;
@@ -263,20 +282,25 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MColor& value)
 	MStatus stat = MS::kSuccess;
 	bool result = false;
 	float r, g, b;
-	MPlug plug = dn.findPlug(plugName + "R", &stat);
-	if( !stat ) return false;
-	r = plug.asFloat(ctx, &stat);
-	plug = dn.findPlug(plugName + "G", &stat);
-	if( !stat ) return false;
-	g = plug.asFloat(ctx, &stat);
-	plug = dn.findPlug(plugName + "B", &stat);
-	if( !stat ) return false;
-	b = plug.asFloat(ctx, &stat);
+	// I suppose the attribute is a color and has 3 children
+	MPlug plug = dn.findPlug(plugName, stat);
+	if (!stat)
+		return result;
+	if (plug.numChildren() < 3)
+		return result;
+	r = plug.child(0).asFloat(ctx, &stat);
+	if (!stat)
+		return result;
+	g = plug.child(1).asFloat(ctx, &stat);
+	if (!stat)
+		return result;
+	b = plug.child(2).asFloat(ctx, &stat);
+	if (!stat)
+		return result;
 	value.r = r;
 	value.g = g;
 	value.b = b;
-	if(stat) return true;
-	return result;
+	return true;
 }
 
 bool getColor(const char *plugName, MFnDependencyNode& dn, MColor& value)

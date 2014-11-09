@@ -137,7 +137,7 @@ void ShaderDefinitions::readShaderDefinitions()
 
 	do{
 		std::getline(shaderFile, line);
-		logger.debug(line.c_str());
+		//logger.debug(line.c_str());
 		if(validString(line))
 		{
 			std::vector<std::string> stringArray;
@@ -182,7 +182,7 @@ void ShaderDefinitions::readShaderDefinitions()
 
 	}while(!shaderFile.eof());
 
-	logger.debug("Reading of shader def file done.");
+	//logger.debug("Reading of shader def file done.");
 	shaderFile.close();
 	readDone = true;
 }

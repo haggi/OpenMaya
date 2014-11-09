@@ -19,6 +19,11 @@ ShadingNetwork::ShadingNetwork(MObject& node) : rootNode(node)
 	this->parseNetwork(rootNode);
 }
 
+ShadingNetwork::ShadingNetwork(MObject& node, MString attribute) : rootNode(node)
+{
+}
+
+
 ShadingNetwork::ShadingNetwork(){}
 
 bool ShadingNetwork::hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest)

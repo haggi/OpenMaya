@@ -99,6 +99,7 @@ public:
 	MString rootNodeName;
 	ShadingNetwork();
 	ShadingNetwork(MObject& node);
+	ShadingNetwork(MObject& node, MString attribute);
 	~ShadingNetwork(){};
 	void parseNetwork(MObject& node);
 	bool alreadyDefined(ShadingNode& sn);

@@ -43,13 +43,28 @@ namespace MAYATO_OSL{
 		MString sourceAttribute;
 		MString destNode;
 		MString destAttribute;
+		MString validateParameter(MString name)
+		{
+			if (name == "min")
+				return "inMin";
+			if (name == "max")
+				return "inMax";
+			if (name == "vector")
+				return "inVector";
+			if (name == "matrix")
+				return "inMatrix";
+			if (name == "color")
+				return "inColor";
+			return name;
+		}
+
 		Connection(){};
 		Connection(MString sn, MString sa, MString dn, MString da)
 		{
-			sourceNode = sn;
-			sourceAttribute = sa;
-			destNode = dn;
-			destAttribute = da;
+			sourceNode = validateParameter(sn);
+			sourceAttribute = validateParameter(sa);
+			destNode = validateParameter(dn);
+			destAttribute = validateParameter(da);
 		};
 	};
 
@@ -64,6 +79,20 @@ namespace MAYATO_OSL{
 		MString name;
 		OIIO::TypeDesc type;
 		boost::variant<int, float, SimpleVector, SimpleMatrix, std::string> value;
+		MString validateParameter(MString pname)
+		{
+			if (pname == "min")
+				return "inMin";
+			if (pname == "max")
+				return "inMax";
+			if (pname == "vector")
+				return "inVector";
+			if (pname == "matrix")
+				return "inMatrix";
+			if (pname == "color")
+				return "inColor";
+			return pname;
+		}
 		OSLParameter(MString pname, float pvalue)
 		{
 			name = pname;
@@ -84,9 +113,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(MString& pname, MVector& pvalue)
 		{
-			name = pname;
-			if (name == "vector")
-				name = "inVector";
+			name = validateParameter(pname);
 			SimpleVector s;
 			s.f[0] = pvalue.x;
 			s.f[1] = pvalue.y;
@@ -96,9 +123,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(MString& pname, MMatrix& pvalue)
 		{
-			name = pname;
-			if (name == "matrix")
-				name = "inMatrix";
+			name = validateParameter(pname);
 			SimpleMatrix m;
 			pvalue.get(m.f);
 			value = m;
@@ -106,9 +131,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(MString& pname, MColor& pvalue)
 		{
-			name = pname;
-			if (name == "color")
-				name = "inColor";
+			name = validateParameter(pname);
 			SimpleVector s;
 			s.f[0] = pvalue.r;
 			s.f[1] = pvalue.g;
@@ -142,9 +165,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(const char *pname, MVector& pvalue)
 		{
-			name = pname;
-			if (name == "vector")
-				name = "inVector";
+			name = validateParameter(pname);
 			SimpleVector s;
 			s.f[0] = pvalue.x;
 			s.f[1] = pvalue.y;
@@ -154,9 +175,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(const char *pname, MMatrix& pvalue)
 		{
-			name = pname;
-			if (name == "matrix")
-				name = "inMatrix";
+			name = validateParameter(pname);
 			SimpleMatrix m;
 			pvalue.get(m.f);
 			value = m;
@@ -164,9 +183,7 @@ namespace MAYATO_OSL{
 		}
 		OSLParameter(const char *pname, MColor& pvalue)
 		{
-			name = pname;
-			if (name == "color")
-				name = "inColor";
+			name = validateParameter(pname);
 			SimpleVector s;
 			s.f[0] = pvalue.r;
 			s.f[1] = pvalue.g;

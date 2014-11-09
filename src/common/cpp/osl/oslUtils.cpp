@@ -86,7 +86,7 @@ namespace MAYATO_OSL{
 
 	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn, OSLParamArray& paramArray)
 	{
-
+		MStatus stat;
 		// if we have an array plug we have do deal with several plugs.
 		// OSL is not able to connect nodes to array indices so we always have a list of parameters, e.g.
 		// for a color array we have in a osl shader color0 color1 color2 ... at the moment we are limited to 
@@ -141,7 +141,13 @@ namespace MAYATO_OSL{
 		}
 		if (sa.type == "color")
 		{
-			paramArray.push_back(OSLParameter(sa.name.c_str(), getColorAttr(sa.name.c_str(), depFn)));
+			// next to color attributes we can have color multipliers which are really useful sometimes
+			MString multiplierName = MString("") + sa.name.c_str() + "Multiplier";
+			MPlug multiplierPlug = depFn.findPlug(multiplierName, &stat);
+			float multiplier = 1.0f;
+			if (stat)
+				multiplier = multiplierPlug.asFloat();
+			paramArray.push_back(OSLParameter(sa.name.c_str(), getColorAttr(sa.name.c_str(), depFn) * multiplier));
 		}
 		if (sa.type == "int")
 		{
@@ -160,7 +166,13 @@ namespace MAYATO_OSL{
 		}
 		if (sa.type == "vector")
 		{
-			paramArray.push_back(OSLParameter(sa.name.c_str(), getVectorAttr(sa.name.c_str(), depFn)));
+			// next to vector attributes we can have vector (vectors can be colors) multipliers which are really useful sometimes
+			MString multiplierName = MString("") + sa.name.c_str() + "Multiplier";
+			MPlug multiplierPlug = depFn.findPlug(multiplierName, &stat);
+			float multiplier = 1.0f;
+			if (stat)
+				multiplier = multiplierPlug.asFloat();
+			paramArray.push_back(OSLParameter(sa.name.c_str(), getVectorAttr(sa.name.c_str(), depFn) * multiplier));
 		}
 	}
 
@@ -245,20 +257,26 @@ namespace MAYATO_OSL{
 		}
 	}
 
-	/* what we do here is:
-			go through the shadingNode attribute list
-			for every connected attribute we check the in/outputs
-			for component connections because this is not possible in OSL:
-				nodeA.outFloat -> nodeB.inColorG
-			to make it work we first create a helper node to be able to connect to nodeB.inColor
-				floatToColor.outColor -> nodeB.inColor
-			and then we connect the output of nodeA to the helper
-				nodeA.outFloat -> floatToColor.inY (y because we need G connected) -> nodeB.inColor
-			In the case where the nodeA output is a component itself we create an additional helper node
-			and connect the helper nodes:
-				nodeA.outColorR -> colorToFloat.inColor 
-				colorToFloat.outX -> floatToColor.inY
-				floatToColor.outColor -> nodeB.inColor
+	/* 
+		OSL cannot connect vector/color components like nodeA.someOutColor.y -> nodeB.someInColor.x
+		A workaround is to create helper nodes. The creation of the helper nodes is a little bit tricky.
+		e.g. if you have two nodes you cannot simply define the two nodes and create helper nodes later.
+		In OSL the outNodes have always to be created before the inNodes. In our case, the nodeA has to be 
+		created before nodeB. 
+		Our strategy looks like this:
+			- check all input attributes of a node
+			- if an attribute is connected, then
+			- go to the source of this connection
+			- if this source is valid and the source attribute is valid,
+			  then check if a outHelper node is needed.
+			- if a out helper node is needed, check if we already have one, if not create it and connect it
+			  to the source node. The source node is always already created.
+			- Then check if the destination attribute needs a helperNode.
+			- If a destination helperNode is needed, create it, connect it to a eventually existing outputHelper node
+			- The inputHelperNode -> node connection cannot be created
+			  because the node itself is not yet created.
+			- Later in the node creation method, we will look for a inputHelper node and connect it if it exists.
+		This is quite complicated, and I don't like it very much, but it somehow works at the moment....
 	*/
 	void createOSLHelperNodes(ShadingNode& snode)
 	{
@@ -311,7 +329,7 @@ namespace MAYATO_OSL{
 		for (uint i = 0; i < snode.inputAttributes.size(); i++)
 		{
 			ShaderAttribute sa = snode.inputAttributes[i];
-			// at the moment our helper nodes convert rgb->3float, 3folat->rgb, vector->3float and 3float->rgb 
+			// at the moment our helper nodes convert rgb->3float, 3float->rgb, vector->3float and 3float->rgb 
 			if ((sa.type != "color") && (sa.type != "vector"))
 				continue;
 			MPlug p = depFn.findPlug(sa.name.c_str());
@@ -325,10 +343,8 @@ namespace MAYATO_OSL{
 			if (p.numConnectedChildren() == 0)
 				continue;
 	
-			// a child connection can be detected if a compund attribute is evaluated.
-			// this is not the type of child we mean, so check this.
 			MPlugArray plugsWithChildren;
-			if (!p.isArray() && !p.isCompound())
+			if (!p.isArray() && p.isCompound())
 				plugsWithChildren.append(p);
 
 			// here we have some hardcoded strings what is a bit ugly but we simply will only support a few complex

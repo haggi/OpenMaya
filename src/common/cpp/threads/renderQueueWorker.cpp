@@ -389,7 +389,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 				int height = mayaScene->renderGlobals->imgHeight;
 
 				if( MRenderView::doesRenderEditorExist())
-					status = MRenderView::startRender(width, height, false, true);
+					status = MRenderView::startRender(width, height, true, true);
+				//status = MRenderView::startRender(width, height, false, true);
 
 				logger.debug("Init check0");
 

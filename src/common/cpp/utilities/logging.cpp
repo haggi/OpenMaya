@@ -64,6 +64,7 @@ void Logging::error(MString logString, int level)
 
 void Logging::debug(MString logString, int level)
 {
+	//MGlobal::displayInfo(MString("debug: log level - ") + (int)log_level);
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + makeSpace(level) + logString;
 	if( Logging::Debug <= log_level && log_level != Logging::Feature )
 		if( log_outtype == Logging::ScriptEditor)
