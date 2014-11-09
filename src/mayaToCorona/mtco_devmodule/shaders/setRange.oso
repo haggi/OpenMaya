@@ -1,0 +1,147 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader setRange
+param	vector	value	0 0 0 		 %read{0,0} %write{2147483647,-1}
+param	vector	inMin	0 0 0 		 %read{46,46} %write{2147483647,-1}
+param	vector	inMax	1 1 1 		 %read{45,45} %write{2147483647,-1}
+param	vector	oldMin	0 0 0 		 %read{2,43} %write{2147483647,-1}
+param	vector	oldMax	1 1 1 		 %read{20,42} %write{2147483647,-1}
+oparam	vector	outValue	0 0 0 		 %read{2147483647,-1} %write{51,51}
+local	vector	clippedColor	 %read{1,48} %write{0,36}
+local	float	dOld	 %read{39,53} %write{37,53}
+local	float	dNew	 %read{39,53} %write{38,53}
+local	int	___315_i	 %read{39,53} %write{39,53}
+const	int	$const1	0		 %read{1,40} %write{2147483647,-1}
+temp	float	$tmp1	 %read{3,3} %write{1,1}
+temp	float	$tmp2	 %read{3,3} %write{2,2}
+temp	int	$tmp3	 %read{4,4} %write{3,3}
+temp	float	$tmp4	 %read{6,6} %write{5,5}
+const	int	$const2	1		 %read{7,53} %write{2147483647,-1}
+temp	float	$tmp5	 %read{9,9} %write{7,7}
+temp	float	$tmp6	 %read{9,9} %write{8,8}
+temp	int	$tmp7	 %read{10,10} %write{9,9}
+temp	float	$tmp8	 %read{12,12} %write{11,11}
+const	int	$const3	2		 %read{13,35} %write{2147483647,-1}
+temp	float	$tmp9	 %read{15,15} %write{13,13}
+temp	float	$tmp10	 %read{15,15} %write{14,14}
+temp	int	$tmp11	 %read{16,16} %write{15,15}
+temp	float	$tmp12	 %read{18,18} %write{17,17}
+temp	float	$tmp13	 %read{21,21} %write{19,19}
+temp	float	$tmp14	 %read{21,21} %write{20,20}
+temp	int	$tmp15	 %read{22,22} %write{21,21}
+temp	float	$tmp16	 %read{24,24} %write{23,23}
+temp	float	$tmp17	 %read{27,27} %write{25,25}
+temp	float	$tmp18	 %read{27,27} %write{26,26}
+temp	int	$tmp19	 %read{28,28} %write{27,27}
+temp	float	$tmp20	 %read{30,30} %write{29,29}
+temp	float	$tmp21	 %read{33,33} %write{31,31}
+temp	float	$tmp22	 %read{33,33} %write{32,32}
+temp	int	$tmp23	 %read{34,34} %write{33,33}
+temp	float	$tmp24	 %read{36,36} %write{35,35}
+const	int	$const4	3		 %read{36,41} %write{2147483647,-1}
+const	float	$const5	0		 %read{37,38} %write{2147483647,-1}
+temp	int	$tmp25	 %read{39,53} %write{39,53}
+temp	float	$tmp26	 %read{44,44} %write{42,42}
+temp	float	$tmp27	 %read{44,44} %write{43,43}
+temp	float	$tmp28	 %read{47,47} %write{45,45}
+temp	float	$tmp29	 %read{47,47} %write{46,46}
+temp	float	$tmp30	 %read{49,49} %write{48,48}
+temp	float	$tmp31	 %read{50,50} %write{49,49}
+temp	float	$tmp32	 %read{51,51} %write{50,50}
+temp	int	$tmp33	 %read{2147483647,-1} %write{52,52}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:4
+# 	
+	assign		clippedColor value 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl"} %line{4} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:6
+# 		clippedColor[0] = oldMin[0];
+	compref		$tmp1 clippedColor $const1 	%line{6} %argrw{"wrr"}
+	compref		$tmp2 oldMin $const1 	%argrw{"wrr"}
+	lt		$tmp3 $tmp1 $tmp2 	%argrw{"wrr"}
+	if		$tmp3 7 7 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:7
+# 	if( clippedColor[1] < oldMin[1] )
+	compref		$tmp4 oldMin $const1 	%line{7} %argrw{"wrr"}
+	compassign	clippedColor $const1 $tmp4 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:8
+# 		clippedColor[1] = oldMin[1];
+	compref		$tmp5 clippedColor $const2 	%line{8} %argrw{"wrr"}
+	compref		$tmp6 oldMin $const2 	%argrw{"wrr"}
+	lt		$tmp7 $tmp5 $tmp6 	%argrw{"wrr"}
+	if		$tmp7 13 13 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:9
+# 	if( clippedColor[2] < oldMin[2] )
+	compref		$tmp8 oldMin $const2 	%line{9} %argrw{"wrr"}
+	compassign	clippedColor $const2 $tmp8 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:10
+# 		clippedColor[2] = oldMin[2];
+	compref		$tmp9 clippedColor $const3 	%line{10} %argrw{"wrr"}
+	compref		$tmp10 oldMin $const3 	%argrw{"wrr"}
+	lt		$tmp11 $tmp9 $tmp10 	%argrw{"wrr"}
+	if		$tmp11 19 19 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:11
+# 
+	compref		$tmp12 oldMin $const3 	%line{11} %argrw{"wrr"}
+	compassign	clippedColor $const3 $tmp12 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:13
+# 		clippedColor[0] = oldMax[0];
+	compref		$tmp13 clippedColor $const1 	%line{13} %argrw{"wrr"}
+	compref		$tmp14 oldMax $const1 	%argrw{"wrr"}
+	gt		$tmp15 $tmp13 $tmp14 	%argrw{"wrr"}
+	if		$tmp15 25 25 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:14
+# 	if( clippedColor[1] > oldMax[1] )
+	compref		$tmp16 oldMax $const1 	%line{14} %argrw{"wrr"}
+	compassign	clippedColor $const1 $tmp16 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:15
+# 		clippedColor[1] = oldMax[1];
+	compref		$tmp17 clippedColor $const2 	%line{15} %argrw{"wrr"}
+	compref		$tmp18 oldMax $const2 	%argrw{"wrr"}
+	gt		$tmp19 $tmp17 $tmp18 	%argrw{"wrr"}
+	if		$tmp19 31 31 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:16
+# 	if( clippedColor[2] > oldMax[2] )
+	compref		$tmp20 oldMax $const2 	%line{16} %argrw{"wrr"}
+	compassign	clippedColor $const2 $tmp20 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:17
+# 		clippedColor[3] = oldMax[2];
+	compref		$tmp21 clippedColor $const3 	%line{17} %argrw{"wrr"}
+	compref		$tmp22 oldMax $const3 	%argrw{"wrr"}
+	gt		$tmp23 $tmp21 $tmp22 	%argrw{"wrr"}
+	if		$tmp23 37 37 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:18
+# 		
+	compref		$tmp24 oldMax $const3 	%line{18} %argrw{"wrr"}
+	compassign	clippedColor $const4 $tmp24 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:20
+# 	float dNew = 0.0;
+	assign		dOld $const5 	%line{20} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:21
+# 	for( int i = 0; i < 3; i++)
+	assign		dNew $const5 	%line{21} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:22
+# 	{
+	for		$tmp25 41 42 52 54 	%line{22} %argrw{"r"}
+	assign		___315_i $const1 	%argrw{"wr"}
+	lt		$tmp25 ___315_i $const4 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:24
+# 		dNew = inMax[i] - inMin[i];
+	compref		$tmp26 oldMax ___315_i 	%line{24} %argrw{"wrr"}
+	compref		$tmp27 oldMin ___315_i 	%argrw{"wrr"}
+	sub		dOld $tmp26 $tmp27 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:25
+# 		outValue[i] = clippedColor[i] * dOld/dNew;
+	compref		$tmp28 inMax ___315_i 	%line{25} %argrw{"wrr"}
+	compref		$tmp29 inMin ___315_i 	%argrw{"wrr"}
+	sub		dNew $tmp28 $tmp29 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:26
+# 	}
+	compref		$tmp30 clippedColor ___315_i 	%line{26} %argrw{"wrr"}
+	mul		$tmp31 $tmp30 dOld 	%argrw{"wrr"}
+	div		$tmp32 $tmp31 dNew 	%argrw{"wrr"}
+	compassign	outValue ___315_i $tmp32 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\setRange.osl:22
+# 	{
+	assign		$tmp33 ___315_i 	%line{22} %argrw{"wr"}
+	add		___315_i ___315_i $const2 	%argrw{"wrr"}
+	end

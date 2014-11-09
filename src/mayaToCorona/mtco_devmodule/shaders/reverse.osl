@@ -1,0 +1,5 @@
+shader reverse(vector input=0, output vector outOutput = 0)
+{
+	vector one = vector(1,1,1);
+	outOutput = one - input;
+}

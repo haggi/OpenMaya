@@ -651,6 +651,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( pSkyAffectGround ));
 
 	pSkyPreethamTurb = nAttr.create("pSkyPreethamTurb", "pSkyPreethamTurb",  MFnNumericData::kFloat, 2.5);
+	nAttr.setMin(1.7f);
 	CHECK_MSTATUS(addAttribute( pSkyPreethamTurb ));
 
 	pSkySunFalloff = nAttr.create("pSkySunFalloff", "pSkySunFalloff",  MFnNumericData::kFloat, 3.0);

@@ -5,16 +5,29 @@ shader_start:lambert
 	outatt:outColor:color
 shader_end
 
+shader_start:coronaGlobals
+	inatt:bgColor:color
+shader_end
+
 # supported maya textures
 shader_start:file
 	inatt:fileTextureName:string
 	inatt:defaultColor:color
 	inatt:colorGain:color
 	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	inatt:uvCoord:float2
 	inatt:fromSRGB:bool
 	inatt:toSRGB:bool
 	outatt:outColor:color
+shader_end
+
+shader_start:reverse
+	inatt:input:vector
+	outatt:output:vector
 shader_end
 
 shader_start:displacementShader
@@ -58,6 +71,10 @@ shader_start:grid
 	inatt:defaultColor:color
 	inatt:colorGain:color
 	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	outatt:outColor:color
 shader_end
 
@@ -77,12 +94,25 @@ shader_start:clamp
 	outatt:output:vector
 shader_end
 
+shader_start:setRange
+	inatt:oldMin:vector
+	inatt:oldMax:vector
+	inatt:min:vector
+	inatt:max:vector
+	inatt:value:vector
+	outatt:outValue:vector
+shader_end
+
 shader_start:bulge
 	inatt:uWidth:float
 	inatt:vWidth:float
 	inatt:defaultColor:color
 	inatt:colorGain:color
 	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	inatt:uvCoord:float2
 	outatt:outColor:color
 shader_end
@@ -106,13 +136,27 @@ shader_start:ramp
 	inatt:colorEntryList:color
 	inatt:type:int
 	inatt:interpolation:int
-	inatt:uvCoord:float2
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	outatt:outAlpha:float
 	outatt:outColor:color
 shader_end
 
 shader_start:solidFractal
 	inatt:placementMatrix:matrix
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	outatt:outColor:color
 shader_end
 
@@ -144,6 +188,13 @@ shader_start:checker
 	inatt:color2:color
 	inatt:contrast:float
 	inatt:uvCoord:float2
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
 	outatt:outAlpha:float
 	outatt:outColor:color
 shader_end
@@ -174,13 +225,14 @@ shader_start:OSLInterface
 	inatt:inColor:color
 	inatt:inFloat:float
 	inatt:inInt:int
+	inatt:multiplier:float
 	outatt:Cout:color
 shader_end
 
 #--------------------------- automatically created attributes start ------------------------------------
 shader_start:CoronaSurface
 	inatt:opacity:color
-	inatt:emissionExponent:float
+	inatt:emissionMultiplier:float
 	inatt:volumeScatteringAlbedo:color
 	inatt:fresnelIor:float
 	inatt:roundCornersSamples:int
@@ -191,6 +243,7 @@ shader_start:CoronaSurface
 	inatt:reflectivity:color
 	inatt:castsShadows:bool
 	inatt:translucency:color
+	inatt:translucencyFraction:float
 	inatt:volumeEmissionColor:color
 	inatt:anisotropyRotation:float
 	inatt:reflectionGlossiness:float

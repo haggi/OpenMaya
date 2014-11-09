@@ -2,11 +2,14 @@
 // maya stadard utilities
 //
 						  
-#define MAYA_COLORBALANCE vector defaultColor = vector(.5,.5,.5), \
+#define MAYA_COLORBALANCE float exposure = 0.0, \
+						  vector defaultColor = vector(.5,.5,.5), \
 						  vector colorGain = vector(1.0,1.0,1.0), \
 						  vector colorOffset = vector(.0,.0,.0), \
 						  float alphaGain = 1.0, \
-						  float alphaOffset = 0.0
+						  float alphaOffset = 0.0, \
+						  int alphaIsLuminance = 1, \
+						  int invert=0
 
 #define MAYA_DEFAULT_OUTPUT output vector outColor = 0, \
 							output float outAlpha = 0

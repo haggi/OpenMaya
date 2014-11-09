@@ -52,8 +52,6 @@ void CoronaSurface::postConstructor( )
 MObject  CoronaSurface::aTranslucenceCoeff;
 MObject  CoronaSurface::aDiffuseReflectivity;
 MObject  CoronaSurface::aInTransparency;
-//MObject  CoronaSurface::aColor;
-//MObject  CoronaSurface::aIncandescence;
 MObject  CoronaSurface::aOutColor;
 MObject  CoronaSurface::aOutTransparency;
 MObject  CoronaSurface::aNormalCamera;
@@ -78,7 +76,8 @@ MObject  CoronaSurface::aLightBlindData;
 
 //---------------------------- automatically created attributes start ------------------------------------
 MObject CoronaSurface::opacity;
-MObject CoronaSurface::emissionExponent;
+MObject CoronaSurface::opacityMultiplier;
+MObject CoronaSurface::emissionMultiplier;
 MObject CoronaSurface::volumeScatteringAlbedo;
 MObject CoronaSurface::fresnelIor;
 MObject CoronaSurface::roundCornersSamples;
@@ -87,8 +86,10 @@ MObject CoronaSurface::glassMode;
 MObject CoronaSurface::attenuationColor;
 MObject CoronaSurface::emissionSharpnessFake;
 MObject CoronaSurface::reflectivity;
+MObject CoronaSurface::reflectivityMultiplier;
 MObject CoronaSurface::castsShadows;
 MObject CoronaSurface::translucency;
+MObject CoronaSurface::translucencyFraction;
 MObject CoronaSurface::volumeEmissionColor;
 MObject CoronaSurface::anisotropyRotation;
 MObject CoronaSurface::reflectionGlossiness;
@@ -97,8 +98,10 @@ MObject CoronaSurface::roundCornersRadius;
 MObject CoronaSurface::bgOverride;
 MObject CoronaSurface::refractionGlossiness;
 MObject CoronaSurface::diffuse;
+MObject CoronaSurface::diffuseMultiplier;
 MObject CoronaSurface::refractivity;
-MObject CoronaSurface::brdfType;
+MObject CoronaSurface::refractivityMultiplier;
+//MObject CoronaSurface::brdfType;
 MObject CoronaSurface::emissionColor;
 MObject CoronaSurface::shadowCatcherMode;
 MObject CoronaSurface::anisotropy;
@@ -143,21 +146,59 @@ MStatus CoronaSurface::initialize()
 
     MStatus status; 
 //---------------------------- automatically created attributes start ------------------------------------
+
+	diffuse = nAttr.createColor("diffuse", "diffuse");
+	nAttr.setKeyable(true);
+	nAttr.setDefault(0.5, 0.5, 0.5);
+	CHECK_MSTATUS(addAttribute(diffuse));
+
+	diffuseMultiplier = nAttr.create("diffuseMultiplier", "diffuseMultiplier", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(diffuseMultiplier));
+
 	opacity = nAttr.createColor("opacity", "opacity");
 	nAttr.setDefault(1.0,1.0,1.0);
+	nAttr.setKeyable(true);
 	CHECK_MSTATUS(addAttribute( opacity ));
 
-	emissionExponent = nAttr.create("emissionExponent", "emissionExponent",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( emissionExponent ));
+	opacityMultiplier = nAttr.create("opacityMultiplier", "opacityMultiplier", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(opacityMultiplier));
+
+	emissionMultiplier = nAttr.create("emissionMultiplier", "emissionMultiplier", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(emissionMultiplier));
+
+	reflectivityMultiplier = nAttr.create("reflectivityMultiplier", "reflectivityMultiplier", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(reflectivityMultiplier));
+
+	refractivityMultiplier = nAttr.create("refractivityMultiplier", "refractivityMultiplier", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(refractivityMultiplier));
 
 	volumeScatteringAlbedo = nAttr.createColor("volumeScatteringAlbedo", "volumeScatteringAlbedo");
 	nAttr.setDefault(0.5,0.5,0.5);
 	CHECK_MSTATUS(addAttribute( volumeScatteringAlbedo ));
 
-	fresnelIor = nAttr.create("fresnelIor", "fresnelIor",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( fresnelIor ));
+	fresnelIor = nAttr.create("fresnelIor", "fresnelIor",  MFnNumericData::kFloat, 1.52);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(2.0);
+	CHECK_MSTATUS(addAttribute(fresnelIor));
 
 	roundCornersSamples = nAttr.create("roundCornersSamples", "roundCornersSamples",  MFnNumericData::kInt, 10);
+	nAttr.setMin(1);
+	nAttr.setSoftMax(20);
 	CHECK_MSTATUS(addAttribute( roundCornersSamples ));
 
 	glassMode = eAttr.create("glassMode", "glassMode", 0, &status);
@@ -174,55 +215,64 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( emissionSharpnessFake ));
 
 	reflectivity = nAttr.createColor("reflectivity", "reflectivity");
-	nAttr.setDefault(0,0,0);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(1, 1, 1);
 	CHECK_MSTATUS(addAttribute( reflectivity ));
 
 	castsShadows = nAttr.create("castsShadows", "castsShadows",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( castsShadows ));
 
 	translucency = nAttr.createColor("translucency", "translucency");
-	nAttr.setDefault(0,0,0);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(1, 1, 1);
 	CHECK_MSTATUS(addAttribute( translucency ));
 
 	volumeEmissionColor = nAttr.createColor("volumeEmissionColor", "volumeEmissionColor");
 	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( volumeEmissionColor ));
 
-	anisotropyRotation = nAttr.create("anisotropyRotation", "anisotropyRotation",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( anisotropyRotation ));
+	anisotropyRotation = nAttr.create("anisotropicRotation", "anisotropicRotation",  MFnNumericData::kFloat, 0.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(anisotropyRotation));
 
 	reflectionGlossiness = nAttr.create("reflectionGlossiness", "reflectionGlossiness",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( reflectionGlossiness ));
+	nAttr.setMin(0.0);
+	nAttr.setMax(1.0);
+	CHECK_MSTATUS(addAttribute(reflectionGlossiness));
 
 	volumeEmissionDist = nAttr.create("volumeEmissionDist", "volumeEmissionDist",  MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(10.0);
 	CHECK_MSTATUS(addAttribute( volumeEmissionDist ));
 
 	roundCornersRadius = nAttr.create("roundCornersRadius", "roundCornersRadius",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( roundCornersRadius ));
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(5.0);
+	CHECK_MSTATUS(addAttribute(roundCornersRadius));
 
 	bgOverride = nAttr.createColor("bgOverride", "bgOverride");
 	nAttr.setDefault(0,0,0);
 	CHECK_MSTATUS(addAttribute( bgOverride ));
 
 	refractionGlossiness = nAttr.create("refractionGlossiness", "refractionGlossiness",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( refractionGlossiness ));
-
-	diffuse = nAttr.createColor("diffuse", "diffuse");
-	nAttr.setDefault(0.7,0.7,0.7);
-	CHECK_MSTATUS(addAttribute( diffuse ));
+	nAttr.setMin(0.0);
+	nAttr.setMax(1.0);
+	CHECK_MSTATUS(addAttribute(refractionGlossiness));
 
 	refractivity = nAttr.createColor("refractivity", "refractivity");
-	nAttr.setDefault(0,0,0);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(1, 1, 1);
 	CHECK_MSTATUS(addAttribute( refractivity ));
 
-	brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
-	status = eAttr.addField( "Ashikmin", 0 );
-	status = eAttr.addField( "Phong", 1 );
-	status = eAttr.addField( "Ward", 2 );
-	CHECK_MSTATUS(addAttribute( brdfType ));
+	//brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
+	//status = eAttr.addField( "Ashikmin", 0 );
+	//status = eAttr.addField( "Phong", 1 );
+	//CHECK_MSTATUS(addAttribute( brdfType ));
 
 	emissionColor = nAttr.createColor("emissionColor", "emissionColor");
-	nAttr.setDefault(0,0,0);
+	nAttr.setKeyable(true);
+	nAttr.setDefault(1, 1, 1);
 	CHECK_MSTATUS(addAttribute( emissionColor ));
 
 	shadowCatcherMode = eAttr.create("shadowCatcherMode", "shadowCatcherMode", 0, &status);
@@ -232,13 +282,19 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( shadowCatcherMode ));
 
 	anisotropy = nAttr.create("anisotropy", "anisotropy",  MFnNumericData::kFloat, 0.5);
-	CHECK_MSTATUS(addAttribute( anisotropy ));
+	nAttr.setMin(0.0);
+	nAttr.setMax(1.0);
+	CHECK_MSTATUS(addAttribute(anisotropy));
 
 	volumeMeanCosine = nAttr.create("volumeMeanCosine", "volumeMeanCosine",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( volumeMeanCosine ));
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(volumeMeanCosine));
 
-	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.2);
-	CHECK_MSTATUS(addAttribute( refractionIndex ));
+	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.52);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(2.0);
+	CHECK_MSTATUS(addAttribute(refractionIndex));
 
 	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));
@@ -250,7 +306,9 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( alphaMode ));
 
 	attenuationDist = nAttr.create("attenuationDist", "attenuationDist",  MFnNumericData::kFloat, 0.0);
-	CHECK_MSTATUS(addAttribute( attenuationDist ));
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(10.0);
+	CHECK_MSTATUS(addAttribute(attenuationDist));
 
 	volumeSSSMode = nAttr.create("volumeSSSMode", "volumeSSSMode",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( volumeSSSMode ));

@@ -20,6 +20,7 @@ CoronaRenderer::CoronaRenderer()
 	this->context.logger = NULL;
 	this->context.settings = NULL;
 	this->context.isCancelled = false;
+	this->context.colorMappingData = NULL;
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -37,47 +38,6 @@ CoronaRenderer::~CoronaRenderer()
 
 using namespace Corona;
 
-void CoronaRenderer::saveImage()
-{
-	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
-    Corona::Bitmap<float, false> alpha(this->context.fb->getImageSize());
-
-	
-	bool doToneMapping = true;
-	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_inFile;
-    for(int i = 0; i < bitmap.getHeight(); ++i)
-	{
-        const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
-        this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
-    }
-	
-    //// since we get the colors from frame buffer after color mapping, that includes gamma correction, they are not 
-    //// in linear space (the "false" argument)
-	this->mtco_renderGlobals->getImageName();
-	Corona::String filename = this->mtco_renderGlobals->imageOutputFile.asChar();
-	logger.debug(MString("Saving image as ") +  this->mtco_renderGlobals->imageOutputFile);
-
-	std::string imgFormatExt = this->mtco_renderGlobals->imageOutputFile.toLowerCase().asChar();
-	std::vector<std::string> fileParts;
-	pystring::split(imgFormatExt, fileParts, ".");
-	std::string ext = fileParts.back();
-
-	Corona::String dumpFilename = (this->mtco_renderGlobals->imageOutputFile + ".dmp").asChar();
-	if (this->mtco_renderGlobals->dumpAndResume)
-		this->context.fb->dumpExr(dumpFilename);
-
-	bool isLinear = false;
-	
-
-	logger.debug(MString("Extension: ") + ext.c_str());
-	if( (ext != "exr") && (ext != "png") && (ext != "bmp") && (ext != "jpg"))
-	{
-		logger.warning(MString("Filename does not contain a valid extension: ") + this->mtco_renderGlobals->imageOutputFile + " adding exr.");
-		filename += ".exr";
-	}
-	Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
-	
-}
 
 void CoronaRenderer::createScene()
 {
@@ -242,6 +202,7 @@ void CoronaRenderer::render()
     ////  SETTINGS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     context.settings = new Settings();
+	context.colorMappingData = new Corona::ColorMappingData;
 
     // populate the settings with parameters from a configuration file. If the file does not exist, a new one 
     // is created with default values.
@@ -316,7 +277,6 @@ void CoronaRenderer::render()
 	context.renderPasses.clear();
 	context.isCancelled = false;
 	context.scene = NULL;
-
 	// for sequence rendering, at the moment clean up pointers
 	// will be removed if I restructure the geo updates
 

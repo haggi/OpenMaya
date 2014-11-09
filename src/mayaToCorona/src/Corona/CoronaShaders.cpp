@@ -25,8 +25,20 @@ float defineFloat(MString& attributeName, MFnDependencyNode& depFn)
 	return getFloatAttr(attributeName.asChar(), depFn, 0.0f);
 }
 
+// if we have something like a color attribute which we want to parse, we derive the 
+// shading network from the attribute name and depFn
+Corona::ColorOrMap defineAttribute(MString& attributeName, MObject& node)
+{
+	ShadingNetwork network(node);
+	MFnDependencyNode depFn(node);
+
+	return defineAttribute(attributeName, depFn, network);
+}
+
 Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
 {
+	MStatus stat;
+
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = NULL;
 
 	Corona::Rgb rgbColor(0.0);
@@ -43,7 +55,11 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR)
 		{
 			MColor col = getColorAttr(attributeName.asChar(), depFn);
-			rgbColor = Corona::Rgb(col.r, col.g, col.b);
+			MPlug multiplierPlug = depFn.findPlug(attributeName + "Multiplier", &stat);
+			float multiplier = 1.0f;
+			if (stat)
+				multiplier = multiplierPlug.asFloat();
+			rgbColor = Corona::Rgb(col.r * multiplier, col.g * multiplier, col.b * multiplier);
 		}
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_FLOAT)
 		{
@@ -100,11 +116,12 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		Corona::NativeMtlData data;
 		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network);
 		data.components.translucency = defineAttribute(MString("translucency"), depFn, network);
+		data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network);
 		data.components.reflect = defineAttribute(MString("reflectivity"), depFn, network);
 		const Corona::BsdfLobeType bsdfType[] = { Corona::BSDF_ASHIKHMIN, Corona::BSDF_PHONG, Corona::BSDF_WARD };
-		int id;
-		getEnum(MString("brdfType"), depFn, id);
-		data.reflect.bsdfType = bsdfType[id];
+		//int id;
+		//getEnum(MString("brdfType"), depFn, id);
+		//data.reflect.bsdfType = bsdfType[id];
 		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
 
 		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);

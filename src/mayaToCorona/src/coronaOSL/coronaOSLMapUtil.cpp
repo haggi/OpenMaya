@@ -45,6 +45,7 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 				if (MString(sa.name.c_str()) == outPlugName)
 				{
 					logger.debug(MString("connected out attr found: ") + sa.name.c_str() + " ");
+
 					MString destParam;
 					MString sourceParam = outPlugName;
 					MString sourceNode = connectedObjectName;
@@ -77,6 +78,15 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 					if (sourceParam == "output")
 						sourceParam = "outOutput";
 
+					// if we have a color/vector input, try to find a multiplier attribute
+					MString multiplierName = attributeName + "Multiplier";
+					MPlug multiplierAttribute = depFn.findPlug(multiplierName, &stat);
+					if (stat)
+					{
+						logger.debug(MString("Found multiplier attribute: ") + multiplierName);
+						float multiplier = multiplierAttribute.asFloat();
+						oslRenderer->shadingsys->Parameter("multiplier", OSL::TypeDesc::TypeFloat, &multiplier);
+					}
 					logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
 					bool success = oslRenderer->shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
 					logger.debug(MString("connecting ") + sourceNode + "." + sourceParam + " -> " + OSLInterfaceName + "." + destParam);

@@ -25,5 +25,12 @@ shader grid(vector lineColor=1, vector fillerColor=0, float uWidth=.1, float vWi
 
    vector lc = Contrast(lineColor, fillerColor, contrast);
    vector fc = Contrast(fillerColor, lineColor, contrast);	
+   
    outColor = mix(lc, fc, f);
+
+	vector C = colorBalance(outColor, colorGain, colorOffset);
+	outColor = C;	
+	if( alphaIsLuminance == 1)
+		outAlpha = luminance(color(outColor));   
+   
 }

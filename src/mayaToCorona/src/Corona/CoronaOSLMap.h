@@ -11,6 +11,8 @@ public:
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, GETU, GETV };
 	BumpType bumpType;
+	Corona::Matrix33 envSphereMatrix;
+	bool isEnvMap;
 	OSL::ShaderGroupRef shaderGroup;
 	OSLMap();
 	~OSLMap();

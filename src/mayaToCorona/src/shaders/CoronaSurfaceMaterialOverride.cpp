@@ -170,7 +170,7 @@ MString CoronaSurfaceOverride::primaryColorParameter() const
 
 MString CoronaSurfaceOverride::transparencyParameter() const
 {
-	return "opacity";
+	return "refractivity";
 }
 
 MString CoronaSurfaceOverride::bumpAttribute() const

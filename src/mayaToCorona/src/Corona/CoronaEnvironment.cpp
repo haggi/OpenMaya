@@ -7,10 +7,12 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "CoronaMap.h"
-
+#include "CoronaShaders.h"
+#include "CoronaOSLMap.h"
 #include "CoronaSky.h"
 
 static Logging logger;
+
 
 void CoronaRenderer::defineEnvironment()
 {
@@ -28,8 +30,13 @@ void CoronaRenderer::defineEnvironment()
 				logger.error(MString("Sorry, textures of this type are not supported: ") + texName);
 				return;
 			}
+			
+			//MObject obj = objectFromName(MString("coronaGlobals"));
+			//const Corona::ColorOrMap com = defineAttribute(MString("bgColor"), obj);			
+			//this->context.scene->setBackground(com);
 			MapLoader loader;
 			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
+
 			if (texmap.getReference() == NULL)
 			{
 				logger.error(MString("Unable to read bg file: ") + texName);

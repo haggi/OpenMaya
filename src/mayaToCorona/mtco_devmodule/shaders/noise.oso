@@ -1,0 +1,5 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.7dev
+shader noise
+code ___main___
+	end

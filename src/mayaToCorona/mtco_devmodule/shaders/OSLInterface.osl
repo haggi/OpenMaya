@@ -1,19 +1,19 @@
-shader OSLInterface(vector inColor = 1, float inFloat = 0.0, int inInt = 0, vector inVector = 0, output color Cout = 0)
+shader OSLInterface(float multiplier=1.0, vector inColor = 1, float inFloat = 0.0, int inInt = 0, vector inVector = 0, output color Cout = 0)
 {	
 	if( isconnected(inColor) )
 	{
-		Cout = color(inColor) ;
+		Cout = color(inColor) * multiplier;
 	}
 	if( isconnected(inFloat) )
 	{
-		Cout = inFloat;
+		Cout = inFloat * multiplier;
 	}
 	if( isconnected(inInt) )
 	{
-		Cout = inInt;
+		Cout = inInt * multiplier;
 	}
 	if( isconnected(inVector) )
 	{
-		Cout = color(inVector);
+		Cout = color(inVector) * multiplier;
 	}
 }

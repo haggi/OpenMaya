@@ -7,6 +7,7 @@ static Logging logger;
 OSLMap::OSLMap()
 {
 	this->bumpType = NONE;
+	this->isEnvMap = false;
 }
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
@@ -56,8 +57,8 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	//sg.dudx = duvw.x() * pixelWorldRatio;
 	//sg.dudy = duvw.y() * pixelWorldRatio;
 
-	sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length();
-	sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length();
+	sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length() * 0.0;
+	sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length() * 0.0;
 
 	sg.dvdx = sg.dudx;
 	sg.dvdy = sg.dudy;
@@ -82,8 +83,11 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 
 Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
 {
-
-	int threadId = context.getThreadId();
+	int threadId = 0;
+	if (!this->isEnvMap)
+	{
+		int threadId = context.getThreadId();
+	}
 	OSL::PerThreadInfo *thread_info = NULL;
 	if( this->oslRenderer->thread_info[threadId] == NULL)
 	{
@@ -151,7 +155,10 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 		normal.x() = (col.r() - 0.5) * 2.0;
 		normal.y() = (col.g() - 0.5) * 2.0;
 		normal.z() = (col.b() - 0.5) * 2.0;
+		
 		normal = base.transform(normal);
+		//normal = normal.getNormalized() - context.getShadingNormal();
+		normal = normal - context.getShadingNormal();
 		return normal;
 	}
 	if (this->bumpType == NORMALOBJECT)
@@ -162,6 +169,7 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 		normal.x() = (col.r() - 0.5) * 2.0;
 		normal.y() = (col.g() - 0.5) * 2.0;
 		normal.z() = (col.b() - 0.5) * 2.0;
+		normal = normal.getNormalized();
 		return normal;
 	}
 	if (this->bumpType == BUMP)

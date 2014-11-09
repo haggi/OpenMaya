@@ -63,4 +63,6 @@ shader file (vector uvCoord = 0,
 	}
 	vector CB = colorBalance(vector(C), colorGain, colorOffset);	
 	outColor = CB;
+	if( alphaIsLuminance == 1)
+		outAlpha = luminance(color(outColor));	
 }

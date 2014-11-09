@@ -9,6 +9,7 @@
 class mtco_MayaObject;
 
 Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
+Corona::ColorOrMap defineAttribute(MString& attributeName, MObject& node);
 Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 Corona::Rgb defineColor(MString& attributeName, MFnDependencyNode& depFn);
 float defineFloat(MString& attributeName, MFnDependencyNode& depFn);

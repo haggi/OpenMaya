@@ -39,7 +39,7 @@ static const MString TestShaderClassification("shader/surface:");
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.29"
+#define VERSION "0.30"
 
 MStatus initializePlugin( MObject obj )
 {

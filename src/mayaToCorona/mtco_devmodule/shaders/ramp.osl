@@ -106,16 +106,24 @@ color getColorsAtPos( color col[], float pos[], int interpolation, float value)
 	return(interpolateColors(firstColor, secondColor, first, second, value, interpolation));
 }
 
-shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpolation=0, vector uvCoord=0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
+shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpolation=0, vector uvCoord=0, float uCoord=0.0, float vCoord=0.0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
 {
 	outColor = vector(0,0,0);
 	
 	float s = u;
 	float t = v;
+	
+	// here we have a strange thing. If a ramp node is connected to the uvCoord, the attribute is called
+	// uvCoord. But if we have a connection to on component, the connection is called uCoord, or vCoord
 	if( isconnected(uvCoord))
 	{
 		s = uvCoord[0];
 		t = uvCoord[1];
+	}else{
+		if( isconnected(uCoord))
+			s = uCoord;
+		if( isconnected(vCoord))
+			t = vCoord;			
 	}
 	
 	s = (s > 1.0 || s < 0.0) ? s - floor(s) : s;
@@ -262,4 +270,10 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 		}
 		
 	}
+	
+	vector C = colorBalance(outColor, colorGain, colorOffset);
+	outColor = C;	
+	if( alphaIsLuminance == 1)
+		outAlpha = luminance(color(outColor));
+	
 }

@@ -7,6 +7,7 @@ import path
 import Renderer as Renderer
 import optimizeTextures
 import Corona.aeNodeTemplates as aet
+import Corona.passesUI
 
 reload(Renderer)
 
@@ -27,6 +28,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def __init__(self, rendererName, moduleName):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
+        if not pm.pluginInfo("coronaPassesNode.py", q=True, loaded=True):
+            pm.loadPlugin("coronaPassesNode.py")
         
     
     def getEnumList(self, attr):
@@ -116,6 +119,39 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_useContrast', uiType = 'bool', displayName = 'Use Contrast', default='false', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
+
+                with pm.frameLayout(label="Environment", collapsable=True, collapse=False):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                        self.addRenderGlobalsUIElement(attName = 'bgType', uiType = 'enum', displayName = 'Background', default='0', data='Color/Image:PhysicalSky', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                        envLightingFrame = None
+                        physSkyFrame = None
+                        physSkyPreetham = None
+                        physSkyRawafake = None
+                        self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
+                        self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
+                        with pm.frameLayout(label="Color/Image", collapsable=False) as envLightingFrame:
+                            with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                                self.addRenderGlobalsUIElement(attName='bgColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
+                        with pm.frameLayout(label="Physical Sky", collapsable=True, collapse=False) as physSkyFrame:
+                            with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                                self.addRenderGlobalsUIElement(attName = 'pSkyModel', uiType = 'enum', displayName = 'Sky Model', default='0', data='Preetham:Rawafake:Hosek', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyMultiplier', uiType = 'float', displayName = 'Sky Multiplier', default='1.0', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyHorizBlur', uiType = 'float', displayName = 'Sky Horizon Blur', default='0.1', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyGroundColor', uiType = 'color', displayName = 'Ground Color', default='0.25:0.25:0.25', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyAffectGround', uiType = 'bool', displayName = 'Sky Affect Ground', default='true', uiDict=uiDict)
+                            with pm.columnLayout(self.rendererName + 'ColumnLayoutphysSkyPreetham', adjustableColumn=True, width=400) as physSkyPreetham:
+                                self.addRenderGlobalsUIElement(attName = 'pSkyPreethamTurb', uiType = 'float', displayName = 'Turbidity', default='2.5', uiDict=uiDict)
+                            with pm.columnLayout(self.rendererName + 'ColumnLayoutphysSkyRawafake', adjustableColumn=True, width=400) as physSkyRawafake:
+                                self.addRenderGlobalsUIElement(attName = 'pSkySunFalloff', uiType = 'float', displayName = 'Sun Falloff', default='3.0', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyZenith', uiType = 'color', displayName = 'Zenith Color', default='0.1:0.1:0.5', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkyHorizon', uiType = 'color', displayName = 'Horizon Color', default='0.25:0.5:0.5', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkySunGlow', uiType = 'float', displayName = 'Sun Glow', default='1.0', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkySunSideGlow', uiType = 'float', displayName = 'Sun Side Glow', default='0.2', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName = 'pSkySunBleed', uiType = 'float', displayName = 'Sun Bleed', default='1.0', uiDict=uiDict)
+                        uiDict['envLightingFrame'] = envLightingFrame
+                        uiDict['physSkyFrame'] = physSkyFrame
+                        uiDict['physSkyPreetham'] = physSkyPreetham
+                        uiDict['physSkyRawafake'] = physSkyRawafake
 
 
                 with pm.frameLayout(label="Features", collapsable=True, collapse=False):
@@ -216,7 +252,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         uiDict['colorMapping_contrast'].setEnable(False)
         if self.renderGlobalsNode.colorMapping_useContrast.get():
             uiDict['colorMapping_contrast'].setEnable(True)
-        uiDict['colorMapping_contrast'].setEnable(False)
         
         uiDict['colorMapping_simpleExposure'].setEnable(False)
         if self.renderGlobalsNode.colorMapping_useSimpleExposure.get():
@@ -226,6 +261,27 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if self.renderGlobalsNode.renderstamp_use.get():
             uiDict['renderstamp_inFile'].setEnable(True)
             
+        bgType = self.renderGlobalsNode.bgType.get()
+        print "BG Type", bgType
+        if bgType == 0: # color/image
+            uiDict['envLightingFrame'].setEnable(True)
+            uiDict['physSkyFrame'].setEnable(False)
+            uiDict['physSkyFrame'].setManage(False)
+        if bgType == 1: # color/image
+            uiDict['envLightingFrame'].setEnable(False)
+            uiDict['physSkyFrame'].setManage(True)
+            uiDict['physSkyFrame'].setEnable(True)
+            pSkyModel = self.renderGlobalsNode.pSkyModel.get()
+            
+            if pSkyModel == 0: #preetham
+                uiDict['physSkyPreetham'].setEnable(True)
+                uiDict['physSkyRawafake'].setEnable(False)
+            if pSkyModel == 1: #Rawafake
+                uiDict['physSkyPreetham'].setEnable(False)
+                uiDict['physSkyRawafake'].setEnable(True)
+            if pSkyModel == 2: #hosek
+                uiDict['physSkyPreetham'].setEnable(False)
+                uiDict['physSkyRawafake'].setEnable(False)
             
 
     def CoronaGiCreateTab(self):
@@ -343,81 +399,32 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     sun.rename("CoronaSun")
                 sun.message >> self.renderGlobalsNode.sunLightConnection
                        
-    def CoronaEnvironmentCreateTab(self):
-        log.debug("CoronaEnvironmentCreateTab()")
+    def CoronaPassesCreateTab(self):
+        log.debug("CoronaPassesCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
-        scLo = self.rendererName + "EnvScrollLayout"
+        scLo = self.rendererName + "PassScrollLayout"
 
-        if self.rendererTabUiDict.has_key('environment'):
-            self.rendererTabUiDict.pop('environment')        
+        if self.rendererTabUiDict.has_key('passes'):
+            self.rendererTabUiDict.pop('passes')        
         uiDict = {}
-        self.rendererTabUiDict['environment'] = uiDict
+        self.rendererTabUiDict['passes'] = uiDict
                 
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                self.addRenderGlobalsUIElement(attName = 'bgType', uiType = 'enum', displayName = 'Background', default='0', data='Color/Image:PhysicalSky', uiDict=uiDict, callback=self.CoronaEnvironmentUpdateTab)
-                envLightingFrame = None
-                physSkyFrame = None
-                physSkyPreetham = None
-                physSkyRawafake = None
-                self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
-                self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
-                with pm.frameLayout(label="Color/Image", collapsable=False) as envLightingFrame:
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName='bgColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
-                with pm.frameLayout(label="Physical Sky", collapsable=True, collapse=False) as physSkyFrame:
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName = 'pSkyModel', uiType = 'enum', displayName = 'Sky Model', default='0', data='Preetham:Rawafake:Hosek', uiDict=uiDict, callback=self.CoronaEnvironmentUpdateTab)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyMultiplier', uiType = 'float', displayName = 'Sky Multiplier', default='1.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyHorizBlur', uiType = 'float', displayName = 'Sky Horizon Blur', default='0.1', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyGroundColor', uiType = 'color', displayName = 'Ground Color', default='0.25:0.25:0.25', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyAffectGround', uiType = 'bool', displayName = 'Sky Affect Ground', default='true', uiDict=uiDict)
-                    with pm.columnLayout(self.rendererName + 'ColumnLayoutphysSkyPreetham', adjustableColumn=True, width=400) as physSkyPreetham:
-                        self.addRenderGlobalsUIElement(attName = 'pSkyPreethamTurb', uiType = 'float', displayName = 'Turbidity', default='2.5', uiDict=uiDict)
-                    with pm.columnLayout(self.rendererName + 'ColumnLayoutphysSkyRawafake', adjustableColumn=True, width=400) as physSkyRawafake:
-                        self.addRenderGlobalsUIElement(attName = 'pSkySunFalloff', uiType = 'float', displayName = 'Sun Falloff', default='3.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyZenith', uiType = 'color', displayName = 'Zenith Color', default='0.1:0.1:0.5', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkyHorizon', uiType = 'color', displayName = 'Horizon Color', default='0.25:0.5:0.5', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkySunGlow', uiType = 'float', displayName = 'Sun Glow', default='1.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkySunSideGlow', uiType = 'float', displayName = 'Sun Side Glow', default='0.2', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'pSkySunBleed', uiType = 'float', displayName = 'Sun Bleed', default='1.0', uiDict=uiDict)
-                uiDict['envLightingFrame'] = envLightingFrame
-                uiDict['physSkyFrame'] = physSkyFrame
-                uiDict['physSkyPreetham'] = physSkyPreetham
-                uiDict['physSkyRawafake'] = physSkyRawafake
+            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400) as passColumn:
+                Corona.passesUI.PassesUI(parent=passColumn)
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[ (scLo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ])        
-        self.CoronaEnvironmentUpdateTab()
+        self.CoronaPassesUpdateTab()
 
         
-    def CoronaEnvironmentUpdateTab(self):
+    def CoronaPassesUpdateTab(self):
         self.createGlobalsNode()
 
-        if not self.rendererTabUiDict.has_key('environment'):
+        if not self.rendererTabUiDict.has_key('passes'):
             return
-        uiDict = self.rendererTabUiDict['environment']    
-
-        bgType = self.renderGlobalsNode.bgType.get()
-        if bgType == 0: # color/image
-            uiDict['envLightingFrame'].setEnable(True)
-            uiDict['physSkyFrame'].setEnable(False)
-        if bgType == 1: # color/image
-            uiDict['envLightingFrame'].setEnable(False)
-            uiDict['physSkyFrame'].setEnable(True)
-            pSkyModel = self.renderGlobalsNode.pSkyModel.get()
-            
-            if pSkyModel == 0: #preetham
-                uiDict['physSkyPreetham'].setEnable(True)
-                uiDict['physSkyRawafake'].setEnable(False)
-            if pSkyModel == 1: #Rawafake
-                uiDict['physSkyPreetham'].setEnable(False)
-                uiDict['physSkyRawafake'].setEnable(True)
-            if pSkyModel == 2: #hosek
-                uiDict['physSkyPreetham'].setEnable(False)
-                uiDict['physSkyRawafake'].setEnable(False)
-        
+        uiDict = self.rendererTabUiDict['passes']            
     
     def CoronaTranslatorCreateTab(self):
         log.debug("CoronaTranslatorCreateTab()")
@@ -473,7 +480,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             self.imageFormats.extend(iList)
 
     def addUserTabs(self):
-        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Environment"))    
+        pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Passes"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Gi"))    
 
 
@@ -508,7 +515,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
         
         # dummy color for legacy viewport
-        pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3' )
+        pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3')
         pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )
         pm.addExtension( nodeType='CoronaSurface', longName='colorG', attributeType='float', parent='color', defaultValue = 0.7 )
         pm.addExtension( nodeType='CoronaSurface', longName='colorB', attributeType='float', parent='color', defaultValue = 0.7 )  
@@ -523,6 +530,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvG', attributeType='float', parent='outDPdv' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvB', attributeType='float', parent='outDPdv' )        
 
+        pm.addExtension( nodeType='coronaGlobals', longName='AOVs', attributeType='message', multi=True)
 
             
     def removeLogFile(self):

@@ -3,3 +3,4 @@ MTCorona_HOME:=
 MTCorona_SHADERS_LOCATION:=shaders
 MAYA_RENDER_DESC_PATH+:=ressources
 PATH+:=bin
+MAYA_PLUG_IN_PATH+:=scripts/plug-ins

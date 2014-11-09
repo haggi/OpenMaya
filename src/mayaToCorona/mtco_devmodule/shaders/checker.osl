@@ -1,4 +1,6 @@
-shader checker (vector uvCoord = 0, vector color1 = 1, vector color2 = 0, float contrast = 1.0, output float outAlpha = 1, output vector outColor = 0)
+#include "mayaUtils.h"
+
+shader checker (vector uvCoord = 0, vector color1 = 1, vector color2 = 0, float contrast = 1.0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
 {
 	float s = 0.0;
 	float t = 0.0;
@@ -16,6 +18,10 @@ shader checker (vector uvCoord = 0, vector color1 = 1, vector color2 = 0, float 
 	vector mixColor = mix(color1, color2, 0.5);
 	vector contrastColor1 = color1 * contrast + (1.0 - contrast) * mixColor;
 	vector contrastColor2 = color2 * contrast + (1.0 - contrast) * mixColor;
-    outColor = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
-	outAlpha = luminance(color(outColor));
+    vector C = mix (contrastColor1, contrastColor2, mod(ss+tt, 2));
+	
+	C = colorBalance(C, colorGain, colorOffset);
+	outColor = C;	
+	if( alphaIsLuminance == 1)
+		outAlpha = luminance(color(outColor));
 }

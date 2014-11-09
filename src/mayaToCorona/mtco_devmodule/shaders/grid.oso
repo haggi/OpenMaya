@@ -7,13 +7,17 @@ param	float	uWidth	0.1 		 %read{18,27} %write{2147483647,-1}
 param	float	vWidth	0.1 		 %read{58,67} %write{2147483647,-1}
 param	vector	uvCoord	0 0 0 		 %read{2,3} %write{2147483647,-1}
 param	float	contrast	0.5 		 %read{101,105} %write{2147483647,-1}
+param	float	exposure	0 		 %read{2147483647,-1} %write{2147483647,-1}
 param	vector	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
-param	vector	colorGain	1 1 1 		 %read{2147483647,-1} %write{2147483647,-1}
-param	vector	colorOffset	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorGain	1 1 1 		 %read{109,109} %write{2147483647,-1}
+param	vector	colorOffset	0 0 0 		 %read{110,110} %write{2147483647,-1}
 param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	vector	outColor	0 0 0 		 %read{2147483647,-1} %write{106,106}
-oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	alphaIsLuminance	1 		 %read{113,113} %write{2147483647,-1}
+param	int	invert	0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	vector	outColor	0 0 0 		 %read{108,115} %write{106,112}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{116,116}
+local	vector	___315_result	 %read{109,111} %write{108,110}
 local	float	___317_invPeriod	 %read{22,67} %write{21,61}
 local	float	___317_w	 %read{24,95} %write{22,62}
 local	float	___317_x0	 %read{26,90} %write{25,65}
@@ -30,7 +34,8 @@ local	float	dtt	 %read{62,62} %write{17,17}
 local	float	f	 %read{106,106} %write{56,56}
 local	vector	lc	 %read{106,106} %write{101,101}
 local	vector	fc	 %read{106,106} %write{105,105}
-const	int	$const1	1		 %read{0,3} %write{2147483647,-1}
+local	vector	C	 %read{112,112} %write{111,111}
+const	int	$const1	1		 %read{0,113} %write{2147483647,-1}
 const	int	$const2	0		 %read{1,2} %write{2147483647,-1}
 const	float	$const3	1		 %read{4,86} %write{2147483647,-1}
 temp	float	$tmp1	 %read{4,4} %write{3,3}
@@ -103,6 +108,9 @@ temp	vector	$tmp59	 %read{100,100} %write{99,99}
 temp	vector	$tmp60	 %read{101,101} %write{100,100}
 temp	vector	$tmp61	 %read{104,104} %write{103,103}
 temp	vector	$tmp62	 %read{105,105} %write{104,104}
+const	string	$const12	"colorBalance"		 %read{107,107} %write{2147483647,-1}
+temp	int	$tmp63	 %read{114,114} %write{113,113}
+temp	color	$tmp64	 %read{116,116} %write{115,115}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:10
 #    float filterOffset = 0;
@@ -149,41 +157,41 @@ code ___main___
 	mul		$tmp8 uWidth $const8 	%line{24} %argrw{"wrr"}
 	add		$tmp9 ss $tmp8 	%argrw{"wrr"}
 	functioncall	$const9 58 	%argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:33
-# 						  float alphaOffset = 0.0
-	div		___317_invPeriod $const3 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{33} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:35
-# #define MAYA_DEFAULT_OUTPUT output vector outColor = 0, \
-	mul		___317_w dss ___317_invPeriod 	%line{35} %argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:36
+# 						  int invert=0
+	div		___317_invPeriod $const3 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{36} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:38
+# #define MAYA_DEFAULT_OUTPUT output vector outColor = 0, \
+	mul		___317_w dss ___317_invPeriod 	%line{38} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:39
 # 							output float outAlpha = 0
-	mul		$tmp10 $tmp9 ___317_invPeriod 	%line{36} %argrw{"wrr"}
+	mul		$tmp10 $tmp9 ___317_invPeriod 	%line{39} %argrw{"wrr"}
 	mul		$tmp11 $const8 ___317_w 	%argrw{"wrr"}
 	sub		___317_x0 $tmp10 $tmp11 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:37
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:40
 # 
-	add		___317_x1 ___317_x0 ___317_w 	%line{37} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:38
+	add		___317_x1 ___317_x0 ___317_w 	%line{40} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:41
 # //vector colorGain; vector colorOffset; float alphaGain; float alphaOffset; int alphaIsLuminance; int invert; vector uvCoord; float filter; float filterOffset
-	mul		___317_nedge uWidth ___317_invPeriod 	%line{38} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:42
+	mul		___317_nedge uWidth ___317_invPeriod 	%line{41} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:45
 # 	vector result = c;
-	eq		$tmp12 ___317_x0 ___317_x1 	%line{42} %argrw{"wrr"}
+	eq		$tmp12 ___317_x0 ___317_x1 	%line{45} %argrw{"wrr"}
 	if		$tmp12 36 56 	%argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:44
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:47
 # 	result += colorOffset;
-	floor		$tmp13 ___317_x0 	%line{44} %argrw{"wr"}
+	floor		$tmp13 ___317_x0 	%line{47} %argrw{"wr"}
 	sub		$tmp14 ___317_x0 $tmp13 	%argrw{"wrr"}
 	lt		$tmp15 $tmp14 ___317_nedge 	%argrw{"wrr"}
 	if		$tmp15 35 36 	%argrw{"r"}
 	assign		___317_result $const6 	%argrw{"wr"}
 	assign		___317_result $const3 	%argrw{"wr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
 # #define WRAPMAX (1.000001)
-	functioncall	$const10 45 	%line{48} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:28
+	functioncall	$const10 45 	%line{51} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:31
 #    return ((1.0 - nedge) * floor(t) + max(0.0, t - floor(t) - nedge));
-	sub		$tmp17 $const3 ___317_nedge 	%line{28} %argrw{"wrr"}
+	sub		$tmp17 $const3 ___317_nedge 	%line{31} %argrw{"wrr"}
 	floor		$tmp18 ___317_x1 	%argrw{"wr"}
 	mul		$tmp19 $tmp17 $tmp18 	%argrw{"wrr"}
 	floor		$tmp21 ___317_x1 	%argrw{"wr"}
@@ -191,12 +199,12 @@ code ___main___
 	sub		$tmp23 $tmp22 ___317_nedge 	%argrw{"wrr"}
 	max		$tmp20 $const6 $tmp23 	%argrw{"wrr"}
 	add		$tmp16 $tmp19 $tmp20 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
 #       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
-	functioncall	$const10 54 	%line{48} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:28
+	functioncall	$const10 54 	%line{51} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:31
 #    return ((1.0 - nedge) * floor(t) + max(0.0, t - floor(t) - nedge));
-	sub		$tmp25 $const3 ___317_nedge 	%line{28} %argrw{"wrr"}
+	sub		$tmp25 $const3 ___317_nedge 	%line{31} %argrw{"wrr"}
 	floor		$tmp26 ___317_x0 	%argrw{"wr"}
 	mul		$tmp27 $tmp25 $tmp26 	%argrw{"wrr"}
 	floor		$tmp29 ___317_x0 	%argrw{"wr"}
@@ -204,54 +212,54 @@ code ___main___
 	sub		$tmp31 $tmp30 ___317_nedge 	%argrw{"wrr"}
 	max		$tmp28 $const6 $tmp31 	%argrw{"wrr"}
 	add		$tmp24 $tmp27 $tmp28 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
-#       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
-	sub		$tmp32 $tmp16 $tmp24 	%line{48} %argrw{"wrr"}
-	div		___317_result $tmp32 ___317_w 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
+#       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
+	sub		$tmp32 $tmp16 $tmp24 	%line{51} %argrw{"wrr"}
+	div		___317_result $tmp32 ___317_w 	%argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:54
 #    return result;
-	assign		f ___317_result 	%line{51} %argrw{"wr"}
+	assign		f ___317_result 	%line{54} %argrw{"wr"}
 	return
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:25
 # 
 	mul		$tmp34 vWidth $const8 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl"} %line{25} %argrw{"wrr"}
 	add		$tmp35 tt $tmp34 	%argrw{"wrr"}
 	functioncall	$const9 98 	%argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:33
-# 						  float alphaGain = 1.0, \
-	div		___317_invPeriod $const3 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{33} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:35
-# 
-	mul		___317_w dtt ___317_invPeriod 	%line{35} %argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:36
-# #define MAYA_DEFAULT_OUTPUT output vector outColor = 0, \
-	mul		$tmp36 $tmp35 ___317_invPeriod 	%line{36} %argrw{"wrr"}
-	mul		$tmp37 $const8 ___317_w 	%argrw{"wrr"}
-	sub		___317_x0 $tmp36 $tmp37 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:37
-# 							output float outAlpha = 0
-	add		___317_x1 ___317_x0 ___317_w 	%line{37} %argrw{"wrr"}
+# 						  int alphaIsLuminance = 1, \
+	div		___317_invPeriod $const3 $const3 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{36} %argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:38
 # 
-	mul		___317_nedge vWidth ___317_invPeriod 	%line{38} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:42
+	mul		___317_w dtt ___317_invPeriod 	%line{38} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:39
+# #define MAYA_DEFAULT_OUTPUT output vector outColor = 0, \
+	mul		$tmp36 $tmp35 ___317_invPeriod 	%line{39} %argrw{"wrr"}
+	mul		$tmp37 $const8 ___317_w 	%argrw{"wrr"}
+	sub		___317_x0 $tmp36 $tmp37 	%argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:40
+# 							output float outAlpha = 0
+	add		___317_x1 ___317_x0 ___317_w 	%line{40} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:41
+# 
+	mul		___317_nedge vWidth ___317_invPeriod 	%line{41} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:45
 # {
-	eq		$tmp38 ___317_x0 ___317_x1 	%line{42} %argrw{"wrr"}
+	eq		$tmp38 ___317_x0 ___317_x1 	%line{45} %argrw{"wrr"}
 	if		$tmp38 76 96 	%argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:44
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:47
 # 	result *= colorGain;
-	floor		$tmp39 ___317_x0 	%line{44} %argrw{"wr"}
+	floor		$tmp39 ___317_x0 	%line{47} %argrw{"wr"}
 	sub		$tmp40 ___317_x0 $tmp39 	%argrw{"wrr"}
 	lt		$tmp41 $tmp40 ___317_nedge 	%argrw{"wrr"}
 	if		$tmp41 75 76 	%argrw{"r"}
 	assign		___317_result $const6 	%argrw{"wr"}
 	assign		___317_result $const3 	%argrw{"wr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
 # 
-	functioncall	$const10 85 	%line{48} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:28
+	functioncall	$const10 85 	%line{51} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:31
 #    return ((1.0 - nedge) * floor(t) + max(0.0, t - floor(t) - nedge));
-	sub		$tmp43 $const3 ___317_nedge 	%line{28} %argrw{"wrr"}
+	sub		$tmp43 $const3 ___317_nedge 	%line{31} %argrw{"wrr"}
 	floor		$tmp44 ___317_x1 	%argrw{"wr"}
 	mul		$tmp45 $tmp43 $tmp44 	%argrw{"wrr"}
 	floor		$tmp47 ___317_x1 	%argrw{"wr"}
@@ -259,12 +267,12 @@ code ___main___
 	sub		$tmp49 $tmp48 ___317_nedge 	%argrw{"wrr"}
 	max		$tmp46 $const6 $tmp49 	%argrw{"wrr"}
 	add		$tmp42 $tmp45 $tmp46 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
 #       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
-	functioncall	$const10 94 	%line{48} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:28
+	functioncall	$const10 94 	%line{51} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:31
 #    return ((1.0 - nedge) * floor(t) + max(0.0, t - floor(t) - nedge));
-	sub		$tmp51 $const3 ___317_nedge 	%line{28} %argrw{"wrr"}
+	sub		$tmp51 $const3 ___317_nedge 	%line{31} %argrw{"wrr"}
 	floor		$tmp52 ___317_x0 	%argrw{"wr"}
 	mul		$tmp53 $tmp51 $tmp52 	%argrw{"wrr"}
 	floor		$tmp55 ___317_x0 	%argrw{"wr"}
@@ -272,13 +280,13 @@ code ___main___
 	sub		$tmp57 $tmp56 ___317_nedge 	%argrw{"wrr"}
 	max		$tmp54 $const6 $tmp57 	%argrw{"wrr"}
 	add		$tmp50 $tmp53 $tmp54 	%argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:48
-#       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
-	sub		$tmp58 $tmp42 $tmp50 	%line{48} %argrw{"wrr"}
-	div		___317_result $tmp58 ___317_w 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:51
+#       result = (integral(x1, nedge) - integral(x0, nedge)) / w;
+	sub		$tmp58 $tmp42 $tmp50 	%line{51} %argrw{"wrr"}
+	div		___317_result $tmp58 ___317_w 	%argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:54
 #    return result;
-	assign		$tmp33 ___317_result 	%line{51} %argrw{"wr"}
+	assign		$tmp33 ___317_result 	%line{54} %argrw{"wr"}
 	return
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:27
 #    vector fc = Contrast(fillerColor, lineColor, contrast);	
@@ -289,14 +297,40 @@ code ___main___
 	div		$tmp60 $tmp59 $const7 	%argrw{"wrr"}
 	mix		lc $tmp60 lineColor contrast 	%argrw{"wrrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:28
-#    outColor = mix(lc, fc, f);
+#    
 	functioncall	$const11 106 	%line{28} %argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:6
 # }
 	add		$tmp61 fillerColor lineColor 	%line{6} %argrw{"wrr"}
 	div		$tmp62 $tmp61 $const7 	%argrw{"wrr"}
 	mix		fc $tmp62 fillerColor contrast 	%argrw{"wrrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:29
-# }
-	mix		outColor lc fc f 	%line{29} %argrw{"wrrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:30
+# 
+	mix		outColor lc fc f 	%line{30} %argrw{"wrrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:32
+# 	outColor = C;	
+	functioncall	$const12 112 	%line{32} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:21
+# 	vector result = c;
+	assign		___315_result outColor 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{21} %argrw{"wr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:22
+# 	result *= colorGain;
+	mul		___315_result ___315_result colorGain 	%line{22} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:23
+# 	result += colorOffset;
+	add		___315_result ___315_result colorOffset 	%line{23} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:24
+# 	return result;
+	assign		C ___315_result 	%line{24} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:33
+#    float filter = 1;
+	assign		outColor C 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl"} %line{33} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:34
+#    float filterOffset = 0;
+	eq		$tmp63 alphaIsLuminance $const1 	%line{34} %argrw{"wrr"}
+	if		$tmp63 117 117 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\grid.osl:35
+# 
+	assign		$tmp64 outColor 	%line{35} %argrw{"wr"}
+	luminance	outAlpha $tmp64 	%argrw{"wr"}
 	end

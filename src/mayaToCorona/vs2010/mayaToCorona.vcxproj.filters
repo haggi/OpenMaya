@@ -239,6 +239,9 @@
     <ClCompile Include="..\src\coronaOSL\coronaOSLMapUtil.cpp">
       <Filter>Source Files\coronaOSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaImage.cpp">
+      <Filter>Source Files\Corona</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">

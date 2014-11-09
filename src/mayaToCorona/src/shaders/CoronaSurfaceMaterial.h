@@ -21,7 +21,8 @@ protected:
 
 //---------------------------- automatically created attributes start ------------------------------------
 	static    MObject opacity;
-	static    MObject emissionExponent;
+	static    MObject opacityMultiplier;
+	static    MObject emissionMultiplier;
 	static    MObject volumeScatteringAlbedo;
 	static    MObject fresnelIor;
 	static    MObject roundCornersSamples;
@@ -30,8 +31,10 @@ protected:
 	static    MObject attenuationColor;
 	static    MObject emissionSharpnessFake;
 	static    MObject reflectivity;
+	static    MObject reflectivityMultiplier;
 	static    MObject castsShadows;
 	static    MObject translucency;
+	static    MObject translucencyFraction;
 	static    MObject volumeEmissionColor;
 	static    MObject anisotropyRotation;
 	static    MObject reflectionGlossiness;
@@ -40,8 +43,10 @@ protected:
 	static    MObject bgOverride;
 	static    MObject refractionGlossiness;
 	static    MObject diffuse;
+	static    MObject diffuseMultiplier;
 	static    MObject refractivity;
-	static    MObject brdfType;
+	static    MObject refractivityMultiplier;
+//	static    MObject brdfType;
 	static    MObject emissionColor;
 	static    MObject shadowCatcherMode;
 	static    MObject anisotropy;

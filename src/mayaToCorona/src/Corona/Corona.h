@@ -18,6 +18,29 @@ class mtco_MayaObject;
 class MFnDependencyNode;
 class MString;
 
+static const char *passesNames[] = {
+	"Alpha",
+	"SourceColor",
+	"Components",
+	"Shadows",
+	"Albedo",
+	"RawComponent",
+
+	// normals passes
+	"Normals",
+	"NormalsDotProduct",
+	"NormalsDiscrepancy",
+
+	// geometry passes
+	"PrimitiveCoords",
+	"MapCoords",
+	"Velocity",
+	"ZDepth",
+	"WorldPosition",
+	"Id",
+	"Texmap"
+};
+
 class Settings : public Corona::Abstract::Settings {
 protected:
 	std::map<int, Corona::Abstract::Settings::Property> values;
@@ -61,6 +84,7 @@ struct Context {
     Corona::Abstract::Settings* settings;
     Corona::Stack<Corona::IRenderPass*> renderPasses;
 	bool isCancelled;
+	Corona::ColorMappingData *colorMappingData;
 };
 
 
@@ -95,7 +119,7 @@ public:
 	void setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
-	void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
+	//void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
 	//Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
 	//void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
 	//void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
