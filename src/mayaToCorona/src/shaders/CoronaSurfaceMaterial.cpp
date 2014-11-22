@@ -155,8 +155,15 @@ MStatus CoronaSurface::initialize()
 	diffuseMultiplier = nAttr.create("diffuseMultiplier", "diffuseMultiplier", MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
+	//nAttr.setKeyable(true);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(diffuseMultiplier));
+
+	translucencyFraction = nAttr.create("translucencyMultiplier", "translucencyMultiplier", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	//nAttr.setKeyable(true);
+	CHECK_MSTATUS(addAttribute(translucencyFraction));
 
 	opacity = nAttr.createColor("opacity", "opacity");
 	nAttr.setDefault(1.0,1.0,1.0);
@@ -166,25 +173,29 @@ MStatus CoronaSurface::initialize()
 	opacityMultiplier = nAttr.create("opacityMultiplier", "opacityMultiplier", MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
+	//nAttr.setKeyable(true);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(opacityMultiplier));
 
-	emissionMultiplier = nAttr.create("emissionMultiplier", "emissionMultiplier", MFnNumericData::kFloat, 1.0);
+	emissionMultiplier = nAttr.create("emissionColorMultiplier", "emissionColorMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
+	//nAttr.setKeyable(true);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(emissionMultiplier));
 
-	reflectivityMultiplier = nAttr.create("reflectivityMultiplier", "reflectivityMultiplier", MFnNumericData::kFloat, 1.0);
+	reflectivityMultiplier = nAttr.create("reflectivityMultiplier", "reflectivityMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
+	//nAttr.setKeyable(true);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(reflectivityMultiplier));
 
-	refractivityMultiplier = nAttr.create("refractivityMultiplier", "refractivityMultiplier", MFnNumericData::kFloat, 1.0);
+	refractivityMultiplier = nAttr.create("refractivityMultiplier", "refractivityMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
+	//nAttr.setKeyable(true);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(refractivityMultiplier));
 
 	volumeScatteringAlbedo = nAttr.createColor("volumeScatteringAlbedo", "volumeScatteringAlbedo");
@@ -216,7 +227,7 @@ MStatus CoronaSurface::initialize()
 
 	reflectivity = nAttr.createColor("reflectivity", "reflectivity");
 	nAttr.setKeyable(true);
-	nAttr.setDefault(1, 1, 1);
+	nAttr.setDefault(1.0, 1.0, 1.0);
 	CHECK_MSTATUS(addAttribute( reflectivity ));
 
 	castsShadows = nAttr.create("castsShadows", "castsShadows",  MFnNumericData::kBoolean, true);
@@ -224,7 +235,7 @@ MStatus CoronaSurface::initialize()
 
 	translucency = nAttr.createColor("translucency", "translucency");
 	nAttr.setKeyable(true);
-	nAttr.setDefault(1, 1, 1);
+	nAttr.setDefault(1.0, 1.0, 1.0);
 	CHECK_MSTATUS(addAttribute( translucency ));
 
 	volumeEmissionColor = nAttr.createColor("volumeEmissionColor", "volumeEmissionColor");
@@ -262,7 +273,7 @@ MStatus CoronaSurface::initialize()
 
 	refractivity = nAttr.createColor("refractivity", "refractivity");
 	nAttr.setKeyable(true);
-	nAttr.setDefault(1, 1, 1);
+	nAttr.setDefault(1.0, 1.0, 1.0);
 	CHECK_MSTATUS(addAttribute( refractivity ));
 
 	//brdfType = eAttr.create("brdfType", "brdfType", 0, &status);
@@ -272,7 +283,7 @@ MStatus CoronaSurface::initialize()
 
 	emissionColor = nAttr.createColor("emissionColor", "emissionColor");
 	nAttr.setKeyable(true);
-	nAttr.setDefault(1, 1, 1);
+	nAttr.setDefault(1.0, 1.0, 1.0);
 	CHECK_MSTATUS(addAttribute( emissionColor ));
 
 	shadowCatcherMode = eAttr.create("shadowCatcherMode", "shadowCatcherMode", 0, &status);

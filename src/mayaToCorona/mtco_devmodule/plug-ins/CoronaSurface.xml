@@ -15,6 +15,9 @@
     <float3 name="opacity" ref="coronaCombiner.opacity" />
     <float3 name="refractivity" ref="coronaCombiner.refractivity" />
     <float3 name="emissionColor" ref="coronaCombiner.emission" />
+    <float  name="emissionColorMultiplier" ref="coronaCombiner.emissionMultiplier" />
+    <float  name="refractivityMultiplier" ref="coronaCombiner.refractivityMultiplier" />
+    <float  name="diffuseMultiplier" ref="coronaCombiner.diffuseMultiplier" />
     <float3 name="diffuseI" ref="coronaDiffuse.diffuseI" />
     <float3 name="Nw" ref="coronaDiffuse.Nw" semantic="Nw" flags="varyingInputParam" />
     <float3 name="Lw" ref="coronaDiffuse.Lw" semantic="Lw" flags="varyingInputParam" />

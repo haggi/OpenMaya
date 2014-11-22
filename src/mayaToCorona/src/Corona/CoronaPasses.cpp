@@ -129,8 +129,8 @@ void CoronaRenderer::definePasses()
 
 		if (className == "ZDepth")
 		{
-			data.zDepth.minDepth = getFloatAttr("minDepth", passNode, 0.0f);
-			data.zDepth.maxDepth = getFloatAttr("maxDepth", passNode, 1000000.0f);
+			data.zDepth.minDepth = getFloatAttr("minDepth", passNode, 0.0f) * this->mtco_renderGlobals->scaleFactor;
+			data.zDepth.maxDepth = getFloatAttr("maxDepth", passNode, 1000000.0f) * this->mtco_renderGlobals->scaleFactor;
 		}
 
 		if (className == "Id")

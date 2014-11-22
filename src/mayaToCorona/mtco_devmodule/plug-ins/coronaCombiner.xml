@@ -7,6 +7,9 @@
     <float3 name="opacity"/>
     <float3 name="refractivity"/>
     <float3 name="emission"/>
+    <float  name="emissionMultiplier"/>
+    <float  name="refractivityMultiplier"/>
+    <float  name="diffuseMultiplier"/>
   </properties>
 	<values>
 		<float3 name="diffuseIrradIn" value="0.0,0.0,0.0" />
@@ -15,6 +18,9 @@
     <float3 name="opacity" value="1.0,1.0,1.0" />
     <float3 name="refractivity" value="0.0,0.0,0.0" />
     <float3 name="emission" value="0.0,0.0,0.0" />
+    <float  name="emissionMultiplier" value="0.0" />
+    <float  name="refractivityMultiplier" value="0.0" />
+    <float  name="diffuseMultiplier" value="1.0" />
   </values>
 	<outputs>
     <struct name="coronaCombinerOutput" struct_name="mayaSurfaceShaderOutput" />
@@ -30,15 +36,18 @@ mayaSurfaceShaderOutput coronaCombiner(
   float3 diffuseColor,
   float3 opacity,
   float3 refractivity,
-  float3 emission
+  float3 emission,
+  float  emissionMultiplier,
+  float  refractivityMultiplier,
+  float  diffuseMultiplier
   )
 {
   float3 transparency = 1.0 - opacity;
-  float r = (refractivity.x + refractivity.y + refractivity.z)/3.0;
+  float r = (refractivity.x + refractivity.y + refractivity.z)/3.0 * refractivityMultiplier;
   if( r > 0 )
      transparency = 1.0 - (opacity * (1.0 - r));
 	mayaSurfaceShaderOutput result;
-  result.outColor = diffuseIrradIn * diffuseColor + emission;
+  result.outColor = diffuseIrradIn * diffuseColor * diffuseMultiplier + emission * emissionMultiplier;
   result.outTransparency = transparency;
   float3 outOpacity = saturate(1.0f - transparency);
   result.outColor *= outOpacity;

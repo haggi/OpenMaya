@@ -1,6 +1,6 @@
 release 0.30
 - transparency in VP 2.0 fix #105
-- corrected normal mapping
+- corrected normal mapping (I hope)
 - set dudx, dudy to 0.0
 - fixed component connections like facingRatio->ramp.uCoord #106
 - fixed strange shadow colors in maya lights #108
@@ -13,6 +13,9 @@ release 0.30
 - added multipliers for coronaSurface color values #121
 - added passes rendering, no multilayer exr yet #100
 - removed brdfType from coronaShader
+- removed acceleration structures from render UI
+- fixed tinted maya and swatches lights #111
+- fixed incorrect maya light calculation
 
 release 0.29
 - Option to save renderstamp to file 

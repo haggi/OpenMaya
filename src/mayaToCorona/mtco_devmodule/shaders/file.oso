@@ -11,10 +11,10 @@ param	vector	colorGain	1 1 1 		 %read{104,104} %write{2147483647,-1}
 param	vector	colorOffset	0 0 0 		 %read{105,105} %write{2147483647,-1}
 param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
-param	int	alphaIsLuminance	1 		 %read{108,108} %write{2147483647,-1}
-param	int	invert	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	vector	outColor	0 0 0 		 %read{110,110} %write{107,107}
-oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{111,111}
+param	int	alphaIsLuminance	1 		 %read{110,110} %write{2147483647,-1}
+param	int	invert	0 		 %read{107,107} %write{2147483647,-1}
+oparam	vector	outColor	0 0 0 		 %read{112,112} %write{109,109}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{113,113}
 global	float	u	 %read{0,0} %write{2147483647,-1} %derivs
 global	float	v	 %read{1,1} %write{2147483647,-1} %derivs
 local	vector	___315_result	 %read{104,106} %write{103,105}
@@ -24,10 +24,10 @@ local	color	___325_outColor	 %read{11,56} %write{10,55}
 local	float	s	 %read{6,6} %write{0,4} %derivs
 local	float	t	 %read{6,6} %write{1,5} %derivs
 local	color	C	 %read{10,101} %write{6,100}
-local	vector	CB	 %read{107,107} %write{106,106}
+local	vector	CB	 %read{108,109} %write{106,108}
 temp	int	$tmp1	 %read{3,3} %write{2,2}
 const	int	$const1	0		 %read{4,73} %write{2147483647,-1}
-const	int	$const2	1		 %read{5,108} %write{2147483647,-1}
+const	int	$const2	1		 %read{5,110} %write{2147483647,-1}
 const	string	$const3	"wrap"		 %read{6,6} %write{2147483647,-1}
 const	string	$const4	"periodic"		 %read{6,6} %write{2147483647,-1}
 temp	int	$tmp2	 %read{8,8} %write{7,7}
@@ -96,8 +96,9 @@ temp	float	$tmp50	 %read{96,96} %write{95,95}
 temp	float	$tmp51	 %read{98,98} %write{97,97}
 temp	vector	$tmp52	 %read{103,103} %write{101,101}
 const	string	$const19	"colorBalance"		 %read{102,102} %write{2147483647,-1}
-temp	int	$tmp53	 %read{109,109} %write{108,108}
-temp	color	$tmp54	 %read{111,111} %write{110,110}
+const	vector	$const20	1 1 1		 %read{108,108} %write{2147483647,-1}
+temp	int	$tmp54	 %read{111,111} %write{110,110}
+temp	color	$tmp55	 %read{113,113} %write{112,112}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:48
 # 	float t = v;
@@ -301,7 +302,7 @@ code ___main___
 # }
 	assign		C ___324_outColor 	%line{29} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:65
-# 	outColor = CB;
+# 	if( invert )
 	assign		$tmp52 C 	%line{65} %argrw{"wr"}
 	functioncall	$const19 107 	%argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:21
@@ -318,13 +319,19 @@ code ___main___
 	assign		CB ___315_result 	%line{24} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:66
 # 			 int fromSRGB = 0,
-	assign		outColor CB 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{66} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:67
-# 			 int toSRGB = 0,
-	eq		$tmp53 alphaIsLuminance $const2 	%line{67} %argrw{"wrr"}
-	if		$tmp53 112 112 	%argrw{"r"}
+	if		invert 109 109 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl"} %line{66} %argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:68
 # 			 MAYA_COLORBALANCE,
-	assign		$tmp54 outColor 	%line{68} %argrw{"wr"}
-	luminance	outAlpha $tmp54 	%argrw{"wr"}
+	sub		CB $const20 CB 	%line{68} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:70
+# {
+	assign		outColor CB 	%line{70} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:71
+# 	float s = u;
+	eq		$tmp54 alphaIsLuminance $const2 	%line{71} %argrw{"wrr"}
+	if		$tmp54 114 114 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\file.osl:72
+# 	float t = v;
+	assign		$tmp55 outColor 	%line{72} %argrw{"wr"}
+	luminance	outAlpha $tmp55 	%argrw{"wr"}
 	end

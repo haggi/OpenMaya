@@ -9,7 +9,6 @@
 
 static Logging logger;
 
-static std::vector<MString> helperNodeNames;
 static std::vector<MObject> projectionNodes;
 static std::vector<MObject> projectionConnectNodes;
 
@@ -178,12 +177,7 @@ namespace MAYATO_OSL{
 
 	bool doesHelperNodeExist(MString& helperNode)
 	{
-		for (uint hId = 0; hId < helperNodeNames.size(); hId++)
-		{
-			if (helperNodeNames[hId] == helperNode)
-				return true;
-		}
-		return false;
+		return doesOSLNodeAlreadyExist(helperNode);
 	}
 
 	MString createPlugHelperNodeName(MPlug& plug, bool outType)
@@ -670,7 +664,6 @@ namespace MAYATO_OSL{
 
 	void initOSLUtil()
 	{
-		helperNodeNames.clear();
 		projectionNodes.clear();
 		projectionConnectNodes.clear();
 		DefinedOSLNodes.clear();

@@ -112,8 +112,10 @@ class MayaToRenderer(object):
         self.preRenderProcedure()
         log.debug("textureBakingProcedure")
     
-    def renderingEditorsSubMenuProcedure(self):
-        self.preRenderProcedure()
+    def renderingEditorsSubMenuProcedure(self, *args):
+        #pm.popupMenu(parentMenu, edit=True, deleteAllItems=True)
+        #pm.menuItem(label="Dummy Menu Item", parent=parentMenu)
+        #self.preRenderProcedure()
         log.debug("renderingEditorsSubMenuProcedure")
                   
     def OpenMayaCommonGlobalsCreateTab(self):
@@ -391,8 +393,8 @@ global proc updateMayaImageFormatControl()
         pm.renderer(self.rendererName, edit=True, showBatchRenderProcedure=self.renderCallback("showBatchRenderProcedure"))
         pm.renderer(self.rendererName, edit=True, showRenderLogProcedure=self.renderCallback("showRenderLogProcedure"))
         pm.renderer(self.rendererName, edit=True, showBatchRenderLogProcedure=self.renderCallback("showBatchRenderLogProcedure"))
-        pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))
-        pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
+        pm.renderer(self.rendererName, edit=True, textureBakingProcedure=self.renderCallback("textureBakingProcedure"))        
+        #pm.renderer(self.rendererName, edit=True, renderingEditorsSubMenuProcedure=self.renderCallback("renderingEditorsSubMenuProcedure"))
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
 

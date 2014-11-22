@@ -10,6 +10,7 @@ static Logging logger;
 
 Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
 {
+	MStatus status;
 	OSL::OSLShadingNetworkRenderer *oslRenderer = (OSL::OSLShadingNetworkRenderer *)getObjPtr("oslRenderer");
 
 	size_t numNodes = sn.shaderList.size();
@@ -80,8 +81,8 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 
 					// if we have a color/vector input, try to find a multiplier attribute
 					MString multiplierName = attributeName + "Multiplier";
-					MPlug multiplierAttribute = depFn.findPlug(multiplierName, &stat);
-					if (stat)
+					MPlug multiplierAttribute = depFn.findPlug(multiplierName, true, &status);
+					if (status)
 					{
 						logger.debug(MString("Found multiplier attribute: ") + multiplierName);
 						float multiplier = multiplierAttribute.asFloat();

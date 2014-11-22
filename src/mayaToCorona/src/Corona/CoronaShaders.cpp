@@ -48,7 +48,6 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 	{
 		logger.debug(MString("it is connected"));
  		rgbColor = Corona::Rgb(0.0, 0.0, 1.0);
-		//texmap = getOslTexMap(attributeName, depFn, sn);
 		texmap = getOslTexMap(attributeName, depFn, sn);
 	}
 	else{

@@ -32,8 +32,9 @@ public:
 
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const
 	{
-		const Corona::Spectrum diffuse(lightColor.r(), lightColor.g(), lightColor.b());
-		Corona::Spectrum sColor(shadowColor.r(), shadowColor.g(), shadowColor.b());
+		
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(lightColor.r(), lightColor.g(), lightColor.b())));
+		Corona::Spectrum sColor(Corona::rgb2Radiance(Corona::Rgb(shadowColor.r(), shadowColor.g(), shadowColor.b())));
 		Corona::BsdfComponents bsdf;
 		const Corona::Pos P = context.getPosition();
 		Corona::Pos rndPos(context.generateRandom() * lightRadius, context.generateRandom() * lightRadius, context.generateRandom() * lightRadius);
@@ -44,7 +45,7 @@ public:
 		if (doShadows)
 			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL) + sColor;
 		else
-			transport = Corona::Spectrum(1.0, 1.0, 1.0);
+			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
 		float dummy;
 		float decay = 1.0;
 		if( decayType == 1) // linear decay
@@ -55,8 +56,9 @@ public:
 			decay = 1.0/(distance * distance * distance);
 
 		context.forwardBsdfCos(toLight, bsdf, dummy);
-        const float dotSurface = absDot(context.getShadingNormal(), toLight);
-		return bsdf * diffuse * (dotSurface * Corona::PI) * lightIntensity * decay;
+        //const float dotSurface = absDot(context.getShadingNormal(), toLight);
+		//return bsdf * diffuse * (dotSurface * Corona::PI) * lightIntensity * decay;
+		return bsdf * diffuse * Corona::PI * lightIntensity * decay;
 	}
 };
 
@@ -98,8 +100,8 @@ public:
 		
 		float dropOff = dropoff;
 		float coneAngle = angle * 0.5;
-		const Corona::Spectrum diffuse(lightColor.r(), lightColor.g(), lightColor.b());
-		Corona::Spectrum sColor(shadowColor.r(), shadowColor.g(), shadowColor.b());
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(lightColor.r(), lightColor.g(), lightColor.b())));
+		Corona::Spectrum sColor(Corona::rgb2Radiance(Corona::Rgb(shadowColor.r(), shadowColor.g(), shadowColor.b())));
 		Corona::BsdfComponents bsdf;
 		const Corona::Pos P = context.getPosition();
 		Corona::Pos rndPos(context.generateRandom() * lightRadius, context.generateRandom() * lightRadius, context.generateRandom() * lightRadius);
@@ -112,7 +114,7 @@ public:
 		if (doShadows)
 			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL) + sColor;
 		else
-			transport = Corona::Spectrum(1.0, 1.0, 1.0);
+			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
 
 		context.forwardBsdfCos(toLight, bsdf, dummy);
 
@@ -188,8 +190,8 @@ public:
 
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const
 	{
-		const Corona::Spectrum diffuse(lightColor.r(), lightColor.g(), lightColor.b());
-		Corona::Spectrum sColor(shadowColor.r(), shadowColor.g(), shadowColor.b());
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(lightColor.r(), lightColor.g(), lightColor.b())));
+		Corona::Spectrum sColor(Corona::rgb2Radiance(Corona::Rgb(shadowColor.r(), shadowColor.g(), shadowColor.b())));
 		Corona::BsdfComponents bsdf;
 		const Corona::Pos P = context.getPosition();
 		const Corona::Dir tl = LD * -1.0;
@@ -203,12 +205,13 @@ public:
 		if (doShadows)
 			transport = context.shadowTransmission(dirLightPos, Corona::RAY_NORMAL) + sColor;
 		else
-			transport = Corona::Spectrum(1.0, 1.0, 1.0);
+			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
 
 		float dummy;
 		context.forwardBsdfCos(toLight, bsdf, dummy);
-        const float dotSurface = absDot(context.getShadingNormal(), toLight);
-		return bsdf * diffuse * (dotSurface * Corona::PI) * lightIntensity;
+		//const float dotSurface = absDot(context.getShadingNormal(), toLight);
+		//return bsdf * diffuse * (dotSurface * Corona::PI) * lightIntensity;
+		return bsdf * diffuse * Corona::PI * lightIntensity;
 	}
 };
 

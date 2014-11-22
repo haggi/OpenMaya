@@ -18,6 +18,7 @@
 #include "osl/oslUtils.h"
 #include "CoronaMap.h"
 #include "world.h"
+#include <time.h>
 
 static Logging logger;
 
@@ -90,9 +91,9 @@ void CoronaRenderer::clearMaterialLists()
 
 void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
 {
+	
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
 
-	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
-		
 	if( obj->shadingGroups.length() > 0)
 	{
 		for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
@@ -103,15 +104,10 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				return;
 
 			MObject surfaceShader = getConnectedInNode(shadingGroup, "surfaceShader");
-			if (surfaceShader != MObject::kNullObj)
-			{
-				Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(surfaceShader, obj);
-				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
-				setRenderStats(ms, obj);
-				obj->instance->addMaterial(ms);
-			}
-
-			MFnDependencyNode sn;
+			Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(surfaceShader, obj);
+			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+			setRenderStats(ms, obj);
+			obj->instance->addMaterial(ms);
 		}
 	}
 	else{

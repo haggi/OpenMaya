@@ -66,8 +66,15 @@ class PassesUI(object):
         item = pm.textScrollList(self.availableAOVsListUI, query=True, selectItem=True)[0] 
         passesNode = pm.createNode("coronaPassesNode", n=item)
         passesNode.passType.set(pm.textScrollList(self.availableAOVsListUI, query=True, sii=True)[0] - 1)
-        ne = pm.PyNode("coronaGlobals").AOVs.numElements()           
-        passesNode.message >> pm.PyNode("coronaGlobals").AOVs[ne]
+        ne = pm.PyNode("coronaGlobals").AOVs.numElements()     
+        if ne > 0:      
+            index = pm.PyNode("coronaGlobals").AOVs.elementByPhysicalIndex(ne - 1).logicalIndex()
+            for i in range(index + 2):
+                if not pm.PyNode("coronaGlobals").AOVs[i].isConnected():                
+                    passesNode.message >> pm.PyNode("coronaGlobals").AOVs[i]
+                    break
+        else:
+            passesNode.message >> pm.PyNode("coronaGlobals").AOVs[0]
         self.addAOVAttributes(passesNode)
         self.updateExistingAOVList()
         

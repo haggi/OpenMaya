@@ -1,14 +1,14 @@
 //Maya ASCII 2015ff05 scene
 //Name: raytrace.ma
-//Last modified: Tue, Oct 14, 2014 09:06:26 PM
+//Last modified: Sat, Nov 22, 2014 03:45:59 PM
 //Codeset: 1252
 requires maya "2015ff05";
-requires -nodeType "CoronaSurface" -nodeType "coronaGlobals" "mayatocorona" "0.29";
+requires -nodeType "CoronaSurface" -nodeType "coronaGlobals" "mayatocorona" "0.30";
 currentUnit -l centimeter -a degree -t film;
 fileInfo "application" "maya";
 fileInfo "product" "Maya 2015";
 fileInfo "version" "2015";
-fileInfo "cutIdentifier" "201408201531-928694-1";
+fileInfo "cutIdentifier" "201410051530-933320-1";
 fileInfo "osv" "Microsoft Windows 7 Business Edition, 64-bit Windows 7 Service Pack 1 (Build 7601)\n";
 createNode transform -s -n "persp";
 	setAttr ".v" no;
@@ -77363,9 +77363,9 @@ createNode shadingEngine -n "skull:CoronaSurface5SG";
 	setAttr -s 4 ".dsm";
 	setAttr ".ro" yes;
 createNode CoronaSurface -n "skull_mat";
+	setAttr ".refractivityMultiplier" 1;
 	setAttr ".glassMode" 2;
 	setAttr ".refractionGlossiness" 0.78195488452911377;
-	setAttr ".refractivity" -type "float3" 1 1 1 ;
 createNode hyperGraphInfo -n "nodeEditorPanel1Info";
 createNode hyperView -n "hyperView1";
 	setAttr ".dag" no;
@@ -77502,11 +77502,6 @@ select -ne :defaultRenderGlobals;
 	setAttr ".ren" -type "string" "Corona";
 select -ne :defaultResolution;
 	setAttr ".pa" 1;
-select -ne :defaultColorMgtGlobals;
-	setAttr ".vtn" -type "string" "sRGB gamma";
-	setAttr ".wsn" -type "string" "scene-linear Rec 709/sRGB";
-	setAttr ".din" -type "string" "sRGB";
-	setAttr ".otn" -type "string" "sRGB gamma";
 select -ne :hardwareRenderGlobals;
 	setAttr ".ctrs" 256;
 	setAttr ".btrs" 512;

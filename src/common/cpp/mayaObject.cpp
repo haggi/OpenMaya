@@ -107,10 +107,7 @@ void MayaObject::getShadingGroups()
 		// only makes sense if we have a geometry shape.
 		if( this->mobject.hasFn(MFn::kMesh) || this->mobject.hasFn(MFn::kNurbsSurface) || this->mobject.hasFn(MFn::kParticle) || this->mobject.hasFn(MFn::kNParticle))
 		{
-			getObjectShadingGroups(this->dagPath, this->perFaceAssignments, this->shadingGroups);
-
-			// TEST MEM TEST MEM
-			//this->perFaceAssignments.clear();
+			getObjectShadingGroups(this->dagPath, this->perFaceAssignments, this->shadingGroups, true);
 		}
 	}
 }

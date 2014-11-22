@@ -70,7 +70,7 @@ void CoronaRenderer::saveImage()
 			this->context.fb->setColorMapping(*context.colorMappingData);
 			this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), passId, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
 		}
-		filename = name + rp->getName().cStr() + rest;
+		filename = name + "_" + rp->getName().cStr() + rest;
 		Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
 	}
 

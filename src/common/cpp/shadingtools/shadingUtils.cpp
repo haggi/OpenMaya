@@ -107,10 +107,10 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup)
 //	Output: perFaceInt array
 //			all connected shading groups
 
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups)
+bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups, bool needsPerFaceInfo=true)
 {
 
-	logger.debug(MString("getObjectShadingGroups:: obj: ") +  shapeObjectDP.partialPathName() + " type: " + shapeObjectDP.node().apiTypeStr());
+	//logger.debug(MString("getObjectShadingGroups:: obj: ") +  shapeObjectDP.partialPathName() + " type: " + shapeObjectDP.node().apiTypeStr());
 
 	// if obj is a light, simply return the mobject
 	if(shapeObjectDP.node().hasFn(MFn::kLight))
@@ -128,10 +128,24 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
 
 		perFaceAssignments.clear();
 		shadingGroups.clear();
+		MObjectArray comps;
+
+		// this one seems to be extremly much faster if we need no per face informations.
+		// e.g. for a sphere with 90000 faces, the non per face method needs 0.05 sec. whereas the 
+		// method with per face info needs about 20 sec.
+		if (!needsPerFaceInfo)
+		{
+			meshFn.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), shadingGroups, comps, true);
+			return true;
+		}
+
+		meshFn.getConnectedShaders(shapeObjectDP.instanceNumber(), shadingGroups, perFaceAssignments);
+
+		if (!meshFn.findPlug("displaySmoothMesh").asBool())
+			return true;
 
 		MIntArray indices;
-		meshFn.getConnectedShaders(shapeObjectDP.instanceNumber(), shadingGroups, indices);
-		perFaceAssignments = indices;
+		indices = perFaceAssignments;
 
 		int subdivs = 0;
 		int multiplier = 0;

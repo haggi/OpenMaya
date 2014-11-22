@@ -72,7 +72,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	float displacementMax = 0.01f;
 
 	// I do it here for displacement mapping, maybe we should to another place
-	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
 	if( obj->shadingGroups.length() > 0)
 	{
 		MFnDependencyNode shadingGroup(obj->shadingGroups[0]);
@@ -356,6 +356,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 			geom->addPrimitive(tri);
 		}
 	}
+	obj->perFaceAssignments.clear();
 	obj->meshDataList.clear();
 }
 

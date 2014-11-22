@@ -85,29 +85,29 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName='maxPtSampleIntensity', uiType='float', displayName='Max Sample Intensity', default='0.0', data='minmax:0.0:99999.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads', default=8, uiDict=uiDict)
 
-                with pm.frameLayout(label="Filter", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Filter", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='filtertype', uiType='enum', displayName='Imagefilter', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='imagefilter_width', uiType='float', displayName='Filter Width', default='1.5', data='minmax:1.0:64', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='imagefilter_blurring', uiType='float', displayName='Blur', default='0.5', data='minmax:0.0:1.0', uiDict=uiDict)
                     
-                with pm.frameLayout(label="Raytrace Features", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Raytrace Features", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         # self.addRenderGlobalsUIElement(attName = 'raycaster_minDepth', uiType = 'int', displayName = 'Min Ray Depth', default='0', data='minmax:0:25', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='raycaster_maxDepth', uiType='int', displayName='Max Ray Depth', default='25', data='minmax:1:25', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='color_exit', uiType='color', displayName='Exit Color', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='system_maxNormalDev', uiType='float', displayName='Max Normal Diff', uiDict=uiDict)
-                        with pm.frameLayout(label="Accerleration Structure", collapsable=True, collapse=True):
-                            with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                                self.addRenderGlobalsUIElement(attName='accelerationStructure', uiType='enum', displayName='Accelerationstructure', default='Embree_bvh4_spatial', data='None:Embree_bvh4_spatial', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='embree_triangles', uiType='enum', displayName='Triangles', default='Fast', data='Fast:Avx', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='instance_minSize', uiType='int', displayName='Instance Min Size', default='1', data='minmax:1:999999', uiDict=uiDict)
+#                         with pm.frameLayout(label="Accerleration Structure", collapsable=True, collapse=True):
+#                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+#                                 self.addRenderGlobalsUIElement(attName='accelerationStructure', uiType='enum', displayName='Accelerationstructure', default='Embree_bvh4_spatial', data='None:Embree_bvh4_spatial', uiDict=uiDict)
+#                                 self.addRenderGlobalsUIElement(attName='embree_triangles', uiType='enum', displayName='Triangles', default='Fast', data='Fast:Avx', uiDict=uiDict)
+#                                 self.addRenderGlobalsUIElement(attName='instance_minSize', uiType='int', displayName='Instance Min Size', default='1', data='minmax:1:999999', uiDict=uiDict)
                                     # self.addRenderGlobalsUIElement(attName = 'bvh_cost_iteration', uiType = 'float', displayName = 'Bvh_cost_iteration', default='1.0', data='minmax:0.01:1000.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'bvh_cost_triangle', uiType = 'float', displayName = 'Bvh_cost_triangle', default='1.0', data='minmax:0.01:1000.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'bvh_leafSizeMin', uiType = 'int', displayName = 'Bvh_leafsizemin', default='2', data='minmax:1:1000', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'bvh_leafSizeMax', uiType = 'int', displayName = 'Bvh_leafsizemax', default='6', data='minmax:2:1000', uiDict=uiDict)
 
-                with pm.frameLayout(label="Color Mapping", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Color Mapping", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_gamma', uiType = 'float', displayName = 'Colormapping_gamma', default='2.2', data='minmax:0.01:10.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_highlightCompression', uiType = 'float', displayName = 'Highlight Compression', default='1.0', data='minmax:0.01:99.0', uiDict=uiDict)
@@ -120,20 +120,21 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_useContrast', uiType = 'bool', displayName = 'Use Contrast', default='false', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
 
-                with pm.frameLayout(label="Environment", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Environment", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName = 'bgType', uiType = 'enum', displayName = 'Background', default='0', data='Color/Image:PhysicalSky', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         envLightingFrame = None
                         physSkyFrame = None
                         physSkyPreetham = None
                         physSkyRawafake = None
-                        self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
-                        self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
                         with pm.frameLayout(label="Color/Image", collapsable=False) as envLightingFrame:
                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                                 self.addRenderGlobalsUIElement(attName='bgColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
                         with pm.frameLayout(label="Physical Sky", collapsable=True, collapse=False) as physSkyFrame:
                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                                self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
+                                self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
+                                pm.separator()
                                 self.addRenderGlobalsUIElement(attName = 'pSkyModel', uiType = 'enum', displayName = 'Sky Model', default='0', data='Preetham:Rawafake:Hosek', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                                 self.addRenderGlobalsUIElement(attName = 'pSkyMultiplier', uiType = 'float', displayName = 'Sky Multiplier', default='1.0', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName = 'pSkyHorizBlur', uiType = 'float', displayName = 'Sky Horizon Blur', default='0.1', uiDict=uiDict)
@@ -154,7 +155,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         uiDict['physSkyRawafake'] = physSkyRawafake
 
 
-                with pm.frameLayout(label="Features", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Features", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='doShading', uiType='bool', displayName='Do Shading', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='doDof', uiType='bool', displayName='Depth of Field:', default='True', uiDict=uiDict)
@@ -191,7 +192,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 # self.addRenderGlobalsUIElement(attName = 'portals_sampleAmount', uiType = 'float', displayName = 'Portals_sampleamount', default='0.75', data='minmax:0.0:1.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'shadowBias', uiType = 'float', displayName = 'Shadowbias', default='-6.07', data='-8.0:-2.0', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'resumeRendering', uiType = 'bool', displayName = 'Resumerendering', default='false', uiDict=uiDict)
-                with pm.frameLayout(label="Displacement", collapsable=True, collapse=False):
+                with pm.frameLayout(label="Displacement", collapsable=True, collapse=True):
                     self.addRenderGlobalsUIElement(attName='displace_maxSubdiv', uiType='int', displayName='Displace_maxsubdiv', default='100', uiDict=uiDict)
                     self.addRenderGlobalsUIElement(attName='displace_useProjectionSize', uiType='bool', displayName='Use Camera Projection', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                     self.addRenderGlobalsUIElement(attName='displace_maxProjectSize', uiType='float', displayName='Max Edgelen (Pixels)', default='2.0', uiDict=uiDict)
@@ -265,10 +266,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         print "BG Type", bgType
         if bgType == 0: # color/image
             uiDict['envLightingFrame'].setEnable(True)
+            uiDict['envLightingFrame'].setManage(True)
             uiDict['physSkyFrame'].setEnable(False)
             uiDict['physSkyFrame'].setManage(False)
         if bgType == 1: # color/image
             uiDict['envLightingFrame'].setEnable(False)
+            uiDict['envLightingFrame'].setManage(False)
             uiDict['physSkyFrame'].setManage(True)
             uiDict['physSkyFrame'].setEnable(True)
             pSkyModel = self.renderGlobalsNode.pSkyModel.get()
@@ -299,7 +302,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):                
                 with pm.frameLayout(label="Lights", collapsable=True, collapse=False):
-                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName = 'pathtracingSamples', uiType = 'int', displayName = 'GI Samples Multiplier', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'lights_areaSamplesMult', uiType = 'float', displayName = 'Light Samples Multiplier', uiDict=uiDict)
 #                         pass
@@ -381,9 +384,11 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             self.rendererTabUiDict['opti']['optiField'].setText(dirname[0])
 
     def editSun(self, *args):
-        if not self.rendererTabUiDict.has_key('environment'):
+        if not self.rendererTabUiDict.has_key('common'):
             return
-        uiDict = self.rendererTabUiDict['environment']    
+        
+        uiDict = self.rendererTabUiDict['common']    
+        
         if self.renderGlobalsNode.useSunLightConnection.get():
             if len(self.renderGlobalsNode.sunLightConnection.inputs()) > 0:
                 # maybe check the connection?

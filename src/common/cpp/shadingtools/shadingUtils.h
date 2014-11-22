@@ -6,7 +6,7 @@
 #include <maya/MDagPath.h>
 #include <maya/MIntArray.h>
 
-bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups);
+bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups, bool needsPerFaceInfo);
 bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup);
 bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId);
 

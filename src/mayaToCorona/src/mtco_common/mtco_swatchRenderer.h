@@ -22,18 +22,20 @@ public:
 
 		float distance;
 		Corona::BsdfComponents brdf;
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(1.f, 1.f, 1.f)));
+		
 		const Corona::Pos P = context.getPosition();
 		const Corona::Dir toLight = (LIGHT_POS - P).getNormalized(distance);
 		//if (false)
 		//	transport = context.shadowTransmission(LIGHT_POS, Corona::RAY_NORMAL);
 		//else
-		transport = Corona::Spectrum(1.0, 1.0, 1.0);
+		transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
 		float dummy;
 		float decay = 1.0;
 
 		context.forwardBsdfCos(toLight, brdf, dummy);
 		const float dotSurface = absDot(context.getShadingNormal(), toLight);
-		return brdf * (dotSurface * Corona::PI) * 2.0;
+		return brdf * diffuse * (dotSurface * Corona::PI) * 2.0;
 	}
 };
 

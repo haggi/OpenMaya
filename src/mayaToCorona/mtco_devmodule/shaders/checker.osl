@@ -22,6 +22,6 @@ shader checker (vector uvCoord = 0, vector color1 = 1, vector color2 = 0, float 
 	
 	C = colorBalance(C, colorGain, colorOffset);
 	outColor = C;	
-	if( alphaIsLuminance == 1)
-		outAlpha = luminance(color(outColor));
+	//if( alphaIsLuminance == 1)
+	outAlpha = luminance(color(outColor));
 }

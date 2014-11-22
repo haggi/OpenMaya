@@ -22,8 +22,8 @@ void CoronaRenderer::framebufferCallback()
 	if( this->context.core == NULL)
 		return;
 
-	//if(this->context.isCancelled)
-	//	return;
+	if(this->context.isCancelled)
+		return;
 
 	Corona::Pixel p = this->context.fb->getImageSize();
 	const Corona::String rstamp = "Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr";

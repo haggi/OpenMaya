@@ -84,10 +84,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
 {
 	int threadId = 0;
-	if (!this->isEnvMap)
-	{
-		int threadId = context.getThreadId();
-	}
+	threadId = context.getThreadId();
 	OSL::PerThreadInfo *thread_info = NULL;
 	if( this->oslRenderer->thread_info[threadId] == NULL)
 	{

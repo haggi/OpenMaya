@@ -1,14 +1,14 @@
 //Maya ASCII 2015ff05 scene
 //Name: simpleShadingNetwork.ma
-//Last modified: Tue, Oct 14, 2014 09:07:16 PM
+//Last modified: Sat, Nov 22, 2014 03:47:24 PM
 //Codeset: 1252
 requires maya "2015ff05";
-requires -nodeType "CoronaSurface" -nodeType "coronaGlobals" "mayatocorona" "0.29";
+requires -nodeType "CoronaSurface" -nodeType "coronaGlobals" "mayatocorona" "0.30";
 currentUnit -l centimeter -a degree -t film;
 fileInfo "application" "maya";
 fileInfo "product" "Maya 2015";
 fileInfo "version" "2015";
-fileInfo "cutIdentifier" "201408201531-928694-1";
+fileInfo "cutIdentifier" "201410051530-933320-1";
 fileInfo "osv" "Microsoft Windows 7 Business Edition, 64-bit Windows 7 Service Pack 1 (Build 7601)\n";
 createNode transform -s -n "persp";
 	setAttr ".v" no;
@@ -235,14 +235,17 @@ createNode shadingEngine -n "CoronaSurface1SG";
 	setAttr ".ro" yes;
 createNode materialInfo -n "materialInfo1";
 createNode CoronaSurface -n "Sphere1Mat";
-	setAttr ".fresnelIor" 5;
 	setAttr ".diffuse" -type "float3" 0 0 0 ;
+	setAttr ".reflectivityMultiplier" 1;
+	setAttr ".fresnelIor" 5;
 createNode shadingEngine -n "CoronaSurface2SG";
 	setAttr ".ihi" 0;
 	setAttr ".ro" yes;
 createNode materialInfo -n "materialInfo2";
 createNode CoronaSurface -n "Sphere2Mat";
 	setAttr ".diffuse" -type "float3" 0 0 0 ;
+	setAttr ".emissionColorMultiplier" 1;
+	setAttr ".emissionDisableSampling" yes;
 createNode shadingEngine -n "Sphere1Mat1SG";
 	setAttr ".ihi" 0;
 	setAttr ".ro" yes;
@@ -292,11 +295,6 @@ select -ne :defaultRenderGlobals;
 select -ne :defaultResolution;
 	setAttr ".pa" 1;
 	setAttr ".dar" 1.7777777910232544;
-select -ne :defaultColorMgtGlobals;
-	setAttr ".vtn" -type "string" "sRGB gamma";
-	setAttr ".wsn" -type "string" "scene-linear Rec 709/sRGB";
-	setAttr ".din" -type "string" "sRGB";
-	setAttr ".otn" -type "string" "sRGB gamma";
 select -ne :hardwareRenderGlobals;
 	setAttr ".ctrs" 256;
 	setAttr ".btrs" 512;
