@@ -1,45 +1,64 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-// Plugin enviromentPortal Shader Class //
+// Plugin CoronaLight Shader Class //
 
-
-// This class will create a new shader. Shaders are custom dependency
-// graph objects so we will derive this class from the basic DG node
-// type MPxNode
-//
-
-class enviromentPortal : public MPxNode
+class CoronaLight : public MPxNode
 {
 public:
-                    enviromentPortal();
-    virtual         ~enviromentPortal();
+                    CoronaLight();
+    virtual         ~CoronaLight();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );
     static  MStatus initialize();
 
-
-    // postConstructor:
-    // The postConstructor method allows us to call MPxNode member
-    // functions during initialization. Internally maya creates two
-    // objects when a user defined node is created, the internal MObject
-    // and the user derived object. The association between the these
-    // two objects is not made until after the MPxNode constructor is
-    // called. This implies that no MPxNode member function can be called
-    // from the MPxNode constructor. The postConstructor will get called
-    // immediately after the constructor when it is safe to call any
-    // MPxNode member function.
-    //
-
     virtual void    postConstructor();
 
-    static  MTypeId   id;  // The IFF type id
+    static  MTypeId   id;
 
 protected:
 
-//---------------------------- automatically created attributes start ------------------------------------
-//---------------------------- automatically created attributes end ------------------------------------
+	static    MObject opacity;
+	static    MObject opacityMultiplier;
+	static    MObject emissionMultiplier;
+	static    MObject volumeScatteringAlbedo;
+	static    MObject fresnelIor;
+	static    MObject roundCornersSamples;
+	static    MObject emissionSharpnessFakePoint;
+	static    MObject glassMode;
+	static    MObject attenuationColor;
+	static    MObject emissionSharpnessFake;
+	static    MObject reflectivity;
+	static    MObject reflectivityMultiplier;
+	static    MObject castsShadows;
+	static    MObject translucency;
+	static    MObject translucencyFraction;
+	static    MObject volumeEmissionColor;
+	static    MObject anisotropyRotation;
+	static    MObject reflectionGlossiness;
+	static    MObject volumeEmissionDist;
+	static    MObject roundCornersRadius;
+	static    MObject bgOverride;
+	static    MObject refractionGlossiness;
+	static    MObject diffuse;
+	static    MObject diffuseMultiplier;
+	static    MObject refractivity;
+	static    MObject refractivityMultiplier;
+//	static    MObject brdfType;
+	static    MObject emissionColor;
+	static    MObject shadowCatcherMode;
+	static    MObject anisotropy;
+	static    MObject volumeMeanCosine;
+	static    MObject refractionIndex;
+	static    MObject emissionDisableSampling;
+	static    MObject alphaMode;
+	static    MObject attenuationDist;
+	static    MObject volumeSSSMode;
+	static    MObject emissionGlossyness;
+	static    MObject emitLight;
+	
+	static    MObject iesProfile;
 
    // Translucence coefficient
    static MObject  aTranslucenceCoeff;
@@ -48,10 +67,10 @@ protected:
    static MObject  aDiffuseReflectivity;
 
    // Surface color
-   static MObject  aColor;
+   //static MObject  aColor;
 
    // Incandescence
-   static MObject  aIncandescence;
+   //static MObject  aIncandescence;
 
    // Surface transparency
    static MObject  aInTransparency;

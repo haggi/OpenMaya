@@ -267,6 +267,90 @@ shader_start:CoronaSurface
 	outatt:outColor:color
 shader_end
 
+shader_start:CoronaLight
+	inatt:opacity:color
+	inatt:emissionMultiplier:float
+	inatt:volumeScatteringAlbedo:color
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:reflectivity:color
+	inatt:castsShadows:bool
+	inatt:translucency:color
+	inatt:translucencyFraction:float
+	inatt:volumeEmissionColor:color
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeEmissionDist:float
+	inatt:roundCornersRadius:float
+	inatt:bgOverride:color
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
+	inatt:anisotropy:float
+	inatt:volumeMeanCosine:float
+	inatt:refractionIndex:float
+	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
+	inatt:attenuationDist:float
+	inatt:volumeSSSMode:bool
+	inatt:emissionGlossyness:float
+	inatt:emitLight:bool
+	inatt:normalCamera:vector
+	outatt:outColor:color
+shader_end
+
+shader_start:CoronaVolume
+	inatt:opacity:color
+	inatt:emissionMultiplier:float
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:reflectivity:color
+	inatt:castsShadows:bool
+	inatt:translucency:color
+	inatt:translucencyFraction:float
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeScatteringAlbedo:color
+	inatt:volumeEmissionColor:color
+	inatt:volumeEmissionDist:float
+	inatt:volumeSSSMode:bool
+	inatt:volumeMeanCosine:float
+	inatt:roundCornersRadius:float
+	inatt:bgOverride:color
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
+	inatt:anisotropy:float
+	inatt:refractionIndex:float
+	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
+	inatt:attenuationDist:float
+	inatt:normalCamera:vector
+	outatt:outColor:color
+shader_end
+
+shader_start:CoronaRaytype
+	inatt:baseMaterial:color
+	inatt:reflectMaterial:color
+	inatt:refractMaterial:color
+	inatt:directMaterial:color
+	outatt:outColor:color
+shader_end
+
 shader_start:OSLNode
 	inatt:color:color
 	inatt:outColor:color

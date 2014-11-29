@@ -104,8 +104,47 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 				return;
 
 			MObject surfaceShader = getConnectedInNode(shadingGroup, "surfaceShader");
-			Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(surfaceShader, obj);
-			Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+			// raytype shader is a special case. Here a material set gets different materials, so I have to call defineCoronaMaterial several times
+			MFnDependencyNode shaderMat(surfaceShader);
+			Corona::SharedPtr<Corona::IMaterial> base = NULL;
+			Corona::SharedPtr<Corona::IMaterial> reflect = NULL;
+			Corona::SharedPtr<Corona::IMaterial> refract = NULL;
+			Corona::SharedPtr<Corona::IMaterial> direct = NULL;
+			if (shaderMat.typeName() == "CoronaRaytype")
+			{
+				MPlug basePlug = shaderMat.findPlug("base");
+				MPlug reflectPlug = shaderMat.findPlug("reflect");
+				MPlug refractPlug = shaderMat.findPlug("refract");
+				MPlug directPlug = shaderMat.findPlug("direct");
+				if (basePlug.isConnected())
+				{
+					MObject inNode = getConnectedInNode(basePlug);
+					base = defineCoronaMaterial(inNode, NULL);
+				}
+				if (reflectPlug.isConnected())
+				{
+					MObject inNode = getConnectedInNode(reflectPlug);
+					reflect = defineCoronaMaterial(inNode, NULL);
+				}
+				if (refractPlug.isConnected())
+				{
+					MObject inNode = getConnectedInNode(refractPlug);
+					refract = defineCoronaMaterial(inNode, NULL);
+				}
+				if (directPlug.isConnected())
+				{
+					MObject inNode = getConnectedInNode(directPlug);
+					direct = defineCoronaMaterial(inNode, NULL);
+				}
+			}
+			else{
+				base = defineCoronaMaterial(surfaceShader, obj);
+			}
+
+			Corona::IMaterialSet ms = Corona::IMaterialSet(base);
+			ms.overrides.direct = direct;
+			ms.overrides.reflect = reflect;
+			ms.overrides.refract = refract;
 			setRenderStats(ms, obj);
 			obj->instance->addMaterial(ms);
 		}

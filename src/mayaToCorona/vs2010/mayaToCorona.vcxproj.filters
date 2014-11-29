@@ -242,6 +242,21 @@
     <ClCompile Include="..\src\Corona\CoronaImage.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaLightMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaVolumeMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaVolumeMaterialOverride.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaRaytypeMaterial.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -403,6 +418,21 @@
     <ClInclude Include="..\src\Corona\CoronaUtils.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaLightMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaVolumeMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaVolumeMaterialOverride.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaRaytypeMaterial.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\assemblyWorkflow.txt">
@@ -462,6 +492,12 @@
       <Filter>Source Files\shaders\xml</Filter>
     </Xml>
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaLight.xml">
+      <Filter>Source Files\shaders\xml</Filter>
+    </Xml>
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaVolume.xml">
       <Filter>Source Files\shaders\xml</Filter>
     </Xml>
   </ItemGroup>

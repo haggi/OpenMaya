@@ -60,28 +60,46 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("mtco_envPortal", label="Use as Environment Portal")
         self.addControl("mtco_shadowCatcherMode", label="Shadow Catcher Mode")
         self.endLayout()
+
+    def updateCameraTemplate(self, nodeName):
+        node = pm.PyNode(nodeName)
+        self.dimControl(node, "mtco_circularBlades", True)        
+        self.dimControl(node, "mtco_blades", True)        
+        self.dimControl(node, "mtco_bladeRotation", True)        
+        self.dimControl(node, "mtco_bokehBitmap", True)      
+        
+        if node.mtco_useBokeh.get():
+            if not node.mtco_circularBlades.get():
+                self.dimControl(node, "mtco_blades", False)        
+                self.dimControl(node, "mtco_bladeRotation", False)        
+                self.dimControl(node, "mtco_bokehBitmap", False)    
         
     def buildCameraTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_iso", label="Iso")
         self.addControl("mtco_shutterSpeed", label="Shutter Speed")
+        self.addSeparator()
+        self.addControl("mtco_useBokeh", label="Use Bokeh", changeCommand=self.updateCameraTemplate)
+        self.addSeparator() 
+        self.addControl("mtco_circularBlades", label="CircularBlades")
+        self.addSeparator() 
+        self.addControl("mtco_blades", label="Num Blades")
+        self.addControl("mtco_bladeRotation", label="Blade Rotation")
+        self.addSeparator() 
+        self.addControl("mtco_bokehBitmap", label="Bokeh Bitmap")
         self.endLayout()
         
     def buildCoronaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         if self.thisNode.type() == "camera":
-            log.debug("AECoronaNodeTemplate:build camera AE")            
-            self.beginLayout("Corona" ,collapse=1)
-            self.endLayout()
+            self.buildCameraTemplate(nodeName)
         if self.thisNode.type() == "areaLight":
             self.buildAreaLightTemplate(nodeName)
         if self.thisNode.type() == "directionalLight":
             self.buildDirLightTemplate(nodeName)
         if self.thisNode.type() == "displacementShader":
             self.buildDisplacementShaderTemplate(nodeName)
-        if self.thisNode.type() == "camera":
-            self.buildCameraTemplate(nodeName)
         if self.thisNode.type() == "bump2d":
             self.buildBum2dTemplate(nodeName)
         if self.thisNode.type() == "file":

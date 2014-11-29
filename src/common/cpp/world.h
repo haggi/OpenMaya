@@ -5,6 +5,7 @@
 #include <maya/MObject.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include <maya/MImage.h>
 #include <vector>
 
 
@@ -34,6 +35,7 @@ public:
 
 	MStringArray objectNames;
 	std::vector<void *> objectPtr;
+	MImage previousRenderedImage;
 
 	MStringArray shaderSearchPath;
 

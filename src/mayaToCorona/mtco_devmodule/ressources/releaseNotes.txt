@@ -1,3 +1,12 @@
+release 0.31
+- implemented lightShader
+- implemented volumeShader
+- implemented raytypeMaterial
+- added VP2.0 for light and volume shader
+- added bokeh for camera
+- adapted the primary/secondary GI solver settings
+- added file check for iesLight
+
 release 0.30
 - transparency in VP 2.0 fix #105
 - corrected normal mapping (I hope)

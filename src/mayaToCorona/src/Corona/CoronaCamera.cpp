@@ -56,6 +56,7 @@ void CoronaRenderer::defineCamera()
 		//Corona::AnimatedFloat fieldOfView(Corona::DEG_TO_RAD(45.f));
 		
 		Corona::CameraData cameraData;
+
 		//cameraData.type
 		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);
 		Corona::AnimatedFloat focalDist(focusDistance);
@@ -64,6 +65,34 @@ void CoronaRenderer::defineCamera()
 		cameraData.perspective.filmWidth = this->mtco_renderGlobals->toMillimeters(horizontalFilmAperture * 2.54f * 10.0f); //film width in mm 
 		if( dof && this->mtco_renderGlobals->doDof)
 			cameraData.perspective.useDof = true;
+
+		if (getBoolAttr("mtco_useBokeh", camera, false))
+		{
+			cameraData.perspective.bokeh.use = true;
+			cameraData.perspective.bokeh.blades = getIntAttr("mtco_blades", camera, 6);
+			cameraData.perspective.bokeh.bladesRotation = getIntAttr("mtco_bladeRotation", camera, 0.0);
+			MPlug bokehBitMapPlug = camera.findPlug("mtco_bokehBitmap");
+			if (!bokehBitMapPlug.isNull())
+			{
+				if (bokehBitMapPlug.isConnected())
+				{
+					MObject bitmapNode = getConnectedInNode(bokehBitMapPlug);
+					if (bitmapNode.hasFn(MFn::kFileTexture))
+					{
+						MFnDependencyNode bitMapFn(bitmapNode);
+						MPlug texNamePlug = bitMapFn.findPlug("fileTextureName");
+						if (!texNamePlug.isNull())
+						{
+							MString fileName = texNamePlug.asString();
+							logger.debug(MString("Found bokeh bitmap file: ") + fileName);
+							Corona::Bitmap<Corona::Rgb> bokehBitmap;
+							Corona::loadImage(fileName.asChar(), bokehBitmap);
+							cameraData.perspective.bokeh.customShape = bokehBitmap;
+						}
+					}
+				}
+			}
+		}
 
 		this->context.scene->getCamera() = cameraData; 
 	}

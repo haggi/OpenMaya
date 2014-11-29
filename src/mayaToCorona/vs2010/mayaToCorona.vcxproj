@@ -198,9 +198,14 @@
     <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\shaders\coronaLightMaterial.cpp" />
+    <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
+    <ClCompile Include="..\src\shaders\coronaRaytypeMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
+    <ClCompile Include="..\src\shaders\coronaVolumeMaterial.cpp" />
+    <ClCompile Include="..\src\shaders\coronaVolumeMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\TestShader.cpp" />
@@ -254,9 +259,14 @@
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
+    <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />
+    <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
+    <ClInclude Include="..\src\shaders\coronaRaytypeMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\coronaVolumeMaterial.h" />
+    <ClInclude Include="..\src\shaders\coronaVolumeMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\materialBase.h" />
     <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
     <ClInclude Include="..\src\shaders\TestShader.h" />
@@ -276,6 +286,7 @@
     <None Include="sourceCodeDocs\todo.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaLight.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\coronaLightAccum.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\coronaOutput.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\coronaCombiner.xml" />
@@ -284,6 +295,7 @@
     <Xml Include="..\mtco_devmodule\plug-ins\coronaPassThrough.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\coronaSpecular.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml" />
+    <Xml Include="..\mtco_devmodule\plug-ins\CoronaVolume.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

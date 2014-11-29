@@ -43,7 +43,7 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_VCM_MODE, this->mtco_renderGlobals->vcm_mode + 4); // only last two entries 4 + 5 are relevant
 	context.settings->set(Corona::PARAM_PPM_INITIAL_RADIUS, this->mtco_renderGlobals->ppm_initialRadius); 
 	context.settings->set(Corona::PARAM_BIDIR_DO_MIS, this->mtco_renderGlobals->bidir_doMis); 
-	context.settings->set(Corona::PARAM_PPM_PHOTONS_PER_ITER, this->mtco_renderGlobals->ppm_photonsPerIter); 
+	context.settings->set(Corona::PARAM_PPM_PHOTONS_PER_ITER, this->mtco_renderGlobals->ppm_photonsPerIter * 1000); 
 	context.settings->set(Corona::PARAM_PPM_ALPHA, this->mtco_renderGlobals->ppm_alpha);
 
 	context.settings->set(Corona::PARAM_MAX_SAMPLE_INTENSITY, this->mtco_renderGlobals->maxPtSampleIntensity);
@@ -76,13 +76,20 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_DO_SHADING, this->mtco_renderGlobals->doShading);
 
 	context.settings->set(Corona::PARAM_GI_PRIMARY_SOLVER, this->mtco_renderGlobals->gi_primarySolver);
-	context.settings->set(Corona::PARAM_GI_SECONDARY_SOLVER, this->mtco_renderGlobals->gi_secondarySolver);
+	int solver = this->mtco_renderGlobals->gi_secondarySolver;
+	if (solver == 2)
+		solver = 3;
+	context.settings->set(Corona::PARAM_GI_SECONDARY_SOLVER, solver);
 
 	context.settings->set(Corona::PARAM_GI_TO_AA_RATIO, this->mtco_renderGlobals->pathtracingSamples);
 	context.settings->set(Corona::PARAM_LIGHT_SAMPLES_MULT, this->mtco_renderGlobals->lights_areaSamplesMult);
 
 //	context.settings->set(Corona::PARAM_HDCACHE_LOAD, this->mtco_renderGlobals->gi_loadSecondary);
 	context.settings->set(Corona::PARAM_HDCACHE_SAVE, this->mtco_renderGlobals->gi_saveSecondary);
+	MFnDependencyNode globals(objectFromName("coronaGlobals"));
+	int precalcMode = 0;
+	getEnum(MString( "gi_hdCache_precalcMode"), globals, precalcMode);
+	context.settings->set(Corona::PARAM_HDCACHE_PRECALC_MODE, precalcMode);
 	context.settings->set(Corona::PARAM_HDCACHE_FILE, Corona::String(this->mtco_renderGlobals->gi_secondaryFile.asChar()));
 	context.settings->set(Corona::PARAM_HDCACHE_PRECOMP_DENSITY, this->mtco_renderGlobals->gi_hdCache_precompMult);
 	context.settings->set(Corona::PARAM_HDCACHE_INTERPOLATION_COUNT, this->mtco_renderGlobals->gi_hdCache_interpolationCount);
@@ -97,9 +104,7 @@ void CoronaRenderer::defineSettings()
 
 	context.settings->set(Corona::PARAM_COLORMAP_GAMMA, this->mtco_renderGlobals->colorMapping_gamma); 
 	context.settings->set(Corona::PARAM_COLORMAP_HIGHLIGHT_COMPRESSION, this->mtco_renderGlobals->colorMapping_highlightCompression); 
-
-	if(  this->mtco_renderGlobals->colorMapping_useContrast)
-		context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, this->mtco_renderGlobals->colorMapping_contrast); 
+	context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, this->mtco_renderGlobals->colorMapping_contrast); 
 
 	context.settings->set(Corona::PARAM_COLORMAP_COLOR_TEMP, this->mtco_renderGlobals->colorMapping_colorTemperature);
 	context.settings->set(Corona::PARAM_COLORMAP_SIMPLE_EXPOSURE, this->mtco_renderGlobals->colorMapping_simpleExposure);

@@ -1,3 +1,4 @@
+#include <fstream>
 #include "CoronaShaders.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/material.h"
@@ -160,15 +161,15 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 		// ---- emission ----
 		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
-		bool disableSampling = false;
-		getBool("emissionDisableSampling", depFn, disableSampling);
-		data.emission.disableSampling = disableSampling;
-		bool sharpnessFake = false;
-		getBool("emissionSharpnessFake", depFn, sharpnessFake);
-		data.emission.sharpnessFake = sharpnessFake;
-		MVector point(0, 0, 0);
-		getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
-		data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
+		//bool disableSampling = false;
+		//getBool("emissionDisableSampling", depFn, disableSampling);
+		data.emission.disableSampling = true; // always disable sampling because we use it only in light shaders
+		//bool sharpnessFake = false;
+		//getBool("emissionSharpnessFake", depFn, sharpnessFake);
+		//data.emission.sharpnessFake = sharpnessFake;
+		//MVector point(0, 0, 0);
+		//getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
+		//data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
 
 
 		// ---- alpha mode ----
@@ -258,6 +259,133 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 
 		}
+
+		return data.createMaterial();
+	}
+
+	if (depFn.typeName() == "CoronaLight")
+	{
+		Corona::NativeMtlData data;
+		// ---- emission ----
+		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
+		//bool disableSampling = false;
+		//getBool("emissionDisableSampling", depFn, disableSampling);
+
+		// if the CoronaLight shader is not supposed to emit light, it should be used as something like a self illuminated BG
+		// so we turn off visible in GI and disableSampling. 
+		if (getBoolAttr("emitLight", depFn, true))
+		{
+			data.emission.disableSampling = false;
+			if (obj != NULL)
+			{
+				if (!getBoolAttr("mtco_visibleInGI", depFn, true))
+				{
+					MFnDependencyNode geoDN(obj->mobject);
+					MPlug giPlug = geoDN.findPlug("mtco_visibleInGI");
+					giPlug.setBool(true);
+				}
+			}
+		}
+		else
+		{
+			data.emission.disableSampling = true;
+			if (obj != NULL)
+			{
+				//getBoolAttr("mtco_visibleInGI", depFn, true);
+				MFnDependencyNode geoDN(obj->mobject);
+				MPlug giPlug = geoDN.findPlug("mtco_visibleInGI");
+				giPlug.setBool(false);
+			}
+		}
+		// setup all object specific data which needs a mayaobject
+		if (obj != NULL)
+		{
+			bool sharpnessFake = false;
+			getBool("emissionSharpnessFake", depFn, sharpnessFake);
+			data.emission.sharpnessFake = sharpnessFake;
+			//MVector point(0, 0, 0);
+			MMatrix centerM = obj->transformMatrices[0];
+			MPoint p(centerM[3][0], centerM[3][1], centerM[3][2]);
+			//getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
+			data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(p.x, p.y, p.z));
+
+			// ---- ies profiles -----
+			MStatus stat;
+			MPlug iesPlug = depFn.findPlug("iesProfile", &stat);
+			if (stat)
+			{
+				//data.emission.gonioDiagram
+				MString iesFile = iesPlug.asString();
+				if (iesFile.length() > 4)
+				{
+					std::ifstream iesFileObject;
+					iesFileObject.open(iesFile.asChar());
+					if (!(iesFileObject.is_open() && iesFileObject.good()))
+					{
+						iesFileObject.close();
+					}
+					else{
+						iesFileObject.close();
+
+						Corona::IesParser iesParser;
+						Corona::FileReader input;
+						Corona::String fn(iesFile.asChar());
+						input.open(fn);
+						if (!input.failed())
+						{
+
+							try {
+
+								const double rm[4][4] = {
+									{ 1.0, 0.0, 0.0, 0.0 },
+									{ 0.0, 0.0, 1.0, 0.0 },
+									{ 0.0, -1.0, 0.0, 0.0 },
+									{ 0.0, 0.0, 0.0, 1.0 }
+								};
+								MMatrix zup(rm);
+
+								MMatrix tm = zup * obj->transformMatrices[0];
+								Corona::AnimatedAffineTm atm;
+								setAnimatedTransformationMatrix(atm, tm);
+
+								const Corona::IesLight light = iesParser.parseIesLight(input);
+								data.emission.gonioDiagram = light.distribution;
+								Corona::Matrix33 m(atm[0].extractRotation());
+
+								data.emission.emissionFrame = Corona::AnimatedMatrix33(m);
+
+							}
+							catch (Corona::Exception& ex) {
+								logger.error(MString(ex.getMessage().cStr()));
+							}
+						}
+						else{
+							logger.error(MString("Unable to read ies file .") + iesFile);
+						}
+					}
+				}
+			}
+		}
+
+		return data.createMaterial();
+	}
+
+	if (depFn.typeName() == "CoronaVolume")
+	{
+		Corona::NativeMtlData data;
+		// --- volume ----
+		data.opacity = defineAttribute(MString("opacity"), depFn, network);
+
+		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network);
+		data.volume.attenuationDist = defineFloat(MString("attenuationDist"), depFn);
+		data.volume.attenuationDist *= globalScaleFactor;
+		data.volume.emissionColor = defineColor(MString("volumeEmissionColor"), depFn);
+		data.volume.emissionDist = defineFloat(MString("volumeEmissionDist"), depFn);
+
+		//// -- volume sss --
+		data.volume.meanCosine = getFloatAttr("volumeMeanCosine", depFn, 0.0f);
+		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network);
+		data.volume.sssMode = getBoolAttr("volumeSSSMode", depFn, false);
 
 		return data.createMaterial();
 	}

@@ -36,7 +36,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         return [(i, v) for i, v in enumerate(attr.getEnums().keys())]
 
     def updateTest(self, dummy=None):
-        print "UpdateTest", dummy             
+        pass
 
     def updateEnvironment(self, dummy=None):
         pass
@@ -48,7 +48,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.OpenMayaCommonGlobalsUpdateTab()            
         
     def CoronaRendererCreateTab(self):
-        print "CoronaRendererCreateTab()"
         log.debug("CoronaRendererCreateTab()")
         self.createGlobalsNode()
         parentForm = pm.setParent(query=True)
@@ -65,28 +64,32 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='renderer', uiType='enum', displayName='Renderer', default='Progressive', data='Progressive:Bucket', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName='progressive_maxPasses', uiType='int', displayName='Maxpasses', default='50', data='minmax:0:9999', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='progressive_timeLimit', uiType='int', displayName='Timelimit', default='60', uiDict=uiDict)
-                        # self.addRenderGlobalsUIElement(attName='progressive_recalculateEvery', uiType='int', displayName='Recalculate Every', default='0', data='minmax:0:999', uiDict=uiDict)
-                        # self.addRenderGlobalsUIElement(attName='progressive_adaptivity', uiType='float', displayName='Adaptivity', default='0.0', data='minmax:0.0:99.0', uiDict=uiDict)
+                        with pm.columnLayout(self.rendererName + 'ColumnLayoutPRO', adjustableColumn=True, width=400) as uiDict['progressiveCL'] :                        
+                            self.addRenderGlobalsUIElement(attName='progressive_maxPasses', uiType='int', displayName='Maxpasses', default='50', data='minmax:0:9999', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='progressive_timeLimit', uiType='int', displayName='Timelimit', default='60', uiDict=uiDict)
+                            # self.addRenderGlobalsUIElement(attName='progressive_recalculateEvery', uiType='int', displayName='Recalculate Every', default='0', data='minmax:0:999', uiDict=uiDict)
+                            # self.addRenderGlobalsUIElement(attName='progressive_adaptivity', uiType='float', displayName='Adaptivity', default='0.0', data='minmax:0.0:99.0', uiDict=uiDict)
+                        #pm.separator()
+                        with pm.columnLayout(self.rendererName + 'ColumnLayoutBUCK', adjustableColumn=True, width=400) as uiDict['bucketCL'] :                        
+                            self.addRenderGlobalsUIElement(attName='image_bucketSize', uiType='int', displayName='Tile Size', default=64, uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='buckets_initialSamples', uiType='int', displayName='Initialsamples', default='1', data='minmax:1:999', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='buckets_adaptiveSteps', uiType='int', displayName='Adaptivesteps', default='2', data='minmax:1:10', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='buckets_adaptiveThreshold', uiType='float', displayName='Adaptive Threshold', default='0.03', data='minmax:0.001:1.0', uiDict=uiDict)
+                        #pm.separator()
+                        with pm.columnLayout(self.rendererName + 'ColumnLayoutVCM', adjustableColumn=True, width=400) as uiDict['VCMCL'] :                        
+                            self.addRenderGlobalsUIElement(attName='vcm_mode', uiType='enum', displayName='VCM Mode', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='bidir_doMis', uiType='bool', displayName='Use MIS', default='true', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='ppm_photonsPerIter', uiType='int', displayName='Photons Per Iteration(k)', default='5000', data='minmax:1000:99000000', uiDict=uiDict)
+                            # self.addRenderGlobalsUIElement(attName = 'ppm_samplesPerIter', uiType = 'int', displayName = 'Ppm_samplesperiter', default='1', data='minmax:1:50', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='ppm_initialRadius', uiType='float', displayName='Initial Radius', default='2.0', data='minmax:0.0001:200.0', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='ppm_alpha', uiType='float', displayName='Alpha (radius reduction)', default='0.666', data='minmax:0.01:1.0', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName='image_bucketSize', uiType='int', displayName='Tile Size', default=64, uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='buckets_initialSamples', uiType='int', displayName='Initialsamples', default='1', data='minmax:1:999', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='buckets_adaptiveSteps', uiType='int', displayName='Adaptivesteps', default='2', data='minmax:1:10', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='buckets_adaptiveThreshold', uiType='float', displayName='Adaptive Threshold', default='0.03', data='minmax:0.001:1.0', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName='vcm_mode', uiType='enum', displayName='VCM Mode', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='bidir_doMis', uiType='bool', displayName='Use MIS', default='true', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='ppm_photonsPerIter', uiType='int', displayName='Photons Per Iteration', default='5000000', data='minmax:1000:99000000', uiDict=uiDict)
-# self.addRenderGlobalsUIElement(attName = 'ppm_samplesPerIter', uiType = 'int', displayName = 'Ppm_samplesperiter', default='1', data='minmax:1:50', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='ppm_initialRadius', uiType='float', displayName='Initial Radius', default='2.0', data='minmax:0.0001:200.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='ppm_alpha', uiType='float', displayName='Alpha (radius reduction)', default='0.666', data='minmax:0.01:1.0', uiDict=uiDict)
-                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'pathtracingSamples', uiType = 'int', displayName = 'GI/AA balance', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'lights_areaSamplesMult', uiType = 'float', displayName = 'Light Samples Multiplier', uiDict=uiDict)                        
                         self.addRenderGlobalsUIElement(attName='maxPtSampleIntensity', uiType='float', displayName='Max Sample Intensity', default='0.0', data='minmax:0.0:99999.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads', default=8, uiDict=uiDict)
 
                 with pm.frameLayout(label="Filter", collapsable=True, collapse=True):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                    with pm.columnLayout(self.rendererName + 'ColumnLayoutFI', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='filtertype', uiType='enum', displayName='Imagefilter', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='imagefilter_width', uiType='float', displayName='Filter Width', default='1.5', data='minmax:1.0:64', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='imagefilter_blurring', uiType='float', displayName='Blur', default='0.5', data='minmax:0.0:1.0', uiDict=uiDict)
@@ -117,7 +120,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_simpleExposure', uiType = 'float', displayName = 'Simple Exposure', default='1.0', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_useContrast', uiType = 'bool', displayName = 'Use Contrast', default='false', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
 
                 with pm.frameLayout(label="Environment", collapsable=True, collapse=True):
@@ -169,6 +171,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_inFile', uiType = 'bool', displayName = 'Save File with Stamp', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads', default=8, uiDict=uiDict)
                     
 
 # self.addRenderGlobalsUIElement(attName='adaptiveSampling', uiType='bool', displayName='Adaptive Sampling:', default='True', uiDict=uiDict)
@@ -205,7 +208,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.CoronaRendererUpdateTab()
 
     def CoronaRendererUpdateTab(self, dummy=None):
-        print "Update corona renderer tab"
+        log.debug("Update corona renderer tab")
         self.createGlobalsNode()
         self.updateEnvironment()
 
@@ -216,32 +219,46 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
         # progressive/bucket
         renderer = self.renderGlobalsNode.renderer.get()
-        for key in uiDict:
-            if key.startswith("progressive_"):                
-                uiDict[key].setEnable(False)
-            if key.startswith("buckets_"):                
-                uiDict[key].setEnable(False)
-            if key in ["image_bucketSize", "ppm_initialRadius", "ppm_photonsPerIter", "ppm_initialRadius", "ppm_alpha"]:                
-                uiDict[key].setEnable(False)
-            if key.startswith("vcm_"):      
-                uiDict[key].setEnable(False)
-              
-        for key in uiDict:
-            if renderer == 0:  # progressive
-                if key.startswith("progressive_"):                
-                    uiDict[key].setEnable(True)
-            if renderer == 1:  # bucket
-                if key.startswith("buckets_"):                
-                    uiDict[key].setEnable(True)
-                if key == "image_bucketSize":                
-                    uiDict[key].setEnable(True)
-            if renderer == 2:  # vcm
-                if key.startswith("vcm_"):                
-                    uiDict[key].setEnable(True)
-                if key == "ppm_initialRadius":                
-                    uiDict[key].setEnable(True)
-                if key in ["ppm_initialRadius", "ppm_photonsPerIter", "ppm_initialRadius", "ppm_alpha"]:                
-                    uiDict[key].setEnable(True)
+        
+        if renderer == 0:
+            uiDict['progressiveCL'].setManage(True)
+            uiDict['bucketCL'].setManage(False)
+            uiDict['VCMCL'].setManage(False)
+        if renderer == 1:
+            uiDict['progressiveCL'].setManage(False)
+            uiDict['bucketCL'].setManage(True)
+            uiDict['VCMCL'].setManage(False)
+        if renderer == 2:
+            uiDict['progressiveCL'].setManage(True)
+            uiDict['bucketCL'].setManage(False)
+            uiDict['VCMCL'].setManage(True)
+        
+#         for key in uiDict:
+#             if key.startswith("progressive_"):                
+#                 uiDict[key].setEnable(False)
+#             if key.startswith("buckets_"):                
+#                 uiDict[key].setEnable(False)
+#             if key in ["image_bucketSize", "ppm_initialRadius", "ppm_photonsPerIter", "ppm_initialRadius", "ppm_alpha"]:                
+#                 uiDict[key].setEnable(False)
+#             if key.startswith("vcm_"):      
+#                 uiDict[key].setEnable(False)
+#               
+#         for key in uiDict:
+#             if renderer == 0:  # progressive
+#                 if key.startswith("progressive_"):                
+#                     uiDict[key].setEnable(True)
+#             if renderer == 1:  # bucket
+#                 if key.startswith("buckets_"):                
+#                     uiDict[key].setEnable(True)
+#                 if key == "image_bucketSize":                
+#                     uiDict[key].setEnable(True)
+#             if renderer == 2:  # vcm
+#                 if key.startswith("vcm_"):                
+#                     uiDict[key].setEnable(True)
+#                 if key == "ppm_initialRadius":                
+#                     uiDict[key].setEnable(True)
+#                 if key in ["ppm_initialRadius", "ppm_photonsPerIter", "ppm_initialRadius", "ppm_alpha"]:                
+#                     uiDict[key].setEnable(True)
         
         uiDict['displace_maxWorldSize'].setEnable(False)
         uiDict['displace_maxProjectSize'].setEnable(False)
@@ -249,10 +266,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             uiDict['displace_maxProjectSize'].setEnable(True)
         else:
             uiDict['displace_maxWorldSize'].setEnable(True)
-
-        uiDict['colorMapping_contrast'].setEnable(False)
-        if self.renderGlobalsNode.colorMapping_useContrast.get():
-            uiDict['colorMapping_contrast'].setEnable(True)
         
         uiDict['colorMapping_simpleExposure'].setEnable(False)
         if self.renderGlobalsNode.colorMapping_useSimpleExposure.get():
@@ -263,7 +276,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             uiDict['renderstamp_inFile'].setEnable(True)
             
         bgType = self.renderGlobalsNode.bgType.get()
-        print "BG Type", bgType
         if bgType == 0: # color/image
             uiDict['envLightingFrame'].setEnable(True)
             uiDict['envLightingFrame'].setManage(True)
@@ -291,7 +303,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         log.debug("CoronaGiCreateTab()")
         tabname = "gi"
         self.createGlobalsNode()
-        parentForm = pm.setParent(query=True)        
+        parentForm = pm.setParent(query=True) 
+               
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         scLo = self.rendererName + "ScrollLayout"
         if self.rendererTabUiDict.has_key(tabname):
@@ -300,11 +313,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         self.rendererTabUiDict[tabname] = uiDict
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0):
-            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):                
-                with pm.frameLayout(label="Lights", collapsable=True, collapse=False):
-                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName = 'pathtracingSamples', uiType = 'int', displayName = 'GI Samples Multiplier', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'lights_areaSamplesMult', uiType = 'float', displayName = 'Light Samples Multiplier', uiDict=uiDict)
+            with pm.columnLayout(self.rendererName + "ColumnLayoutGI", adjustableColumn=True, width=400) as uiDict['giCLout']:                
+#                with pm.frameLayout(label="Lights", collapsable=True, collapse=False):
+#                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
 #                         pass
 # #                         self.addRenderGlobalsUIElement(attName = 'lights_solver', uiType = 'enum', displayName = 'Lights_solver', default='Combined', data='Combined:Photon', uiDict=uiDict)
 # #                         self.addRenderGlobalsUIElement(attName = 'gi_pathtracing_directMode', uiType = 'enum', displayName = 'Sampling Mode', default='Mis', data='Sample_lights:Mis', uiDict=uiDict)
@@ -319,9 +330,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         # self.addRenderGlobalsUIElement(attName='gi_ic_hemisphereSubdiv', uiType='float', displayName='Hemi Subdiv', default='7', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
                 with pm.frameLayout(label="Secondary GI ", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName='gi_secondaryFile', uiType='string', displayName='HD Cache File', default='"c:/secondarygi.dat"', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Saves HD Cache', default='false', uiDict=uiDict)
-#                        self.addRenderGlobalsUIElement(attName='gi_loadSecondary', uiType = 'bool', displayName = 'Load Secondary GI', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_precompMult', uiType = 'float', displayName = 'Precom Density', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_interpolationCount', uiType = 'int', displayName = 'Interpolation Count', default='3', data='1:64', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'gi_hdCache_ptSamples', uiType = 'int', displayName = 'Record Quality', default='256', data='minmax:1:4096', uiDict=uiDict)
@@ -334,6 +342,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                                 self.addRenderGlobalsUIElement(attName = 'gi_hdCache_dirSensitivity', uiType = 'float', displayName = 'Direction', default='2.0', data='minmax:0.001:100.0', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName = 'gi_hdCache_posSensitivity', uiType = 'float', displayName = 'Position', default='20.0', data='minmax:0.0:100.0', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName = 'gi_hdCache_normalSensitivity', uiType = 'float', displayName = 'Normal', default='3.0', data='minmax:0.0:10.0', uiDict=uiDict)
+                        with pm.frameLayout(label="Load/Save", collapsable=True, collapse=False):
+                            with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                                self.addRenderGlobalsUIElement(attName='gi_hdCache_precalcMode', uiType='enum', displayName='Precalc Mode', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Save Cache After Render', default='false', uiDict=uiDict)
+                                self.addRenderGlobalsUIElement(attName='gi_secondaryFile', uiType='string', displayName='HD Cache File', default='"c:/secondarygi.dat"', uiDict=uiDict)
+
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_incrementalBuild', uiType = 'bool', displayName = 'Gi_ic_incrementalbuild', default='false', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_incrementalFilename', uiType = 'string', displayName = 'Gi_ic_incrementalfilename', default='"incrementalic.dat"', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_hemisphereSubdiv', uiType = 'int', displayName = 'Gi_ic_hemispheresubdiv', default='7', data='minmax:1:100', uiDict=uiDict)
@@ -368,7 +382,10 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def CoronaGiUpdateTab(self):
         log.debug("CoronaGiUpdateTab()")
-
+        self.createGlobalsNode()
+        if not self.rendererTabUiDict.has_key('gi'):
+            return        
+        uiDict = self.rendererTabUiDict['gi']    
 
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
@@ -494,6 +511,15 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         """
         pm.addExtension(nodeType="camera", longName="mtco_iso", attributeType="float", defaultValue=100.0)
         pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0, minValue=0.001, softMaxValue=2048.0)
+        pm.addExtension(nodeType="camera", longName="mtco_useBokeh", attributeType="bool", defaultValue=False)
+        pm.addExtension(nodeType="camera", longName="mtco_circularBlades", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="camera", longName="mtco_blades", attributeType="long", defaultValue=6)
+        pm.addExtension(nodeType="camera", longName="mtco_bladeRotation", attributeType="float", defaultValue=0.0)
+        pm.addExtension( nodeType="camera", longName="mtco_bokehBitmap", usedAsColor=True, attributeType='float3')
+        pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapR', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )
+        pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapG', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )
+        pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapB', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )  
+        
         
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue=1.0)
@@ -553,7 +579,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
         self.removeLogFile()
-        print "renderProcedure", width, height, doShadows, doGlow, camera, options
+        log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options)
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
@@ -571,7 +597,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True
         log.debug("startIprRenderProcedure")
-        print "startIprRenderProcedure", editor, resolutionX, resolutionY, camera
+        log.debug("startIprRenderProcedure {0} {1} {2} {3}".format( editor, resolutionX, resolutionY, camera)
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()

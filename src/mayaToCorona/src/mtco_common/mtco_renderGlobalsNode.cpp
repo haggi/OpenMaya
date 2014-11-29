@@ -72,6 +72,8 @@ MObject MayaToCoronaGlobals::gi_ic_searchStructure;
 MObject MayaToCoronaGlobals::gi_ic_relaxedInterpolation;
 MObject MayaToCoronaGlobals::gi_ic_vizualization;
 MObject MayaToCoronaGlobals::gi_ic_minInterpSamples;
+MObject MayaToCoronaGlobals::gi_hdCache_doSaveAfterRender;
+MObject MayaToCoronaGlobals::gi_hdCache_precalcMode;
 MObject MayaToCoronaGlobals::gi_hdCache_precompMult;
 MObject MayaToCoronaGlobals::gi_hdCache_interpolationCount;
 MObject MayaToCoronaGlobals::gi_hdCache_dirSensitivity;
@@ -178,7 +180,11 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 //	------------- automatically created attributes start ----------- // 
 
-	exportOnly = nAttr.create("exportOnly", "exportOnly",  MFnNumericData::kBoolean, false);
+	
+	gi_hdCache_doSaveAfterRender = nAttr.create("gi_hdCache_doSaveAfterRender", "gi_hdCache_doSaveAfterRender", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(exportOnly));
+
+	exportOnly = nAttr.create("exportOnly", "exportOnly", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportOnly ));
 
 	gi_saveSecondary = nAttr.create("gi_saveSecondary", "gi_saveSecondary",  MFnNumericData::kBoolean, false);
@@ -199,6 +205,12 @@ MStatus	MayaToCoronaGlobals::initialize()
 	doAa = nAttr.create("doAa", "doAa",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( doAa ));
 
+	gi_hdCache_precalcMode = eAttr.create("gi_hdCache_precalcMode", "gi_hdCache_precalcMode", 0, &stat);
+	stat = eAttr.addField("Rebuild", 0);
+	stat = eAttr.addField("Load", 1);
+	stat = eAttr.addField("Append", 2);
+	CHECK_MSTATUS(addAttribute(gi_hdCache_precalcMode));
+
 	renderer = eAttr.create("renderer", "renderer", 0, &stat);
 	stat = eAttr.addField( "Progressive", 0 );
 	stat = eAttr.addField( "Bucket", 1 );
@@ -214,19 +226,19 @@ MStatus	MayaToCoronaGlobals::initialize()
 	gi_primarySolver = eAttr.create("gi_primarySolver", "gi_primarySolver", 1, &stat);
 	stat = eAttr.addField( "None", 0 );
 	stat = eAttr.addField( "Pathtracing", 1 );
-	stat = eAttr.addField( "Photon Map", 2 );
-	stat = eAttr.addField( "HD Cache", 3 );
-	stat = eAttr.addField( "VPL", 4 );
-	stat = eAttr.addField( "Irradiance Cache", 5 );
+	//stat = eAttr.addField( "Photon Map", 2 );
+	//stat = eAttr.addField( "HD Cache", 3 );
+	//stat = eAttr.addField( "VPL", 4 );
+	//stat = eAttr.addField( "Irradiance Cache", 5 );
 	CHECK_MSTATUS(addAttribute( gi_primarySolver ));
 
-	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 3, &stat);
+	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 2, &stat);
 	stat = eAttr.addField( "None", 0 );
 	stat = eAttr.addField( "Pathtracing", 1 );
-	stat = eAttr.addField( "Photon Map", 2 );
-	stat = eAttr.addField( "HD Cache", 3 );
-	stat = eAttr.addField( "VPL", 4 );
-	stat = eAttr.addField( "Irradiance Cache", 5 );
+	stat = eAttr.addField( "HD Cache", 2 ); // orig place is 3
+	//stat = eAttr.addField( "Photon Map", 3 );
+	//stat = eAttr.addField( "VPL", 4 );
+	//stat = eAttr.addField( "Irradiance Cache", 5 );
 	CHECK_MSTATUS(addAttribute( gi_secondarySolver ));
 
 	lights_solver = eAttr.create("lights_solver", "lights_solver", 0, &stat);

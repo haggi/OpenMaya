@@ -1,5 +1,5 @@
-#ifndef enviromentPortalOverride_H
-#define enviromentPortalOverride_H
+#ifndef LightMaterialOverride_H
+#define LightMaterialOverride_H
 
 //-
 // ===========================================================================
@@ -19,25 +19,19 @@
 
 #include <maya/MPxSurfaceShadingNodeOverride.h>
 
-class enviromentPortalOverride : public MHWRender::MPxSurfaceShadingNodeOverride
+class LightMaterialOverride : public MHWRender::MPxSurfaceShadingNodeOverride
 {
 public:
 	static MHWRender::MPxSurfaceShadingNodeOverride* creator(const MObject& obj);
 
-	virtual ~enviromentPortalOverride();
+	virtual ~LightMaterialOverride();
 
 	virtual MHWRender::DrawAPI supportedDrawAPIs() const;
-
 	virtual MString fragmentName() const;
-	virtual void getCustomMappings(
-		MHWRender::MAttributeParameterMappingList& mappings);
-
 	virtual MString primaryColorParameter() const;
-	virtual MString transparencyParameter() const;
-	virtual MString bumpAttribute() const;
 
 private:
-	enviromentPortalOverride(const MObject& obj);
+	LightMaterialOverride(const MObject& obj);
 };
 
-#endif // _enviromentPortalOverride
+#endif // _LightMaterialOverride

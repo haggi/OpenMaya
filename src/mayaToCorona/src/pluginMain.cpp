@@ -13,6 +13,11 @@
 
 #include "swatchesRenderer\swatchRenderer.h"
 
+#include "shaders/CoronaRaytypeMaterial.h"
+#include "shaders/CoronaLightMaterial.h"
+#include "shaders/CoronaVolumeMaterial.h"
+#include "shaders/coronaLightMaterialOverride.h"
+#include "shaders/coronaVolumeMaterialOverride.h"
 #include "shaders/CoronaSurfaceMaterial.h"
 #include "shaders/CoronaSurfaceMaterialOverride.h"
 #include "shaders/coronaOSLNode.h"
@@ -31,15 +36,28 @@ static const MString CoronaSurfacesRenderNodeClassification("rendernode/corona/s
 //static const MString CoronaSurfacesFullClassification("corona/material:shader/surface:" + CoronaSurfacesDrawDBClassification + swatchFullName + ":" + CoronaSurfacesRenderNodeClassification);
 static const MString CoronaSurfacesFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaSurfacesDrawDBClassification);
 
+static const MString CoronaLightRenderNodeClassification("rendernode/corona/shader/surface");
+static const MString CoronaLightDrawDBClassification("drawdb/shader/surface/CoronaLight");
+static const MString CoronaLightFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaLightDrawDBClassification);
+
+static const MString CoronaVolumeRenderNodeClassification("rendernode/corona/shader/volume");
+static const MString CoronaVolumeDrawDBClassification("drawdb/shader/surface/CoronaVolume");
+static const MString CoronaVolumeFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaVolumeDrawDBClassification);
+
 static const MString CoronaOSLRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaOSLDrawDBClassification("drawdb/shader/surface/CoronaOSL");
 static const MString CoronaOSLFullClassification("corona/utility:shader/utility:" + CoronaOSLDrawDBClassification);
+
+static const MString CoronaRaytypeRegistrantId("CoronaSurfacePlugin");
+static const MString CoronaRaytypeDrawDBClassification("drawdb/shader/surface/CoronaRaytype");
+static const MString CoronaRaytypeFullClassification("shader/surface:corona/material:" + CoronaRaytypeDrawDBClassification);
+
 
 static const MString TestShaderClassification("shader/surface:");
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.30"
+#define VERSION "0.31"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -50,10 +68,15 @@ MStatus initializePlugin( MObject obj )
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 
 #ifdef HAS_OVERRIDE
-	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId,CoronaSurfaceOverride::creator));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId, CoronaSurfaceOverride::creator));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaLightDrawDBClassification, CoronaSurfacesRegistrantId, LightMaterialOverride::creator));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaVolumeDrawDBClassification, CoronaSurfacesRegistrantId, VolumeMaterialOverride::creator));
 #endif
-	CHECK_MSTATUS( plugin.registerNode( "CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification ));
-	CHECK_MSTATUS( plugin.registerNode( "CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification ));
+	CHECK_MSTATUS(plugin.registerNode("CoronaVolume", CoronaVolume::id, CoronaVolume::creator, CoronaVolume::initialize, MPxNode::kDependNode, &CoronaVolumeFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaLight", CoronaLight::id, CoronaLight::creator, CoronaLight::initialize, MPxNode::kDependNode, &CoronaLightFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaRaytype", CoronaRaytype::id, CoronaRaytype::creator, CoronaRaytype::initialize, MPxNode::kDependNode, &CoronaRaytypeFullClassification));
 
 	CHECK_MSTATUS(plugin.registerNode("TestShader", TestShader::id, TestShader::creator, TestShader::initialize, MPxNode::kDependNode, &TestShaderClassification));
 
@@ -110,9 +133,14 @@ MStatus uninitializePlugin( MObject obj)
 	
 #ifdef HAS_OVERRIDE
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaLightDrawDBClassification, CoronaSurfacesRegistrantId));
+	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaVolumeDrawDBClassification, CoronaSurfacesRegistrantId));
 #endif
-	CHECK_MSTATUS( plugin.deregisterNode( CoronaSurface::id ) );
-	CHECK_MSTATUS( plugin.deregisterNode( OSLNode::id ) );
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaLight::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaVolume::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaSurface::id));
+	CHECK_MSTATUS(plugin.deregisterNode(OSLNode::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaRaytype::id));
 
 	CHECK_MSTATUS(plugin.deregisterNode(TestShader::id));
 
