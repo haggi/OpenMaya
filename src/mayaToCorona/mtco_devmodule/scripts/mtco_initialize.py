@@ -539,6 +539,11 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         # gamma
         pm.addExtension( nodeType='file', longName='fromSRGB', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='file', longName='toSRGB', attributeType='bool', defaultValue=False) 
+        pm.addExtension( nodeType='file', longName='textureFilter', attributeType='enum', enumName="SmartCubic:Cubic:Triangle:Box", defaultValue = 0.0)
+        pm.addExtension( nodeType='file', longName='textureBlur', attributeType='float', defaultValue=0.0)
+        pm.addExtension( nodeType='file', longName='textureSblur', attributeType='float', defaultValue=0.0)
+        pm.addExtension( nodeType='file', longName='textureTblur', attributeType='float', defaultValue=0.0)
+        pm.addExtension( nodeType='file', longName='textureFilterWidth', attributeType='float', defaultValue=1.0)
 
         #mesh
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
@@ -579,7 +584,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
         self.removeLogFile()
-        log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options)
+        log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options))
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()
@@ -597,7 +602,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         self.ipr_isrunning = True
         log.debug("startIprRenderProcedure")
-        log.debug("startIprRenderProcedure {0} {1} {2} {3}".format( editor, resolutionX, resolutionY, camera)
+        log.debug("startIprRenderProcedure {0} {1} {2} {3}".format( editor, resolutionX, resolutionY, camera))
         self.createGlobalsNode()    
         self.preRenderProcedure()
         self.setImageName()

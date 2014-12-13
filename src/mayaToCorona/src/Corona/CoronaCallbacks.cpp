@@ -1,4 +1,6 @@
 #include <maya/MGlobal.h>
+#include <maya/MImage.h>
+#include "world.h"
 #include "Corona.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
@@ -42,7 +44,9 @@ void CoronaRenderer::framebufferCallback()
 	float *outAlpha = new float[numPixelsInRow];
 	this->context.fb->updateRenderStamp(rstamp, showRenderStamp);
 
-	for( uint rowId = 0; rowId < p.y; rowId++)
+	this->context.fb->setColorMapping(*context.colorMappingData);
+
+	for (uint rowId = 0; rowId < p.y; rowId++)
 	{
 		memset(outAlpha, 0, numPixelsInRow * sizeof(float));
 		firstPixelInRow.y = rowId;
@@ -70,6 +74,55 @@ void CoronaRenderer::framebufferCallback()
 
 	if(this->context.isCancelled) 
 		return;
+
+	MImage& oldImage = getWorldPtr()->previousRenderedImage;
+	if (this->mtco_renderGlobals->useRenderRegion)
+	{
+		MImage renderedImage;
+		renderedImage.create(width, height, 4, MImage::kFloat);
+
+		uint oldWidth, oldHeight;
+		MStatus result = oldImage.getSize(oldWidth, oldHeight);
+		if (!result)
+		{
+			oldImage.create(width, height, 4, MImage::kFloat);
+		}
+		else{
+			if ((oldWidth != width) || (oldHeight != height))
+			{
+				oldImage.release();
+				oldImage.create(width, height, 4, MImage::kFloat);
+			}
+		}
+		// copy old image into rendered image
+		renderedImage.setFloatPixels(oldImage.floatPixels(), width, height);
+
+		RV_PIXEL *p = (RV_PIXEL *)renderedImage.floatPixels();
+
+		int ymin = this->mtco_renderGlobals->regionBottom;
+		int xmin = this->mtco_renderGlobals->regionLeft;
+		int ymax = this->mtco_renderGlobals->regionTop;
+		int xmax = this->mtco_renderGlobals->regionRight;
+
+		// copy region pixels into rendered image
+		for (int y = ymin; y < ymax; y++)
+		{
+			for (int x = xmin; x < xmax; x++)
+			{
+				p[y * width + x] = pixels[y * width + x];
+			}
+		}
+		// copy content of rendered image back into pixles
+		for (int x = 0; x < (width * height); x++)
+			pixels[x] = p[x];
+
+		renderedImage.release();
+	}
+	// save rendered image into old image
+	oldImage.release();
+	oldImage.create(width, height, 4, MImage::kFloat);
+	oldImage.setFloatPixels((float *)pixels, width, height);
+
 
 	e.data = pixels;
 	e.tile_xmin = 0;

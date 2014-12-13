@@ -7,6 +7,7 @@ static Logging logger;
 OSLMap::OSLMap()
 {
 	this->bumpType = NONE;
+	this->worldScale = 1.0f;
 	this->isEnvMap = false;
 }
 
@@ -34,12 +35,11 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     sg.P = OSL::Vec3 (pos.x(), pos.y(), pos.z());	
 	sg.u = uvw.x();
 	sg.v = uvw.y();
-	
 	Corona::Ray I = context.getRay();
 	sg.I = OSL::Vec3(I.direction.x(), I.direction.y(), I.direction.z());
 
     // Tangents of P with respect to surface u,v
-	Corona::Dir duvw = context.dUvw(0);
+	Corona::Dir duvw = context.dUvw(0);		
 
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
@@ -54,11 +54,11 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
 	C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
 
-	//sg.dudx = duvw.x() * pixelWorldRatio;
-	//sg.dudy = duvw.y() * pixelWorldRatio;
+	sg.dudx = duvw.x() * pixelWorldRatio;
+	sg.dudy = duvw.y() * pixelWorldRatio;
 
-	sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length() * 0.0;
-	sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length() * 0.0;
+	//sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length() * 0.0;
+	//sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length() * 0.0;
 
 	sg.dvdx = sg.dudx;
 	sg.dvdy = sg.dudy;
@@ -126,8 +126,58 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 	}
     outAlpha = 1.f;
 	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
-
 	return col;	
+}
+
+Corona::Rgb OSLMap::evalColorBump(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha, float u, float v)
+{
+	int threadId = 0;
+	threadId = context.getThreadId();
+	OSL::PerThreadInfo *thread_info = NULL;
+	if (this->oslRenderer->thread_info[threadId] == NULL)
+	{
+		this->oslRenderer->thread_info[threadId] = this->oslRenderer->shadingsys->create_thread_info();
+	}
+	thread_info = this->oslRenderer->thread_info[threadId];
+	OSL::ShadingContext *ctx = NULL;
+	if (this->oslRenderer->ctx[threadId] == NULL)
+	{
+		this->oslRenderer->ctx[threadId] = this->oslRenderer->shadingsys->get_context(thread_info);
+	}
+	ctx = this->oslRenderer->ctx[threadId];
+
+	OSL::Matrix44 Mshad;
+	OSL::Matrix44 Mobj;
+	OSL::ShaderGlobals sg;
+	setShadingGlobals(context, sg, 0, 0, Mshad, Mobj);
+	
+	sg.u = u;
+	sg.v = v;
+
+	float rgb[3] = { 0, 0, 0 };
+
+	OSL::TypeDesc t;
+	if (this->oslRenderer->shadingsys->execute(*ctx, *this->shaderGroup, sg))
+	{
+		const void *data = this->oslRenderer->shadingsys->get_symbol(*ctx, this->oslRenderer->outputVar, t);
+		if (data)
+		{
+			if (t.basetype == OSL::TypeDesc::FLOAT)
+			{
+				float r, g, b;
+				float *d = (float *)data;
+				r = *d++;
+				g = *d++;
+				b = *d;
+				rgb[0] = r;
+				rgb[1] = g;
+				rgb[2] = b;
+			}
+		}
+	}
+	outAlpha = 1.f;
+	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
+	return col;
 }
 
 float OSLMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
@@ -135,6 +185,10 @@ float OSLMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCach
     return evalColor(context, cache, outAlpha).grayValue();
 }
 
+INLINE float rgb2bumpVal(const Corona::Rgb& in)
+{
+	return in.powFast(1.f / 2.2f).grayValue();
+}
 
 Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache)
 {
@@ -171,46 +225,24 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 	}
 	if (this->bumpType == BUMP)
 	{
+		const Corona::Matrix33 base = context.bumpBase(0);
+		const float pixel2world = context.pixelToWorldRatio();
+		const Corona::Dir ddUvw = context.dUvw(0);
+		const Corona::Dir dUvw = ddUvw * (pixel2world);
 		float outAlpha = 1.0f;
-		Corona::Rgb col = evalColor(context, cache, outAlpha);
-		this->bumpType = GETU;
-		Corona::Rgb colU = evalColor(context, cache, outAlpha);
-		this->bumpType = GETV;
-		Corona::Rgb colV = evalColor(context, cache, outAlpha);
+		Corona::Pos uvw = context.getMapCoords(0);
+		float multi = 0.01;
+		float dx = dUvw.x();
+		float dy = dUvw.y();
+		float uPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() + dx, uvw.y())) * multi;
+		float uMinus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() - dx, uvw.y())) * multi;
+		float vPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x(), uvw.y() + dy)) * multi;
+		float vMinus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x(), uvw.y() - dy)) * multi;
 
-		float ap = col.grayValue();
-		float au = colU.grayValue();
-		float av = colV.grayValue();
-
-		if ((ap != au) || (ap != av))
-			logger.debug(MString("unterschied gefunden."));
-
-		Corona::Matrix33 base = context.bumpBase(0);
-		Corona::Dir N = context.getShadingNormal();
-		Corona::Dir NN = N * ap;
-		Corona::Dir T = base.getColumn(0);
-		Corona::Dir C = base.getColumn(2);
-		const Corona::Dir dT = T + N * au;
-		Corona::Dir dC = C + N * av;
-		//Corona::Dir cr = Corona::cross(N,T);
-
-		//OSL::Vec3 a = OSL::Vec3(dT.x(), dT.y(), dT.z()).normalize();
-		//OSL::Vec3 b = OSL::Vec3(N.x(), N.y(), N.z()).normalize();
-		//OSL::Vec3 c = a.cross(b).normalize();
-		//OSL::Vec3 nn = c.cross(a);
-		
-		OSL::Vec3 nnt(T.x(), T.y(), T.z());
-		OSL::Vec3 nnc(C.x(), C.y(), C.z());
-		OSL::Vec3 nnp(N.x() * ap, N.y() * ap, N.z() * ap);
-		OSL::Vec3 nnu(N.x() * au, N.y() * au, N.z() * au);
-		OSL::Vec3 nnv(N.x() * av, N.y() * av, N.z() * av);
-		OSL::Vec3 pt = (nnt + nnu - nnp).normalize();
-		OSL::Vec3 pc = (nnc + nnv - nnp).normalize();
-		OSL::Vec3 crN = pt.cross(pc).normalize();
-		Corona::Dir nt(crN.x, crN.y, crN.z);
-		//Corona::Dir nt = base.transform(Corona::Dir(nn.x, nn.y, nn.z));
-		//normal = nt.getNormalized();
-		return N;
+		const float dU = (uMinus - uPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.x());
+		const float dV = (vMinus - vPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.y());
+		const Corona::Dir bumpedNormal = (dU*base.tangent() - dV*base.cotangent() + base.mainDir()).getNormalizedApprox();
+		return (bumpedNormal - base.mainDir());
 	}
 	return context.getShadingNormal();
 }

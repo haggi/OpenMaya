@@ -81,7 +81,6 @@ static    MObject gi_ic_relaxedInterpolation;
 static    MObject gi_ic_vizualization;
 static    MObject gi_ic_minInterpSamples;
 static    MObject gi_hdCache_precalcMode;
-static    MObject gi_hdCache_doSaveAfterRender;
 static    MObject gi_hdCache_precompMult;
 static    MObject gi_hdCache_interpolationCount;
 static    MObject gi_hdCache_dirSensitivity;

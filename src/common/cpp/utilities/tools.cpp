@@ -1329,3 +1329,11 @@ MPlug getParentPlug(MPlug& p)
 		tmp = tmp.parent();
 	return tmp;
 }
+
+bool isChildOf(MPlug& parent, MPlug& child)
+{
+	for (uint i = 0; i < parent.numChildren(); i++)
+		if (parent.child(i) == child)
+			return true;
+	return false;
+}

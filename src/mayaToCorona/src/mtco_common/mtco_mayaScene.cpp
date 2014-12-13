@@ -70,7 +70,7 @@ void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)
 void mtco_MayaScene::shapeUpdateCallback(MayaObject *mobj)
 {
 	mtco_MayaObject *obj = (mtco_MayaObject *)mobj;
-	logger.trace(MString("mtco_MayaScene::deformUpdateCallback"));
+	//logger.trace(MString("mtco_MayaScene::deformUpdateCallback"));
 
 	if( obj->instanceNumber > 0)
 		return;

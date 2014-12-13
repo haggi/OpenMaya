@@ -10,10 +10,10 @@ param	vector	colorGain	1 1 1 		 %read{39,39} %write{2147483647,-1}
 param	vector	colorOffset	0 0 0 		 %read{40,40} %write{2147483647,-1}
 param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
-param	int	alphaIsLuminance	1 		 %read{43,43} %write{2147483647,-1}
+param	int	alphaIsLuminance	1 		 %read{2147483647,-1} %write{2147483647,-1}
 param	int	invert	0 		 %read{2147483647,-1} %write{2147483647,-1}
-oparam	vector	outColor	0 0 0 		 %read{45,45} %write{42,42}
-oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{46,46}
+oparam	vector	outColor	0 0 0 		 %read{43,43} %write{42,42}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{44,44}
 global	float	u	 %read{6,6} %write{2147483647,-1}
 global	float	v	 %read{7,7} %write{2147483647,-1}
 local	vector	___315_result	 %read{39,41} %write{38,40}
@@ -25,7 +25,7 @@ local	vector	C	 %read{38,42} %write{36,41}
 const	float	$const1	0		 %read{0,1} %write{2147483647,-1}
 temp	int	$tmp1	 %read{3,3} %write{2,2}
 const	int	$const2	0		 %read{4,4} %write{2147483647,-1}
-const	int	$const3	1		 %read{5,43} %write{2147483647,-1}
+const	int	$const3	1		 %read{5,5} %write{2147483647,-1}
 const	float	$const4	1		 %read{8,31} %write{2147483647,-1}
 const	float	$const5	1.000001		 %read{10,17} %write{2147483647,-1}
 const	string	$const6	"mod"		 %read{9,14} %write{2147483647,-1}
@@ -53,8 +53,7 @@ temp	float	$tmp20	 %read{36,36} %write{35,35}
 temp	float	$tmp21	 %read{35,35} %write{34,34}
 temp	float	$tmp22	 %read{34,34} %write{33,33}
 const	string	$const10	"colorBalance"		 %read{37,37} %write{2147483647,-1}
-temp	int	$tmp23	 %read{44,44} %write{43,43}
-temp	color	$tmp24	 %read{46,46} %write{45,45}
+temp	color	$tmp23	 %read{44,44} %write{43,43}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:7
 # 	float t = 0.0;
@@ -143,10 +142,6 @@ code ___main___
 	assign		outColor C 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{27} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:28
 # {
-	eq		$tmp23 alphaIsLuminance $const3 	%line{28} %argrw{"wrr"}
-	if		$tmp23 47 47 	%argrw{"r"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:29
-# 	vector uvw;
-	assign		$tmp24 outColor 	%line{29} %argrw{"wr"}
-	luminance	outAlpha $tmp24 	%argrw{"wr"}
+	assign		$tmp23 outColor 	%line{28} %argrw{"wr"}
+	luminance	outAlpha $tmp23 	%argrw{"wr"}
 	end

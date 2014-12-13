@@ -214,6 +214,19 @@ bool getEnum(MString& plugName, MFnDependencyNode& dn, int& value)
 	return result;
 }
 
+int getEnumInt(MString plugName, MFnDependencyNode& dn)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if (!stat)
+		return -1;
+	int value = plug.asShort(ctx, &stat);
+	if (!stat)
+		return -1;
+	return value;
+}
+
 MString getEnumString(MString plugName, MFnDependencyNode& dn)
 {
 	MDGContext ctx = MDGContext::fsNormal;

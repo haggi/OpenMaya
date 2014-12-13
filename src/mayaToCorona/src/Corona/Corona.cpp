@@ -256,8 +256,9 @@ void CoronaRenderer::render()
     // run the rendering. This function blocks until it is done
 	logger.debug(MString("renderFrame..."));
     context.core->renderFrame();
-	context.isCancelled = true;
     context.core->endSession();
+	framebufferCallback();
+	context.isCancelled = true;
 	this->saveImage();
 
     // delete what we have created and call deallocation functions for objects the core has created

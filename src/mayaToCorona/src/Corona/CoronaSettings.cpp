@@ -119,6 +119,14 @@ void CoronaRenderer::defineSettings()
 	context.colorMappingData->exposure.simple.exponent = this->mtco_renderGlobals->colorMapping_simpleExposure;
 	context.colorMappingData->highlightCompression = this->mtco_renderGlobals->colorMapping_highlightCompression;
 
+	logger.debug(MString("Color temp: ") + this->mtco_renderGlobals->colorMapping_colorTemperature);
+	logger.debug(MString("contrast: ") + this->mtco_renderGlobals->colorMapping_contrast);
+	logger.debug(MString("gamma: ") + this->mtco_renderGlobals->colorMapping_gamma);
+	logger.debug(MString("tint: ") + this->mtco_renderGlobals->colorMapping_tint.r + " " + this->mtco_renderGlobals->colorMapping_tint.g + " " + this->mtco_renderGlobals->colorMapping_tint.b);
+	logger.debug(MString("exposure: ") + this->mtco_renderGlobals->colorMapping_simpleExposure);
+	logger.debug(MString("highlightCompression: ") + this->mtco_renderGlobals->colorMapping_highlightCompression);
+	logger.debug(MString("use photographic: ") + !this->mtco_renderGlobals->colorMapping_useSimpleExposure);
+
 	// v2.8 exposure from camera
 	for (int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
 	{

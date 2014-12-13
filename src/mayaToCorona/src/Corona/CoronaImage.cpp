@@ -46,11 +46,11 @@ void CoronaRenderer::saveImage()
 	if (isExr)
 		context.colorMappingData->gamma = 1.0f;
 
+	this->context.fb->setColorMapping(*context.colorMappingData);
 	// first write the beauty
 	for (int i = 0; i < bitmap.getHeight(); ++i)
 	{
 		const Corona::Pixel pixel(0, bitmap.getHeight() - 1 - i);
-		this->context.fb->setColorMapping(*context.colorMappingData);
 		this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
 	}
 

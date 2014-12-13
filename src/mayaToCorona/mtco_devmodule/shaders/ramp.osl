@@ -2,7 +2,7 @@
 
 #define MAXENTRIES 10
 #define RAMPCOLORIN vector col0=0,vector col1=0, vector col2=0, vector col3=0, vector col4=0, vector col5=0, vector col6=0, vector col7=0, vector col8=0, vector col9=0
-#define RAMPPOSIN float pos0=0,float pos1=0, float pos2=0, float pos3=0, float pos4=0, float pos5=0, float pos6=0, float pos7=0, float pos8=0, float pos9=0
+#define RAMPPOSIN float pos0=-1,float pos1=-1,float pos2=-1,float pos3=-1,float pos4=-1,float pos5=-1,float pos6=-1,float pos7=-1,float pos8=-1,float pos9=-1
 
 color interpolateColors(color firstColor, color secondColor, float first, float second, float value, int interpolation)
 {
@@ -29,7 +29,7 @@ color interpolateColors(color firstColor, color secondColor, float first, float 
 		if( interpolation == 1) // linear
 		{
 			float per = (value - first) / diff;
-			outColor = firstColor * (1.0 - per) + secondColor * per;
+			outColor = firstColor  * (1.0 - per) + secondColor* per;			
 		}
 		if( interpolation == 2) // exp up
 		{
@@ -88,10 +88,17 @@ color getColorsAtPos( color col[], float pos[], int interpolation, float value)
 	float first=-1.0, second=2.0;
 	color firstColor = 0;
 	color secondColor = 0;
+	float pMin = 2.0;
+	int iMin = -1;
 	for( int i = 0; i < MAXENTRIES; i++)
 	{
 		float p = pos[i];
 		p = clamp(p, 0.0, 1.0);
+		if( p < pMin)
+		{
+			pMin = p;
+			iMin = i;
+		}
         if(( p <= value )&&( p > first ))
         {
             first = p;
@@ -103,6 +110,12 @@ color getColorsAtPos( color col[], float pos[], int interpolation, float value)
             secondColor = col[i];
         }	
 	}
+	if( first < pMin)
+	{
+		first = pMin;
+		firstColor = col[iMin];
+	}
+
 	return(interpolateColors(firstColor, secondColor, first, second, value, interpolation));
 }
 
@@ -170,6 +183,15 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 		{
 			float value = t;
 			outColor = vector(getColorsAtPos(col, pos, interpolation, value)); 
+			//float p0 = pos[0];
+			//float p1 = pos[1];
+			//float diff = (value - p0)/(p1 - p0);
+			//color outCol= col[0] * (1.0 - diff) + col[1] * diff;
+			//if( value < p0)
+			//	outCol = col[0];
+			//if( value > p1)
+			//	outCol = col[1];
+			//outColor = vector(outCol);
 		}
 		if(type == 1) // u-ramp
 		{
@@ -275,5 +297,4 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 	outColor = C;	
 	if( alphaIsLuminance == 1)
 		outAlpha = luminance(color(outColor));
-	
 }

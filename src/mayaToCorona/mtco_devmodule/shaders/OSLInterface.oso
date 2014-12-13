@@ -47,7 +47,7 @@ code ___main___
 	isconnected	$tmp8 inVector 	%line{16} %argrw{"wr"}
 	if		$tmp8 17 17 	%argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\OSLInterface.osl:18
-# 	}
+# 	}	
 	assign		$tmp9 inVector 	%line{18} %argrw{"wr"}
 	mul		Cout $tmp9 multiplier 	%argrw{"wrr"}
 	end

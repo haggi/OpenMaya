@@ -178,5 +178,7 @@ void getUVFromConnectedTexturePlacementNode(MObject fileTextureNode, float inU, 
 void uniqueMObjectArray(MObjectArray& cleanMe);
 
 MPlug getParentPlug(MPlug& p);
+
+bool isChildOf(MPlug& parent, MPlug& child);
 #endif
 

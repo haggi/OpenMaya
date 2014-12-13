@@ -72,7 +72,6 @@ MObject MayaToCoronaGlobals::gi_ic_searchStructure;
 MObject MayaToCoronaGlobals::gi_ic_relaxedInterpolation;
 MObject MayaToCoronaGlobals::gi_ic_vizualization;
 MObject MayaToCoronaGlobals::gi_ic_minInterpSamples;
-MObject MayaToCoronaGlobals::gi_hdCache_doSaveAfterRender;
 MObject MayaToCoronaGlobals::gi_hdCache_precalcMode;
 MObject MayaToCoronaGlobals::gi_hdCache_precompMult;
 MObject MayaToCoronaGlobals::gi_hdCache_interpolationCount;
@@ -179,10 +178,6 @@ MStatus	MayaToCoronaGlobals::initialize()
 	MStatus stat = MStatus::kSuccess;
 
 //	------------- automatically created attributes start ----------- // 
-
-	
-	gi_hdCache_doSaveAfterRender = nAttr.create("gi_hdCache_doSaveAfterRender", "gi_hdCache_doSaveAfterRender", MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute(exportOnly));
 
 	exportOnly = nAttr.create("exportOnly", "exportOnly", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportOnly ));
@@ -565,8 +560,10 @@ MStatus	MayaToCoronaGlobals::initialize()
 	colorMapping_useSimpleExposure = nAttr.create("colorMapping_useSimpleExposure", "colorMapping_useSimpleExposure",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( colorMapping_useSimpleExposure ));
 
-	colorMapping_simpleExposure = nAttr.create("colorMapping_simpleExposure", "colorMapping_simpleExposure",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( colorMapping_simpleExposure ));
+	colorMapping_simpleExposure = nAttr.create("colorMapping_simpleExposure", "colorMapping_simpleExposure",  MFnNumericData::kFloat, 0.0);
+	nAttr.setSoftMin(-1.0);
+	nAttr.setSoftMax( 1.0);
+	CHECK_MSTATUS(addAttribute(colorMapping_simpleExposure));
 
 	colorMapping_tint = nAttr.createColor("colorMapping_tint", "colorMapping_tint");
 	nAttr.setDefault(1.0,1.0,1.0);

@@ -9,8 +9,9 @@ class OSLMap : public Corona::Abstract::Map
 public:
 	//CoronaRenderer *coronaRenderer;
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
-	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, GETU, GETV };
+	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD};
 	BumpType bumpType;
+	float worldScale;
 	Corona::Matrix33 envSphereMatrix;
 	bool isEnvMap;
 	OSL::ShaderGroupRef shaderGroup;
@@ -21,6 +22,7 @@ public:
     virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);
     virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);
     virtual Corona::Dir evalBump(const Corona::IShadeContext&, Corona::TextureCache*);
-    virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
+	virtual Corona::Rgb evalColorBump(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha, float u, float v);
+	virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
 	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
 };

@@ -26,20 +26,20 @@ local	point	p0	 %read{16,65} %write{8,8}
 local	point	p1	 %read{16,16} %write{9,9}
 local	point	pRot	 %read{63,63} %write{14,14}
 local	point	result	 %read{66,69} %write{65,65}
-const	float	$const1	1		 %read{1,62} %write{2147483647,-1}
 temp	int	$tmp1	 %read{3,3} %write{2,2}
-const	int	$const2	0		 %read{4,74} %write{2147483647,-1}
-const	int	$const3	1		 %read{5,75} %write{2147483647,-1}
-const	point	$const4	0 0 0		 %read{8,8} %write{2147483647,-1}
-const	point	$const5	0 1 0		 %read{9,9} %write{2147483647,-1}
-const	float	$const6	0.5		 %read{10,70} %write{2147483647,-1}
+const	int	$const1	0		 %read{4,74} %write{2147483647,-1}
+const	int	$const2	1		 %read{5,75} %write{2147483647,-1}
+const	point	$const3	0 0 0		 %read{8,8} %write{2147483647,-1}
+const	point	$const4	0 1 0		 %read{9,9} %write{2147483647,-1}
+const	float	$const5	0.5		 %read{10,70} %write{2147483647,-1}
 temp	float	$tmp2	 %read{11,11} %write{10,10}
 temp	float	$tmp3	 %read{14,14} %write{11,11}
-const	float	$const7	0		 %read{14,62} %write{2147483647,-1}
+const	float	$const6	0		 %read{14,62} %write{2147483647,-1}
 temp	float	$tmp4	 %read{13,13} %write{12,12}
 temp	float	$tmp5	 %read{14,14} %write{13,13}
-const	string	$const8	"rotate"		 %read{15,15} %write{2147483647,-1}
+const	string	$const7	"rotate"		 %read{15,15} %write{2147483647,-1}
 temp	vector	$tmp6	 %read{17,17} %write{16,16}
+const	float	$const8	1		 %read{19,62} %write{2147483647,-1}
 const	int	$const9	2		 %read{22,69} %write{2147483647,-1}
 temp	float	$tmp7	 %read{27,27} %write{23,23}
 temp	float	$tmp8	 %read{25,25} %write{24,24}
@@ -88,21 +88,21 @@ temp	float	$tmp50	 %read{71,71} %write{69,69}
 temp	float	$tmp51	 %read{71,71} %write{70,70}
 code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:11
-# 	float tt = 1.0 - v;
+# 	float tt = v;
 	assign		ss u 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl"} %line{11} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:12
 # 	if( isconnected(uvCoord))
-	sub		tt $const1 v 	%line{12} %argrw{"wrr"}
+	assign		tt v 	%line{12} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:13
 # 	{
 	isconnected	$tmp1 uvCoord 	%line{13} %argrw{"wr"}
 	if		$tmp1 6 6 	%argrw{"r"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:15
 # 		tt = uvCoord[1];
-	compref		ss uvCoord $const2 	%line{15} %argrw{"wrr"}
+	compref		ss uvCoord $const1 	%line{15} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:16
 # 	}
-	compref		tt uvCoord $const3 	%line{16} %argrw{"wrr"}
+	compref		tt uvCoord $const2 	%line{16} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:19
 # 	float t = tt * repeatV;	
 	mul		s ss repeatU 	%line{19} %argrw{"wrr"}
@@ -111,20 +111,20 @@ code ___main___
 	mul		t tt repeatV 	%line{20} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:22
 # 	point p1 = point(0,1,0);
-	assign		p0 $const4 	%line{22} %argrw{"wr"}
+	assign		p0 $const3 	%line{22} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:23
 # 	point pRot = point(s - 0.5 * repeatU, 0.0, t - 0.5 * repeatV);
-	assign		p1 $const5 	%line{23} %argrw{"wr"}
+	assign		p1 $const4 	%line{23} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:24
 # 	point result = rotate(pRot, rotateUV, p0, p1); 
-	mul		$tmp2 $const6 repeatU 	%line{24} %argrw{"wrr"}
+	mul		$tmp2 $const5 repeatU 	%line{24} %argrw{"wrr"}
 	sub		$tmp3 s $tmp2 	%argrw{"wrr"}
-	mul		$tmp4 $const6 repeatV 	%argrw{"wrr"}
+	mul		$tmp4 $const5 repeatV 	%argrw{"wrr"}
 	sub		$tmp5 t $tmp4 	%argrw{"wrr"}
-	point		pRot $tmp3 $const7 $tmp5 	%argrw{"wrrr"}
+	point		pRot $tmp3 $const6 $tmp5 	%argrw{"wrrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:25
 # 	
-	functioncall	$const8 66 	%line{25} %argrw{"r"}
+	functioncall	$const7 66 	%line{25} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:250
 # }
 	sub		$tmp6 p1 p0 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h"} %line{250} %argrw{"wrr"}
@@ -134,17 +134,17 @@ code ___main___
 	sincos		rotateUV ___233_sinang ___233_cosang 	%line{252} %argrw{"rww"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:253
 #               output float Kr, output float Kt)
-	sub		___233_cosang1 $const1 ___233_cosang 	%line{253} %argrw{"wrr"}
+	sub		___233_cosang1 $const8 ___233_cosang 	%line{253} %argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:254
 # {
-	compref		___233_x ___233_axis $const2 	%line{254} %argrw{"wrr"}
-	compref		___233_y ___233_axis $const3 	%argrw{"wrr"}
+	compref		___233_x ___233_axis $const1 	%line{254} %argrw{"wrr"}
+	compref		___233_y ___233_axis $const2 	%argrw{"wrr"}
 	compref		___233_z ___233_axis $const9 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:255
 #     vector R, T;
 	mul		$tmp7 ___233_x ___233_x 	%line{255} %argrw{"wrr"}
 	mul		$tmp8 ___233_x ___233_x 	%argrw{"wrr"}
-	sub		$tmp9 $const1 $tmp8 	%argrw{"wrr"}
+	sub		$tmp9 $const8 $tmp8 	%argrw{"wrr"}
 	mul		$tmp10 $tmp9 ___233_cosang 	%argrw{"wrr"}
 	add		$tmp11 $tmp7 $tmp10 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:256
@@ -169,7 +169,7 @@ code ___main___
 # normal transform (matrix Mto, normal p) BUILTIN;
 	mul		$tmp24 ___233_y ___233_y 	%line{260} %argrw{"wrr"}
 	mul		$tmp25 ___233_y ___233_y 	%argrw{"wrr"}
-	sub		$tmp26 $const1 $tmp25 	%argrw{"wrr"}
+	sub		$tmp26 $const8 $tmp25 	%argrw{"wrr"}
 	mul		$tmp27 $tmp26 ___233_cosang 	%argrw{"wrr"}
 	add		$tmp28 $tmp24 $tmp27 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:261
@@ -194,12 +194,12 @@ code ___main___
 # point  transform (string from, string to, point p) BUILTIN;
 	mul		$tmp41 ___233_z ___233_z 	%line{265} %argrw{"wrr"}
 	mul		$tmp42 ___233_z ___233_z 	%argrw{"wrr"}
-	sub		$tmp43 $const1 $tmp42 	%argrw{"wrr"}
+	sub		$tmp43 $const8 $tmp42 	%argrw{"wrr"}
 	mul		$tmp44 $tmp43 ___233_cosang 	%argrw{"wrr"}
 	add		$tmp45 $tmp41 $tmp44 	%argrw{"wrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:267
 # vector transform (string to, vector p) { return transform("common",to,p); }
-	matrix		___233_M $tmp11 $tmp15 $tmp19 $const7 $tmp23 $tmp28 $tmp32 $const7 $tmp36 $tmp40 $tmp45 $const7 $const7 $const7 $const7 $const1 	%line{267} %argrw{"wrrrrrrrrrrrrrrrr"}
+	matrix		___233_M $tmp11 $tmp15 $tmp19 $const6 $tmp23 $tmp28 $tmp32 $const6 $tmp36 $tmp40 $tmp45 $const6 $const6 $const6 $const6 $const8 	%line{267} %argrw{"wrrrrrrrrrrrrrrrr"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\stdosl.h:268
 # point  transform (string to, point p)  { return transform("common",to,p); }
 	sub		$tmp47 pRot p0 	%line{268} %argrw{"wrr"}
@@ -207,13 +207,13 @@ code ___main___
 	add		result $tmp46 p0 	%argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:27
 # 	t = result[2] + 0.5 * repeatV;
-	compref		$tmp48 result $const2 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl"} %line{27} %argrw{"wrr"}
-	mul		$tmp49 $const6 repeatU 	%argrw{"wrr"}
+	compref		$tmp48 result $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl"} %line{27} %argrw{"wrr"}
+	mul		$tmp49 $const5 repeatU 	%argrw{"wrr"}
 	add		s $tmp48 $tmp49 	%argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:28
 # 	
 	compref		$tmp50 result $const9 	%line{28} %argrw{"wrr"}
-	mul		$tmp51 $const6 repeatV 	%argrw{"wrr"}
+	mul		$tmp51 $const5 repeatV 	%argrw{"wrr"}
 	add		t $tmp50 $tmp51 	%argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:30
 # 	t += offsetV;
@@ -223,8 +223,8 @@ code ___main___
 	add		t t offsetV 	%line{31} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:33
 # 	outUV[1] = t;
-	compassign	outUV $const2 s 	%line{33} %argrw{"wrr"}
+	compassign	outUV $const1 s 	%line{33} %argrw{"wrr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\place2dTexture.osl:34
 # 	
-	compassign	outUV $const3 t 	%line{34} %argrw{"wrr"}
+	compassign	outUV $const2 t 	%line{34} %argrw{"wrr"}
 	end

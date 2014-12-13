@@ -24,6 +24,5 @@ shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALAN
 	
 	C = colorBalance(C, colorGain, colorOffset);
 	outColor = C;	
-	if( alphaIsLuminance == 1)
-		outAlpha = luminance(color(outColor));
+	outAlpha = luminance(color(outColor));
 }

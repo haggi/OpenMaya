@@ -8,7 +8,7 @@ shader place2dTexture ( float repeatU = 1.0,
 {
 
 	float ss = u;
-	float tt = 1.0 - v;
+	float tt = v;
 	if( isconnected(uvCoord))
 	{
 		ss = uvCoord[0];

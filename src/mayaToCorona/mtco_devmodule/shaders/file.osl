@@ -41,6 +41,9 @@ shader file (vector uvCoord = 0,
 			 string fileTextureName = "",
 			 int fromSRGB = 0,
 			 int toSRGB = 0,
+			 int textureFilter = 0,
+			 float textureFilterWidth = 1.0,
+			 float textureBlur = 0.0,
 			 MAYA_COLORBALANCE,
 			 MAYA_DEFAULT_OUTPUT)
 {
@@ -51,8 +54,10 @@ shader file (vector uvCoord = 0,
 		s = uvCoord[0];
 		t = uvCoord[1];
 	}
-	
-	color C = texture(fileTextureName, s, t, "wrap", "periodic");
+	t = 1.0 - t;
+	string filters[4] = {"smartcubic", "cubic", "linear", "closest"};
+	string filter = filters[textureFilter];
+	color C = texture(fileTextureName, s, t, "wrap", "periodic", "interp", filter, "width", textureFilterWidth, "blur", textureBlur);
 	if( fromSRGB > 0)
 	{
 		C = fromSRGBToLinear(C);
@@ -67,6 +72,6 @@ shader file (vector uvCoord = 0,
 		CB = vector(1.0) - CB;
 	}
 	outColor = CB;
-	if( alphaIsLuminance == 1)
-		outAlpha = luminance(color(outColor));	
+	//if( alphaIsLuminance == 1)
+	outAlpha = luminance(color(outColor));	
 }

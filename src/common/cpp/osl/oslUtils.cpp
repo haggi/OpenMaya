@@ -173,6 +173,11 @@ namespace MAYATO_OSL{
 				multiplier = multiplierPlug.asFloat();
 			paramArray.push_back(OSLParameter(sa.name.c_str(), getVectorAttr(sa.name.c_str(), depFn) * multiplier));
 		}
+		if (sa.type == "enumint")
+		{
+			int v = getEnumInt(sa.name.c_str(), depFn);
+			paramArray.push_back(OSLParameter(sa.name.c_str(), v));
+		}
 	}
 
 	bool doesHelperNodeExist(MString& helperNode)
@@ -400,12 +405,26 @@ namespace MAYATO_OSL{
 						continue;
 					}
 					MPlug connectedPlug = plugArray[0];
-					logger.error(MString("Source plug ") + connectedPlug.name());
-					outAttribute = getAttributeNameFromPlug(connectedPlug).asChar();
+					logger.debug(MString("Source plug ") + connectedPlug.name());
+					logger.debug(MString("OutAttribute ") + outAttribute.c_str());
 					MObject connectedNode = connectedPlug.node();
 					MPlug parentPlug = getParentPlug(connectedPlug);
-					MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
 					MString outNode = getObjectName(connectedNode);
+
+					if (!isChildOf(parentPlug, connectedPlug))
+						outAttribute = getAttributeNameFromPlug(connectedPlug).asChar();
+					else
+					{
+						MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
+						if (!doesHelperNodeExist(outHelperNodeName))
+						{
+							logger.debug(MString("Outattribute Helper node does not yet exist: ") + outHelperNodeName + " creating a new one");
+							createPlugHelperNode(childPlug, true);
+						}
+						outNode = outHelperNodeName;
+						outAttribute = outAttributes[getChildId(connectedPlug)];
+					}
+
 					MString inHelperNodeName = createPlugHelperNodeName(childPlug, false);
 					if (!doesHelperNodeExist(inHelperNodeName))
 					{

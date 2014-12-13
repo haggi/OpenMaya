@@ -22,7 +22,11 @@ shader_start:file
 	inatt:uvCoord:float2
 	inatt:fromSRGB:bool
 	inatt:toSRGB:bool
+	inatt:textureFilter:enumint
+	inatt:textureFilterWidth:float
+	inatt:textureBlur:float
 	outatt:outColor:color
+	outatt:outAlpha:float
 shader_end
 
 shader_start:reverse
@@ -76,6 +80,7 @@ shader_start:grid
 	inatt:alphaIsLuminance:int
 	inatt:invert:int
 	outatt:outColor:color
+	outatt:outAlpha:float
 shader_end
 
 shader_start:condition
@@ -115,6 +120,7 @@ shader_start:bulge
 	inatt:invert:int
 	inatt:uvCoord:float2
 	outatt:outColor:color
+	outatt:outAlpha:float
 shader_end
 
 shader_start:place2dTexture
@@ -158,6 +164,7 @@ shader_start:solidFractal
 	inatt:alphaIsLuminance:int
 	inatt:invert:int
 	outatt:outColor:color
+	outatt:outAlpha:float
 shader_end
 
 shader_start:blendColors

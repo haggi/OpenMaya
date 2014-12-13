@@ -213,4 +213,5 @@ if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")    
     createDeployment("corona", "mtco", "2014")    
     createDeployment("corona", "mtco", "2015")    
+    print "Deployment creation done"
     #createDeployment("indigo", "mtin", "2014")

@@ -44,6 +44,12 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("fromSRGB", label="Convert sRGB->Linear")
         self.addControl("toSRGB", label="Convert Linear->sRGB")
+        self.addSeparator() 
+        self.addControl("textureFilter", label="FilterType")
+        self.addControl("textureFilterWidth", label="FilterWidth")
+        #self.addControl("textureBlur", label="FilterBlur")
+        #self.addControl("textureSblur", label="Filter S Blur")
+        #self.addControl("textureTblur", label="Filter T Blur")
         self.endLayout()
 
     def buildDisplacementShaderTemplate(self, nodeName):
@@ -69,6 +75,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.dimControl(node, "mtco_bokehBitmap", True)      
         
         if node.mtco_useBokeh.get():
+            self.dimControl(node, "mtco_circularBlades", False)        
             if not node.mtco_circularBlades.get():
                 self.dimControl(node, "mtco_blades", False)        
                 self.dimControl(node, "mtco_bladeRotation", False)        
@@ -82,7 +89,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addSeparator()
         self.addControl("mtco_useBokeh", label="Use Bokeh", changeCommand=self.updateCameraTemplate)
         self.addSeparator() 
-        self.addControl("mtco_circularBlades", label="CircularBlades")
+        self.addControl("mtco_circularBlades", label="CircularBlades", changeCommand=self.updateCameraTemplate)
         self.addSeparator() 
         self.addControl("mtco_blades", label="Num Blades")
         self.addControl("mtco_bladeRotation", label="Blade Rotation")
