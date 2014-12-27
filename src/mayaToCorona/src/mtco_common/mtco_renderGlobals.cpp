@@ -53,28 +53,6 @@ bool mtco_RenderGlobals::getMtCoronaGlobals()
 	renderGlobalsMobject = node;
 
 	try{
-
-		if(!getInt(MString("translatorVerbosity"), CoronaGlobals, this->translatorVerbosity))
-			throw("problem reading CoronaGlobals.translatorVerbosity");
-		switch(this->translatorVerbosity)
-		{
-		case 0:
-			logger.setLogLevel(Logging::Info);
-			break;
-		case 1:
-			logger.setLogLevel(Logging::Error);
-			break;
-		case 2:
-			logger.setLogLevel(Logging::Warning);
-			break;
-		case 3:
-			logger.setLogLevel(Logging::Progress);
-			break;
-		case 4:
-			logger.setLogLevel(Logging::Debug);
-			break;
-		}
-
 //	------------- automatically created attributes start ----------- // 
 		if(!getBool(MString("exportOnly"), CoronaGlobals, this->exportOnly))
 			throw("problem reading coronaGlobals.exportOnly");

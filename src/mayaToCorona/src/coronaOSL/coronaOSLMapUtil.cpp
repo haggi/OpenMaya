@@ -86,7 +86,13 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 					{
 						logger.debug(MString("Found multiplier attribute: ") + multiplierName);
 						float multiplier = multiplierAttribute.asFloat();
+						float offset = 0.0f;
+						if ((attributeName == "refractionIndex") || (attributeName == "reflectionIor"))
+						{
+							offset = -1.0f;
+						}
 						oslRenderer->shadingsys->Parameter("multiplier", OSL::TypeDesc::TypeFloat, &multiplier);
+						oslRenderer->shadingsys->Parameter("offset", OSL::TypeDesc::TypeFloat, &offset);
 					}
 					logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
 					bool success = oslRenderer->shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());

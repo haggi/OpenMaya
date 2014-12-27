@@ -196,6 +196,7 @@ void CoronaRenderer::render()
     context.scene = context.core->createScene();
     context.logger = new mtco_Logger(context.core);
 
+	Logging::debug("Corona rendering started.....");
 	logger.debug(MString("core/scene/logger..."));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

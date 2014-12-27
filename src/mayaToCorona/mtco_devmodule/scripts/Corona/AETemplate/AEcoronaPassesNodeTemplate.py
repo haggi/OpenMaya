@@ -77,7 +77,6 @@ class AEcoronaPassesNodeTemplate(BaseTemplate):
         componentString = node.components.get()
         if componentString is None or len(componentString) == 0:
             return
-        print self.componentsButton
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         with pm.frameLayout(labelVisible=False, collapsable=False, w=240, parent=self.uiParent) as self.componentsListUI:
             with pm.rowColumnLayout(nc=2, cw=((1,200), (2, 30))):
@@ -112,13 +111,14 @@ class AEcoronaPassesNodeTemplate(BaseTemplate):
         self.beginLayout("Corona Pass" ,collapse=0)
         self.beginNoOptimize()
         self.addControl("mapChannel", "Map Channel")
-        pm.popupMenu()
-        pm.menuItem()
+        #pm.popupMenu()
+        #pm.menuItem()
         self.addControl("elementType", "Element Type")
         self.addControl("minDepth", "Min Depth")
         self.addControl("maxDepth", "Max Depth")
         self.callCustom( self.componentsNew, self.componentsReplace, "components")
         self.addSeparator()
+        self.addControl("dataType", "Data Type")
         self.endNoOptimize()
         self.endLayout()
         

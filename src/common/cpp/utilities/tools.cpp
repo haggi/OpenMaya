@@ -13,6 +13,21 @@
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
 
+float clamp(float x, float minv, float maxv)
+{
+	if (x > maxv)
+		return maxv;
+	if (x < minv)
+		return minv;
+	return x;
+}
+
+float smoothstep(float edge0, float edge1, float x)
+{
+	x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+	return x*x*(3 - 2 * x);
+}
+
 void setRendererName(MString rname)
 {
 	RendererName = rname;

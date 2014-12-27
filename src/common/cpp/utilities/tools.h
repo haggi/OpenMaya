@@ -25,6 +25,10 @@ static MString RendererHome;
 #define DegToRad(x) (M_PI/ 180.0 * x)
 #define RadToDeg(x) (180.0/M_PI * x)
 
+float clamp(float x, float minv, float maxv);
+
+float smoothstep(float edge0, float edge1, float x);
+
 void setRendererName(MString rname);
 
 void setRendererShortCutName(MString rname);

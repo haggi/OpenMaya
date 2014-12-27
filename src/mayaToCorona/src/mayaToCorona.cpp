@@ -8,6 +8,7 @@
 #include "threads/renderQueueWorker.h"
 #include "mayaSceneFactory.h"
 #include "mtco_common/mtco_renderGlobals.h"
+#include "utilities\attrTools.h"
 
 static Logging logger;
 
@@ -37,12 +38,26 @@ MSyntax MayaToCorona::newSyntax()
 	return syntax;
 }
 
+void MayaToCorona::setLogLevel()
+{
+	MObject globalsObj = objectFromName("coronaGlobals");
+	if (globalsObj == MObject::kNullObj)
+	{
+		Logging::setLogLevel(Logging::Debug);
+		return;
+	}
+	MFnDependencyNode globalsNode(globalsObj);
+	int logLevel = getIntAttr("translatorVerbosity", globalsNode, 0);
+	Logging::setLogLevel((Logging::LogLevel)logLevel);
+}
+
 MStatus MayaToCorona::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
 	MGlobal::displayInfo("Executing mayaToCorona...");
-	logger.setLogLevel(Logging::Debug);
 	
+	setLogLevel();
+
 	MArgDatabase argData(syntax(), args);
 	
 	int width = -1;
@@ -111,7 +126,7 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		argData.getFlagArgument("-camera", 0, selectionList);
         stat = selectionList.getDagPath(0, camera);
 		camera.extendToShape();
-		logger.debug(MString("camera: ") + camera.fullPathName());
+		Logging::debug(MString("camera: ") + camera.fullPathName());
 		mayaScene->setCurrentCamera(camera);
 	}			
 	

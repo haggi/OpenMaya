@@ -117,7 +117,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_colorTemperature', uiType = 'float', displayName = 'Color Temperature', default='6500.0', data='minmax:1000.0:99999.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_tint', uiType = 'color', displayName = 'Tint', default='1.0:1.0:1.0', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_simpleExposure', uiType = 'float', displayName = 'Simple Exposure', default='1.0', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
@@ -575,11 +575,18 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def showLogFile(self):
         pass
     
-    def createRenderNode(self, nodeType=None):
+    def createRenderNode(self, nodeType=None, postCommand=None):
         log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
         mat = pm.shadingNode(nodeType, asShader=True)
         shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
         mat.outColor >> shadingGroup.surfaceShader
+        if postCommand is not None:
+            log.debug("createRenderNode callback postcommand: {0}".format(postCommand))
+            postCommand = postCommand.replace("%node", str(mat))
+            postCommand = postCommand.replace("%type", '\"\"')
+            log.debug("processed postcommand: {0}".format(postCommand))
+            pm.mel.eval(postCommand)
+        return mat
     
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")

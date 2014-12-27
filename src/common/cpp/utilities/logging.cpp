@@ -2,22 +2,45 @@
 #include "memory/memoryInfo.h"
 #include <maya/MGlobal.h>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+
+
+
 void Logging::setLogLevel( Logging::LogLevel level)
 {
-	if( level == Logging::Debug)
+	//boost::log::add_common_attributes();
+	//boost::log::core::get_global_attributes()
+	//boost::log::core::get()->remove_global_attribute();
+
+	if (level == Logging::Debug)
+	{
 		MGlobal::displayInfo("Set logging level to DEBUG");
-	if( level == Logging::Info)
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::debug);
+		//boost::log::core::set_global_attributes();
+	}
+	if (level == Logging::Info)
+	{
 		MGlobal::displayInfo("Set logging level to INFO");
-	if( level == Logging::Warning)
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::info);
+	}
+	if (level == Logging::Warning)
+	{
 		MGlobal::displayInfo("Set logging level to WARNING");
-	if( level == Logging::Error)
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::warning);
+	}
+	if (level == Logging::Error)
+	{
 		MGlobal::displayInfo("Set logging level to ERROR");
-	if( level == Logging::Progress)
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::error);
+	}
+	if (level == Logging::Progress)
+	{
 		MGlobal::displayInfo("Set logging level to PROGRESS");
-	if( level == Logging::Detail)
-		MGlobal::displayInfo("Set logging level to DETAIL");
-	if( level == Logging::Feature)
-		MGlobal::displayInfo("Set logging level to FEATURE");
+		boost::log::core::get()->set_filter(boost::log::trivial::severity >= boost::log::trivial::trace);
+	}
 	log_level = level;
 }
 
@@ -34,73 +57,62 @@ void Logging::trace(MString logString, int level)
 
 void Logging::info(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + (int)getCurrentUsage() + "MB INFO: " + makeSpace(level) + logString;
-	if( Logging::Info <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + (int)getCurrentUsage() + "MB : " + makeSpace(level) + logString;
+	BOOST_LOG_TRIVIAL(info) << outString.asChar();
 }
 
 void Logging::warning(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB WARN: " + makeSpace(level) + logString;
-	if( Logging::Warning <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	BOOST_LOG_TRIVIAL(warning) << outString.asChar();
 }
 
 void Logging::error(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB ERROR: " + makeSpace(level) + logString;
-	if( Logging::Error <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	BOOST_LOG_TRIVIAL(error) << outString.asChar();
 }
 
 void Logging::debug(MString logString, int level)
 {
-	//MGlobal::displayInfo(MString("debug: log level - ") + (int)log_level);
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DEBUG: " + makeSpace(level) + logString;
-	if( Logging::Debug <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	BOOST_LOG_TRIVIAL(debug) << outString.asChar();
 }
 
 void Logging::progress(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB PROG: " + makeSpace(level) + logString;
-	if( Logging::Progress <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	BOOST_LOG_TRIVIAL(trace) << outString.asChar();
 }
 
 void Logging::detail(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB DET: " + makeSpace(level) + logString;
-	if( Logging::Detail <= log_level && log_level != Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	//MString outString = MString("Mem: ") + getCurrentUsage() + "MB DET: " + makeSpace(level) + logString;
+	//if( Logging::Detail <= log_level && log_level != Logging::Feature )
+	//	if( log_outtype == Logging::ScriptEditor)
+	//		MGlobal::displayInfo(outString);
+	//	else
+	//		trace(outString);
 }
 
 void Logging::feature(MString logString, int level)
 {
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB FEA: " + makeSpace(level) + logString;
-	if( log_level == Logging::Feature )
-		if( log_outtype == Logging::ScriptEditor)
-			MGlobal::displayInfo(outString);
-		else
-			trace(outString);
+	//MString outString = MString("Mem: ") + getCurrentUsage() + "MB FEA: " + makeSpace(level) + logString;
+	//if( log_level == Logging::Feature )
+	//	if( log_outtype == Logging::ScriptEditor)
+	//		MGlobal::displayInfo(outString);
+	//	else
+	//		trace(outString);
 }
 
 MString makeSpace(int level)

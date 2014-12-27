@@ -74,12 +74,12 @@ MObject  CoronaSurface::aLightShadowFraction;
 MObject  CoronaSurface::aPreShadowIntensity;
 MObject  CoronaSurface::aLightBlindData;
 
-//---------------------------- automatically created attributes start ------------------------------------
 MObject CoronaSurface::opacity;
 MObject CoronaSurface::opacityMultiplier;
 MObject CoronaSurface::emissionMultiplier;
 MObject CoronaSurface::volumeScatteringAlbedo;
 MObject CoronaSurface::fresnelIor;
+MObject CoronaSurface::fresnelIorMap;
 MObject CoronaSurface::roundCornersSamples;
 MObject CoronaSurface::emissionSharpnessFakePoint;
 MObject CoronaSurface::glassMode;
@@ -97,21 +97,21 @@ MObject CoronaSurface::volumeEmissionDist;
 MObject CoronaSurface::roundCornersRadius;
 MObject CoronaSurface::bgOverride;
 MObject CoronaSurface::refractionGlossiness;
+MObject CoronaSurface::refractionIndex;
+MObject CoronaSurface::refractionIndexMap;
 MObject CoronaSurface::diffuse;
 MObject CoronaSurface::diffuseMultiplier;
 MObject CoronaSurface::refractivity;
 MObject CoronaSurface::refractivityMultiplier;
-//MObject CoronaSurface::brdfType;
 MObject CoronaSurface::emissionColor;
 MObject CoronaSurface::shadowCatcherMode;
 MObject CoronaSurface::anisotropy;
 MObject CoronaSurface::volumeMeanCosine;
-MObject CoronaSurface::refractionIndex;
 MObject CoronaSurface::emissionDisableSampling;
 MObject CoronaSurface::alphaMode;
 MObject CoronaSurface::attenuationDist;
 MObject CoronaSurface::volumeSSSMode;
-//---------------------------- automatically created attributes end ------------------------------------
+MObject CoronaSurface::glassType;
 MObject CoronaSurface::iesProfile;
 
 // This node does not need to perform any special actions on creation or
@@ -145,7 +145,7 @@ MStatus CoronaSurface::initialize()
 	MFnMessageAttribute mAttr;
 
     MStatus status; 
-//---------------------------- automatically created attributes start ------------------------------------
+
 
 	diffuse = nAttr.createColor("diffuse", "diffuse");
 	nAttr.setKeyable(true);
@@ -155,14 +155,12 @@ MStatus CoronaSurface::initialize()
 	diffuseMultiplier = nAttr.create("diffuseMultiplier", "diffuseMultiplier", MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	//nAttr.setKeyable(true);
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(diffuseMultiplier));
 
-	translucencyFraction = nAttr.create("translucencyMultiplier", "translucencyMultiplier", MFnNumericData::kFloat, 0.0);
+	translucencyFraction = nAttr.create("translucencyFraction", "translucencyFraction", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	//nAttr.setKeyable(true);
 	CHECK_MSTATUS(addAttribute(translucencyFraction));
 
 	opacity = nAttr.createColor("opacity", "opacity");
@@ -180,21 +178,18 @@ MStatus CoronaSurface::initialize()
 	emissionMultiplier = nAttr.create("emissionColorMultiplier", "emissionColorMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	//nAttr.setKeyable(true);
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(emissionMultiplier));
 
 	reflectivityMultiplier = nAttr.create("reflectivityMultiplier", "reflectivityMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	//nAttr.setKeyable(true);
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(reflectivityMultiplier));
 
 	refractivityMultiplier = nAttr.create("refractivityMultiplier", "refractivityMultiplier", MFnNumericData::kFloat, 0.0);
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(1.0);
-	//nAttr.setKeyable(true);
 	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(refractivityMultiplier));
 
@@ -202,10 +197,15 @@ MStatus CoronaSurface::initialize()
 	nAttr.setDefault(0.5,0.5,0.5);
 	CHECK_MSTATUS(addAttribute( volumeScatteringAlbedo ));
 
-	fresnelIor = nAttr.create("fresnelIor", "fresnelIor",  MFnNumericData::kFloat, 1.52);
+	fresnelIor = nAttr.create("fresnelIorMultiplier", "fresnelIorMultiplier",  MFnNumericData::kFloat, 1.52);
 	nAttr.setSoftMin(0.0);
 	nAttr.setSoftMax(2.0);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(fresnelIor));
+
+	fresnelIorMap = nAttr.createColor("fresnelIor", "fresnelIor");
+	nAttr.setDefault(1.0, 1.0, 1.0);
+	CHECK_MSTATUS(addAttribute(fresnelIorMap));
 
 	roundCornersSamples = nAttr.create("roundCornersSamples", "roundCornersSamples",  MFnNumericData::kInt, 10);
 	nAttr.setMin(1);
@@ -217,6 +217,12 @@ MStatus CoronaSurface::initialize()
 	status = eAttr.addField( "TwoSided", 1 );
 	status = eAttr.addField( "Hybrid", 2 );
 	CHECK_MSTATUS(addAttribute( glassMode ));
+
+	glassType = eAttr.create("glassType", "glassType", 0, &status);
+	status = eAttr.addField("Normal", 0);
+	status = eAttr.addField("Caustic", 1);
+	status = eAttr.addField("ThinFilm", 2);
+	CHECK_MSTATUS(addAttribute(glassType));	
 
 	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
 	nAttr.setDefault(0,0,0);
@@ -302,10 +308,16 @@ MStatus CoronaSurface::initialize()
 	nAttr.setSoftMax(1.0);
 	CHECK_MSTATUS(addAttribute(volumeMeanCosine));
 
-	refractionIndex = nAttr.create("refractionIndex", "refractionIndex",  MFnNumericData::kFloat, 1.52);
+	refractionIndex = nAttr.create("refractionIndexMultiplier", "refractionIndexMultiplier",  MFnNumericData::kFloat, 1.52);
 	nAttr.setSoftMin(0.0);
 	nAttr.setSoftMax(2.0);
+	nAttr.setConnectable(false);
 	CHECK_MSTATUS(addAttribute(refractionIndex));
+
+	refractionIndexMap = nAttr.createColor("refractionIndex", "refractionIndex");
+	nAttr.setDefault(1.0, 1.0, 1.0);
+	CHECK_MSTATUS(addAttribute(refractionIndexMap));
+
 
 	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));

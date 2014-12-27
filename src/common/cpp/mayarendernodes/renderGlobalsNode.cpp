@@ -55,6 +55,8 @@ MObject MayaRenderGlobalsNode::optimizedTexturePath;
 MObject MayaRenderGlobalsNode::useOptimizedTextures;
 MObject MayaRenderGlobalsNode::imageFormat;
 MObject MayaRenderGlobalsNode::filtertype;
+MObject MayaRenderGlobalsNode::exrDataTypeHalf;
+MObject MayaRenderGlobalsNode::exrMergeChannels;
 
 void MayaRenderGlobalsNode::postConstructor()
 {
@@ -159,9 +161,7 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	stat = eAttr.addField( "Warning", 2 );
 	stat = eAttr.addField( "Progress", 3 );
 	stat = eAttr.addField( "Debug", 4 );
-	stat = eAttr.addField( "Deatil", 5 );
-	stat = eAttr.addField( "Feature", 6 );
-	stat = eAttr.addField( "None", 7 );
+	stat = eAttr.addField( "None", 5 );
 	CHECK_MSTATUS(addAttribute( translatorVerbosity ));
 
 	rendererVerbosity = nAttr.create("rendererVerbosity", "rendererVerbosity", MFnNumericData::kInt, 2);
@@ -204,6 +204,12 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	useOptimizedTextures = nAttr.create("useOptimizedTextures", "useOptimizedTextures", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( useOptimizedTextures ));
 
+	exrDataTypeHalf = nAttr.create("exrDataTypeHalf", "exrDataTypeHalf", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(exrDataTypeHalf));
+
+	exrMergeChannels = nAttr.create("exrMergeChannels", "exrMergeChannels", MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute(exrMergeChannels));
+	
 	return MStatus::kSuccess;
 }
 

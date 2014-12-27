@@ -77,7 +77,7 @@ void CoronaRenderer::definePasses()
 		}
 		if (className == "Components")
 		{
-			MString components = getEnumString("components", passNode);
+			MString components = getString("components", passNode);
 			if (components.length() > 0)
 			{
 				std::vector<std::string> stringArray;

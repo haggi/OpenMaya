@@ -5,13 +5,15 @@
     <CORONA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToCorona\devkit\CoronaApi</CORONA_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
     <MAYA_ROOT>C:\Program Files\Autodesk\Maya2014</MAYA_ROOT>
-    <OSL>H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy</OSL>
-    <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy</OIIO>
+    <OSL>H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy_vs2012</OSL>
+    <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
+    <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\openexr_deploy</OPENEXR>
+    <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT);$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_ROOT)\include;..\..\common\cpp;$(OSL)/include;$(OIIO)/include;$(ILM_BASE)/include;$(OPENEXR)/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -19,7 +21,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib64-msvc-10.0;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -41,6 +43,14 @@
     </BuildMacro>
     <BuildMacro Include="OIIO">
       <Value>$(OIIO)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXR">
+      <Value>$(OPENEXR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILM_BASE">
+      <Value>$(ILM_BASE)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

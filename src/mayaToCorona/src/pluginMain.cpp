@@ -5,6 +5,8 @@
 
 #include "OpenImageIO/oiioversion.h"
 #include "OSL/oslversion.h"
+#include "boost/version.hpp"
+#include "OpenEXR\OpenExrConfig.h"
 
 #include "CoronaCore/api/Api.h"
 #include "mayatoCorona.h"
@@ -57,13 +59,21 @@ static const MString TestShaderClassification("shader/surface:");
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.31"
+#define VERSION "0.34"
 
 MStatus initializePlugin( MObject obj )
 {
 	std::string oiio = OIIO_VERSION_STRING;
 	std::string oslVersion = OSL_LIBRARY_VERSION_STRING;
-	MGlobal::displayInfo(MString("MayaToCorona version: ") + MString(VERSION) + " using OIIO " + oiio.c_str() + " and osl " + oslVersion.c_str());
+	std::string boostVersion = BOOST_LIB_VERSION;
+	std::string openExrVersion = OPENEXR_VERSION_STRING;
+	MGlobal::displayInfo(MString("MayaToCorona version: ") + MString(VERSION));
+	MGlobal::displayInfo(MString("OIIO ") + oiio.c_str());
+	MGlobal::displayInfo(MString("OSL ") + oslVersion.c_str());
+	MGlobal::displayInfo(MString("BOOST ") + boostVersion.c_str());
+	MGlobal::displayInfo(MString("OpenEXR ") + openExrVersion.c_str());
+
+
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 

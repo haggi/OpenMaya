@@ -18,6 +18,37 @@ class mtco_MayaObject;
 class MFnDependencyNode;
 class MString;
 
+struct MayaToRenderPass{
+	enum MayaToPassType{
+		HALF = 0,
+		FLOAT = 1
+	};
+	enum MayaToChannelType{
+		SINGLE = 0,
+		COLOR = 1
+	};
+	const char *passName;
+	MayaToPassType passType;
+	MayaToChannelType channelType;
+	int coronaPassId;
+	Corona::Rgb *coronaRgbScanline;
+	float *coronaFloatScanline;
+
+	MayaToRenderPass()
+	{
+		coronaRgbScanline = NULL;
+		coronaFloatScanline = NULL;
+	}
+
+	~MayaToRenderPass()
+	{
+		if (coronaRgbScanline != NULL)
+			delete[] coronaRgbScanline;
+		if (coronaRgbScanline != NULL)
+			delete[] coronaFloatScanline;
+	}
+};
+
 static const char *passesNames[] = {
 	"Alpha",
 	"SourceColor",
@@ -115,14 +146,9 @@ public:
 	virtual void defineMesh(mtco_MayaObject *obj);
 	void updateMesh(mtco_MayaObject *obj);
 	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
-	//void defineDefaultMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
 	void setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj);
 	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
 	void clearMaterialLists();
-	//void defineAttribute(MString& attributeName, MFnDependencyNode& depFn, Corona::ColorOrMap& com, ShadingNetwork& sn);
-	//Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
-	//void defineFloat(MString& attributeName, MFnDependencyNode& depFn, float& com);
-	//void defineColor(MString& attributeName, MFnDependencyNode& depFn, Corona::Rgb& com);
 	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
 	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
 	bool isSunLight(mtco_MayaObject *obj);
@@ -138,13 +164,13 @@ public:
 	virtual void abortRendering();
 
 	void saveImage();
+	void saveMergedExr(Corona::String filename);
+	MString getImageFileName(MString& basename, MString& rest);
+	void getPassesInfo(std::vector<MayaToRenderPass>& passes);
 	// utils
-	//void setTransformationMatrix(Corona::AffineTm& tm, mtco_MayaObject *obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
-	// temp
 	void createScene();
-
 	void framebufferCallback();
 
 	//void doit(); // for testing

@@ -55,11 +55,19 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR)
 		{
 			MColor col = getColorAttr(attributeName.asChar(), depFn);
-			MPlug multiplierPlug = depFn.findPlug(attributeName + "Multiplier", &stat);
+			MString multiplierName = attributeName + "Multiplier";
+			MPlug multiplierPlug = depFn.findPlug(multiplierName, &stat);
 			float multiplier = 1.0f;
 			if (stat)
 				multiplier = multiplierPlug.asFloat();
+			Corona::Rgb offsetColor(0,0,0);
+			if (attributeName == "refractionIndex")
+				offsetColor = Corona::Rgb(-1, -1, -1);
+			if (attributeName == "fresnelIor")
+				offsetColor = Corona::Rgb(-1, -1, -1);
 			rgbColor = Corona::Rgb(col.r * multiplier, col.g * multiplier, col.b * multiplier);
+			rgbColor += offsetColor;
+			
 		}
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_FLOAT)
 		{
@@ -116,34 +124,36 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		Corona::NativeMtlData data;
 		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network);
 		data.components.translucency = defineAttribute(MString("translucency"), depFn, network);
-		data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network);
+		data.translucencyLevel = defineAttribute(MString("translucencyFraction"), depFn, network);
+		//data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network);
 		data.components.reflect = defineAttribute(MString("reflectivity"), depFn, network);
 		const Corona::BsdfLobeType bsdfType[] = { Corona::BSDF_ASHIKHMIN, Corona::BSDF_PHONG, Corona::BSDF_WARD };
-		//int id;
-		//getEnum(MString("brdfType"), depFn, id);
-		//data.reflect.bsdfType = bsdfType[id];
 		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
-
 		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
 		data.reflect.fresnelIor = defineAttribute(MString("fresnelIor"), depFn, network);
 		data.reflect.anisotropy = defineAttribute(MString("anisotropy"), depFn, network);
 		data.reflect.anisoRotation = defineAttribute(MString("anisotropicRotation"), depFn, network);
-
 		data.components.refract = defineAttribute(MString("refractivity"), depFn, network);
 		data.refract.ior = defineAttribute(MString("refractionIndex"), depFn, network);
 		data.refract.glossiness = defineAttribute(MString("refractionGlossiness"), depFn, network);
 
-		int glassMode = 0;
-		getEnum(MString("glassMode"), depFn, glassMode);
+		int glassType = getEnumInt("glassType", depFn);
 		Corona::GlassMode glassModes[] = { Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID };
-		data.refract.glassMode = glassModes[glassMode];
+		if (glassType == 0) //normal == hybrid
+			data.refract.glassMode = glassModes[2];
+		if (glassType == 1) //causticy == onesided
+			data.refract.glassMode = glassModes[0];
+		if (glassType == 2) //thin == twosided
+			data.refract.glassMode = glassModes[1];
 
-		// -- round corners -- 
-		float rcRadius = 0.0001;
-		getFloat(MString("roundCornersRadius"), depFn, rcRadius);
-		data.roundedCorners.radius = rcRadius * globalScaleFactor;
-		getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
-
+		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
+		if (obj != NULL)
+		{
+			float rcRadius = 0.0001;
+			getFloat(MString("roundCornersRadius"), depFn, rcRadius);
+			data.roundedCorners.radius = rcRadius * globalScaleFactor;
+			getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
+		}
 
 		// --- volume ----
 		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network);

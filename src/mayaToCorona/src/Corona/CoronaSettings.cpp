@@ -7,8 +7,6 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 
-static Logging logger;
-
 void CoronaRenderer::defineSettings()
 {
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, this->mtco_renderGlobals->imgWidth);
@@ -49,7 +47,6 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_MAX_SAMPLE_INTENSITY, this->mtco_renderGlobals->maxPtSampleIntensity);
 	
 	context.settings->set(Corona::PARAM_NUM_THREADS, this->mtco_renderGlobals->threads);
-	//context.settings->set(Corona::PARAM_EXPORT_ONLY, this->mtco_renderGlobals->exportSceneFile);
 	if(this->mtco_renderGlobals->exportSceneFile)
 		context.settings->set(Corona::PARAM_EXPORT_PATH, this->mtco_renderGlobals->exportSceneFileName.asChar());
 	 
@@ -119,14 +116,6 @@ void CoronaRenderer::defineSettings()
 	context.colorMappingData->exposure.simple.exponent = this->mtco_renderGlobals->colorMapping_simpleExposure;
 	context.colorMappingData->highlightCompression = this->mtco_renderGlobals->colorMapping_highlightCompression;
 
-	logger.debug(MString("Color temp: ") + this->mtco_renderGlobals->colorMapping_colorTemperature);
-	logger.debug(MString("contrast: ") + this->mtco_renderGlobals->colorMapping_contrast);
-	logger.debug(MString("gamma: ") + this->mtco_renderGlobals->colorMapping_gamma);
-	logger.debug(MString("tint: ") + this->mtco_renderGlobals->colorMapping_tint.r + " " + this->mtco_renderGlobals->colorMapping_tint.g + " " + this->mtco_renderGlobals->colorMapping_tint.b);
-	logger.debug(MString("exposure: ") + this->mtco_renderGlobals->colorMapping_simpleExposure);
-	logger.debug(MString("highlightCompression: ") + this->mtco_renderGlobals->colorMapping_highlightCompression);
-	logger.debug(MString("use photographic: ") + !this->mtco_renderGlobals->colorMapping_useSimpleExposure);
-
 	// v2.8 exposure from camera
 	for (int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
 	{
@@ -140,6 +129,7 @@ void CoronaRenderer::defineSettings()
 		context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
 		context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
 		context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f/getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+		context.colorMappingData->photographicExposure = !this->mtco_renderGlobals->colorMapping_useSimpleExposure;
 		context.colorMappingData->exposure.photographic.fStop = getFloatAttr("fStop", camFn, 5.6);
 		context.colorMappingData->exposure.photographic.iso = getFloatAttr("mtco_iso", camFn, 1.0);
 		context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f);

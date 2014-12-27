@@ -43,9 +43,9 @@ public:
         const Corona::Dir toLight = (PP - P).getNormalized(distance);
 		distance *= distFactor;
 		if (doShadows)
-			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL) + sColor;
+			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL);
 		else
-			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
+			transport = Corona::Spectrum::WHITE;
 		float dummy;
 		float decay = 1.0;
 		if( decayType == 1) // linear decay
@@ -109,40 +109,33 @@ public:
 		float distance;
         const Corona::Dir toLight = (PP - P).getNormalized(distance);
 		distance *= distFactor;
-		const float cosAngle = acos(Corona::Utils::max(0.f, -dot(toLight, LD)));
+		const float cos = Corona::Utils::max(0.f, -dot(toLight, LD));
+		const float cosAngle = acos(cos);
 		float dummy;
 		if (doShadows)
-			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL) + sColor;
+			transport = context.shadowTransmission(PP, Corona::RAY_NORMAL);
 		else
-			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
+			transport = Corona::Spectrum::WHITE;
+
 
 		context.forwardBsdfCos(toLight, bsdf, dummy);
 
 		float angularValue = 1.0;
-		if( penumbraAngle > 0.0)
+		if( penumbraAngle != 0.0)
 		{
-			float startAngle = coneAngle;
-			float endAngle = coneAngle + penumbraAngle * 2;
-			if( cosAngle > startAngle )
+			
+			angularValue = smoothstep(coneAngle, coneAngle + penumbraAngle, cosAngle);
+			if (penumbraAngle > 0.0)
 			{
-				angularValue = (endAngle - cosAngle)/(penumbraAngle * 2.0);
-				coneAngle += penumbraAngle * 2;
-			}
-		}
-		if( penumbraAngle < 0.0)
-		{
-			float startAngle = coneAngle - abs(penumbraAngle) * 2.0;
-			float endAngle = coneAngle;
-			if( cosAngle > startAngle )
-			{
-				angularValue = (endAngle - cosAngle)/(abs(penumbraAngle) * 2.0);
+				angularValue = 1.0 - angularValue;
+				coneAngle += penumbraAngle;
 			}
 		}
 
 		if( dropoff > 0.0)
 		{
 			float fac = cosAngle/coneAngle;
-			angularValue *= 1.0 - pow(1.0f - fac, dropoff);
+			angularValue *= pow(cos, dropoff);
 		}
 
 		if( cosAngle > coneAngle)
@@ -158,7 +151,7 @@ public:
 			decay = 1.0/(distance * distance * distance);
 
         const float dotSurface = absDot(context.getShadingNormal(), toLight);
-		return bsdf * diffuse * (dotSurface * Corona::PI) * lightIntensity * decay * angularValue;
+		return bsdf * diffuse * Corona::PI * lightIntensity * decay * angularValue;
 	}
 };
 
@@ -203,9 +196,9 @@ public:
 		const Corona::Dir finalDir = (newTo * blendFac + (1.0 - blendFac) * toLight).getNormalized();
 		Corona::Pos dirLightPos = P + finalDir * 10.0;
 		if (doShadows)
-			transport = context.shadowTransmission(dirLightPos, Corona::RAY_NORMAL) + sColor;
+			transport = context.shadowTransmission(dirLightPos, Corona::RAY_NORMAL);
 		else
-			transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
+			transport = Corona::Spectrum::WHITE;
 
 		float dummy;
 		context.forwardBsdfCos(toLight, bsdf, dummy);

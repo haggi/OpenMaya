@@ -56,8 +56,6 @@ void CoronaRenderer::defineLights()
 				lightDir.normalize();
 		
 				MObject sunDagObj =	sunDagNode.child(0, &stat);
-				if( !stat )
-					logger.error("no child 0");
 				MColor sunColor(1);
 				float colorMultiplier = 1.0f;
 				if(sunDagObj.hasFn(MFn::kDirectionalLight))
@@ -68,7 +66,8 @@ void CoronaRenderer::defineLights()
 				}else{
 					logger.warning(MString("Sun connection is not a directional light - using transform only."));
 				}
-				sunColor *= colorMultiplier * 10000.0;
+				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(this->mtco_renderGlobals->sunSizeMulti*Corona::SUN_PROJECTED_HALF_ANGLE));
+				sunColor *= colorMultiplier * intensityFactor * 10000.0;
 				Corona::Sun sun;
 
 				sun.active = true;
@@ -79,6 +78,7 @@ void CoronaRenderer::defineLights()
 				sun.visibleRefract = true;
 				sun.sizeMultiplier = this->mtco_renderGlobals->sunSizeMulti;
 				this->context.scene->getSun() = sun;
+
 			}
 		}
 	}

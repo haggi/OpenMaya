@@ -1,3 +1,22 @@
+release 0.34
+- 
+
+
+release 0.33
+- fixed a bug in component passes
+- fixed inverted dropoff in spotlight
+- modified glassMode now we have glassType
+- added map for reflection and refraction index
+- fixed refraction and reflection ior #147
+- implemented multilayer exr #122
+
+release 0.32
+- fixed translucency #143
+- removed roundCorners from swatches rendering #144
+- fixed photographic exposure #141
+- normalized sunsize/intensity relationship #139
+- switching to boost::log started #140
+
 release 0.31
 - implemented lightShader
 - implemented volumeShader

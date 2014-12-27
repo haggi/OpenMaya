@@ -19,12 +19,12 @@ public:
 
 protected:
 
-//---------------------------- automatically created attributes start ------------------------------------
 	static    MObject opacity;
 	static    MObject opacityMultiplier;
 	static    MObject emissionMultiplier;
 	static    MObject volumeScatteringAlbedo;
 	static    MObject fresnelIor;
+	static    MObject fresnelIorMap;
 	static    MObject roundCornersSamples;
 	static    MObject emissionSharpnessFakePoint;
 	static    MObject glassMode;
@@ -32,31 +32,31 @@ protected:
 	static    MObject emissionSharpnessFake;
 	static    MObject reflectivity;
 	static    MObject reflectivityMultiplier;
+	static    MObject reflectionGlossiness;
+	static    MObject refractionGlossiness;
+	static    MObject refractionIndex;
+	static    MObject refractionIndexMap;
 	static    MObject castsShadows;
+	static    MObject glassType;
 	static    MObject translucency;
 	static    MObject translucencyFraction;
 	static    MObject volumeEmissionColor;
 	static    MObject anisotropyRotation;
-	static    MObject reflectionGlossiness;
 	static    MObject volumeEmissionDist;
 	static    MObject roundCornersRadius;
 	static    MObject bgOverride;
-	static    MObject refractionGlossiness;
 	static    MObject diffuse;
 	static    MObject diffuseMultiplier;
 	static    MObject refractivity;
 	static    MObject refractivityMultiplier;
-//	static    MObject brdfType;
 	static    MObject emissionColor;
 	static    MObject shadowCatcherMode;
 	static    MObject anisotropy;
 	static    MObject volumeMeanCosine;
-	static    MObject refractionIndex;
 	static    MObject emissionDisableSampling;
 	static    MObject alphaMode;
 	static    MObject attenuationDist;
 	static    MObject volumeSSSMode;
-//---------------------------- automatically created attributes end ------------------------------------
 	static    MObject iesProfile;
 
    // Translucence coefficient

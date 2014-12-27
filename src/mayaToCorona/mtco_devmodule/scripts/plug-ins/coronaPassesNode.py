@@ -14,7 +14,7 @@ def addEnumAttr(attr, default, options, doc=""):
     enumAttr = OpenMaya.MFnEnumAttribute()
     setattr(CoronaPassesNode, attr, enumAttr.create(attr, attr, default))
     for option in options:
-        enumAttr.addField(option, options[option])
+        enumAttr.addField(option, options.index(option))
     CoronaPassesNode.addAttribute(getattr(CoronaPassesNode, attr))
 
 def addTypedAttr(attr, type, default, doc=""):
@@ -43,6 +43,7 @@ def nodeInitializer():
     kString = OpenMaya.MFnData.kString
 
     addNumAttr("passType", kInt, 0)
+    addEnumAttr("dataType", 0, ["Half", "Float"])
 #     addNumAttr("mapChannel", kInt, 0)
 #     addStrAttr("sourceColor")
 #     addStrAttr("componentName")

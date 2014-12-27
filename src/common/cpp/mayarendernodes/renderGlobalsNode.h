@@ -57,6 +57,9 @@ private:
 	static    MObject imagePath;
 	static    MObject imageName;
 
+	static    MObject exrDataTypeHalf;
+	static    MObject exrMergeChannels;
+
 	// raytracing
 	static    MObject maxTraceDepth;
 

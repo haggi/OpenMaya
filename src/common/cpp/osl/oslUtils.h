@@ -30,6 +30,7 @@
 #include <vector>
 #include "OSL/oslexec.h"
 #include "boost/variant.hpp"
+#include "math.h"
 
 #include "../shadingtools/shadingNode.h"
 #include "../utilities/tools.h"
@@ -37,7 +38,7 @@
 #define ARRAY_MAX_ENTRIES 10
 
 namespace MAYATO_OSL{
-
+	
 	struct Connection{
 		MString sourceNode;
 		MString sourceAttribute;

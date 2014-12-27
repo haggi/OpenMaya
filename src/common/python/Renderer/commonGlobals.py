@@ -15,7 +15,7 @@ class OpenMayaCommonGlobals(object):
         self.imageFormatData = []
         imageFormats = pm.getMelGlobal("string[]", "$gImageFormatData")
         if len(imageFormats) == 0:
-            pm.mel.eval("source imageFormats") #make sure we have the $gImageFormatData global variable
+            pm.mel.eval("source imageFormats")  # make sure we have the $gImageFormatData global variable
             imageFormats = pm.getMelGlobal("string[]", "$gImageFormatData")
         self.imageFormatData.append(("Custom", 320, 240))
         for line in imageFormats:
@@ -40,11 +40,10 @@ class OpenMayaCommonGlobals(object):
     def setImageSize(self, preset):
         for imgFormat in self.imageFormatData:
             if imgFormat[0] == preset:
-                print "---------- found preset", preset
                 self.defaultResolution.aspectLock.set(0)
                 self.defaultResolution.width.set(imgFormat[1])
                 self.defaultResolution.height.set(imgFormat[2])
-                self.defaultResolution.deviceAspectRatio.set(float(imgFormat[1])/float(imgFormat[2]))
+                self.defaultResolution.deviceAspectRatio.set(float(imgFormat[1]) / float(imgFormat[2]))
     
     def updateImageSize(self, *args):
         
@@ -55,23 +54,21 @@ class OpenMayaCommonGlobals(object):
         w = self.defaultResolution.width.get()
         h = self.defaultResolution.height.get()
         dar = self.defaultResolution.deviceAspectRatio.get()
-        
-        print "----------- update image size with ", w, h, dar
-        
+                
         if args[0] == "width":
             if self.defaultResolution.aspectLock.get():
-                h = w/dar
+                h = w / dar
         if args[0] == "height":
             if self.defaultResolution.aspectLock.get():
                 w = h * dar
         if args[0] == "devAsp":
-            h = w/dar
-        darNew = w/h
+            h = w / dar
+        darNew = w / h
         self.defaultResolution.deviceAspectRatio.set(darNew)
         self.defaultResolution.width.set(w)
         self.defaultResolution.height.set(h)
-        #uiDict['width'].setValue1(w) 
-        #uiDict['height'].setValue1(h)
+        # uiDict['width'].setValue1(w) 
+        # uiDict['height'].setValue1(h)
 
         for imgFormat in self.imageFormatData:            
             if w == imgFormat[1] and h == imgFormat[2]:
@@ -92,8 +89,20 @@ class OpenMayaCommonGlobals(object):
             self.defaultGlobals.periodInExt.set(1)
         self.updateFrameSettings()
 
-                    
-        
+    def createExrUI(self):
+        pass
+    
+    def updateExrUI(self):
+        ext = self.renderNode.imageFormat.getEnums().keys()[self.renderNode.imageFormat.get()]
+        print "updateExrUI imageFormat extension", ext
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+            if ext.lower() == "exr":
+                print "Exr, activating contrls"
+                uiDict['exrOptionsLayout'].setEnable(True)
+            else:
+                uiDict['exrOptionsLayout'].setEnable(False)
+            
     def OpenMayaCommonGlobalsCreateTab(self):        
         log.debug("OpenMayaCommonGlobalsCreateTab()")
         scLo = "scrollLayout"
@@ -112,15 +121,17 @@ class OpenMayaCommonGlobals(object):
                 uiDict['imgsize'] = pm.text(label="Image Size:", align="left", font="smallBoldLabelFont")
         
         with pm.scrollLayout(scLo, horizontalScrollBarThickness=0) as sl:
-            print "Scroll layout", sl
             with pm.columnLayout("commonTabColumn", adjustableColumn=True, width=400) as ctc:
-                print "common", ctc
                 with pm.frameLayout(label="File Output", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
                         pm.textFieldGrp(label="File Name Prefix:")
-                        
-                        pm.attrEnumOptionMenuGrp("imageMenuMayaSW", label="Image Format:", attribute=self.renderNode.imageFormat)                            
-                        
+                        pm.attrEnumOptionMenuGrp("imageMenuMayaSW", label="Image Format:", attribute=self.renderNode.imageFormat)
+                        formats = self.renderNode.imageFormat.getEnums().keys()
+                        if "exr" in formats or "Exr"  in formats:
+                            with pm.columnLayout("exrOptionsLayout", adjustableColumn=True, width=400) as uiDict['exrOptionsLayout']:
+                                self.addRenderGlobalsUIElement(attName='exrDataTypeHalf', uiType='bool', displayName='Half Float', default='false', uiDict={})
+                                self.addRenderGlobalsUIElement(attName='exrMergeChannels', uiType='bool', displayName='Merge passes', default='true', uiDict={})
+                                
                         uiDict['imageNumbering'] = pm.optionMenuGrp(label="Frame/Animation ext:", changeCommand=self.setFrameNumbering)
                         for value in ["name.ext", "name.#.ext"]:
                             pm.menuItem(value)
@@ -136,25 +147,25 @@ class OpenMayaCommonGlobals(object):
                         self.addRenderDefaultGlobalsUIElement(attName='endFrame', uiType='float', displayName='End Frame:', uiDict=uiDict)
                         self.addRenderDefaultGlobalsUIElement(attName='byFrame', uiType='float', displayName='By Frame:', uiDict=uiDict)
 
-                with pm.frameLayout(label="Renderable Cameras",collapsable=True, collapse=False):
+                with pm.frameLayout(label="Renderable Cameras", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
                         for cam in pm.ls(type="camera"):
                             pm.checkBoxGrp(label=cam.name(), value1=cam.renderable.get(), cc=pm.Callback(self.switchCamRenderable, cam))
 
-                with pm.frameLayout(label="Image Size",collapsable=True, collapse=False):
+                with pm.frameLayout(label="Image Size", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
                         uiDict['imageSizePresets'] = pm.optionMenuGrp(label="Presets:", changeCommand=self.setImageSize)
                         for imgFormat in self.imageFormatData:
                             pm.menuItem(imgFormat[0])
-                        #uiDict['imageSizePresets'].setSelect(12) 
+                        # uiDict['imageSizePresets'].setSelect(12) 
 
                         self.addRenderDefaultResGlobalsUIElement(attName='aspectLock', uiType='bool', displayName='Maintain aspect ratio', uiDict=uiDict)
                         self.addRenderDefaultResGlobalsUIElement(attName='width', uiType='int', displayName='Width:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "width"))
                         self.addRenderDefaultResGlobalsUIElement(attName='height', uiType='int', displayName='Height:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "height"))
                         self.addRenderDefaultResGlobalsUIElement(attName='deviceAspectRatio', uiType='float', displayName='Device Aspect:', uiDict=uiDict, callback=pm.Callback(self.updateImageSize, "devAsp"))
-                        #self.addRenderDefaultResGlobalsUIElement(attName='pixelAspect', uiType='float', displayName='Pixel Aspect:', uiDict=uiDict, callback=self.updateImageSize)
+                        # self.addRenderDefaultResGlobalsUIElement(attName='pixelAspect', uiType='float', displayName='Pixel Aspect:', uiDict=uiDict, callback=self.updateImageSize)
                         
-                with pm.frameLayout(label="Render Scripts",collapsable=True, collapse=False):
+                with pm.frameLayout(label="Render Scripts", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
                         self.addRenderDefaultGlobalsUIElement(attName='preMel', uiType='string', displayName='Pre Render Mel:', uiDict=uiDict)
                         self.addRenderDefaultGlobalsUIElement(attName='postMel', uiType='string', displayName='Post Render Mel:', uiDict=uiDict)
@@ -164,12 +175,12 @@ class OpenMayaCommonGlobals(object):
                         self.addRenderDefaultGlobalsUIElement(attName='postRenderMel', uiType='string', displayName='Post Frame Mel:', uiDict=uiDict)
 
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
-        pm.formLayout(parentForm, edit=True, attachForm=[  (clo, "right", 0), (clo, "left", 0), (clo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ], attachControl = [(scLo, "top", 0, clo)])
-        #self.setImageSize("HD_540") # set default
+        pm.formLayout(parentForm, edit=True, attachForm=[  (clo, "right", 0), (clo, "left", 0), (clo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ], attachControl=[(scLo, "top", 0, clo)])
+        # self.setImageSize("HD_540") # set default
         self.OpenMayaCommonGlobalsUpdateTab()
-        
+        self.updateExrUI()
+        pm.scriptJob(attributeChange=(self.renderNode.imageFormat, self.updateExrUI), parent=parentForm)
 
-    
     def updateFrameSettings(self):
         log.debug("OpenMayaCommonGlobalsUpdateTab()")
         if not self.rendererTabUiDict.has_key('common'):
