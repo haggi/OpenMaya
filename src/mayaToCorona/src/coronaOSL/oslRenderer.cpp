@@ -4,7 +4,6 @@
 
 #include "OSL/oslexec.h"
 #include "OSL/genclosure.h"
-
 #include "utilities/logging.h"
 
 using namespace OSL;
@@ -420,7 +419,6 @@ TypeDesc type, ustring name, void *val)
 	return false;
 }
 
-
 void OSLShadingNetworkRenderer::setShaderSearchPath(std::string path)
 {
 	this->shaderSearchPath = path;
@@ -467,6 +465,8 @@ void OSLShadingNetworkRenderer::setup()
 	if (this->shadingsys != NULL)
 		delete this->shadingsys;
 	this->shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &this->errorHandler);
+	OIIO::TextureSystem *ts = this->shadingsys->texturesys();
+	ts->attribute("grey_to_rgb", 1);
 	this->shadingsys->attribute("lockgeom", 1);
 	this->shadingsys->attribute("searchpath:shader", this->shaderSearchPath);
 	//this->shadingsys->attribute("strict_messages", true);
@@ -481,6 +481,20 @@ void OSLShadingNetworkRenderer::setup()
 	//aovnames[1] = "fout";
 	//shadingsys->attribute ("renderer_outputs", TypeDesc(TypeDesc::STRING,(int)aovnames.size()), &aovnames[0]);
 
+	for (int i = 0; i < 256; i++)
+	{
+		if (ctx[i] != NULL)
+		{
+			shadingsys->release_context(ctx[i]);
+			ctx[i] = NULL;
+		}
+
+		if (thread_info[i] != NULL)
+		{
+			this->shadingsys->destroy_thread_info(thread_info[i]);
+			thread_info[i] = NULL;
+		}
+	}
 }
 
 void OSLShadingNetworkRenderer::createDummyShader()

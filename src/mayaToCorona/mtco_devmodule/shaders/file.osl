@@ -57,7 +57,17 @@ shader file (vector uvCoord = 0,
 	t = 1.0 - t;
 	string filters[4] = {"smartcubic", "cubic", "linear", "closest"};
 	string filter = filters[textureFilter];
+	int numChannels = 0;		
 	color C = texture(fileTextureName, s, t, "wrap", "periodic", "interp", filter, "width", textureFilterWidth, "blur", textureBlur);
+	//int infoResult = gettextureinfo (fileTextureName, "channels", numChannels);
+	//if( infoResult == 1 )
+	//{
+	//	if( numChannels == 1)
+	//	{
+	//		C[1] = C[0];
+	//		C[2] = C[0];
+	//	}
+	//}
 	if( fromSRGB > 0)
 	{
 		C = fromSRGBToLinear(C);

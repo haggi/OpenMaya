@@ -1,3 +1,6 @@
+#ifndef CORONA_SKY_MAP
+#define CORONA_SKY_MAP
+
 #include "CoronaCore/api/Api.h"
 #include "CoronaCore/misc/Shaders/SkyShader.h"
 
@@ -7,11 +10,8 @@ class SkyMap : public Corona::Abstract::Map, Corona::SkyShader
 {
 public:
 	CoronaRenderer *coronaRenderer;
-	SkyMap()
-	{
-		this->params = new Corona::SkyParams;
-	};
-	~SkyMap(){};
+	SkyMap();
+	~SkyMap();
 	Corona::SkyParams *params;
 
 	virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);
@@ -20,32 +20,8 @@ public:
 	virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
 	void initSky();
 	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
+	virtual Corona::Rgb sc(const int samples = 1000);
 };
 
-void SkyMap::initSky()
-{
-	Corona::Sun sun = this->coronaRenderer->context.scene->getSun();
-	this->init(this->params, &sun);
-}
 
-Corona::Rgb SkyMap::evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
-{
-	outAlpha = 1.0f;
-	Corona::Dir d = context.getRay().direction;
-	return evalSky(d);
-}
-
-float SkyMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha)
-{
-	return evalColor(context, cache, outAlpha).grayValue();
-}
-
-Corona::Dir SkyMap::evalBump(const Corona::IShadeContext&, Corona::TextureCache*)
-{
-	STOP; //currently not supported
-}
-
-void SkyMap::renderTo(Corona::Bitmap<Corona::Rgb>& output)
-{
-	STOP; //currently not supported
-}
+#endif

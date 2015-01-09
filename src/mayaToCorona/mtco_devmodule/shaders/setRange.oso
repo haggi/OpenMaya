@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader setRange
 param	vector	value	0 0 0 		 %read{0,0} %write{2147483647,-1}
 param	vector	inMin	0 0 0 		 %read{46,46} %write{2147483647,-1}

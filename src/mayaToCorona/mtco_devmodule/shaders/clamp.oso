@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader clamp
 param	vector	inMin	0 0 0 		 %read{2,2} %write{2147483647,-1}
 param	vector	inMax	0 0 0 		 %read{1,1} %write{2147483647,-1}

@@ -15,27 +15,20 @@ public:
 
 	const Corona::Pos LIGHT_POS;
 
-	Light() : LIGHT_POS(Corona::Pos(-4.4, -6.4, 4.4)) { }
+	Light() : LIGHT_POS(Corona::Pos(-4.4 * 15.0, -6.4 * 15.0, 4.4 * 15.0)) { }
 
 	// simulate spot light with colorful directional falloff
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const {
 
 		float distance;
 		Corona::BsdfComponents brdf;
-		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(1.f, 1.f, 1.f)));
-		
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(0.8f, 0.8f, 0.8f)));		
 		const Corona::Pos P = context.getPosition();
 		const Corona::Dir toLight = (LIGHT_POS - P).getNormalized(distance);
-		//if (false)
-		//	transport = context.shadowTransmission(LIGHT_POS, Corona::RAY_NORMAL);
-		//else
-		transport = Corona::Spectrum(Corona::rgb2Radiance(Corona::Rgb(1.0, 1.0, 1.0)));
+		transport = Corona::Spectrum::WHITE;
 		float dummy;
-		float decay = 1.0;
-
 		context.forwardBsdfCos(toLight, brdf, dummy);
-		const float dotSurface = absDot(context.getShadingNormal(), toLight);
-		return brdf * diffuse * (dotSurface * Corona::PI) * 2.0;
+		return brdf * diffuse * Corona::PI * 2.0;
 	}
 };
 
@@ -49,7 +42,7 @@ public:
 			return Corona::Rgb::BLACK;
 		}
 		else {
-			return Corona::Rgb::WHITE;
+			return Corona::Rgb::WHITE * .8;
 		}
 	}
 

@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader contrast
 param	vector	value	0 0 0 		 %read{1,13} %write{2147483647,-1}
 param	vector	contrast	0 0 0 		 %read{24,62} %write{2147483647,-1}

@@ -1,5 +1,6 @@
 #include "Corona.h"
 #include "CoronaLights.h"
+#include "CoronaSky.h"
 
 #include <maya/MObjectArray.h>
 
@@ -67,9 +68,20 @@ void CoronaRenderer::defineLights()
 					logger.warning(MString("Sun connection is not a directional light - using transform only."));
 				}
 				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(this->mtco_renderGlobals->sunSizeMulti*Corona::SUN_PROJECTED_HALF_ANGLE));
-				sunColor *= colorMultiplier * intensityFactor * 10000.0;
+				sunColor *= colorMultiplier * intensityFactor * 2000000;
 				Corona::Sun sun;
 
+				Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
+				SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
+
+				Corona::Rgb avgColor(1, 1, 1);
+				if (sky != NULL)
+				{
+					avgColor = sky->sc();
+				}
+
+				Corona::Rgb sColor(sunColor.r, sunColor.g, sunColor.b);
+				sun.color = sColor * avgColor;
 				sun.active = true;
 				sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
 				sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
@@ -114,6 +126,10 @@ void CoronaRenderer::defineLights()
 			pl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			pl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+			{ 
+				pl->excludeList.nodes.push(obj->excludedObjects[loId]);
+			}
 			this->context.scene->addLightShader(pl);
 		}
 		if( obj->mobject.hasFn(MFn::kSpotLight))
@@ -143,6 +159,10 @@ void CoronaRenderer::defineLights()
 			sl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			sl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+			{
+				sl->excludeList.nodes.push(obj->excludedObjects[loId]);
+			}
 
 			this->context.scene->addLightShader(sl);
 		}
@@ -173,6 +193,10 @@ void CoronaRenderer::defineLights()
 			dl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			dl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+			{
+				dl->excludeList.nodes.push(obj->excludedObjects[loId]);
+			}
 
 			this->context.scene->addLightShader(dl);
 		}
@@ -196,6 +220,11 @@ void CoronaRenderer::defineLights()
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
 				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
+				for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+				{
+					data.emission.excluded.nodes.push(obj->excludedObjects[loId]);
+				}				
+
 				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 				bool visible = getBoolAttr("mtco_areaVisible", depFn, true);

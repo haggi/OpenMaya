@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader gammaCorrect
 param	vector	value	0 0 0 		 %read{3,19} %write{2147483647,-1}
 param	vector	gamma	0 0 0 		 %read{0,20} %write{2147483647,-1}

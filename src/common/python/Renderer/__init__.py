@@ -149,15 +149,8 @@ class MayaToRenderer(object):
         melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
         melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
         
-#         if tabName == "CommonGlobals":
-#             createTabCmd = "{0}CreateTab".format(tabName) 
-#             updateTabCmd = "{0}UpdateTab".format(tabName) 
-#             tabLabel = "{0}Common".format(self.rendererName)
-#             createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
-#             updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
-#             melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)
-#             melUpdateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(updateTabCmd, updatePyCmd)
-        
+        #if tabName == "CommonGlobals":
+        #   createTabCmd = "{0}{1}CreateTab".format(self.rendererName, tabName) 
         #log.debug("mel create tab: \n" + melCreateCmd)
         #log.debug("mel update tab: \n" + melUpdateCmd)
         #log.debug("python create tab: \n" + createPyCmd)
@@ -243,8 +236,8 @@ global proc updateMayaImageFormatControl()
                 self.renderGlobalsNode.optimizedTexturePath.set(str(optimizedPath))
                 self.afterGlobalsNodeReplacement()
                 self.renderGlobalsNode.setLocked(True)
-        else:
-            log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
+        #else:
+        #    log.debug("renderlgobalsnode already defined: " + self.renderGlobalsNode)
         pm.select(selection)
         
     def registerNodeExtensions(self):
@@ -398,18 +391,107 @@ global proc updateMayaImageFormatControl()
             
         pm.renderer(self.rendererName, edit=True, renderRegionProcedure="mayaRenderRegion")
 
-        # In the maya system files we have to hardcode some renderers if we want to use our own CommonGlobals Tab
-        # The modified scripts are located in the module scritps directory. Unfortunatly the scripts directory is loaded
-        # after mayas own scripts directory so the modified scripts with the same name will never be loaded. To fix this
-        # behaviour I place the module script path at the very first position.        
         scriptDir = path.path(__file__).dirname().parent
-        os.environ['MAYA_SCRIPT_PATH'] = "{0};{1}".format(scriptDir, os.environ['MAYA_SCRIPT_PATH'])
-        pm.mel.eval("source createMayaSoftwareCommonGlobalsTab")
-        pm.mel.eval("source unifiedRenderGlobalsWindow")
+        #os.environ['MAYA_SCRIPT_PATH'] = "{0};{1}".format(scriptDir, os.environ['MAYA_SCRIPT_PATH'])
+        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
+        pm.mel.source("unifiedRenderGlobalsWindow")
+        
+        self.defineCommonMelProcedures()
         
         pm.evalDeferred(self.addTabs)                
         log.debug("RegisterRenderer done")
         
+    def defineCommonMelProcedures(self):        
+        melCmd = """global proc updateMayaSoftwareImageFormatControl(){
+            python("{0}");
+        }""".replace("{0}", self.baseRenderMelCommand + "updateMayaSoftwareImageFormatControl()")
+        #print "commonMelCmd: ", melCmd
+        pm.mel.eval(melCmd)
+
+        melCmd = """global proc updateMultiCameraBufferNamingMenu(){
+            python("{0}");
+        }""".replace("{0}", self.baseRenderMelCommand + "updateMultiCameraBufferNamingMenu()")
+        #print "commonMelCmd: ", melCmd
+        pm.mel.eval(melCmd)
+        
+        melCmd = """global proc addOneTabToGlobalsWindow(string $renderer, string $tabLabel, string $createProc){
+            python("{0}");
+        }""".replace("{0}", self.baseRenderMelCommand + "addOneTabToGlobalsWindow(\\\"\" + $renderer + \"\\\", \\\"\" + $tabLabel + \"\\\", \\\"\" + $createProc + \"\\\")")
+        #print "commonMelCmd: ", melCmd
+        pm.mel.eval(melCmd)
+
+    def addOneTabToGlobalsWindow(self, renderer, tabLabel, createProc):
+        #print "python cmd: addOneTabToGlobalsWindow", renderer, tabLabel, createProc
+        # no windows no need to call
+        if not pm.window('unifiedRenderGlobalsWindow', exists=True):
+            return
+        
+        displayAllTabs = pm.mel.isDisplayingAllRendererTabs()
+        #print "displayAllTabs", displayAllTabs
+        
+        if not displayAllTabs and pm.SCENE.defaultRenderGlobals.currentRenderer.get() != renderer:
+            #print "displayAllTabs false currentRenderer ('{0}') is not ('{0}')".format(pm.SCENE.defaultRenderGlobals.currentRenderer.get(),renderer)
+            return
+                
+        # Set the correct tabLayout parent.
+        if displayAllTabs:
+            tabLayoutName = pm.mel.getRendererTabLayout(pm.melGlobals['gMasterLayerRendererName'])
+        else:
+            tabLayoutName = pm.mel.getRendererTabLayout(renderer)
+        
+        # Hide the tabForm while updating.
+        tabFormManagedStatus = pm.formLayout('tabForm', q=True, manage=True)
+        pm.formLayout('tabForm', edit=True, manage=False)
+        pm.setParent('tabForm')
+        
+        # Set the correct tabLayout parent.
+        if displayAllTabs:
+            tabLayoutName = pm.mel.getRendererTabLayout(pm.melGlobals['gMasterLayerRendererName'])
+        else:
+            tabLayoutName = pm.mel.getRendererTabLayout(renderer)
+        #print "TabLayoutName", tabLayoutName
+        pm.setParent(tabLayoutName)        
+        tabName = pm.mel.rendererTabName(renderer, tabLabel)
+        #print "tabName", tabName
+        
+        commonTabNames = {
+            'Common'             : "m_unifiedRenderGlobalsWindow.kCommon",
+            'Passes'             : "m_unifiedRenderGlobalsWindow.kPassesTab",
+            'Maya Software'      : "m_unifiedRenderGlobalsWindow.kMayaSoftware",
+            'Maya Hardware'      : "m_unifiedRenderGlobalsWindow.kMayaHardware",
+            'Maya Vector'        : "m_unifiedRenderGlobalsWindow.kMayaVector",
+            'Features'           : "m_unifiedRenderGlobalsWindow.kFeatures",
+            'Quality'            : "m_unifiedRenderGlobalsWindow.kQuality",
+            'Indirect Lighting'  : "m_unifiedRenderGlobalsWindow.kIndirectLighting",
+            'Options'            : "m_unifiedRenderGlobalsWindow.kOptions"
+        }
+        if commonTabNames.has_key(tabLabel):
+            tabLabel = pm.mel.uiRes(commonTabNames[tabLabel])
+                
+        if not pm.layout(tabName, exists=True):
+            pm.setUITemplate('renderGlobalsTemplate', pushTemplate=True)
+            pm.setUITemplate('attributeEditorTemplate', pushTemplate=True)
+            pm.formLayout(tabName)
+            createProcs = ['createMayaSoftwareCommonGlobalsTab', 'createMayaSoftwareGlobalsTab']
+            createProcs.extend(pm.renderer("Corona", q=True, globalsTabCreateProcNames=True))             
+            if createProc in createProcs:
+                #print "eval renderer create proc", createProc
+                pm.mel.eval(createProc)
+            pm.setParent('..')    
+            pm.setUITemplate(popTemplate=True)
+            pm.setUITemplate(popTemplate=True)
+            pm.tabLayout(tabLayoutName, edit=True, tabLabel=(tabName, tabLabel))
+    
+        pm.formLayout('tabForm', edit=True, manage=tabFormManagedStatus)
+                    
+    def updateMultiCameraBufferNamingMenu(self):
+        #print "python cmd: updateMultiCameraBufferNamingMenu"
+        pass
+    
+    def updateMayaSoftwareImageFormatControl(self):
+        #print "python cmd: updateMayaSoftwareImageFormatControl"
+        pass
+    
     def addTabs(self):
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("CommonGlobals"))    
         pm.renderer(self.rendererName, edit=True, addGlobalsTab=self.renderTabMelProcedure("Renderer"))
@@ -434,7 +516,6 @@ global proc updateMayaImageFormatControl()
         return self.imageFormatCtrl
 
     def updateImageFormatControls(self):
-                
         log.debug("updateImageFormatControls()")
         self.createGlobalsNode()   
         selectedItem = self.renderGlobalsNode.imageFormat.get()
@@ -465,8 +546,8 @@ global proc updateMayaImageFormatControl()
         print "unregister"
         if pm.renderer(self.rendererName, q=True, exists=True):
             pm.renderer(self.rendererName, unregisterRenderer=True)
-            #pm.mel.eval("source unifiedRenderGlobalsWindow")
-            # self.unDoOverwriteUpdateMayaImageFormatControl()
+        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
+        pm.mel.source("unifiedRenderGlobalsWindow")
     
     def globalsTabCreateProcNames(self):
         pass

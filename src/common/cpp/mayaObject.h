@@ -57,6 +57,7 @@ public:
 	std::vector<MDagPath> shadowObjects; // for lights - shadow linking
 	bool shadowExcludeList; // if true the shadowObjects contains objects which ignores shadows from the current light
 	std::vector<MDagPath> castNoShadowObjects; // for lights - shadow linking
+	std::vector<MayaObject *> excludedObjects; // for lights - excluded objects
 
 
 	std::vector<MString> exportFileNames; // for every mb step complete filename for every exported shape file

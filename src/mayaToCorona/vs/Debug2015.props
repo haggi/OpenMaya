@@ -9,6 +9,14 @@
     <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
     <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
     <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\openexr_deploy</OPENEXR>
+    <OSLA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\osl-release</OSLA>
+    <OIIOA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\oiio-release</OIIOA>
+    <OPENEXRA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\openexr-release</OPENEXRA>
+    <ILM_BASEA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\ilmbase-release</ILM_BASEA>
+    <LLVM>H:\UserDatenHaggi\Documents\coding\llvm\deploy_debug</LLVM>
+    <LLVMA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\llvm-debug</LLVMA>
+    <TIFFA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\libtiff-release</TIFFA>
+    <TIFF>H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy</TIFF>
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
@@ -23,8 +31,8 @@
       <PreprocessorDefinitions>MAYA2015;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;H:\UserDatenHaggi\Documents\coding\llvm\deploy_debug\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013\lib\jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;$(LLVM)\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013\lib\libpng16_static.lib;libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013\lib\jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
@@ -56,6 +64,38 @@
     </BuildMacro>
     <BuildMacro Include="OPENEXR">
       <Value>$(OPENEXR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OSLA">
+      <Value>$(OSLA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OIIOA">
+      <Value>$(OIIOA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXRA">
+      <Value>$(OPENEXRA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILM_BASEA">
+      <Value>$(ILM_BASEA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LLVM">
+      <Value>$(LLVM)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LLVMA">
+      <Value>$(LLVMA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="TIFFA">
+      <Value>$(TIFFA)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="TIFF">
+      <Value>$(TIFF)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

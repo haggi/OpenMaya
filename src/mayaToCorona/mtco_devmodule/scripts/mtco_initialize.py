@@ -519,6 +519,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapR', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )
         pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapG', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )
         pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapB', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )  
+        pm.addExtension( nodeType='camera', longName='mtco_cameraType', attributeType='enum', enumName="Perspective:Cylindrical:Spherical", defaultValue = 0.0)
         
         
         # exponent for sun light
@@ -581,10 +582,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
         mat.outColor >> shadingGroup.surfaceShader
         if postCommand is not None:
-            log.debug("createRenderNode callback postcommand: {0}".format(postCommand))
             postCommand = postCommand.replace("%node", str(mat))
             postCommand = postCommand.replace("%type", '\"\"')
-            log.debug("processed postcommand: {0}".format(postCommand))
             pm.mel.eval(postCommand)
         return mat
     

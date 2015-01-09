@@ -13,6 +13,7 @@ class OpenMayaCommonGlobals(object):
         self.defaultResolution = pm.SCENE.defaultResolution
         self.rendererTabUiDict = {}
         self.imageFormatData = []
+        self.cameras = []
         imageFormats = pm.getMelGlobal("string[]", "$gImageFormatData")
         if len(imageFormats) == 0:
             pm.mel.eval("source imageFormats")  # make sure we have the $gImageFormatData global variable
@@ -37,6 +38,9 @@ class OpenMayaCommonGlobals(object):
     def switchCamRenderable(self, cam):
         cam.renderable.set(not cam.renderable.get())
 
+    def createImageSize(self, parent):
+        pass
+    
     def setImageSize(self, preset):
         for imgFormat in self.imageFormatData:
             if imgFormat[0] == preset:
@@ -46,30 +50,48 @@ class OpenMayaCommonGlobals(object):
                 self.defaultResolution.deviceAspectRatio.set(float(imgFormat[1]) / float(imgFormat[2]))
     
     def updateImageSize(self, *args):
+                        
+        w = float(self.defaultResolution.width.get())
+        h = float(self.defaultResolution.height.get())
+        dar = float(self.defaultResolution.deviceAspectRatio.get())
+        aspectLock = self.defaultResolution.aspectLock.get()
         
-        if not self.rendererTabUiDict.has_key('common'):
+        
+        if args is None or len(args) == 0:
             return
-        uiDict = self.rendererTabUiDict['common']
-        
-        w = self.defaultResolution.width.get()
-        h = self.defaultResolution.height.get()
-        dar = self.defaultResolution.deviceAspectRatio.get()
-                
+                        
         if args[0] == "width":
-            if self.defaultResolution.aspectLock.get():
+            if aspectLock:
                 h = w / dar
         if args[0] == "height":
-            if self.defaultResolution.aspectLock.get():
+            if aspectLock:
                 w = h * dar
         if args[0] == "devAsp":
             h = w / dar
         darNew = w / h
+        
         self.defaultResolution.deviceAspectRatio.set(darNew)
         self.defaultResolution.width.set(w)
         self.defaultResolution.height.set(h)
-        # uiDict['width'].setValue1(w) 
-        # uiDict['height'].setValue1(h)
 
+        defrw = pm.SCENE.defaultResolution.width
+        defrh = pm.SCENE.defaultResolution.height
+        defrd = pm.SCENE.defaultResolution.deviceAspectRatio
+        if args[0] == "width":
+            pm.scriptJob(attributeChange=(defrw, pm.Callback(self.updateImageSize, ["width"])), runOnce=True)
+        if args[0] == "height":
+            pm.scriptJob(attributeChange=(defrh, pm.Callback(self.updateImageSize, ["height"])), runOnce=True)
+        if args[0] == "devAsp":
+            pm.scriptJob(attributeChange=(defrd, pm.Callback(self.updateImageSize, ["devAsp"])), runOnce=True)
+
+        if not self.rendererTabUiDict.has_key('common'):
+            return
+        uiDict = self.rendererTabUiDict['common']
+        
+        if not pm.optionMenuGrp(uiDict['imageSizePresets'], exists=True):
+            log.debug("imageSizePresets Option menu does not exist.")
+            return
+        
         for imgFormat in self.imageFormatData:            
             if w == imgFormat[1] and h == imgFormat[2]:
                 uiDict['imageSizePresets'].setSelect(self.imageFormatData.index(imgFormat) + 1) 
@@ -102,7 +124,35 @@ class OpenMayaCommonGlobals(object):
                 uiDict['exrOptionsLayout'].setEnable(True)
             else:
                 uiDict['exrOptionsLayout'].setEnable(False)
-            
+    
+    def createCamerasUI(self, uiDict):
+        with pm.columnLayout(adjustableColumn=True, width=400) as uiDict['camerasCL']:
+            for cam in pm.ls(type="camera"):
+                pm.checkBoxGrp(label=cam.name(), value1=cam.renderable.get(), cc=pm.Callback(self.switchCamRenderable, cam))
+                self.cameras.append(cam.name())
+                    
+    def updateCamerasUI(self):
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+            pm.deleteUI(uiDict['camerasCL'])
+            with pm.columnLayout(adjustableColumn=True, width=400, parent=uiDict['camerasFrame']) as uiDict['camerasCL']:
+                for cam in pm.ls(type="camera"):
+                    pm.checkBoxGrp(label=cam.name(), value1=cam.renderable.get(), cc=pm.Callback(self.switchCamRenderable, cam))
+
+    def selectionChangedEvent(self):
+        try:
+            sel = pm.ls(sl=True, type="camera")
+            if len(sel) == 0:
+                for t in pm.ls(sl=True, type="transform"):
+                    s = t.getShape()
+                    if s.type() == "camera":     
+                        sel.append(s)
+            for c in sel:
+                if c.name() not in self.cameras or c.renderable.get() != pm.PyNode(self.cameras[self.cameras.index[c.name()]].renderable.get()):
+                    self.updateCamerasUI()
+        except:
+            pass
+        
     def OpenMayaCommonGlobalsCreateTab(self):        
         log.debug("OpenMayaCommonGlobalsCreateTab()")
         scLo = "scrollLayout"
@@ -147,10 +197,8 @@ class OpenMayaCommonGlobals(object):
                         self.addRenderDefaultGlobalsUIElement(attName='endFrame', uiType='float', displayName='End Frame:', uiDict=uiDict)
                         self.addRenderDefaultGlobalsUIElement(attName='byFrame', uiType='float', displayName='By Frame:', uiDict=uiDict)
 
-                with pm.frameLayout(label="Renderable Cameras", collapsable=True, collapse=False):
-                    with pm.columnLayout(adjustableColumn=True, width=400):
-                        for cam in pm.ls(type="camera"):
-                            pm.checkBoxGrp(label=cam.name(), value1=cam.renderable.get(), cc=pm.Callback(self.switchCamRenderable, cam))
+                with pm.frameLayout(label="Renderable Cameras", collapsable=True, collapse=False) as uiDict['camerasFrame']:
+                    self.createCamerasUI(uiDict)
 
                 with pm.frameLayout(label="Image Size", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
@@ -176,10 +224,17 @@ class OpenMayaCommonGlobals(object):
 
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
         pm.formLayout(parentForm, edit=True, attachForm=[  (clo, "right", 0), (clo, "left", 0), (clo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ], attachControl=[(scLo, "top", 0, clo)])
-        # self.setImageSize("HD_540") # set default
         self.OpenMayaCommonGlobalsUpdateTab()
         self.updateExrUI()
+        self.updateImageSize( ["width"])
         pm.scriptJob(attributeChange=(self.renderNode.imageFormat, self.updateExrUI), parent=parentForm)
+        defrw = pm.SCENE.defaultResolution.width
+        defrh = pm.SCENE.defaultResolution.height
+        defrd = pm.SCENE.defaultResolution.deviceAspectRatio
+        pm.scriptJob(attributeChange=(defrw, pm.Callback(self.updateImageSize, ["width"])), runOnce=True)
+        pm.scriptJob(attributeChange=(defrh, pm.Callback(self.updateImageSize, ["height"])), runOnce=True)
+        pm.scriptJob(attributeChange=(defrd, pm.Callback(self.updateImageSize, ["devAsp"])), runOnce=True)
+        pm.scriptJob(event=("SelectionChanged", self.selectionChangedEvent))
 
     def updateFrameSettings(self):
         log.debug("OpenMayaCommonGlobalsUpdateTab()")
@@ -201,3 +256,4 @@ class OpenMayaCommonGlobals(object):
         uiDict = self.rendererTabUiDict['common']
         
         self.updateFrameSettings()
+        self.updateCamerasUI()

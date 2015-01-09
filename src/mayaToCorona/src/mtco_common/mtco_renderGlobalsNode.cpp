@@ -684,6 +684,8 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( pSkySunBleed ));
 
 	sunSizeMulti = nAttr.create("sunSizeMulti", "sunSizeMulti",  MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.1);
+	nAttr.setSoftMax(64.0);
 	CHECK_MSTATUS(addAttribute( sunSizeMulti ));
 
 	dumpAndResume = nAttr.create("dumpAndResume", "dumpAndResume",  MFnNumericData::kBoolean, false);

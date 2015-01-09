@@ -16,6 +16,11 @@
 
 //vector colorGain; vector colorOffset; float alphaGain; float alphaOffset; int alphaIsLuminance; int invert; vector uvCoord; float filter; float filterOffset
 
+float sampleArea()
+{
+	return length(cross(dPdu, dPdv));
+}
+
 vector colorBalance( vector c, vector colorGain, vector colorOffset)
 {
 	vector result = c;

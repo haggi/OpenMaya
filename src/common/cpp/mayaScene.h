@@ -92,6 +92,7 @@ public:
 	void clearObjList(std::vector<MayaObject *>& objList);
 	void clearObjList(std::vector<MayaObject *>& objList, MayaObject *notThisOne);
 	bool getShadingGroups();
+	bool lightObjectIsInLinkedLightList(MayaObject *lightObject, MDagPathArray& linkedLightsArray);
 	void getLightLinking();
 	bool listContainsAllLights(MDagPathArray& linkedLights, MDagPathArray& excludedLights);
 	MDagPath getWorld();

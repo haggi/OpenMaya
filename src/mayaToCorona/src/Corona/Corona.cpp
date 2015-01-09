@@ -43,8 +43,8 @@ void CoronaRenderer::createScene()
 {
 	this->defineCamera();
 	this->defineGeometry();
-	this->defineLights();
 	this->defineEnvironment();
+	this->defineLights();
 }
 
 //IMaterial* getNativeMtl() 

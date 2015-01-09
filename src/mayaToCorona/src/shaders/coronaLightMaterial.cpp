@@ -43,6 +43,7 @@ void CoronaLight::postConstructor( )
     // to get input data and store output data.
     //
 	MStatus stat;
+	this->setExistWithoutInConnections(true);
 	setMPSafe( true );
 }
 

@@ -22,9 +22,13 @@ void CoronaRenderer::defineCamera()
 		}
 
 		logger.debug(MString("using camera ") + cam->shortName);
+		MVector cameraUpVector(0.0,1.0,0.0);
+
 		MFnCamera camera(cam->mobject);
 		MPoint pos, rot, scale;
 		MMatrix camMatrix = cam->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+		cameraUpVector *= camMatrix;
+		Corona::Dir upVector(cameraUpVector.x, cameraUpVector.y, cameraUpVector.z);
 		getMatrixComponents(camMatrix, pos, rot, scale);
 		Corona::Pos cpos(pos.x, pos.y, pos.z);
 		
@@ -49,7 +53,16 @@ void CoronaRenderer::defineCamera()
 		MPoint coiTransform = coiBase * camMatrix;
 		//logger.debug(MString("Center of interest: ") + coi + " transformed " + coiTransform.x + " "  + coiTransform.y + " "  + coiTransform.z);
 		Corona::Pos center(coiTransform.x, coiTransform.y, coiTransform.z);
-		float fov = 2.0 * atan((horizontalFilmAperture * 0.5f) / (focalLength * 0.03937));
+		float fov;
+		MFnCamera::FilmFit filmFit = camera.filmFit();
+		float factor = horizontalFilmAperture;
+		if (filmFit == MFnCamera::kHorizontalFilmFit)
+			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
+		else if (filmFit == MFnCamera::kVerticalFilmFit)
+		{
+			factor = verticalFilmAperture * this->mtco_renderGlobals->imgWidth / this->mtco_renderGlobals->imgHeight;
+			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
+		}
 		float fovDeg = fov * 57.29578;
 		Corona::AnimatedFloat fieldOfView(fov);
 		//logger.debug(MString("fov ") + fov + " deg: " + fovDeg);
@@ -57,14 +70,38 @@ void CoronaRenderer::defineCamera()
 		
 		Corona::CameraData cameraData;
 
-		//cameraData.type
-		cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(Corona::Dir::UNIT_Z), fieldOfView);
+		bool orthographic = getBoolAttr("orthographic", camera, false);
+
+		if (orthographic)
+		{
+			cameraData.createOrtho(Corona::AnimatedAffineTm(), 10.0f);
+		}
+		else{
+			cameraData.createPerspective(Corona::AnimatedPos(cpos), Corona::AnimatedPos(center), Corona::AnimatedDir(upVector), fieldOfView);
+		}
+		cameraData.spherical.roll = Corona::AnimatedDir(upVector);
+		cameraData.cylindrical.roll = Corona::AnimatedDir(upVector);
+		cameraData.cylindrical.height = 1.0f;
+		int projType = getEnumInt("mtco_cameraType", camera);
+		//CameraProjectionType
+		cameraData.type = Corona::PROJECTION_PERSPECTIVE;
+		if (projType == 1)
+			cameraData.type = Corona::PROJECTION_CYLINDRICAL;
+		if (projType == 2)
+			cameraData.type = Corona::PROJECTION_SPHERICAL;
+
 		Corona::AnimatedFloat focalDist(focusDistance);
 		cameraData.perspective.focalDist = focalDist;
 		cameraData.perspective.fStop = fStop;
 		cameraData.perspective.filmWidth = this->mtco_renderGlobals->toMillimeters(horizontalFilmAperture * 2.54f * 10.0f); //film width in mm 
 		if( dof && this->mtco_renderGlobals->doDof)
 			cameraData.perspective.useDof = true;
+		
+		if (!getBoolAttr("bestFitClippingPlanes", camera, false))
+		{
+			cameraData.distances.minimal = getFloatAttr("nearClipPlane", camera, 0.001f);
+			cameraData.distances.maximal = getFloatAttr("farClipPlane", camera, 100000.0f);
+		}
 
 		if (getBoolAttr("mtco_useBokeh", camera, false))
 		{

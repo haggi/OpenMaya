@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader bulge
 param	float	uWidth	0 		 %read{19,21} %write{2147483647,-1}
 param	float	vWidth	0 		 %read{26,28} %write{2147483647,-1}
@@ -16,7 +16,7 @@ oparam	vector	outColor	0 0 0 		 %read{43,43} %write{42,42}
 oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{44,44}
 global	float	u	 %read{6,6} %write{2147483647,-1}
 global	float	v	 %read{7,7} %write{2147483647,-1}
-local	vector	___315_result	 %read{39,41} %write{38,40}
+local	vector	___316_result	 %read{39,41} %write{38,40}
 local	float	s	 %read{10,23} %write{0,13}
 local	float	t	 %read{8,30} %write{1,18}
 local	float	a	 %read{33,33} %write{25,25}
@@ -125,23 +125,23 @@ code ___main___
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:26
 # 	outColor = C;	
 	functioncall	$const10 42 	%line{26} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:21
-# 	vector result = c;
-	assign		___315_result C 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %line{21} %argrw{"wr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:22
-# 	result *= colorGain;
-	mul		___315_result ___315_result colorGain 	%line{22} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:23
-# 	result += colorOffset;
-	add		___315_result ___315_result colorOffset 	%line{23} %argrw{"wrr"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:24
-# 	return result;
-	assign		C ___315_result 	%line{24} %argrw{"wr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:26
+# 	outColor = C;	
+	assign		___316_result C 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h"} %argrw{"wr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:27
+# // 
+	mul		___316_result ___316_result colorGain 	%line{27} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:28
+# // maya stadard utilities
+	add		___316_result ___316_result colorOffset 	%line{28} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToCorona\\mtco_devmodule\\shaders\\mayaUtils.h:29
+# //
+	assign		C ___316_result 	%line{29} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:27
-# shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
+# 	outAlpha = luminance(color(outColor));
 	assign		outColor C 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl"} %line{27} %argrw{"wr"}
 # H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\bulge.osl:28
-# {
+# }
 	assign		$tmp23 outColor 	%line{28} %argrw{"wr"}
 	luminance	outAlpha $tmp23 	%argrw{"wr"}
 	end

@@ -44,6 +44,7 @@ void CoronaVolume::postConstructor( )
     //
 	MStatus stat;
 	setMPSafe( true );
+	this->setExistWithoutInConnections(true);
 }
 
 

@@ -22,6 +22,7 @@ MTypeId	CoronaRaytype::id(0x0011EF71);
 void CoronaRaytype::postConstructor( )
 {
 	setMPSafe( true );
+	this->setExistWithoutInConnections(true);
 }
 
 MObject CoronaRaytype::base;

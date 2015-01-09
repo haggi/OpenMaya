@@ -30,7 +30,7 @@ void addObjectIdentifier(int id)
 
 bool MayaObject::isInstanced()
 {
-	return this->dagPath.isInstanced() || (this->instanceNumber > 0);
+	return this->dagPath.isInstanced() || (this->instanceNumber > 0) || ((this->attributes != NULL) && this->attributes->hasInstancerConnection);
 }
 
 bool MayaObject::isLight()

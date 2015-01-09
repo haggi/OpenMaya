@@ -105,106 +105,118 @@ bool MayaScene::listContainsAllLights(MDagPathArray& linkedLights, MDagPathArray
 	return true;
 }
 
+bool MayaScene::lightObjectIsInLinkedLightList(MayaObject *lightObject, MDagPathArray& linkedLightsArray)
+{
+	for (uint lId = 0; lId < linkedLightsArray.length(); lId++)
+	{
+		if (lightObject->mobject == linkedLightsArray[lId].node())
+			return true;
+	}
+	return false;
+}
+
 // there are two types of linking, light linking and shadow linking.
 // Light linking will be done in the object attributes, whereas shadow linking is an attribute of a light
 void MayaScene::getLightLinking()
 {
-	//logger.debug(MString("----------- MayaScene::getLightLinking ---------------"));
+	//Logging::debug(MString("----------- MayaScene::getLightLinking ---------------"));
 	MLightLinks lightLink;
     bool parseStatus;
-    //parseStatus = lightLink.parseLinks(MObject::kNullObj, useIgnore = true);
-    parseStatus = lightLink.parseLinks(MObject::kNullObj);
-	MDagPathArray lightArray, excludeLights;
-	MObject nullObj;
-	std::vector<MayaObject *> castNoShadowObjects;
+	parseStatus = lightLink.parseLinks(MObject::kNullObj);
 
-	for( int oId = 0; oId < this->objectList.size(); oId++)
+	for (int oId = 0; oId < this->objectList.size(); oId++)
 	{
-		MayaObject *mo = this->objectList[oId];
-		MDagPath path = mo->dagPath;
-		// the ignored list is more useful because if we have no ignored lights the list is empty
-		// at the moment this does not work for lights with "illuminates by default" turned off, so
-		// I use the linkedLights which works and search for excluded ones
-		mo->linkedLights.clear();
-		//lightLink.getIgnoredLights(path, nullObj, lightArray); 	
-		//for( int ll = 0; ll < lightArray.length(); ll++)
+		MDagPathArray lightArray;
+		MayaObject *obj = this->objectList[oId];
+		
+		if (!obj->mobject.hasFn(MFn::kMesh) && !obj->mobject.hasFn(MFn::kNurbsSurface) && !obj->mobject.hasFn(MFn::kNurbsCurve))
+			continue;
+
+		lightLink.getLinkedLights(obj->dagPath, MObject::kNullObj, lightArray);
+		//for (uint lId = 0; lId < lightArray.length(); lId++)
 		//{
-		//	MDagPath lpath = lightArray[ll];
-		//	logger.debug(lpath.partialPathName() + " is ignored by " + path.partialPathName());
-		//	mo->linkedLights.push_back(lpath);
+		//	Logging::debug(MString("Object ") + obj->shortName + " has link to light: " + lightArray[lId].fullPathName());			
 		//}
 
-		lightLink.getLinkedLights(path, nullObj, lightArray); 	
-		this->listContainsAllLights(lightArray, excludeLights);
-		//logger.debug(MString("Exclude list contains: ") + excludeLights.length() + " lights");
-		for( uint ll = 0; ll < excludeLights.length(); ll++)
+		// if one of the light in my scene light list is NOT in the linked light list,
+		// the light has either turned off "Illuminate by default" or it is explicilty not linked to this object.
+		for (size_t lObjId = 0; lObjId < this->lightList.size(); lObjId++)
 		{
-			MDagPath lpath = excludeLights[ll];
-			//logger.debug(lpath.partialPathName() + " is ignored by " + path.partialPathName());
-			mo->linkedLights.push_back(lpath);
-		}
-
-		bool castsShadows = true;
-		MFnDependencyNode dn(mo->mobject);
-		if( getBool(MString("castsShadows"), dn, castsShadows))
-		{
-			if( !castsShadows )
-				castNoShadowObjects.push_back(mo);
-		}
-		// leave for later implementation: Compare include and exclude list and create the shorter one if necessary
-		// not sure if this is useful at all...
-		//if( !this->listContainsAllLights(lightArray, excludeLights) )
-		//{
-		//	for( int ll = 0; ll < lightArray.length(); ll++)
-		//	{
-		//		this->objectList[oId]->linkedLights.push_back(lightArray[ll]);
-		//	}
-		//}else{
-		//	logger.debug(path.partialPathName() + " is connected to all lights.");
-		//}
-	}
-
-	// shadow linking. Get objects which ignores shadows from a specific light
-	MSelectionList selectionList;
-	for( uint lId = 0; lId < this->lightList.size(); lId++)
-	{
-		if( castNoShadowObjects.size() > 0)
-		{
-			for( uint oId = 0; oId < castNoShadowObjects.size(); oId++)
+			if (lightObjectIsInLinkedLightList(this->lightList[lObjId], lightArray))
 			{
-				this->lightList[lId]->castNoShadowObjects.push_back(castNoShadowObjects[oId]->dagPath);
+				//Logging::debug(MString("Light object ") + this->lightList[lObjId]->shortName + " IS in lightList -> linked.");
+			}
+			else{
+				//Logging::debug(MString("Light object ") + this->lightList[lObjId]->shortName + " is NOT in lightList -> " + obj->shortName + " is not linked.");
+				this->lightList[lObjId]->excludedObjects.push_back(obj);
 			}
 		}
-		//MayaObject *mo = this->lightList[lId];
-		//MDagPath path = mo->dagPath;
-		//selectionList.clear();
-		//lightLink.getShadowIgnoredObjects(path, selectionList);
-		//int numObj = selectionList.length();
-		//for( int oId = 0; oId < numObj; oId++)
+
+		//lightArray.clear();
+		//lightLink.getIgnoredLights(obj->dagPath, MObject::kNullObj, lightArray);
+		//for (uint lId = 0; lId < lightArray.length(); lId++)
 		//{
-		//	MDagPath obDag;
-		//	selectionList.getDagPath(oId, obDag);
-		//	logger.debug(MString("Object ") +  obDag.partialPathName() + " ignores shadows from " + path.partialPathName());
-		//	mo->shadowObjects.push_back(obDag);
+		//	Logging::debug(MString("Object ") + obj->shortName + " ignores light: " + lightArray[lId].fullPathName());
 		//}
 	}
+	//MDagPathArray lightArray, excludeLights;
+	//MObject nullObj;
+	//std::vector<MayaObject *> castNoShadowObjects;
 
-	// search for shadow ignoring objects
-	for( uint lId = 0; lId < this->lightList.size(); lId++)
-	{
-		MayaObject *mo = this->lightList[lId];
-		MDagPath path = mo->dagPath;
-		selectionList.clear();
-		lightLink.getShadowIgnoredObjects(path, selectionList);
-		int numObj = selectionList.length();
-		for( int oId = 0; oId < numObj; oId++)
-		{
-			MDagPath obDag;
-			selectionList.getDagPath(oId, obDag);
-			//logger.debug(MString("Object ") +  obDag.partialPathName() + " ignores shadows from " + path.partialPathName());
-			mo->shadowObjects.push_back(obDag);
-		}
-	}
+	//for( int oId = 0; oId < this->objectList.size(); oId++)
+	//{
+	//	MayaObject *mo = this->objectList[oId];
+	//	MDagPath path = mo->dagPath;
+	//	// the ignored list is more useful because if we have no ignored lights the list is empty
+	//	// at the moment this does not work for lights with "illuminates by default" turned off, so
+	//	// I use the linkedLights which works and search for excluded ones
+	//	mo->linkedLights.clear();
+	//	lightLink.getLinkedLights(path, nullObj, lightArray); 	
+	//	this->listContainsAllLights(lightArray, excludeLights);
+	//	for( uint ll = 0; ll < excludeLights.length(); ll++)
+	//	{
+	//		MDagPath lpath = excludeLights[ll];
+	//		mo->linkedLights.push_back(lpath);
+	//	}
+
+	//	bool castsShadows = true;
+	//	MFnDependencyNode dn(mo->mobject);
+	//	if( getBool(MString("castsShadows"), dn, castsShadows))
+	//	{
+	//		if( !castsShadows )
+	//			castNoShadowObjects.push_back(mo);
+	//	}
+	//}
+
+	//// shadow linking. Get objects which ignores shadows from a specific light
+	//MSelectionList selectionList;
+	//for( uint lId = 0; lId < this->lightList.size(); lId++)
+	//{
+	//	if( castNoShadowObjects.size() > 0)
+	//	{
+	//		for( uint oId = 0; oId < castNoShadowObjects.size(); oId++)
+	//		{
+	//			this->lightList[lId]->castNoShadowObjects.push_back(castNoShadowObjects[oId]->dagPath);
+	//		}
+	//	}
+	//}
+
+	//// search for shadow ignoring objects
+	//for( uint lId = 0; lId < this->lightList.size(); lId++)
+	//{
+	//	MayaObject *mo = this->lightList[lId];
+	//	MDagPath path = mo->dagPath;
+	//	selectionList.clear();
+	//	lightLink.getShadowIgnoredObjects(path, selectionList);
+	//	int numObj = selectionList.length();
+	//	for( int oId = 0; oId < numObj; oId++)
+	//	{
+	//		MDagPath obDag;
+	//		selectionList.getDagPath(oId, obDag);
+	//		//logger.debug(MString("Object ") +  obDag.partialPathName() + " ignores shadows from " + path.partialPathName());
+	//		mo->shadowObjects.push_back(obDag);
+	//	}
+	//}
 }
 
 std::vector<MayaObject *> parentList;

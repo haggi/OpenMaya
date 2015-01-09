@@ -1,6 +1,19 @@
-release 0.34
-- 
+release 0.35
+- fixed sun size crash with limits. #152
+- negative bump map value was not recognized. #153
+- switched common globals ui to new system. #155
+- shader nodes are not deleted any more if inputs are deleted. #159
+- added near/far clipping to camera.
+- fixed camera roll.
+- fixed single channel textures in OSL. #156
+- added camera view projections. #165
+- fixed particle instancer bug. #154
+- implemented light linking. #167
 
+release 0.34
+- fixed shader assingment via Assign New Material... #125
+- fixed cameras ui in renderGlobals #151
+- runs on Windows8
 
 release 0.33
 - fixed a bug in component passes

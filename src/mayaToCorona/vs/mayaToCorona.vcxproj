@@ -102,8 +102,9 @@
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OIIO)\lib;$(OSL)\lib;$(OPENEXR)\lib;$(ILM_BASE)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)_maya2015$(TargetExt)</OutputFile>
+      <AdditionalDependencies>libboost_regex-vc120-mt-gd-1_55.lib;libboost_wave-vc120-mt-gd-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
@@ -140,6 +141,7 @@
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
+      <AdditionalDependencies>libboost_regex-vc120-mt-1_55.lib;libboost_wave-vc120-mt-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -185,6 +187,7 @@
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp" />
     <ClCompile Include="..\src\Corona\CoronaShaders.cpp" />
     <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaSky.cpp" />
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp" />
     <ClCompile Include="..\src\Corona\CoronaWorld.cpp" />
     <ClCompile Include="..\src\mayaToCorona.cpp" />

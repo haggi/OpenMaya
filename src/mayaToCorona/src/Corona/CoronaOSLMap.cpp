@@ -45,9 +45,10 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Dir N = context.getShadingNormal();
 
 	Corona::Matrix33 base = context.bumpBase(0);
-	Corona::Dir T = base.getColumn(0);
-	Corona::Dir No = base.getColumn(1);
-	Corona::Dir C = base.getColumn(2);
+	Corona::Dir T = base.tangent();
+	
+	Corona::Dir No = N;
+	Corona::Dir C = base.cotangent();
 
 	float pixelWorldRatio = context.pixelToWorldRatio();
 
@@ -63,8 +64,8 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	sg.dvdx = sg.dudx;
 	sg.dvdy = sg.dudy;
 
-	//sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
-	//sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);
+	sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
+	sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);
 	//sg.dPdz = OSL::Vec3(0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
 
 	//sg.dPdv = OSL::Vec3(duvw.x(), duvw.y(), duvw.z());
@@ -187,7 +188,10 @@ float OSLMap::evalMono(const Corona::IShadeContext& context, Corona::TextureCach
 
 INLINE float rgb2bumpVal(const Corona::Rgb& in)
 {
-	return in.powFast(1.f / 2.2f).grayValue();
+	if (in.r() < 0.0)
+		return -1.0 * in.powFast(1.f / 2.2f).grayValue();
+	else
+		return in.powFast(1.f / 2.2f).grayValue();
 }
 
 Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache)
@@ -225,6 +229,7 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 	}
 	if (this->bumpType == BUMP)
 	{
+		//context.worldToObjectTm;
 		const Corona::Matrix33 base = context.bumpBase(0);
 		const float pixel2world = context.pixelToWorldRatio();
 		const Corona::Dir ddUvw = context.dUvw(0);
@@ -232,8 +237,8 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 		float outAlpha = 1.0f;
 		Corona::Pos uvw = context.getMapCoords(0);
 		float multi = 0.01;
-		float dx = dUvw.x();
-		float dy = dUvw.y();
+		float dx = dUvw.x() * 0.5;
+		float dy = dUvw.y() * 0.5;
 		float uPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() + dx, uvw.y())) * multi;
 		float uMinus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() - dx, uvw.y())) * multi;
 		float vPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x(), uvw.y() + dy)) * multi;
@@ -242,7 +247,8 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 		const float dU = (uMinus - uPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.x());
 		const float dV = (vMinus - vPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.y());
 		const Corona::Dir bumpedNormal = (dU*base.tangent() - dV*base.cotangent() + base.mainDir()).getNormalizedApprox();
-		return (bumpedNormal - base.mainDir());
+		//return (bumpedNormal - base.mainDir());
+		return (bumpedNormal - context.getShadingNormal());
 	}
 	return context.getShadingNormal();
 }

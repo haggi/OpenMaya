@@ -84,6 +84,8 @@ class AECoronaNodeTemplate(BaseTemplate):
     def buildCameraTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_cameraType", label="Projection Type")
+        self.addSeparator()
         self.addControl("mtco_iso", label="Iso")
         self.addControl("mtco_shutterSpeed", label="Shutter Speed")
         self.addSeparator()

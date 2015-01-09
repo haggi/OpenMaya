@@ -371,7 +371,8 @@ Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
 		if( iobj->geom != NULL )
 			geom = iobj->geom;
 	}else{
-		if( obj->visible || (obj->hasInstancerConnection && (this->mtco_scene->instancerNodeElements.size() > 0)))
+		// if this object is visible or if it is invisible and it has a connection to an instancer node and there are any instancer elements, then export it
+		if( obj->visible || (((obj->attributes!=NULL) && obj->attributes->hasInstancerConnection) && (this->mtco_scene->instancerNodeElements.size() > 0)))
 		{
 			logger.debug(MString("Translating mesh ") + obj->shortName );
 			this->defineMesh(obj);
@@ -386,7 +387,7 @@ Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
 
 void CoronaRenderer::defineGeometry()
 {
-	
+
 	for(size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
 	{
 		mtco_MayaObject *obj = (mtco_MayaObject *)this->mtco_scene->objectList[objId];
@@ -396,9 +397,6 @@ void CoronaRenderer::defineGeometry()
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
 		if( geom == NULL )
 		{
-			//if( obj->isShapeConnected() )
-			//	if( this->mtco_renderGlobals->doMb )
-
 			logger.debug(MString("Geo pointer is NULL"));
 			continue;
 		}
@@ -408,7 +406,7 @@ void CoronaRenderer::defineGeometry()
 
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
-		obj->instance = geom->addInstance(atm, NULL, NULL);
+		obj->instance = geom->addInstance(atm, obj, NULL);
 
 		MFnDependencyNode depFn(obj->mobject);
 		if (getBoolAttr("mtco_envPortal", depFn, false))
@@ -423,16 +421,15 @@ void CoronaRenderer::defineGeometry()
 		}
 	}
 
-
-	for(size_t objId = 0; objId < this->mtco_scene->instancerNodeElements.size(); objId++)
+	for (size_t objId = 0; objId < this->mtco_scene->instancerNodeElements.size(); objId++)
 	{
 		mtco_MayaObject *obj = (mtco_MayaObject *)this->mtco_scene->instancerNodeElements[objId];
-		if( !obj->mobject.hasFn(MFn::kMesh))
+		if (!obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
 
-		if( geom == NULL )
+		if (geom == NULL)
 		{
 			logger.error(MString("Geo pointer is NULL"));
 			continue;
@@ -440,7 +437,8 @@ void CoronaRenderer::defineGeometry()
 
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
-		obj->instance = geom->addInstance(atm, NULL, NULL);
+		
+		obj->instance = geom->addInstance(atm, obj, NULL);
 
 		MFnDependencyNode depFn(obj->mobject);
 		if (getBoolAttr("mtco_envPortal", depFn, false))
@@ -454,6 +452,7 @@ void CoronaRenderer::defineGeometry()
 			this->defineMaterial(obj->instance, obj);
 		}
 	}
+
 }
 
 

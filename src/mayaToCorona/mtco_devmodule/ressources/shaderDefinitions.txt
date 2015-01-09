@@ -206,6 +206,36 @@ shader_start:checker
 	outatt:outColor:color
 shader_end
 
+shader_start:noise
+	inatt:threshold:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:frequencyRatio:float
+	inatt:depthMax:int
+	inatt:inflection:int
+	inatt:inTime:float
+	inatt:frequency:float
+	inatt:implode:float
+	inatt:implodeCenter:vector
+	inatt:noiseType:int
+	inatt:density:float
+	inatt:spottyness:float
+	inatt:sizeRand:float
+	inatt:randomness:float
+	inatt:falloff:int
+	inatt:numWaves:int
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
 shader_start:samplerInfo
 	outatt:normalCamera:vector
 	outatt:pointWorld:vector

@@ -1,5 +1,5 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.5.7dev
+# Compiled by oslc 1.6.0dev
 shader OSLInterface
 param	float	multiplier	1 		 %read{3,19} %write{2147483647,-1}
 param	float	offset	0 		 %read{4,20} %write{2147483647,-1}
