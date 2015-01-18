@@ -256,6 +256,7 @@ void CoronaRenderer::render()
     
     // run the rendering. This function blocks until it is done
 	logger.debug(MString("renderFrame..."));
+	this->mtco_scene->renderingStarted = true;
     context.core->renderFrame();
     context.core->endSession();
 	framebufferCallback();

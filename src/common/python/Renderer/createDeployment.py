@@ -176,9 +176,9 @@ def createDeployment(renderer, shortCut, mayaRelease):
         f.remove()
 
     #common mel replacement scripts
-    scDir = path.path(sourceDir.parent.parent + "/common/mel/maya{0}".format(mayaRelease))
-    for f in scDir.listdir("*.mel"):
-        f.copy("{destDir}/scripts/{melName}".format(destDir=devDestDir, melName=f.basename()))
+    #scDir = path.path(sourceDir.parent.parent + "/common/mel/maya{0}".format(mayaRelease))
+    #for f in scDir.listdir("*.mel"):
+    #    f.copy("{destDir}/scripts/{melName}".format(destDir=devDestDir, melName=f.basename()))
 
     #renderer python scripts
     for root, dirs, files in os.walk(sourceDir + "/scripts/"):

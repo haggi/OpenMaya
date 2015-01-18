@@ -13,6 +13,8 @@ class RenderQueueWorker
 public:
 	RenderQueueWorker();
 	~RenderQueueWorker();
+	static void addDefaultCallbacks();
+	static void removeDefaultCallbacks();
 	static void reAddCallbacks();
 	static void addCallbacks();
 	static void removeCallbacks();

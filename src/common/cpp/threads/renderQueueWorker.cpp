@@ -12,6 +12,7 @@
 
 #include "../dummyRenderer/dummyScene.h"
 #include "../mayaScene.h"
+#include "../world.h"
 
 #include <time.h>
 
@@ -105,6 +106,13 @@ std::vector<MObject> *getModifiedObjectList()
 {
 	return &modifiedObjList;
 }
+
+
+void RenderQueueWorker::addDefaultCallbacks()
+{
+}
+void RenderQueueWorker::removeDefaultCallbacks(){}
+
 
 //
 // basic idea:
@@ -245,6 +253,15 @@ void RenderQueueWorker::computationEventThread( void *dummy)
 {
 	if(renderComputation.isInterruptRequested() && isRendering)
 	{
+		MayaScene *scene = MayaTo::MayaSceneFactory().getMayaScenePtr();
+		if (scene != NULL)
+		{
+			if (!scene->renderingStarted)
+			{
+				Logging::debug("interrupt request, but rendering not yet started. Skipping.");
+				return;
+			}
+		}
 		logger.detail("computationEventThread::InterruptRequested.");
 		EventQueue::Event e;
 		e.type = EventQueue::Event::INTERRUPT;
@@ -383,7 +400,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 				computationInterruptCallbackId = 0;
 				renderDone = false;
 				isRendering = true;
-				logger.debug("Init check");
 				MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
 				int width = mayaScene->renderGlobals->imgWidth;
 				int height = mayaScene->renderGlobals->imgHeight;
@@ -391,9 +407,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, true, true);
 				//status = MRenderView::startRender(width, height, false, true);
-
-				logger.debug("Init check0");
-
 				if( MGlobal::mayaState() != MGlobal::kBatch)
 				{
 					timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
@@ -419,30 +432,21 @@ void RenderQueueWorker::startRenderQueueWorker()
 					addIdleUIComputationCallback();
 				}
 
-				logger.debug("Init check1a");
 				// calculate numtiles
 				int numTX = (int)ceil((float)width/(float)mayaScene->renderGlobals->tilesize);
 				int numTY = (int)ceil((float)height/(float)mayaScene->renderGlobals->tilesize);
 				numTiles = numTX * numTY;
-
-				logger.debug("Init check1b");
-
 				// Here we set the output type to output window.
 				// This will use the trace() command. The reason is that otherways the output will not be printed until 
 				// the end of rendering.
 				logger.setOutType(Logging::OutputWindow);
-
 				logger.debug(MString("start render thread: "));
-
 				mayaScene->startRenderThread();
-				logger.debug("Init check1c");
-
 				if(mayaScene->renderType == MayaScene::IPR)
 				{
 					RenderQueueWorker::addCallbacks();
 					isIpr = true;
 				}
-				logger.debug("Init check2");
 
 				break;
 			}
@@ -514,8 +518,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 			{
 				if( MRenderView::doesRenderEditorExist() )
 				{
-					MRenderView::updatePixels(0, e.tile_xmax, 0, e.tile_ymax, (RV_PIXEL *)e.data);
-					MRenderView::refresh(0, e.tile_xmax, 0, e.tile_ymax);
+					MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, (RV_PIXEL *)e.data);
+					MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
 				}
 				delete[]  (RV_PIXEL *)e.data;
 			}

@@ -152,6 +152,58 @@ class OpenMayaCommonGlobals(object):
                     self.updateCamerasUI()
         except:
             pass
+
+    def updateFilePath(self, *args):   
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+
+    def updateFilePathName(self, *args):   
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+    
+    def updateFileImageSize(self, *args):   
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+
+    def updateFileNamePrefix(self, *args):   
+        if self.rendererTabUiDict.has_key('common'):            
+            uiDict = self.rendererTabUiDict['common']
+        prefix = uiDict['fileNamePrefixField'].getText()
+
+        sceneName = ".".join(pm.sceneName().basename().split(".")[:-1])
+        if len(prefix) == 0:
+            prefix = sceneName
+            uiDict['imgname'].setLabel("File Name: " + sceneName)   
+        
+        settings = pm.api.MCommonRenderSettingsData()
+        pm.api.MRenderUtil.getCommonRenderSettings(settings)
+
+        cams = [cam for cam in pm.ls(type='camera') if cam.renderable.get()]
+        if len(cams) < 1:
+            log.error("No renderable camera.")
+            prefix = ""
+        prefix = prefix.replace("<Camera>", cams[0].name())
+        
+        prefix = prefix.replace("<Scene>", sceneName)
+                
+        ext = self.renderNode.imageFormat.getEnums().keys()[self.renderNode.imageFormat.get()].lower()
+        numberFormat = ""
+        paddedFrameString = "{0:0" + str(settings.framePadding) + "d}."
+        if settings.isAnimated():
+            numberFormat = paddedFrameString.format(int(pm.SCENE.defaultRenderGlobals.startFrame.get()))
+            
+        completeFileName = "{prefix}.{numbering}{ext}".format(prefix=prefix, numbering=numberFormat, ext=ext)
+        
+        uiDict['imgname'].setLabel("File Name: " + completeFileName)   
+        """
+        <Scene>
+        <RenderLayer>
+        <Camera>
+        <RenderPass>
+        <RenderPassType>
+        <Extension>
+        <Version>
+        """
         
     def OpenMayaCommonGlobalsCreateTab(self):        
         log.debug("OpenMayaCommonGlobalsCreateTab()")
@@ -174,7 +226,8 @@ class OpenMayaCommonGlobals(object):
             with pm.columnLayout("commonTabColumn", adjustableColumn=True, width=400) as ctc:
                 with pm.frameLayout(label="File Output", collapsable=True, collapse=False):
                     with pm.columnLayout(adjustableColumn=True, width=400):
-                        pm.textFieldGrp(label="File Name Prefix:")
+                        uiDict['fileNamePrefixField'] = pm.textFieldGrp(label="File Name Prefix:", cc=self.updateFileNamePrefix)
+                        pm.connectControl(uiDict['fileNamePrefixField'], pm.SCENE.defaultRenderGlobals.imageFilePrefix, index = 2)
                         pm.attrEnumOptionMenuGrp("imageMenuMayaSW", label="Image Format:", attribute=self.renderNode.imageFormat)
                         formats = self.renderNode.imageFormat.getEnums().keys()
                         if "exr" in formats or "Exr"  in formats:
@@ -226,7 +279,8 @@ class OpenMayaCommonGlobals(object):
         pm.formLayout(parentForm, edit=True, attachForm=[  (clo, "right", 0), (clo, "left", 0), (clo, "top", 0), (scLo, "bottom", 0), (scLo, "left", 0), (scLo, "right", 0) ], attachControl=[(scLo, "top", 0, clo)])
         self.OpenMayaCommonGlobalsUpdateTab()
         self.updateExrUI()
-        self.updateImageSize( ["width"])
+        self.updateImageSize(["width"])
+        self.updateFileNamePrefix()
         pm.scriptJob(attributeChange=(self.renderNode.imageFormat, self.updateExrUI), parent=parentForm)
         defrw = pm.SCENE.defaultResolution.width
         defrh = pm.SCENE.defaultResolution.height

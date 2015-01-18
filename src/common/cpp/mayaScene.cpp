@@ -39,6 +39,7 @@ void MayaScene::init()
 	this->renderType = NORMAL;
 	this->needsUserThread = false;
 	this->renderState = MayaScene::UNDEF;
+	this->renderingStarted = false;
 }
 
 MString MayaScene::getExportPath(MString ext, MString rendererName)

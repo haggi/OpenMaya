@@ -1,3 +1,6 @@
+release 0.36
+- 
+
 release 0.35
 - fixed sun size crash with limits. #152
 - negative bump map value was not recognized. #153
@@ -9,6 +12,11 @@ release 0.35
 - added camera view projections. #165
 - fixed particle instancer bug. #154
 - implemented light linking. #167
+- fixed render region with test resolution change crash #162
+- implemented imageFilePrefix #166
+- improved region rendering
+- pressing esc during translation process works better
+
 
 release 0.34
 - fixed shader assingment via Assign New Material... #125

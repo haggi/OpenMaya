@@ -49,7 +49,7 @@ public:
 	
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects
 	bool parseScene();
-
+	bool renderingStarted;
 	//bool parseInstancer(); // parse only particle instancer nodes, its a bit more complex
 	bool parseInstancerNew(); // parse only particle instancer nodes, its a bit more complex
 

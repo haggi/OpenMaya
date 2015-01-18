@@ -350,6 +350,7 @@ bool RenderGlobals::getDefaultGlobals()
 		this->frameList.push_back(this->currentFrameNumber );
 		this->doAnimation = false; // at the moment, if rendering comes from UI dont do animation
 	}
+
 	this->imgHeight = data.height;
 	this->imgWidth = data.width;
 	this->pixelAspect = data.pixelAspectRatio;

@@ -55,6 +55,12 @@ public:
 
 	virtual void initialize();
 	virtual void cleanUp();
+
+	virtual void afterOpenScene();
+	virtual void afterNewScene();
+
+	static void callAfterOpenCallback( void *);
+	static void callAfterNewCallback( void *);
 };
 
 void *getObjPtr(MString name);
@@ -63,5 +69,6 @@ static void addObjectPtr(MString name, void *ptr);
 void deleteWorld();
 void defineWorld();
 MayaToWorld *getWorldPtr();
+
 
 #endif // !MAYATO_WORLD_H

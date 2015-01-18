@@ -94,6 +94,14 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 			mayaScene->renderGlobals->imgHeight = height;
 	}
 
+	if (mayaScene->renderGlobals->useRenderRegion)
+	{
+		int imgWidth = mayaScene->renderGlobals->imgWidth;
+		int imgHeight = mayaScene->renderGlobals->imgHeight;
+		RenderGlobals *rg = mayaScene->renderGlobals;
+		if ((rg->regionLeft > imgWidth) || (rg->regionRight > imgWidth) || (rg->regionBottom > imgHeight) || (rg->regionTop > imgHeight))
+			rg->useRenderRegion = false;
+	}
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{
 		logger.debug(MString("-stopIpr"));

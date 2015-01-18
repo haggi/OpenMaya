@@ -393,7 +393,7 @@ global proc updateMayaImageFormatControl()
 
         scriptDir = path.path(__file__).dirname().parent
         #os.environ['MAYA_SCRIPT_PATH'] = "{0};{1}".format(scriptDir, os.environ['MAYA_SCRIPT_PATH'])
-        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
+        pm.mel.source('createMayaSoftwareCommonGlobalsTab')
         pm.mel.source("unifiedRenderGlobalsWindow")
         
         self.defineCommonMelProcedures()
@@ -473,7 +473,11 @@ global proc updateMayaImageFormatControl()
             pm.setUITemplate('attributeEditorTemplate', pushTemplate=True)
             pm.formLayout(tabName)
             createProcs = ['createMayaSoftwareCommonGlobalsTab', 'createMayaSoftwareGlobalsTab']
-            createProcs.extend(pm.renderer("Corona", q=True, globalsTabCreateProcNames=True))             
+            createProcs.extend(pm.renderer("Corona", q=True, globalsTabCreateProcNames=True))  
+            try:
+                createProcs.extend(pm.renderer("arnold", q=True, globalsTabCreateProcNames=True))
+            except:
+                pass
             if createProc in createProcs:
                 #print "eval renderer create proc", createProc
                 pm.mel.eval(createProc)
@@ -546,7 +550,7 @@ global proc updateMayaImageFormatControl()
         print "unregister"
         if pm.renderer(self.rendererName, q=True, exists=True):
             pm.renderer(self.rendererName, unregisterRenderer=True)
-        pm.mel.source('createMayaSoftwareCommonGlobalsTab.mel')
+        pm.mel.source('createMayaSoftwareCommonGlobalsTab')
         pm.mel.source("unifiedRenderGlobalsWindow")
     
     def globalsTabCreateProcNames(self):
@@ -622,16 +626,33 @@ global proc updateMayaImageFormatControl()
         except:
             self.renderGlobalsNode.imagePath.set(pm.workspace.path + 'images')
             
-        imageName = pm.sceneName().basename().replace(".ma", "").replace(".mb", "")
+        sceneName = ".".join(pm.sceneName().basename().split(".")[:-1])
+        
         # check for mayabatch name like sceneName_number 
-        numberPart = imageName.split("__")[-1]
+        numberPart = sceneName.split("__")[-1]
         try:
             number = int(numberPart)
             if number > 999:
-                imageName = imageName.replace("__" + numberPart, "")
+                sceneName = sceneName.replace("__" + numberPart, "")
         except:
             pass
-        self.renderGlobalsNode.imageName.set(imageName)        
 
+        imageName = sceneName
+        
+        prefix = pm.SCENE.defaultRenderGlobals.imageFilePrefix.get()
+        if prefix:
+            if len(prefix) > 0:        
+                settings = pm.api.MCommonRenderSettingsData()
+                pm.api.MRenderUtil.getCommonRenderSettings(settings)
+        
+                cams = [cam for cam in pm.ls(type='camera') if cam.renderable.get()]
+                if len(cams) < 1:
+                    log.error("No renderable camera.")
+                    prefix = ""
+                prefix = prefix.replace("<Camera>", cams[0].name())
+                prefix = prefix.replace("<Scene>", sceneName)
+                imageName = prefix
+            
+        self.renderGlobalsNode.imageName.set(imageName)        
     
     
