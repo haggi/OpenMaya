@@ -156,6 +156,12 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignmen
 			MStatus status = meshFn.getSmoothMeshDisplayOptions(options);
 			if (status)
 			{
+				if (!meshFn.findPlug("useSmoothPreviewForRender", false, &status).asBool())
+				{
+					int smoothLevel = meshFn.findPlug("renderSmoothLevel", false, &status).asInt();
+					options.setDivisions(smoothLevel);
+				}
+
 				subdivs = options.divisions();
 				if (subdivs > 0)
 					multiplier = static_cast<int> (pow(4.0f, (subdivs - 1)));

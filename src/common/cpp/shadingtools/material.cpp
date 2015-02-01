@@ -67,7 +67,7 @@ void ShadingNetwork::parseNetwork(MObject& shaderNode)
 
 	if (sn.nodeState == ShadingNode::INVALID)
 	{
-		logger.feature(MString("Node is not supported (INVALID): ") + getObjectName(shaderNode));
+		Logging::debug(MString("Node is not supported (INVALID): ") + getObjectName(shaderNode));
 		return;
 	}
 
@@ -190,7 +190,7 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
 
 	if( sn.nodeState == ShadingNode::INVALID)
 	{
-		logger.feature(MString("Node is not supported (INVALID): ") + getObjectName(shaderNode));
+		Logging::debug(MString("Node is not supported (INVALID): ") + getObjectName(shaderNode));
 		return;
 	}
 

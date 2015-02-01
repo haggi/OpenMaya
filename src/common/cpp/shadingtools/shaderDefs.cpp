@@ -119,8 +119,8 @@ void ShaderDefinitions::readShaderDefinitions()
 	snodes.push_back(sn);
 	this->shadingNodes.push_back(sn);
 
-	logger.feature(MString("home dir: ") + getRendererHome());
-	logger.feature(MString("shader defs file: ") + getRendererHome() + "ressources/shaderDefinitions.txt");
+	Logging::debug(MString("home dir: ") + getRendererHome());
+	Logging::debug(MString("shader defs file: ") + getRendererHome() + "ressources/shaderDefinitions.txt");
 	
 	std::string shaderDefFile = (getRendererHome() + "ressources/shaderDefinitions.txt").asChar();
 
@@ -193,7 +193,7 @@ ShadingNode ShaderDefinitions::findShadingNode(MObject node)
 	MString nodeTypeName = getDepNodeTypeName(node);
 	for(size_t nodeId = 0; nodeId < this->shadingNodes.size(); nodeId++)
 	{
-		//logger.feature(MString("Searching current node type ") + nodeTypeName + " in supported nodes " + this->shadingNodes[nodeId].typeName);
+		//Logging::debug(MString("Searching current node type ") + nodeTypeName + " in supported nodes " + this->shadingNodes[nodeId].typeName);
 		if( this->shadingNodes[nodeId].typeName == nodeTypeName)
 		{
 			// copy attributes to the shading node
@@ -211,7 +211,7 @@ ShadingNode ShaderDefinitions::findShadingNode(MString nodeTypeName)
 	ShadingNode sn;
 	for(size_t nodeId = 0; nodeId < this->shadingNodes.size(); nodeId++)
 	{
-		//logger.feature(MString("Searching current node type ") + nodeTypeName + " in supported nodes " + this->shadingNodes[nodeId].typeName);
+		//Logging::debug(MString("Searching current node type ") + nodeTypeName + " in supported nodes " + this->shadingNodes[nodeId].typeName);
 		if( this->shadingNodes[nodeId].typeName == nodeTypeName)
 		{
 			// copy attributes to the shading node

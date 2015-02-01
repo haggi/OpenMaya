@@ -346,8 +346,10 @@ void MayaObject::addMeshData()
 	if (this->hasBifrostVelocityChannel())
 	{
 		bool doMb = this->motionBlurred;
-		if (getWorldPtr()->worldRenderGlobals != NULL)
-			doMb = doMb && getWorldPtr()->worldRenderGlobals->doMb;
+		RenderGlobals *rg = (RenderGlobals *)getWorldPtr()->getObjPtr("RenderGlobals");
+		
+		if (rg != NULL)
+			doMb = doMb && rg->doMb;
 
 		logger.debug(MString("Found bifrost velocity data for object: ") + this->shortName);
 		if ((this->meshDataList.size() == 2) || !doMb)
@@ -417,7 +419,11 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals)
 		if (stat)
 		{
 			if (!tmpMesh.findPlug("useSmoothPreviewForRender", false, &stat).asBool())
-				options.setDivisions(tmpMesh.findPlug("renderSmoothLevel", false, &stat).asInt());
+			{
+				//Logging::debug(MString("useSmoothPreviewForRender turned off"));
+				int smoothLevel = tmpMesh.findPlug("renderSmoothLevel", false, &stat).asInt();
+				options.setDivisions(smoothLevel);
+			}
 			if (options.divisions() > 0)
 			{
 				dataObject = meshData.create();
@@ -453,7 +459,11 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals, MF
 		if (stat)
 		{
 			if (!tmpMesh.findPlug("useSmoothPreviewForRender", false, &stat).asBool())
-				options.setDivisions(tmpMesh.findPlug("renderSmoothLevel", false, &stat).asInt());
+			{
+				//Logging::debug(MString("useSmoothPreviewForRender turned off"));
+				int smoothLevel = tmpMesh.findPlug("renderSmoothLevel", false, &stat).asInt();
+				options.setDivisions(smoothLevel);
+			}
 			if (options.divisions() > 0)
 			{
 				dataObject = meshData.create();
@@ -478,6 +488,10 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals, MF
 	uint numVertices = points.length();
 	uint numNormals = normals.length();
 	uint numUvs = uArray.length();
+
+	//Logging::debug(MString("numVertices ") + numVertices);
+	//Logging::debug(MString("numNormals ") + numNormals);
+	//Logging::debug(MString("numUvs ") + numUvs);
 
 	// some meshes may have no uv's
 	// to avoid problems I add a default uv coordinate
@@ -567,6 +581,9 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals, MF
 
 			triMatIndices.append(perFaceShadingGroup);
 
+			//Logging::debug(MString("vtxIds ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
+			//Logging::debug(MString("nIds ") + normalId0 + " " + normalId1 + " " + normalId2);
+			//Logging::debug(MString("uvIds ") + uvId0 + " " + uvId1 + " " + uvId2);
 		}
 	}
 

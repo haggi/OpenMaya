@@ -180,8 +180,12 @@ class OpenMayaCommonGlobals(object):
 
         cams = [cam for cam in pm.ls(type='camera') if cam.renderable.get()]
         if len(cams) < 1:
-            log.error("No renderable camera.")
+            log.error("No renderable camera. please make at least one camera renderable.")
             prefix = ""
+            for c in pm.ls(type='camera'):
+                if "perspShape" in  c:
+                    cams.append(c)
+                    break
         prefix = prefix.replace("<Camera>", cams[0].name())
         
         prefix = prefix.replace("<Scene>", sceneName)

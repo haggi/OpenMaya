@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <boost/thread/thread.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "renderGlobals.h"
 #include "mayaObject.h"
@@ -20,6 +21,7 @@ public:
 		IPR,
 		NONE
 	};
+	
 	enum RenderState{
 		START = 0, 
 		TRANSLATE = 1,
@@ -28,23 +30,22 @@ public:
 		RENDERERROR = 4,
 		UNDEF = 5
 	};
+
 	bool good;
 	RenderType renderType;
-
 	RenderState renderState;
 	std::vector<int> lightIdentifier; // plugids for detecting new lighttypes
 	std::vector<int> objectIdentifier; // plugids for detecting new objTypes
-
 	std::vector<MObject> mObjectList;
 	std::vector<MayaObject *> objectList;
 	std::vector<MayaObject *> camList;
 	std::vector<MayaObject *> lightList;
 	std::vector<MayaObject *> instancerNodeElements; // so its easier to update them
-
 	std::vector<MDagPath> instancerDagPathList;
 
 	float currentFrame;
 	RenderGlobals *renderGlobals;
+	boost::shared_ptr<RenderGlobals> rGlobals;
 	boost::thread rendererThread;
 	
 	bool parseSceneHierarchy(MDagPath currentObject, int level, ObjectAttributes *attr, MayaObject *parentObject); // new, parse whole scene as hierarchy and save/analyze objects

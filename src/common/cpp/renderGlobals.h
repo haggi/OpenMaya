@@ -207,7 +207,9 @@ public:
 	bool isDeformStep();
 	void getImageName();
 	MString getImageOutputFile();
-	virtual MString getImageExt() = 0;
+	MString getImageExt();
+
+	// for every renderer make sure these functions will be overridden
 	virtual void setRendererUnit() = 0;
 	virtual void setRendererAxis() = 0;
 	void defineGlobalConversionMatrix();

@@ -454,13 +454,13 @@ bool MayaScene::updateScene(MFn::Type updateElement)
 			continue;
 
 		obj->updateObject();
-		logger.feature(MString("updateObj ") + objId + ": " + obj->dagPath.fullPathName());
+		Logging::debug(MString("updateObj ") + objId + ": " + obj->dagPath.fullPathName());
 
 		if (!obj->motionBlurred)
 		{
 			if (this->renderGlobals->currentMbElement.elementType == MbElement::None)
 			{
-				logger.feature(MString("found non mb element type. Updating non mb objects.") + objId + ": " + obj->dagPath.fullPathName());
+				Logging::debug(MString("found non mb element type. Updating non mb objects.") + objId + ": " + obj->dagPath.fullPathName());
 				if (updateElement == MFn::kShape)
 					this->shapeUpdateCallback(obj);
 				if (updateElement == MFn::kTransform)

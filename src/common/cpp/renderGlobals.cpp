@@ -163,6 +163,11 @@ void RenderGlobals::defineGlobalConversionMatrix()
 	globalConversionMatrix *= scaleMatrix;
 }
 
+MString RenderGlobals::getImageExt()
+{
+	return this->imageFormatString;
+}
+
 void RenderGlobals::getImageName()
 {
 	double fn = this->currentFrame;
@@ -170,7 +175,6 @@ void RenderGlobals::getImageName()
 	MRenderUtil::getCommonRenderSettings(data);
 	MObject renderLayer = MFnRenderLayer::currentLayer();		
 	MString ext = this->imageFormatString.toLowerCase();
-	//MString ext = this->getImageExt().toLowerCase();
 	ext = pystring::lower(ext.asChar()).c_str();
 	this->imageOutputFile = data.getImageName(data.kFullPathImage, fn, this->imageName, MString(""), ext, renderLayer);
 }

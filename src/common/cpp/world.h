@@ -13,6 +13,8 @@ class MayaToWorld;
 static MayaToWorld *worldPointer = NULL;
 
 class RenderGlobals;
+class MayaScene;
+class Renderer;
 
 class MayaToWorld
 {
@@ -31,7 +33,10 @@ public:
 		BATCHRENDER
 	};
 	WorldState state;
+
 	RenderGlobals *worldRenderGlobals;
+	MayaScene *worldScenePtr;
+	Renderer *worldRendererPtr;
 
 	MStringArray objectNames;
 	std::vector<void *> objectPtr;
