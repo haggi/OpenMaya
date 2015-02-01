@@ -3,6 +3,9 @@
 
 #include "CoronaCore/api/Api.h"
 #include "CoronaCore/api/ApiInterfaces.h"
+#include <maya/MMatrix.h>
+#include <maya/MPoint.h>
+#include <maya/MVector.h>
 
 class PointLight : public Corona::Abstract::LightShader, public Corona::Noncopyable 
 {
@@ -68,6 +71,7 @@ public:
 	Corona::Pos LP;
 	Corona::Dir LD;
 	Corona::Rgb lightColor;
+	Corona::AffineTm lightWorldInverseMatrix;
 	float	lightIntensity;
 	int		decayType;
 	float	angle;
@@ -78,6 +82,7 @@ public:
 	float	lightAngle;
 	bool	doShadows;
 	Corona::Rgb shadowColor;
+	Corona::ColorOrMap lightColorMap;
 
 	SpotLight()
 	{
@@ -97,10 +102,14 @@ public:
 
 	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const
 	{
-		
+		Corona::Rgb lcol(1,1,1);
+		float outAlpha;
+		Corona::Pos lightUvs;
+		Corona::Pos origUvCoords = context.getMapCoords(0);
+
 		float dropOff = dropoff;
 		float coneAngle = angle * 0.5;
-		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(lightColor.r(), lightColor.g(), lightColor.b())));
+		//		const Corona::Spectrum diffuse(Corona::rgb2Radiance(Corona::Rgb(lightColor.r(), lightColor.g(), lightColor.b())));
 		Corona::Spectrum sColor(Corona::rgb2Radiance(Corona::Rgb(shadowColor.r(), shadowColor.g(), shadowColor.b())));
 		Corona::BsdfComponents bsdf;
 		const Corona::Pos P = context.getPosition();
@@ -149,6 +158,21 @@ public:
 			decay = 1.0/(distance * distance);
 		if( decayType == 3) // cubic decay
 			decay = 1.0/(distance * distance * distance);
+
+		// the idea: simply transform the hit pos to camera space, then we use the x and z coordinates to 
+		// as uv coords
+		Corona::Pos lightLocalPos = this->lightWorldInverseMatrix.transformPoint(P);
+		lightUvs.x() = lightLocalPos.x();
+		lightUvs.z() = lightLocalPos.z();
+
+		context.overrideMapCoords(lightUvs);
+		
+		Corona::Matrix33 base = context.bumpBase(0);
+		Corona::Dir T = base.tangent();
+
+		lcol = lightColorMap.getRgb(context, NULL);
+		context.restoreMapCoords(origUvCoords);
+		const Corona::Spectrum diffuse(Corona::rgb2Radiance(lcol));
 
         const float dotSurface = absDot(context.getShadingNormal(), toLight);
 		return bsdf * diffuse * Corona::PI * lightIntensity * decay * angularValue;

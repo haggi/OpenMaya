@@ -146,9 +146,6 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	enable_dl = nAttr.create("enable_dl", "enable_ibl",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( enable_dl ));
 
-	enable_dl = nAttr.create("enalbe_dl", "enable_dl",  MFnNumericData::kBoolean, true);
-	CHECK_MSTATUS(addAttribute( enable_dl ));
-
 	enable_diagnostics = nAttr.create("enable_diagnostics", "enable_diagnostics",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( enable_diagnostics ));
 

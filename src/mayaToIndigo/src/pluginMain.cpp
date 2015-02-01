@@ -18,6 +18,8 @@
 #include "shaders/inMediumDermisMaterial.h"
 #include "shaders/inMediumBasicMaterial.h"
 
+#include "world.h"
+
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.11"
 
@@ -191,6 +193,8 @@ MStatus uninitializePlugin( MObject obj)
 		status.perror("Problem executing cmd: mtin_initialize.unregister()");
 		return status;
 	}
+
+	defineWorld();
 
 	return status;
 }

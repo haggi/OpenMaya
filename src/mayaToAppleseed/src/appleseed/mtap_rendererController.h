@@ -31,9 +31,14 @@ class mtap_IRendererController : public asr::IRendererController
     void on_frame_end();
 
     // This method is called continuously during rendering.
-    Status on_progress();
+	void on_progress();
 
 	void release(){};
+
+	Status get_status() const
+	{
+		return this->status;
+	};
 
 	volatile Status status;
 

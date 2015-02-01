@@ -254,7 +254,7 @@ MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& att
         asr::DiskTexture2dFactory().create(
 	    textureName.asChar(),
             params,
-            this->project->get_search_paths()));    // the project holds a set of search paths to find textures and other assets
+            this->project->search_paths()));    // the project holds a set of search paths to find textures and other assets
 	this->scenePtr->textures().insert(textureElement);
 
 	bool alphaIsLuminance = false;

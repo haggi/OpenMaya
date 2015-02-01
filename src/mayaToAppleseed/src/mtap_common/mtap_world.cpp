@@ -11,3 +11,11 @@ void MayaToWorld::cleanUp()
 void MayaToWorld::initialize()
 {
 }
+
+void MayaToWorld::afterOpenScene()
+{
+}
+
+void MayaToWorld::afterNewScene()
+{
+}

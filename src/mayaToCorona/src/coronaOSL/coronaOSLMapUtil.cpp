@@ -143,6 +143,8 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 							oslMap->bumpType = OSLMap::NORMALTANGENT;
 						if (interpPlug.asInt() == 2)
 							oslMap->bumpType = OSLMap::NORMALOBJECT;
+						if (pa[pId].node().hasFn(MFn::kBump3d))
+							oslMap->bumpType = OSLMap::BUMP3D;
 					}
 				}
 			}

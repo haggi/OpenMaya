@@ -24,7 +24,7 @@ mtco_MayaScene::mtco_MayaScene():MayaScene()
 mtco_MayaScene::~mtco_MayaScene()
 {
 	logger.debug("mtco maya scene destructor.");
-	getWorldPtr()->worldRenderGlobals = NULL;
+	//getWorldPtr()->worldRenderGlobals = NULL;
 }
 
 void mtco_MayaScene::transformUpdateCallback(MayaObject *mobj)

@@ -3,7 +3,6 @@
 #include "renderer/api/edf.h"
 #include "renderer/modeling/edf/coneedf.h"
 #include "renderer/api/texture.h"
-#include "renderer/modeling/surfaceshader/fastsubsurfacescatteringsurfaceshader.h"
 
 #include <maya/MPlugArray.h>
 #include <maya/MFnMesh.h>
@@ -39,39 +38,39 @@ void AppleseedRenderer::defineMaterial(MObject shadingGroup)
 void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
  //   // Create a color called "gray" and insert it into the assembly.
- //   static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	//if( this->scenePtr->colors().get_by_name("gray") == NULL)
-	//{
-	//	this->scenePtr->colors().insert(
-	//		asr::ColorEntityFactory::create(
-	//			"gray",
-	//			asr::ParamArray()
-	//				.insert("color_space", "srgb"),
-	//			asr::ColorValueArray(3, GrayReflectance)));
-	//}
-	//if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
-	//{
-	//	// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
-	//	assembly->bsdfs().insert(
-	//		asr::LambertianBRDFFactory().create(
-	//			"diffuse_gray_brdf",
-	//			asr::ParamArray()
-	//				.insert("reflectance", "gray")));
+    static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
+	if( this->scenePtr->colors().get_by_name("gray") == NULL)
+	{
+		this->scenePtr->colors().insert(
+			asr::ColorEntityFactory::create(
+				"gray",
+				asr::ParamArray()
+					.insert("color_space", "srgb"),
+				asr::ColorValueArray(3, GrayReflectance)));
+	}
+	if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
+	{
+		// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
+		assembly->bsdfs().insert(
+			asr::LambertianBRDFFactory().create(
+				"diffuse_gray_brdf",
+				asr::ParamArray()
+					.insert("reflectance", "gray")));
 
-	//	// Create a physical surface shader and insert it into the assembly.
-	//	assembly->surface_shaders().insert(
-	//		asr::PhysicalSurfaceShaderFactory().create(
-	//			"physical_surface_shader",
-	//			asr::ParamArray()));
+		// Create a physical surface shader and insert it into the assembly.
+		assembly->surface_shaders().insert(
+			asr::PhysicalSurfaceShaderFactory().create(
+				"physical_surface_shader",
+				asr::ParamArray()));
 
-	//	// Create a material called "gray_material" and insert it into the assembly.
-	//	assembly->materials().insert(
-	//		asr::MaterialFactory::create(
-	//			"gray_material",
-	//			asr::ParamArray()
-	//				.insert("surface_shader", "physical_surface_shader")
-	//				.insert("bsdf", "diffuse_gray_brdf")));
-	//}
+		// Create a material called "gray_material" and insert it into the assembly.
+		assembly->materials().insert(
+			asr::GenericMaterialFactory().create(
+				"gray_material",
+				asr::ParamArray()
+					.insert("surface_shader", "physical_surface_shader")
+					.insert("bsdf", "diffuse_gray_brdf")));
+	}
 }
 
 void AppleseedRenderer::defineSmokeShader(asr::Assembly *assembly, MObject& shadingGroup)
@@ -111,73 +110,73 @@ void AppleseedRenderer::defineWireframeShader(asr::Assembly *assembly, MObject& 
 
 void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject& shadingGroup)
 {
-	//MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
-	//MFnDependencyNode shadingGroupNode(shadingGroup);
-	//MString materialName = shadingGroupNode.name();
-	//MFnDependencyNode shaderNode(surfaceShader);
-	//MString shaderName = shaderNode.name();
-	//logger.debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
+	MObject surfaceShader = getOtherSideNode(MString("surfaceShader"), shadingGroup);
+	MFnDependencyNode shadingGroupNode(shadingGroup);
+	MString materialName = shadingGroupNode.name();
+	MFnDependencyNode shaderNode(surfaceShader);
+	MString shaderName = shaderNode.name();
+	logger.debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
 
-	//MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
-	//MString incandescenceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("incandescence"));
-	//MColor incandescence;
-	//getColor(MString("incandescence"), shaderNode, incandescence);
+	MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
+	MString incandescenceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("incandescence"));
+	MColor incandescence;
+	getColor(MString("incandescence"), shaderNode, incandescence);
 
-	//MString edf_name = "";
-	//// if incandescence is not black we think this is a self illuminated materials, we we create an edf
-	//if( !isBlack(incandescence))
-	//{		
-	//	edf_name = shaderNode.name() + "_incandescence_edf";
-	//	asr::ParamArray params;
-	//	params.insert("radiance", incandescenceAttributeDefinition.asChar());
-	//	assembly->edfs().insert(
-	//		asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
-	//}
+	MString edf_name = "";
+	// if incandescence is not black we think this is a self illuminated materials, we we create an edf
+	if( !isBlack(incandescence))
+	{		
+		edf_name = shaderNode.name() + "_incandescence_edf";
+		asr::ParamArray params;
+		params.insert("radiance", incandescenceAttributeDefinition.asChar());
+		assembly->edfs().insert(
+			asr::DiffuseEDFFactory().create(edf_name.asChar(), params));
+	}
 
-	//asf::auto_release_ptr<asr::BSDF> lambertShader;
-	//	
-	//asr::Entity *entity = assembly->bsdfs().get_by_name(shaderName.asChar());
-	//if( entity != NULL)
-	//	assembly->bsdfs().remove(entity);
+	asf::auto_release_ptr<asr::BSDF> lambertShader;
+		
+	asr::Entity *entity = assembly->bsdfs().get_by_name(shaderName.asChar());
+	if( entity != NULL)
+		assembly->bsdfs().remove(entity);
 
-	//lambertShader = asr::LambertianBRDFFactory().create(
-	//	shaderName.asChar(),
-	//	asr::ParamArray()
-	//		.insert("reflectance", colorAttributeDefinition.asChar()));
-	//	
-	//assembly->bsdfs().insert(lambertShader);
+	lambertShader = asr::LambertianBRDFFactory().create(
+		shaderName.asChar(),
+		asr::ParamArray()
+			.insert("reflectance", colorAttributeDefinition.asChar()));
+		
+	assembly->bsdfs().insert(lambertShader);
 
-	//MString surfaceShaderNode = shaderName + "phys_surf";
-	//entity = assembly->surface_shaders().get_by_name(surfaceShaderNode.asChar());
-	//if( entity != NULL)
-	//	assembly->surface_shaders().remove(entity);
+	MString surfaceShaderNode = shaderName + "phys_surf";
+	entity = assembly->surface_shaders().get_by_name(surfaceShaderNode.asChar());
+	if( entity != NULL)
+		assembly->surface_shaders().remove(entity);
 
-	//asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
-	//lambertSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
-	//		surfaceShaderNode.asChar(),
-	//		asr::ParamArray()
-	//		.insert("alpha_source", "material"));
+	asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
+	lambertSurfaceShader = asr::PhysicalSurfaceShaderFactory().create(
+			surfaceShaderNode.asChar(),
+			asr::ParamArray()
+			.insert("alpha_source", "material"));
 
-	//assembly->surface_shaders().insert(lambertSurfaceShader);
+	assembly->surface_shaders().insert(lambertSurfaceShader);
 
-	//entity = assembly->materials().get_by_name(materialName.asChar());
-	//if( entity != NULL)
-	//	assembly->materials().remove(entity);
+	entity = assembly->materials().get_by_name(materialName.asChar());
+	if( entity != NULL)
+		assembly->materials().remove(entity);
 
-	//asr::ParamArray materialParams;
-	//materialParams.insert("surface_shader", surfaceShaderNode.asChar());
-	//materialParams.insert("bsdf", shaderName.asChar());
-	//if( edf_name.length() > 0)
-	//	materialParams.insert("edf", edf_name.asChar());
+	asr::ParamArray materialParams;
+	materialParams.insert("surface_shader", surfaceShaderNode.asChar());
+	materialParams.insert("bsdf", shaderName.asChar());
+	if( edf_name.length() > 0)
+		materialParams.insert("edf", edf_name.asChar());
 
-	//materialParams.insert("alpha_map", colorAttributeDefinition.asChar());
+	materialParams.insert("alpha_map", colorAttributeDefinition.asChar());
 
-	//assembly->materials().insert(
-	//	asr::MaterialFactory::create(
-	//			materialName.asChar(),
-	//			materialParams));
+	assembly->materials().insert(
+		asr::GenericMaterialFactory().create(
+				materialName.asChar(),
+				materialParams));
 
-	//addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
+	addShaderAssemblyAssignment(surfaceShader, shadingGroup, assembly);
 }
 
 
@@ -709,7 +708,7 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 	asr::Assembly *assembly = getObjectAssembly(obj);
 
 	// get per face shadingGroups
-	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
 
 	MObject shadingGroup;
 
@@ -721,18 +720,26 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 
 		MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), shadingGroup);
 		if( surfaceShaderNode == MObject::kNullObj)
-			return;
+			continue;
 
 		MFnDependencyNode shadingGroupNode(shadingGroup);
 		MString materialName = shadingGroupNode.name();
+
 
 		// here I reuse the shader if it already exists in the assembly
 		if( assembly->materials().get_by_name(materialName.asChar()) != NULL)
 		{
 			materialNames.push_back(materialName.asChar());
-			return;		
+			continue;		
 		}else{
 			logger.debug(MString("----MaterialName: ") + materialName + " does not exist in assembly: " + assembly->get_name());
+		}
+
+		if (surfaceShaderNode.hasFn(MFn::kLambert))
+		{
+			this->defineMayaLambertShader(assembly, shadingGroup);
+			materialNames.push_back(materialName.asChar());
+			continue;
 		}
 
 		// if we have double sided shading, we have a xx_back material 

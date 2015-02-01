@@ -7,8 +7,6 @@
 #include "utilities/tools.h"
 #include "../mtth_common/mtth_mayaScene.h"
 
-static Logging logger;
-
 TheaRenderer::TheaRenderer()
 {
 	isGood = true;
@@ -46,9 +44,9 @@ void TheaRenderer::render()
 	bool gpuSuccess = TheaSDK::Kernel::Root().initPrestoGPUDriver(gpuDriver.asChar());
 	bool cpuSuccess = TheaSDK::Kernel::Root().initPrestoCPUDriver(cpuDriver.asChar());
 	if( !gpuSuccess )
-		logger.error("Unable to load presto gpu driver.");
+		Logging::error("Unable to load presto gpu driver.");
 	if( !cpuSuccess )
-		logger.error("Unable to load presto cpu driver.");
+		Logging::error("Unable to load presto cpu driver.");
 	
 	if(!isGood )
 	{
@@ -75,7 +73,7 @@ void TheaRenderer::render()
 		MString scenePath = MString("C:/daten/3dprojects/mayaToThea/data/Thea/") + currentFile.c_str() + ".xml";
 		//MString scenePath = this->mtth_renderGlobals->basePath + "/Thea/" + currentFile.c_str() + ".xml";
 		TheaSDK::XML::Importer::Write(this->sceneXML);
-		logger.debug(MString("Exporting scene to: ") + scenePath);
+		Logging::debug(MString("Exporting scene to: ") + scenePath);
 		TheaSDK::SaveScene(scenePath.asChar());
 	}
 
@@ -92,7 +90,7 @@ void TheaRenderer::render()
 	pystring::split(imgFormatExt, fileParts, ".");
 	std::string ext = fileParts.back();
 	
-	logger.debug(MString("Saving image as ") +  filename);
+	Logging::debug(MString("Saving image as ") +  filename);
 	TheaSDK::SaveImage(filename.asChar());
 
 	EventQueue::Event e;

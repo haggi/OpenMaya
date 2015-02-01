@@ -1,6 +1,8 @@
 #include "Corona.h"
 #include "CoronaLights.h"
 #include "CoronaSky.h"
+#include "CoronaShaders.h"
+#include "CoronaUtils.h"
 
 #include <maya/MObjectArray.h>
 
@@ -68,7 +70,7 @@ void CoronaRenderer::defineLights()
 					logger.warning(MString("Sun connection is not a directional light - using transform only."));
 				}
 				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(this->mtco_renderGlobals->sunSizeMulti*Corona::SUN_PROJECTED_HALF_ANGLE));
-				sunColor *= colorMultiplier * intensityFactor * 2000000;
+				sunColor *= colorMultiplier * intensityFactor * 1.0;// 2000000;
 				Corona::Sun sun;
 
 				Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
@@ -84,7 +86,7 @@ void CoronaRenderer::defineLights()
 				sun.color = sColor * avgColor;
 				sun.active = true;
 				sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
-				sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
+				//sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
 				sun.visibleDirect = true;
 				sun.visibleReflect = true;
 				sun.visibleRefract = true;
@@ -142,7 +144,6 @@ void CoronaRenderer::defineLights()
 			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			lightDir *= obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
 			lightDir.normalize();
-
 			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
 			SpotLight *sl = new SpotLight;
 			sl->LP = LP;
@@ -163,7 +164,10 @@ void CoronaRenderer::defineLights()
 			{
 				sl->excludeList.nodes.push(obj->excludedObjects[loId]);
 			}
-
+			Corona::AffineTm tm;
+			setTransformationMatrix(sl->lightWorldInverseMatrix, m);
+			ShadingNetwork network(obj->mobject);
+			sl->lightColorMap = defineAttribute(MString("color"), depFn, network);
 			this->context.scene->addLightShader(sl);
 		}
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))

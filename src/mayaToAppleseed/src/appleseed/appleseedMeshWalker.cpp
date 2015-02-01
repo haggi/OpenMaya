@@ -85,7 +85,7 @@ MeshWalker::MeshWalker(MDagPath& dagPath)
 	}
 	meshFn.setObject(this->meshObject);
 	
-	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups);
+	getObjectShadingGroups(dagPath, perFaceAssignments, shadingGroups, true);
 
 	MItMeshPolygon faceIt(this->meshObject, &stat);
 	CHECK_MSTATUS(stat);

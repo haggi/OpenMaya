@@ -15,11 +15,11 @@ using namespace AppleRender;
 void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 {
 
-	logger.feature(MString("asr::updateTransform: ") + obj->shortName);
+	Logging::debug(MString("asr::updateTransform: ") + obj->shortName);
 	// if we have no object assembly, there is no need to update/create the assemblyInstance
 	if( this->getObjectAssembly(obj) == NULL )
 	{
-		logger.feature(MString("no obj assembly, skipping: ") + obj->shortName);
+		Logging::debug(MString("no obj assembly, skipping: ") + obj->shortName);
 		return;
 	}
 	if( obj->shortName == "world")
@@ -155,7 +155,7 @@ asr::Object *AppleseedRenderer::getObjectGeometry(mtap_MayaObject *obj)
 
 void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 {
-	logger.feature(MString("asr::updateShape: ") + obj->shortName);
+	Logging::debug(MString("asr::updateShape: ") + obj->shortName);
 
 	if( obj->isCamera())
 	{
@@ -172,7 +172,7 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 	// get assembly, and geometry
 	asr::Assembly *objectAssembly = this->getObjectAssembly(obj);
 
-	logger.feature(MString("Obj ") + obj->fullName + " has inst nr " + obj->instanceNumber);
+	Logging::debug(MString("Obj ") + obj->fullName + " has inst nr " + obj->instanceNumber);
 	// for instances we have an already existing assembly.
 	// in case of instances we will have one original geometry which will receive the assembly_instance automatically
 	// the other instances will be updated here
@@ -187,7 +187,7 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 		}
 	}
 
-	logger.feature(MString("Defining mesh for object ") + obj->fullName);
+	Logging::debug(MString("Defining mesh for object ") + obj->fullName);
 	if( obj->mobject.hasFn(MFn::kMesh))
 	{
 		asr::Object *geometryObject = objectAssembly->objects().get_by_name(obj->getObjectName().asChar());
@@ -207,10 +207,6 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 			this->putObjectIntoAssembly(objectAssembly, obj);
 		}
 	}
-
-	// not a too good solution: in hierarchical mode, the transform is updated, then the shape, not good if the transform needs a shape...
-	//this->updateTransform(obj);
-
 }
 
 void AppleseedRenderer::updateEntities()

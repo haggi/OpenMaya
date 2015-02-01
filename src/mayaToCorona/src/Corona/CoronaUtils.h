@@ -7,5 +7,6 @@ class mtco_MayaObject;
 
 void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj = NULL);
 void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
+void setTransformationMatrix(Corona::AffineTm& atm, MMatrix& mat);
 
 #endif

@@ -286,7 +286,7 @@ void IndigoRenderer::defineGeometry()
 		if( !obj->visible )
 			continue;
 		
-		getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+		getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
 
 		if( obj->instanceNumber == 0 )
 			this->defineMesh(obj);

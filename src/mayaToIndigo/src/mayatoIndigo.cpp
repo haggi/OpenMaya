@@ -5,6 +5,8 @@
 #include <maya/MSelectionList.h>
 #include "mtin_common/mtin_mayaScene.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
+#include "utilities/attrTools.h"
 #include "threads/renderQueueWorker.h"
 #include "mayaSceneFactory.h"
 
@@ -36,12 +38,27 @@ MSyntax MayaToIndigo::newSyntax()
 	return syntax;
 }
 
+void MayaToIndigo::setLogLevel()
+{
+	MObject globalsObj = objectFromName("indigoGlobals");
+	if (globalsObj == MObject::kNullObj)
+	{
+		Logging::setLogLevel(Logging::Debug);
+		return;
+	}
+	MFnDependencyNode globalsNode(globalsObj);
+	int logLevel = getIntAttr("translatorVerbosity", globalsNode, 0);
+	Logging::setLogLevel((Logging::LogLevel)logLevel);
+}
+
+
 MStatus MayaToIndigo::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
 	MGlobal::displayInfo("Executing mayaToIndigo...");
-	logger.setLogLevel(Logging::Debug);
-	
+
+	setLogLevel();
+
 	MArgDatabase argData(syntax(), args);
 	
 	int width = -1;

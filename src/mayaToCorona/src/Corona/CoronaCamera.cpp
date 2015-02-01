@@ -99,8 +99,8 @@ void CoronaRenderer::defineCamera()
 		
 		if (!getBoolAttr("bestFitClippingPlanes", camera, false))
 		{
-			cameraData.distances.minimal = getFloatAttr("nearClipPlane", camera, 0.001f);
-			cameraData.distances.maximal = getFloatAttr("farClipPlane", camera, 100000.0f);
+			cameraData.distances.minimal = getFloatAttr("nearClipPlane", camera, 0.001f) * this->mtco_renderGlobals->scaleFactor;
+			cameraData.distances.maximal = getFloatAttr("farClipPlane", camera, 100000.0f) * this->mtco_renderGlobals->scaleFactor;
 		}
 
 		if (getBoolAttr("mtco_useBokeh", camera, false))

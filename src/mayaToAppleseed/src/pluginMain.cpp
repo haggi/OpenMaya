@@ -3,11 +3,12 @@
 #include <maya/MStatus.h>
 #include <maya/MDrawRegistry.h>
 
-#include "mtap_common/mtap_standinMeshNode.h"
+//#include "mtap_common/mtap_standinMeshNode.h"
 #include "mayatoappleseed.h"
 #include "mtap_common/mtap_renderGlobalsNode.h"
-#include "mtap_common/mtap_standinLocator.h"
+//#include "mtap_common/mtap_standinLocator.h"
 #include "utilities/tools.h"
+#include "world.h"
 
 // -------------------- auto shader include start --------------------
 
@@ -122,11 +123,11 @@ MStatus initializePlugin( MObject obj )
 	//	return status;
 	//}
 
-	status = plugin.registerNode( STANDIN_MESH_NODE_NAME, mtap_standinMeshNode::id, mtap_standinMeshNode::creator, mtap_standinMeshNode::initialize);
-	if (!status) {
-		status.perror("cannot register node: mtap_standinMeshNode");
-		return status;
-	}
+	//status = plugin.registerNode( STANDIN_MESH_NODE_NAME, mtap_standinMeshNode::id, mtap_standinMeshNode::creator, mtap_standinMeshNode::initialize);
+	//if (!status) {
+	//	status.perror("cannot register node: mtap_standinMeshNode");
+	//	return status;
+	//}
 
 	status = plugin.registerNode(MayaToAppleseedGlobalsName, MayaToAppleseedGlobals::id, MayaToAppleseedGlobals::creator, MayaToAppleseedGlobals::initialize );
 	if (!status) {
@@ -197,6 +198,8 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	defineWorld();
+
 	return status;
 }
 
@@ -221,12 +224,12 @@ MStatus uninitializePlugin( MObject obj)
 	//	return status;
 	//}
 
-	std::cout << "deregister mtap standinMeshNode\n";
-	status = plugin.deregisterNode( mtap_standinMeshNode::id );
-	if (!status) {
-		status.perror("cannot deregister node: mtap_standinMeshNode");
-		return status;
-	}
+	//std::cout << "deregister mtap standinMeshNode\n";
+	//status = plugin.deregisterNode( mtap_standinMeshNode::id );
+	//if (!status) {
+	//	status.perror("cannot deregister node: mtap_standinMeshNode");
+	//	return status;
+	//}
 
 	std::cout << "deregister mtap globals\n";
 	status = plugin.deregisterNode( MayaToAppleseedGlobals::id );

@@ -24,7 +24,7 @@ mtap_MayaScene::mtap_MayaScene()
 
 mtap_MayaScene::~mtap_MayaScene()
 {
-	logger.debug("~mtap_MayaScene");
+	Logging::debug("~mtap_MayaScene");
 }
 
 void mtap_MayaScene::userThreadProcedure()
@@ -38,7 +38,7 @@ void mtap_MayaScene::transformUpdateCallback(MayaObject *mobj)
 	if( !obj->mobject.hasFn(MFn::kTransform) && (obj->instancerParticleId < 0))
 		return;
 
-	//logger.feature(MString("mtap_MayaScene::transformUpdateCallback") + mobj->shortName);
+	//Logging::debug(MString("mtap_MayaScene::transformUpdateCallback") + mobj->shortName);
 
 	if( obj->instancerParticleId > -1)
 	{

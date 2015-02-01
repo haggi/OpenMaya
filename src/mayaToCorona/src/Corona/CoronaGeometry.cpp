@@ -19,6 +19,7 @@
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
+#include "CoronaShaders.h"
 
 #include "CoronaMap.h"
 
@@ -112,6 +113,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	MFloatVectorArray normals;
 	MFloatArray uArray, vArray;
 	MIntArray triPointIds, triNormalIds, triUvIds, triMatIds;
+	Logging::debug("defineMesh pre getMeshData");
 	obj->getMeshData(points, normals, uArray, vArray, triPointIds, triNormalIds, triUvIds, triMatIds);
 
 	//std::cout << "const float points[] = {\n";
@@ -252,6 +254,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
 		{
 			MPoint& p = md.points[vtxId];
+			//Logging::debug(MString("Pt id: ") + vtxId + ": " + p.x + " " + p.y + " " + p.z);
 			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
 		}
 	
@@ -259,13 +262,15 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		for (uint nId = 0; nId < md.normals.length(); nId++)
 		{
 			MFloatVector& n =  md.normals[nId];
+			//Logging::debug(MString("N id: ") + nId + ": " + n.x + " " + n.y + " " + n.z);
 			geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
 		}
 	}
 
 	for( uint tId = 0; tId < uArray.length(); tId++)
 	{
-		geom->getMapCoords().push(Corona::Pos(uArray[tId],vArray[tId],0.0f));
+		//Logging::debug(MString("uv id: ") + tId + ": " + uArray[tId] + " " + uArray[tId]);
+		geom->getMapCoords().push(Corona::Pos(uArray[tId], vArray[tId], 0.0f));
 		geom->getMapCoordIndices().push(geom->getMapCoordIndices().size());
 	}   
 
@@ -279,12 +284,6 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		int vtxId0 = triPointIds[index];
 		int vtxId1 = triPointIds[index + 1];
 		int vtxId2 = triPointIds[index + 2];
-
-		//logger.debug(MString("") + vtxId0 + " " + vtxId1 + " " + vtxId2);
-		//logger.debug(MString("") + points[vtxId0].x + " " + points[vtxId0].y + " " + points[vtxId0].z);
-		//logger.debug(MString("") + points[vtxId1].x + " " + points[vtxId1].y + " " + points[vtxId1].z);
-		//logger.debug(MString("") + points[vtxId2].x + " " + points[vtxId2].y + " " + points[vtxId2].z);
-
 		int normalId0 = triNormalIds[index];
 		int normalId1 = triNormalIds[index + 1];
 		int normalId2 = triNormalIds[index + 2];
@@ -292,10 +291,26 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		int uvId1 = triUvIds[index + 1];
 		int uvId2 = triUvIds[index + 2];
 
+		//logger.debug(MString("VtxIds: ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
+		//logger.debug(MString("NorIds: ") + normalId0 + " " + normalId1 + " " + normalId2);
+		//logger.debug(MString("UVsIds: ") + uvId0 + " " + uvId1 + " " + uvId2);
+		//logger.debug(MString("") + points[vtxId0].x + " " + points[vtxId0].y + " " + points[vtxId0].z);
+		//logger.debug(MString("") + points[vtxId1].x + " " + points[vtxId1].y + " " + points[vtxId1].z);
+		//logger.debug(MString("") + points[vtxId2].x + " " + points[vtxId2].y + " " + points[vtxId2].z);
+
+		//logger.debug(MString("") + normals[normalId0].x + " " + normals[normalId0].y + " " + normals[normalId0].z);
+		//logger.debug(MString("") + normals[normalId1].x + " " + normals[normalId1].y + " " + normals[normalId1].z);
+		//logger.debug(MString("") + normals[normalId2].x + " " + normals[normalId2].y + " " + normals[normalId2].z);
+
+		//logger.debug(MString("") + uArray[uvId0] + " " + vArray[uvId0]);
+		//logger.debug(MString("") + uArray[uvId1] + " " + vArray[uvId1]);
+		//logger.debug(MString("") + uArray[uvId2] + " " + vArray[uvId2]);
+
 		if (hasDisplacement)
 		{
 			Corona::DisplacedTriangleData tri;
 			tri.displacement.map = displacementMap;
+			tri.displacement.waterLevel = -Corona::INFINITY;
 			MPoint p0 = points[vtxId0];
 			MPoint p1 = points[vtxId1];
 			MPoint p2 = points[vtxId2];

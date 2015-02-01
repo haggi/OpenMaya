@@ -9,6 +9,10 @@ shader_start:coronaGlobals
 	inatt:bgColor:color
 shader_end
 
+shader_start:spotLight
+	inatt:color:color
+shader_end
+
 # supported maya textures
 shader_start:file
 	inatt:fileTextureName:string

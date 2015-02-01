@@ -287,6 +287,12 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def AppleseedAOVsUpdateTab(self):
         log.debug("AppleseedAOVsUpdateTab()")
             
+    def AppleseedCommonGlobalsCreateTab(self):
+        self.OpenMayaCommonGlobalsCreateTab()            
+
+    def AppleseedCommonGlobalsUpdateTab(self):
+        self.OpenMayaCommonGlobalsUpdateTab()    
+                    
     def AppleseedRendererCreateTab(self):
         log.debug("AppleseedRendererCreateTab()")
         self.createGlobalsNode()
@@ -431,18 +437,18 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     ui = pm.attrEnumOptionMenuGrp(label="Translator Verbosity", at=self.renderGlobalsNodeName + ".translatorVerbosity", ei=self.getEnumList(attr)) 
                 
                 with pm.frameLayout(label="{0} export".format(self.rendererName), collapsable=True, collapse=False):
-                    ui = pm.checkBoxGrp(label="Export {0} Scene file (no rendering):".format(self.rendererName), value1=False)
+                    ui = pm.checkBoxGrp(label="Export {0} Scene file:".format(self.rendererName), value1=False)
                     pm.connectControl(ui, self.renderGlobalsNodeName + ".exportSceneFile", index=2)
-                    xmlDict = {}
-                    self.rendererTabUiDict['xml'] = xmlDict
-                    defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".Corona"
-                    if not defaultXMLPath.dirname().exists():
-                        defaultXMLPath.dirname().makedirs()
-                    with pm.rowLayout(nc=3):
-                        xmlDict['xmlFileText'] = pm.text(label="Export to")
-                        xmlDict['xmlFile'] = pm.textField(text=defaultXMLPath)
-                        pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
-                        pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index=2)
+#                     xmlDict = {}
+#                     self.rendererTabUiDict['xml'] = xmlDict
+#                     defaultXMLPath = pm.workspace.path + "/" + pm.sceneName().basename().split(".")[0] + ".appleseed"
+#                     if not defaultXMLPath.dirname().exists():
+#                         defaultXMLPath.dirname().makedirs()
+#                     with pm.rowLayout(nc=3):
+#                         xmlDict['xmlFileText'] = pm.text(label="Export to")
+#                         xmlDict['xmlFile'] = pm.textField(text=defaultXMLPath)
+#                         pm.symbolButton(image="navButtonBrowse.png", c=self.xmlFileBrowse)
+#                         pm.connectControl(xmlDict['xmlFile'], self.renderGlobalsNodeName + ".exportSceneFileName", index=2)
                         
                 with pm.frameLayout(label="Optimize Textures", collapsable=True, collapse=False):
                     optiDict = {}
@@ -609,16 +615,18 @@ def loadAETemplates():
             pm.mel.eval(melCommand)
 
 def loadPlugins():
-    try:
-        log.debug("Loading Appleseed maya plugins")
-        version = pm.about(v=True).split(" ")[0]
-        pluginName = "appleseedTools_maya{0}".format(version)
-        log.debug("Trying to load appleseedTools: {0}".format(pluginName))
-        if not pm.pluginInfo(pluginName, query=True, loaded=True):
-            pm.loadPlugin(pluginName)
-    except:
-        traceback.print_exc(file=sys.__stderr__)
-        log.error("Load plugins Appleseed FAILED")
+    # temporarily decativated
+    return
+#     try:
+#         log.debug("Loading Appleseed maya plugins")
+#         version = pm.about(v=True).split(" ")[0]
+#         pluginName = "appleseedTools_maya{0}".format(version)
+#         log.debug("Trying to load appleseedTools: {0}".format(pluginName))
+#         if not pm.pluginInfo(pluginName, query=True, loaded=True):
+#             pm.loadPlugin(pluginName)
+#     except:
+#         traceback.print_exc(file=sys.__stderr__)
+#         log.error("Load plugins Appleseed FAILED")
     
         
 def theRenderer():

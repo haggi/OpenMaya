@@ -1,20 +1,27 @@
 #ifndef mtin_SWATCH_RENDERER
 #define mtin_SWATCH_RENDERER
 
-#include <maya/MSwatchRenderBase.h> 
+#include "swatchesRenderer/SwatchRendererInterface.h"
 
-class mtin_SwatchGenerator : public MSwatchRenderBase
+class mtin_SwatchRendererInterface : SwatchRendererInterface
 {
-
 public:
-   mtin_SwatchGenerator(MObject dependNode, MObject renderNode, int imageResolution);
-   ~mtin_SwatchGenerator();
+	mtin_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution);
+	~mtin_SwatchRendererInterface();
+	MObject renderNode;
+	MObject dependNode;
 
-   static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
+	virtual void init();
+	virtual void loadGeometry();
+	virtual void renderSwatch();
+	virtual void getImage(MImage& imageRef);
+	virtual void getImageData(MImage& imageRef);
 
-   virtual bool doIteration();
+	virtual void fillDummySwatch(MImage& image);
 
+	static void initializeStaticData();
+	static void cleanUpStaticData();
+	static void swatchRenderThread(mtin_SwatchRendererInterface* me);
 };
-
 
 #endif

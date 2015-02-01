@@ -5,6 +5,8 @@
 #include <maya/MSelectionList.h>
 #include "mtth_common/mtth_mayaScene.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
+#include "utilities/attrTools.h"
 #include "threads/renderQueueWorker.h"
 #include "mayaSceneFactory.h"
 #include "mtth_common/mtth_renderGlobals.h"
@@ -37,11 +39,26 @@ MSyntax MayaToThea::newSyntax()
 	return syntax;
 }
 
+void MayaToThea::setLogLevel()
+{
+	MObject globalsObj = objectFromName("theaGlobals");
+	if (globalsObj == MObject::kNullObj)
+	{
+		Logging::setLogLevel(Logging::Debug);
+		return;
+	}
+	MFnDependencyNode globalsNode(globalsObj);
+	int logLevel = getIntAttr("translatorVerbosity", globalsNode, 0);
+	Logging::setLogLevel((Logging::LogLevel)logLevel);
+}
+
+
 MStatus MayaToThea::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
 	MGlobal::displayInfo("Executing mayaToThea...");
-	logger.setLogLevel(Logging::Debug);
+	
+	setLogLevel();
 	
 	MArgDatabase argData(syntax(), args);
 	

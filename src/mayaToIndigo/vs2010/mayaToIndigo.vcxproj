@@ -149,6 +149,7 @@
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
+    <ClCompile Include="..\..\common\cpp\world.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoCamera.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoImgExport.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoParser.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="..\src\mtin_common\mtin_mayaScene.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\mtin_common\mtin_world.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoEnvironment.cpp" />
     <ClCompile Include="..\src\shaders\inBlendMaterial.cpp" />
@@ -218,6 +220,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
+    <ClInclude Include="..\..\common\cpp\world.h" />
     <ClInclude Include="..\src\Indigo\IndigoImgExport.h" />
     <ClInclude Include="..\src\Indigo\IndigoRendererController.h" />
     <ClInclude Include="..\src\Indigo\Indigo.h" />

@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{704a4cb1-d893-4a4c-973e-2f3b715bae4f}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\binMeshTools">
+      <UniqueIdentifier>{17ea1f24-90d8-447b-9fae-efd97d3ac3b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{9fcd2b2c-85af-443e-8147-947c0a87a83b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\utilities">
+      <UniqueIdentifier>{cb488b7e-e458-490b-ab2d-d29966a82480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\shadingTools">
+      <UniqueIdentifier>{3ff000da-288e-44fe-b6be-9b0e2446e21a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\memory">
+      <UniqueIdentifier>{962ddbaa-1c6d-432a-9c17-e5ffbb7f28ef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\appleseedTools\toolsPluginMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\logging.cpp">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp">
+      <Filter>Source Files\common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp">
+      <Filter>Source Files\common\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\proxyMesh.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseedTools\binMeshTools\binMeshWriterCmd.cpp">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\cpp\utilities\tools.h">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\pystring.h">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\attrTools.h">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshTranslator.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\logging.h">
+      <Filter>Source Files\common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h">
+      <Filter>Source Files\common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h">
+      <Filter>Source Files\common\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\proxyMesh.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshReaderCmd.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseedTools\binMeshTools\binMeshWriterCmd.h">
+      <Filter>Source Files\binMeshTools</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

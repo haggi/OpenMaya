@@ -50,33 +50,6 @@ bool mtin_RenderGlobals::getMtIndigoGlobals()
 
 	try{
 
-		if(!getInt(MString("translatorVerbosity"), IndigoGlobals, this->translatorVerbosity))
-			throw("problem reading IndigoGlobals.translatorVerbosity");
-		switch(this->translatorVerbosity)
-		{
-		case 0:
-			logger.setLogLevel(Logging::Info);
-			break;
-		case 1:
-			logger.setLogLevel(Logging::Error);
-			break;
-		case 2:
-			logger.setLogLevel(Logging::Warning);
-			break;
-		case 3:
-			logger.setLogLevel(Logging::Progress);
-			break;
-		case 4:
-			logger.setLogLevel(Logging::Debug);
-			break;
-		case 5:
-			logger.setLogLevel(Logging::Detail);
-			break;
-		case 6:
-			logger.setLogLevel(Logging::Feature);
-			break;
-		}
-
 //	------------- automatically created attributes start ----------- // 
 		if(!getEnum(MString("white_point"), IndigoGlobals, this->white_point))
 			throw("problem reading indigoGlobals.white_point");

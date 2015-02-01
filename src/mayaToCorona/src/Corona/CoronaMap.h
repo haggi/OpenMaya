@@ -115,6 +115,11 @@ public:
 // loaded using this class.
 class MapLoader : public Corona::Object {
 public:
+
+	MColor colorGain;
+	MColor colorOffset;
+	float  exposure;
+
      Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
         Corona::Bitmap<Corona::Rgb> data;
         Corona::loadImage(filename, data);
@@ -123,6 +128,10 @@ public:
         protected:
             Corona::TextureShader shader;
         public:
+			Corona::Rgb  colorGain;
+			Corona::Rgb  colorOffset;
+			float  exposure;
+			
             TextureMap(const Corona::Bitmap<Corona::Rgb>& data, const int mapChannel) {
                 shader.data = data;
                 shader.mapChannel = mapChannel;
@@ -130,8 +139,11 @@ public:
 
             virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
                 outAlpha = 1.f;
-				
-                return shader.eval(context, false);
+				Corona::Rgb result = shader.eval(context, false);
+				result *= this->colorGain;
+				result += this->colorOffset;
+				result *= pow(2, this->exposure);
+				return result;
             }
 
             /// \brief Same as evalColor, only scalar value is returned
@@ -157,7 +169,11 @@ public:
 			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
         };
 
-        return new TextureMap(data, 0);
+		TextureMap *tm = new TextureMap(data, 0);
+		tm->colorGain = Corona::Rgb(this->colorGain.r, this->colorGain.g, this->colorGain.b);
+		tm->colorOffset = Corona::Rgb(this->colorOffset.r, this->colorOffset.g, this->colorOffset.b);
+		tm->exposure = this->exposure;
+		return(tm);
     }
 };
 

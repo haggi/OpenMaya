@@ -1,19 +1,27 @@
 #ifndef mtth_SWATCH_RENDERER
 #define mtth_SWATCH_RENDERER
 
-#include <maya/MSwatchRenderBase.h> 
+#include "swatchesRenderer/SwatchRendererInterface.h"
 
-class mtth_SwatchGenerator : public MSwatchRenderBase
+class mtth_SwatchRendererInterface : SwatchRendererInterface
 {
-
 public:
-   mtth_SwatchGenerator(MObject dependNode, MObject renderNode, int imageResolution);
-   ~mtth_SwatchGenerator();
+	mtth_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution);
+	~mtth_SwatchRendererInterface();
+	MObject renderNode;
+	MObject dependNode;
 
-   static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
+	virtual void init();
+	virtual void loadGeometry();
+	virtual void renderSwatch();
+	virtual void getImage(MImage& imageRef);
+	virtual void getImageData(MImage& imageRef);
 
-   virtual bool doIteration();
+	virtual void fillDummySwatch(MImage& image);
 
+	static void initializeStaticData();
+	static void cleanUpStaticData();
+	static void swatchRenderThread(mtth_SwatchRendererInterface* me);
 };
 
 

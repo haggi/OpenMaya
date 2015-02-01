@@ -99,7 +99,6 @@ void AppleseedRenderer::writeXML()
 {
 	logger.debug("AppleseedRenderer::writeXML");
 	MString outputPath = this->renderGlobals->basePath + "/" + this->renderGlobals->imageName + "." + (int)this->renderGlobals->currentFrame + ".appleseed";
-
 	asr::ProjectFileWriter::write(this->project.ref(), outputPath.asChar());
 }
 

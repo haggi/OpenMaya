@@ -9,7 +9,7 @@ class OSLMap : public Corona::Abstract::Map
 public:
 	//CoronaRenderer *coronaRenderer;
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
-	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD};
+	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, BUMP3D};
 	BumpType bumpType;
 	float worldScale;
 	Corona::Matrix33 envSphereMatrix;

@@ -242,6 +242,12 @@
     <ClCompile Include="..\src\shaders\inISLNode.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mtin_common\mtin_world.cpp">
+      <Filter>mtin_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\world.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -408,6 +414,9 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\inISLNode.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\world.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

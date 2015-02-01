@@ -1,7 +1,6 @@
 #include "appleseed.h"
 #include "renderer/api/edf.h"
 #include "renderer/api/texture.h"
-#include "renderer/modeling/surfaceshader/fastsubsurfacescatteringsurfaceshader.h"
 #include <maya/MColor.h>
 
 #include "shadingtools/material.h"
@@ -18,7 +17,7 @@ using namespace AppleRender;
 
 void AppleseedRenderer::defineColor(MString attrName, MObject& mobject)
 {
-	//logger.feature(MString("Define color: ") + attrName);
+	//Logging::debug(MString("Define color: ") + attrName);
 	MColor color;
 	MFnDependencyNode dn(mobject);
 	getColor(attrName, dn, color);
@@ -28,7 +27,7 @@ void AppleseedRenderer::defineColor(MString attrName, MObject& mobject)
 	MString colorSpace = "srgb";
 	MString colorName = getObjectName(mobject) + "." + attrName;
 	
-	//logger.feature(MString("Creating Color object : ") + colorName);
+	//Logging::debug(MString("Creating Color object : ") + colorName);
 
 	removeColorEntityIfItExists(colorName);
 
@@ -43,18 +42,18 @@ void AppleseedRenderer::defineColor(MString attrName, MObject& mobject)
 
 void AppleseedRenderer::addNodeParameters(ShadingNode& sn, asr::ParamArray& pa)
 {
-	//logger.feature(MString("addNodeParameters for node: ") + sn.fullName);
+	//Logging::debug(MString("addNodeParameters for node: ") + sn.fullName);
 	MFnDependencyNode depFn(sn.mobject);
 
 	for( size_t inputAttId = 0; inputAttId < sn.inputAttributes.size(); inputAttId++)
 	{
 		ShaderAttribute sa = sn.inputAttributes[inputAttId];
-		//logger.feature(MString("Translating nodeAtt : ") + sa.name.c_str() + " type: " + sa.type.c_str() + " connected " + sa.connected);
+		//Logging::debug(MString("Translating nodeAtt : ") + sa.name.c_str() + " type: " + sa.type.c_str() + " connected " + sa.connected);
 		MString parameterValue; 
 		// colors needs to be defined as color entity in appleseed. So we define them and use the defined name as parameter.
 		if( sa.connected || MString(sa.type.c_str()) == "color" || MString(sa.type.c_str()) == "varying_color" || MString(sa.type.c_str()) == "uniform_color")
 		{
-			//logger.feature(MString("Connected or color."));
+			//Logging::debug(MString("Connected or color."));
 			if( sa.connected )
 				parameterValue = getObjectName(sa.connectedMObject).asChar();
 			else{
@@ -99,7 +98,7 @@ void AppleseedRenderer::addNodeParameters(ShadingNode& sn, asr::ParamArray& pa)
 
 void AppleseedRenderer::createMayaShadingNode(ShadingNode& sn, asr::Assembly* localAssembly)
 {
-	//logger.feature(MString("Create maya shading node: ") + sn.fullName + " maya NodeType name " + sn.typeName);
+	//Logging::debug(MString("Create maya shading node: ") + sn.fullName + " maya NodeType name " + sn.typeName);
 	MFnDependencyNode depFn(sn.mobject);
 
 	if( sn.typeName == "file")
@@ -123,12 +122,12 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	MString classification = depFn.classification(sn.typeName);
 	if( pystring::find(classification.asChar(), "appleseed") == -1)
 	{
-		//logger.feature(MString("Node is not a appleseed node: Trying to create maya node: ") + sn.typeName);
+		//Logging::debug(MString("Node is not a appleseed node: Trying to create maya node: ") + sn.typeName);
 		createMayaShadingNode(sn, localAssembly);
 		return;
 	}
 
-	//logger.feature(MString("Create appleseed shading node: ") + sn.fullName + " appleseed Node name " + appleName);
+	//Logging::debug(MString("Create appleseed shading node: ") + sn.fullName + " appleseed Node name " + appleName);
 
 	bool nodeFound = false;
 
@@ -189,14 +188,6 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 		if( entity == NULL)
 			assembly->bsdfs().insert(asr::SpecularBTDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		nodeFound = true;
-	}
-	if( appleName == "Fast_sss_surface_shader")
-	{
-		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
-			assembly->surface_shaders().insert(asr::FastSubSurfaceScatteringSurfaceShaderFactory().create(sn.fullName.asChar(), asr::ParamArray()));
-		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
 	}
 	if( appleName == "Diagnostic_surface_shader")
@@ -283,7 +274,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 			logger.debug(MString("Defining appleseed material with shading engine name: ") + shadingEngineName);
 			entity = assembly->materials().get_by_name(shadingEngineName.asChar());
 			if( entity == NULL)
-				assembly->materials().insert(asr::MaterialFactory::create(shadingEngineName.asChar(), asr::ParamArray()));
+				assembly->materials().insert(asr::GenericMaterialFactory().create(shadingEngineName.asChar(), asr::ParamArray()));
 			entity = assembly->materials().get_by_name(shadingEngineName.asChar());
 			nodeFound = true;
 		}else{
@@ -312,7 +303,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 		asr::ParamArray& pa = entity->get_parameters();
 		addNodeParameters(sn, pa);
 	}else{
-		//logger.feature(MString("Node not an Appleseed node."));
+		//Logging::debug(MString("Node not an Appleseed node."));
 	}
 
 }
@@ -322,16 +313,16 @@ void AppleseedRenderer::defineShadingNodes(mtap_MayaObject *obj)
 	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{
 		MObject shadingGroup = obj->shadingGroups[sgId];
-		//logger.feature(MString("Define Material from shadingGroup: ") + getObjectName(shadingGroup));
+		//Logging::debug(MString("Define Material from shadingGroup: ") + getObjectName(shadingGroup));
 		Material material(shadingGroup);
 
-		//logger.feature(MString("Translating material for SG: ") + material.materialName);
+		//Logging::debug(MString("Translating material for SG: ") + material.materialName);
 		
 		int numNodes = (int)material.surfaceShaderNet.shaderList.size();
 		for( int shadingNodeId = numNodes - 1; shadingNodeId >= 0; shadingNodeId--)
 		{
 			ShadingNode sn = material.surfaceShaderNet.shaderList[shadingNodeId];
-			//logger.feature(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
+			//Logging::debug(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
 			createAppleseedShadingNode(material.surfaceShaderNet.shaderList[shadingNodeId], getObjectAssembly(obj));
 		}
 	}

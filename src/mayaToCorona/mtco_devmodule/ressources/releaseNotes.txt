@@ -1,5 +1,8 @@
 release 0.36
-- 
+- fixes near/far clipping #173
+- fixed displacement mapping water level.
+- fixed a subdiv per face shading crash. #91 (reopened/reclosed)
+- fixed bump mapping (I hope). #153
 
 release 0.35
 - fixed sun size crash with limits. #152

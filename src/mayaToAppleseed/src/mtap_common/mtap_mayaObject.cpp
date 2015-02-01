@@ -57,17 +57,17 @@ MString mtap_MayaObject::getAssemblyName()
 	
 	if( this->mobject.hasFn(MFn::kShape) )
 	{
-		//logger.feature(MString("object is shape:") + this->dagPath.fullPathName());
+		//Logging::debug(MString("object is shape:") + this->dagPath.fullPathName());
 		if( this->isInstanced() )
 		{
 			MDagPathArray pathArray;
 			path.getAllPathsTo(this->mobject, pathArray);
 			//for( uint i = 0; i < pathArray.length(); i++)
-			//	logger.feature(MString("pathArray: index:") + i + " :: " + pathArray[i].fullPathName());
+			//	Logging::debug(MString("pathArray: index:") + i + " :: " + pathArray[i].fullPathName());
 			if( pathArray.length() > 0)
 			{
 				path = pathArray[0];
-				//logger.feature(MString("Using dagPath for instance ") + path.fullPathName() + " orig path: " + this->fullName);
+				//Logging::debug(MString("Using dagPath for instance ") + path.fullPathName() + " orig path: " + this->fullName);
 			}
 		}
 		path.pop();

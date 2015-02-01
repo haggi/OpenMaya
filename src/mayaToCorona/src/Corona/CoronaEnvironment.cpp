@@ -34,7 +34,15 @@ void CoronaRenderer::defineEnvironment()
 			//MObject obj = objectFromName(MString("coronaGlobals"));
 			//const Corona::ColorOrMap com = defineAttribute(MString("bgColor"), obj);			
 			//this->context.scene->setBackground(com);
+
 			MapLoader loader;
+			if (fileTextureObject != MObject::kNullObj)
+			{
+				MFnDependencyNode fileNode(fileTextureObject);
+				loader.colorGain = getColorAttr("colorGain", fileNode);
+				loader.colorOffset = getColorAttr("colorOffset", fileNode);
+				loader.exposure = getFloatAttr("exposure", fileNode, 0.0);
+			}
 			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
 
 			if (texmap.getReference() == NULL)

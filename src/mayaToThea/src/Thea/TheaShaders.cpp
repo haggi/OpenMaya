@@ -445,7 +445,7 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 
 void TheaRenderer::defineShader(mtth_MayaObject *obj)
 {
-	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups);
+	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
 		
 	if( obj->shadingGroups.length() > 0)
 	{		

@@ -30,6 +30,10 @@
 #include "textures/synthesis.h"
 #include "textures/blackBody.h"
 
+
+#include "world.h"
+
+
 static const MString swatchName("TheaRenderSwatch");
 static const MString swatchFullName(":swatch/TheaRenderSwatch");
 
@@ -71,7 +75,7 @@ static const MString SynthesisClassification("Thea/texture/TheaSynthesis");
 static const MString BlackbodyClassification("Thea/texture/TheaBlackbody");
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.01"
+#define VERSION "0.02"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -149,6 +153,8 @@ MStatus initializePlugin( MObject obj )
 		status.perror("Problem executing cmd: mtth_initialize.initRenderer()");
 		return status;
 	}
+
+	defineWorld();
 
 	return status;
 }

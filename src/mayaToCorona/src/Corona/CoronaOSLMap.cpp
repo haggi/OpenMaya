@@ -43,7 +43,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
-
+	
 	Corona::Matrix33 base = context.bumpBase(0);
 	Corona::Dir T = base.tangent();
 	
@@ -246,9 +246,30 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 
 		const float dU = (uMinus - uPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.x());
 		const float dV = (vMinus - vPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.y());
-		const Corona::Dir bumpedNormal = (dU*base.tangent() - dV*base.cotangent() + base.mainDir()).getNormalizedApprox();
-		//return (bumpedNormal - base.mainDir());
-		return (bumpedNormal - context.getShadingNormal());
+		const Corona::Dir bumpedNormal = (dU*base.tangent() + dV*base.cotangent() + base.mainDir()).getNormalizedApprox();
+		return (bumpedNormal - base.mainDir());
+	}
+	if (this->bumpType == BUMP3D)
+	{
+		//context.worldToObjectTm;
+		const Corona::Matrix33 base = context.bumpBase(0);
+		const float pixel2world = context.pixelToWorldRatio();
+		const Corona::Dir ddUvw = context.dUvw(0);
+		const Corona::Dir dUvw = ddUvw * (pixel2world);
+		float outAlpha = 1.0f;
+		Corona::Pos uvw = context.getMapCoords(0);
+		float multi = 0.01;
+		float dx = dUvw.x() * 0.5;
+		float dy = dUvw.y() * 0.5;
+		float uPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() + dx, uvw.y())) * multi;
+		float uMinus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x() - dx, uvw.y())) * multi;
+		float vPlus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x(), uvw.y() + dy)) * multi;
+		float vMinus = rgb2bumpVal(evalColorBump(context, cache, outAlpha, uvw.x(), uvw.y() - dy)) * multi;
+
+		const float dU = (uMinus - uPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.x());
+		const float dV = (vMinus - vPlus) / Corona::Utils::max(Corona::EPS, 2 * dUvw.y());
+		const Corona::Dir bumpedNormal = (dU*base.tangent() + dV*base.cotangent() + base.mainDir()).getNormalizedApprox();
+		return (bumpedNormal - base.mainDir());
 	}
 	return context.getShadingNormal();
 }

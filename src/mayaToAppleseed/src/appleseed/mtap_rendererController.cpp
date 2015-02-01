@@ -48,7 +48,7 @@ void mtap_IRendererController::on_frame_end()
 }
 
 // This method is called continuously during rendering.
-mtap_IRendererController::Status mtap_IRendererController::on_progress()
+void mtap_IRendererController::on_progress()
 {
-	 return this->status;
+	// return this->status;
 }

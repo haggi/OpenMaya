@@ -9,6 +9,15 @@
 
 static Logging logger;
 
+void setTransformationMatrix(Corona::AffineTm& atm, MMatrix& mat)
+{
+	MMatrix t = mat.transpose();
+	Corona::Float4 row1(t[0][0], t[0][1], t[0][2], t[0][3]);
+	Corona::Float4 row2(t[1][0], t[1][1], t[1][2], t[1][3]);
+	Corona::Float4 row3(t[2][0], t[2][1], t[2][2], t[2][3]);
+	atm = Corona::AffineTm(row1, row2, row3);
+}
+
 void CoronaRenderer::setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj)
 {
 	MMatrix to, from;
