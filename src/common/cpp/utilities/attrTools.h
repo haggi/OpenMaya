@@ -34,6 +34,8 @@ bool getString(MString& plugName, MFnDependencyNode& dn, MString& value);
 
 MString getString(const char *plugName, MFnDependencyNode& dn);
 
+MString getStringAttr(MString plugName, MFnDependencyNode& dn, MString default);
+
 bool getInt(MString& plugName, MFnDependencyNode& dn, int& value);
 
 bool getInt(const char *plugName, MFnDependencyNode& dn, int& value);

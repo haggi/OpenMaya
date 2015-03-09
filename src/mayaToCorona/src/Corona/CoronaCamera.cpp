@@ -1,33 +1,37 @@
 #include "Corona.h"
 #include <maya/MPoint.h>
 #include <maya/MFnCamera.h>
+#include "renderGlobals.h"
 #include "utilities/logging.h"
-#include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaObject.h"
-#include "../mtco_common/mtco_mayaScene.h"
+#include "mayaScene.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "world.h"
 
 static Logging logger;
 
 void CoronaRenderer::defineCamera()
 {
 	MPoint rot, pos, scale;
-	for(int objId = 0; objId < this->mtco_scene->camList.size(); objId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	for (auto cam : mayaScene->camList)
 	{
-		mtco_MayaObject *cam = (mtco_MayaObject *)this->mtco_scene->camList[objId];
-		if( !this->mtco_scene->isCameraRenderable(cam->mobject) && (!(cam->dagPath == this->mtco_scene->uiCamera)))
+		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
 		{	
 			continue;
 		}
 
-		logger.debug(MString("using camera ") + cam->shortName);
+		Logging::debug(MString("using camera ") + cam->shortName);
 		MVector cameraUpVector(0.0,1.0,0.0);
 
 		MFnCamera camera(cam->mobject);
 		MPoint pos, rot, scale;
-		MMatrix camMatrix = cam->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+		MMatrix camMatrix = cam->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 		cameraUpVector *= camMatrix;
+		cameraUpVector.normalize();
 		Corona::Dir upVector(cameraUpVector.x, cameraUpVector.y, cameraUpVector.z);
 		getMatrixComponents(camMatrix, pos, rot, scale);
 		Corona::Pos cpos(pos.x, pos.y, pos.z);
@@ -47,11 +51,11 @@ void CoronaRenderer::defineCamera()
 		getFloat(MString("fStop"), camera, fStop);
 		getFloat(MString("centerOfInterest"), camera, coi);
 
-		focusDistance *= this->mtco_renderGlobals->scaleFactor;
+		focusDistance *= renderGlobals->scaleFactor;
 
 		MPoint coiBase(0,0,-coi);
 		MPoint coiTransform = coiBase * camMatrix;
-		//logger.debug(MString("Center of interest: ") + coi + " transformed " + coiTransform.x + " "  + coiTransform.y + " "  + coiTransform.z);
+		//Logging::debug(MString("Center of interest: ") + coi + " transformed " + coiTransform.x + " "  + coiTransform.y + " "  + coiTransform.z);
 		Corona::Pos center(coiTransform.x, coiTransform.y, coiTransform.z);
 		float fov;
 		MFnCamera::FilmFit filmFit = camera.filmFit();
@@ -60,12 +64,12 @@ void CoronaRenderer::defineCamera()
 			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
 		else if (filmFit == MFnCamera::kVerticalFilmFit)
 		{
-			factor = verticalFilmAperture * this->mtco_renderGlobals->imgWidth / this->mtco_renderGlobals->imgHeight;
+			factor = verticalFilmAperture * renderGlobals->getWidth() / renderGlobals->getHeight();
 			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
 		}
 		float fovDeg = fov * 57.29578;
 		Corona::AnimatedFloat fieldOfView(fov);
-		//logger.debug(MString("fov ") + fov + " deg: " + fovDeg);
+		//Logging::debug(MString("fov ") + fov + " deg: " + fovDeg);
 		//Corona::AnimatedFloat fieldOfView(Corona::DEG_TO_RAD(45.f));
 		
 		Corona::CameraData cameraData;
@@ -93,14 +97,14 @@ void CoronaRenderer::defineCamera()
 		Corona::AnimatedFloat focalDist(focusDistance);
 		cameraData.perspective.focalDist = focalDist;
 		cameraData.perspective.fStop = fStop;
-		cameraData.perspective.filmWidth = this->mtco_renderGlobals->toMillimeters(horizontalFilmAperture * 2.54f * 10.0f); //film width in mm 
-		if( dof && this->mtco_renderGlobals->doDof)
+		cameraData.perspective.filmWidth = renderGlobals->toMillimeters(horizontalFilmAperture * 2.54f * 10.0f); //film width in mm 
+		if( dof && renderGlobals->doDof)
 			cameraData.perspective.useDof = true;
 		
 		if (!getBoolAttr("bestFitClippingPlanes", camera, false))
 		{
-			cameraData.distances.minimal = getFloatAttr("nearClipPlane", camera, 0.001f) * this->mtco_renderGlobals->scaleFactor;
-			cameraData.distances.maximal = getFloatAttr("farClipPlane", camera, 100000.0f) * this->mtco_renderGlobals->scaleFactor;
+			cameraData.distances.minimal = getFloatAttr("nearClipPlane", camera, 0.001f) * renderGlobals->scaleFactor;
+			cameraData.distances.maximal = getFloatAttr("farClipPlane", camera, 100000.0f) * renderGlobals->scaleFactor;
 		}
 
 		if (getBoolAttr("mtco_useBokeh", camera, false))
@@ -121,7 +125,7 @@ void CoronaRenderer::defineCamera()
 						if (!texNamePlug.isNull())
 						{
 							MString fileName = texNamePlug.asString();
-							logger.debug(MString("Found bokeh bitmap file: ") + fileName);
+							Logging::debug(MString("Found bokeh bitmap file: ") + fileName);
 							Corona::Bitmap<Corona::Rgb> bokehBitmap;
 							Corona::loadImage(fileName.asChar(), bokehBitmap);
 							cameraData.perspective.bokeh.customShape = bokehBitmap;

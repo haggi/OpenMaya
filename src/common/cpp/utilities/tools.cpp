@@ -13,6 +13,25 @@
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
 
+bool isCameraRenderable(MObject obj)
+{
+	MFnDependencyNode camFn(obj);
+	bool renderable = true;
+	getBool(MString("renderable"), camFn, renderable);
+	if (renderable)
+		return true;
+	return false;
+}
+
+bool isCamera(MObject obj)
+{
+	if (obj.hasFn(MFn::kCamera))
+	{
+		return true;
+	}
+	return false;
+}
+
 float clamp(float x, float minv, float maxv)
 {
 	if (x > maxv)
@@ -55,6 +74,12 @@ MString getRendererShortCutName()
 MString getRendererHome()
 {
 	return RendererHome;
+}
+
+MObject getRenderGlobalsNode()
+{
+	MString globalsNodeName = MString(pystring::lower(getRendererName().asChar()).c_str()) + "Globals";
+	return objectFromName(globalsNodeName);
 }
 
 

@@ -11,7 +11,7 @@ static Logging logger;
 Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
 {
 	MStatus status;
-	OSL::OSLShadingNetworkRenderer *oslRenderer = (OSL::OSLShadingNetworkRenderer *)getObjPtr("oslRenderer");
+	OSL::OSLShadingNetworkRenderer *oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 
 	size_t numNodes = sn.shaderList.size();
 	MString OSLInterfaceName = depFn.name() + "_" + attributeName + "_OSLInterface";
@@ -22,7 +22,7 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	MString outPlugName;
 	MString connectedObjectName = getObjectName(getOtherSideSourceNode(attributeName, thisMObject, true, outPlugName));
 
-	logger.debug(MString("getOslTexMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
+	Logging::debug(MString("getOslTexMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
 	MPlug shaderPlug = depFn.findPlug(attributeName);
 
 	MAYATO_OSL::createOSLProjectionNodes(shaderPlug);
@@ -30,7 +30,7 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
 	{
 		ShadingNode snode = sn.shaderList[shadingNodeId];
-		logger.debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
+		Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 		MAYATO_OSL::createOSLHelperNodes(sn.shaderList[shadingNodeId]);
 		MAYATO_OSL::createOSLShadingNode(sn.shaderList[shadingNodeId]);
 		MAYATO_OSL::connectProjectionNodes(sn.shaderList[shadingNodeId].mobject);
@@ -38,14 +38,14 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 		if (snode.fullName == connectedObjectName.asChar())
 		{
 			MAYATO_OSL::createOSLHelperNodes(sn.shaderList[sn.shaderList.size() - 1]);
-			logger.debug(MString("connected node found: ") + snode.fullName + " search output attr.");
+			Logging::debug(MString("connected node found: ") + snode.fullName + " search output attr.");
 
 			for (size_t outId = 0; outId < snode.outputAttributes.size(); outId++)
 			{
 				ShaderAttribute& sa = snode.outputAttributes[outId];
 				if (MString(sa.name.c_str()) == outPlugName)
 				{
-					logger.debug(MString("connected out attr found: ") + sa.name.c_str() + " ");
+					Logging::debug(MString("connected out attr found: ") + sa.name.c_str() + " ");
 
 					MString destParam;
 					MString sourceParam = outPlugName;
@@ -54,10 +54,10 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 					{
 						// lets see if we have a color helper node
 						MString helperNodeName = MAYATO_OSL::createPlugHelperNodeName(attributeName.asChar(), thisMObject, false);
-						logger.debug(MString("Interface connection - color/vector attribute ") + sa.name.c_str() + " search for helper node " + helperNodeName);
+						Logging::debug(MString("Interface connection - color/vector attribute ") + sa.name.c_str() + " search for helper node " + helperNodeName);
 						if (MAYATO_OSL::doesOSLNodeAlreadyExist(helperNodeName))
 						{
-							logger.debug(MString("Found helper node name."));
+							Logging::debug(MString("Found helper node name."));
 							sourceParam = "outputValue";
 							sourceNode = helperNodeName;
 						}
@@ -84,7 +84,7 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 					MPlug multiplierAttribute = depFn.findPlug(multiplierName, true, &status);
 					if (status)
 					{
-						logger.debug(MString("Found multiplier attribute: ") + multiplierName);
+						Logging::debug(MString("Found multiplier attribute: ") + multiplierName);
 						float multiplier = multiplierAttribute.asFloat();
 						float offset = 0.0f;
 						if ((attributeName == "refractionIndex") || (attributeName == "reflectionIor"))
@@ -94,9 +94,9 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 						oslRenderer->shadingsys->Parameter("multiplier", OSL::TypeDesc::TypeFloat, &multiplier);
 						oslRenderer->shadingsys->Parameter("offset", OSL::TypeDesc::TypeFloat, &offset);
 					}
-					logger.debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
+					Logging::debug(MString("creating OSLInterface shader ") + OSLInterfaceName);
 					bool success = oslRenderer->shadingsys->Shader("surface", "OSLInterface", OSLInterfaceName.asChar());
-					logger.debug(MString("connecting ") + sourceNode + "." + sourceParam + " -> " + OSLInterfaceName + "." + destParam);
+					Logging::debug(MString("connecting ") + sourceNode + "." + sourceParam + " -> " + OSLInterfaceName + "." + destParam);
 					success = oslRenderer->shadingsys->ConnectShaders(sourceNode.asChar(), sourceParam.asChar(), OSLInterfaceName.asChar(), destParam.asChar());
 					break;
 				}
@@ -106,11 +106,11 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	}
 	if (!oslRenderer->shadingsys->ShaderGroupEnd())
 	{
-		logger.debug("Problem finishing shader group");
+		Logging::debug("Problem finishing shader group");
 	}
 	std::string serialized;
 	oslRenderer->shadingsys->getattribute(shaderGroup.get(), "pickle", serialized);
-	logger.debug(MString("Serialized: ") + serialized.c_str());
+	Logging::debug(MString("Serialized: ") + serialized.c_str());
 
 	Corona::SharedPtr<Corona::Abstract::Map> oslMapp = new OSLMap;
 	OSLMap *oslMap = (OSLMap *)oslMapp.getReference();

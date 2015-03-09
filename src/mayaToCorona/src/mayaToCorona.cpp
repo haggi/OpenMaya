@@ -3,14 +3,11 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mtco_common/mtco_mayaScene.h"
-#include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
-#include "mayaSceneFactory.h"
-#include "mtco_common/mtco_renderGlobals.h"
-#include "utilities\attrTools.h"
-
-static Logging logger;
+#include "utilities/logging.h"
+#include "utilities/tools.h"
+#include "utilities/attrTools.h"
+#include "world.h"
 
 void* MayaToCorona::creator()
 {
@@ -25,8 +22,9 @@ MSyntax MayaToCorona::newSyntax()
 	MSyntax syntax;
 	MStatus stat;
 
-	stat = syntax.addFlag( "-cam", "-camera", MSyntax::kString);
-	stat = syntax.addFlag( "-wi", "-width", MSyntax::kLong);
+	stat = syntax.addFlag("-cam", "-camera", MSyntax::kString);
+	stat = syntax.addFlag("-s", "-state");
+	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
 	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
 	// Flag -startIPR
 	stat = syntax.addFlag( "-sar", "-startIpr");
@@ -40,7 +38,7 @@ MSyntax MayaToCorona::newSyntax()
 
 void MayaToCorona::setLogLevel()
 {
-	MObject globalsObj = objectFromName("coronaGlobals");
+	MObject globalsObj = getRenderGlobalsNode();
 	if (globalsObj == MObject::kNullObj)
 	{
 		Logging::setLogLevel(Logging::Debug);
@@ -59,52 +57,26 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 	setLogLevel();
 
 	MArgDatabase argData(syntax(), args);
+
+	if (argData.isFlagSet("-state", &stat))
+	{
+		Logging::debug(MString("state: ???"));
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATETRANSLATING)
+				setResult("rstatetranslating");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATERENDERING)
+			setResult("rstaterendering");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATEDONE)
+			setResult("rstatedone");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATENONE)
+			setResult("rstatenone");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATESTOPPED)
+			setResult("rstatestopped");
+		return MS::kSuccess;
+	}
 	
-	int width = -1;
-	int height = -1;
-
-	MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
-
-	if( !mayaScene->good )
-	{
-		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
-		MayaTo::MayaSceneFactory().deleteMaysScene();
-		return MS::kFailure;
-	}
-
-	if (mayaScene->renderState == MayaScene::RENDERING)
-	{
-		MGlobal::displayError("\nThere is already a render process running... please stop current rendering first.\n");
-		return MS::kFailure;
-	}
-
-	if ( argData.isFlagSet("-width", &stat))
-	{
-		argData.getFlagArgument("-width", 0, width);
-		logger.debug(MString("width: ") + width);
-		if( width > 0 )
-			mayaScene->renderGlobals->imgWidth = width;
-	}
-
-	if ( argData.isFlagSet("-height", &stat))
-	{
-		argData.getFlagArgument("-height", 0, height);
-		logger.debug(MString("height: ") + height);
-		if( height > 0 )
-			mayaScene->renderGlobals->imgHeight = height;
-	}
-
-	if (mayaScene->renderGlobals->useRenderRegion)
-	{
-		int imgWidth = mayaScene->renderGlobals->imgWidth;
-		int imgHeight = mayaScene->renderGlobals->imgHeight;
-		RenderGlobals *rg = mayaScene->renderGlobals;
-		if ((rg->regionLeft > imgWidth) || (rg->regionRight > imgWidth) || (rg->regionBottom > imgHeight) || (rg->regionTop > imgHeight))
-			rg->useRenderRegion = false;
-	}
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{
-		logger.debug(MString("-stopIpr"));
+		Logging::debug(MString("-stopIpr"));
 		EventQueue::Event e;
 		e.type = EventQueue::Event::IPRSTOP;
 		theRenderEventQueue()->push(e);
@@ -113,20 +85,34 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 
 	if ( argData.isFlagSet("-pauseIpr", &stat))
 	{
-		logger.debug(MString("-pauseIpr"));
-		logger.debug(MString("-stopIpr"));
+		Logging::debug(MString("-pauseIpr"));
+		Logging::debug(MString("-stopIpr"));
 		EventQueue::Event e;
 		e.type = EventQueue::Event::IPRPAUSE;
 		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
+	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
+
 	if ( argData.isFlagSet("-startIpr", &stat))
 	{
-		logger.debug(MString("-startIpr"));
-		mayaScene->setRenderType(MayaScene::IPR);
+		Logging::debug(MString("-startIpr"));
+		cmdArgs->renderType = MayaTo::MayaToWorld::WorldRenderType::IPRRENDER;
 	}
 	
+	if (argData.isFlagSet("-width", &stat))
+	{
+		argData.getFlagArgument("-width", 0, cmdArgs->width);
+		Logging::debug(MString("width: ") + cmdArgs->width);
+	}
+
+	if (argData.isFlagSet("-height", &stat))
+	{
+		argData.getFlagArgument("-height", 0, cmdArgs->height);
+		Logging::debug(MString("height: ") + cmdArgs->height);
+	}
+
 	if ( argData.isFlagSet("-camera", &stat))
 	{
 	    MDagPath camera;
@@ -135,16 +121,13 @@ MStatus MayaToCorona::doIt( const MArgList& args)
         stat = selectionList.getDagPath(0, camera);
 		camera.extendToShape();
 		Logging::debug(MString("camera: ") + camera.fullPathName());
-		mayaScene->setCurrentCamera(camera);
+		cmdArgs->cameraDagPath = camera;
 	}			
 	
-	mayaScene->renderState = MayaScene::RENDERING;
-
 	EventQueue::Event e;
+	e.cmdArgsData = std::move(cmdArgs);
 	e.type = EventQueue::Event::INITRENDER;
 	theRenderEventQueue()->push(e);
-	
-	RenderQueueWorker::startRenderQueueWorker();
-	
+		
 	return MStatus::kSuccess;
 }

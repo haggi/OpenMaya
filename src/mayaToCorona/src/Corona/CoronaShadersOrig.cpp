@@ -1,10 +1,10 @@
 #include "Corona.h"
 #include <maya/MPlugArray.h>
-#include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "renderGlobals.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
@@ -33,19 +33,19 @@ void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn
 	if( isConnected("normalCamera", depFn, true, false))
 	{
 		//MString normalCamName = "normalCamera";
-		//logger.debug(MString("normal camera is connected"));
+		//Logging::debug(MString("normal camera is connected"));
 		//texmap = getOslTexMap(normalCamName, depFn, sn);
-		//logger.debug("Bump connected");
+		//Logging::debug("Bump connected");
 		//data.bump = texmap;
 	}
 }
 
-bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj)
+bool CoronaRenderer::assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> obj)
 {
 	int index = -1;
 	for( size_t i = 0; i < shaderArray.size(); i++)
 	{
-		logger.debug(MString("assingExistingMat search for ") + getObjectName(shadingGroup) + " current shaderArrayElement: " + getObjectName(shaderArray[i]));
+		Logging::debug(MString("assingExistingMat search for ") + getObjectName(shadingGroup) + " current shaderArrayElement: " + getObjectName(shaderArray[i]));
 		if( shaderArray[i] == shadingGroup)
 		{
 			index = i;
@@ -54,7 +54,7 @@ bool CoronaRenderer::assingExistingMat(MObject shadingGroup, mtco_MayaObject *ob
 	}
 	if( index > -1)
 	{
-		logger.info(MString("Reusing material data from :") + getObjectName(shaderArray[index]));
+		Logging::info(MString("Reusing material data from :") + getObjectName(shaderArray[index]));
 		Corona::NativeMtlData data = dataArray[index];
 		MFnDependencyNode depFn(obj->mobject);
 		// this can be a problem because a user may turn off shadow casting for the shader itself what is possible but should not be used normally
@@ -89,7 +89,7 @@ void CoronaRenderer::clearMaterialLists()
 }
 
 
-void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj)
+void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> obj)
 {
 	
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
@@ -99,7 +99,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 		for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 		{
 			MObject shadingGroup = obj->shadingGroups[sgId];
-			logger.debug(MString("---------- Check shading group: ") + getObjectName(shadingGroup) + " for existence on object named " +  obj->fullName);
+			Logging::debug(MString("---------- Check shading group: ") + getObjectName(shadingGroup) + " for existence on object named " +  obj->fullName);
 			if (assingExistingMat(shadingGroup, obj))
 				return;
 
@@ -158,7 +158,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, mtco_MayaObject
 }
 
 
-void CoronaRenderer::setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj)
+void CoronaRenderer::setRenderStats(Corona::IMaterialSet& ms, std::shared_ptr<MayaObject> obj)
 {
 	MFnDependencyNode depFn(obj->mobject);
 

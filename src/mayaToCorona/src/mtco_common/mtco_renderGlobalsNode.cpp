@@ -48,7 +48,6 @@ MObject MayaToCoronaGlobals::maxPtSampleIntensity;
 MObject MayaToCoronaGlobals::subdivEnviroThreshold;
 MObject MayaToCoronaGlobals::lights_texturedResolution;
 MObject MayaToCoronaGlobals::random_seed;
-MObject MayaToCoronaGlobals::numThreads;
 MObject MayaToCoronaGlobals::lightSolver_localFrac;
 MObject MayaToCoronaGlobals::lightSolver_globalFrac;
 MObject MayaToCoronaGlobals::portals_sampleAmount;
@@ -344,9 +343,6 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	random_seed = nAttr.create("random_seed", "random_seed",  MFnNumericData::kInt, 1234);
 	CHECK_MSTATUS(addAttribute( random_seed ));
-
-	numThreads = nAttr.create("numThreads", "numThreads",  MFnNumericData::kInt, 0);
-	CHECK_MSTATUS(addAttribute( numThreads ));
 
 	lightSolver_localFrac = nAttr.create("lightSolver_localFrac", "lightSolver_localFrac",  MFnNumericData::kFloat, 0.33);
 	nAttr.setMin(0.0);

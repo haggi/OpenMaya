@@ -44,8 +44,8 @@ CoronaSurfaceOverride::CoronaSurfaceOverride(const MObject& obj)
 			//}
 			//xmlFile.close();
 
-			for (uint i = 0; i < getWorldPtr()->shaderSearchPath.length(); i++)
-				fragmentMgr->addFragmentPath(getWorldPtr()->shaderSearchPath[i]);
+			for (uint i = 0; i < MayaTo::getWorldPtr()->shaderSearchPath.length(); i++)
+				fragmentMgr->addFragmentPath(MayaTo::getWorldPtr()->shaderSearchPath[i]);
 			MStringArray fragments;
 			fragments.append("coronaOutput");
 			fragments.append("coronaDiffuse");

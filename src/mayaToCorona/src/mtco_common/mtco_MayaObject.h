@@ -15,8 +15,7 @@ class mtco_ObjectAttributes : public ObjectAttributes
 {
 public:
 	mtco_ObjectAttributes();
-	mtco_ObjectAttributes(mtco_ObjectAttributes *other);
-	MMatrix objectMatrix;
+	mtco_ObjectAttributes(std::shared_ptr<ObjectAttributes> other);
 };
 
 class mtco_MayaObject : public MayaObject
@@ -26,11 +25,11 @@ public:
 	mtco_MayaObject(MDagPath&);
 	~mtco_MayaObject();
 
+	virtual bool geometryShapeSupported();
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = NULL);
+
 	Corona::IGeometryGroup* geom;
 	Corona::IInstance* instance;
-	virtual bool geometryShapeSupported();
-	virtual mtco_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
-	virtual void getMaterials();
 
 };
 

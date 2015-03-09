@@ -1,32 +1,32 @@
 #include <maya/MGlobal.h>
 #include <maya/MImage.h>
 #include "Corona.h"
+#include "renderGlobals.h"
 #include "utilities/logging.h"
+#include "utilities/attrTools.h"
 #include "threads/renderQueueWorker.h"
-#include "../mtco_common/mtco_renderGlobals.h"
+#include "world.h"
 
 static Logging logger;
 
 void CoronaRenderer::framebufferCallback()
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
 		return;
 
-	if( this->mtco_renderGlobals->exportSceneFile)
+	if( renderGlobals->exportSceneFile)
 		return;
 
-	if( this->context.fb == NULL)
+	if (!(MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING))
 		return;
 
-	if( this->context.core == NULL)
-		return;
-
-	if(this->context.isCancelled)
-		return;
-
-	Corona::Pixel p = this->context.fb->getImageSize();
+	Corona::Pixel p = renderer-> context.fb->getImageSize();
 	const Corona::String rstamp = "Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr";
 	
 	int width = p.x;
@@ -36,44 +36,41 @@ void CoronaRenderer::framebufferCallback()
 	int xmax = width - 1;
 	int ymax = height - 1;
 
-	if (this->mtco_renderGlobals->useRenderRegion)
+	if (renderGlobals->getUseRenderRegion())
 	{
-		ymin = this->mtco_renderGlobals->regionBottom;
-		xmin = this->mtco_renderGlobals->regionLeft;
-		ymax = this->mtco_renderGlobals->regionTop;
-		xmax = this->mtco_renderGlobals->regionRight;
+		renderGlobals->getRenderRegion(xmin, ymin, xmax, ymax);
 		width = xmax - xmin + 1;
 		height = ymax - ymin + 1;
 	}
+
 	size_t numPixels = width * height;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-		
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);		
+	RV_PIXEL *pixels = pixelsPtr.get();
 	uint numPixelsInRow = p.x;
 	bool doToneMapping = true;
-	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_use;
+	bool showRenderStamp = getBoolAttr("renderstamp_use", depFn, true);
 	Corona::Pixel firstPixelInRow(0,0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];
-	this->context.fb->updateRenderStamp(rstamp, showRenderStamp);
-
-	this->context.fb->setColorMapping(*context.colorMappingData);
+	renderer-> context.fb->updateRenderStamp(rstamp, showRenderStamp);
+	renderer-> context.fb->setColorMapping(*renderer->context.colorMappingData);
 
 	for (uint rowId = 0; rowId < p.y; rowId++)
 	{
 		memset(outAlpha, 0, numPixelsInRow * sizeof(float));
 		firstPixelInRow.y = rowId;
-		if (this->context.isCancelled)
+		if (renderer-> context.isCancelled)
 			break;
 		try{
-			this->context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, outColors, outAlpha);
+			renderer-> context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, outColors, outAlpha);
 		}
 		catch (char *errorMsg){
-			logger.error(errorMsg);
+			Logging::error(errorMsg);
 			break;
 		}
 
 		uint rowPos = rowId * width;
-		if (this->mtco_renderGlobals->useRenderRegion)
+		if (renderGlobals->getUseRenderRegion())
 		{
 			if (rowId < ymin)
 				continue;
@@ -94,10 +91,10 @@ void CoronaRenderer::framebufferCallback()
 	delete[] outColors;
 	delete[] outAlpha;
 
-	if (this->context.isCancelled)
+	if (renderer-> context.isCancelled)
 		return;
 
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.tile_xmin = xmin;
 	e.tile_ymin = ymin;
 	e.tile_xmax = xmax;

@@ -13,6 +13,7 @@
 #include "mtco_common/mtco_renderGlobalsNode.h"
 #include "utilities/tools.h"
 
+#include "threads/renderQueueWorker.h"
 #include "swatchesRenderer\swatchRenderer.h"
 
 #include "shaders/CoronaRaytypeMaterial.h"
@@ -128,10 +129,11 @@ MStatus initializePlugin( MObject obj )
 
 	Corona::ICore::initLib(false);
 
-	defineWorld();
-
+	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();
-	getWorldPtr()->shaderSearchPath.append(loadPath);
+	MayaTo::getWorldPtr()->shaderSearchPath.append(loadPath);
+
+	RenderQueueWorker::startRenderQueueWorker();
 
 	return status;
 }
@@ -140,7 +142,9 @@ MStatus uninitializePlugin( MObject obj)
 {
 	MStatus   status;
 	MFnPlugin plugin( obj );
-	
+
+	MayaTo::deleteWorld();
+
 #ifdef HAS_OVERRIDE
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId));
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(CoronaLightDrawDBClassification, CoronaSurfacesRegistrantId));
@@ -157,14 +161,14 @@ MStatus uninitializePlugin( MObject obj)
 	if (MGlobal::mayaState() != MGlobal::kBatch)
 		MSwatchRenderRegister::unregisterSwatchRender(swatchName);
 
-	std::cout << "deregister mtap cmd\n";
+	std::cout << "deregister mtco cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {
 		status.perror("cannot deregister command: MayaToCoronaCmd");
 		return status;
 	}
 
-	std::cout << "deregister mtap globals\n";
+	std::cout << "deregister mtco globals\n";
 	status = plugin.deregisterNode( MayaToCoronaGlobals::id );
 	if (!status) {
 		status.perror("cannot deregister node: MayaToCoronaGlobals");

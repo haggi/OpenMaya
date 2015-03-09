@@ -589,6 +589,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     
     def renderProcedure(self, width, height, doShadows, doGlow, camera, options):
         log.debug("renderProcedure")
+        
+        renderState = pm.mayatoCorona(s=True)
+        if  renderState in ["rstaterendering", "rstatetranslating"]:
+            log.error("Rendering is in progress, cannot proceed. Please stop rendering first.")
+            return
+        
         self.removeLogFile()
         log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options))
         self.createGlobalsNode()    

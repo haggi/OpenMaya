@@ -13,10 +13,10 @@
 #include "shadingtools/material.h"
 
 class mtco_MayaScene;
-class mtco_RenderGlobals;
 class mtco_MayaObject;
 class MFnDependencyNode;
 class MString;
+class RenderGlobals;
 
 struct MayaToRenderPass{
 	enum MayaToPassType{
@@ -123,12 +123,6 @@ class CoronaRenderer : public MayaTo::Renderer
 {
 public:
 
-	mtco_MayaScene *mtco_scene;
-	mtco_RenderGlobals *mtco_renderGlobals;
-
-	std::vector<mtco_MayaObject *> interactiveUpdateList;
-	std::vector<MObject> interactiveUpdateMOList;
-
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 
 	Context context;
@@ -137,30 +131,30 @@ public:
 	virtual ~CoronaRenderer();
 
 	virtual void defineCamera();
-	virtual void defineEnvironment();
-	virtual void defineGeometry();
+	virtual void defineEnvironment(){};
+	virtual void defineGeometry(){};
 	virtual void defineSettings();
+	virtual void defineColorMapping();
 	Corona::IGeometryGroup *defineStdPlane();
 	//void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
-	virtual void defineMesh(mtco_MayaObject *obj);
-	void updateMesh(mtco_MayaObject *obj);
-	void defineMaterial(Corona::IInstance* instance, mtco_MayaObject *obj);
-	void setRenderStats(Corona::IMaterialSet& ms, mtco_MayaObject *obj);
-	bool assingExistingMat(MObject shadingGroup, mtco_MayaObject *obj);
+	virtual void defineMesh(std::shared_ptr<MayaObject> obj){};
+	void updateMesh(std::shared_ptr<MayaObject> obj);
+	void defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> obj){};
+	void setRenderStats(Corona::IMaterialSet& ms, std::shared_ptr<MayaObject> obj);
+	bool assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> obj);
 	void clearMaterialLists();
 	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
-	Corona::IGeometryGroup* getGeometryPointer(mtco_MayaObject *obj);
-	bool isSunLight(mtco_MayaObject *obj);
-	virtual void defineLights();
+	Corona::IGeometryGroup* getGeometryPointer(std::shared_ptr<MayaObject> obj);
+	bool isSunLight(std::shared_ptr<MayaObject> obj);
+	virtual void defineLights(){};
 
 	virtual void render();
 
 	virtual void initializeRenderer();
-	virtual void updateShape(MayaObject *obj);
-	virtual void updateTransform(MayaObject *obj);
-	virtual void IPRUpdateEntities();
-	virtual void reinitializeIPRRendering();
+	virtual void unInitializeRenderer();
+	virtual void updateShape(std::shared_ptr<MayaObject> obj);
+	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
 	virtual void abortRendering();
 
 	void saveImage();
@@ -168,10 +162,10 @@ public:
 	MString getImageFileName(MString& basename, MString& rest);
 	void getPassesInfo(std::vector<MayaToRenderPass>& passes);
 	// utils
-	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, mtco_MayaObject *obj);
+	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 	void createScene();
-	void framebufferCallback();
+	static void framebufferCallback();
 
 	//void doit(); // for testing
 };

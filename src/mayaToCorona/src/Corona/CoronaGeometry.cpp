@@ -11,10 +11,10 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MDataHandle.h>
 
+#include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/shadingUtils.h"
@@ -57,12 +57,12 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 	return geom;
 }
 
-void CoronaRenderer::updateMesh(mtco_MayaObject *obj)
+void CoronaRenderer::updateMesh(std::shared_ptr<MayaObject> obj)
 {
 	obj->addMeshData();
 }
 
-void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
+void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
 {
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
@@ -95,7 +95,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 				{
 					if( !textureFileSupported(fileTexturePath))
 					{
-						logger.error(MString("File texture extension is not supported: ") + fileTexturePath);
+						Logging::error(MString("File texture extension is not supported: ") + fileTexturePath);
 					}else{
 						MapLoader loader;
 						displacementMap = loader.loadBitmap(fileTexturePath.asChar());
@@ -235,7 +235,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		MeshData& md = obj->meshDataList[mbStep];
 		if (md.points.length() != numVertices)
 		{
-			logger.debug(MString("Error there is a mismatch between point data length and num vertices."));
+			Logging::debug(MString("Error there is a mismatch between point data length and num vertices."));
 			numSteps = 1;
 			return;
 		}
@@ -244,13 +244,13 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 			uint npts1 = md.points.length();
 			if (npts1 != obj->meshDataList[0].points.length())
 			{
-				logger.debug(MString("Error there is a mismatch between point data length between mb steps."));
+				Logging::debug(MString("Error there is a mismatch between point data length between mb steps."));
 				numSteps = 1;
 				break;
 			}
 		}
 		npts = md.points.length();
-		//logger.debug(MString("Adding ") + npts + " points for step " + mbStep);
+		//Logging::debug(MString("Adding ") + npts + " points for step " + mbStep);
 		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
 		{
 			MPoint& p = md.points[vtxId];
@@ -258,7 +258,7 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
 		}
 	
-		//logger.debug(MString("Adding ") + md.normals.length() + " normals for step " + mbStep);
+		//Logging::debug(MString("Adding ") + md.normals.length() + " normals for step " + mbStep);
 		for (uint nId = 0; nId < md.normals.length(); nId++)
 		{
 			MFloatVector& n =  md.normals[nId];
@@ -291,20 +291,20 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 		int uvId1 = triUvIds[index + 1];
 		int uvId2 = triUvIds[index + 2];
 
-		//logger.debug(MString("VtxIds: ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
-		//logger.debug(MString("NorIds: ") + normalId0 + " " + normalId1 + " " + normalId2);
-		//logger.debug(MString("UVsIds: ") + uvId0 + " " + uvId1 + " " + uvId2);
-		//logger.debug(MString("") + points[vtxId0].x + " " + points[vtxId0].y + " " + points[vtxId0].z);
-		//logger.debug(MString("") + points[vtxId1].x + " " + points[vtxId1].y + " " + points[vtxId1].z);
-		//logger.debug(MString("") + points[vtxId2].x + " " + points[vtxId2].y + " " + points[vtxId2].z);
+		//Logging::debug(MString("VtxIds: ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
+		//Logging::debug(MString("NorIds: ") + normalId0 + " " + normalId1 + " " + normalId2);
+		//Logging::debug(MString("UVsIds: ") + uvId0 + " " + uvId1 + " " + uvId2);
+		//Logging::debug(MString("") + points[vtxId0].x + " " + points[vtxId0].y + " " + points[vtxId0].z);
+		//Logging::debug(MString("") + points[vtxId1].x + " " + points[vtxId1].y + " " + points[vtxId1].z);
+		//Logging::debug(MString("") + points[vtxId2].x + " " + points[vtxId2].y + " " + points[vtxId2].z);
 
-		//logger.debug(MString("") + normals[normalId0].x + " " + normals[normalId0].y + " " + normals[normalId0].z);
-		//logger.debug(MString("") + normals[normalId1].x + " " + normals[normalId1].y + " " + normals[normalId1].z);
-		//logger.debug(MString("") + normals[normalId2].x + " " + normals[normalId2].y + " " + normals[normalId2].z);
+		//Logging::debug(MString("") + normals[normalId0].x + " " + normals[normalId0].y + " " + normals[normalId0].z);
+		//Logging::debug(MString("") + normals[normalId1].x + " " + normals[normalId1].y + " " + normals[normalId1].z);
+		//Logging::debug(MString("") + normals[normalId2].x + " " + normals[normalId2].y + " " + normals[normalId2].z);
 
-		//logger.debug(MString("") + uArray[uvId0] + " " + vArray[uvId0]);
-		//logger.debug(MString("") + uArray[uvId1] + " " + vArray[uvId1]);
-		//logger.debug(MString("") + uArray[uvId2] + " " + vArray[uvId2]);
+		//Logging::debug(MString("") + uArray[uvId0] + " " + vArray[uvId0]);
+		//Logging::debug(MString("") + uArray[uvId1] + " " + vArray[uvId1]);
+		//Logging::debug(MString("") + uArray[uvId2] + " " + vArray[uvId2]);
 
 		if (hasDisplacement)
 		{
@@ -375,21 +375,21 @@ void CoronaRenderer::defineMesh(mtco_MayaObject *obj)
 	obj->meshDataList.clear();
 }
 
-Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(mtco_MayaObject *obj)
+Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(std::shared_ptr<MayaObject> obj)
 {
 	Corona::IGeometryGroup* geom = NULL;
-	mtco_MayaObject *iobj = obj;
+	std::shared_ptr<MayaObject> iobj = obj;
 
 	if( obj->isInstanced() && (obj->origObject != NULL))
 	{
-		iobj = (mtco_MayaObject *)obj->origObject;
+		iobj = (std::shared_ptr<MayaObject> )obj->origObject;
 		if( iobj->geom != NULL )
 			geom = iobj->geom;
 	}else{
 		// if this object is visible or if it is invisible and it has a connection to an instancer node and there are any instancer elements, then export it
 		if( obj->visible || (((obj->attributes!=NULL) && obj->attributes->hasInstancerConnection) && (this->mtco_scene->instancerNodeElements.size() > 0)))
 		{
-			logger.debug(MString("Translating mesh ") + obj->shortName );
+			Logging::debug(MString("Translating mesh ") + obj->shortName );
 			this->defineMesh(obj);
 			if( obj->geom != NULL )
 				geom = obj->geom;
@@ -405,14 +405,14 @@ void CoronaRenderer::defineGeometry()
 
 	for(size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
 	{
-		mtco_MayaObject *obj = (mtco_MayaObject *)this->mtco_scene->objectList[objId];
+		std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->objectList[objId];
 		if( !obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
 		if( geom == NULL )
 		{
-			logger.debug(MString("Geo pointer is NULL"));
+			Logging::debug(MString("Geo pointer is NULL"));
 			continue;
 		}
 
@@ -438,7 +438,7 @@ void CoronaRenderer::defineGeometry()
 
 	for (size_t objId = 0; objId < this->mtco_scene->instancerNodeElements.size(); objId++)
 	{
-		mtco_MayaObject *obj = (mtco_MayaObject *)this->mtco_scene->instancerNodeElements[objId];
+		std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->instancerNodeElements[objId];
 		if (!obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
@@ -446,7 +446,7 @@ void CoronaRenderer::defineGeometry()
 
 		if (geom == NULL)
 		{
-			logger.error(MString("Geo pointer is NULL"));
+			Logging::error(MString("Geo pointer is NULL"));
 			continue;
 		}
 

@@ -1,10 +1,12 @@
 #ifndef MTAP_QUEUE_H
 #define MTAP_QUEUE_H
 
+#include <memory>
 #include <queue>
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition_variable.hpp"
-
+#include <maya/MRenderView.h>
+#include "../world.h"
 
 namespace EventQueue 
 {
@@ -39,14 +41,23 @@ namespace EventQueue
 		Types type;
 		PixelMode pixelMode;
 		size_t numPixels;
-		void *data;
+
+		// i use shared ptr here because if I push it into a queue, I make a copy
+		// of the original what means I would have to move the move the unique_ptr<>
+		// of a const object because it is automatically created Event( const & Event ) and const
+		// elements cannot be modified so I have to use another way here
+		std::shared_ptr<RV_PIXEL> pixelData;
+		std::shared_ptr<MayaTo::CmdArgs> cmdArgsData;
+
 		size_t tile_xmin, tile_xmax, tile_ymin, tile_ymax;
 		Event()
 		{
 			type = INTERRUPT;
-			data = NULL;
 			pixelMode = RECT;
 			numPixels = 0;
+		}
+		~Event()
+		{
 		}
 	};
 

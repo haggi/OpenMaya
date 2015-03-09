@@ -31,7 +31,7 @@ bool getObjectShadingGroups(MObject& geoObject, MObject& sGroup, int instId)
 			return true;
 		}
 	}else{
-		logger.debug(MString("Object-instObjGroups has no connection to shading group."));
+		Logging::debug(MString("Object-instObjGroups has no connection to shading group."));
 	}
 	return false;
 }
@@ -52,11 +52,11 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup)
         fnMesh.getConnectedSetsAndMembers(shapeObjectDP.instanceNumber(), sets, comps, true);
 
         // Each set is a Shading Group. Loop through them
-		//logger.debug(MString("Found ") + sets.length()  + " shading groups for mesh object " + fnMesh.name());
+		//Logging::debug(MString("Found ") + sets.length()  + " shading groups for mesh object " + fnMesh.name());
         for(unsigned int i = 0; i < sets.length(); ++i)
         {
             MFnDependencyNode fnDepSGNode(sets[i]);
-			//logger.debug(MString("SG: ") + fnDepSGNode.name());
+			//Logging::debug(MString("SG: ") + fnDepSGNode.name());
 			shadingGroup = sets[i];
 			return true;
             //cout << fnDepSGNode.name() << endl;
@@ -110,7 +110,7 @@ bool getObjectShadingGroups(MDagPath& shapeObjectDP, MObject& shadingGroup)
 bool getObjectShadingGroups(MDagPath& shapeObjectDP, MIntArray& perFaceAssignments, MObjectArray& shadingGroups, bool needsPerFaceInfo=true)
 {
 
-	//logger.debug(MString("getObjectShadingGroups:: obj: ") +  shapeObjectDP.partialPathName() + " type: " + shapeObjectDP.node().apiTypeStr());
+	//Logging::debug(MString("getObjectShadingGroups:: obj: ") +  shapeObjectDP.partialPathName() + " type: " + shapeObjectDP.node().apiTypeStr());
 
 	// if obj is a light, simply return the mobject
 	if(shapeObjectDP.node().hasFn(MFn::kLight))

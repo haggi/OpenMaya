@@ -1,8 +1,10 @@
 #include "Corona.h"
 #include <maya/MPlugArray.h>
-#include "../mtco_common/mtco_renderGlobals.h"
+#include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/pystring.h"
+#include "utilities/attrTools.h"
+#include "world.h"
 
 // passes types
 //0  "Alpha", - f
@@ -63,6 +65,8 @@ void CoronaRenderer::getPassesInfo(std::vector<MayaToRenderPass>& passes)
 
 void CoronaRenderer::saveMergedExr(Corona::String filename)
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+
 	int width = this->context.fb->getImageSize().x;
 	int height = this->context.fb->getImageSize().y;
 
@@ -137,38 +141,7 @@ void CoronaRenderer::saveMergedExr(Corona::String filename)
 	std::string fileName = filename.cStr();
 	
 	OIIO::ImageOutput *out = OIIO::ImageOutput::create(fileName);
-
 	OIIO::ImageSpec spec(width, height, numChannels, OIIO::TypeDesc::FLOAT);
-	//OIIO::ImageSpec spec(width, height, 2, OIIO::TypeDesc::FLOAT);
-	//spec.channelformats.push_back(OIIO::TypeDesc::FLOAT);
-	//spec.channelformats.push_back(OIIO::TypeDesc::FLOAT);
-	//spec.channelnames.push_back("ChannelA");
-	//spec.channelnames.push_back("ChannelB");
-	//out->open(fileName, spec);
-	//int z = 0; // always 0 for non deep images
-	//bool result;
-	//for (int y = (height-1); y >= 0; y--)
-	//{
-	//	float *sl = new float[width * 2];
-	//	float *f = sl;
-	//	for (uint x = 0; x < width; x++)
-	//	{
-	//		if (x >(width * 0.5))
-	//		{
-	//			*f++ = 0.0f;
-	//			*f++ = 0.5f;
-	//		}
-	//		else{
-	//			*f++ = 1.0f;
-	//			*f++ =  .7f;
-	//		}
-	//	}
-	//	result = out->write_scanline(y, z, OIIO::TypeDesc::UNKNOWN, sl);
-	//}
-	//out->close();
-	//return;
-
-
 
 	for (int passId = 0; passId < numPasses; passId++)
 	{
@@ -229,7 +202,7 @@ void CoronaRenderer::saveMergedExr(Corona::String filename)
 
 	// get scanlines
 	bool doToneMapping = true;
-	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_inFile;
+	bool showRenderStamp = getBoolAttr("renderstamp_inFile", depFn, true);
 	int exrScanlineSize = pixelSize * width;
 	char *scanLine = new char[exrScanlineSize];
 	int z = 0;
@@ -329,10 +302,11 @@ void CoronaRenderer::saveMergedExr(Corona::String filename)
 
 MString CoronaRenderer::getImageFileName(MString& basename, MString& restname)
 {
-	this->mtco_renderGlobals->getImageName();
-	MString filename = this->mtco_renderGlobals->imageOutputFile.asChar();
-	Logging::debug(MString("Saving image as ") + this->mtco_renderGlobals->imageOutputFile);
-	std::string imgFormatExt = this->mtco_renderGlobals->imageOutputFile.toLowerCase().asChar();
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	renderGlobals->getImageName();
+	MString filename = renderGlobals->imageOutputFile.asChar();
+	Logging::debug(MString("Saving image as ") + renderGlobals->imageOutputFile);
+	std::string imgFormatExt = renderGlobals->imageOutputFile.toLowerCase().asChar();
 	std::vector<std::string> fileParts;
 
 	// we simply expect a filename with format: <name>.number.ext or <name>.ext where name must not contain points.
@@ -348,7 +322,7 @@ MString CoronaRenderer::getImageFileName(MString& basename, MString& restname)
 	std::string ext = fileParts.back();
 	if ((ext != "exr") && (ext != "png") && (ext != "bmp") && (ext != "jpg"))
 	{
-		Logging::warning(MString("Filename does not contain a valid extension: ") + this->mtco_renderGlobals->imageOutputFile + " adding exr.");
+		Logging::warning(MString("Filename does not contain a valid extension: ") + renderGlobals->imageOutputFile + " adding exr.");
 		filename += ".exr";
 		ext = "exr";
 	}
@@ -357,18 +331,20 @@ MString CoronaRenderer::getImageFileName(MString& basename, MString& restname)
 
 void CoronaRenderer::saveImage()
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 
 	Corona::Bitmap<Corona::Rgb, false> bitmap(this->context.fb->getImageSize());
 	Corona::Bitmap<float, false> alpha(this->context.fb->getImageSize());
 
 	bool doToneMapping = true;
-	bool showRenderStamp = this->mtco_renderGlobals->renderstamp_inFile;
+	bool showRenderStamp = getBoolAttr("renderstamp_inFile", depFn, true);
 	MString name, rest;
 	Corona::String filename = getImageFileName(name, rest).asChar();
 	bool isExr = pystring::endswith(filename.cStr(), ".exr");
 
-	Corona::String dumpFilename = (this->mtco_renderGlobals->imageOutputFile + ".dmp").asChar();
-	if (this->mtco_renderGlobals->dumpAndResume)
+	Corona::String dumpFilename = (renderGlobals->imageOutputFile + ".dmp").asChar();
+	if (getBoolAttr("dumpAndResume", depFn, false))
 		this->context.fb->dumpExr(dumpFilename);
 
 	// no gamma for exr
@@ -384,13 +360,12 @@ void CoronaRenderer::saveImage()
 		this->context.fb->getRow(Corona::Pixel(0, i), bitmap.getWidth(), Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, &bitmap[pixel], &alpha[pixel]);
 	}
 
-	MFnDependencyNode globalsNode(objectFromName("coronaGlobals"));
 	if (isExr)
 	{
-		if (globalsNode.findPlug("exrMergeChannels").asBool())
+		if (getBoolAttr("exrMergeChannels", depFn, true))
 		{
 			saveMergedExr(filename);
-			context.colorMappingData->gamma = this->mtco_renderGlobals->colorMapping_gamma;
+			context.colorMappingData->gamma = getFloatAttr("colorMapping_gamma", depFn, 2.2);
 			return;
 		}
 	}

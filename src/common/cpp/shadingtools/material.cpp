@@ -74,7 +74,7 @@ void ShadingNetwork::parseNetwork(MObject& shaderNode)
 	// to avoid any dg node cycles
 	if (alreadyDefined(sn))
 	{
-		logger.debug("Node is already defined, skipping.");
+		Logging::debug("Node is already defined, skipping.");
 		return;
 	}
 
@@ -82,7 +82,7 @@ void ShadingNetwork::parseNetwork(MObject& shaderNode)
 	sn.getConnectedInputObjects(connectedNodeList);
 	this->checkNodeList(connectedNodeList);
 
-	logger.debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
+	Logging::debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
 
 	for (uint i = 0; i < connectedNodeList.length(); i++)
 	{
@@ -197,7 +197,7 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
 	// to avoid any dg node cycles
 	if(alreadyDefined(sn, network))
 	{
-		logger.debug("Node is already defined, skipping.");
+		Logging::debug("Node is already defined, skipping.");
 		return;
 	}
 	
@@ -205,7 +205,7 @@ void Material::parseNetwork(MObject& shaderNode, ShadingNetwork& network)
 	sn.getConnectedInputObjects(connectedNodeList);
 	this->checkNodeList(connectedNodeList);
 
-	logger.debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
+	Logging::debug(MString("Node ") + sn.fullName + " has " + connectedNodeList.length() + " input connections.");
 
 	for(uint i = 0; i < connectedNodeList.length(); i++)
 	{
@@ -227,8 +227,8 @@ void Material::printNodes(ShadingNetwork& network)
 	for(int i = numNodes - 1; i >= 0 ; i--)
 	{
 		ShadingNode sn = network.shaderList[i];
-		logger.info(MString("Material::Node id ") + (double)i + " typename " + sn.typeName);
-		logger.info(MString("Material::Node id ") + (double)i + " mayaname " + sn.fullName);
+		Logging::info(MString("Material::Node id ") + (double)i + " typename " + sn.typeName);
+		Logging::info(MString("Material::Node id ") + (double)i + " mayaname " + sn.fullName);
 	}
 }
 

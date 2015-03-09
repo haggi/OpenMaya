@@ -19,8 +19,8 @@ LightMaterialOverride::LightMaterialOverride(const MObject& obj)
 		MHWRender::MFragmentManager* fragmentMgr = theRenderer->getFragmentManager();
 		if (fragmentMgr)
 		{
-			for (uint i = 0; i < getWorldPtr()->shaderSearchPath.length(); i++)
-				fragmentMgr->addFragmentPath(getWorldPtr()->shaderSearchPath[i]);
+			for (uint i = 0; i < MayaTo::getWorldPtr()->shaderSearchPath.length(); i++)
+				fragmentMgr->addFragmentPath(MayaTo::getWorldPtr()->shaderSearchPath[i]);
 
 			MString fragment = "CoronaLight";
 			bool fragAdded = fragmentMgr->hasFragment(fragment);

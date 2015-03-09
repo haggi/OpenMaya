@@ -194,9 +194,6 @@
     <ClCompile Include="..\src\Corona\CoronaPasses.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtco_common\mtco_mayaSceneFactory.cpp">
-      <Filter>mtco_common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
@@ -260,6 +257,33 @@
     <ClCompile Include="..\src\Corona\CoronaSky.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\maysSceneInteractive.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_rendererFactory.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_mayaObjectFactory.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -319,9 +343,6 @@
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h">
       <Filter>mtco_common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h">
-      <Filter>mtco_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h">
       <Filter>mtco_common</Filter>
     </ClInclude>
@@ -359,9 +380,6 @@
       <Filter>common\shadingTools</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Corona\MyClasses.h">
-      <Filter>Source Files\Corona</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaCallbacks.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h">
@@ -435,6 +453,24 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\coronaRaytypeMaterial.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h">
+      <Filter>common\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaTestScene.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderProcess.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

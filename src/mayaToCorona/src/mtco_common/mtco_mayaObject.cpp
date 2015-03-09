@@ -13,7 +13,7 @@ mtco_ObjectAttributes::mtco_ObjectAttributes()
 	objectMatrix.setToIdentity();
 }
 
-mtco_ObjectAttributes::mtco_ObjectAttributes(mtco_ObjectAttributes *other)
+mtco_ObjectAttributes::mtco_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
 	if( other != NULL)
 	{
@@ -35,23 +35,13 @@ mtco_MayaObject::mtco_MayaObject(MObject& mobject) : MayaObject(mobject)
 
 mtco_MayaObject::mtco_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
-	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	Logging::debug(MString("created obj: ") + this->dagPath.fullPathName());
 	this->geom = NULL;
 	this->instance = NULL;
 }
 
 mtco_MayaObject::~mtco_MayaObject()
-{
-	if( this->attributes != NULL)
-		delete (mtco_ObjectAttributes *)this->attributes;
-}
-
-void mtco_MayaObject::getMaterials()
-{
-	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
-	{
-	}
-}
+{}
 
 bool mtco_MayaObject::geometryShapeSupported()
 {
@@ -61,7 +51,6 @@ bool mtco_MayaObject::geometryShapeSupported()
 		return true;
 	}
 	return false;
-
 }
 
 //
@@ -69,9 +58,10 @@ bool mtco_MayaObject::geometryShapeSupported()
 //	e.g. lets say we assign a color to the top node of a hierarchy. Then all child nodes will be
 //	called and this method is used. 
 //
-mtco_ObjectAttributes *mtco_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
+
+std::shared_ptr<ObjectAttributes> mtco_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	mtco_ObjectAttributes *myAttributes = new mtco_ObjectAttributes((mtco_ObjectAttributes *)parentAttributes);
+	std::shared_ptr<ObjectAttributes> myAttributes = std::shared_ptr<ObjectAttributes>(new mtco_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{
@@ -87,7 +77,7 @@ mtco_ObjectAttributes *mtco_MayaObject::getObjectAttributes(ObjectAttributes *pa
 		MFnDagNode objNode(this->mobject);
 		myAttributes->objectMatrix = objNode.transformationMatrix() * myAttributes->objectMatrix;
 	}
-
+	
 	this->attributes = myAttributes;
 	return myAttributes;
 }

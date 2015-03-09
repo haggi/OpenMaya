@@ -1,11 +1,11 @@
 #include "Corona.h"
 #include <maya/MPlugArray.h>
 #include <maya/MObjectArray.h>
-#include "../mtco_common/mtco_renderGlobals.h"
-#include "../mtco_common/mtco_mayaScene.h"
-#include "../mtco_common/mtco_mayaObject.h"
+#include "renderGlobals.h"
+#include "world.h"
+//#include "../mtco_common/mtco_mayaObject.h"
 #include "utilities/logging.h"
-#include "threads/renderQueueWorker.h"
+//#include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
@@ -31,10 +31,12 @@ static char *sourceColorNames[] = { "diffuse","translucency","reflect","refract"
 void CoronaRenderer::definePasses()
 {
 	MStatus stat;
-	MObject globals = objectFromName("coronaGlobals");
+	MObject globals = getRenderGlobalsNode();
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
 	if (globals == MObject::kNullObj)
 	{
-		logger.warning(MString("Unable to find coronaGlobals node."));
+		Logging::warning(MString("Unable to find coronaGlobals node."));
 		return;
 	}
 
@@ -42,7 +44,7 @@ void CoronaRenderer::definePasses()
 	MPlug aovs = depFn.findPlug("AOVs", &stat);
 	if (!stat)
 	{
-		logger.debug(MString("Unable to find AOVs attribute on coronaGlobals node."));
+		Logging::debug(MString("Unable to find AOVs attribute on coronaGlobals node."));
 		return;
 	}
 
@@ -57,7 +59,7 @@ void CoronaRenderer::definePasses()
 
 	for (uint i = 0; i < oa.length(); i++)
 	{
-		logger.debug(MString("Found connected AOV node: ") + getObjectName(oa[i]));
+		Logging::debug(MString("Found connected AOV node: ") + getObjectName(oa[i]));
 		MString passName = getObjectName(oa[i]);
 		MFnDependencyNode passNode(oa[i]);
 		int passType = passNode.findPlug("passType").asInt();
@@ -129,8 +131,8 @@ void CoronaRenderer::definePasses()
 
 		if (className == "ZDepth")
 		{
-			data.zDepth.minDepth = getFloatAttr("minDepth", passNode, 0.0f) * this->mtco_renderGlobals->scaleFactor;
-			data.zDepth.maxDepth = getFloatAttr("maxDepth", passNode, 1000000.0f) * this->mtco_renderGlobals->scaleFactor;
+			data.zDepth.minDepth = getFloatAttr("minDepth", passNode, 0.0f) * renderGlobals->scaleFactor;
+			data.zDepth.maxDepth = getFloatAttr("maxDepth", passNode, 1000000.0f) * renderGlobals->scaleFactor;
 		}
 
 		if (className == "Id")
@@ -142,8 +144,6 @@ void CoronaRenderer::definePasses()
 					data.id.type = idTypes[k];
 			}
 		}
-
 		context.renderPasses.push(context.core->createRenderPass(data));
 	}
-
 }

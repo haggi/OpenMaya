@@ -16,10 +16,10 @@ static bool done;
 mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution)
 {
 #ifdef _DEBUG
-	logger.setLogLevel(Logging::Debug);
+	Logging::setLogLevel(Logging::Debug);
 #endif
 
-	logger.debug("------------mtco_SwatchRendererInterface created.");
+	Logging::debug("------------mtco_SwatchRendererInterface created.");
 	this->imgDone = false;
 	this->inProgress = false;
 
@@ -63,7 +63,7 @@ void mtco_SwatchRendererInterface::defineSettings()
 
 void mtco_SwatchRendererInterface::init()
 {
-	logger.debug("SwatchRendererInterface init called.");
+	Logging::debug("SwatchRendererInterface init called.");
 }
 
 void mtco_SwatchRendererInterface::loadGeometry(){}
@@ -251,7 +251,7 @@ void mtco_SwatchRendererInterface::saveImageData()
 			this->context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, false, outColors, outAlpha);
 		}
 		catch (char *errorMsg){
-			logger.error(errorMsg);
+			Logging::error(errorMsg);
 			break;
 		}
 		uint rowPos = rowId * numPixelsInRow;
@@ -279,7 +279,7 @@ void mtco_SwatchRendererInterface::renderSwatch()
 	Corona::ConfParser parser;
 	Corona::String resPath = (getRendererHome() + "ressources/").asChar();
 	Corona::String defPath = "Config-" + Corona::toStr(Corona::PropertyDescriptor::descriptorsHash()) + ".conf";
-	logger.debug(MString("parser: ") + (resPath + defPath).cStr());
+	Logging::debug(MString("parser: ") + (resPath + defPath).cStr());
 	parser.parseFile(resPath + defPath, context.settings, Corona::ConfParser::CREATE_IF_NONEXISTENT);
 
 	defineSettings();
@@ -320,12 +320,10 @@ void mtco_SwatchRendererInterface::swatchRenderThread(mtco_SwatchRendererInterfa
 void mtco_SwatchRendererInterface::initializeStaticData()
 {
 #ifdef _DEBUG
-	logger.setLogLevel(Logging::Debug);
+	Logging::setLogLevel(Logging::Debug);
 #endif
-	logger.debug("------------initializeStaticData called.");
 }
 
 void mtco_SwatchRendererInterface::cleanUpStaticData()
 {
-	logger.debug("------------cleanUpStaticData called.");
 }

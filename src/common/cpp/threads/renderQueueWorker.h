@@ -1,12 +1,20 @@
 #ifndef RENDER_QUEUE_H
 #define RENDER_QUEUE_H
 
+#include <thread>
+#include <functional>
 #include <maya/MRenderView.h>
-#include <maya/MComputation.h>
 #include "queue.h"
 
 static EventQueue::concurrent_queue<EventQueue::Event> RenderEventQueue;
 EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue();
+
+struct Callback{
+	unsigned int millsecondInterval = 100;
+	std::function<void()> functionPointer;
+	unsigned int callbackId = 0;
+	bool terminate = false;
+};
 
 class RenderQueueWorker
 {
@@ -26,14 +34,18 @@ public:
 	static void addIdleUIComputationCallback();
 	static void sceneCallback(void *);
 	static void pluginUnloadCallback(void *);
-	static void computationEventThread(void *);
-	static void userThread(void *);
+	static void computationEventThread();
+	static std::thread sceneThread;
+	static void renderProcessThread();
 	static void sendFinalizeIfQueueEmpty(void *);
 	static void setStartTime();
 	static void setEndTime();
 	static MString getElapsedTimeString();
 	static MString getCaptionString();
-
+	static void updateRenderView(EventQueue::Event& e);
+	static size_t registerCallback(std::function<void()> function, unsigned int millisecondsUpdateInterval = 100);
+	static void unregisterCallback(size_t cbId);
+	static void callbackWorker(size_t cbId);
 private:
 
 };
@@ -44,7 +56,6 @@ namespace EventQueue{
 		int x, y;
 	};
 };
-
 
 std::vector<MObject> *getModifiedObjectList();
 

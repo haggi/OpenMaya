@@ -43,11 +43,11 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = NULL;
 
 	Corona::Rgb rgbColor(0.0);
-	logger.debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
+	Logging::debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
 
 	if (isConnected(attributeName.asChar(), depFn, true, true))
 	{
-		logger.debug(MString("it is connected"));
+		Logging::debug(MString("it is connected"));
  		rgbColor = Corona::Rgb(0.0, 0.0, 1.0);
 		texmap = getOslTexMap(attributeName, depFn, sn);
 	}
@@ -84,9 +84,9 @@ Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnD
 	if (isConnected("normalCamera", depFn, true, false))
 	{
 		MString normalCamName = "normalCamera";
-		logger.debug(MString("normal camera is connected"));
+		Logging::debug(MString("normal camera is connected"));
 		texmap = getOslTexMap(normalCamName, depFn, sn);
-		logger.debug("Bump connected");
+		Logging::debug("Bump connected");
 		return texmap;
 	}
 	return NULL;
@@ -100,11 +100,11 @@ Corona::SharedPtr<Corona::IMaterial> defineDefaultMaterial()
 	return data.createMaterial();
 }
 
-Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode, mtco_MayaObject *obj)
+Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode, std::shared_ptr<MayaObject> obj)
 {
 	float globalScaleFactor = 1.0f;
-	if (getWorldPtr()->worldRenderGlobals != NULL)
-		globalScaleFactor = getWorldPtr()->worldRenderGlobals->scaleFactor;
+	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != NULL)
+		globalScaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
 
 	MAYATO_OSL::initOSLUtil();
 
@@ -116,7 +116,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	if (network.shaderList.size() == 0)
 		return defineDefaultMaterial();
 
-	logger.debug(MString("Defining corona material from node: ") + network.rootNodeName);
+	Logging::debug(MString("Defining corona material from node: ") + network.rootNodeName);
 
 	MFnDependencyNode depFn(materialNode);
 	if (depFn.typeName() == "CoronaSurface")
@@ -258,11 +258,11 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 						}
 						catch (Corona::Exception& ex) {
-							logger.error(MString(ex.getMessage().cStr()));
+							Logging::error(MString(ex.getMessage().cStr()));
 						}
 					}
 					else{
-						logger.error(MString("Unable to read ies file .") + iesFile);
+						Logging::error(MString("Unable to read ies file .") + iesFile);
 					}
 				}
 			}
@@ -366,11 +366,11 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 							}
 							catch (Corona::Exception& ex) {
-								logger.error(MString(ex.getMessage().cStr()));
+								Logging::error(MString(ex.getMessage().cStr()));
 							}
 						}
 						else{
-							logger.error(MString("Unable to read ies file .") + iesFile);
+							Logging::error(MString("Unable to read ies file .") + iesFile);
 						}
 					}
 				}

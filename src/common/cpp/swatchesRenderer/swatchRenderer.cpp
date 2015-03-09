@@ -43,7 +43,7 @@ bool SwatchRenderer::doIteration()
 //#endif
 
 
-		if (getWorldPtr()->state == MayaToWorld::UIRENDER)
+		if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::UIRENDER)
 		{
 			this->renderInterface->getImageData(this->image()); // copy empty image
 			image().convertPixelFormat(MImage::kByte);

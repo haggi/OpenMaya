@@ -1,6 +1,7 @@
 #include "oslUtils.h"
 #include <maya/MPlugArray.h>
 #include <maya/MFnDependencyNode.h>
+#include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
@@ -66,7 +67,7 @@ namespace MAYATO_OSL{
 		// no more nodes, this is my leaf node
 		if (inputNodes.length() == 0)
 		{
-			logger.debug(MString("node ") + depFn.name() + " has no incoming connections this is my leaf node.");
+			Logging::debug(MString("node ") + depFn.name() + " has no incoming connections this is my leaf node.");
 			util.leafNodes.append(depFn.object());
 			return;
 		}
@@ -76,7 +77,7 @@ namespace MAYATO_OSL{
 		for (uint i = 0; i < inputNodes.length(); i++)
 		{
 			MString nodeName = getObjectName(inputNodes[i]);
-			logger.debug(MString("Checking node ") + nodeName);
+			Logging::debug(MString("Checking node ") + nodeName);
 			listProjectionHistory(inputNodes[i], util);
 		}
 	}
@@ -97,13 +98,13 @@ namespace MAYATO_OSL{
 			int numEntries = plug.numElements();
 			if (numEntries > ARRAY_MAX_ENTRIES)
 			{
-				logger.warning(MString("Plug ") + plug.name() + " has more than 10 entries: " + numEntries + ", limiting to " + ARRAY_MAX_ENTRIES);
+				Logging::warning(MString("Plug ") + plug.name() + " has more than 10 entries: " + numEntries + ", limiting to " + ARRAY_MAX_ENTRIES);
 				numEntries = ARRAY_MAX_ENTRIES;
 			}
 			for (uint i = 0; i < numEntries; i++)
 			{
 				MPlug p = plug[i];
-				logger.debug(MString("Found an array plug ") + attrName);
+				Logging::debug(MString("Found an array plug ") + attrName);
 
 				if (plug.isCompound())
 				{
@@ -119,7 +120,7 @@ namespace MAYATO_OSL{
 						
 						MString posName = MString("pos") + i;
 						MString colName = MString("col") + i;
-						logger.debug(MString("colorEntryList define pos ") + posName + " col " + colName);
+						Logging::debug(MString("colorEntryList define pos ") + posName + " col " + colName);
 						paramArray.push_back(OSLParameter(colName, vec));
 						paramArray.push_back(OSLParameter(posName, position));
 					}
@@ -159,8 +160,6 @@ namespace MAYATO_OSL{
 		if (sa.type == "matrix")
 		{
 			MMatrix value = getMatrix(sa.name.c_str(), depFn);
-			//value *= this->mtco_renderGlobals->globalConversionMatrix;
-			//value *= this->mtco_renderGlobals->sceneScaleMatrix.inverse();
 			paramArray.push_back(OSLParameter(sa.name.c_str(), value));
 		}
 		if (sa.type == "vector")
@@ -239,7 +238,7 @@ namespace MAYATO_OSL{
 			paramArray.push_back(OSLParameter("inZ", fval2));
 		}
 	
-		logger.debug(MString("Creating helpernode ") + shaderName + " with name " + helperNodeName);
+		Logging::debug(MString("Creating helpernode ") + shaderName + " with name " + helperNodeName);
 		createOSLShader(shaderName, helperNodeName, paramArray);
 		saveOSLNodeNameInArray(helperNodeName);
 
@@ -250,7 +249,7 @@ namespace MAYATO_OSL{
 		// we cannot yet define the connection between a helper node and the attribute itself because the current node is not yet defined.
 		if (outType)
 		{
-			logger.debug(MString("Connecting outType helper node ") + nodeName + "." + attName + " --> " + helperNodeName + "." + inAttName);
+			Logging::debug(MString("Connecting outType helper node ") + nodeName + "." + attName + " --> " + helperNodeName + "." + inAttName);
 			addConnectionToConnectionArray(ca, nodeName, attrName, helperNodeName, inAttName);
 			connectOSLShaders(ca);
 		}
@@ -314,7 +313,7 @@ namespace MAYATO_OSL{
 					int childId = getChildId(otherSidePlug);
 					if ((childId < 0) || (childId > 2))
 					{
-						logger.error(MString("Source plug ") + otherSidePlug.name() + " child id is wrong (<0 or >2): " + childId);
+						Logging::error(MString("Source plug ") + otherSidePlug.name() + " child id is wrong (<0 or >2): " + childId);
 						continue;
 					}
 					outAttribute = outAttributes[childId];
@@ -375,12 +374,12 @@ namespace MAYATO_OSL{
 			}
 	
 	
-			logger.debug(MString("Found connected child input attribute: ") + p.name());
+			Logging::debug(MString("Found connected child input attribute: ") + p.name());
 	
 			for (uint cId = 0; cId < plugsWithChildren.length(); cId++)
 			{
 				MPlug childPlug = plugsWithChildren[cId];
-				logger.debug(MString("Checking child plug: ") + childPlug.name());
+				Logging::debug(MString("Checking child plug: ") + childPlug.name());
 	
 				for (uint chId = 0; chId < childPlug.numChildren(); chId++)
 				{
@@ -389,24 +388,24 @@ namespace MAYATO_OSL{
 	
 					if (chId > 2)
 					{
-						logger.error(MString("Dest plug ") + childPlug.name() + " child id > 2 - it not a color or vector.");
+						Logging::error(MString("Dest plug ") + childPlug.name() + " child id > 2 - it not a color or vector.");
 						continue;
 					}
 	
 					MPlug connectedDestPlug = childPlug.child(chId);
 					MString inAttribute = inAttributes[chId];
-					logger.debug(MString("Found connected child plug: ") + connectedDestPlug.name());
+					Logging::debug(MString("Found connected child plug: ") + connectedDestPlug.name());
 	
 					MPlugArray plugArray;
 					connectedDestPlug.connectedTo(plugArray, true, false);
 					if (plugArray.length() == 0)
 					{
-						logger.error(MString("Dest plug ") + connectedDestPlug.name() + " is connected but has no input plug");
+						Logging::error(MString("Dest plug ") + connectedDestPlug.name() + " is connected but has no input plug");
 						continue;
 					}
 					MPlug connectedPlug = plugArray[0];
-					logger.debug(MString("Source plug ") + connectedPlug.name());
-					logger.debug(MString("OutAttribute ") + outAttribute.c_str());
+					Logging::debug(MString("Source plug ") + connectedPlug.name());
+					Logging::debug(MString("OutAttribute ") + outAttribute.c_str());
 					MObject connectedNode = connectedPlug.node();
 					MPlug parentPlug = getParentPlug(connectedPlug);
 					MString outNode = getObjectName(connectedNode);
@@ -418,7 +417,7 @@ namespace MAYATO_OSL{
 						MString outHelperNodeName = createPlugHelperNodeName(parentPlug, true);
 						if (!doesHelperNodeExist(outHelperNodeName))
 						{
-							logger.debug(MString("Outattribute Helper node does not yet exist: ") + outHelperNodeName + " creating a new one");
+							Logging::debug(MString("Outattribute Helper node does not yet exist: ") + outHelperNodeName + " creating a new one");
 							createPlugHelperNode(childPlug, true);
 						}
 						outNode = outHelperNodeName;
@@ -428,11 +427,11 @@ namespace MAYATO_OSL{
 					MString inHelperNodeName = createPlugHelperNodeName(childPlug, false);
 					if (!doesHelperNodeExist(inHelperNodeName))
 					{
-						logger.debug(MString("Inattribute Helper node does not yet exist: ") + inHelperNodeName + " creating a new one");
+						Logging::debug(MString("Inattribute Helper node does not yet exist: ") + inHelperNodeName + " creating a new one");
 						createPlugHelperNode(childPlug, false);
 					}
 					MString inNode = inHelperNodeName;
-					logger.debug(MString("Connecting helper nodes: ") + outNode + "." + outAttribute.c_str() + " --> " + inNode + "." + inAttribute);
+					Logging::debug(MString("Connecting helper nodes: ") + outNode + "." + outAttribute.c_str() + " --> " + inNode + "." + inAttribute);
 					ConnectionArray ca;
 					addConnectionToConnectionArray(ca, outNode, outAttribute.c_str(), inNode, inAttribute);
 					connectOSLShaders(ca);
@@ -482,10 +481,10 @@ namespace MAYATO_OSL{
 				ca.push_back(Connection(pn.fullName, "worldInverseMatrix", sn.fullName, "placementMatrix"));
 				connectOSLShaders(ca);
 	
-				logger.debug(MString("Found projection node: ") + projectionNodeName);
+				Logging::debug(MString("Found projection node: ") + projectionNodeName);
 				for (uint lId = 0; lId < projectionUtil.leafNodes.length(); lId++)
 				{
-					logger.debug(projectionNodeName + " has to be connected to " + getObjectName(projectionUtil.leafNodes[lId]));
+					Logging::debug(projectionNodeName + " has to be connected to " + getObjectName(projectionUtil.leafNodes[lId]));
 					projectionNodes.push_back(projectionUtil.projectionNodes[pId]);
 					projectionConnectNodes.push_back(projectionUtil.leafNodes[lId]);
 				}
@@ -526,7 +525,7 @@ namespace MAYATO_OSL{
 				{
 					directPlug = otherNodePlugs[plId];
 					MPlug thisLocalPlug = thisNodePlugs[plId];
-					logger.debug(MString("directPlug ") + directPlug.name());
+					Logging::debug(MString("directPlug ") + directPlug.name());
 					// we have a direct connection, if children and direct connections exist, the direct ones have priority
 					// find out if the other side is a valid node
 					ShadingNode otherSideNode = findShadingNode(directPlug.node());
@@ -607,7 +606,7 @@ namespace MAYATO_OSL{
 					}
 
 					c.destNode = getObjectName(connectedPlug.node());
-					logger.debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
+					Logging::debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
 					connectionList.push_back(c);
 
 					// we have a helper node, now we need to find out how the children are connected
@@ -633,7 +632,7 @@ namespace MAYATO_OSL{
 							MString otherSidePlugHelperNodeName = createPlugHelperNodeName(otherSidePlug, false);
 							if (!doesHelperNodeExist(otherSidePlugHelperNodeName))
 							{
-								logger.debug(MString("Problem: other side plug is child") + otherSidePlug.name() + " but no helper node exists");
+								Logging::debug(MString("Problem: other side plug is child") + otherSidePlug.name() + " but no helper node exists");
 								continue;
 							}
 							c.sourceNode = otherSidePlugHelperNodeName;
@@ -643,7 +642,7 @@ namespace MAYATO_OSL{
 							c.sourceAttribute = getAttributeNameFromPlug(otherSidePlug);
 							c.sourceNode = getObjectName(otherSidePlug.node());
 						}
-						logger.debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
+						Logging::debug(MString("AddConnection: ") + c.sourceNode + "." + c.sourceAttribute + " -> " + c.destNode + "." + c.destAttribute);
 						connectionList.push_back(c);
 					}
 				}
@@ -658,7 +657,7 @@ namespace MAYATO_OSL{
 		}
 
 		// now create the current node
-		logger.debug(MString("Register shader type: ") + snode.typeName + " named: " + snode.fullName);
+		Logging::debug(MString("Register shader type: ") + snode.typeName + " named: " + snode.fullName);
 		createOSLShader(snode.typeName, snode.fullName, paramArray);
 		saveOSLNodeNameInArray(snode.fullName);
 
@@ -696,7 +695,7 @@ namespace MAYATO_OSL{
 		{
 			if (projNode == projectionConnectNodes[i])
 			{
-				logger.debug(MString("Place3dNode for projection input defined ") + pn.name());
+				Logging::debug(MString("Place3dNode for projection input defined ") + pn.name());
 				MString sourceNode = (getObjectName(projectionNodes[i]) + "_ProjUtil");
 				MString sourceAttr = "outUVCoord";
 				MString destNode = pn.name();
@@ -726,8 +725,8 @@ namespace MAYATO_OSL{
 //	if (sourceAttr == "max")
 //		sourceAttr = "inMax";
 //
-//	logger.debug(MString("createOSLRampShadingNode: Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
+//	Logging::debug(MString("createOSLRampShadingNode: Connect  ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
 //	bool result = this->oslRenderer->shadingsys->ConnectShaders(sourceNode, sourceAttr, destNode, destAttr);
 //	if (!result)
-//		logger.debug(MString("createOSLRampShadingNode: Connect FAILED ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
+//		Logging::debug(MString("createOSLRampShadingNode: Connect FAILED ") + sourceNode.c_str() + "." + sourceAttr.c_str() + " --> " + destNode.c_str() + "." + destAttr.c_str());
 //}

@@ -127,7 +127,7 @@ void ShaderDefinitions::readShaderDefinitions()
 	std::ifstream shaderFile(shaderDefFile.c_str());
 	if( !shaderFile.good())
 	{
-		logger.error(MString("Unable to open shaderInfoFile ") + MString(shaderDefFile.c_str()));
+		Logging::error(MString("Unable to open shaderInfoFile ") + MString(shaderDefFile.c_str()));
 		shaderFile.close();
 		return;
 	}
@@ -137,7 +137,7 @@ void ShaderDefinitions::readShaderDefinitions()
 
 	do{
 		std::getline(shaderFile, line);
-		//logger.debug(line.c_str());
+		//Logging::debug(line.c_str());
 		if(validString(line))
 		{
 			std::vector<std::string> stringArray;
@@ -182,7 +182,7 @@ void ShaderDefinitions::readShaderDefinitions()
 
 	}while(!shaderFile.eof());
 
-	//logger.debug("Reading of shader def file done.");
+	//Logging::debug("Reading of shader def file done.");
 	shaderFile.close();
 	readDone = true;
 }
@@ -227,18 +227,18 @@ void ShaderDefinitions::printShaderDefs()
 	for( uint i = 0; i < this->shadingNodes.size(); i++)
 	{
 		ShadingNode node = shadingNodes[i];
-		logger.debug(MString("Nodename: ") + node.fullName);
-		logger.debug(MString("In Attributes: "));
+		Logging::debug(MString("Nodename: ") + node.fullName);
+		Logging::debug(MString("In Attributes: "));
 		for( uint p = 0; p < node.inputAttributes.size(); p++)
 		{
-			logger.debug(MString("\tinattName: ") + node.inputAttributes[p].name.c_str());
-			logger.debug(MString("\tinattType: ") + node.inputAttributes[p].type.c_str());
+			Logging::debug(MString("\tinattName: ") + node.inputAttributes[p].name.c_str());
+			Logging::debug(MString("\tinattType: ") + node.inputAttributes[p].type.c_str());
 		}
-		logger.debug(MString("Out Attributes: "));
+		Logging::debug(MString("Out Attributes: "));
 		for( uint p = 0; p < node.outputAttributes.size(); p++)
 		{
-			logger.debug(MString("\tOutAttName: ") + node.outputAttributes[p].name.c_str());
-			logger.debug(MString("\tOutAttType: ") + node.outputAttributes[p].type.c_str());
+			Logging::debug(MString("\tOutAttName: ") + node.outputAttributes[p].name.c_str());
+			Logging::debug(MString("\tOutAttType: ") + node.outputAttributes[p].type.c_str());
 		}
 	}
 }

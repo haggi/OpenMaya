@@ -281,6 +281,6 @@ void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output)
 
 OSLMap::~OSLMap()
 {
-	logger.debug(MString("OSLMap resetting shader group"));
+	Logging::debug(MString("OSLMap resetting shader group"));
 	this->shaderGroup.reset();
 }

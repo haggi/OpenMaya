@@ -41,6 +41,8 @@ MString getRendererShortCutName();
 
 MString getRendererHome();
 
+MObject getRenderGlobalsNode();
+
 bool checkDirectory( MString& path);
 
 MString makeGoodString(MString& oldString);
@@ -158,6 +160,10 @@ bool findCamera(MDagPath& dagPath);
 bool isLightTransform(MDagPath& dagPath);
 
 bool isCameraTransform(MDagPath& dagPath);
+
+bool isCamera(MObject obj);
+
+bool isCameraRenderable(MObject obj);
 
 void makeUniqueArray( MObjectArray& );
 

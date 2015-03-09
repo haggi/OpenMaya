@@ -56,6 +56,8 @@ public:
     virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
         STOP; //currently not supported
     }
+
+	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
 };
 
 

@@ -516,7 +516,7 @@ namespace MAYATO_OSL
 {
 	void createOSLShader(MString& shadingNodeType, MString& shaderName, OSLParamArray& paramArray, MString type)
 	{
-		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)getObjPtr("oslRenderer");
+		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 		if (r == NULL)
 		{
 			std::cerr << "error createOSLShader: OSL renderer == NULL\n";
@@ -548,7 +548,7 @@ namespace MAYATO_OSL
 				tmp = boost::get<std::string>(paramArray[i].value);
 				const OIIO::string_ref p = tmp;
 				if (!r->shadingsys->Parameter(name.asChar(), type, &p))
-					logger.debug(MString("Problem! createOSLShader defining string parameter: ") + name);
+					Logging::debug(MString("Problem! createOSLShader defining string parameter: ") + name);
 			}
 			if (type == OSL::TypeDesc::TypeMatrix)
 			{
@@ -557,16 +557,16 @@ namespace MAYATO_OSL
 			}
 			if (type != OSL::TypeDesc::TypeString)
 				if (!r->shadingsys->Parameter(name.asChar(), type, val))
-					logger.debug(MString("Problem! createOSLShader defining parameter: ") + name);
+					Logging::debug(MString("Problem! createOSLShader defining parameter: ") + name);
 		}
 		if(!r->shadingsys->Shader("surface", shadingNodeType.asChar(), shaderName.asChar()))
-			logger.debug(MString("Problem! createOSLShader defining shader: ") + shaderName);
+			Logging::debug(MString("Problem! createOSLShader defining shader: ") + shaderName);
 
 	}
 
 	void connectOSLShaders(ConnectionArray& ca)
 	{
-		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)getObjPtr("oslRenderer");
+		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 		if (r == NULL)
 		{
 			std::cerr << "error connectOSLShaders: OSL renderer == NULL\n";
@@ -575,7 +575,7 @@ namespace MAYATO_OSL
 		for (size_t i = 0; i < ca.size(); i++)
 		{
 			if (!r->shadingsys->ConnectShaders(ca[i].sourceNode.asChar(), ca[i].sourceAttribute.asChar(), ca[i].destNode.asChar(), ca[i].destAttribute.asChar()))
-				logger.debug(MString("Problem! connectOSLShaders defining connection: ") + ca[i].sourceNode + " to " + ca[i].destNode);
+				Logging::debug(MString("Problem! connectOSLShaders defining connection: ") + ca[i].sourceNode + " to " + ca[i].destNode);
 		}
 	}
 };

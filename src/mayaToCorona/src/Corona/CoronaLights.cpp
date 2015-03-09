@@ -6,16 +6,16 @@
 
 #include <maya/MObjectArray.h>
 
+#include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 
 static Logging logger;
 
-bool CoronaRenderer::isSunLight(mtco_MayaObject *obj)
+bool CoronaRenderer::isSunLight(std::shared_ptr<MayaObject> obj)
 {
 	// a sun light has a transform connection to the coronaGlobals.sunLightConnection plug
 	MObject coronaGlobals = objectFromName(MString("coronaGlobals"));
@@ -38,12 +38,13 @@ bool CoronaRenderer::isSunLight(mtco_MayaObject *obj)
 
 void CoronaRenderer::defineLights()
 {
+	MFnDependencyNode rGlNode(getRenderGlobalsNode());
 	// first get the globals node and serach for a directional light connection
-	MObject coronaGlobals = objectFromName(MString("coronaGlobals"));
+	MObject coronaGlobals = getRenderGlobalsNode();
 	MObjectArray nodeList;
 	MStatus stat;
 
-	if( this->mtco_renderGlobals->useSunLightConnection )
+	if( renderGlobals->useSunLightConnection )
 	{
 		getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
 		if( nodeList.length() > 0)
@@ -55,7 +56,7 @@ void CoronaRenderer::defineLights()
 				MVector lightDir(0, 0, 1); // default dir light dir
 				MFnDagNode sunDagNode(sunObj);
 				lightDir *= sunDagNode.transformationMatrix();
-				lightDir *= this->mtco_renderGlobals->globalConversionMatrix;
+				lightDir *= renderGlobals->globalConversionMatrix;
 				lightDir.normalize();
 		
 				MObject sunDagObj =	sunDagNode.child(0, &stat);
@@ -65,11 +66,11 @@ void CoronaRenderer::defineLights()
 				{
 					MFnDependencyNode sunNode(sunDagObj);
 					getColor("color", sunNode, sunColor);
-					getFloat("mtco_sun_multiplier", sunNode, colorMultiplier);
+					colorMultiplier = getFloatAttr("mtco_sun_multiplier", sunNode, 1.0f);
 				}else{
-					logger.warning(MString("Sun connection is not a directional light - using transform only."));
+					Logging::warning(MString("Sun connection is not a directional light - using transform only."));
 				}
-				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(this->mtco_renderGlobals->sunSizeMulti*Corona::SUN_PROJECTED_HALF_ANGLE));
+				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(getFloatAttr("sunSizeMulti", rGlNode, 1.0f) * Corona::SUN_PROJECTED_HALF_ANGLE));
 				sunColor *= colorMultiplier * intensityFactor * 1.0;// 2000000;
 				Corona::Sun sun;
 
@@ -90,7 +91,7 @@ void CoronaRenderer::defineLights()
 				sun.visibleDirect = true;
 				sun.visibleReflect = true;
 				sun.visibleRefract = true;
-				sun.sizeMultiplier = this->mtco_renderGlobals->sunSizeMulti;
+				sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
 				this->context.scene->getSun() = sun;
 
 			}
@@ -99,7 +100,7 @@ void CoronaRenderer::defineLights()
 
 	for( size_t lightId = 0; lightId < this->mtco_scene->lightList.size();  lightId++)
 	{
-		mtco_MayaObject *obj =  (mtco_MayaObject *)this->mtco_scene->lightList[lightId];
+		std::shared_ptr<MayaObject> obj =  (std::shared_ptr<MayaObject> )this->mtco_scene->lightList[lightId];
 		if(!obj->visible)
 			continue;
 
@@ -116,15 +117,15 @@ void CoronaRenderer::defineLights()
 			getFloat("intensity", depFn, intensity);
 			int decay = 0;
 			getEnum(MString("decayRate"), depFn, decay);
-			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
 			PointLight *pl = new PointLight;
 			pl->LP = LP;
-			pl->distFactor = 1.0/this->mtco_renderGlobals->scaleFactor;
+			pl->distFactor = 1.0/renderGlobals->scaleFactor;
 			pl->lightColor = Corona::Rgb(col.r, col.g, col.b);
 			pl->lightIntensity = intensity;
 			getEnum(MString("decayRate"), depFn, pl->decayType);
-			pl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
+			pl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * renderGlobals->scaleFactor;
 			pl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			pl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
@@ -141,8 +142,8 @@ void CoronaRenderer::defineLights()
 			getColor("color", depFn, col);
 			float intensity = 1.0f;
 			getFloat("intensity", depFn, intensity);
-			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
-			lightDir *= obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
+			lightDir *= obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 			lightDir.normalize();
 			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
 			SpotLight *sl = new SpotLight;
@@ -151,12 +152,12 @@ void CoronaRenderer::defineLights()
 			sl->lightIntensity = intensity;
 			sl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
 			sl->angle = 45.0f;
-			sl->distFactor = 1.0/this->mtco_renderGlobals->scaleFactor;
+			sl->distFactor = 1.0/renderGlobals->scaleFactor;
 			getEnum(MString("decayRate"), depFn, sl->decayType);
 			getFloat("coneAngle", depFn, sl->angle);
 			getFloat("penumbraAngle", depFn, sl->penumbraAngle);
 			getFloat("dropoff", depFn, sl->dropoff);
-			sl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * this->mtco_renderGlobals->scaleFactor;
+			sl->lightRadius = getFloatAttr("lightRadius", depFn, 0.0) * renderGlobals->scaleFactor;
 			sl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			sl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
@@ -179,7 +180,7 @@ void CoronaRenderer::defineLights()
 			getColor("color", depFn, col);
 			float intensity = 1.0f;
 			getFloat("intensity", depFn, intensity);
-			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 			lightDir *= m;
 			lightDirTangent *= m;
 			lightDirBiTangent *= m;
@@ -206,7 +207,7 @@ void CoronaRenderer::defineLights()
 		}
 		if( obj->mobject.hasFn(MFn::kAreaLight))
 		{
-			MMatrix m = obj->transformMatrices[0] * this->mtco_renderGlobals->globalConversionMatrix;
+			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 			obj->geom = defineStdPlane();
 			Corona::AnimatedAffineTm atm;
 			this->setAnimatedTransformationMatrix(atm, obj);
@@ -239,6 +240,4 @@ void CoronaRenderer::defineLights()
 			}
 		}
 	}
-
-
 }

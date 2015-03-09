@@ -120,6 +120,16 @@ MString getString(const char *plugName, MFnDependencyNode& dn)
 	return plug.asString(ctx, &stat);
 }
 
+MString getStringAttr(MString plugName, MFnDependencyNode& dn, MString default)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	if (!stat)
+		return default;
+	return plug.asString(ctx, &stat);
+}
+
 bool getLong(MString& plugName, MFnDependencyNode& dn, long& value)
 {
 	MDGContext ctx = MDGContext::fsNormal;

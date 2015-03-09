@@ -1,7 +1,7 @@
 #include "Corona.h"
-#include "../mtco_common/mtco_renderGlobals.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
+#include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
@@ -10,24 +10,27 @@
 #include "CoronaShaders.h"
 #include "CoronaOSLMap.h"
 #include "CoronaSky.h"
+#include "CoronaUtils.h"
 
 static Logging logger;
 
 
 void CoronaRenderer::defineEnvironment()
 {
-	Corona::Rgb bgRgb(this->mtco_renderGlobals->bgColor.r, this->mtco_renderGlobals->bgColor.g, this->mtco_renderGlobals->bgColor.b);
-	if (this->mtco_renderGlobals->bgType == 0)
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
+	int bgType = getEnumInt("bgType", depFn);
+	if (bgType == 0)
 	{
 		MString texName;
 		MObject fileTextureObject;
 		if (getConnectedFileTexturePath(MString("bgColor"), MString("coronaGlobals"), texName, fileTextureObject))
 		{
 			Corona::String fileName = texName.asChar();
-			logger.debug(MString("Found bg texture: ") + texName);
+			Logging::debug(MString("Found bg texture: ") + texName);
 			if (!textureFileSupported(texName))
 			{
-				logger.error(MString("Sorry, textures of this type are not supported: ") + texName);
+				Logging::error(MString("Sorry, textures of this type are not supported: ") + texName);
 				return;
 			}
 			
@@ -47,7 +50,7 @@ void CoronaRenderer::defineEnvironment()
 
 			if (texmap.getReference() == NULL)
 			{
-				logger.error(MString("Unable to read bg file: ") + texName);
+				Logging::error(MString("Unable to read bg file: ") + texName);
 			}
 			else{
 				this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
@@ -57,33 +60,28 @@ void CoronaRenderer::defineEnvironment()
 			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, NULL));
 		}
 	}
-	if (this->mtco_renderGlobals->bgType == 1)
+	if (bgType == 1)
 	{
 		SkyMap *texmap = new SkyMap;
 		texmap->coronaRenderer = this;
-		texmap->params->multiplier = this->mtco_renderGlobals->pSkyMultiplier;
-		if (this->mtco_renderGlobals->pSkyModel == 0)
+		texmap->params->multiplier = getFloatAttr("pSkyMultiplier", depFn, 1.0);
+		int skyModel = getEnumInt("pSkyModel", depFn);
+		if (skyModel == 0)
 			texmap->params->mode = Corona::SkyModelType::MODEL_PREETHAM;
-		if (this->mtco_renderGlobals->pSkyModel == 1)
+		if (skyModel == 1)
 			texmap->params->mode = Corona::SkyModelType::MODEL_RAWAFAKE;
-		if (this->mtco_renderGlobals->pSkyModel == 2)
+		if (skyModel == 2)
 			texmap->params->mode = Corona::SkyModelType::MODEL_HOSEK;
-		MColor gc = this->mtco_renderGlobals->pSkyGroundColor;
-		Corona::Rgb groundCol(gc.r, gc.g, gc.b);
-		texmap->params->groundColor = groundCol;
-		texmap->params->horizonBlur = this->mtco_renderGlobals->pSkyHorizBlur;
-		texmap->params->skyAffectGround = this->mtco_renderGlobals->pSkyAffectGround;
-		texmap->params->preetham.turbidity = this->mtco_renderGlobals->pSkyPreethamTurb;
-		MColor hc = this->mtco_renderGlobals->pSkyHorizon;
-		Corona::Rgb hCol(hc.r, hc.g, hc.b);
-		texmap->params->rawafake.horizon = hCol;
-		MColor zc = this->mtco_renderGlobals->pSkyZenith;
-		Corona::Rgb zCol(zc.r, zc.g, zc.b);
-		texmap->params->rawafake.horizon = zCol;
-		texmap->params->rawafake.sunBleed = this->mtco_renderGlobals->pSkySunBleed;
-		texmap->params->rawafake.sunFalloff = this->mtco_renderGlobals->pSkySunFalloff;
-		texmap->params->rawafake.sunGlow = this->mtco_renderGlobals->pSkySunGlow;
-		texmap->params->rawafake.sunSideGlow = this->mtco_renderGlobals->pSkySunSideGlow;
+		texmap->params->groundColor = toCorona(getColorAttr("pSkyGroundColor", depFn));
+		texmap->params->horizonBlur = getFloatAttr("pSkyHorizBlur", depFn, .1f);
+		texmap->params->skyAffectGround = getBoolAttr("pSkyAffectGround", depFn, true);
+		texmap->params->preetham.turbidity = getFloatAttr("pSkyPreethamTurb", depFn, 2.5f);
+		texmap->params->rawafake.horizon = toCorona(getColorAttr("pSkyHorizon", depFn));
+		texmap->params->rawafake.horizon = toCorona(getColorAttr("pSkyZenith", depFn));
+		texmap->params->rawafake.sunBleed = getFloatAttr("pSkySunBleed", depFn, 1.0f);
+		texmap->params->rawafake.sunFalloff = getFloatAttr("pSkySunFalloff", depFn, 3.0f);
+		texmap->params->rawafake.sunGlow = getFloatAttr("pSkySunGlow", depFn, 1.0f);
+		texmap->params->rawafake.sunSideGlow = getFloatAttr("pSkySunSideGlow", depFn, .2f);
 		texmap->initSky();
 		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
 	}

@@ -1,6 +1,8 @@
 #ifndef MAYA_OBJECT_H
 #define MAYA_OBJECT_H
 
+#include <vector>
+#include <memory>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MIntArray.h>
@@ -13,7 +15,6 @@
 #include <maya/MString.h>
 #include <maya/MMatrix.h>
 #include <maya/MColor.h>
-#include <vector>
 
 //typedef void (*functionPointer)(void *, void *); 
 
@@ -37,6 +38,7 @@ public:
 	MColor colorOverride;
 	bool hasColorOverride;
 	float opacityOverride;
+	MMatrix objectMatrix;
 private:
 };
 
@@ -49,15 +51,14 @@ public:
 	MString fullNiceName;
 	int index;
 	MDagPath dagPath;
-	ObjectAttributes *attributes;
-	MayaScene *scenePtr;
+	std::shared_ptr<ObjectAttributes> attributes;
 
 	std::vector<MDagPath> linkedLights; // for objects - light linking
 	bool lightExcludeList; // if true the linkedLights list contains excluded lights, else included lights
 	std::vector<MDagPath> shadowObjects; // for lights - shadow linking
 	bool shadowExcludeList; // if true the shadowObjects contains objects which ignores shadows from the current light
 	std::vector<MDagPath> castNoShadowObjects; // for lights - shadow linking
-	std::vector<MayaObject *> excludedObjects; // for lights - excluded objects
+	std::vector<std::shared_ptr<MayaObject>>  excludedObjects; // for lights - excluded objects
 
 
 	std::vector<MString> exportFileNames; // for every mb step complete filename for every exported shape file
@@ -68,7 +69,7 @@ public:
 	std::vector<MeshData> meshDataList;
 	MObjectArray shadingGroups;
 	MIntArray perFaceAssignments;	
-	std::vector<Material *> materialList; // for every shading group connected to the shape, we have a material
+	std::vector<std::shared_ptr<Material>> materialList; // for every shading group connected to the shape, we have a material
 
 	// instancer node attributes
 	MMatrix instancerMatrix; // matrix of instancer node and paricle node
@@ -104,10 +105,10 @@ public:
 					MFloatArray& v, MIntArray& triPointIndices, MIntArray& triNormalIndices, 
 					MIntArray& triUvIndices, MIntArray& triMatIndices); // all triIndices contain per vertex indices except the triMatIndices, this is per face
 	virtual bool geometryShapeSupported();
-	virtual ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes) = 0;
-	virtual void getMaterials() = 0;
-	MayaObject *parent;
-	MayaObject *origObject; // this is necessary for instanced objects that have to access the original objects data
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = NULL) = 0;
+
+	std::shared_ptr<MayaObject> parent;
+	std::shared_ptr<MayaObject> origObject; // this is necessary for instanced objects that have to access the original objects data
 	MayaObject(MObject& mobject);
 	MayaObject(MDagPath& objPath);
 	virtual ~MayaObject();

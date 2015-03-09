@@ -114,11 +114,19 @@ public:
 	std::vector<float> frameList;
 
 	bool inBatch;
-	bool useShortNames;
 	RenderType::RType renderType;
 
+private:
 	int imgWidth;
 	int imgHeight;
+public:
+	void setWidth(int w) { this->imgWidth = w; };
+	void setHeight(int h) { this->imgHeight = h; };
+	void setWidthHeight(int w, int h) { this->imgWidth = w; this->imgHeight = h; };
+	void getWidthHeight(int& w, int& h){ w = this->imgWidth; h = this->imgHeight; };
+	int getWidth(){ return this->imgWidth; };
+	int getHeight(){ return this->imgHeight; };
+
 	float pixelAspect;
 
 	// sampling
@@ -159,7 +167,7 @@ public:
 	std::vector<MbElement> mbElementList;
 	MbElement currentMbElement; // contains type and relative time
 	int currentMbStep; // currend mb step id 0 - x
-	bool isMbStartStep; 
+	bool isMbStartStep(); 
 
 	bool createDefaultLight;
 
@@ -175,12 +183,17 @@ public:
 	MString preRenderLayerScript;
 	MString postRenderLayerScript;
 
+private:
 	bool	useRenderRegion;
 	int		regionLeft;
 	int		regionRight;
 	int		regionBottom;
 	int		regionTop;
 
+public:
+	void setUseRenderRegion(bool useRegion){ useRenderRegion = useRegion; };
+	bool getUseRenderRegion() { return useRenderRegion; };
+	void getRenderRegion(int& left, int& bottom, int& right, int& top) { left = regionLeft; bottom = regionBottom; right = regionRight; top = regionTop; };
 	bool detectShapeDeform;
 	bool exportSceneFile;
 	MString exportSceneFileName;
@@ -200,7 +213,7 @@ public:
 	int currentRenderPassElementId;
 
 	RenderGlobals();
-	virtual ~RenderGlobals();
+	~RenderGlobals();
 	bool getDefaultGlobals();
 	bool getMbSteps();
 	bool isTransformStep();
@@ -209,10 +222,11 @@ public:
 	MString getImageOutputFile();
 	MString getImageExt();
 
-	// for every renderer make sure these functions will be overridden
-	virtual void setRendererUnit() = 0;
-	virtual void setRendererAxis() = 0;
+	// these methods are not defined in the base implementation, they should be implemented in every renderer
+	void setRendererUnit();
+	void setRendererAxis();
 	void defineGlobalConversionMatrix();
+	//virtual MObject getRenderGlobalsNode();
 };
 
 #endif

@@ -11,6 +11,7 @@
 #include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
+#include "utilities/tools.h"
 #include "utilities/pystring.h"
 
 static Logging logger;
@@ -20,14 +21,11 @@ static Logging logger;
 // All additional information should be done in a derived class
 RenderGlobals::RenderGlobals()
 {
-	logger.info("RenderGlobals::RenderGlobals()");
+	Logging::debug("RenderGlobals::RenderGlobals()");
 	this->good = false;
-	this->useShortNames = true;
 	this->currentRenderPass = NULL;
 	this->currentRenderPassElementId = 0;
-	this->isMbStartStep = false;
 	this->maxTraceDepth = 4;
-	this->isMbStartStep = true;
 	this->doMb = false;
 	this->doDof = false;
 	this->mbStartTime = 0.0f;
@@ -50,10 +48,15 @@ RenderGlobals::RenderGlobals()
 	this->internalUnit = MDistance::internalUnit();
 	this->internalAxis = MGlobal::isYAxisUp() ? YUp : ZUp;
 	this->scaleFactor = 1.0f;
+	this->setRendererUnit();
+	this->setRendererAxis();
+	this->defineGlobalConversionMatrix();
 }
 
 RenderGlobals::~RenderGlobals()
-{}
+{
+	Logging::debug("RenderGlobals::~RenderGlobals()");
+}
 
 float RenderGlobals::toMillimeters(float mm)
 {
@@ -306,6 +309,11 @@ bool RenderGlobals::getMbSteps()
 	return true;
 }
 
+bool RenderGlobals::isMbStartStep()
+{
+	return this->currentMbStep == 0;
+}
+
 bool RenderGlobals::getDefaultGlobals()
 {
 	MSelectionList defaultGlobals;
@@ -313,7 +321,7 @@ bool RenderGlobals::getDefaultGlobals()
 
 	if( defaultGlobals.length() == 0 )
 	{
-		logger.debug("defaultRenderGlobals not found. Stopping.");
+		Logging::debug("defaultRenderGlobals not found. Stopping.");
 		return false;
 	}
 	MCommonRenderSettingsData data;
@@ -338,13 +346,13 @@ bool RenderGlobals::getDefaultGlobals()
 		this->inBatch = true;
 		if( data.isAnimated() )
 		{
-			logger.debug(MString("animation on, rendering frame sequence from ") + this->startFrame + " to " + this->endFrame);
+			Logging::debug(MString("animation on, rendering frame sequence from ") + this->startFrame + " to " + this->endFrame);
 			// these are the frames that are supposed to be rendered in batch mode
 			this->doAnimation = true;
 			for( double frame = this->startFrame; frame <= this->endFrame; frame += this->byFrame)
 				this->frameList.push_back((float)frame);
 		}else{
-			logger.debug(MString("animation off, rendering current frame"));
+			Logging::debug(MString("animation off, rendering current frame"));
 			this->frameList.push_back(this->currentFrameNumber );
 			this->doAnimation = false;
 		}
@@ -360,24 +368,42 @@ bool RenderGlobals::getDefaultGlobals()
 	this->pixelAspect = data.pixelAspectRatio;
 
 	getBool(MString("enableDefaultLight"), fnRenderGlobals, this->createDefaultLight);
-
-	this->useRenderRegion = false;
-	getBool(MString("useRenderRegion"), fnRenderGlobals, useRenderRegion); 
+	useRenderRegion = getBoolAttr("useRenderRegion", fnRenderGlobals, false);
 	
 	this->regionLeft = 0;
 	this->regionRight = this->imgWidth;
 	this->regionBottom = 0;
 	this->regionTop = this->imgHeight;
 
-	getInt(MString("left"), fnRenderGlobals, regionLeft);
-	getInt(MString("rght"), fnRenderGlobals, regionRight);
-	getInt(MString("bot"), fnRenderGlobals, regionBottom);
-	getInt(MString("top"), fnRenderGlobals, regionTop);
+	regionLeft = getIntAttr("left", fnRenderGlobals, 0);
+	regionRight = getIntAttr("rght", fnRenderGlobals, imgWidth);
+	regionBottom = getIntAttr("bot", fnRenderGlobals, 0);
+	regionTop = getIntAttr("top", fnRenderGlobals, imgHeight);
+
+	if ((regionLeft > imgWidth) || (regionRight > imgWidth) || (regionBottom > imgHeight) || (regionTop > imgHeight))
+		useRenderRegion = false;
 
 	getString(MString("preRenderMel"), fnRenderGlobals, this->preFrameScript);
 	getString(MString("postRenderMel"), fnRenderGlobals, this->postFrameScript);
 	getString(MString("preRenderLayerMel"), fnRenderGlobals, this->preRenderLayerScript);
 	getString(MString("postRenderLayerMel"), fnRenderGlobals, this->postRenderLayerScript);
+
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	this->maxTraceDepth = getIntAttr("maxTraceDepth", depFn, 4);
+	this->doMb = getBoolAttr("doMb", depFn, false);
+	this->doDof = getBoolAttr("doDof", depFn, false);
+	this->motionBlurRange = getFloatAttr("motionBlurRange", depFn, 0.4f);
+	this->motionBlurType = 0; // center
+	this->xftimesamples = getIntAttr("xftimesamples", depFn, 2);
+	this->geotimesamples = getIntAttr("geotimesamples", depFn, 2);
+	this->createDefaultLight = false;
+	this->renderType = RenderType::FINAL;
+	this->exportSceneFile = getBoolAttr("exportSceneFile", depFn, false);
+	this->adaptiveSampling = getBoolAttr("adaptiveSampling", depFn, false);
+	this->imageName = getStringAttr("imageName", depFn, "");
+	this->basePath = getStringAttr("basePath", depFn, "");
+	this->exportSceneFileName = getStringAttr("exportSceneFileName", depFn, "");
+	this->imagePath = getStringAttr("imagePath", depFn, "");
 
 	this->good = true;
 	return true;

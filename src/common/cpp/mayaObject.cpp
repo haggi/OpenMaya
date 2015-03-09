@@ -43,7 +43,7 @@ bool MayaObject::isLight()
 	{
 		if( nodeId == lightIdentifier[lId])
 		{
-			logger.debug(MString("Found external lighttype: ") + depFn.name());
+			Logging::debug(MString("Found external lighttype: ") + depFn.name());
 			return true;
 		}
 	}
@@ -82,7 +82,7 @@ bool MayaObject::isGeo()
 	{
 		if( nodeId == objectIdentifier[lId])
 		{
-			logger.debug(MString("Found external geotype: ") + depFn.name());
+			Logging::debug(MString("Found external geotype: ") + depFn.name());
 			return true;
 		}
 	}
@@ -103,7 +103,7 @@ void MayaObject::getShadingGroups()
 
 	if( this->geometryShapeSupported() )
 	{
-		logger.debug(MString("getShadingGroups::Supported geo ") + this->shortName);
+		Logging::debug(MString("getShadingGroups::Supported geo ") + this->shortName);
 		// only makes sense if we have a geometry shape.
 		if( this->mobject.hasFn(MFn::kMesh) || this->mobject.hasFn(MFn::kNurbsSurface) || this->mobject.hasFn(MFn::kParticle) || this->mobject.hasFn(MFn::kNParticle))
 		{
@@ -124,7 +124,7 @@ bool  MayaObject::isVisiblityAnimated()
 		MPlug vplug = depFn.findPlug("visibility");
 		if(vplug.isConnected())
 		{
-			logger.debug(MString("Object: ") + vplug.name() + " has animated visibility");
+			Logging::debug(MString("Object: ") + vplug.name() + " has animated visibility");
 			return true;
 		}
 		stat = dp.pop();
@@ -194,7 +194,6 @@ void MayaObject::initialize()
 	this->perObjectTransformSteps = 1;
 	this->perObjectDeformSteps = 1;
 	this->index = -1;
-	this->scenePtr = NULL;
 	this->shapeConnected = false;
 	this->lightExcludeList = true; // In most cases only a few lights are ignored, so the list is shorter with excluded lights
 	this->shadowExcludeList = true; // in most cases only a few objects ignore shadows, so the list is shorter with ignoring objects
@@ -213,7 +212,7 @@ void MayaObject::initialize()
 	MStatus stat;
 	MPlug matrixPlug = depFn.findPlug(MString("matrix"), &stat);
 	if( !stat)
-		logger.debug(MString("Could not find matrix plug"));
+		Logging::debug(MString("Could not find matrix plug"));
 	else{
 		MPlugArray outputs;
 		if( matrixPlug.isConnected())
@@ -222,10 +221,10 @@ void MayaObject::initialize()
 			for( uint i = 0; i < outputs.length(); i++)
 			{
 				MObject otherSide = outputs[i].node();
-				logger.debug(MString("matrix is connected to ") + getObjectName(otherSide));
+				Logging::debug(MString("matrix is connected to ") + getObjectName(otherSide));
 				if( otherSide.hasFn(MFn::kInstancer))
 				{
-					logger.debug(MString("other side is instancer"));
+					Logging::debug(MString("other side is instancer"));
 					this->hasInstancerConnection = true;
 				}
 			}
@@ -346,15 +345,13 @@ void MayaObject::addMeshData()
 	if (this->hasBifrostVelocityChannel())
 	{
 		bool doMb = this->motionBlurred;
-		RenderGlobals *rg = (RenderGlobals *)getWorldPtr()->getObjPtr("RenderGlobals");
-		
-		if (rg != NULL)
-			doMb = doMb && rg->doMb;
+		std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;		
+		doMb = doMb && renderGlobals->doMb;
 
-		logger.debug(MString("Found bifrost velocity data for object: ") + this->shortName);
+		Logging::debug(MString("Found bifrost velocity data for object: ") + this->shortName);
 		if ((this->meshDataList.size() == 2) || !doMb)
 		{
-			logger.debug("Bifrost mesh already has two motion steps or mb is turned off for it -> skipping");
+			Logging::debug("Bifrost mesh already has two motion steps or mb is turned off for it -> skipping");
 			return;
 		}
 
@@ -390,7 +387,7 @@ void MayaObject::addMeshData()
 				this->meshDataList.push_back(mdata);
 			}
 		}else{
-			logger.debug("Bifrost mesh has no velocity data, no motionblur.");
+			Logging::debug("Bifrost mesh has no velocity data, no motionblur.");
 			if (this->meshDataList.size() == 0)
 				this->meshDataList.push_back(mdata);
 		}
@@ -497,14 +494,14 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals, MF
 	// to avoid problems I add a default uv coordinate
 	if (numUvs == 0)
 	{
-		logger.warning(MString("Object has no uv's: ") + this->shortName);
+		Logging::warning(MString("Object has no uv's: ") + this->shortName);
 		uArray.append(0.0);
 		vArray.append(0.0);
 	}
 	for (uint nid = 0; nid < numNormals; nid++)
 	{
 		if (normals[nid].length() < 0.1f)
-			logger.warning(MString("Malformed normal in ") + this->shortName);
+			Logging::warning(MString("Malformed normal in ") + this->shortName);
 	}
 	MPointArray triPoints;
 	MIntArray triVtxIds;
@@ -536,7 +533,7 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals, MF
 			else{
 				faceIt.getUVIndex(vtxId, uvIndex);
 				//if (uvIndex > uArray.length())
-				//	logger.info(MString("-----------------> UV Problem!!! uvIndex ") + uvIndex + " > uvArray in object " + this->shortName);
+				//	Logging::info(MString("-----------------> UV Problem!!! uvIndex ") + uvIndex + " > uvArray in object " + this->shortName);
 				faceUVIndices.append(uvIndex);
 			}
 		}

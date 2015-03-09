@@ -95,7 +95,7 @@
       <PreprocessorDefinitions>HAS_OVERRIDE;CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4996;4244;4305</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
@@ -152,16 +152,23 @@
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
+    <ClCompile Include="..\..\common\cpp\maysSceneInteractive.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp" />
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
     <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h" />
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -172,28 +179,63 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\..\common\cpp\world.cpp" />
-    <ClCompile Include="..\src\coronaOSL\coronaOSLMapUtil.cpp" />
-    <ClCompile Include="..\src\coronaOSL\oslRenderer.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaCamera.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaImage.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaMap.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaPasses.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaRendererController.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp" />
+    <ClCompile Include="..\src\coronaOSL\coronaOSLMapUtil.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\coronaOSL\oslRenderer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaCamera.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaImage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaPasses.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaRendererController.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Corona\Corona.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaGeometry.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaLights.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaSettings.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaShaders.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaSky.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaUtils.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaWorld.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaGeometry.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaLights.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaShaders.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaSky.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaUtils.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaWorld.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\mayaToCorona.cpp" />
-    <ClCompile Include="..\src\mtco_common\mtco_mayaSceneFactory.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp" />
+    <ClCompile Include="..\src\mtco_common\mtco_mayaObjectFactory.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaScene.cpp" />
+    <ClCompile Include="..\src\mtco_common\mtco_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp" />
@@ -211,10 +253,13 @@
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\TestShader.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
-    <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp" />
+    <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h" />
@@ -224,7 +269,10 @@
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\osl\oslUtils.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h" />
+    <ClInclude Include="..\..\common\cpp\renderProcess.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
@@ -232,6 +280,7 @@
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
@@ -242,22 +291,41 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\..\common\cpp\world.h" />
-    <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h" />
-    <ClInclude Include="..\src\coronaOSL\oslRenderer.h" />
-    <ClInclude Include="..\src\Corona\CoronaLights.h" />
-    <ClInclude Include="..\src\Corona\CoronaMap.h" />
-    <ClInclude Include="..\src\Corona\CoronaOSLMap.h" />
-    <ClInclude Include="..\src\Corona\CoronaRendererController.h" />
-    <ClInclude Include="..\src\Corona\CoronaCallbacks.h" />
+    <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\coronaOSL\oslRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaLights.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaRendererController.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\src\Corona\Corona.h" />
-    <ClInclude Include="..\src\Corona\CoronaShaders.h" />
-    <ClInclude Include="..\src\Corona\CoronaSky.h" />
-    <ClInclude Include="..\src\Corona\CoronaUtils.h" />
-    <ClInclude Include="..\src\Corona\MyClasses.h" />
+    <ClInclude Include="..\src\Corona\CoronaShaders.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaSky.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaTestScene.h" />
+    <ClInclude Include="..\src\Corona\CoronaUtils.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\MyClasses.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
-    <ClInclude Include="..\src\mtco_common\mtco_renderGlobals.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />
