@@ -36,15 +36,15 @@ struct MayaToRenderPass{
 
 	MayaToRenderPass()
 	{
-		coronaRgbScanline = NULL;
-		coronaFloatScanline = NULL;
+		coronaRgbScanline = nullptr;
+		coronaFloatScanline = nullptr;
 	}
 
 	~MayaToRenderPass()
 	{
-		if (coronaRgbScanline != NULL)
+		if (coronaRgbScanline != nullptr)
 			delete[] coronaRgbScanline;
-		if (coronaRgbScanline != NULL)
+		if (coronaRgbScanline != nullptr)
 			delete[] coronaFloatScanline;
 	}
 };
@@ -131,23 +131,23 @@ public:
 	virtual ~CoronaRenderer();
 
 	virtual void defineCamera();
-	virtual void defineEnvironment(){};
-	virtual void defineGeometry(){};
+	virtual void defineEnvironment();
+	virtual void defineGeometry();
 	virtual void defineSettings();
 	virtual void defineColorMapping();
 	Corona::IGeometryGroup *defineStdPlane();
 	//void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
-	virtual void defineMesh(std::shared_ptr<MayaObject> obj){};
+	virtual void defineMesh(std::shared_ptr<MayaObject> obj);
 	void updateMesh(std::shared_ptr<MayaObject> obj);
-	void defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> obj){};
+	void defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> obj);
 	void setRenderStats(Corona::IMaterialSet& ms, std::shared_ptr<MayaObject> obj);
 	bool assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> obj);
 	void clearMaterialLists();
 	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
 	Corona::IGeometryGroup* getGeometryPointer(std::shared_ptr<MayaObject> obj);
 	bool isSunLight(std::shared_ptr<MayaObject> obj);
-	virtual void defineLights(){};
+	virtual void defineLights();
 
 	virtual void render();
 

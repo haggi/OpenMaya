@@ -15,7 +15,7 @@ mtco_ObjectAttributes::mtco_ObjectAttributes()
 
 mtco_ObjectAttributes::mtco_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
-	if( other != NULL)
+	if( other != nullptr)
 	{
 		hasInstancerConnection = other->hasInstancerConnection;
 		objectMatrix = other->objectMatrix;
@@ -29,15 +29,15 @@ mtco_ObjectAttributes::mtco_ObjectAttributes(std::shared_ptr<ObjectAttributes> o
 
 mtco_MayaObject::mtco_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
-	this->geom = NULL;
-	this->instance = NULL;
+	this->geom = nullptr;
+	this->instance = nullptr;
 }
 
 mtco_MayaObject::mtco_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
 	Logging::debug(MString("created obj: ") + this->dagPath.fullPathName());
-	this->geom = NULL;
-	this->instance = NULL;
+	this->geom = nullptr;
+	this->instance = nullptr;
 }
 
 mtco_MayaObject::~mtco_MayaObject()

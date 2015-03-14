@@ -40,7 +40,7 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 {
 	MStatus stat;
 
-	Corona::SharedPtr<Corona::Abstract::Map> texmap = NULL;
+	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 
 	Corona::Rgb rgbColor(0.0);
 	Logging::debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
@@ -80,7 +80,7 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 
 Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
 {
-	Corona::SharedPtr<Corona::Abstract::Map> texmap = NULL;
+	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 	if (isConnected("normalCamera", depFn, true, false))
 	{
 		MString normalCamName = "normalCamera";
@@ -89,7 +89,7 @@ Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnD
 		Logging::debug("Bump connected");
 		return texmap;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -103,7 +103,7 @@ Corona::SharedPtr<Corona::IMaterial> defineDefaultMaterial()
 Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode, std::shared_ptr<MayaObject> obj)
 {
 	float globalScaleFactor = 1.0f;
-	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != NULL)
+	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 		globalScaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
 
 	MAYATO_OSL::initOSLUtil();
@@ -147,7 +147,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			data.refract.glassMode = glassModes[1];
 
 		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
-		if (obj != NULL)
+		if (obj != nullptr)
 		{
 			float rcRadius = 0.0001;
 			getFloat(MString("roundCornersRadius"), depFn, rcRadius);
@@ -191,11 +191,11 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		data.bump = defineBump(MString("bump"), depFn, network);
 
 		// setup all object specific data which needs a mayaobject
-		if (obj != NULL)
+		if (obj != nullptr)
 		{
 			// overrideColor is not yet reimplemented. It should be used by particle instancer
 			MColor overrideColor(1, 1, 1);
-			if (obj->attributes != NULL)
+			if (obj->attributes != nullptr)
 				if (obj->attributes->hasColorOverride)
 					overrideColor = obj->attributes->colorOverride;
 
@@ -286,7 +286,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		if (getBoolAttr("emitLight", depFn, true))
 		{
 			data.emission.disableSampling = false;
-			if (obj != NULL)
+			if (obj != nullptr)
 			{
 				if (!getBoolAttr("mtco_visibleInGI", depFn, true))
 				{
@@ -299,7 +299,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		else
 		{
 			data.emission.disableSampling = true;
-			if (obj != NULL)
+			if (obj != nullptr)
 			{
 				//getBoolAttr("mtco_visibleInGI", depFn, true);
 				MFnDependencyNode geoDN(obj->mobject);
@@ -308,7 +308,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			}
 		}
 		// setup all object specific data which needs a mayaobject
-		if (obj != NULL)
+		if (obj != nullptr)
 		{
 			bool sharpnessFake = false;
 			getBool("emissionSharpnessFake", depFn, sharpnessFake);

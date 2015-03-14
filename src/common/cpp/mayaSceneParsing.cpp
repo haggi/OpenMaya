@@ -79,19 +79,19 @@ bool MayaScene::parseScene()
 	clearObjList(this->lightList);
 
 	MDagPath world = getWorld();
-	if (parseSceneHierarchy(world, 0, NULL, NULL))
+	if (parseSceneHierarchy(world, 0, nullptr, nullptr))
 	{
 		this->parseInstancerNew();
 		this->getLightLinking();
 		if (this->uiCamera.isValid() && (MGlobal::mayaState() != MGlobal::kBatch))
 		{
-			std::shared_ptr<MayaObject> cam = NULL;
+			std::shared_ptr<MayaObject> cam = nullptr;
 			for (uint camId = 0; camId < this->camList.size(); camId++)
 			{
 				if (this->camList[camId]->dagPath == this->uiCamera)
 					cam = this->camList[camId];
 			}
-			if (cam == NULL)
+			if (cam == nullptr)
 			{
 				Logging::error(MString("UI Camera not found: ") + this->uiCamera.fullPathName());
 				return false;
@@ -233,7 +233,7 @@ bool MayaScene::updateInstancer()
 		std::shared_ptr<MayaObject> obj = this->instancerNodeElements[i];
 		MMatrix origMatrix;
 		origMatrix.setToIdentity();
-		if (obj->origObject != NULL)
+		if (obj->origObject != nullptr)
 		{
 			origMatrix = obj->origObject->dagPath.inclusiveMatrix();
 			origMatrix.inverse();
@@ -330,7 +330,7 @@ bool MayaScene::parseInstancerNew()
 			int pathStart = pathStartIndices[p];
 
 			//  loop through the instanced paths for this particle
-			std::shared_ptr<ObjectAttributes> currentAttributes = NULL;
+			std::shared_ptr<ObjectAttributes> currentAttributes = nullptr;
 			for (int i = pathStart; i < pathStart + numPaths; i++)
 			{
 				int curPathIndex = pathIndices[i];
@@ -342,7 +342,7 @@ bool MayaScene::parseInstancerNew()
 
 				// search for the correct orig MayaObject element
 				// TODO: visibiliy check - necessary?
-				std::shared_ptr<MayaObject> origObj = NULL;
+				std::shared_ptr<MayaObject> origObj = nullptr;
 				std::vector<std::shared_ptr<MayaObject>> ::iterator mIter = origObjects.begin();
 				for (; mIter != origObjects.end(); mIter++)
 				{
@@ -352,7 +352,7 @@ bool MayaScene::parseInstancerNew()
 						origObj = obj;
 					}
 				}
-				if (origObj == NULL)
+				if (origObj == nullptr)
 				{
 					Logging::debug(MString("Orig particle instancer obj not found."));
 					continue;
@@ -372,7 +372,7 @@ bool MayaScene::parseInstancerNew()
 				currentAttributes->hasInstancerConnection = true;
 				if (hasParticleSystem)
 				{
-					if (particleMObject->attributes != NULL)
+					if (particleMObject->attributes != nullptr)
 					{
 						particleMObject->attributes->hasColorOverride = true;
 						particleMObject->attributes->colorOverride = MColor(rgbPP[p].x, rgbPP[p].y, rgbPP[p].z);

@@ -14,7 +14,7 @@
 
 std::shared_ptr<MayaObject> MayaScene::getObject(MObject obj)
 {
-	std::shared_ptr<MayaObject> mo = NULL;
+	std::shared_ptr<MayaObject> mo = nullptr;
 	size_t numobjects = this->objectList.size();
 	for (size_t objId = 0; objId < numobjects; objId++)
 	{
@@ -26,7 +26,7 @@ std::shared_ptr<MayaObject> MayaScene::getObject(MObject obj)
 
 std::shared_ptr<MayaObject> MayaScene::getObject(MDagPath dp)
 {
-	std::shared_ptr<MayaObject> mo = NULL;
+	std::shared_ptr<MayaObject> mo = nullptr;
 	size_t numobjects = this->objectList.size();
 	for (size_t objId = 0; objId < numobjects; objId++)
 	{
@@ -69,7 +69,7 @@ void MayaScene::checkParent(std::shared_ptr<MayaObject> obj)
 	MFnDagNode node(obj->mobject);
 	if (node.parentCount() == 0)
 	{
-		obj->parent = NULL;
+		obj->parent = nullptr;
 		return;
 	}
 	MObject parent = node.parent(0);

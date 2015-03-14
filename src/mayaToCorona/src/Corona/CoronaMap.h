@@ -227,9 +227,9 @@ public:
 		uArray.append(uvw.x());
 		vArray.append(uvw.y());
 		normals.append(MFloatVector(normal.x(), normal.y(), normal.z()));
-		//MRenderUtil::sampleShadingNetwork(otherSidePlugName, numFollicles, false, true, matrix, NULL, &uCoords, &vCoords, NULL, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+		//MRenderUtil::sampleShadingNetwork(otherSidePlugName, numFollicles, false, true, matrix, nullptr, &uCoords, &vCoords, nullptr, nullptr, nullptr, nullptr, nullptr, resultColors, resultTransparencies);
 
-		//MStatus s = MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, NULL, NULL, NULL, NULL, resultColors, resultTransparencies);
+		//MStatus s = MRenderUtil::sampleShadingNetwork(otherSidePlugName, 1, false, true, camMatrix, &pointArray, &uArray, &vArray, &normals, nullptr, nullptr, nullptr, nullptr, resultColors, resultTransparencies);
 		//if( !s )
 		//	MGlobal::displayInfo(MString("sample problem: ") + s.errorString());
 		//if( resultColors.length() > 0)

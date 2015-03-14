@@ -10,6 +10,6 @@ SwatchRendererInterface *SwatchRendererInterfaceFactory::createSwatchRendererInt
 void SwatchRendererInterfaceFactory::deleteSwatchRendererInterface(SwatchRendererInterface *swInterface)
 {
 	mtco_SwatchRendererInterface *sr = (mtco_SwatchRendererInterface *)swInterface;
-	if (sr != NULL)
+	if (sr != nullptr)
 		delete sr;
 }

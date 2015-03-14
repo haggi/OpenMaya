@@ -15,12 +15,12 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtco_common/mtco_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
+#include "world.h"
 #include "CoronaShaders.h"
-
 #include "CoronaMap.h"
 
 static Logging logger;
@@ -62,13 +62,16 @@ void CoronaRenderer::updateMesh(std::shared_ptr<MayaObject> obj)
 	obj->addMeshData();
 }
 
-void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
+void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 {
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
+
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
 	
 	bool hasDisplacement = false;
-	Corona::SharedPtr<Corona::Abstract::Map> displacementMap = NULL;
+	Corona::SharedPtr<Corona::Abstract::Map> displacementMap = nullptr;
 	float displacementMin = 0.0f;
 	float displacementMax = 0.01f;
 
@@ -223,7 +226,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
 
 	Corona::TriangleData td;
-	Corona::IGeometryGroup* geom = NULL;	
+	Corona::IGeometryGroup* geom = nullptr;	
 	geom = this->context.scene->addGeomGroup();
 
 	// to capture the vertex and normal positions, we capture the data during the motion steps
@@ -375,23 +378,26 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
 	obj->meshDataList.clear();
 }
 
-Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(std::shared_ptr<MayaObject> obj)
+Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(std::shared_ptr<MayaObject> mobj)
 {
-	Corona::IGeometryGroup* geom = NULL;
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
+
+	Corona::IGeometryGroup* geom = nullptr;
 	std::shared_ptr<MayaObject> iobj = obj;
 
-	if( obj->isInstanced() && (obj->origObject != NULL))
+	if( obj->isInstanced() && (obj->origObject != nullptr))
 	{
-		iobj = (std::shared_ptr<MayaObject> )obj->origObject;
-		if( iobj->geom != NULL )
+		std::shared_ptr<mtco_MayaObject> iobj = std::static_pointer_cast<mtco_MayaObject>(obj->origObject);
+		if( iobj->geom != nullptr )
 			geom = iobj->geom;
 	}else{
 		// if this object is visible or if it is invisible and it has a connection to an instancer node and there are any instancer elements, then export it
-		if( obj->visible || (((obj->attributes!=NULL) && obj->attributes->hasInstancerConnection) && (this->mtco_scene->instancerNodeElements.size() > 0)))
+		if( obj->visible || (((obj->attributes!=nullptr) && obj->attributes->hasInstancerConnection) && (mayaScene->instancerNodeElements.size() > 0)))
 		{
 			Logging::debug(MString("Translating mesh ") + obj->shortName );
 			this->defineMesh(obj);
-			if( obj->geom != NULL )
+			if( obj->geom != nullptr )
 				geom = obj->geom;
 		}
 	}
@@ -402,17 +408,17 @@ Corona::IGeometryGroup* CoronaRenderer::getGeometryPointer(std::shared_ptr<MayaO
 
 void CoronaRenderer::defineGeometry()
 {
-
-	for(size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	for (auto mobj : mayaScene->objectList)
 	{
-		std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->objectList[objId];
+		std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
 		if( !obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
-		if( geom == NULL )
+		if( geom == nullptr )
 		{
-			Logging::debug(MString("Geo pointer is NULL"));
+			Logging::debug(MString("Geo pointer is nullptr"));
 			continue;
 		}
 
@@ -421,7 +427,7 @@ void CoronaRenderer::defineGeometry()
 
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
-		obj->instance = geom->addInstance(atm, obj, NULL);
+		obj->instance = geom->addInstance(atm, obj.get(), nullptr);
 
 		MFnDependencyNode depFn(obj->mobject);
 		if (getBoolAttr("mtco_envPortal", depFn, false))
@@ -436,24 +442,24 @@ void CoronaRenderer::defineGeometry()
 		}
 	}
 
-	for (size_t objId = 0; objId < this->mtco_scene->instancerNodeElements.size(); objId++)
+	for (auto mobj : mayaScene->instancerNodeElements)
 	{
-		std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->instancerNodeElements[objId];
+		std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
 		if (!obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
 		Corona::IGeometryGroup* geom = getGeometryPointer(obj);
 
-		if (geom == NULL)
+		if (geom == nullptr)
 		{
-			Logging::error(MString("Geo pointer is NULL"));
+			Logging::error(MString("Geo pointer of ") + obj->shortName + "is nullptr");
 			continue;
 		}
 
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		
-		obj->instance = geom->addInstance(atm, obj, NULL);
+		obj->instance = geom->addInstance(atm, obj.get(), nullptr);
 
 		MFnDependencyNode depFn(obj->mobject);
 		if (getBoolAttr("mtco_envPortal", depFn, false))

@@ -73,6 +73,11 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 			setResult("rstatestopped");
 		return MS::kSuccess;
 	}
+
+	MObject drg = objectFromName("defaultRenderGlobals");
+	MFnDependencyNode drgfn(drg);
+	bool urr = drgfn.findPlug("useRenderRegion").asBool();
+
 	
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{

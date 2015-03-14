@@ -3,14 +3,13 @@
 #include "CoronaSky.h"
 #include "CoronaShaders.h"
 #include "CoronaUtils.h"
-
 #include <maya/MObjectArray.h>
-
 #include "renderGlobals.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtco_common/mtco_mayaScene.h"
+#include "mayaScene.h"
+#include "world.h"
 #include "../mtco_common/mtco_mayaObject.h"
 
 static Logging logger;
@@ -41,6 +40,9 @@ void CoronaRenderer::defineLights()
 	MFnDependencyNode rGlNode(getRenderGlobalsNode());
 	// first get the globals node and serach for a directional light connection
 	MObject coronaGlobals = getRenderGlobalsNode();
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+
 	MObjectArray nodeList;
 	MStatus stat;
 
@@ -78,7 +80,7 @@ void CoronaRenderer::defineLights()
 				SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
 
 				Corona::Rgb avgColor(1, 1, 1);
-				if (sky != NULL)
+				if (sky != nullptr)
 				{
 					avgColor = sky->sc();
 				}
@@ -98,9 +100,10 @@ void CoronaRenderer::defineLights()
 		}
 	}
 
-	for( size_t lightId = 0; lightId < this->mtco_scene->lightList.size();  lightId++)
+	for (auto mobj : mayaScene->lightList)
 	{
-		std::shared_ptr<MayaObject> obj =  (std::shared_ptr<MayaObject> )this->mtco_scene->lightList[lightId];
+		std::shared_ptr<mtco_MayaObject> obj(std::static_pointer_cast<mtco_MayaObject>(mobj));
+
 		if(!obj->visible)
 			continue;
 
@@ -129,9 +132,9 @@ void CoronaRenderer::defineLights()
 			pl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			pl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
-			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
-			{ 
-				pl->excludeList.nodes.push(obj->excludedObjects[loId]);
+			for (auto excludedObj : obj->excludedObjects)
+			{
+				pl->excludeList.nodes.push(excludedObj.get());
 			}
 			this->context.scene->addLightShader(pl);
 		}
@@ -161,9 +164,9 @@ void CoronaRenderer::defineLights()
 			sl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			sl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
-			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+			for (auto excludedObj:obj->excludedObjects)
 			{
-				sl->excludeList.nodes.push(obj->excludedObjects[loId]);
+				sl->excludeList.nodes.push(excludedObj.get());
 			}
 			Corona::AffineTm tm;
 			setTransformationMatrix(sl->lightWorldInverseMatrix, m);
@@ -198,9 +201,9 @@ void CoronaRenderer::defineLights()
 			dl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
 			col = getColorAttr("shadowColor", depFn);
 			dl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
-			for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+			for (auto excludedObj : obj->excludedObjects)
 			{
-				dl->excludeList.nodes.push(obj->excludedObjects[loId]);
+				dl->excludeList.nodes.push(excludedObj.get());
 			}
 
 			this->context.scene->addLightShader(dl);
@@ -211,7 +214,7 @@ void CoronaRenderer::defineLights()
 			obj->geom = defineStdPlane();
 			Corona::AnimatedAffineTm atm;
 			this->setAnimatedTransformationMatrix(atm, obj);
-			obj->instance = obj->geom->addInstance(atm, NULL, NULL);
+			obj->instance = obj->geom->addInstance(atm, nullptr, nullptr);
 			if (getBoolAttr("mtco_envPortal", depFn, false))
 			{
 				Corona::EnviroPortalMtlData data;
@@ -225,10 +228,10 @@ void CoronaRenderer::defineLights()
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
 				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
-				for (size_t loId = 0; loId < obj->excludedObjects.size(); loId++)
+				for (auto excludedObj : obj->excludedObjects)
 				{
-					data.emission.excluded.nodes.push(obj->excludedObjects[loId]);
-				}				
+					data.emission.excluded.nodes.push(excludedObj.get());
+				}
 
 				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);

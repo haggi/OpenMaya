@@ -115,8 +115,6 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	Corona::SharedPtr<Corona::Abstract::Map> oslMapp = new OSLMap;
 	OSLMap *oslMap = (OSLMap *)oslMapp.getReference();
 
-	//OSLMap *oslMap = new OSLMap();
-
 	oslMap->oslRenderer = oslRenderer;
 	oslMap->shaderGroup = shaderGroup;
 

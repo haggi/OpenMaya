@@ -192,7 +192,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaMap.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
@@ -200,18 +200,15 @@
     <ClCompile Include="..\src\Corona\CoronaPasses.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaRendererController.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaCallbacks.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\Corona.cpp" />
     <ClCompile Include="..\src\Corona\CoronaGeometry.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaLights.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
@@ -220,10 +217,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaShadersOrig.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaSky.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaUtils.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
@@ -234,7 +231,6 @@
     <ClCompile Include="..\src\mayaToCorona.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObjectFactory.cpp" />
-    <ClCompile Include="..\src\mtco_common\mtco_mayaScene.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
@@ -254,7 +250,7 @@
     <ClCompile Include="..\src\shaders\TestShader.cpp" />
     <ClCompile Include="..\src\shaders\textureBase.cpp" />
     <ClCompile Include="..\src\Corona\CoronaEnvironment.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,23 +294,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaLights.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaMap.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaRendererController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\Corona.h" />
     <ClInclude Include="..\src\Corona\CoronaShaders.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaSky.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaTestScene.h" />
     <ClInclude Include="..\src\Corona\CoronaUtils.h">
@@ -325,7 +318,6 @@
     </ClInclude>
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
-    <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />

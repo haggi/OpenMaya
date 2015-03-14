@@ -11,7 +11,6 @@ class BaseTemplate(pm.ui.AETemplate):
     def beginLayout(self, name, collapse=True):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
         
-
 class AECoronaRaytypeTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)

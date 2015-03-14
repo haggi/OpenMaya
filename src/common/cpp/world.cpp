@@ -1,4 +1,5 @@
 #include "world.h"
+#include <maya/MSceneMessage.h>
 #include "mayaSceneFactory.h"
 #include "renderGlobalsFactory.h"
 #include "rendering/rendererFactory.h"
@@ -7,24 +8,27 @@
 static MCallbackId timerCallbackId = 0;
 
 namespace MayaTo{
+	MCallbackId MayaToWorld::afterOpenCallbackId;
+	MCallbackId MayaToWorld::afterNewCallbackId;
+
 	void *getObjPtr(MString name)
 	{
-		if (worldPointer != NULL)
+		if (worldPointer != nullptr)
 			return MayaTo::getWorldPtr()->getObjPtr(name);
-		return NULL;
+		return nullptr;
 	}
 
 	static void addObjectPtr(MString name, void *ptr)
 	{
-		if (worldPointer != NULL)
+		if (worldPointer != nullptr)
 			worldPointer->addObjectPtr(name, ptr);
 	}
 
 	void deleteWorld()
 	{
-		if (worldPointer != NULL)
+		if (worldPointer != nullptr)
 			delete worldPointer;
-		worldPointer = NULL;
+		worldPointer = nullptr;
 	}
 
 	void defineWorld()
@@ -40,20 +44,26 @@ namespace MayaTo{
 
 	MayaToWorld::MayaToWorld()
 	{
-		timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL);
+		MStatus stat;
+		timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, nullptr);
+		//MSceneMessage::addCallback(MSceneMessage::kAfterNew, MayaToWorld::callAfterNewCallback, nullptr, &stat);
+		MayaToWorld::afterNewCallbackId = MSceneMessage::addCallback(MSceneMessage::kAfterOpen, MayaToWorld::callAfterOpenCallback, nullptr, &stat);
 
 		initialize();
 		renderType = WorldRenderType::RTYPENONE;
 		renderState = WorldRenderState::RSTATENONE;
-		worldScenePtr = NULL;
-		worldRendererPtr = NULL;
-		worldRenderGlobalsPtr = NULL;
+		worldScenePtr = nullptr;
+		worldRendererPtr = nullptr;
+		worldRenderGlobalsPtr = nullptr;
 	};
 
 	MayaToWorld::~MayaToWorld()
 	{
 		if (timerCallbackId != 0)
 			MTimerMessage::removeCallback(timerCallbackId);
+		if (MayaToWorld::afterNewCallbackId != 0)
+			MSceneMessage::removeCallback(MayaToWorld::afterNewCallbackId);
+
 		cleanUp();
 	}
 

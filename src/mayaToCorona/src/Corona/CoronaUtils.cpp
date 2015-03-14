@@ -96,7 +96,7 @@ void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_
 	MMatrix globalConversionMatrix;
 	globalConversionMatrix.setToIdentity();
 
-	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != NULL)
+	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 	{
 		doMb = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->doMb;
 		globalConversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
@@ -125,7 +125,7 @@ void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat
 	MMatrix globalConversionMatrix;
 	globalConversionMatrix.setToIdentity();
 
-	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != NULL)
+	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 	{
 		globalConversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
 	}

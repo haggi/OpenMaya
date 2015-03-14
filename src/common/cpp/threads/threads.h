@@ -10,7 +10,7 @@
 //	int numArgs;
 //	ThreadData()
 //	{
-//		argument = NULL;
+//		argument = nullptr;
 //		numArgs = 0;
 //	};
 //};

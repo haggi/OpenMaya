@@ -23,7 +23,7 @@ RenderGlobals::RenderGlobals()
 {
 	Logging::debug("RenderGlobals::RenderGlobals()");
 	this->good = false;
-	this->currentRenderPass = NULL;
+	this->currentRenderPass = nullptr;
 	this->currentRenderPassElementId = 0;
 	this->maxTraceDepth = 4;
 	this->doMb = false;
@@ -37,7 +37,6 @@ RenderGlobals::RenderGlobals()
 	this->xftimesamples = 2;
 	this->geotimesamples = 2;
 	this->createDefaultLight = false;
-	this->renderType = RenderType::FINAL;
 	this->exportSceneFile = false;
 	this->adaptiveSampling = false;
 	this->imageName = "";
@@ -45,6 +44,7 @@ RenderGlobals::RenderGlobals()
 	this->exportSceneFileName = "";
 	this->imagePath = "";
 	this->getDefaultGlobals();
+	this->imageFormatString = getEnumString(MString("imageFormat"), MFnDependencyNode(getRenderGlobalsNode()));
 	this->internalUnit = MDistance::internalUnit();
 	this->internalAxis = MGlobal::isYAxisUp() ? YUp : ZUp;
 	this->scaleFactor = 1.0f;

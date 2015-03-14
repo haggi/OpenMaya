@@ -194,7 +194,7 @@ MStatus standinMeshNode::compute(const MPlug& plug, MDataBlock& data)
 		MFnMeshData dataCreator;
 		MObject newOutputData = dataCreator.create(&returnStatus);
 		McheckErr(returnStatus, "ERROR creating outputData");
-
+		
 		if (createMesh(time, newOutputData, returnStatus) == MObject::kNullObj)
 			return MS::kFailure;
 

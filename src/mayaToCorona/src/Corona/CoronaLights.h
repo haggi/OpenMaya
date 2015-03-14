@@ -170,7 +170,7 @@ public:
 		Corona::Matrix33 base = context.bumpBase(0);
 		Corona::Dir T = base.tangent();
 
-		lcol = lightColorMap.getRgb(context, NULL);
+		lcol = lightColorMap.getRgb(context, nullptr);
 		context.restoreMapCoords(origUvCoords);
 		const Corona::Spectrum diffuse(Corona::rgb2Radiance(lcol));
 

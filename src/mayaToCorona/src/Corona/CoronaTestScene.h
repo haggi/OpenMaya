@@ -196,7 +196,7 @@
 //		}
 //
 //		// standard windows message dispatch
-//		while (PeekMessage(&msg, NULL, 0, 0, TRUE)) {
+//		while (PeekMessage(&msg, nullptr, 0, 0, TRUE)) {
 //			TranslateMessage(&msg);
 //			DispatchMessage(&msg);
 //		}

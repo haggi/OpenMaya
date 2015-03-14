@@ -1,6 +1,7 @@
 #include <maya/MDagPath.h>
 #include <maya/MItDag.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MFnMesh.h>
 #include <maya/MDagPathArray.h>
 #include <maya/MFnCamera.h>
 #include <maya/MFnDependencyNode.h>
@@ -15,12 +16,14 @@
 #include <maya/MRenderView.h>
 #include <maya/MVectorArray.h>
 #include <maya/MFileIO.h>
+#include <maya/MFnSingleIndexedComponent.h>
 
 #include "mayaScene.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
+#include "shadingtools/shadingUtils.h"
 #include "threads/renderQueueWorker.h"
 #include "rendering/renderer.h"
 #include "world.h"
@@ -97,16 +100,36 @@ void MayaScene::getLightLinking()
     bool parseStatus;
 	parseStatus = lightLink.parseLinks(MObject::kNullObj);
 
-	for (int oId = 0; oId < this->objectList.size(); oId++)
+	for (auto obj:this->objectList)
 	{
 		MDagPathArray lightArray;
-		std::shared_ptr<MayaObject> obj = this->objectList[oId];
-		
+
 		if (!obj->mobject.hasFn(MFn::kMesh) && !obj->mobject.hasFn(MFn::kNurbsSurface) && !obj->mobject.hasFn(MFn::kNurbsCurve))
 			continue;
 
-		lightLink.getLinkedLights(obj->dagPath, MObject::kNullObj, lightArray);
-
+		if (obj->mobject.hasFn(MFn::kMesh))
+		{
+			MObjectArray shadingGroups, components;
+			MFnMesh meshFn(obj->mobject);
+			meshFn.getConnectedSetsAndMembers(obj->instanceNumber, shadingGroups, components, true);	
+			if (shadingGroups.length() > 1)
+			{
+				Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");
+				for (uint cId = 0; cId < components.length(); cId++)
+				{
+					MDagPathArray tmpLightArray;
+					lightLink.getLinkedLights(obj->dagPath, components[cId], tmpLightArray); // Lights linked to the face component
+					for (uint lp = 0; lp < tmpLightArray.length(); lp++)
+						lightArray.append(tmpLightArray[lp]);
+				}
+			}
+			else{
+				lightLink.getLinkedLights(obj->dagPath, MObject::kNullObj, lightArray);
+			}
+		}
+		else{
+			lightLink.getLinkedLights(obj->dagPath, MObject::kNullObj, lightArray);
+		}
 		// if one of the light in my scene light list is NOT in the linked light list,
 		// the light has either turned off "Illuminate by default" or it is explicilty not linked to this object.
 		for (size_t lObjId = 0; lObjId < this->lightList.size(); lObjId++)

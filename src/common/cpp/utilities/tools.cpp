@@ -345,7 +345,7 @@ MObject getUpstreamMesh(MString& outputPlugName, MObject thisObject)
 
 //
 // simply get the node wich is connected to the named plug.
-// If we have no connection, a kNullObject is returned.
+// If we have no connection, a knullptrObject is returned.
 //
 MObject getOtherSideNode(MString& plugName, MObject& thisObject)
 {

@@ -37,8 +37,8 @@ class PassesUI(object):
                 "Velocity",
                 "ZDepth",
                 "WorldPosition",
-                "Id",
-                "Texmap"
+                "Id"
+                #"Texmap"
                 ]
         
     def getActiveAOVs(self):

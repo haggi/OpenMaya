@@ -1,5 +1,5 @@
 #include "Corona.h"
-#include "../mtco_common/mtco_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "utilities/logging.h"
 #include "renderGlobals.h"
@@ -15,19 +15,18 @@ static Logging logger;
 CoronaRenderer::CoronaRenderer()
 {
 	Logging::debug("CoronaRenderer::CoronaRenderer()");
-	this->context.core = NULL;
-	this->context.fb = NULL;
-	this->context.scene = NULL;
-	this->context.logger = NULL;
-	this->context.settings = NULL;
+	this->context.core = nullptr;
+	this->context.fb = nullptr;
+	this->context.scene = nullptr;
+	this->context.logger = nullptr;
+	this->context.settings = nullptr;
 	this->context.isCancelled = false;
-	this->context.colorMappingData = NULL;
+	this->context.colorMappingData = nullptr;
 }
 
 CoronaRenderer::~CoronaRenderer()
 {
 	Logging::debug("CoronaRenderer::~CoronaRenderer()");
-	//Corona::ICore::shutdownLib();
 }
 
 #ifdef CORONA_RELEASE_ASSERTS
@@ -48,19 +47,13 @@ void CoronaRenderer::createScene()
 void CoronaRenderer::render()
 {
 	Logging::debug("CoronaRenderer::render");
-	//Logging::debug("Rendering for 10 secs.");
-	//std::this_thread::sleep_for(std::chrono::seconds(10));
-	//Logging::debug("Sleeping done.");
-
 	//this->clearMaterialLists();
-
 	this->defineCamera();
-	//this->defineGeometry();
-	//this->defineEnvironment();
-	//this->defineLights();
+	this->defineGeometry();
+	this->defineEnvironment();
+	this->defineLights();
 
 	context.core->sanityCheck(context.scene);
-
 	Logging::debug(MString("registering framebuffer callback."));
 	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
 
@@ -79,8 +72,8 @@ void CoronaRenderer::render()
 	//for( size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
 	//{
 	//	std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->objectList[objId];
-	//	obj->geom = NULL;
-	//	obj->instance = NULL;
+	//	obj->geom = nullptr;
+	//	obj->instance = nullptr;
 	//}
 }
 
@@ -107,26 +100,28 @@ void CoronaRenderer::initializeRenderer()
 	context.fb->initFb(context.settings, context.renderPasses);
 	context.core->sanityCheck(context.settings);
 
-	//renderGlobals->getImageName();
-	//Corona::String dumpFilename = (renderGlobals->imageOutputFile + ".dmp").asChar();
-	//if (getBoolAttr("dumpAndResume", rGlNode, false))
-	//{
-	//	context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-	//	if (!context.fb->accumulateFromExr(dumpFilename))
-	//	{
-	//		Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
-	//	}
-	//	else{
-	//		// random seed has to be 0 for resuming a render
-	//		context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
-	//		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-	//	}
-	//}
+	// this can be extracted and placed in a button function in the render globals
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode renderGlobalsNode(getRenderGlobalsNode());
+	Corona::String dumpFilename = (renderGlobals->getImageOutputFile() + ".dmp").asChar();
+	if (getBoolAttr("dumpAndResume", renderGlobalsNode, false))
+	{
+		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+		if (!context.fb->accumulateFromExr(dumpFilename))
+		{
+			Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
+		}
+		else{
+			// random seed has to be 0 for resuming a render
+			context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
+			context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+		}
+	}
 
 	OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getWorldPtr()->getObjPtr("oslRenderer");
-	if (r == NULL)
+	if (r == nullptr)
 	{
-		Logging::debug("error CoronaRenderer::render: OSL renderer == NULL");
+		Logging::debug("error CoronaRenderer::render: OSL renderer == nullptr");
 		return;
 	}
 	this->oslRenderer = r;
@@ -184,7 +179,7 @@ void CoronaRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
 
 void CoronaRenderer::abortRendering()
 {
-	if( this->context.core != NULL)
+	if( this->context.core != nullptr)
 		this->context.core->cancelRender();
 }
 

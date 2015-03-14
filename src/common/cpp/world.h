@@ -56,7 +56,7 @@ namespace MayaTo{
 			for (uint i = 0; i < objectNames.length(); i++)
 				if (objectNames[i] == name)
 					return objectPtr[i];
-			return NULL;
+			return nullptr;
 		}
 
 		void addObjectPtr(MString name, void *ptr)
@@ -88,6 +88,8 @@ namespace MayaTo{
 
 		static void callAfterOpenCallback(void *);
 		static void callAfterNewCallback(void *);
+		static MCallbackId afterOpenCallbackId;
+		static MCallbackId afterNewCallbackId;
 	};
 
 	void *getObjPtr(MString name);
@@ -97,7 +99,7 @@ namespace MayaTo{
 	void defineWorld();
 	MayaToWorld *getWorldPtr();
 
-	static MayaToWorld *worldPointer = NULL;
+	static MayaToWorld *worldPointer = nullptr;
 
 	struct CmdArgs{
 		CmdArgs()

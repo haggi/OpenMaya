@@ -45,9 +45,9 @@ mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, M
 
 mtco_SwatchRendererInterface::~mtco_SwatchRendererInterface()
 {
-	if (this->imageData != NULL)
+	if (this->imageData != nullptr)
 		free(this->imageData);
-	this->imageData = NULL;
+	this->imageData = nullptr;
 }
 
 void mtco_SwatchRendererInterface::defineSettings()
@@ -160,7 +160,7 @@ void mtco_SwatchRendererInterface::createCoronaScene()
 	//sdata.components.diffuse.setColor(Corona::Rgb(col.r, col.g, col.b));
 	//sdata.components.reflect.setColor(1.0f);
 	//col = getColorAttr("emissionColor", depFn);
-	//Corona::ColorOrMap com  = Corona::ColorOrMap(Corona::Rgb(col.r, col.g, col.b), NULL);
+	//Corona::ColorOrMap com  = Corona::ColorOrMap(Corona::Rgb(col.r, col.g, col.b), nullptr);
 	//sdata.emission.color.setColor(Corona::Rgb(rnd(), rnd(), rnd()));
 	Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(dependNode);
 
@@ -212,7 +212,7 @@ void mtco_SwatchRendererInterface::createCoronaScene()
 		box->addPrimitive(tri);
 	}
 
-	Corona::IInstance* binstance = box->addInstance(atm, NULL, NULL);
+	Corona::IInstance* binstance = box->addInstance(atm, nullptr, nullptr);
 
 	Corona::NativeMtlData data;
 	data.components.diffuse.setMap(new CheckerMap);

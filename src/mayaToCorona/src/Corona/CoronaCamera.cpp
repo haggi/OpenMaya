@@ -57,23 +57,42 @@ void CoronaRenderer::defineCamera()
 		MPoint coiTransform = coiBase * camMatrix;
 		//Logging::debug(MString("Center of interest: ") + coi + " transformed " + coiTransform.x + " "  + coiTransform.y + " "  + coiTransform.z);
 		Corona::Pos center(coiTransform.x, coiTransform.y, coiTransform.z);
-		float fov;
-		MFnCamera::FilmFit filmFit = camera.filmFit();
 		float factor = horizontalFilmAperture;
-		if (filmFit == MFnCamera::kHorizontalFilmFit)
-			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
-		else if (filmFit == MFnCamera::kVerticalFilmFit)
-		{
-			factor = verticalFilmAperture * renderGlobals->getWidth() / renderGlobals->getHeight();
-			fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
-		}
-		float fovDeg = fov * 57.29578;
-		Corona::AnimatedFloat fieldOfView(fov);
-		//Logging::debug(MString("fov ") + fov + " deg: " + fovDeg);
-		//Corona::AnimatedFloat fieldOfView(Corona::DEG_TO_RAD(45.f));
-		
-		Corona::CameraData cameraData;
+		float fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937)); // make horizontal film fit the default
+		MFnCamera::FilmFit filmFit = camera.filmFit();
+		float dAspect = (float)renderGlobals->getWidth() / (float)renderGlobals->getHeight();
+		double fAspect = horizontalFilmAperture / verticalFilmAperture;
 
+		switch (filmFit)
+		{
+			case  MFnCamera::kHorizontalFilmFit:
+			{
+				fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
+			}
+			break;
+
+			case  MFnCamera::kVerticalFilmFit:
+			{
+				factor = verticalFilmAperture * dAspect;
+				fov = 2.0 * atan((factor * 0.5f) / (focalLength * 0.03937));
+			}
+			break;
+
+			case  MFnCamera::kFillFilmFit:
+			{}
+			break;
+
+			case  MFnCamera::kOverscanFilmFit:
+			{}
+			break;
+
+			default:
+				break;
+		}
+
+		float fovDeg = fov * 57.29578;
+		Corona::AnimatedFloat fieldOfView(fov);		
+		Corona::CameraData cameraData;
 		bool orthographic = getBoolAttr("orthographic", camera, false);
 
 		if (orthographic)

@@ -566,7 +566,7 @@ MStatus CoronaLight::initialize()
     CHECK_MSTATUS( lAttr.setStorable( false ) );
     CHECK_MSTATUS( lAttr.setHidden( true ) );
     CHECK_MSTATUS( lAttr.setDefault( 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            true, true, false, 1.0f, 1.0f, NULL ) );
+            true, true, false, 1.0f, 1.0f, nullptr ) );
 
 
     // Next we will add the attributes we have defined to the node

@@ -128,9 +128,6 @@
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtco_common\mtco_mayaScene.cpp">
-      <Filter>mtco_common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
@@ -142,9 +139,6 @@
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp">
       <Filter>common\rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaRendererController.cpp">
-      <Filter>Source Files\Corona</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shaders\materialBase.cpp">
       <Filter>Source Files\shaders</Filter>
@@ -340,9 +334,6 @@
     <ClInclude Include="..\src\mayatoCorona.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtco_common\mtco_mayaScene.h">
-      <Filter>mtco_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h">
       <Filter>mtco_common</Filter>
     </ClInclude>
@@ -351,9 +342,6 @@
     </ClInclude>
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h">
       <Filter>mtco_common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaRendererController.h">
-      <Filter>Source Files\Corona</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\materialBase.h">
       <Filter>Source Files\shaders</Filter>

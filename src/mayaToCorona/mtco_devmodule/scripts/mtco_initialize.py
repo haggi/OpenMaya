@@ -594,7 +594,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if  renderState in ["rstaterendering", "rstatetranslating"]:
             log.error("Rendering is in progress, cannot proceed. Please stop rendering first.")
             return
-        
+
+        #print("Check for useRenderRegion. urr is {0}".format(pm.PyNode("defaultRenderGlobals").useRenderRegion.get()))        
         self.removeLogFile()
         log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options))
         self.createGlobalsNode()    

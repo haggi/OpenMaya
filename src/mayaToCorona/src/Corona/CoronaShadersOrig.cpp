@@ -1,6 +1,6 @@
 #include "Corona.h"
 #include <maya/MPlugArray.h>
-#include "../mtco_common/mtco_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
@@ -29,7 +29,7 @@ Corona::Stack<Corona::SharedPtr<Corona::IMaterial>> coronaMaterialStack;
 
 void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data)
 {
-	Corona::SharedPtr<Corona::Abstract::Map> texmap = NULL;
+	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 	if( isConnected("normalCamera", depFn, true, false))
 	{
 		//MString normalCamName = "normalCamera";
@@ -40,8 +40,9 @@ void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn
 	}
 }
 
-bool CoronaRenderer::assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> obj)
+bool CoronaRenderer::assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> mobj)
 {
+	std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
 	int index = -1;
 	for( size_t i = 0; i < shaderArray.size(); i++)
 	{
@@ -89,9 +90,9 @@ void CoronaRenderer::clearMaterialLists()
 }
 
 
-void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> obj)
+void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> mobj)
 {
-	
+	std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
 
 	if( obj->shadingGroups.length() > 0)
@@ -106,10 +107,10 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 			MObject surfaceShader = getConnectedInNode(shadingGroup, "surfaceShader");
 			// raytype shader is a special case. Here a material set gets different materials, so I have to call defineCoronaMaterial several times
 			MFnDependencyNode shaderMat(surfaceShader);
-			Corona::SharedPtr<Corona::IMaterial> base = NULL;
-			Corona::SharedPtr<Corona::IMaterial> reflect = NULL;
-			Corona::SharedPtr<Corona::IMaterial> refract = NULL;
-			Corona::SharedPtr<Corona::IMaterial> direct = NULL;
+			Corona::SharedPtr<Corona::IMaterial> base = nullptr;
+			Corona::SharedPtr<Corona::IMaterial> reflect = nullptr;
+			Corona::SharedPtr<Corona::IMaterial> refract = nullptr;
+			Corona::SharedPtr<Corona::IMaterial> direct = nullptr;
 			if (shaderMat.typeName() == "CoronaRaytype")
 			{
 				MPlug basePlug = shaderMat.findPlug("base");
@@ -119,22 +120,22 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 				if (basePlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(basePlug);
-					base = defineCoronaMaterial(inNode, NULL);
+					base = defineCoronaMaterial(inNode, nullptr);
 				}
 				if (reflectPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(reflectPlug);
-					reflect = defineCoronaMaterial(inNode, NULL);
+					reflect = defineCoronaMaterial(inNode, nullptr);
 				}
 				if (refractPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(refractPlug);
-					refract = defineCoronaMaterial(inNode, NULL);
+					refract = defineCoronaMaterial(inNode, nullptr);
 				}
 				if (directPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(directPlug);
-					direct = defineCoronaMaterial(inNode, NULL);
+					direct = defineCoronaMaterial(inNode, nullptr);
 				}
 			}
 			else{
@@ -150,7 +151,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 		}
 	}
 	else{
-		Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(MObject::kNullObj, NULL);
+		Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(MObject::kNullObj, nullptr);
 		Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 		setRenderStats(ms, obj);
 		obj->instance->addMaterial(ms);

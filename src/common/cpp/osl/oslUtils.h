@@ -164,6 +164,12 @@ namespace MAYATO_OSL{
 			value = pvalue.asChar();
 			type = OSL::TypeDesc::TypeString;
 		}
+		OSLParameter(const char *pname, std::string& pvalue)
+		{
+			name = pname;
+			value = pvalue.c_str();
+			type = OSL::TypeDesc::TypeString;
+		}
 		OSLParameter(const char *pname, MVector& pvalue)
 		{
 			name = validateParameter(pname);

@@ -5,7 +5,7 @@
 #include "CoronaCore/api/Api.h"
 class mtco_MayaObject;
 
-void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj = NULL);
+void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj = nullptr);
 void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 void setTransformationMatrix(Corona::AffineTm& atm, MMatrix& mat);
 Corona::Rgb toCorona(MColor& color);

@@ -26,7 +26,7 @@ public:
 	~mtco_MayaObject();
 
 	virtual bool geometryShapeSupported();
-	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = NULL);
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = nullptr);
 
 	Corona::IGeometryGroup* geom;
 	Corona::IInstance* instance;

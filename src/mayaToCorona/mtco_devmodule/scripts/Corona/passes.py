@@ -11,7 +11,6 @@ def getAOVs():
             "NormalsDotProduct",
             "NormalsDiscrepancy",
             
-            
             "PrimitiveCoords",
             "MapCoords",
             "Velocity",

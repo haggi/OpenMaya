@@ -48,7 +48,7 @@ void CoronaRenderer::defineEnvironment()
 			}
 			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
 
-			if (texmap.getReference() == NULL)
+			if (texmap.getReference() == nullptr)
 			{
 				Logging::error(MString("Unable to read bg file: ") + texName);
 			}
@@ -57,7 +57,7 @@ void CoronaRenderer::defineEnvironment()
 			}
 		}
 		else{
-			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, NULL));
+			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, nullptr));
 		}
 	}
 	if (bgType == 1)

@@ -17,7 +17,6 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, w);
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, h);
 
-	return;
 	if (renderGlobals->getUseRenderRegion())
 	{
 		int left, bottom, right, top;

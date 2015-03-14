@@ -86,14 +86,14 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 {
 	int threadId = 0;
 	threadId = context.getThreadId();
-	OSL::PerThreadInfo *thread_info = NULL;
-	if( this->oslRenderer->thread_info[threadId] == NULL)
+	OSL::PerThreadInfo *thread_info = nullptr;
+	if( this->oslRenderer->thread_info[threadId] == nullptr)
 	{
 		this->oslRenderer->thread_info[threadId] = this->oslRenderer->shadingsys->create_thread_info();
 	}
 	thread_info = this->oslRenderer->thread_info[threadId];
-	OSL::ShadingContext *ctx = NULL;
-	if( this->oslRenderer->ctx[threadId] == NULL)
+	OSL::ShadingContext *ctx = nullptr;
+	if( this->oslRenderer->ctx[threadId] == nullptr)
 	{
 		this->oslRenderer->ctx[threadId] = this->oslRenderer->shadingsys->get_context(thread_info);
 	}
@@ -134,14 +134,14 @@ Corona::Rgb OSLMap::evalColorBump(const Corona::IShadeContext& context, Corona::
 {
 	int threadId = 0;
 	threadId = context.getThreadId();
-	OSL::PerThreadInfo *thread_info = NULL;
-	if (this->oslRenderer->thread_info[threadId] == NULL)
+	OSL::PerThreadInfo *thread_info = nullptr;
+	if (this->oslRenderer->thread_info[threadId] == nullptr)
 	{
 		this->oslRenderer->thread_info[threadId] = this->oslRenderer->shadingsys->create_thread_info();
 	}
 	thread_info = this->oslRenderer->thread_info[threadId];
-	OSL::ShadingContext *ctx = NULL;
-	if (this->oslRenderer->ctx[threadId] == NULL)
+	OSL::ShadingContext *ctx = nullptr;
+	if (this->oslRenderer->ctx[threadId] == nullptr)
 	{
 		this->oslRenderer->ctx[threadId] = this->oslRenderer->shadingsys->get_context(thread_info);
 	}

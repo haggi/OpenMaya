@@ -462,9 +462,9 @@ void OSLShadingNetworkRenderer::setResolution(int x, int y)
 
 void OSLShadingNetworkRenderer::setup()
 {
-	if (this->shadingsys != NULL)
+	if (this->shadingsys != nullptr)
 		delete this->shadingsys;
-	this->shadingsys = OSL::ShadingSystem::create (&renderer, NULL, &this->errorHandler);
+	this->shadingsys = OSL::ShadingSystem::create (&renderer, nullptr, &this->errorHandler);
 	OIIO::TextureSystem *ts = this->shadingsys->texturesys();
 	ts->attribute("grey_to_rgb", 1);
 	this->shadingsys->attribute("lockgeom", 1);
@@ -483,16 +483,16 @@ void OSLShadingNetworkRenderer::setup()
 
 	for (int i = 0; i < 256; i++)
 	{
-		if (ctx[i] != NULL)
+		if (ctx[i] != nullptr)
 		{
 			shadingsys->release_context(ctx[i]);
-			ctx[i] = NULL;
+			ctx[i] = nullptr;
 		}
 
-		if (thread_info[i] != NULL)
+		if (thread_info[i] != nullptr)
 		{
 			this->shadingsys->destroy_thread_info(thread_info[i]);
-			thread_info[i] = NULL;
+			thread_info[i] = nullptr;
 		}
 	}
 }
@@ -504,7 +504,7 @@ void OSLShadingNetworkRenderer::createDummyShader()
 	float colorB[3] = {0,0,1};
 	this->shadingsys->Parameter("colorA", TypeDesc::TypeColor, colorA);
 	this->shadingsys->Parameter("colorB", TypeDesc::TypeColor, colorB);
-    this->shadingsys->Shader("surface", "H:/UserDatenHaggi/Documents/coding/OpenShadingLanguage/testsuite/aastep/blubb", NULL);
+    this->shadingsys->Shader("surface", "H:/UserDatenHaggi/Documents/coding/OpenShadingLanguage/testsuite/aastep/blubb", nullptr);
     if(!this->shadingsys->ShaderGroupEnd ())
 		std::cout << "error shading group\n";
 }
@@ -517,9 +517,9 @@ namespace MAYATO_OSL
 	void createOSLShader(MString& shadingNodeType, MString& shaderName, OSLParamArray& paramArray, MString type)
 	{
 		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		if (r == NULL)
+		if (r == nullptr)
 		{
-			std::cerr << "error createOSLShader: OSL renderer == NULL\n";
+			std::cerr << "error createOSLShader: OSL renderer == nullptr\n";
 			return;
 		}
 
@@ -530,7 +530,7 @@ namespace MAYATO_OSL
 			std::string tmp;
 			float vec[3];
 			float m[4][4];
-			void *val = NULL;
+			void *val = nullptr;
 			if (type == OSL::TypeDesc::TypeFloat)
 				val = boost::get<float>(&paramArray[i].value);
 			if (type == OSL::TypeDesc::TypeInt)
@@ -567,9 +567,9 @@ namespace MAYATO_OSL
 	void connectOSLShaders(ConnectionArray& ca)
 	{
 		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		if (r == NULL)
+		if (r == nullptr)
 		{
-			std::cerr << "error connectOSLShaders: OSL renderer == NULL\n";
+			std::cerr << "error connectOSLShaders: OSL renderer == nullptr\n";
 			return;
 		}
 		for (size_t i = 0; i < ca.size(); i++)

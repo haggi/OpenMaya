@@ -134,6 +134,48 @@ namespace MAYATO_OSL{
 		if (sa.type == "string")
 		{
 			paramArray.push_back(OSLParameter(sa.name.c_str(), getString(sa.name.c_str(), depFn)));
+			if (sa.name == "fileTextureName")
+			{
+				// to support udim textures we check if we have a file texture node here.
+				// if so, we take the fileTextureName and seperate base, ext.
+				if (depFn.object().hasFn(MFn::kFileTexture))
+				{
+					std::string fileName(getString("fileTextureName", depFn).asChar());
+					int uvTilingMode = getIntAttr("uvTilingMode", depFn, 0);
+					if (uvTilingMode > 3)
+					{
+						Logging::error(MString("Uv Mode is not supported. Only ZBrush(1), Mudbox(2) and Mari(3) are supported."));
+						uvTilingMode = 0;
+					}
+
+					// we search for the base name. All patterns start with a '<' character, everything before is our base.
+					std::string fileNameWithTokens(getString("computedFileTextureNamePattern", depFn).asChar());
+					std::string baseFileName = fileName;
+					size_t pos = fileNameWithTokens.find("<");
+					if (pos == std::string::npos)
+						uvTilingMode = 0;
+					else{
+						baseFileName = fileNameWithTokens.substr(0, pos - 1);
+						if (uvTilingMode == 3)
+							baseFileName = fileNameWithTokens.substr(0, pos);
+						//Logging::debug(MString("Base fileName is: ") + baseFileName.c_str());
+						paramArray.push_back(OSLParameter("baseName", baseFileName));
+					}
+					pos = fileName.rfind(".");
+					std::string ext = "";
+					if (pos == std::string::npos)
+					{
+						Logging::error(MString("Could not find a extension in file texture: ") + fileName.c_str());
+					}
+					else{
+						ext = fileName.substr(pos+1);
+						Logging::debug(MString("Extension for file texture: ") + fileName.c_str() + " is " + ext.c_str());
+						paramArray.push_back(OSLParameter("ext", ext));
+					}
+
+					paramArray.push_back(OSLParameter("uvTilingMode", uvTilingMode));
+				}
+			}
 		}
 		if (sa.type == "float")
 		{
@@ -573,7 +615,7 @@ namespace MAYATO_OSL{
 					}
 				}
 			}
-			// direct plug is null so we have one or more child connections
+			// direct plug is nullptr so we have one or more child connections
 			// if so, we need a helper node
 			else{
 				thisNodePlugs.clear();

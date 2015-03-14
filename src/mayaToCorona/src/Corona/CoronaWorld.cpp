@@ -1,4 +1,3 @@
-#include <maya/MSceneMessage.h>
 #include "world.h"
 #include "../coronaOSL/oslRenderer.h"
 #include "../mtco_common/mtco_swatchRenderer.h"
@@ -12,7 +11,7 @@ namespace MayaTo{
 	void MayaToWorld::cleanUp()
 	{
 		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)this->getObjPtr("oslRenderer");
-		if (r != NULL)
+		if (r != nullptr)
 			delete r;
 		mtco_SwatchRendererInterface::cleanUpStaticData();
 	}
@@ -20,7 +19,6 @@ namespace MayaTo{
 	void MayaToWorld::cleanUpAfterRender()
 	{
 		MayaSceneFactory().deleteMayaScene();
-		RenderGlobalsFactory().deleteRenderGlobals();
 	}
 
 
@@ -34,10 +32,6 @@ namespace MayaTo{
 		r->setShaderSearchPath(oslShaderPath);
 		r->setup();
 		mtco_SwatchRendererInterface::initializeStaticData();
-
-		MStatus stat;
-		//MSceneMessage::addCallback(MSceneMessage::kAfterNew, MayaToWorld::callAfterNewCallback, NULL, &stat);
-		//MSceneMessage::addCallback(MSceneMessage::kAfterOpen, MayaToWorld::callAfterOpenCallback, NULL, &stat);
 	}
 
 	void MayaToWorld::afterOpenScene()

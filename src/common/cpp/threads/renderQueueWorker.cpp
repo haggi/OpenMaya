@@ -40,7 +40,7 @@ static clock_t renderStartTime = 0;
 static clock_t renderEndTime = 0;
 
 static std::map<MCallbackId, MObject> objIdMap;
-//RV_PIXEL *imageBuffer = NULL;
+//RV_PIXEL *imageBuffer = nullptr;
 
 static Compute renderComputation = Compute();
 static std::vector<Callback> callbackList;
@@ -162,18 +162,18 @@ void RenderQueueWorker::addCallbacks()
         MObject             node = nodesIter.item();
         MFnDependencyNode   nodeFn(node);
 		Logging::detail(MString("Adding dirty callback to node ") + nodeFn.name());
-		MCallbackId id = MNodeMessage::addNodeDirtyCallback(node, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, NULL, &stat );
+		MCallbackId id = MNodeMessage::addNodeDirtyCallback(node, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, nullptr, &stat );
 		objIdMap[id] = node;
 
 		if( stat )
 			nodeCallbacks.push_back(id);
 	}
 
-	idleCallbackId = MTimerMessage::addTimerCallback(0.2, RenderQueueWorker::renderQueueWorkerIdleCallback, NULL, &stat);
-	//timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, NULL, &stat);
-	sceneCallbackId0 = MSceneMessage::addCallback(MSceneMessage::kBeforeNew, RenderQueueWorker::sceneCallback, NULL, &stat);
-	sceneCallbackId1 = MSceneMessage::addCallback(MSceneMessage::kBeforeOpen, RenderQueueWorker::sceneCallback, NULL, &stat);
-	pluginCallbackId = MSceneMessage::addCallback(MSceneMessage::kBeforePluginUnload, RenderQueueWorker::sceneCallback, NULL, &stat);	
+	idleCallbackId = MTimerMessage::addTimerCallback(0.2, RenderQueueWorker::renderQueueWorkerIdleCallback, nullptr, &stat);
+	//timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, nullptr, &stat);
+	sceneCallbackId0 = MSceneMessage::addCallback(MSceneMessage::kBeforeNew, RenderQueueWorker::sceneCallback, nullptr, &stat);
+	sceneCallbackId1 = MSceneMessage::addCallback(MSceneMessage::kBeforeOpen, RenderQueueWorker::sceneCallback, nullptr, &stat);
+	pluginCallbackId = MSceneMessage::addCallback(MSceneMessage::kBeforePluginUnload, RenderQueueWorker::sceneCallback, nullptr, &stat);	
 	
 }
 
@@ -202,7 +202,7 @@ void RenderQueueWorker::reAddCallbacks()
 	for( iter = modifiedObjList.begin(); iter != modifiedObjList.end(); iter++)
 	{
 		MObject node = *iter;
-		MCallbackId id = MNodeMessage::addNodeDirtyCallback(node, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, NULL, &stat );
+		MCallbackId id = MNodeMessage::addNodeDirtyCallback(node, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, nullptr, &stat );
 		if( stat )
 			nodeCallbacks.push_back(id);
 		objIdMap[id] = node;
@@ -280,7 +280,7 @@ void RenderQueueWorker::computationEventThread()
 		if (renderComputation.isInterruptRequested() && (MayaTo::getWorldPtr()->getRenderState() == MayaTo::MayaToWorld::RSTATERENDERING))
 		{
 			//std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
-			//if (scene != NULL)
+			//if (scene != nullptr)
 			//{
 			//	if (!scene->renderingStarted)
 			//	{
@@ -324,7 +324,7 @@ void RenderQueueWorker::sendFinalizeIfQueueEmpty(void *)
 	while( theRenderEventQueue()->size() > 0)
 		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 
-	Logging::detail("sendFinalizeIfQueueEmpty: queue is null, sending finalize.");
+	Logging::detail("sendFinalizeIfQueueEmpty: queue is nullptr, sending finalize.");
 	EventQueue::Event e;
 	e.type = EventQueue::Event::FINISH;
 	theRenderEventQueue()->push(e);
@@ -373,6 +373,10 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, true, true);
 
+				MObject drg = objectFromName("defaultRenderGlobals");
+				MFnDependencyNode drgfn(drg);
+				bool urr = drgfn.findPlug("useRenderRegion").asBool();
+
 				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATETRANSLATING);
 				std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 
@@ -380,25 +384,12 @@ void RenderQueueWorker::startRenderQueueWorker()
 				if(mayaScene->renderType == MayaScene::NORMAL)
 				{
 					renderComputation.beginComputation();
-					void *data = NULL;
+					void *data = nullptr;
 				}
 
-				// the worldRenderer->render() is called from within the scene job execution
 				RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);
 				std::thread cet = std::thread(RenderQueueWorker::computationEventThread);
 				cet.detach();
-
-				//if( MGlobal::mayaState() != MGlobal::kBatch)
-				//{
-
-				//	if( mayaScene->needsUserThread)
-				//	{
-				//		boost::thread(RenderQueueWorker::userThread, (void *)NULL);
-				//		userEventFinished = false;
-				//	}else{
-				//		userEventFinished = true;
-				//	}
-				//}
 
 				//// calculate numtiles
 				//int numTX = (int)ceil((float)width/(float)MayaTo::getWorldPtr()->worldRenderGlobalsPtr->tilesize);
@@ -468,29 +459,12 @@ void RenderQueueWorker::startRenderQueueWorker()
 					Logging::debug(captionCmd);
 					MGlobal::executePythonCommandOnIdle(captionCmd);
 
-				//	while (!userEventFinished)
-				//	{
-				//		boost::this_thread::sleep(boost::posix_time::milliseconds(5));
-				//	}
-
 					// clean the queue
 					while (RenderEventQueue.try_pop(e)){}
-
-					//MString waitCursorCmd = "import pymel.core as pm;pm.waitCursor(state=False);";
-					//MGlobal::executePythonCommand(waitCursorCmd);
 				}
 
 				MayaTo::getWorldPtr()->cleanUpAfterRender();
 				MayaTo::getWorldPtr()->worldRendererPtr->unInitializeRenderer();
-
-				//if (MayaTo::getWorldPtr()->worldScenePtr != NULL)
-				//{
-				//	//boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-				//	//Logging::debug("Waiting for render thread to finish");
-				//	//MayaTo::getWorldPtr()->worldScenePtr->rendererThread.join();
-				//	Logging::debug("Render thread finished, deleting scene");
-				//	//MayaTo::MayaSceneFactory().deleteMayaScene();
-				//}
 			}
 			break;
 
@@ -529,7 +503,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 			//{
 			//	int width, height;
 			//	MayaTo::getWorldPtr()->worldRenderGlobalsPtr->getWidthHeight(width, height);
-			//	if (imageBuffer == NULL)
+			//	if (imageBuffer == nullptr)
 			//	{
 			//		imageBuffer = new RV_PIXEL[width * height];
 			//		for( int x=0; x < width; x++)

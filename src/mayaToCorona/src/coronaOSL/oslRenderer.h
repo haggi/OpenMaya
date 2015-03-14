@@ -115,13 +115,13 @@ public:
 
 	OSLShadingNetworkRenderer()
 	{
-		shadingsys = NULL;
+		shadingsys = nullptr;
 		this->setResolution(256, 256);
 		outputVar = "Cout";
 		for( int i = 0; i < 256; i++)
 		{
-			thread_info[i] = NULL;
-			ctx[i] = NULL;
+			thread_info[i] = nullptr;
+			ctx[i] = nullptr;
 		}
 	};
 
@@ -129,15 +129,15 @@ public:
 	{
 		for( int i = 0; i < 256; i++)
 		{
-			if( ctx[i] != NULL )
+			if( ctx[i] != nullptr )
 			{
 				shadingsys->release_context(ctx[i]);
 			}
 
-			if( thread_info[i] != NULL )
+			if( thread_info[i] != nullptr )
 			{
 				this->shadingsys->destroy_thread_info(thread_info[i]);
-				thread_info[i] = NULL;
+				thread_info[i] = nullptr;
 			}
 		}
 		OSL::ShadingSystem::destroy(this->shadingsys);
