@@ -6,17 +6,21 @@
 #include <maya/MFnMeshData.h>
 #include <maya/MPointArray.h>
 #include <maya/MFloatVectorArray.h>
+#include <maya/MNodeMessage.h>
 #include "rendering/renderer.h"
 #include "CoronaCore/api/Api.h"
 #include "../coronaOSL/oslRenderer.h"
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
+#include "threads/queue.h"
 
 class mtco_MayaScene;
 class mtco_MayaObject;
 class MFnDependencyNode;
 class MString;
 class RenderGlobals;
+
+//EventQueue::concurrent_queue<void> fbCallQueue;
 
 struct MayaToRenderPass{
 	enum MayaToPassType{
@@ -124,17 +128,23 @@ class CoronaRenderer : public MayaTo::Renderer
 public:
 
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
-
 	Context context;
 
 	CoronaRenderer();
 	virtual ~CoronaRenderer();
+
+	MCallbackId renderFbGlobalsNodeCallbackId; // callback id for framebuffer callback
+	MCallbackId renderFbCamNodeCallbackId; // callback id for framebuffer camera callback
+	MObject renderCam;
+	static void frameBufferInteractiveCallback(MObject& node, void *clientData);
+	void updateCameraFbCallback(MObject& camera);
 
 	virtual void defineCamera();
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineSettings();
 	virtual void defineColorMapping();
+	void defineColorMappingFromCam(MObject& cam);
 	Corona::IGeometryGroup *defineStdPlane();
 	//void sanityCheck(Corona::Abstract::Settings* settings) const; 
 	virtual void definePasses();
@@ -149,6 +159,7 @@ public:
 	bool isSunLight(std::shared_ptr<MayaObject> obj);
 	virtual void defineLights();
 
+	virtual void interactiveFbCallback();
 	virtual void render();
 
 	virtual void initializeRenderer();
@@ -165,8 +176,10 @@ public:
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 	void createScene();
+
 	static void framebufferCallback();
 
+	std::vector<Corona::SharedPtr<Corona::Abstract::Map>> maps;
 	//void doit(); // for testing
 };
 

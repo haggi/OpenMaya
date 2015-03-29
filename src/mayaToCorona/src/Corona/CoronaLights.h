@@ -161,17 +161,17 @@ public:
 
 		// the idea: simply transform the hit pos to camera space, then we use the x and z coordinates to 
 		// as uv coords
-		Corona::Pos lightLocalPos = this->lightWorldInverseMatrix.transformPoint(P);
-		lightUvs.x() = lightLocalPos.x();
-		lightUvs.z() = lightLocalPos.z();
+		//Corona::Pos lightLocalPos = this->lightWorldInverseMatrix.transformPoint(P * 100.0);
+		//lightUvs.x() = lightLocalPos.x();
+		//lightUvs.z() = lightLocalPos.z();
 
-		context.overrideMapCoords(lightUvs);
+		//context.overrideMapCoords(lightUvs);
 		
-		Corona::Matrix33 base = context.bumpBase(0);
-		Corona::Dir T = base.tangent();
+		//Corona::Matrix33 base = context.bumpBase(0);
+		//Corona::Dir T = base.tangent();
 
 		lcol = lightColorMap.getRgb(context, nullptr);
-		context.restoreMapCoords(origUvCoords);
+		//context.restoreMapCoords(origUvCoords);
 		const Corona::Spectrum diffuse(Corona::rgb2Radiance(lcol));
 
         const float dotSurface = absDot(context.getShadingNormal(), toLight);

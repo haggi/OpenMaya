@@ -172,6 +172,7 @@ void CoronaRenderer::defineLights()
 			setTransformationMatrix(sl->lightWorldInverseMatrix, m);
 			ShadingNetwork network(obj->mobject);
 			sl->lightColorMap = defineAttribute(MString("color"), depFn, network);
+			
 			this->context.scene->addLightShader(sl);
 		}
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))

@@ -10,10 +10,16 @@ static EventQueue::concurrent_queue<EventQueue::Event> RenderEventQueue;
 EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue();
 
 struct Callback{
-	unsigned int millsecondInterval = 100;
+	Callback()
+	{
+		millsecondInterval = 100;
+		callbackId = 0;
+		terminate = false;
+	}
+	unsigned int millsecondInterval;
 	std::function<void()> functionPointer;
-	unsigned int callbackId = 0;
-	bool terminate = false;
+	unsigned int callbackId;
+	bool terminate;
 };
 
 class RenderQueueWorker

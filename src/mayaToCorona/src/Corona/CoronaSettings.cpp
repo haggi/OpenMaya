@@ -127,6 +127,14 @@ void CoronaRenderer::defineSettings()
 	}
 }
 
+void CoronaRenderer::defineColorMappingFromCam(MObject& cam)
+{
+	MFnDependencyNode camFn(cam);
+	context.colorMappingData->exposure.photographic.fStop = getFloatAttr("fStop", camFn, 5.6);
+	context.colorMappingData->exposure.photographic.iso = getFloatAttr("mtco_iso", camFn, 1.0);
+	context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f);
+}
+
 void CoronaRenderer::defineColorMapping()
 {
 	MFnDependencyNode depFn(getRenderGlobalsNode());
@@ -140,15 +148,21 @@ void CoronaRenderer::defineColorMapping()
 
 	// v2.8 exposure from camera
 	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
-	for (auto cam : mayaScene->camList)
+	// to be able to modify color mapping after rendering we check for mayaScene
+	// after rendering, the mayaScene object is deleted, but we should have a renderCam object defined insted.
+	if (mayaScene)
 	{
-		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
-			continue;
-		MFnDependencyNode camFn(cam->mobject);
-		context.colorMappingData->exposure.photographic.fStop = getFloatAttr("fStop", camFn, 5.6);
-		context.colorMappingData->exposure.photographic.iso = getFloatAttr("mtco_iso", camFn, 1.0);
-		context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f);
-		break;
+		for (auto cam : mayaScene->camList)
+		{
+			if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
+				continue;
+			defineColorMappingFromCam(cam->mobject);
+			break;
+		}
+	}
+	else{
+		if ( renderCam != MObject::kNullObj)
+			defineColorMappingFromCam(renderCam);
 	}
 }
 //void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 

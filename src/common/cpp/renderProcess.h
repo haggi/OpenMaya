@@ -7,6 +7,7 @@ namespace RenderProcess{
 	void doPostFrameJobs();
 	void doPostRenderJobs();
 	void doFrameJobs();
+	void doPrepareFrame();
 	void render();
 }
 

@@ -1,3 +1,6 @@
+release 0.37
+- fixed a crash if motion blur is turned off and a object has motionblur turned off as well 
+
 release 0.36
 - fixes near/far clipping #173
 - fixed displacement mapping water level.
@@ -6,6 +9,8 @@ release 0.36
 - refactured large parts of the framework 
 - implemented udims #174
 - fixed broken lighting with per face shading #176
+- interactive color mapping #179
+- fixed a motionblur regression
 
 release 0.35
 - fixed sun size crash with limits. #152
@@ -22,7 +27,6 @@ release 0.35
 - implemented imageFilePrefix #166
 - improved region rendering
 - pressing esc during translation process works better
-
 
 release 0.34
 - fixed shader assingment via Assign New Material... #125

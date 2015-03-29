@@ -394,7 +394,13 @@ void MayaObject::addMeshData()
 	}
 	else{
 		this->getMeshData(mdata.points, mdata.normals);
+		int np = mdata.points.length();
 		this->meshDataList.push_back(mdata);
+
+		for (auto md : this->meshDataList)
+		{
+			np = md.points.length();
+		}
 	}
 
 }

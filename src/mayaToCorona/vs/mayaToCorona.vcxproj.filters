@@ -278,6 +278,9 @@
     <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -459,6 +462,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\renderProcess.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
+      <Filter>common\rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
-#include <maya/MGlobal.h>
-#include <maya/MImage.h>
 #include "Corona.h"
 #include "renderGlobals.h"
 #include "utilities/logging.h"
+#include <maya/MGlobal.h>
+#include <maya/MImage.h>
 #include "utilities/attrTools.h"
 #include "threads/renderQueueWorker.h"
 #include "world.h"
@@ -11,7 +11,7 @@ static Logging logger;
 
 void CoronaRenderer::framebufferCallback()
 {
-	MFnDependencyNode depFn(getRenderGlobalsNode());
+	//MFnDependencyNode depFn(getRenderGlobalsNode());
 	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
 
@@ -20,10 +20,10 @@ void CoronaRenderer::framebufferCallback()
 	if( MGlobal::mayaState() == MGlobal::kBatch)
 		return;
 
-	if( renderGlobals->exportSceneFile)
+	if (!renderer || !renderGlobals || (renderer->context.fb == nullptr))
 		return;
 
-	if (!(MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING))
+	if( renderGlobals->exportSceneFile)
 		return;
 
 	Corona::Pixel p = renderer-> context.fb->getImageSize();
@@ -48,19 +48,20 @@ void CoronaRenderer::framebufferCallback()
 	RV_PIXEL *pixels = pixelsPtr.get();
 	uint numPixelsInRow = p.x;
 	bool doToneMapping = true;
-	bool showRenderStamp = getBoolAttr("renderstamp_use", depFn, true);
-	Corona::Pixel firstPixelInRow(0,0);
+	//bool showRenderStamp = getBoolAttr("renderstamp_use", depFn, true);
+	bool showRenderStamp = true;
+	Corona::Pixel firstPixelInRow(0, 0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];
-	renderer-> context.fb->updateRenderStamp(rstamp, showRenderStamp);
+	renderer->defineColorMapping();
+	renderer->context.fb->updateRenderStamp(rstamp, showRenderStamp);
 	renderer-> context.fb->setColorMapping(*renderer->context.colorMappingData);
+	MColor t(renderer->context.colorMappingData->tint.r(), renderer->context.colorMappingData->tint.g(), renderer->context.colorMappingData->tint.b());
 
 	for (uint rowId = 0; rowId < p.y; rowId++)
 	{
 		memset(outAlpha, 0, numPixelsInRow * sizeof(float));
 		firstPixelInRow.y = rowId;
-		if (renderer-> context.isCancelled)
-			break;
 		try{
 			renderer-> context.fb->getRow(firstPixelInRow, numPixelsInRow, Corona::CHANNEL_BEAUTY, doToneMapping, showRenderStamp, outColors, outAlpha);
 		}

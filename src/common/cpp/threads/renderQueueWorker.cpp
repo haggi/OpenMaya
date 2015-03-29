@@ -90,7 +90,7 @@ MString RenderQueueWorker::getElapsedTimeString()
 MString RenderQueueWorker::getCaptionString()
 {
 	MString captionString;
-	MString frameString = MString("Frame ") + MayaTo::getWorldPtr()->worldRenderGlobalsPtr->currentFrameNumber;
+	MString frameString = MString("Frame ") + MayaTo::getWorldPtr()->worldRenderGlobalsPtr->getFrameNumber();
 	MString timeString = getElapsedTimeString();
 	size_t mem =  getPeakUsage();
 	MString memUnit = "MB";
@@ -302,8 +302,12 @@ void RenderQueueWorker::computationEventThread()
 void RenderQueueWorker::renderProcessThread()
 {
 	Logging::debug("RenderQueueWorker::renderProcessThread()");
-	RenderProcess::render();
+	//RenderProcess::render();
+	MayaTo::getWorldPtr()->worldRendererPtr->render();
 	Logging::debug("RenderQueueWorker::renderProcessThread() - DONE.");
+	EventQueue::Event event;
+	event.type = EventQueue::Event::FRAMEDONE;
+	theRenderEventQueue()->push(event);
 }
 
 void RenderQueueWorker::updateRenderView(EventQueue::Event& e)
@@ -312,8 +316,8 @@ void RenderQueueWorker::updateRenderView(EventQueue::Event& e)
 	{
 		if (MRenderView::doesRenderEditorExist())
 		{
-			MRenderView::updatePixels(0, e.tile_xmax, 0, e.tile_ymax, e.pixelData.get());
-			MRenderView::refresh(0, e.tile_xmax, 0, e.tile_ymax);
+			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, e.pixelData.get());
+			MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
 		}
 	}
 }
@@ -365,6 +369,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				// Here we create the overall scene, renderer and renderGlobals objects
 				MayaTo::getWorldPtr()->initializeRenderEnvironment();
 				MayaTo::getWorldPtr()->worldRenderGlobalsPtr->setWidthHeight(e.cmdArgsData->width, e.cmdArgsData->height);
+				MayaTo::getWorldPtr()->worldRenderGlobalsPtr->setUseRenderRegion(e.cmdArgsData->useRenderRegion);
 				MayaTo::getWorldPtr()->worldScenePtr->uiCamera = e.cmdArgsData->cameraDagPath;
 				MayaTo::getWorldPtr()->worldRendererPtr->initializeRenderer();
 				//renderDone = false;
@@ -372,10 +377,6 @@ void RenderQueueWorker::startRenderQueueWorker()
 				MayaTo::getWorldPtr()->worldRenderGlobalsPtr->getWidthHeight(width, height);
 				if( MRenderView::doesRenderEditorExist())
 					status = MRenderView::startRender(width, height, true, true);
-
-				MObject drg = objectFromName("defaultRenderGlobals");
-				MFnDependencyNode drgfn(drg);
-				bool urr = drgfn.findPlug("useRenderRegion").asBool();
 
 				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATETRANSLATING);
 				std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
@@ -387,7 +388,10 @@ void RenderQueueWorker::startRenderQueueWorker()
 					void *data = nullptr;
 				}
 
-				RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);
+				RenderProcess::doPreRenderJobs();
+				e.type = EventQueue::Event::FRAMERENDER;
+				theRenderEventQueue()->push(e);
+
 				std::thread cet = std::thread(RenderQueueWorker::computationEventThread);
 				cet.detach();
 
@@ -409,6 +413,24 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 				break;
 			}
+			
+		case EventQueue::Event::FRAMERENDER:
+			{
+				Logging::debug("Event::Framerender");
+
+				if(!MayaTo::getWorldPtr()->worldRenderGlobalsPtr->frameListDone())
+				{ 
+					float f = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->updateFrameNumber();
+					RenderProcess::doPreFrameJobs();
+					RenderProcess::doPrepareFrame();
+					RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);
+				}
+				else{
+					e.type = EventQueue::Event::RENDERDONE;
+					theRenderEventQueue()->push(e);
+				}
+			}
+
 		case EventQueue::Event::STARTRENDER:
 			{
 				Logging::debug("Event::Startrender");
@@ -423,17 +445,15 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::FRAMEDONE:
-
 			Logging::debug("Event::FRAMEDONE");
+			RenderProcess::doPostFrameJobs();
 			if (MayaTo::getWorldPtr()->worldScenePtr->renderType == MayaScene::IPR)
 			{
 			}
 			else{
 				RenderQueueWorker::updateRenderView(e);
-
-				EventQueue::Event event;
-				event.type = EventQueue::Event::RENDERDONE;
-				theRenderEventQueue()->push(event);
+				e.type = EventQueue::Event::FRAMERENDER;
+				theRenderEventQueue()->push(e);
 			}
 			break;
 
@@ -453,7 +473,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 				setEndTime();
 				if (MRenderView::doesRenderEditorExist())
 				{
-					status = MRenderView::endRender();
+					//status = MRenderView::endRender();
 					MString captionString = getCaptionString();
 					MString captionCmd = MString("import pymel.core as pm;pm.renderWindowEditor(\"renderView\", edit=True, pcaption=\"") + captionString + "\");";
 					Logging::debug(captionCmd);
@@ -462,6 +482,8 @@ void RenderQueueWorker::startRenderQueueWorker()
 					// clean the queue
 					while (RenderEventQueue.try_pop(e)){}
 				}
+
+				RenderProcess::doPostRenderJobs();
 
 				MayaTo::getWorldPtr()->cleanUpAfterRender();
 				MayaTo::getWorldPtr()->worldRendererPtr->unInitializeRenderer();
@@ -537,7 +559,14 @@ void RenderQueueWorker::startRenderQueueWorker()
 			Logging::debug("Event::IPRUPDATESCENE");
 			MayaTo::getWorldPtr()->worldScenePtr->updateInteraciveRenderScene(interactiveUpdateList);
 			break;
+
+		case EventQueue::Event::INTERACTIVEFBCALLBACK:
+			Logging::debug("Event::INTERACTIVEFBCALLBACK");
+			MayaTo::getWorldPtr()->worldRendererPtr->interactiveFbCallback();
+			break;
 		}
+
+		
 
 		if(MGlobal::mayaState() != MGlobal::kBatch)
 			break;

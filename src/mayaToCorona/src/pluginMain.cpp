@@ -60,7 +60,7 @@ static const MString TestShaderClassification("shader/surface:");
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.36"
+#define VERSION "0.37"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -132,8 +132,6 @@ MStatus initializePlugin( MObject obj )
 	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();
 	MayaTo::getWorldPtr()->shaderSearchPath.append(loadPath);
-
-	RenderQueueWorker::startRenderQueueWorker();
 
 	return status;
 }

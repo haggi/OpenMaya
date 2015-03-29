@@ -9,6 +9,10 @@
 #include "utilities/attrTools.h"
 #include "world.h"
 
+#if MAYA_API_VERSION >= 201600
+
+#endif
+
 void* MayaToCorona::creator()
 {
 	return new MayaToCorona();
@@ -73,11 +77,6 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 			setResult("rstatestopped");
 		return MS::kSuccess;
 	}
-
-	MObject drg = objectFromName("defaultRenderGlobals");
-	MFnDependencyNode drgfn(drg);
-	bool urr = drgfn.findPlug("useRenderRegion").asBool();
-
 	
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{
@@ -98,7 +97,13 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		return MS::kSuccess;
 	}
 
+	// I have to request useRenderRegion here because as soon the command is finished, what happens immediatly after the command is 
+	// put into the queue, the value is set back to false.
 	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
+	MObject drg = objectFromName("defaultRenderGlobals");
+	MFnDependencyNode drgfn(drg);
+	cmdArgs->useRenderRegion = drgfn.findPlug("useRenderRegion").asBool();
+
 
 	if ( argData.isFlagSet("-startIpr", &stat))
 	{

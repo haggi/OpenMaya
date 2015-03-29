@@ -1377,3 +1377,15 @@ bool isChildOf(MPlug& parent, MPlug& child)
 			return true;
 	return false;
 }
+
+
+MDagPath getDagPathFromName(MString name)
+{
+	MDagPath dagPath;
+	MSelectionList sList;
+	if (MGlobal::getSelectionListByName(name, sList))
+	{
+		sList.getDagPath(0, dagPath);
+	}
+	return dagPath;
+}

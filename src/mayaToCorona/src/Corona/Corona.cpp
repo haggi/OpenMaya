@@ -9,11 +9,13 @@
 #include "utilities/attrTools.h"
 #include "CoronaMap.h"
 #include "world.h"
+#include <maya/MNodeMessage.h>
 
 static Logging logger;
 
 CoronaRenderer::CoronaRenderer()
 {
+	MStatus stat;
 	Logging::debug("CoronaRenderer::CoronaRenderer()");
 	this->context.core = nullptr;
 	this->context.fb = nullptr;
@@ -22,12 +24,78 @@ CoronaRenderer::CoronaRenderer()
 	this->context.settings = nullptr;
 	this->context.isCancelled = false;
 	this->context.colorMappingData = nullptr;
+	MObject renderGlobalsNode = getRenderGlobalsNode();
+	this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 CoronaRenderer::~CoronaRenderer()
 {
 	Logging::debug("CoronaRenderer::~CoronaRenderer()");
+
+	if (this->renderFbGlobalsNodeCallbackId != 0)
+		MNodeMessage::removeCallback(this->renderFbGlobalsNodeCallbackId);
+	if (this->renderFbCamNodeCallbackId != 0)
+		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+
+	if (context.logger != nullptr)
+	{
+		delete context.logger;
+		context.logger = nullptr;
+	}
+	if (context.settings != nullptr)
+	{
+		delete context.settings;
+		context.settings = nullptr;
+	}
+	for (auto it : context.renderPasses)
+	{
+		context.core->destroyRenderPass(it);
+	}
+	context.renderPasses.clear();
+	context.core->destroyFb(context.fb);
+	if (context.scene != nullptr)
+	{
+		context.core->destroyScene(context.scene);
+		context.scene = nullptr;
+	}
+	if (context.core != nullptr)
+	{
+		Corona::ICore::destroyInstance(context.core);
+		context.core = nullptr;
+	}
+	if (context.colorMappingData != nullptr)
+	{
+		delete context.colorMappingData;
+		context.colorMappingData = nullptr;
+	}
+
 }
+
+void CoronaRenderer::frameBufferInteractiveCallback(MObject& node, void *clientData)
+{
+	Logging::debug("CoronaRenderer::frameBufferInteractiveCallback");
+	//MFnDependencyNode depFn(node);
+	//Logging::debug(MString("NodeType: ") + depFn.typeName());
+	//MGlobal::executeCommand("refresh;");
+	EventQueue::Event e;
+	e.type = EventQueue::Event::INTERACTIVEFBCALLBACK;
+	theRenderEventQueue()->push(e);
+}
+
+void CoronaRenderer::interactiveFbCallback()
+{
+	CoronaRenderer::framebufferCallback();
+}
+
+// if photographic exposure is used, we need access to the camera which was used for rendering
+void CoronaRenderer::updateCameraFbCallback(MObject& camera)
+{
+	MStatus stat;
+	if (this->renderFbCamNodeCallbackId != 0)
+		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+	this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+}
+
 
 #ifdef CORONA_RELEASE_ASSERTS
 #pragma comment(lib, "PrecompiledLibs_Assert.lib")
@@ -68,6 +136,11 @@ void CoronaRenderer::render()
 	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
 	framebufferCallback();
 	this->saveImage();
+	//std::string statsString = this->oslRenderer->shadingsys->getstats();
+	//Logging::debug(statsString.c_str());
+	OIIO::TextureSystem *tsystem = this->oslRenderer->renderer.texturesys();
+	std::string statsString = tsystem->getstats(3);
+	Logging::debug(statsString.c_str());
 
 	//for( size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
 	//{
@@ -82,6 +155,46 @@ void CoronaRenderer::render()
 void CoronaRenderer::initializeRenderer()
 {
 	Logging::debug("CoronaRenderer::initializeRenderer()");
+
+	// first we delete any still existing elements.
+	// after a render, the framebuffers, core and passes still exist until a new scene is loaded
+	// or a new rendering is started.
+	if (context.logger != nullptr)
+	{
+		delete context.logger;
+		context.logger = nullptr;
+	}
+	if (context.settings != nullptr)
+	{
+		delete context.settings;
+		context.settings = nullptr;
+	}
+	for (auto it : context.renderPasses)
+	{
+		context.core->destroyRenderPass(it);
+	}
+	context.renderPasses.clear();
+	if (context.fb != nullptr)
+	{
+		context.core->destroyFb(context.fb);
+		context.fb = nullptr;
+	}
+	if (context.scene != nullptr)
+	{
+		context.core->destroyScene(context.scene);
+		context.scene = nullptr;
+	}
+	if (context.core != nullptr)
+	{
+		ICore::destroyInstance(context.core);
+		context.core = nullptr;
+	}
+	if (context.colorMappingData != nullptr)
+	{
+		delete context.colorMappingData;
+		context.colorMappingData = nullptr;
+	}
+
 	context.settings = new Settings();
 	context.core = ICore::createInstance();
 	context.scene = context.core->createScene();
@@ -132,32 +245,11 @@ void CoronaRenderer::initializeRenderer()
 void CoronaRenderer::unInitializeRenderer()
 {
 	Logging::debug("CoronaRenderer::unInitializeRenderer()");
-	if (context.logger != nullptr)
-	{
-		delete context.logger;
-		context.logger = nullptr;
-	}
-	if (context.settings != nullptr)
-	{
-		delete context.settings;
-		context.settings = nullptr;
-	}
-	for (auto it : context.renderPasses)
-	{
-		context.core->destroyRenderPass(it);
-	}
-	context.renderPasses.clear();
-	context.core->destroyFb(context.fb);
 	if (context.scene != nullptr)
 	{
 		context.core->destroyScene(context.scene);
 		context.scene = nullptr;
 	}
-	if (context.core != nullptr)
-	{
-		ICore::destroyInstance(context.core);
-		context.core = nullptr;
-	}	
 }
 
 void CoronaRenderer::updateShape(std::shared_ptr<MayaObject> obj)
@@ -167,7 +259,7 @@ void CoronaRenderer::updateShape(std::shared_ptr<MayaObject> obj)
 
 	if( obj->mobject.hasFn(MFn::kMesh))
 	{
-		if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->isMbStartStep() || obj->isShapeConnected())
+		if ((obj->meshDataList.size() == 0) || obj->isShapeConnected())
 		{
 			obj->addMeshData();
 		}

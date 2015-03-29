@@ -1,10 +1,4 @@
-#include <maya/MPlugArray.h>
 #include "coronaOSLMapUtil.h"
-#include "osl/oslUtils.h"
-#include "../coronaOSL/oslRenderer.h"
-#include "../corona/CoronaOSLMap.h"
-#include "world.h"
-#include "utilities/logging.h"
 
 static Logging logger;
 
@@ -117,6 +111,9 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 
 	oslMap->oslRenderer = oslRenderer;
 	oslMap->shaderGroup = shaderGroup;
+	
+	if (depFn.object().hasFn(MFn::kLight))
+		oslMap->isLightMap = true;
 
 	if (attributeName == "normalCamera")
 	{

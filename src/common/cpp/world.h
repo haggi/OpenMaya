@@ -108,12 +108,14 @@ namespace MayaTo{
 			width = defaultGlobals.findPlug("width").asInt();
 			height = defaultGlobals.findPlug("height").asInt();
 			renderType = MayaToWorld::WorldRenderType::UIRENDER;
+			useRenderRegion = false;
 		}
 		~CmdArgs(){
 			std::cout << "Cmd args are deleted\n";
 		}
 		int width;
 		int height;
+		bool useRenderRegion;
 		MDagPath cameraDagPath;
 		MayaToWorld::WorldRenderType renderType;
 	};

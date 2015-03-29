@@ -19,6 +19,11 @@ namespace MayaTo{
 		virtual void defineEnvironment() = 0;
 		virtual void defineGeometry() = 0;
 		virtual void defineLights() = 0;
+		// interactiveFbCallback can be called after a rendering is finished and
+		// the user wants to modify the color mapping of the final rendering.
+		// all interactive callbacks should be pushed into the worker queue with INTERACTIVEFBCALLBACK so that we don't get
+		// any race conditions if the callback takes longer than the next call.
+		virtual void interactiveFbCallback() = 0;
 
 		virtual void render() = 0;
 		// initializeRenderer is called before rendering starts

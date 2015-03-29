@@ -14,6 +14,7 @@ public:
 	float worldScale;
 	Corona::Matrix33 envSphereMatrix;
 	bool isEnvMap;
+	bool isLightMap;
 	OSL::ShaderGroupRef shaderGroup;
 	OSLMap();
 	~OSLMap();

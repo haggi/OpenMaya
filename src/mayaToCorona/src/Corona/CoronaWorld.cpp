@@ -18,6 +18,8 @@ namespace MayaTo{
 
 	void MayaToWorld::cleanUpAfterRender()
 	{
+		// after a normal rendering we do not need the maya scene data any more
+		// remove it to save memory
 		MayaSceneFactory().deleteMayaScene();
 	}
 

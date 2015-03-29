@@ -294,6 +294,8 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		int uvId1 = triUvIds[index + 1];
 		int uvId2 = triUvIds[index + 2];
 
+		if ((vtxId0 >= npts) || (vtxId1 >= npts) || (vtxId2 >= npts))
+			Logging::error(MString("Index > npts!!! -- Obj: ") + obj->shortName);
 		//Logging::debug(MString("VtxIds: ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
 		//Logging::debug(MString("NorIds: ") + normalId0 + " " + normalId1 + " " + normalId2);
 		//Logging::debug(MString("UVsIds: ") + uvId0 + " " + uvId1 + " " + uvId2);

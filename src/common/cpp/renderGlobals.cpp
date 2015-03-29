@@ -51,11 +51,31 @@ RenderGlobals::RenderGlobals()
 	this->setRendererUnit();
 	this->setRendererAxis();
 	this->defineGlobalConversionMatrix();
+	this->currentFrameIndex = 0;
 }
 
 RenderGlobals::~RenderGlobals()
 {
 	Logging::debug("RenderGlobals::~RenderGlobals()");
+}
+
+bool RenderGlobals::frameListDone()
+{
+	return currentFrameIndex >= this->frameList.size();
+}
+float RenderGlobals::getFrameNumber()
+{
+	if (currentFrameIndex < this->frameList.size())
+		return this->frameList[currentFrameIndex];
+	else
+		return this->frameList.back();
+}
+float RenderGlobals::updateFrameNumber()
+{
+	if (currentFrameIndex < this->frameList.size())
+		return this->frameList[currentFrameIndex++];
+	else
+		return this->frameList.back();
 }
 
 float RenderGlobals::toMillimeters(float mm)
@@ -314,6 +334,11 @@ bool RenderGlobals::isMbStartStep()
 	return this->currentMbStep == 0;
 }
 
+void RenderGlobals::checkRenderRegion()
+{
+	if ((regionLeft > imgWidth) || (regionRight > imgWidth) || (regionBottom > imgHeight) || (regionTop > imgHeight))
+		useRenderRegion = false;
+}
 bool RenderGlobals::getDefaultGlobals()
 {
 	MSelectionList defaultGlobals;
@@ -366,9 +391,6 @@ bool RenderGlobals::getDefaultGlobals()
 	this->imgHeight = data.height;
 	this->imgWidth = data.width;
 	this->pixelAspect = data.pixelAspectRatio;
-
-	getBool(MString("enableDefaultLight"), fnRenderGlobals, this->createDefaultLight);
-	useRenderRegion = getBoolAttr("useRenderRegion", fnRenderGlobals, false);
 	
 	this->regionLeft = 0;
 	this->regionRight = this->imgWidth;
@@ -380,8 +402,7 @@ bool RenderGlobals::getDefaultGlobals()
 	regionBottom = getIntAttr("bot", fnRenderGlobals, 0);
 	regionTop = getIntAttr("top", fnRenderGlobals, imgHeight);
 
-	if ((regionLeft > imgWidth) || (regionRight > imgWidth) || (regionBottom > imgHeight) || (regionTop > imgHeight))
-		useRenderRegion = false;
+	getBool(MString("enableDefaultLight"), fnRenderGlobals, this->createDefaultLight);
 
 	getString(MString("preRenderMel"), fnRenderGlobals, this->preFrameScript);
 	getString(MString("postRenderMel"), fnRenderGlobals, this->postFrameScript);
@@ -390,7 +411,7 @@ bool RenderGlobals::getDefaultGlobals()
 
 	MFnDependencyNode depFn(getRenderGlobalsNode());
 	this->maxTraceDepth = getIntAttr("maxTraceDepth", depFn, 4);
-	this->doMb = getBoolAttr("doMb", depFn, false);
+	this->doMb = getBoolAttr("doMotionBlur", depFn, false);
 	this->doDof = getBoolAttr("doDof", depFn, false);
 	this->motionBlurRange = getFloatAttr("motionBlurRange", depFn, 0.4f);
 	this->motionBlurType = 0; // center

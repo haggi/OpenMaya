@@ -595,7 +595,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             log.error("Rendering is in progress, cannot proceed. Please stop rendering first.")
             return
 
-        #print("Check for useRenderRegion. urr is {0}".format(pm.PyNode("defaultRenderGlobals").useRenderRegion.get()))        
         self.removeLogFile()
         log.debug("renderProcedure {0} {1} {2} {3} {4} {5}".format(width, height, doShadows, doGlow, camera, options))
         self.createGlobalsNode()    
@@ -666,12 +665,14 @@ AETemplates directory, the automatic loading will not work. So I replace it with
 def loadAETemplates():    
     rendererName = "Corona"
     aeDir = path.path(__file__).dirname() + "/" + rendererName + "/AETemplate/"
+    log.debug("searching aeTemplate dir {0} for templates.".format(aeDir))
+    log.debug("found {0} templates.".format(len(aeDir.listdir("*.py"))))
     for d in aeDir.listdir("*.py"):
-        if d.endswith("Template.py"):
+        if d.endswith("Template.py") and d.basename().startswith("AE"):
             templateName = d.basename().replace(".py", "")
             pythonCommand = "import {1}.AETemplate.{0}".format(templateName, rendererName)
             melCommand = 'python("{0}");'.format(pythonCommand)
-            # log.debug("load aeTemplate: " + templateName + " : " + melCommand)
+            log.debug("trying to load aeTemplate {0} with command {1}.".format(templateName, melCommand))
             pm.mel.eval(melCommand)
 
 def theRenderer():

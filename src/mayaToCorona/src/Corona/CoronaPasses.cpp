@@ -129,6 +129,11 @@ void CoronaRenderer::definePasses()
 			data.mapCoords.channel = getIntAttr("mapChannel", passNode, 0);
 		}
 
+		if (className == "Texmap")
+		{
+			//data.map.map
+		}
+
 		if (className == "ZDepth")
 		{
 			data.zDepth.minDepth = getFloatAttr("minDepth", passNode, 0.0f) * renderGlobals->scaleFactor;

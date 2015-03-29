@@ -155,6 +155,8 @@ void CoronaRenderer::defineCamera()
 		}
 
 		this->context.scene->getCamera() = cameraData; 
+		this->renderCam = cam->mobject;
+		updateCameraFbCallback(cam->mobject);
 	}
 
 }

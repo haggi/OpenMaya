@@ -9,6 +9,7 @@ OSLMap::OSLMap()
 	this->bumpType = NONE;
 	this->worldScale = 1.0f;
 	this->isEnvMap = false;
+	isLightMap = false;
 }
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
@@ -44,34 +45,39 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
 	
-	Corona::Matrix33 base = context.bumpBase(0);
-	Corona::Dir T = base.tangent();
-	
-	Corona::Dir No = N;
-	Corona::Dir C = base.cotangent();
+	// in light evaluation, the bumpBase is invalid
+	if (!this->isLightMap)
+	{
+		Corona::Matrix33 base = context.bumpBase(0);
+		Corona::Dir T = base.tangent();
 
-	float pixelWorldRatio = context.pixelToWorldRatio();
+		Corona::Dir No = N;
+		Corona::Dir C = base.cotangent();
 
-	T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
-	C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
+		float pixelWorldRatio = context.pixelToWorldRatio();
 
-	sg.dudx = duvw.x() * pixelWorldRatio;
-	sg.dudy = duvw.y() * pixelWorldRatio;
+		T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
+		C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
 
-	//sg.dudx = OSL::Vec3(T.x(), T.y(), T.z()).length() * 0.0;
-	//sg.dudy = OSL::Vec3(C.x(), C.y(), C.z()).length() * 0.0;
+		sg.dudx = duvw.x() * pixelWorldRatio;
+		sg.dudy = duvw.y() * pixelWorldRatio;
 
+		sg.dPdu = OSL::Vec3(T.x(), T.y(), T.z());
+		sg.dPdv = OSL::Vec3(C.x(), C.y(), C.z());
+	}
+	else{
+		sg.dudx = 0.01;
+		sg.dudy = 0.01;
+		sg.dPdu = OSL::Vec3(1.0,0.0, 0.0);
+		sg.dPdv = OSL::Vec3(0.0, 0.0, 1.0);
+	}
 	sg.dvdx = sg.dudx;
 	sg.dvdy = sg.dudy;
 
 	sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
 	sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);
 	//sg.dPdz = OSL::Vec3(0.0f, 0.0f, 0.0f);  // just use 0 for volume tangent
-
 	//sg.dPdv = OSL::Vec3(duvw.x(), duvw.y(), duvw.z());
-
-	sg.dPdu = OSL::Vec3(T.x(), T.y(), T.z());
-	sg.dPdv = OSL::Vec3(C.x(), C.y(), C.z());
 
     sg.N    = OSL::Vec3(N.x(), N.y(), N.z());
     sg.Ng   = OSL::Vec3(Ng.x(), Ng.y(), Ng.z());

@@ -112,6 +112,7 @@ void MayaScene::getLightLinking()
 			MObjectArray shadingGroups, components;
 			MFnMesh meshFn(obj->mobject);
 			meshFn.getConnectedSetsAndMembers(obj->instanceNumber, shadingGroups, components, true);	
+			Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");
 			if (shadingGroups.length() > 1)
 			{
 				Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");

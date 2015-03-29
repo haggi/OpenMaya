@@ -119,6 +119,7 @@ public:
 private:
 	int imgWidth;
 	int imgHeight;
+	int currentFrameIndex;
 public:
 	void setWidth(int w) { this->imgWidth = w; };
 	void setHeight(int h) { this->imgHeight = h; };
@@ -126,7 +127,9 @@ public:
 	void getWidthHeight(int& w, int& h){ w = this->imgWidth; h = this->imgHeight; };
 	int getWidth(){ return this->imgWidth; };
 	int getHeight(){ return this->imgHeight; };
-
+	float updateFrameNumber(); // returns the current frame number and incements the currentFrameIndex
+	float getFrameNumber();
+	bool frameListDone();
 	float pixelAspect;
 
 	// sampling
@@ -191,7 +194,8 @@ private:
 	int		regionTop;
 
 public:
-	void setUseRenderRegion(bool useRegion){ useRenderRegion = useRegion; };
+	void checkRenderRegion();
+	void setUseRenderRegion(bool useRegion){ useRenderRegion = useRegion; checkRenderRegion(); };
 	bool getUseRenderRegion() { return useRenderRegion; };
 	void getRenderRegion(int& left, int& bottom, int& right, int& top) { left = regionLeft; bottom = regionBottom; right = regionRight; top = regionTop; };
 	bool detectShapeDeform;

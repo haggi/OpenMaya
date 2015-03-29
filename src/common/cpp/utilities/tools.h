@@ -43,6 +43,8 @@ MString getRendererHome();
 
 MObject getRenderGlobalsNode();
 
+MDagPath getDagPathFromName(MString name);
+
 bool checkDirectory( MString& path);
 
 MString makeGoodString(MString& oldString);

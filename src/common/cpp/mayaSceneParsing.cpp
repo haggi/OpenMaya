@@ -120,6 +120,7 @@ bool MayaScene::updateScene(MFn::Type updateElement)
 		obj->updateObject();
 		Logging::debug(MString("updateObj ") + objId + ": " + obj->dagPath.fullPathName());
 
+		// this part is only used if motionblur is turned on, else we have no MbElement::None
 		if (!obj->motionBlurred)
 		{
 			if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->currentMbElement.elementType == MbElement::None)
@@ -138,8 +139,8 @@ bool MayaScene::updateScene(MFn::Type updateElement)
 
 		//if( !MayaTo::getWorldPtr()->worldRenderGlobalsPtr->isMbStartStep )
 		// non mb objects will be exported only above
-		if (!obj->motionBlurred)
-			continue;
+		//if (!obj->motionBlurred)
+		//	continue;
 
 		if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->isDeformStep())
 			if (obj->mobject.hasFn(MFn::kShape))

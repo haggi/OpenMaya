@@ -10,13 +10,12 @@
 
 float getFloatAttr(const char* plugName, MFnDependencyNode& dn, float defaultValue)
 {
-	MDGContext ctx = MDGContext::fsNormal;
 	MStatus stat = MS::kSuccess;
 	bool result = false;
 	MPlug plug = dn.findPlug(plugName, &stat);
 	if( !stat )
 		return defaultValue;
-	return plug.asFloat(ctx, &stat);
+	return plug.asFloat();
 }
 
 bool getFloat(MString& plugName, MFnDependencyNode& dn, float& value)
