@@ -40,7 +40,7 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	sg.I = OSL::Vec3(I.direction.x(), I.direction.y(), I.direction.z());
 
     // Tangents of P with respect to surface u,v
-	Corona::Dir duvw = context.dUvw(0);		
+	Corona::Dir duvw = context.dUvw(0);
 
 	Corona::Dir Ng = context.getGeometryNormal();
 	Corona::Dir N = context.getShadingNormal();
@@ -49,18 +49,33 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 	if (!this->isLightMap)
 	{
 		Corona::Matrix33 base = context.bumpBase(0);
-		Corona::Dir T = base.tangent();
+		Corona::Dir T = base.tangent().getNormalized();
 
 		Corona::Dir No = N;
-		Corona::Dir C = base.cotangent();
+		Corona::Dir C = base.cotangent().getNormalized();
 
 		float pixelWorldRatio = context.pixelToWorldRatio();
 
 		T *= duvw.x() * pixelWorldRatio;// / pixelWorldRatio;
 		C *= duvw.y() * pixelWorldRatio;// / pixelWorldRatio;
 
-		sg.dudx = duvw.x() * pixelWorldRatio;
-		sg.dudy = duvw.y() * pixelWorldRatio;
+		//Corona::Pos PT = pos + T;
+		//Corona::Pos PC = pos + C;
+		//Corona::Vector2 screenPos = context.unprojectHitpoint();
+		//Corona::Vector2 screenPosT = context.unproject(PT);
+		//Corona::Vector2 screenPosC = context.unproject(PC);
+		//Corona::Vector2 du = screenPosT - screenPos;
+		//Corona::Vector2 dv = screenPosC - screenPos;
+		//std::cout << "pos.x " << pos.x() << " PT.x " << PT.x() << " pwr " << pixelWorldRatio << " duvw.x " << duvw.x() << " duvw.y " << duvw.y() << "\n";
+		//std::cout << "screenPos.x " << screenPos.x << " screenPos.y " << screenPos.y << "\n";
+		//std::cout << "screenPosT.x " << screenPosT.x << " screenPosT.y " << screenPosT.y << "\n";
+		//std::cout << "du.x " << du.x << " du.y " << du.y << " dv.x " << dv.x << " dv.y " << dv.y << "\n";
+		float du = duvw.x() * pixelWorldRatio * 1;
+		float dv = duvw.y() * pixelWorldRatio * 1;
+		sg.dudx = du;
+		sg.dudy = 0;
+		sg.dvdx = 0;
+		sg.dvdy = dv;
 
 		sg.dPdu = OSL::Vec3(T.x(), T.y(), T.z());
 		sg.dPdv = OSL::Vec3(C.x(), C.y(), C.z());
@@ -71,8 +86,6 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
 		sg.dPdu = OSL::Vec3(1.0,0.0, 0.0);
 		sg.dPdv = OSL::Vec3(0.0, 0.0, 1.0);
 	}
-	sg.dvdx = sg.dudx;
-	sg.dvdy = sg.dudy;
 
 	sg.dPdx = OSL::Vec3(sg.dudx, sg.dudy, 0.0f);
 	sg.dPdy = OSL::Vec3(sg.dvdx, sg.dvdy, 0.0f);

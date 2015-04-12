@@ -44,6 +44,7 @@ protected:
 	static    MObject anisotropyRotation;
 	static    MObject volumeEmissionDist;
 	static    MObject roundCornersRadius;
+	static    MObject roundCornersMultiplier;
 	static    MObject bgOverride;
 	static    MObject diffuse;
 	static    MObject diffuseMultiplier;

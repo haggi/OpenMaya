@@ -137,6 +137,7 @@ MObject MayaToCoronaGlobals::pSkySunBleed;
 MObject MayaToCoronaGlobals::sunSizeMulti;
 MObject MayaToCoronaGlobals::dumpAndResume;
 MObject MayaToCoronaGlobals::dumpExrFile;
+MObject MayaToCoronaGlobals::uhdCacheType;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -220,19 +221,13 @@ MStatus	MayaToCoronaGlobals::initialize()
 	gi_primarySolver = eAttr.create("gi_primarySolver", "gi_primarySolver", 1, &stat);
 	stat = eAttr.addField( "None", 0 );
 	stat = eAttr.addField( "Pathtracing", 1 );
-	//stat = eAttr.addField( "Photon Map", 2 );
-	//stat = eAttr.addField( "HD Cache", 3 );
-	//stat = eAttr.addField( "VPL", 4 );
-	//stat = eAttr.addField( "Irradiance Cache", 5 );
 	CHECK_MSTATUS(addAttribute( gi_primarySolver ));
 
 	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 2, &stat);
 	stat = eAttr.addField( "None", 0 );
 	stat = eAttr.addField( "Pathtracing", 1 );
-	stat = eAttr.addField( "HD Cache", 2 ); // orig place is 3
-	//stat = eAttr.addField( "Photon Map", 3 );
-	//stat = eAttr.addField( "VPL", 4 );
-	//stat = eAttr.addField( "Irradiance Cache", 5 );
+	stat = eAttr.addField("HD Cache", 2);
+	stat = eAttr.addField("UHD Cache", 3);
 	CHECK_MSTATUS(addAttribute( gi_secondarySolver ));
 
 	lights_solver = eAttr.create("lights_solver", "lights_solver", 0, &stat);
@@ -689,6 +684,11 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	dumpExrFile = tAttr.create("dumpExrFile", "dumpExrFile",  MFnNumericData::kString);
 	CHECK_MSTATUS(addAttribute( dumpExrFile ));
+
+	uhdCacheType = eAttr.create("uhdCacheType", "uhdCacheType", 0, &stat);
+	stat = eAttr.addField("Still", 0);
+	stat = eAttr.addField("Animation", 1);
+	CHECK_MSTATUS(addAttribute(uhdCacheType));
 
 //	------------- automatically created attributes end ----------- // 
 

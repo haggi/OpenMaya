@@ -9,6 +9,9 @@
 #include "utilities/attrTools.h"
 #include "world.h"
 
+#include <fstream>
+#include <iostream>
+
 #if MAYA_API_VERSION >= 201600
 
 #endif
@@ -28,6 +31,7 @@ MSyntax MayaToCorona::newSyntax()
 
 	stat = syntax.addFlag("-cam", "-camera", MSyntax::kString);
 	stat = syntax.addFlag("-s", "-state");
+	stat = syntax.addFlag("-ci", "-canDoIPR");
 	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
 	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
 	// Flag -startIPR
@@ -77,7 +81,16 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 			setResult("rstatestopped");
 		return MS::kSuccess;
 	}
-	
+
+	if (argData.isFlagSet("-canDoIPR", &stat))
+	{
+		if(MayaTo::getWorldPtr()->canDoIPR())
+			setResult("yes");
+		else
+			setResult("no");
+		return MS::kSuccess;
+	}
+
 	if ( argData.isFlagSet("-stopIpr", &stat))
 	{
 		Logging::debug(MString("-stopIpr"));
@@ -138,6 +151,11 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 	e.cmdArgsData = std::move(cmdArgs);
 	e.type = EventQueue::Event::INITRENDER;
 	theRenderEventQueue()->push(e);
-		
+	
+	//MGlobal::displayInfo("mglobal:displayInfo mayaToCorona...");
+	//std::cout << "std::cout test mayaToCorona..." << std::endl;
+	//std::cout.flush();
+	//MGlobal::executeCommand(MString("trace ") + "\"trace - test mayaToCorona...\"", true);
+	
 	return MStatus::kSuccess;
 }

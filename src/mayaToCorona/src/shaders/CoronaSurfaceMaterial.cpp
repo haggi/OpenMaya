@@ -96,6 +96,7 @@ MObject CoronaSurface::anisotropyRotation;
 MObject CoronaSurface::reflectionGlossiness;
 MObject CoronaSurface::volumeEmissionDist;
 MObject CoronaSurface::roundCornersRadius;
+MObject CoronaSurface::roundCornersMultiplier;
 MObject CoronaSurface::bgOverride;
 MObject CoronaSurface::refractionGlossiness;
 MObject CoronaSurface::refractionIndex;
@@ -268,6 +269,12 @@ MStatus CoronaSurface::initialize()
 	nAttr.setMin(0.0);
 	nAttr.setSoftMax(5.0);
 	CHECK_MSTATUS(addAttribute(roundCornersRadius));
+
+	roundCornersMultiplier = nAttr.create("roundCornersRadiusMultiplier", "roundCornersRadiusMultiplier", MFnNumericData::kFloat, 0.001);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(roundCornersMultiplier));
+	
 
 	bgOverride = nAttr.createColor("bgOverride", "bgOverride");
 	nAttr.setDefault(0,0,0);

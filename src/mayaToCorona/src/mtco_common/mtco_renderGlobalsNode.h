@@ -145,6 +145,7 @@ static    MObject pSkySunBleed;
 static    MObject sunSizeMulti;
 static    MObject dumpAndResume;
 static    MObject dumpExrFile;
+static    MObject uhdCacheType;
 //	------------- automatically created attributes end ----------- // 
 
 };

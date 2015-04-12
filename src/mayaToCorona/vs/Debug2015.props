@@ -9,18 +9,15 @@
     <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
     <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
     <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\openexr_deploy</OPENEXR>
-    <OSLA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\osl-release</OSLA>
-    <OIIOA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\oiio-release</OIIOA>
-    <OPENEXRA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\openexr-release</OPENEXRA>
-    <ILM_BASEA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\ilmbase-release</ILM_BASEA>
     <LLVM>H:\UserDatenHaggi\Documents\coding\llvm\deploy_debug</LLVM>
-    <LLVMA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\llvm-debug</LLVMA>
-    <TIFFA>H:\UserDatenHaggi\Documents\coding\appleseed-deps\stage\libtiff-release</TIFFA>
     <TIFF>H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy</TIFF>
     <JPEG>H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013</JPEG>
+    <ZLIB>H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy</ZLIB>
+    <PNG>H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013</PNG>
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
+    <OutDir>..\mtco_devmodule\2015\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -29,15 +26,14 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <PreprocessorDefinitions>MAYA2015;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAYA2015;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;HAS_OVERRIDE;CORONA_RELEASE_ASSERTS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib;$(JPEG)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;$(LLVM)\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013\lib\libpng16_static.lib;libtiff.lib;jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib;$(JPEG)/lib;$(ZLIB)/lib;$(PNG)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;$(LLVM)\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;zlibstatic.lib;libpng16_static.lib;libtiff.lib;jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)_maya2015$(TargetExt)</OutputFile>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="CORONA_ROOT">
@@ -67,32 +63,8 @@
       <Value>$(OPENEXR)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
-    <BuildMacro Include="OSLA">
-      <Value>$(OSLA)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="OIIOA">
-      <Value>$(OIIOA)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="OPENEXRA">
-      <Value>$(OPENEXRA)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="ILM_BASEA">
-      <Value>$(ILM_BASEA)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
     <BuildMacro Include="LLVM">
       <Value>$(LLVM)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="LLVMA">
-      <Value>$(LLVMA)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="TIFFA">
-      <Value>$(TIFFA)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
     <BuildMacro Include="TIFF">
@@ -101,6 +73,14 @@
     </BuildMacro>
     <BuildMacro Include="JPEG">
       <Value>$(JPEG)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ZLIB">
+      <Value>$(ZLIB)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="PNG">
+      <Value>$(PNG)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

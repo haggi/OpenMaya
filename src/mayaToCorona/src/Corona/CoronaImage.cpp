@@ -114,7 +114,7 @@ void CoronaRenderer::saveMergedExr(Corona::String filename)
 	int numCoronaPasses = this->context.renderPasses.size();
 	for (int coronaPassId = 0; coronaPassId < numCoronaPasses; coronaPassId++)
 	{
-		Corona::IRenderPass *crp = this->context.renderPasses[coronaPassId];
+		Corona::SharedPtr<Corona::IRenderPass> crp = this->context.renderPasses[coronaPassId];
 		for (int passId = 0; passId < numPasses; passId++)
 		{
 			MayaToRenderPass &rp = passes[passId];
@@ -369,14 +369,18 @@ void CoronaRenderer::saveImage()
 			return;
 		}
 	}
-
-	Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
-
+	try{
+		Corona::saveImage(filename, Corona::RgbBitmapIterator<false>(bitmap, &alpha), isLinear, Corona::IMAGE_DETERMINE_FROM_EXT);
+	}
+	catch (Corona::Exception e)
+	{
+		std::cout << "Exception " << e.getMessage().cStr() << "\n";
+	}
 	int numPasses = this->context.renderPasses.size();
 	Corona::Iterator<Corona::IRenderPass *> passIter;
 	for (int passId = 0; passId < numPasses; passId++)
 	{
-		Corona::IRenderPass *rp = this->context.renderPasses[passId];
+		Corona::SharedPtr<Corona::IRenderPass> rp = this->context.renderPasses[passId];
 		Logging::debug(MString("Renderpass ") + rp->getName().cStr());
 		for (int i = 0; i < bitmap.getHeight(); ++i)
 		{

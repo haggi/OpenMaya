@@ -77,7 +77,7 @@ shader file (vector uvCoord = 0,
 #undef TENNAMES
 #undef TENROWS
 
-// mari nomenclature name_u<U>v<V>.ext
+// mudbox nomenclature name_u<U>v<V>.ext
 #define NAMEM(uu,vv) format("%su%dv%d.%s",baseName,uu,vv, ext)
 #define TENNAMESM(vc)  NAMEM(0, vc),NAMEM(1,vc),NAMEM(2,vc),NAMEM(3,vc),NAMEM(4,vc), NAMEM(5,vc),NAMEM(6,vc),NAMEM(7,vc),NAMEM(8,vc),NAMEM(9,vc)
 #define TENROWSM     TENNAMESM(0),TENNAMESM(1),TENNAMESM(2),TENNAMESM(3),TENNAMESM(4),TENNAMESM(5),TENNAMESM(6),TENNAMESM(7),TENNAMESM(8),TENNAMESM(9)

@@ -38,16 +38,16 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_RESUME_RENDERING, false);
 	
 	context.settings->set(Corona::PARAM_BUCKET_SIZE, getIntAttr("image_bucketSize", depFn, 64));
-	context.settings->set(Corona::PARAM_BUCKET_INITIAL_SAMPLES, getIntAttr("buckets_initialSamples", depFn, 4));
+	context.settings->set(Corona::PARAM_BUCKET_SAMPLES_PER_ITERATION, getIntAttr("buckets_initialSamples", depFn, 4));
 	context.settings->set(Corona::PARAM_BUCKET_PASSES, getIntAttr("buckets_adaptiveSteps", depFn, 4));
 	context.settings->set(Corona::PARAM_BUCKET_ADAPTIVE_THRESHOLD, getFloatAttr("buckets_adaptiveThreshold", depFn, 0.03f));
 
-	context.settings->set(Corona::PARAM_PROGRESSIVE_MAX_PASSES, getIntAttr("progressive_maxPasses", depFn, 20));
+	context.settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, getIntAttr("progressive_maxPasses", depFn, 20));
 	context.settings->set(Corona::PARAM_PROGRESSIVE_TIME_LIMIT, getIntAttr("progressive_timeLimit", depFn, 60) * 1000);
 
 	context.settings->set(Corona::PARAM_VCM_MODE, getEnumInt("vcm_mode", depFn) + 4); // only last two entries 4 + 5 are relevant
 	context.settings->set(Corona::PARAM_PPM_INITIAL_RADIUS, getFloatAttr("ppm_initialRadius", depFn, 2.0f));
-	context.settings->set(Corona::PARAM_BIDIR_DO_MIS, getBoolAttr("bidir_doMis", depFn, true));
+	//context.settings->set(Corona::PARAM_BIDIR_DO_MIS, getBoolAttr("bidir_doMis", depFn, true));
 	context.settings->set(Corona::PARAM_PPM_PHOTONS_PER_ITER, getIntAttr("ppm_photonsPerIter", depFn, 5000)  * 1000);
 	context.settings->set(Corona::PARAM_PPM_ALPHA, getFloatAttr("ppm_alpha", depFn, .666f));
 
@@ -59,8 +59,9 @@ void CoronaRenderer::defineSettings()
 	 
 	context.settings->set(Corona::PARAM_LOW_PRIORITY, true); // always render with low priority
 
-	context.settings->set(Corona::PARAM_DISPLACE_USE_PROJ_SIZE, getBoolAttr("displace_useProjectionSize", depFn, true));
-	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_PROJ, getFloatAttr("displace_maxProjectSize", depFn, 2.0f));
+	Corona::DisplaceSubdivType subdivTypes[] = { Corona::DisplaceSubdivType::DISPLACE_SUBDIV_PROJECTED, Corona::DisplaceSubdivType::DISPLACE_SUBDIV_WORLD };
+	context.settings->set(Corona::PARAM_DISPLACE_SUBDIV_TYPE, subdivTypes[(int)getBoolAttr("displace_useProjectionSize", depFn, true)]);
+	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_SCREEN, getFloatAttr("displace_maxProjectSize", depFn, 2.0f));
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_WORLD, getFloatAttr("displace_maxWorldSize", depFn, 1.0f));
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, getIntAttr("displace_maxSubdiv", depFn, 100));
 
@@ -68,27 +69,25 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_EXIT_COLOR, toCorona(getColorAttr("color_exit", depFn)));
 	context.settings->set(Corona::PARAM_MAX_NORMAL_DIFF, getFloatAttr("system_maxNormalDev", depFn, .55f));
 
-	context.settings->set(Corona::PARAM_ACCELERATION_STRUCTURE, getIntAttr("accelerationStructure", depFn, 0) + 3); // first entry is 3 == bvh4 spatial
-	context.settings->set(Corona::PARAM_EMBREE_TRIANGLES, getEnumInt("embree_triangles", depFn));
+	//context.settings->set(Corona::PARAM_ACCELERATION_STRUCTURE, getIntAttr("accelerationStructure", depFn, 0) + 3); // first entry is 3 == bvh4 spatial
+	//context.settings->set(Corona::PARAM_EMBREE_TRIANGLES, getEnumInt("embree_triangles", depFn));
 	context.settings->set(Corona::PARAM_MIN_INSTANCE_SAVING, getIntAttr("instance_minSize", depFn, 50000));
 
 	int f = getEnumInt("filtertype", depFn);
 	float fw = getFloatAttr("imagefilter_width", depFn, 1.5f);
 	float fb = getFloatAttr("imagefilter_blurring", depFn, .5f);
-	context.settings->set(Corona::PARAM_IMAGE_FILTER, getEnumInt("filtertype", depFn));
+	context.settings->set(Corona::PARAM_IMAGEFILTER, getEnumInt("filtertype", depFn));
 	context.settings->set(Corona::PARAM_IMAGEFILTER_WIDTH, getFloatAttr("imagefilter_width", depFn, 1.5f));
 	context.settings->set(Corona::PARAM_IMAGEFILTER_BLURRING, getFloatAttr("imagefilter_blurring", depFn, .5f));
 
-	context.settings->set(Corona::PARAM_DO_SHADING, getBoolAttr("doShading", depFn, true));
+	context.settings->set(Corona::PARAM_SHADING_ENABLE, getBoolAttr("doShading", depFn, true));
 
-	context.settings->set(Corona::PARAM_GI_PRIMARY_SOLVER, getEnumInt("gi_primarySolver", depFn));
-	int solver = getEnumInt("gi_secondarySolver", depFn);
-	if (solver == 2)
-		solver = 3;
-	context.settings->set(Corona::PARAM_GI_SECONDARY_SOLVER, solver);
+	Corona::GiSolverType solverTypes[] = { Corona::GiSolverType::GISOLVER_NONE, Corona::GiSolverType::GISOLVER_PATHTRACING, Corona::GiSolverType::GISOLVER_HD_CACHE, Corona::GiSolverType::GISOLVER_UHD_CACHE };
+	context.settings->set(Corona::PARAM_SHADING_PRIMARY_SOLVER, solverTypes[getEnumInt("gi_primarySolver", depFn)]);
+	context.settings->set(Corona::PARAM_SHADING_SECONDARY_SOLVER, solverTypes[getEnumInt("gi_secondarySolver", depFn)]);
 
 	context.settings->set(Corona::PARAM_GI_TO_AA_RATIO, getIntAttr("pathtracingSamples", depFn, 16));
-	context.settings->set(Corona::PARAM_LIGHT_SAMPLES_MULT, getFloatAttr("lights_areaSamplesMult", depFn, 2.0f));
+	//context.settings->set(Corona::PARAM_LIGHT_SAMPLES_MULT, getFloatAttr("lights_areaSamplesMult", depFn, 2.0f));
 
 	context.settings->set(Corona::PARAM_HDCACHE_SAVE, getBoolAttr("gi_saveSecondary", depFn, false));
 	context.settings->set(Corona::PARAM_HDCACHE_PRECALC_MODE, getEnumInt("gi_hdCache_precalcMode", depFn));
@@ -104,6 +103,22 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_HDCACHE_POS_SENSITIVITY, getFloatAttr("gi_hdCache_posSensitivity", depFn, 20.0f));
 	context.settings->set(Corona::PARAM_HDCACHE_NORMAL_SENSITIVITY, getFloatAttr("gi_hdCache_normalSensitivity", depFn, 3.0f));
 
+	float uhd_precision = 1.0f;
+	int uhd_recordQuality = 512;
+	float uhd_strictness = 0.075f;
+	float uhd_msi = 3.0f;
+	int uhdType = getEnumInt("uhdCacheType", depFn);
+	if (getEnumInt("gi_secondarySolver", depFn) == 4) // uhd cache
+	{
+		// 0 == still, 1 == animation. Only animation needs not default settings.
+		if (uhdType == 1)
+		{
+			context.settings->set(Corona::PARAM_UHDCACHE_MSI, uhd_msi * 3.0f);
+			context.settings->set(Corona::PARAM_UHDCACHE_RECORD_QUALITY, uhd_recordQuality * .5f);
+			context.settings->set(Corona::PARAM_UHDCACHE_STRICTNESS, uhd_strictness * .33f);
+			context.settings->set(Corona::PARAM_UHDCACHE_PRECISION, uhd_precision * .4f);
+		}
+	}
 	context.settings->set(Corona::PARAM_COLORMAP_GAMMA, getFloatAttr("colorMapping_gamma", depFn, 2.2f));
 	context.settings->set(Corona::PARAM_COLORMAP_HIGHLIGHT_COMPRESSION, getFloatAttr("colorMapping_highlightCompression", depFn, 1.0f));
 	context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, getFloatAttr("colorMapping_contrast", depFn, 1.0f));

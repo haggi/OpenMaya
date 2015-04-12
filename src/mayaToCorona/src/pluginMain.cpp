@@ -26,8 +26,14 @@
 #include "shaders/coronaOSLNode.h"
 
 #include "shaders/TestShader.h"
-
 #include "world.h"
+
+#if MAYA_API_VERSION >= 201600
+#include "mtco_common/mtco_mayaRenderer.h"
+#endif
+
+
+//#include "rvCmd.h"
 
 static const MString swatchName("CoronaRenderSwatch");
 static const MString swatchFullName(":swatch/CoronaRenderSwatch");
@@ -60,7 +66,7 @@ static const MString TestShaderClassification("shader/surface:");
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.37"
+#define VERSION "0.38"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -98,6 +104,12 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	//status = plugin.registerCommand("rvCmd", RvCmd::creator);
+	//if (!status) {
+	//	status.perror("cannot register command: RvCmd");
+	//	return status;
+	//}
+
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += CoronaSurfacesFullClassification;
 	command += "\");}\n";
@@ -127,7 +139,15 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	Corona::ICore::initLib(false);
+#if MAYA_API_VERSION >= 201600
+	status = plugin.registerRenderer("Corona", mtco_MayaRenderer::creator);
+	if (!status) {
+		status.perror("cannot register node: Corona Maya renderer");
+		return status;
+	}
+#endif
+
+	Corona::ICore::initLib(Corona::APP_MAYA);
 
 	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();
@@ -158,6 +178,15 @@ MStatus uninitializePlugin( MObject obj)
 
 	if (MGlobal::mayaState() != MGlobal::kBatch)
 		MSwatchRenderRegister::unregisterSwatchRender(swatchName);
+
+#if MAYA_API_VERSION >= 201600
+	status = plugin.deregisterRenderer("Corona");
+	if (!status) {
+		status.perror("cannot deregister node: Corona Maya renderer");
+		return status;
+	}
+#endif
+
 
 	std::cout << "deregister mtco cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );

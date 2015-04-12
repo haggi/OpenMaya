@@ -1,7 +1,5 @@
 #include "oslRenderer.h"
-
 #include "world.h"
-
 #include "OSL/oslexec.h"
 #include "OSL/genclosure.h"
 #include "utilities/logging.h"
@@ -23,8 +21,7 @@ static TypeDesc TypeIntArray2(TypeDesc::INT, 2);
 SimpleRenderer::SimpleRenderer()
 {
 	Matrix44 M;  M.makeIdentity();
-	camera_params(M, u_perspective, 90.0f,
-		0.1f, 1000.0f, 256, 256);
+	camera_params(M, u_perspective, 90.0f, 0.1f, 1000.0f, 256, 256);
 
 	// Set up getters
 	m_attr_getters[ustring("camera:resolution")] = &SimpleRenderer::get_camera_resolution;
@@ -43,10 +40,7 @@ SimpleRenderer::SimpleRenderer()
 
 
 void
-SimpleRenderer::camera_params(const Matrix44 &world_to_camera,
-ustring projection, float hfov,
-float hither, float yon,
-int xres, int yres)
+SimpleRenderer::camera_params(const Matrix44 &world_to_camera, ustring projection, float hfov, float hither, float yon, int xres, int yres)
 {
 	m_world_to_camera = world_to_camera;
 	m_projection = projection;
@@ -216,8 +210,7 @@ bool
 SimpleRenderer::get_attribute(ShaderGlobals *sg, bool derivatives, ustring object,
 TypeDesc type, ustring name, void *val)
 {
-	return get_array_attribute(sg, derivatives, object,
-		type, name, -1, val);
+	return get_array_attribute(sg, derivatives, object, type, name, -1, val);
 }
 
 
@@ -262,8 +255,7 @@ SimpleRenderer::has_userdata(ustring name, TypeDesc type, ShaderGlobals *sg)
 
 
 bool
-SimpleRenderer::get_camera_resolution(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_resolution(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeIntArray2) {
 		((int *)val)[0] = m_xres;
@@ -275,8 +267,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_projection(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_projection(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeDesc::TypeString) {
 		((ustring *)val)[0] = m_projection;
@@ -287,8 +278,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_fov(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_fov(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	// N.B. in a real rederer, this may be time-dependent
 	if (type == TypeDesc::TypeFloat) {
@@ -302,8 +292,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_pixelaspect(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_pixelaspect(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeDesc::TypeFloat) {
 		((float *)val)[0] = m_pixelaspect;
@@ -316,8 +305,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_clip(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_clip(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeFloatArray2) {
 		((float *)val)[0] = m_hither;
@@ -331,8 +319,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_clip_near(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_clip_near(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeDesc::TypeFloat) {
 		((float *)val)[0] = m_hither;
@@ -345,8 +332,7 @@ TypeDesc type, ustring name, void *val)
 
 
 bool
-SimpleRenderer::get_camera_clip_far(ShaderGlobals *sg, bool derivs, ustring object,
-TypeDesc type, ustring name, void *val)
+SimpleRenderer::get_camera_clip_far(ShaderGlobals *sg, bool derivs, ustring object, TypeDesc type, ustring name, void *val)
 {
 	if (type == TypeDesc::TypeFloat) {
 		((float *)val)[0] = m_yon;
@@ -516,7 +502,18 @@ namespace MAYATO_OSL
 {
 	void createOSLShader(MString& shadingNodeType, MString& shaderName, OSLParamArray& paramArray, MString type)
 	{
-		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		//OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		OSL::OSLShadingNetworkRenderer *r;
+		MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
+		if ((rType == MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
+		{
+			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		}
+		if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
+		{
+			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
+		}
+
 		if (r == nullptr)
 		{
 			std::cerr << "error createOSLShader: OSL renderer == nullptr\n";
@@ -566,7 +563,17 @@ namespace MAYATO_OSL
 
 	void connectOSLShaders(ConnectionArray& ca)
 	{
-		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		//OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		OSL::OSLShadingNetworkRenderer *r;
+		MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
+		if ((rType == MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
+		{
+			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
+		}
+		if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
+		{
+			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
+		}
 		if (r == nullptr)
 		{
 			std::cerr << "error connectOSLShaders: OSL renderer == nullptr\n";

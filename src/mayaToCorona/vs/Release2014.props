@@ -9,9 +9,16 @@
     <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
     <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
     <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\openexr_deploy</OPENEXR>
+    <PNG>H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013</PNG>
+    <JPEG>H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013</JPEG>
+    <LLVM>H:\UserDatenHaggi\Documents\coding\llvm\deploy_release</LLVM>
+    <ZLIB>H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy</ZLIB>
+    <TIFF>H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy</TIFF>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\mtco_devmodule\2014\plug-ins</OutDir>
+    <TargetExt>.mll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -19,24 +26,23 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;_USRDLL;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;_SECURE_SCL_THROWS=0;_SECURE_SCL_DEPRECATE=0;_CRT_SECURE_NO_DEPRECATE;TBB_USE_DEBUG=0;__TBB_LIB_NAME=tbb.lib;AW_NEW_IOSTREAMS;OSL_LLVM_VERSION=35;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAYA2015;WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;HAS_OVERRIDE;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec.lib;oslcomp.lib;oslquery.lib;H:\UserDatenHaggi\Documents\coding\llvm\deploy_release\lib\*.lib;Half.lib;Iex.lib;Imath.lib;IlmThread.lib;OpenImageIO.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013\lib\libpng16_static.lib;H:\UserDatenHaggi\Documents\coding\tiff\libtiff3.9.4Deploy\lib\libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013\lib\jpeg.lib;IlmImf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib;$(JPEG)/lib;$(ZLIB)/lib;$(PNG)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec.lib;oslcomp.lib;oslquery.lib;$(LLVM)\lib\*.lib;Half.lib;Iex.lib;Imath.lib;IlmThread.lib;OpenImageIO.lib;zlibstatic.lib;libpng16_static.lib;libtiff.lib;jpeg.lib;IlmImf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <OutputFile>$(OutDir)$(TargetName)_maya2014$(TargetExt)</OutputFile>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(Configuration)\$(ProjectName).mll ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="CORONA_ROOT">
@@ -64,6 +70,26 @@
     </BuildMacro>
     <BuildMacro Include="OPENEXR">
       <Value>$(OPENEXR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="PNG">
+      <Value>$(PNG)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="JPEG">
+      <Value>$(JPEG)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LLVM">
+      <Value>$(LLVM)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ZLIB">
+      <Value>$(ZLIB)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="TIFF">
+      <Value>$(TIFF)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

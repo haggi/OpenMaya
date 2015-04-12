@@ -1,5 +1,18 @@
+release 0.38
+- 
+
 release 0.37
+- switched to new Corona API with new license procedure
 - fixed a crash if motion blur is turned off and a object has motionblur turned off as well 
+- fixed the case where one shader is assigned per face (what handles maya differntly than one shader for one object)
+- fixed a crash which occured after changing the image resolution after a rendering. #183
+- fixed rendering template objects. #184
+- fixed wrong IPR execution
+- reimplemented reusing previous defined shader data (helpful for scenes with a lot of objects)
+- improved texture handling
+- implemented corona intern shader swatch preview
+- restructured module file
+
 
 release 0.36
 - fixes near/far clipping #173

@@ -368,6 +368,7 @@ shader_start:CoronaVolume
 	inatt:volumeSSSMode:bool
 	inatt:volumeMeanCosine:float
 	inatt:roundCornersRadius:float
+	inatt:roundCornersRadiusMultiplier:float
 	inatt:bgOverride:color
 	inatt:refractionGlossiness:float
 	inatt:diffuse:color

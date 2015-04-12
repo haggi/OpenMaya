@@ -11,6 +11,13 @@ static Logging logger;
 
 void CoronaRenderer::framebufferCallback()
 {
+	//MSG msg;
+	//while (PeekMessage(&msg, NULL, 0, 0, TRUE))
+	//{
+	//	TranslateMessage(&msg);
+	//	DispatchMessage(&msg);
+	//}
+
 	//MFnDependencyNode depFn(getRenderGlobalsNode());
 	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);

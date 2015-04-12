@@ -99,13 +99,17 @@ struct Context {
 	{
 		isCancelled = false;
 		isRendering = false;
+		core = nullptr;
+		fb = nullptr;
+		scene = nullptr;
+		settings = nullptr;
 	}
 	Corona::ICore* core;
 	Corona::IFrameBuffer* fb;
 	Corona::IScene* scene;
 	mtco_Logger* logger;
 	Corona::Abstract::Settings* settings;
-	Corona::Stack<Corona::IRenderPass*> renderPasses;
+	Corona::Stack<Corona::SharedPtr<Corona::IRenderPass>> renderPasses;
 	bool isCancelled;
 	bool isRendering;
 };
@@ -130,10 +134,11 @@ public:
 
 	// corona specific
 
-	Context context;
+	Corona::ICore::MtlSceneConfig config;
+	//Context context;
 	void defineSettings();
 	void createCoronaScene();
-	void saveImageData();
+	void saveImageData(Context *c);
 	static void initializeStaticData();
 	static void cleanUpStaticData();
 	static void swatchRenderThread(mtco_SwatchRendererInterface* me);

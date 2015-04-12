@@ -257,9 +257,6 @@
     <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\maysSceneInteractive.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -278,8 +275,14 @@
     <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
-      <Filter>common\rendering</Filter>
+    <ClCompile Include="..\src\rvCmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtco_common\mtco_mayaRenderer.cpp">
+      <Filter>mtco_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -369,9 +372,6 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
       <Filter>common\shadingTools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Corona\MyClasses.h">
-      <Filter>Source Files\Corona</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h">
       <Filter>Source Files\shaders</Filter>
@@ -463,8 +463,14 @@
     <ClInclude Include="..\..\common\cpp\renderProcess.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
-      <Filter>common\rendering</Filter>
+    <ClInclude Include="..\src\Corona\CoronaTestClasses.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rvCmd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtco_common\mtco_mayaRenderer.h">
+      <Filter>mtco_common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -481,9 +487,6 @@
       <Filter>ressources</Filter>
     </None>
     <None Include="..\mtco_devmodule\ressources\releaseNotes.txt">
-      <Filter>ressources</Filter>
-    </None>
-    <None Include="sourceCodeDocs\todo.txt">
       <Filter>ressources</Filter>
     </None>
     <None Include="..\mtco_devmodule\shaders\constant.osl">
@@ -533,5 +536,10 @@
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaVolume.xml">
       <Filter>Source Files\shaders\xml</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\utils.txt">
+      <Filter>ressources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

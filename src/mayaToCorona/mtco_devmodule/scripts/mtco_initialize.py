@@ -322,21 +322,26 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Global Illumination", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='gi_primarySolver', uiType='enum', displayName='Primary Solver', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='gi_secondarySolver', uiType='enum', displayName='Secondary Solver', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='gi_secondarySolver', uiType='enum', displayName='Secondary Solver', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
                         # self.addRenderGlobalsUIElement(attName='gi_ic_hemisphereSubdiv', uiType='float', displayName='Hemi Subdiv', default='7', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
 #                with pm.frameLayout(label="Primary GI", collapsable=True, collapse=False):
 #                    with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
 #                        pass
+                UHDFrame = None
+                HDFrame = None
                         # self.addRenderGlobalsUIElement(attName='gi_ic_hemisphereSubdiv', uiType='float', displayName='Hemi Subdiv', default='7', uiDict=uiDict, callback=self.CoronaGiUpdateTab)
                 with pm.frameLayout(label="Secondary GI ", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_precompMult', uiType = 'float', displayName = 'Precom Density', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_interpolationCount', uiType = 'int', displayName = 'Interpolation Count', default='3', data='1:64', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_ptSamples', uiType = 'int', displayName = 'Record Quality', default='256', data='minmax:1:4096', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_smoothing', uiType = 'float', displayName = 'Smoothing', default='2.0', data='minmax:1.0:10.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_maxRecords', uiType = 'int', displayName = 'Max Records', default='100000', data='minmax:1000:999000', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_glossyThreshold', uiType = 'float', displayName = 'Glossy Threshold', default='0.9', data='minmax:0.0:1.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'gi_hdCache_writePasses', uiType = 'int', displayName = 'Write # of Passes', default='0', data='minmax:0:9999999', uiDict=uiDict)
+                        with pm.frameLayout(label="UHD Cache Settings ", collapsable=True, collapse=False) as UHDFrame:
+                            pass
+                        with pm.frameLayout(label="HD Cache Settings ", collapsable=True, collapse=False) as HDFrame:
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_precompMult', uiType = 'float', displayName = 'Precom Density', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_interpolationCount', uiType = 'int', displayName = 'Interpolation Count', default='3', data='1:64', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_ptSamples', uiType = 'int', displayName = 'Record Quality', default='256', data='minmax:1:4096', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_smoothing', uiType = 'float', displayName = 'Smoothing', default='2.0', data='minmax:1.0:10.0', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_maxRecords', uiType = 'int', displayName = 'Max Records', default='100000', data='minmax:1000:999000', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_glossyThreshold', uiType = 'float', displayName = 'Glossy Threshold', default='0.9', data='minmax:0.0:1.0', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'gi_hdCache_writePasses', uiType = 'int', displayName = 'Write # of Passes', default='0', data='minmax:0:9999999', uiDict=uiDict)
                         with pm.frameLayout(label="Interpolation accuracy ", collapsable=True, collapse=False):
                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                                 self.addRenderGlobalsUIElement(attName = 'gi_hdCache_dirSensitivity', uiType = 'float', displayName = 'Direction', default='2.0', data='minmax:0.001:100.0', uiDict=uiDict)
@@ -347,7 +352,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                                 self.addRenderGlobalsUIElement(attName='gi_hdCache_precalcMode', uiType='enum', displayName='Precalc Mode', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Save Cache After Render', default='false', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName='gi_secondaryFile', uiType='string', displayName='HD Cache File', default='"c:/secondarygi.dat"', uiDict=uiDict)
-
+                uiDict['UHDFrame'] = UHDFrame
+                uiDict['HDFrame'] = HDFrame
+                
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_incrementalBuild', uiType = 'bool', displayName = 'Gi_ic_incrementalbuild', default='false', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_incrementalFilename', uiType = 'string', displayName = 'Gi_ic_incrementalfilename', default='"incrementalic.dat"', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'gi_ic_hemisphereSubdiv', uiType = 'int', displayName = 'Gi_ic_hemispheresubdiv', default='7', data='minmax:1:100', uiDict=uiDict)
@@ -386,6 +393,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if not self.rendererTabUiDict.has_key('gi'):
             return        
         uiDict = self.rendererTabUiDict['gi']    
+        if self.renderGlobalsNode.gi_secondarySolver.get() == 2: #hd cache
+            uiDict['UHDFrame'].setEnable(False)
+            uiDict['HDFrame'].setEnable(True)
+        if self.renderGlobalsNode.gi_secondarySolver.get() == 3: #hd cache
+            uiDict['UHDFrame'].setEnable(True)
+            uiDict['HDFrame'].setEnable(False)
 
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
@@ -612,6 +625,10 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             
         
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
+        canDoIPR = pm.mayatoCorona(canDoIPR=True)
+        if canDoIPR == "no":
+            log.warning("IPR is not yet supported, sorry.")
+            return
         self.ipr_isrunning = True
         log.debug("startIprRenderProcedure")
         log.debug("startIprRenderProcedure {0} {1} {2} {3}".format( editor, resolutionX, resolutionY, camera))

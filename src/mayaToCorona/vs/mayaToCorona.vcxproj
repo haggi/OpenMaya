@@ -85,14 +85,15 @@
     <Import Project="$(Configuration).props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
-    <OutDir>..\mtco_devmodule\plug-ins</OutDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">
     <OutDir>..\mtco_devmodule\plug-ins</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">
     <OutDir>..\mtco_devmodule\plug-ins</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
+    <OutDir>..\mtco_devmodule\2015\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
@@ -121,8 +122,6 @@
     <ClCompile>
       <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>HAS_OVERRIDE;CORONA_RELEASE_ASSERTS;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4244;4305</DisableSpecificWarnings>
@@ -133,13 +132,10 @@
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)$(TargetName)_maya2015$(TargetExt)</OutputFile>
       <AdditionalDependencies>libboost_regex-vc120-mt-gd-1_55.lib;libboost_wave-vc120-mt-gd-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">
     <ClCompile>
@@ -190,34 +186,27 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">
     <ClCompile>
       <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;$(OSL)\include;$(OIIO)/include;$(ILM_BASE)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
-      <OutputFile>$(Configuration)\$(ProjectName).mll</OutputFile>
       <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(OIIO)\lib;$(OSL)\lib;$(OPENEXR)\lib;$(ILM_BASE)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
     <ClCompile>
-      <AdditionalOptions>/c %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>HAS_OVERRIDE;_MBCS;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/c /Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
-      <ProgramDatabaseFile>Debug/mayaToCorona.pdb</ProgramDatabaseFile>
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
-      <AdditionalDependencies>libboost_regex-vc120-mt-1_55.lib;libboost_wave-vc120-mt-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -231,12 +220,11 @@
     <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
-    <ClCompile Include="..\..\common\cpp\maysSceneInteractive.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp" />
-    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp" />
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
     <ClCompile Include="..\..\common\cpp\renderProcess.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
@@ -340,12 +328,14 @@
     <ClCompile Include="..\src\mayaToCorona.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObject.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_mayaObjectFactory.cpp" />
+    <ClCompile Include="..\src\mtco_common\mtco_mayaRenderer.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_swatchRenderer.cpp" />
     <ClCompile Include="..\src\mtco_common\mtco_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
+    <ClCompile Include="..\src\rvCmd.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
@@ -377,7 +367,6 @@
     <ClInclude Include="..\..\common\cpp\osl\oslUtils.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h" />
-    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
     <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h" />
     <ClInclude Include="..\..\common\cpp\renderProcess.h" />
@@ -435,21 +424,25 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaTestScene.h" />
+    <ClInclude Include="..\src\Corona\CoronaTestScene.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaUtils.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\MyClasses.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+    <ClInclude Include="..\src\Corona\CoronaTestClasses.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
+    <ClInclude Include="..\src\mtco_common\mtco_mayaRenderer.h" />
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
+    <ClInclude Include="..\src\rvCmd.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
@@ -474,7 +467,6 @@
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
     <None Include="sourceCodeDocs\materials.txt" />
-    <None Include="sourceCodeDocs\todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaLight.xml" />
@@ -487,6 +479,9 @@
     <Xml Include="..\mtco_devmodule\plug-ins\coronaSpecular.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaVolume.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\utils.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

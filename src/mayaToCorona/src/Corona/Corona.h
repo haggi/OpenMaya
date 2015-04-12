@@ -13,6 +13,7 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "threads/queue.h"
+#include "utilities/logging.h"
 
 class mtco_MayaScene;
 class mtco_MayaObject;
@@ -103,12 +104,12 @@ public:
 
     virtual void logMsg(const Corona::String& message, const Corona::LogType type) 
 	{
-        std::cout << message << std::endl;
-    }
+		Logging::info(MString("Message: ") + message.cStr());
+	}
     virtual void setProgress(const float progress) 
 	{
-        std::cout << "Progress: " << progress << std::endl;
-    }
+		Logging::info(MString("Progress: ") + progress);
+	}
 };
 
 struct Context {
@@ -117,7 +118,7 @@ struct Context {
     Corona::IScene* scene;
     mtco_Logger* logger;
     Corona::Abstract::Settings* settings;
-    Corona::Stack<Corona::IRenderPass*> renderPasses;
+	Corona::Stack<Corona::SharedPtr<Corona::IRenderPass>> renderPasses;
 	bool isCancelled;
 	Corona::ColorMappingData *colorMappingData;
 };
@@ -176,6 +177,8 @@ public:
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 	void createScene();
+
+	void createTestScene(); // for error checking if a new api is here
 
 	static void framebufferCallback();
 

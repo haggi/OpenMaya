@@ -15,6 +15,12 @@
 
 static Logging logger;
 
+void clearDataList()
+{
+	dataList.clear();
+}
+
+
 Corona::Rgb defineColor(MString& attributeName, MFnDependencyNode& depFn)
 {
 	MColor col = getColorAttr(attributeName.asChar(), depFn);
@@ -43,11 +49,11 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 
 	Corona::Rgb rgbColor(0.0);
-	Logging::debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
+	//Logging::debug(MString("check if : ") + depFn.name() + "." + attributeName + " is connected");
 
 	if (isConnected(attributeName.asChar(), depFn, true, true))
 	{
-		Logging::debug(MString("it is connected"));
+		//Logging::debug(MString("it is connected"));
  		rgbColor = Corona::Rgb(0.0, 0.0, 1.0);
 		texmap = getOslTexMap(attributeName, depFn, sn);
 	}
@@ -61,10 +67,6 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 			if (stat)
 				multiplier = multiplierPlug.asFloat();
 			Corona::Rgb offsetColor(0,0,0);
-			if (attributeName == "refractionIndex")
-				offsetColor = Corona::Rgb(-1, -1, -1);
-			if (attributeName == "fresnelIor")
-				offsetColor = Corona::Rgb(-1, -1, -1);
 			rgbColor = Corona::Rgb(col.r * multiplier, col.g * multiplier, col.b * multiplier);
 			rgbColor += offsetColor;
 			
@@ -119,6 +121,13 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	Logging::debug(MString("Defining corona material from node: ") + network.rootNodeName);
 
 	MFnDependencyNode depFn(materialNode);
+
+	for (size_t i = 0; i < dataList.size(); i++ )
+	{
+		if (dataList[i].mtlName == depFn.name())
+			return dataList[i].data.createMaterial();
+	}
+
 	if (depFn.typeName() == "CoronaSurface")
 	{
 		Corona::NativeMtlData data;
@@ -138,20 +147,19 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		data.refract.glossiness = defineAttribute(MString("refractionGlossiness"), depFn, network);
 
 		int glassType = getEnumInt("glassType", depFn);
-		Corona::GlassMode glassModes[] = { Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED, Corona::GLASS_HYBRID };
-		if (glassType == 0) //normal == hybrid
-			data.refract.glassMode = glassModes[2];
-		if (glassType == 1) //causticy == onesided
-			data.refract.glassMode = glassModes[0];
-		if (glassType == 2) //thin == twosided
-			data.refract.glassMode = glassModes[1];
+		Corona::GlassMode glassModes[] = { Corona::GLASS_HYBRID, Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED };
+		data.refract.glassMode = glassModes[glassType];
 
 		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
 		if (obj != nullptr)
 		{
 			float rcRadius = 0.0001;
 			getFloat(MString("roundCornersRadius"), depFn, rcRadius);
-			data.roundedCorners.radius = rcRadius * globalScaleFactor;
+			data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
+			MPlug rcMultiPlug = depFn.findPlug("roundCornersRadiusMultiplier");
+			if (!rcMultiPlug.isNull())
+				rcMultiPlug.setFloat(globalScaleFactor);
+			//data.roundedCorners.radius = rcRadius * globalScaleFactor;
 			getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
 		}
 
@@ -269,6 +277,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 
 		}
+		mtlData md;
+		md.data = data;
+		md.mtlName = depFn.name();
+		dataList.push_back(md);
 
 		return data.createMaterial();
 	}
@@ -377,6 +389,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			}
 		}
 
+		mtlData md;
+		md.data = data;
+		md.mtlName = depFn.name();
+		dataList.push_back(md);
 		return data.createMaterial();
 	}
 
@@ -397,6 +413,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network);
 		data.volume.sssMode = getBoolAttr("volumeSSSMode", depFn, false);
 
+		mtlData md;
+		md.data = data;
+		md.mtlName = depFn.name();
+		dataList.push_back(md);
 		return data.createMaterial();
 	}
 
@@ -406,6 +426,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		MColor col = getColorAttr("color", depFn);
 		data.components.diffuse.setColor(Corona::Rgb(col.r, col.g, col.b));
 		data.components.reflect.setColor(0.0f);
+		mtlData md;
+		md.data = data;
+		md.mtlName = depFn.name();
+		dataList.push_back(md);
 		return data.createMaterial();
 	}
 

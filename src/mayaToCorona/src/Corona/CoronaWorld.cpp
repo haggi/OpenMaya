@@ -13,6 +13,9 @@ namespace MayaTo{
 		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)this->getObjPtr("oslRenderer");
 		if (r != nullptr)
 			delete r;
+		r = (OSL::OSLShadingNetworkRenderer *)this->getObjPtr("oslSwatchRenderer");
+		if (r != nullptr)
+			delete r;
 		mtco_SwatchRendererInterface::cleanUpStaticData();
 	}
 
@@ -23,17 +26,23 @@ namespace MayaTo{
 		MayaSceneFactory().deleteMayaScene();
 	}
 
-
+	
 	void MayaToWorld::initialize()
 	{
 		OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
 		this->addObjectPtr("oslRenderer", r);
 
+		OSL::OSLShadingNetworkRenderer *swatchRenderer = new OSL::OSLShadingNetworkRenderer();
+		this->addObjectPtr("oslSwatchRenderer", r);
+
 		std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
 		Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
 		r->setShaderSearchPath(oslShaderPath);
 		r->setup();
+		swatchRenderer->setShaderSearchPath(oslShaderPath);
+		swatchRenderer->setup();
 		mtco_SwatchRendererInterface::initializeStaticData();
+		setCanDoIPR(false);
 	}
 
 	void MayaToWorld::afterOpenScene()

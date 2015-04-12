@@ -9,7 +9,10 @@
 #include "utilities/attrTools.h"
 #include "CoronaMap.h"
 #include "world.h"
+#include "CoronaShaders.h"
 #include <maya/MNodeMessage.h>
+
+//#include "CoronaTestScene.h"
 
 static Logging logger;
 
@@ -25,7 +28,8 @@ CoronaRenderer::CoronaRenderer()
 	this->context.isCancelled = false;
 	this->context.colorMappingData = nullptr;
 	MObject renderGlobalsNode = getRenderGlobalsNode();
-	this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	this->renderFbGlobalsNodeCallbackId = 0;
+	//this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -47,10 +51,6 @@ CoronaRenderer::~CoronaRenderer()
 		delete context.settings;
 		context.settings = nullptr;
 	}
-	for (auto it : context.renderPasses)
-	{
-		context.core->destroyRenderPass(it);
-	}
 	context.renderPasses.clear();
 	context.core->destroyFb(context.fb);
 	if (context.scene != nullptr)
@@ -68,14 +68,13 @@ CoronaRenderer::~CoronaRenderer()
 		delete context.colorMappingData;
 		context.colorMappingData = nullptr;
 	}
-
 }
 
 void CoronaRenderer::frameBufferInteractiveCallback(MObject& node, void *clientData)
 {
 	Logging::debug("CoronaRenderer::frameBufferInteractiveCallback");
-	//MFnDependencyNode depFn(node);
-	//Logging::debug(MString("NodeType: ") + depFn.typeName());
+	MFnDependencyNode depFn(node);
+	Logging::debug(MString("NodeType: ") + depFn.typeName());
 	//MGlobal::executeCommand("refresh;");
 	EventQueue::Event e;
 	e.type = EventQueue::Event::INTERACTIVEFBCALLBACK;
@@ -91,9 +90,9 @@ void CoronaRenderer::interactiveFbCallback()
 void CoronaRenderer::updateCameraFbCallback(MObject& camera)
 {
 	MStatus stat;
-	if (this->renderFbCamNodeCallbackId != 0)
-		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
-	this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	//if (this->renderFbCamNodeCallbackId != 0)
+	//	MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+	//this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 
@@ -115,6 +114,21 @@ void CoronaRenderer::createScene()
 void CoronaRenderer::render()
 {
 	Logging::debug("CoronaRenderer::render");
+
+	if (MGlobal::mayaState() != MGlobal::kBatch)
+	{
+		Corona::ICore::doLicensePopup();
+	}
+	Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
+	if (!li.isUsable())
+	{
+		MString reason = li.error.cStr();
+		MGlobal::displayError(MString("Sorry! Could not get a valid license.") + reason);
+		return;
+	}
+	//createTestScene();
+	//OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
+
 	//this->clearMaterialLists();
 	this->defineCamera();
 	this->defineGeometry();
@@ -124,15 +138,25 @@ void CoronaRenderer::render()
 	context.core->sanityCheck(context.scene);
 	Logging::debug(MString("registering framebuffer callback."));
 	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
-
 	Corona::String basePath = (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->basePath + "/corona/").asChar();
 	Logging::debug(MString("beginSession..."));
 	ICore::AdditionalInfo info;
 	info.defaultFilePath = basePath;
 	context.core->beginSession(context.scene, context.settings, context.fb, context.logger, info);
+	int maxCount=100, count=0;
+	while (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATENONE)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		count++;
+		if (count >= maxCount)
+		{
+			Logging::warning("RState is not RSTATENONE, but wait is over...");
+			break;
+		}
+	}
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
 	context.core->renderFrame(); // blocking render call
-    context.core->endSession();
+	context.core->endSession();
 	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
 	framebufferCallback();
 	this->saveImage();
@@ -141,13 +165,7 @@ void CoronaRenderer::render()
 	OIIO::TextureSystem *tsystem = this->oslRenderer->renderer.texturesys();
 	std::string statsString = tsystem->getstats(3);
 	Logging::debug(statsString.c_str());
-
-	//for( size_t objId = 0; objId < this->mtco_scene->objectList.size(); objId++)
-	//{
-	//	std::shared_ptr<MayaObject> obj = (std::shared_ptr<MayaObject> )this->mtco_scene->objectList[objId];
-	//	obj->geom = nullptr;
-	//	obj->instance = nullptr;
-	//}
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
 }
 
 // init all data which will be used during a rendering.
@@ -155,6 +173,13 @@ void CoronaRenderer::render()
 void CoronaRenderer::initializeRenderer()
 {
 	Logging::debug("CoronaRenderer::initializeRenderer()");
+
+	clearDataList(); // clear nativeMtlData
+
+	if (MGlobal::mayaState() != MGlobal::kBatch)
+		MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::UIRENDER);
+	else
+		MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER);
 
 	// first we delete any still existing elements.
 	// after a render, the framebuffers, core and passes still exist until a new scene is loaded
@@ -168,10 +193,6 @@ void CoronaRenderer::initializeRenderer()
 	{
 		delete context.settings;
 		context.settings = nullptr;
-	}
-	for (auto it : context.renderPasses)
-	{
-		context.core->destroyRenderPass(it);
 	}
 	context.renderPasses.clear();
 	if (context.fb != nullptr)
@@ -250,6 +271,7 @@ void CoronaRenderer::unInitializeRenderer()
 		context.core->destroyScene(context.scene);
 		context.scene = nullptr;
 	}
+	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::RTYPENONE);
 }
 
 void CoronaRenderer::updateShape(std::shared_ptr<MayaObject> obj)
