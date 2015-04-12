@@ -570,36 +570,28 @@ global proc updateMayaImageFormatControl()
         
     def changeIprRegionProcedure(self):
         log.debug("changeIprRegionProcedure")
-        pass
 
     def iprOptionsProcedure(self):
         log.debug("iprOptionsProcedure")
-        pass
             
     def iprOptionsMenuLabel(self):
         log.debug("iprOptionsMenuLabel")
-        pass
 
     def iprRenderProcedure(self):
         log.debug("iprRenderProcedure")
-        pass
 
     def iprRenderSubMenuProcedure(self):
         log.debug("iprRenderSubMenuProcedure")
-        pass
             
-    def isRunningIprProcedure(self):
-        
+    def isRunningIprProcedure(self):        
         return self.ipr_isrunning
         log.debug("isRunningIprProcedure")
-        pass
             
     def pauseIprRenderProcedure(self, editor, pause):
         log.debug("pauseIprRenderProcedure")
             
     def refreshIprRenderProcedure(self):
         log.debug("refreshIprRenderProcedure")
-        pass
             
     def stopIprRenderProcedure(self):
         self.ipr_isrunning = False

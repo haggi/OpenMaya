@@ -4,6 +4,7 @@
 #include "renderGlobalsFactory.h"
 #include "rendering/rendererFactory.h"
 #include "threads/renderQueueWorker.h"
+#include "utilities/logging.h"
 
 static MCallbackId timerCallbackId = 0;
 
@@ -48,6 +49,7 @@ namespace MayaTo{
 		timerCallbackId = MTimerMessage::addTimerCallback(0.001, RenderQueueWorker::renderQueueWorkerTimerCallback, nullptr);
 		//MSceneMessage::addCallback(MSceneMessage::kAfterNew, MayaToWorld::callAfterNewCallback, nullptr, &stat);
 		MayaToWorld::afterNewCallbackId = MSceneMessage::addCallback(MSceneMessage::kAfterOpen, MayaToWorld::callAfterOpenCallback, nullptr, &stat);
+		LoggingWorker::startId = MTimerMessage::addTimerCallback(0.001, LoggingWorker::LoggingWorkerLoop, nullptr);
 
 		initialize();
 		renderType = WorldRenderType::RTYPENONE;
@@ -55,6 +57,7 @@ namespace MayaTo{
 		worldScenePtr = nullptr;
 		worldRendererPtr = nullptr;
 		worldRenderGlobalsPtr = nullptr;
+
 	};
 
 	MayaToWorld::~MayaToWorld()
@@ -63,6 +66,8 @@ namespace MayaTo{
 			MTimerMessage::removeCallback(timerCallbackId);
 		if (MayaToWorld::afterNewCallbackId != 0)
 			MSceneMessage::removeCallback(MayaToWorld::afterNewCallbackId);
+		if (LoggingWorker::startId != 0)
+			MTimerMessage::removeCallback(LoggingWorker::startId);
 
 		cleanUp();
 	}

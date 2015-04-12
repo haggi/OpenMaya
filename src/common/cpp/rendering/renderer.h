@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include <memory>
+#include <vector>
 
 class MayaObject;
 class MObject;

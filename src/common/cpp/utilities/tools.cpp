@@ -201,7 +201,7 @@ bool IsPathVisible( MDagPath& dp )
 bool IsVisible(MDagPath& node)
 {
 	MFnDagNode dagNode(node.node());
-	if (!IsVisible(dagNode) || IsTemplated(dagNode) || !IsInRenderLayer(node) || !IsPathVisible(node) || !IsLayerVisible(node))
+	if (!IsVisible(dagNode) || IsTemplated(dagNode) || IsPathTemplated(node)  || !IsInRenderLayer(node) || !IsPathVisible(node) || !IsLayerVisible(node))
 		return false;
 	return true;
 }
@@ -249,6 +249,20 @@ bool IsTemplated(MFnDagNode& node)
    return false;
 }
 
+bool IsPathTemplated(MDagPath& path)
+{
+	MStatus stat = MStatus::kSuccess;
+	while (stat == MStatus::kSuccess)
+	{
+		MFnDagNode node;
+		node.setObject(path.node());
+		if (IsTemplated(node))
+			return true;
+		stat = path.pop();
+	}
+	return false;
+}
+
 bool IsLayerVisible(MDagPath& dp)
 {
    MStatus stat = MStatus::kSuccess;
@@ -263,11 +277,13 @@ bool IsLayerVisible(MDagPath& dp)
 		  MFnDependencyNode layerNode(layer, &stat);
 		  if( stat )
 		  {
-			  MGlobal::displayInfo(MString("check layer ") + layerNode.name() + " for node " + dagPath.fullPathName());
+			  //MGlobal::displayInfo(MString("check layer ") + layerNode.name() + " for node " + dagPath.fullPathName());
 			  bool visibility = true;
 			  if(getBool("visibility", layerNode, visibility))
 				  if(!visibility)
 					  return false;
+			  if (getEnumInt("displayType", layerNode) == 1) // template
+				  return false;
 		  }
 	  }
       stat = dagPath.pop();
@@ -279,11 +295,8 @@ bool IsLayerVisible(MDagPath& dp)
 bool IsInRenderLayer(MDagPath& dagPath)
 {
    MObject renderLayerObj = MFnRenderLayer::currentLayer();
-
    MFnRenderLayer curLayer(renderLayerObj);
-
    bool isInRenderLayer = curLayer.inCurrentRenderLayer(dagPath);
-
    if (isInRenderLayer)
       return true;
    else

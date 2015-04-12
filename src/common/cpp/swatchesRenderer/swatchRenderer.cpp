@@ -34,25 +34,20 @@ bool SwatchRenderer::doIteration()
 	MGlobal::displayInfo("doIteration called.");
 	image().create(resolution(), resolution(), 4, MImage::kFloat);
 
-//#ifndef NDEBUG
-//		unsigned int iWidth, iHeight;
-//		image().getSize(iWidth, iHeight);
-//		assert(resolution() == (int)iWidth);
-//		assert(resolution() == (int)iHeight);
-//		assert(MImage::kFloat == image().pixelType());
-//#endif
-
-
-		if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::UIRENDER)
-		{
-			this->renderInterface->getImageData(this->image()); // copy empty image
-			image().convertPixelFormat(MImage::kByte);
-			return true;
-		}
-
-		this->renderInterface->renderSwatch();
-		this->renderInterface->getImageData(this->image());
+	// if another render process is rendering then...
+	if (MayaTo::getWorldPtr()->getRenderState() == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING)
+	{
+		this->renderInterface->getImageData(this->image()); // copy empty image
 		image().convertPixelFormat(MImage::kByte);
 		return true;
+	}
+	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER);
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
+	this->renderInterface->renderSwatch();
+	this->renderInterface->getImageData(this->image());
+	image().convertPixelFormat(MImage::kByte);
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
+	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::RTYPENONE);
+	return true;
 }
 

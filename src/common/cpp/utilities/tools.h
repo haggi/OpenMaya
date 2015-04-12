@@ -61,6 +61,8 @@ bool IsVisible(MDagPath& node);
 
 bool IsTemplated(MFnDagNode& node);
 
+bool IsPathTemplated(MDagPath& node);
+
 bool IsInRenderLayer(MDagPath& dagPath);
 
 bool IsLayerVisible(MDagPath& dagPath);

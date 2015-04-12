@@ -2,6 +2,7 @@
 #define MTM_LOGGING_H
 
 #include <maya/MString.h>
+#include <maya/MTimerMessage.h>
 
 class Logging
 {
@@ -28,12 +29,19 @@ public:
 	static void progress(MString logString, int level = 0);
 	static void detail(MString logString, int level = 0);
 	static void feature(MString logString, int level = 0);
-	static void trace(MString logString, int level = 0);
+	static void trace(MString logString);
 };
 
 MString makeSpace(int level);
 static  Logging::LogLevel log_level = Logging::Info;
 static  Logging::OutputType log_outtype = Logging::ScriptEditor;
 
+
+class LoggingWorker{
+public:
+	static MCallbackId startId;
+	static bool terminateLoop;
+	static void LoggingWorkerLoop(float time, float lastTime, void *userPtr);
+};
 
 #endif

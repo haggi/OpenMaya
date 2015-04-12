@@ -312,10 +312,29 @@ void RenderQueueWorker::renderProcessThread()
 
 void RenderQueueWorker::updateRenderView(EventQueue::Event& e)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	int width, height;
+	renderGlobals->getWidthHeight(width, height);
+
 	if (e.pixelData)
 	{
 		if (MRenderView::doesRenderEditorExist())
 		{
+			// we have cases where the the the render mrender view has changed but the framebuffer callback may have still the old settings.
+			// here we make sure we do not exceed the renderView area.
+			if ((e.tile_xmin != 0) || (e.tile_xmax != width - 1) || (e.tile_ymin != 0) || (e.tile_ymax != height - 1))
+			{
+				if (renderGlobals->getUseRenderRegion())
+				{
+					uint left, right, bottom, top;
+					MRenderView::getRenderRegion(left, right, bottom, top);
+					if ((left != e.tile_xmin) || (right != e.tile_xmax) || (bottom != e.tile_ymin) || (top != e.tile_ymax))
+						return;
+				}
+				else{
+					return;
+				}
+			}
 			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, e.pixelData.get());
 			MRenderView::refresh(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax);
 		}
@@ -375,9 +394,11 @@ void RenderQueueWorker::startRenderQueueWorker()
 				//renderDone = false;
 				int width, height;
 				MayaTo::getWorldPtr()->worldRenderGlobalsPtr->getWidthHeight(width, height);
-				if( MRenderView::doesRenderEditorExist())
+				if (MRenderView::doesRenderEditorExist())
+				{
+					MRenderView::endRender();
 					status = MRenderView::startRender(width, height, true, true);
-
+				}
 				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATETRANSLATING);
 				std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 

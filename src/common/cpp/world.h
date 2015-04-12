@@ -48,6 +48,9 @@ namespace MayaTo{
 		MStringArray objectNames;
 		std::vector<void *> objectPtr;
 		MImage previousRenderedImage;
+		bool _canDoIPR;
+		bool canDoIPR(){ return _canDoIPR; }
+		void setCanDoIPR(bool yesOrNo) { _canDoIPR = yesOrNo; };
 
 		MStringArray shaderSearchPath;
 
@@ -70,7 +73,17 @@ namespace MayaTo{
 		void initializeRenderer();
 		void initializeRenderGlobals();
 		void initializeRenderEnvironment();
-		
+
+		void setRenderType(WorldRenderType type)
+		{
+			this->renderType = type;
+		}
+
+		WorldRenderType getRenderType()
+		{
+			return this->renderType;
+		}
+
 		void setRenderState(WorldRenderState state)
 		{
 			this->renderState = state;

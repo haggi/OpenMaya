@@ -17,6 +17,7 @@
 #include <maya/MVectorArray.h>
 #include <maya/MFileIO.h>
 #include <maya/MFnSingleIndexedComponent.h>
+#include <maya/MFnComponent.h>
 
 #include "mayaScene.h"
 #include "utilities/logging.h"
@@ -91,8 +92,10 @@ bool MayaScene::lightObjectIsInLinkedLightList(std::shared_ptr<MayaObject> light
 	return false;
 }
 
-// there are two types of linking, light linking and shadow linking.
-// Light linking will be done in the object attributes, whereas shadow linking is an attribute of a light
+// we have to take care for the component assignments in light linking. 
+// if a mesh has per face shader assignments, we have to ask for the components to get the correct light linking
+// because lightLink.getLinkedLights() will give us a wrong result in this case.
+
 void MayaScene::getLightLinking()
 {
 	//Logging::debug(MString("----------- MayaScene::getLightLinking ---------------"));
@@ -112,8 +115,15 @@ void MayaScene::getLightLinking()
 			MObjectArray shadingGroups, components;
 			MFnMesh meshFn(obj->mobject);
 			meshFn.getConnectedSetsAndMembers(obj->instanceNumber, shadingGroups, components, true);	
-			Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");
-			if (shadingGroups.length() > 1)
+			//Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");
+			int componentElements = 0;
+			for (uint cId = 0; cId < components.length(); cId++)
+			{
+				MFnComponent compFn(components[cId]);
+				if (compFn.componentType() == MFn::kMeshPolygonComponent)
+					componentElements += compFn.elementCount();
+			}
+			if ((shadingGroups.length() > 1) || (componentElements > 0))
 			{
 				Logging::debug(MString("Object ") + obj->shortName + " has " + components.length() + " component groups and " + shadingGroups.length() + " shading groups.");
 				for (uint cId = 0; cId < components.length(); cId++)

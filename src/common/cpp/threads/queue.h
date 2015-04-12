@@ -43,7 +43,7 @@ namespace EventQueue
 		Types type;
 		PixelMode pixelMode;
 		size_t numPixels;
-
+		MString message;
 		// i use shared ptr here because if I push it into a queue, I make a copy
 		// of the original what means I would have to move the move the unique_ptr<>
 		// of a const object because it is automatically created Event( const & Event ) and const
@@ -119,8 +119,10 @@ public:
 
 
 static concurrent_queue<Event> EventList;
+static concurrent_queue<Event> LogEventList;
 
 concurrent_queue<Event> *theQueue();
+concurrent_queue<Event> *theLogQueue();
 
 } // namespace EventQueue
 

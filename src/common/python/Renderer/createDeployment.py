@@ -128,7 +128,7 @@ def createDeployment(renderer, shortCut, mayaRelease):
         destBinDir = devDestDir + "/bin/"
         if not destBinDir.exists():
             destBinDir.makedirs()
-        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_vc_corona.dll", "Config-15653683.conf"]:
+        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_gl_vc_corona.dll", "wxmsw30u_vc_corona.dll", "Config-6773585.conf", "oslc.exe", "oslinfo.exe"]:
             sourceFile = binDir + "/" + f
             destFile =   destBinDir + f
             print "Copy ", sourceFile, "to", destFile
@@ -208,10 +208,166 @@ def createDeployment(renderer, shortCut, mayaRelease):
             pass
         shutil.copytree(basePath + "/" + folder, deployDir + "/" + folder)
 
+def createDeploymentCombined(renderer, shortCut):
+    
+    projectName = "mayaTo{0}".format(renderer.capitalize())
+    if os.name == 'nt':
+        basePath = path.path("H:/UserDatenHaggi/Documents/coding/OpenMaya/src/{0}".format(projectName))
+    else:
+        print "Os not supported"
+        return
+    
+    sourceDir = path.path(basePath + "/" +  shortCut + "_devmodule")
+    devDestDir = path.path("{0}/deployment/{1}".format(basePath, projectName))
+    if devDestDir.exists():
+        print "removing old {0} dir".format(devDestDir)
+        shutil.rmtree(devDestDir)
+
+    deploymentDir =  path.path("{0}/deployment".format(basePath))
+    # dev destination directories                
+    try:
+        print "Creating destination directory", devDestDir
+        os.makedirs(devDestDir)
+    except WindowsError:
+        print "\nERROR: Failure creating {0}\n".format(devDestDir)
+        return
+
+    for mayaVersionName in ["2014", "2015", "2016"]:
+        try:
+            mayaVersionSubPlugInDir = "{deploymentDir}/{mayaVersion}/plug-ins".format(deploymentDir=devDestDir, mayaVersion=mayaVersionName)
+            print "Creating version depenedent directory", mayaVersionSubPlugInDir
+            os.makedirs(mayaVersionSubPlugInDir)
+            pluginFile = path.path(sourceDir + "/" +  mayaVersionName + "/plug-ins/mayaTo" + renderer.capitalize() + "_maya" + mayaVersionName + ".mll")
+            pluginDestFile = mayaVersionSubPlugInDir + "/mayaTo" + renderer.capitalize() + ".mll"
+            shutil.copy2(pluginFile, pluginDestFile)
+        except:
+            print "Unable to make plugins for", mayaVersionName
+    # get folders from dev module
+    devFolders = ['shaders']
+    
+    for folder in devFolders:
+        print "Creating destination directory", devDestDir + "/" + folder
+        os.makedirs(devDestDir + "/" + folder)
+    
+    #module file
+    shutil.copy(sourceDir+"/mayaTo" + renderer.capitalize() + ".mod", devDestDir)
+    mfh = open(devDestDir+"/mayaTo" + renderer.capitalize() + ".mod", "r")
+    content = mfh.readlines()
+    mfh.close()
+    mfh = open(devDestDir+"/mayaTo" + renderer.capitalize() + ".mod", "w")
+    for c in content:
+        mfh.write(c.replace(shortCut +"_devmodule", "mayaTo" + renderer.capitalize()))
+    mfh.close()
+
+    
+    #mll
+    pluginsDir = path.path(sourceDir + "/plug-ins/")
+    for plugIn in pluginsDir.listdir("*.mll"):
+        destMayaVersion = plugIn.split("_")[-1].replace("maya", "").split(".")[0]
+        plugInDestDir = devDestDir + "/" + destMayaVersion + "/plug-ins"
+    
+        files = pluginsDir.listdir("*.xml")
+        for xmlFile in files:
+            print "Copy xml file", xmlFile
+            shutil.copy(xmlFile, plugInDestDir)
+            
+    #ressources
+    scDir = path.path(sourceDir + "/ressources")
+    shutil.copytree(scDir, devDestDir + "/ressources")
+    
+    manuapPdf = None
+    #bin
+    if renderer == "appleseed":
+        dkDir = path.path(sourceDir.parent + "/devkit/appleseed_devkit_win64/bin/Release")
+        for f in dkDir.listdir():
+            shutil.copy(f, devDestDir + "/bin")
+
+    
+    manualPdf = path.path("C:/daten/web/openmaya/manuals/{0}/{0}.pdf".format(projectName))
+    if renderer == "corona":
+        binDir = sourceDir + "/bin"
+        destBinDir = devDestDir + "/bin/"
+        if not destBinDir.exists():
+            destBinDir.makedirs()
+        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_gl_vc_corona.dll", "wxmsw30u_vc_corona.dll", "Config-6773585.conf", "oslc.exe", "oslinfo.exe"]:
+            sourceFile = binDir + "/" + f
+            destFile =   destBinDir + f
+            print "Copy ", sourceFile, "to", destFile
+            shutil.copy(sourceFile, devDestDir + "/bin")
+            
+        shaderDir = sourceDir + "/shaders"
+        shaderDestDir = devDestDir + "/shaders"
+        shutil.rmtree(shaderDestDir)
+        shutil.copytree(shaderDir, shaderDestDir)
+                
+    if renderer == "indigo":
+        binDir = sourceDir + "/bin"
+        destDir = devDestDir + "/bin"
+        shutil.copytree(binDir, destDir)
+        try:
+            os.remove(destDir + "/licence.sig")
+        except:
+            pass
+        
+    if manualPdf is not None:
+        docsDir = deploymentDir + "/docs"
+        print "Check", docsDir
+        if not docsDir.exists():
+            print "Create docs dir"
+            docsDir.makedirs()
+        manualPdf.copy2(docsDir)
+        
+    iconsSourceDir = "{0}/icons/".format(sourceDir)
+    iconsDestDir = "{0}/icons/".format(devDestDir)
+    shutil.copytree(iconsSourceDir, iconsDestDir)
+
+    #common python scripts
+    scDir = path.path(sourceDir.parent.parent + "/common/python/")
+    shutil.copytree(scDir, devDestDir + "/scripts/")
+    scDir = devDestDir + "/scripts/"
+    files = scDir.listdir(".*")
+    for f in files:
+        if f.isdir():
+            f.rmtree()
+        else:
+            f.remove()
+    scDir = path.path(scDir + "Renderer")
+    files = scDir.listdir("*.pyc")
+    for f in files:
+        f.remove()
+
+    #renderer python scripts
+    for root, dirs, files in os.walk(sourceDir + "/scripts/"):
+            for file in files:
+                ff = path.path(os.path.join(root, file))
+                if ff.endswith(".pyc"):
+                    continue
+                if file.startswith("."):
+                    continue
+                dst = ff.replace(sourceDir, devDestDir)
+                print "copy", ff, "to", dst
+                shutil.copy(ff, dst)
+            for d in dirs:
+                dd = path.path(os.path.join(root, d))
+                dst = dd.replace(sourceDir, devDestDir)
+                print "mkdir", dst
+                os.makedirs(dst)
+                
+    # get external folders 
+    extFolders = ['{0}Examples'.format(projectName)]
+        
+    for folder in extFolders:
+        deployDir = devDestDir.parent
+        try:
+            shutil.rmtree(deployDir + "/" + folder)
+        except:
+            pass
+        shutil.copytree(basePath + "/" + folder, deployDir + "/" + folder)
     
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")    
-    createDeployment("corona", "mtco", "2014")    
-    createDeployment("corona", "mtco", "2015")    
+    #createDeployment("corona", "mtco", "2014")    
+    #createDeployment("corona", "mtco", "2015")
+    createDeploymentCombined("corona", "mtco")
     print "Deployment creation done"
     #createDeployment("indigo", "mtin", "2014")
