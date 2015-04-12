@@ -39,7 +39,7 @@ void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 {
  //   // Create a color called "gray" and insert it into the assembly.
     static const float GrayReflectance[] = { 0.8f, 0.8f, 0.8f };
-	if( this->scenePtr->colors().get_by_name("gray") == NULL)
+	if( this->scenePtr->colors().get_by_name("gray") == nullptr)
 	{
 		this->scenePtr->colors().insert(
 			asr::ColorEntityFactory::create(
@@ -48,7 +48,7 @@ void AppleseedRenderer::addDefaultMaterial(asr::Assembly *assembly)
 					.insert("color_space", "srgb"),
 				asr::ColorValueArray(3, GrayReflectance)));
 	}
-	if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == NULL)
+	if( assembly->bsdfs().get_by_name("diffuse_gray_brdf") == nullptr)
 	{
 		// Create a BRDF called "diffuse_gray_brdf" and insert it into the assembly.
 		assembly->bsdfs().insert(
@@ -115,7 +115,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	MString materialName = shadingGroupNode.name();
 	MFnDependencyNode shaderNode(surfaceShader);
 	MString shaderName = shaderNode.name();
-	logger.debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
+	Logging::debug(MString("Translating mayaLambertShader: ") + shaderNode.name());
 
 	MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
 	MString incandescenceAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("incandescence"));
@@ -136,7 +136,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	asf::auto_release_ptr<asr::BSDF> lambertShader;
 		
 	asr::Entity *entity = assembly->bsdfs().get_by_name(shaderName.asChar());
-	if( entity != NULL)
+	if( entity != nullptr)
 		assembly->bsdfs().remove(entity);
 
 	lambertShader = asr::LambertianBRDFFactory().create(
@@ -148,7 +148,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 
 	MString surfaceShaderNode = shaderName + "phys_surf";
 	entity = assembly->surface_shaders().get_by_name(surfaceShaderNode.asChar());
-	if( entity != NULL)
+	if( entity != nullptr)
 		assembly->surface_shaders().remove(entity);
 
 	asf::auto_release_ptr<asr::SurfaceShader> lambertSurfaceShader;
@@ -160,7 +160,7 @@ void AppleseedRenderer::defineMayaLambertShader(asr::Assembly *assembly, MObject
 	assembly->surface_shaders().insert(lambertSurfaceShader);
 
 	entity = assembly->materials().get_by_name(materialName.asChar());
-	if( entity != NULL)
+	if( entity != nullptr)
 		assembly->materials().remove(entity);
 
 	asr::ParamArray materialParams;
@@ -187,7 +187,7 @@ void AppleseedRenderer::defineMayaPhongShader(asr::Assembly *assembly, MObject& 
 	//MString materialName = shadingGroupNode.name();
 	//MFnDependencyNode shaderNode(surfaceShader);
 	//MString shaderName = shaderNode.name();
-	//logger.debug(MString("Translating mayaPhongShader: ") + shaderNode.name());
+	//Logging::debug(MString("Translating mayaPhongShader: ") + shaderNode.name());
 
 	//MString colorAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("color"));
 
@@ -223,7 +223,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 	//MString materialName = shadingGroupNode.name();
 	//MFnDependencyNode shaderNode(surfaceShader);
 	//MString shaderName = shaderNode.name();
-	//logger.debug(MString("Translating physicalSurfaceShader: ") + shaderNode.name());
+	//Logging::debug(MString("Translating physicalSurfaceShader: ") + shaderNode.name());
 
 	//MString matteReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("matte_reflectance"));
 	//MString specReflAttributeDefinition = this->defineColorAttributeWithTexture(shaderNode, MString("specular_reflectance"));
@@ -525,7 +525,7 @@ void AppleseedRenderer::definePhysSurfShader(asr::Assembly *assembly, MObject& s
 
 	//if(this->defineAOVShaders(assembly, surfaceShaderName))
 	//{
-	//	logger.debug(MString("Successfully created an aov shader called: ") + surfaceShaderName);
+	//	Logging::debug(MString("Successfully created an aov shader called: ") + surfaceShaderName);
 	//}
 
 	//asr::ParamArray materialParams;
@@ -566,27 +566,27 @@ void AppleseedRenderer::defineBumpMap(asr::ParamArray& materialParams, MObject& 
 	MObject bumpObj = getOtherSideNode(MString("normalCamera"), surfaceShader);
 	if( bumpObj == MObject::kNullObj)
 	{
-		logger.debug(MString("No normalCamera input found."));
+		Logging::debug(MString("No normalCamera input found."));
 		return;
 	}
 	if( !bumpObj.hasFn(MFn::kBump))
 	{
-		logger.debug(MString("Found cameraNormal input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj) + " but is NO bump2d node");
+		Logging::debug(MString("Found cameraNormal input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj) + " but is NO bump2d node");
 		return;
 	}
-	logger.debug(MString("Found bump input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj));
+	Logging::debug(MString("Found bump input for shader: ") + shaderNode.name() + " : " + getObjectName(bumpObj));
 	MFnDependencyNode bumpNode(bumpObj);
 	MObject fileObj = getOtherSideNode(MString("bumpValue"), bumpObj);
 	if( fileObj == MObject::kNullObj)
 	{
-		logger.debug(MString("No bump file node found."));
+		Logging::debug(MString("No bump file node found."));
 		return;
 	}	
 
 	MString textureAttributeDefinition = this->defineScalarAttributeWithTexture(bumpNode, MString("bumpValue"));
 	if( textureAttributeDefinition == "")
 	{
-		logger.debug(MString("BumpValue texture definition == empty --> invalid."));
+		Logging::debug(MString("BumpValue texture definition == empty --> invalid."));
 		return;
 	}
 	int bumpInterp = 0;
@@ -604,9 +604,9 @@ void AppleseedRenderer::defineBumpMap(asr::ParamArray& materialParams, MObject& 
 
 bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physSurfaceShaderName)
 {
-	//if( assembly->surface_shaders().get_by_name("aovs") != NULL)
+	//if( assembly->surface_shaders().get_by_name("aovs") != nullptr)
 	//{
-	//	logger.debug("AOV collection shader already defined.");
+	//	Logging::debug("AOV collection shader already defined.");
 	//	physSurfaceShaderName = "aovs";
 	//	return true;
 	//}
@@ -617,12 +617,12 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 	//MPlug AOVs = depFn.findPlug(MString("AOVs"), &stat);
 	//if( !stat )
 	//{
-	//	logger.debug("Unable to find AOVs plug.");
+	//	Logging::debug("Unable to find AOVs plug.");
 	//	return false;
 	//}
 	//if( AOVs.numElements() == 0)
 	//{
-	//	logger.debug("No elements in AOVs.");
+	//	Logging::debug("No elements in AOVs.");
 	//	return false;
 	//}
 
@@ -635,12 +635,12 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 	//	elementPlug.connectedTo(plugArray, true, false, &stat);
 	//	if( plugArray.length() == 0)
 	//	{
-	//		logger.debug(MString("No aovs connected to ") + elementPlug.name());
+	//		Logging::debug(MString("No aovs connected to ") + elementPlug.name());
 	//		continue;
 	//	}
 	//	MObject shaderNode = plugArray[0].node();
 	//	MString nodeName = getObjectName(shaderNode);
-	//	logger.debug(elementPlug.name() + " connected to: " + nodeName);
+	//	Logging::debug(elementPlug.name() + " connected to: " + nodeName);
 	//	MString shaderName;
 	//	MFn::Type shaderType = shaderNode.apiType();
 	//	MFnDependencyNode shaderFn(shaderNode);
@@ -681,12 +681,12 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 	//	{
 	//		this->defineMayaPhongShader(assembly, shaderNode, shaderName);
 	//	}	
-	//	logger.debug(MString("Inserting aov shader into array: ") + shaderName);
+	//	Logging::debug(MString("Inserting aov shader into array: ") + shaderName);
 	//	params.insert((MString("surface_shader")+(i+2)).asChar(), shaderName);
  //   }
 	//if( params.size() == 0)
 	//{
-	//	logger.debug("No connections found in AOVs.");
+	//	Logging::debug("No connections found in AOVs.");
 	//	return false;
 	//}
 	//
@@ -703,7 +703,7 @@ bool AppleseedRenderer::defineAOVShaders(asr::Assembly *assembly, MString& physS
 }
 
 // translate shaders here, will be seperated later if we have a real shading language
-void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, mtap_MayaObject *obj, asf::StringArray& materialNames)
+void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, std::shared_ptr<MayaObject> obj, asf::StringArray& materialNames)
 {
 	asr::Assembly *assembly = getObjectAssembly(obj);
 
@@ -727,12 +727,12 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 
 
 		// here I reuse the shader if it already exists in the assembly
-		if( assembly->materials().get_by_name(materialName.asChar()) != NULL)
+		if( assembly->materials().get_by_name(materialName.asChar()) != nullptr)
 		{
 			materialNames.push_back(materialName.asChar());
 			continue;		
 		}else{
-			logger.debug(MString("----MaterialName: ") + materialName + " does not exist in assembly: " + assembly->get_name());
+			Logging::debug(MString("----MaterialName: ") + materialName + " does not exist in assembly: " + assembly->get_name());
 		}
 
 		if (surfaceShaderNode.hasFn(MFn::kLambert))
@@ -743,7 +743,7 @@ void AppleseedRenderer::defineObjectMaterial(mtap_RenderGlobals *renderGlobals, 
 		}
 
 		// if we have double sided shading, we have a xx_back material 
-		if( assembly->materials().get_by_name((materialName + "_back").asChar()) != NULL)
+		if( assembly->materials().get_by_name((materialName + "_back").asChar()) != nullptr)
 		{
 			materialNames.push_back((materialName + "_back").asChar());
 		}
@@ -766,7 +766,7 @@ void AppleseedRenderer::updateShader( MObject shadingNode)
 	if(found)
 	{
 		ShaderAssemblyAssignment saa = ShaderAssemblyAssignments[assignmentId];
-		logger.debug(MString("Found shader assingments for shading node: ") + getObjectName(shadingNode));		
+		Logging::debug(MString("Found shader assingments for shading node: ") + getObjectName(shadingNode));		
 		for( size_t assId = 0; assId < saa.assemblyList.size(); assId++)
 			definePhysSurfShader(saa.assemblyList[assId], saa.shadingGroup, true);
 	}

@@ -109,9 +109,9 @@ void AppleseedRenderer::createMayaShadingNode(ShadingNode& sn, asr::Assembly* lo
 
 void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembly* localAssembly)
 {
-	if( localAssembly == NULL )
+	if( localAssembly == nullptr )
 	{	
-		logger.error("createAppleseedShadingNode::Local assembly is NULL.");
+		Logging::error("createAppleseedShadingNode::Local assembly is NULL.");
 		return;
 	}
 
@@ -156,12 +156,12 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	//if( pystring::find(appleName.asChar(), "file") > -1)
 	//	assembly = this->masterAssembly;
 
-	asr::Entity *entity = NULL;
+	asr::Entity *entity = nullptr;
 
 	if( appleName == "Diffuse_edf")
 	{
 		entity = assembly->edfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->edfs().insert(asr::DiffuseEDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->edfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -169,7 +169,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Cone_edf")
 	{
 		entity = assembly->edfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->edfs().insert(asr::ConeEDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->edfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -177,7 +177,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Ao_surface_shader")
 	{
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->surface_shaders().insert(asr::AOSurfaceShaderFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -185,7 +185,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Specular_btdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::SpecularBTDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -193,7 +193,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Diagnostic_surface_shader")
 	{
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->surface_shaders().insert(asr::DiagnosticSurfaceShaderFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -201,7 +201,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Bsdf_blend")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::BSDFBlendFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -209,7 +209,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Ashikhmin_brdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::AshikhminBRDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -217,7 +217,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Microfacet_brdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::MicrofacetBRDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -225,7 +225,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Diffuse_btdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::DiffuseBTDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -233,7 +233,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Constant_surface_shader")
 	{
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->surface_shaders().insert(asr::ConstantSurfaceShaderFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -241,7 +241,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Specular_brdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::SpecularBRDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -249,7 +249,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Bsdf_mix")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::BSDFMixFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -257,7 +257,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Surface_shader_collection")
 	{
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->surface_shaders().insert(asr::SurfaceShaderCollectionFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -271,20 +271,20 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 		if( shadingEngine != MObject::kNullObj )
 		{
 			MString shadingEngineName = getObjectName(shadingEngine);
-			logger.debug(MString("Defining appleseed material with shading engine name: ") + shadingEngineName);
+			Logging::debug(MString("Defining appleseed material with shading engine name: ") + shadingEngineName);
 			entity = assembly->materials().get_by_name(shadingEngineName.asChar());
-			if( entity == NULL)
+			if( entity == nullptr)
 				assembly->materials().insert(asr::GenericMaterialFactory().create(shadingEngineName.asChar(), asr::ParamArray()));
 			entity = assembly->materials().get_by_name(shadingEngineName.asChar());
 			nodeFound = true;
 		}else{
-			logger.warning(MString("Could not find shading engine connection of material node: ") + sn.fullName);
+			Logging::warning(MString("Could not find shading engine connection of material node: ") + sn.fullName);
 		}
 	}
 	if( appleName == "Lambertian_brdf")
 	{
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->bsdfs().insert(asr::LambertianBRDFFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->bsdfs().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -292,7 +292,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 	if( appleName == "Physical_surface_shader")
 	{
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
-		if( entity == NULL)
+		if( entity == nullptr)
 			assembly->surface_shaders().insert(asr::PhysicalSurfaceShaderFactory().create(sn.fullName.asChar(), asr::ParamArray()));
 		entity = assembly->surface_shaders().get_by_name(sn.fullName.asChar());
 		nodeFound = true;
@@ -308,7 +308,7 @@ void AppleseedRenderer::createAppleseedShadingNode(ShadingNode& sn, asr::Assembl
 
 }
 
-void AppleseedRenderer::defineShadingNodes(mtap_MayaObject *obj)
+void AppleseedRenderer::defineShadingNodes(std::shared_ptr<MayaObject> obj)
 {
 	for( size_t sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{

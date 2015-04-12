@@ -3,11 +3,13 @@
 #include <maya/MStatus.h>
 #include <maya/MDrawRegistry.h>
 
+#include "foundation/core/appleseed.h"
 //#include "mtap_common/mtap_standinMeshNode.h"
 #include "mayatoappleseed.h"
 #include "mtap_common/mtap_renderGlobalsNode.h"
 //#include "mtap_common/mtap_standinLocator.h"
 #include "utilities/tools.h"
+#include "threads/renderQueueWorker.h"
 #include "world.h"
 
 // -------------------- auto shader include start --------------------
@@ -96,7 +98,7 @@ static const MString asPhysical_surface_shadersFullClassification("appleseed/mat
 
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.3"
+#define VERSION "0.31"
 
 //static const MString mtapSurfaceShaderName("appleseedSurfaceShader");
 //static const MString mtapSurfaceShaderNameDrawDBClassification("drawdb/shader/surface/appleseed/mattetranslucent");
@@ -107,7 +109,9 @@ MStatus initializePlugin( MObject obj )
 	const MString	UserClassify( "shader/surface" );
 
 
-	MGlobal::displayInfo(MString("Loading plugin MayaToAppleseed version: ") + MString(VERSION));
+	MGlobal::displayInfo(MString("MayaToAppleseed version: ") + MString(VERSION));
+	MGlobal::displayInfo(MString("Based on Appleseed version: ") + foundation::Appleseed::get_synthetic_version_string());
+
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
 
@@ -198,7 +202,9 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	defineWorld();
+	MayaTo::defineWorld();
+	MString loadPath = plugin.loadPath();
+	MayaTo::getWorldPtr()->shaderSearchPath.append(loadPath);
 
 	return status;
 }
@@ -207,6 +213,8 @@ MStatus uninitializePlugin( MObject obj)
 {
 	MStatus   status;
 	MFnPlugin plugin( obj );
+
+	MayaTo::deleteWorld();
 
 	const MString UserClassify( "shader/surface" );
 	

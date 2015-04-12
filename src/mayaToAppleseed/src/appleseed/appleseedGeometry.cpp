@@ -18,20 +18,20 @@ using namespace AppleRender;
 
 #define MTAP_MESH_STANDIN_ID 0x0011CF7B
 
-void AppleseedRenderer::defineMesh(mtap_MayaObject *obj)
+void AppleseedRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
 {}
-void AppleseedRenderer::defineNurbsSurface(mtap_MayaObject *obj)
+void AppleseedRenderer::defineNurbsSurface(std::shared_ptr<MayaObject> obj)
 {}
 
-void AppleseedRenderer::defineParticle(mtap_MayaObject *obj)
+void AppleseedRenderer::defineParticle(std::shared_ptr<MayaObject> obj)
 {
 
 }
 
-void AppleseedRenderer::defineFluid(mtap_MayaObject *obj)
+void AppleseedRenderer::defineFluid(std::shared_ptr<MayaObject> obj)
 {}
 
-void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, MString fileName, asr::MeshObjectArray& meshArray)
+void AppleseedRenderer::createMeshFromFile(std::shared_ptr<MayaObject> obj, MString fileName, asr::MeshObjectArray& meshArray)
 {
 	asr::MeshObjectReader reader;
 	asf::SearchPaths searchPaths;
@@ -42,7 +42,7 @@ void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, MString fileNam
 	reader.read(searchPaths, objName.asChar(), params, meshArray);
 }
 
-void AppleseedRenderer::createMeshFromFile(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray)
+void AppleseedRenderer::createMeshFromFile(std::shared_ptr<MayaObject> obj, asr::MeshObjectArray& meshArray)
 {	
 	MFnDependencyNode depFn(obj->mobject);
 	MString proxyFile("");
@@ -58,7 +58,7 @@ MObject AppleseedRenderer::checkSmoothMesh(MObject& meshObject, MFnMeshData& smo
 	MFnMesh mesh(meshObject, &stat);
 	if(!stat)
 	{
-		logger.error(MString("checkSmoothMesh : could not get mesh: ") + stat.errorString());
+		Logging::error(MString("checkSmoothMesh : could not get mesh: ") + stat.errorString());
 		return object;
 	}
 
@@ -68,7 +68,7 @@ MObject AppleseedRenderer::checkSmoothMesh(MObject& meshObject, MFnMeshData& smo
 		if( !displaySmoothMesh )
 			return object;
 	}else{
-		logger.error(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
+		Logging::error(MString("generateSmoothMesh : could not get displaySmoothMesh attr "));
 		return object;
 	}
 	
@@ -76,14 +76,14 @@ MObject AppleseedRenderer::checkSmoothMesh(MObject& meshObject, MFnMeshData& smo
 	MObject smoothMeshObj = mesh.generateSmoothMesh(meshDataObj, &stat);
 	if(!stat)
 	{
-		logger.error(MString("generateSmoothMesh : failed"));
+		Logging::error(MString("generateSmoothMesh : failed"));
 		return object;
 	}
 	
 	MFnMesh smoothMeshDn(smoothMeshObj, &stat);
 	if(!stat)
 	{
-		logger.error(MString("generateSmoothMesh : could not create smoothMeshDn: ") + stat.errorString());
+		Logging::error(MString("generateSmoothMesh : could not create smoothMeshDn: ") + stat.errorString());
 		return object;
 	}
 		
@@ -91,7 +91,7 @@ MObject AppleseedRenderer::checkSmoothMesh(MObject& meshObject, MFnMeshData& smo
 }
 
 
-void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
+void AppleseedRenderer::createMesh(std::shared_ptr<MayaObject> obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
 {
 
 	// If the mesh has an attribute called "mtap_standin_path" and it contains a valid entry, then try to read the
@@ -126,7 +126,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 
 	// check for standInNode connection
 	MObjectArray connectedElements;
-	logger.debug(MString("findConnectedNodeTypes ") + meshFn.name());
+	Logging::debug(MString("findConnectedNodeTypes ") + meshFn.name());
 	findConnectedNodeTypes(MTAP_MESH_STANDIN_ID, meshObject, connectedElements, false);
 
 	if( connectedElements.length() > 0)
@@ -134,17 +134,17 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 
 		if( connectedElements.length() > 1)
 		{
-			logger.warning(MString("Found more than 1 standin elements:"));
+			Logging::warning(MString("Found more than 1 standin elements:"));
 			for( uint i = 0; i < connectedElements.length(); i++)
 			{
-				logger.warning(MString("Standin element: ") + getObjectName(connectedElements[i]));
+				Logging::warning(MString("Standin element: ") + getObjectName(connectedElements[i]));
 			}
-			logger.warning(MString("Using element: ") + getObjectName(connectedElements[0]));
+			Logging::warning(MString("Using element: ") + getObjectName(connectedElements[0]));
 		}
 		MFnDependencyNode depFn(connectedElements[0]);
 		if(getString(MString("binMeshFile"), depFn, proxyFile))
 		{
-			logger.debug(MString("Reading binarymesh from file: ") + proxyFile);
+			Logging::debug(MString("Reading binarymesh from file: ") + proxyFile);
 			isProxyArray = true;
 			createMeshFromFile(obj, proxyFile, meshArray);
 			return;
@@ -164,7 +164,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 	MFloatArray uArray, vArray;
 	meshFn.getUVs(uArray, vArray);
 
-	logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
+	Logging::debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
     // Create a new mesh object.
 	//asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
@@ -230,7 +230,7 @@ void AppleseedRenderer::createMesh(mtap_MayaObject *obj, asr::MeshObjectArray& m
 		int perFaceShadingGroup = 0;
 		if( obj->perFaceAssignments.length() > 0)
 			perFaceShadingGroup = obj->perFaceAssignments[faceId];
-		//logger.info(MString("Face ") + faceId + " will receive SG " +  perFaceShadingGroup);
+		//Logging::info(MString("Face ") + faceId + " will receive SG " +  perFaceShadingGroup);
 
 		for( int triId = 0; triId < numTris; triId++)
 		{

@@ -109,7 +109,7 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 void mtap_ITileCallback::post_render(
 		const asr::Frame* frame)
 {
-	//logger.debug(MString("Post render interactive frame:"));
+	//Logging::debug(MString("Post render interactive frame:"));
 	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
 	size_t numPixels = frame_props.m_canvas_width * frame_props.m_canvas_height;

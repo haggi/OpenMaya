@@ -70,13 +70,13 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 	asf::auto_release_ptr<asr::EnvironmentEDF> environmentEDF;
 	
 	bool doUpdate = false;
-	if(this->scenePtr->environment_shaders().get_by_name("sky_shader") != NULL)
+	if(this->scenePtr->environment_shaders().get_by_name("sky_shader") != nullptr)
 	{
 		 //this->scenePtr->environment_shaders().remove(this->scenePtr->environment_shaders().get_by_name("sky_shader"));
 		 doUpdate = true;
 	}
 
-	if( this->scenePtr->environment_edfs().get_by_name("sky_edf")  != NULL)
+	if( this->scenePtr->environment_edfs().get_by_name("sky_edf")  != nullptr)
 	{
 		 //this->scenePtr->environment_edfs().remove(this->scenePtr->environment_edfs().get_by_name("sky_edf"));
 		 doUpdate = true;
@@ -173,17 +173,17 @@ void AppleseedRenderer::defineEnvironment(mtap_RenderGlobals *renderGlobals)
 						renderGlobals->sun_theta = theta;
 						renderGlobals->sun_phi = RadToDeg(phi);
 
-						logger.debug(MString("converted unit to theta: ") + renderGlobals->sun_theta + " and phi: " + renderGlobals->sun_phi);
+						Logging::debug(MString("converted unit to theta: ") + renderGlobals->sun_theta + " and phi: " + renderGlobals->sun_phi);
 					}else{
-						logger.warning(MString("Problems creating tmatrix from: ") + getObjectName(lightNode));
+						Logging::warning(MString("Problems creating tmatrix from: ") + getObjectName(lightNode));
 					}
 				}else{
-					logger.warning("physicalSunConnection plug has no connection, but use physical sun is turned on, please correct.");
+					Logging::warning("physicalSunConnection plug has no connection, but use physical sun is turned on, please correct.");
 				}
 			}
 
 			asr::EnvironmentEDF *sky = this->scenePtr->environment_edfs().get_by_name("sky_edf");
-			if( sky != NULL )
+			if( sky != nullptr )
 				this->scenePtr->environment_edfs().remove(sky);
 
 			if(skyModel == 0) // preetham
@@ -274,11 +274,11 @@ void AppleseedRenderer::updateEnv(MObject mobj)
 	MString gradHorizName = "gradientHorizon";
 	MString gradZenitName = "gradientZenit";
 
-	asr::ColorEntity *entity = NULL;
+	asr::ColorEntity *entity = nullptr;
 	entity = this->project->get_scene()->colors().get_by_name(envName.asChar());
-	if( entity != NULL )
+	if( entity != nullptr )
 	{
-		logger.debug("Found envColor entity");
+		Logging::debug("Found envColor entity");
 		asr::ColorValueArray cva = entity->get_values();
 		cva[0] = envColor.r;
 		cva[1] = envColor.g;

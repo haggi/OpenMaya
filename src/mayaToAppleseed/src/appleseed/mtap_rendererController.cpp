@@ -6,7 +6,7 @@ static Logging logger;
 void mtap_IRendererController::on_rendering_begin()
 {
 	//IRendererController::on_rendering_begin();
-	if( this->entityUpdateProc != NULL)
+	if( this->entityUpdateProc != nullptr)
 	{
 		this->entityUpdateProc();
 	}
@@ -29,7 +29,7 @@ void mtap_IRendererController::on_frame_begin()
 {
 	this->status = IRendererController::ContinueRendering;
 
-	//if( this->entityUpdateProc != NULL)
+	//if( this->entityUpdateProc != nullptr)
 	//{
 	//	this->entityUpdateProc();
 	//}
@@ -40,7 +40,7 @@ void mtap_IRendererController::on_frame_begin()
 void mtap_IRendererController::on_frame_end()
 {
 	//IRendererController::on_frame_end();
-	//if( this->entityUpdateProc != NULL)
+	//if( this->entityUpdateProc != nullptr)
 	//{
 	//	this->entityUpdateProc();
 	//}

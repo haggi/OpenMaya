@@ -15,13 +15,11 @@ class mtap_ObjectAttributes : public ObjectAttributes
 {
 public:
 	mtap_ObjectAttributes();
-	mtap_ObjectAttributes(mtap_ObjectAttributes *other);
+	mtap_ObjectAttributes(std::shared_ptr<ObjectAttributes>);
 	bool needsOwnAssembly;
 	MMatrix objectMatrix;
-	mtap_MayaObject *assemblyObject;
+	//std::shared_ptr<MayaObject> assemblyObject;
 };
-
-
 
 class mtap_MayaObject : public MayaObject
 {
@@ -31,16 +29,13 @@ public:
 	~mtap_MayaObject();
 
 	virtual bool geometryShapeSupported();
-	virtual mtap_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
-	virtual void getMaterials();
-	asr::Assembly *getObjectAssembly();
-	mtap_MayaObject *getAssemblyObject();
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = nullptr);
+	std::shared_ptr<MayaObject> getAssemblyObject();
 	MString getAssemblyInstName();
 	MString getAssemblyName();
 	MString getObjectName();
 	bool needsAssembly();
-	bool isTransform();
-	bool isGeo();
+	asr::Assembly *getObjectAssembly();
 	asr::Assembly *objectAssembly;
 };
 

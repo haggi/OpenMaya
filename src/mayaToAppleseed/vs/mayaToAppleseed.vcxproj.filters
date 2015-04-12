@@ -293,6 +293,36 @@
     <ClCompile Include="..\src\mtap_common\mtap_world.cpp">
       <Filter>mtap_common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_mayaObjectFactory.cpp">
+      <Filter>mtap_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedRendererFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -507,6 +537,24 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\world.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderProcess.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h">
+      <Filter>common\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
+      <Filter>common\rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

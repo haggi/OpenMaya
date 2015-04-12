@@ -13,7 +13,7 @@ static Logging logger;
 
 using namespace AppleRender;
 
-bool AppleseedRenderer::isSunLightTransform(mtap_MayaObject *obj)
+bool AppleseedRenderer::isSunLightTransform(std::shared_ptr<MayaObject> obj)
 {
 	if(obj->dagPath.node().hasFn(MFn::kTransform))
 	{
@@ -27,7 +27,7 @@ bool AppleseedRenderer::isSunLightTransform(mtap_MayaObject *obj)
 }
 
 // it is a directional sunlight if it is connected to appleseedGlobals node
-bool AppleseedRenderer::isSunLight(mtap_MayaObject *obj)
+bool AppleseedRenderer::isSunLight(std::shared_ptr<MayaObject> obj)
 {
 	if( !renderGlobals->physicalSun )
 		return false;
@@ -54,42 +54,42 @@ bool AppleseedRenderer::isSunLight(mtap_MayaObject *obj)
 			if( stat )
 			{
 				MPlug destPlug = plugArray[0];
-				//logger.debug(MString("AppleseedRenderer::isSunLight found destPlug: ") + destPlug.name());
+				//Logging::debug(MString("AppleseedRenderer::isSunLight found destPlug: ") + destPlug.name());
 				if(pystring::endswith(destPlug.name().asChar(), ".physicalSunConnection"))
 				{
-					//logger.debug(MString("AppleseedRenderer::isSunLight found a physicalSunConnection, this is a sun light."));
+					//Logging::debug(MString("AppleseedRenderer::isSunLight found a physicalSunConnection, this is a sun light."));
 					return true;
 				}
 			}else{
-				//logger.debug(MString("AppleseedRenderer::isSunLight Problem message connections "));
+				//Logging::debug(MString("AppleseedRenderer::isSunLight Problem message connections "));
 				return false;
 			}
 		}else{
-			//logger.debug(MString("AppleseedRenderer::isSunLight Problem getting msg plug of node: ") + depFn.name());
+			//Logging::debug(MString("AppleseedRenderer::isSunLight Problem getting msg plug of node: ") + depFn.name());
 			return false;
 		}
 	}else{
-		//logger.debug(MString("AppleseedRenderer::isSunLight Problem getting dep node from dagpath: ") + dp.fullPathName());
+		//Logging::debug(MString("AppleseedRenderer::isSunLight Problem getting dep node from dagpath: ") + dp.fullPathName());
 		return false;
 	}
 	return false;
 }
 
 
-void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bool update)
+void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj, asr::Assembly *ass, bool update)
 {
 	MStatus stat;
 	
-	mtap_MayaObject *mlight = obj;
+	std::shared_ptr<MayaObject> mlight = obj;
 	asf::Matrix4d appMatrix = asf::Matrix4d::identity();
-	logger.debug(MString("Creating light: ") + mlight->shortName);
+	Logging::debug(MString("Creating light: ") + mlight->shortName);
 	MMatrix colMatrix = mlight->transformMatrices[0];
 	this->MMatrixToAMatrix(colMatrix, appMatrix);
 
 	MFnLight lightFn(mlight->mobject, &stat);
 	if( !stat )
 	{
-		logger.error(MString("Could not get light info from ") + mlight->shortName);
+		Logging::error(MString("Could not get light info from ") + mlight->shortName);
 		return;
 	}
 
@@ -105,7 +105,7 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 	{
 		// redefinition because it is possible that this value is textured
 		colorAttribute = defineColorAttributeWithTexture(lightFn, MString("color"), 1.0f);
-		logger.debug(MString("Creating spotLight: ") + lightFn.name());
+		Logging::debug(MString("Creating spotLight: ") + lightFn.name());
 		float coneAngle = 45.0f;
 		float penumbraAngle = 3.0f;
 		getFloat(MString("coneAngle"), lightFn, coneAngle);
@@ -142,7 +142,7 @@ void AppleseedRenderer::defineLight(mtap_MayaObject *obj, asr::Assembly *ass, bo
 		{
 			if( this->isSunLight(mlight))
 			{
-				logger.debug(MString("Found sunlight."));
+				Logging::debug(MString("Found sunlight."));
 				light = asf::auto_release_ptr<asr::Light>(
 					asr::SunLightFactory().create(
 					"sunLight",
@@ -226,41 +226,41 @@ void AppleseedRenderer::defineDefaultLight()
     this->masterAssembly->lights().insert(light);
 }
 
-void AppleseedRenderer::updateLight(mtap_MayaObject *obj)
+void AppleseedRenderer::updateLight(std::shared_ptr<MayaObject> obj)
 {	
-	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-	asr::Assembly *ass = NULL;
+	std::shared_ptr<ObjectAttributes>att = (std::shared_ptr<ObjectAttributes>)obj->attributes;
+	asr::Assembly *ass = nullptr;
 	if( att->assemblyObject && att->assemblyObject->objectAssembly)
 		ass = att->assemblyObject->objectAssembly;
 
-	if( ass != NULL )
+	if( ass != nullptr )
 	{
-		logger.debug("Found LightAssembly, search for light...");
+		Logging::debug("Found LightAssembly, search for light...");
 
-		asr::Light *light = NULL;
+		asr::Light *light = nullptr;
 		light = ass->lights().get_by_name(obj->shortName.asChar());
 		if( isSunLight(obj))
 			light = ass->lights().get_by_name("sunLight");
 
-		if( light == NULL )
+		if( light == nullptr )
 		{
-			logger.debug("Light not found in lightAssembly, creating one...");
+			Logging::debug("Light not found in lightAssembly, creating one...");
 			this->defineLight(obj, ass);
 		}else{
-			logger.debug("Light found in lightAssembly, updating...");
+			Logging::debug("Light found in lightAssembly, updating...");
 			this->defineLight(obj, ass, true);
 		}
 		
 		MString lightAssemblyInst = obj->shortName + "assembly_inst";
 		asr::AssemblyInstance *ai = this->masterAssembly->assembly_instances().get_by_name(lightAssemblyInst.asChar());
-		if(ai != NULL)
+		if(ai != nullptr)
 		{
 
 		}else{
-			//logger.error("LightAssemblyInstance not found, something's wrong.");
+			//Logging::error("LightAssemblyInstance not found, something's wrong.");
 		}
 		// update instance
 	}else{
-		//logger.debug("LightAssembly not found, something's wrong.");
+		//Logging::debug("LightAssembly not found, something's wrong.");
 	}
 }

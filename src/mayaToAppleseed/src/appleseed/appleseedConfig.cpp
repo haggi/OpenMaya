@@ -3,94 +3,77 @@
 #include "utilities/attrTools.h"
 #include "utilities/logging.h"
 #include <maya/MStringArray.h>
-#include "../mtap_common/mtap_mayaScene.h"
-
-static Logging logger;
+#include "renderGlobals.h"
+#include "world.h"
 
 using namespace AppleRender;
 
+const char *lightingEngines[] = {"pt", "drt", "sppm"};
+
+// all renderengines get the same values from render globals
 void AppleseedRenderer::addRenderParams(asr::ParamArray& paramArray)
 {
-	MString lightingEngine = "pt";
-	MStringArray lightingEngines;
-	lightingEngines.append("pt");
-	lightingEngines.append("drt");
-	lightingEngines.append("sppm");
-	lightingEngine = lightingEngines[renderGlobals->lightingEngine];
+	MFnDependencyNode renderGlobalsFn(getRenderGlobalsNode());
+	MString lightingEngine = lightingEngines[getEnumInt("lightingEngine", renderGlobalsFn)];
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 
 	paramArray.insert("rendering_threads", renderGlobals->threads);
-	paramArray.insert_path("texture_store.max_size", this->renderGlobals->texCacheSize * 1024 * 1024); // at least 128 MB
+	paramArray.insert_path("texture_store.max_size", getIntAttr("texCacheSize", renderGlobalsFn, 128) * 1024 * 1024); // at least 128 MB
 
-	if( this->renderGlobals->pixel_renderer == 1) // 
+	if (getEnumInt("pixel_renderer", renderGlobalsFn) == 1) // 
 	{
 		paramArray.insert("pixel_renderer", "uniform");
 		paramArray.insert_path("uniform_pixel_renderer.decorrelate_pixels", true);
 		paramArray.insert_path("uniform_pixel_renderer.force_antialiasing", false);
-		paramArray.insert_path("uniform_pixel_renderer.samples", this->renderGlobals->maxSamples);
+		paramArray.insert_path("uniform_pixel_renderer.samples", getIntAttr("maxSamples", renderGlobalsFn, 16));
 	}
-	if( this->renderGlobals->pixel_renderer == 0) // adaptive
+	if (getEnumInt("pixel_renderer", renderGlobalsFn) == 0) // adaptive
 	{
 		paramArray.insert("pixel_renderer", "adaptive");
-		paramArray.insert_path("adaptive_pixel_renderer.enable_diagnostics", this->renderGlobals->enable_diagnostics);
-		paramArray.insert_path("adaptive_pixel_renderer.min_samples", this->renderGlobals->minSamples);
-		paramArray.insert_path("adaptive_pixel_renderer.max_samples", this->renderGlobals->maxSamples);
-		paramArray.insert_path("adaptive_pixel_renderer.quality", this->renderGlobals->adaptiveQuality);
+		paramArray.insert_path("adaptive_pixel_renderer.enable_diagnostics", getBoolAttr("enable_diagnostics", renderGlobalsFn, true));
+		paramArray.insert_path("adaptive_pixel_renderer.min_samples", getIntAttr("minSamples", renderGlobalsFn, 1));
+		paramArray.insert_path("adaptive_pixel_renderer.max_samples", getIntAttr("maxSamples", renderGlobalsFn, 16));
+		paramArray.insert_path("adaptive_pixel_renderer.quality", getFloatAttr("adaptiveQuality", renderGlobalsFn, 3.0f));
 	}
 
-	paramArray.insert_path("generic_frame_renderer.passes", renderGlobals->frameRendererPasses);
-
-
+	paramArray.insert_path("generic_frame_renderer.passes", getIntAttr("frameRendererPasses", renderGlobalsFn, 1));
 	paramArray.insert("lighting_engine", lightingEngine.asChar());
 	paramArray.insert_path((lightingEngine + ".max_path_length").asChar(), renderGlobals->maxTraceDepth);
-	paramArray.insert_path((lightingEngine + ".enable_ibl").asChar(), renderGlobals->enable_ibl);
-	paramArray.insert_path((lightingEngine + ".rr_min_path_length").asChar(), renderGlobals->rr_min_path_length);
+	paramArray.insert_path((lightingEngine + ".enable_ibl").asChar(), getBoolAttr("enable_ibl", renderGlobalsFn, true));
+	paramArray.insert_path((lightingEngine + ".rr_min_path_length").asChar(), getFloatAttr("rr_min_path_length", renderGlobalsFn, 3.0f));
 	
 	//drt + pt
-	if( renderGlobals->directLightSamples > 0)
-		paramArray.insert_path((lightingEngine + ".dl_light_samples").asChar(), this->renderGlobals->directLightSamples);
+	if (getIntAttr("directLightSamples", renderGlobalsFn, 0) > 0)
+		paramArray.insert_path((lightingEngine + ".dl_light_samples").asChar(), getIntAttr("directLightSamples", renderGlobalsFn, 0));
 
-	paramArray.insert_path((lightingEngine + ".ibl_env_samples").asChar(), this->renderGlobals->environmentSamples);
-	paramArray.insert_path((lightingEngine + ".next_event_estimation").asChar(), this->renderGlobals->next_event_estimation);
+	paramArray.insert_path((lightingEngine + ".ibl_env_samples").asChar(), getIntAttr("environmentSamples", renderGlobalsFn, 0));
+	paramArray.insert_path((lightingEngine + ".next_event_estimation").asChar(), getBoolAttr("next_event_estimation", renderGlobalsFn, true));
 
 	//pt + sppm
-	paramArray.insert_path((lightingEngine + ".enable_caustics").asChar(), this->renderGlobals->enable_caustics);
+	paramArray.insert_path((lightingEngine + ".enable_caustics").asChar(), getBoolAttr("enable_caustics", renderGlobalsFn, true));
 
 	// sppm
-	paramArray.insert_path((lightingEngine + ".alpha").asChar(), this->renderGlobals->sppmAlpha);
+	paramArray.insert_path((lightingEngine + ".alpha").asChar(), getFloatAttr("sppmAlpha", renderGlobalsFn, .8f));
 	paramArray.insert_path((lightingEngine + ".dl_mode").asChar(), "sppm");
-	paramArray.insert_path((lightingEngine + ".env_photons_per_pass").asChar(), this->renderGlobals->env_photons_per_pass);
-	paramArray.insert_path((lightingEngine + ".initial_radius").asChar(), this->renderGlobals->initial_radius);
-	paramArray.insert_path((lightingEngine + ".light_photons_per_pass").asChar(), this->renderGlobals->light_photons_per_pass);
-	paramArray.insert_path((lightingEngine + ".max_photons_per_estimate").asChar(), this->renderGlobals->max_photons_per_estimate);
-	paramArray.insert_path((lightingEngine + ".photons_per_pass").asChar(), this->renderGlobals->photons_per_pass);
+	paramArray.insert_path((lightingEngine + ".env_photons_per_pass").asChar(), getIntAttr("env_photons_per_pass", renderGlobalsFn, 100000));
+	paramArray.insert_path((lightingEngine + ".initial_radius").asChar(), getFloatAttr("initial_radius", renderGlobalsFn, .5f));
+	paramArray.insert_path((lightingEngine + ".light_photons_per_pass").asChar(), getIntAttr("light_photons_per_pass", renderGlobalsFn, 100000));
+	paramArray.insert_path((lightingEngine + ".max_photons_per_estimate").asChar(), getIntAttr("max_photons_per_estimate", renderGlobalsFn, 100));
+	paramArray.insert_path((lightingEngine + ".photons_per_pass").asChar(), getIntAttr("photons_per_pass", renderGlobalsFn, 100000));
 
-	paramArray.insert_path((lightingEngine + ".max_ray_intensity").asChar(), this->renderGlobals->max_ray_intensity);
+	paramArray.insert_path((lightingEngine + ".max_ray_intensity").asChar(), getFloatAttr("max_ray_intensity", renderGlobalsFn, .5f));
 }
 
 void AppleseedRenderer::defineConfig()
 {
-	logger.debug("AppleseedRenderer::defineConfig");
-	
-    // Add default configurations to the project.
-    project->add_default_configurations();
-	
-	MString minSamples = MString("") + renderGlobals->minSamples;
-	MString maxSamples = MString("") + renderGlobals->maxSamples;
-	float maxError = renderGlobals->maxError;
-
-	MString numThreads = MString("") + renderGlobals->threads;
-	MString maxTraceDepth = MString("") + renderGlobals->maxTraceDepth;
-	MString lightingEngine = "pt";
-	MStringArray lightingEngines;
-	lightingEngines.append("pt");
-	lightingEngines.append("drt");
-	lightingEngines.append("sppm");
-	lightingEngine = lightingEngines[renderGlobals->lightingEngine];
+	Logging::debug("AppleseedRenderer::defineConfig");
+	MFnDependencyNode renderGlobalsFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	
 	addRenderParams(this->project->configurations().get_by_name("final")->get_parameters());
 	addRenderParams(this->project->configurations().get_by_name("interactive")->get_parameters());
 
-	if( this->renderGlobals->adaptiveSampling )
+	if (getBoolAttr("adaptiveSampling", renderGlobalsFn, true))
 	{
 		this->project->configurations()
 			.get_by_name("final")->get_parameters()
@@ -100,15 +83,18 @@ void AppleseedRenderer::defineConfig()
 			.insert_path("generic_tile_renderer.sampler", "adaptive");
 	}
 
-	if( this->renderGlobals->useRenderRegion )
+	if( renderGlobals->getUseRenderRegion() )
 	{
-		int ybot = (this->renderGlobals->imgHeight - this->renderGlobals->regionBottom);
-		int ytop = (this->renderGlobals->imgHeight - this->renderGlobals->regionTop);
+		int left, right, bottom, top;
+		int imgWidth, imgHeight;
+		renderGlobals->getWidthHeight(imgWidth, imgHeight);
+		renderGlobals->getRenderRegion(left, bottom, right, top);
+		int ybot = (imgHeight - bottom);
+		int ytop = (imgHeight - top);
 		int ymin = ybot <  ytop ? ybot :  ytop;
 		int ymax = ybot >  ytop ? ybot :  ytop;
-		MString regionString = MString("") + this->renderGlobals->regionLeft + " "  + ymin;
-		regionString += MString(" ") + this->renderGlobals->regionRight + " "  + ymax;
-		logger.debug("Render region is turned on rendering: " + regionString);
+		MString regionString = MString("") + left + " " + ymin + " " + right + " " + ymax;
+		Logging::debug("Render region is turned on rendering: " + regionString);
 		this->project->configurations()
         .get_by_name("final")->get_parameters()
 		.insert_path("generic_tile_renderer.crop_window", regionString.asChar());

@@ -17,6 +17,7 @@ public:
 
 	MStatus     	doIt( const MArgList& args );
 	static void*	creator();
+	void setLogLevel();
 
 private:
 };

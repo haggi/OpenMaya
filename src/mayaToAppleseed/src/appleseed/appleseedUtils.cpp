@@ -18,23 +18,23 @@ using namespace AppleRender;
 // If the object has an assembly itself, there should be an assembly with the object name in the database.
 // If the object does not have an assembly, the objAttributes should contain the parent assembly node.
 
-asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj)
+asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(std::shared_ptr<MayaObject> obj)
 {
-	asr::Assembly *assembly = NULL;
+	asr::Assembly *assembly = nullptr;
 
 	// in ipr mode, the geometry is always placed into the assembly of the parent transform node
 	if( this->mtap_scene->renderType == MayaScene::IPR)
 	{
-		if( obj->parent != NULL)
+		if( obj->parent != nullptr)
 		{
-			mtap_MayaObject *parentObject = (mtap_MayaObject *)obj->parent;
-			if( parentObject->objectAssembly != NULL)
+			std::shared_ptr<MayaObject> parentObject = (std::shared_ptr<MayaObject> )obj->parent;
+			if( parentObject->objectAssembly != nullptr)
 				assembly = parentObject->objectAssembly;
 		}
 	}else{
-		mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)obj->attributes;
-		if( att == NULL)
-			logger.debug("Error");
+		std::shared_ptr<ObjectAttributes>att = (std::shared_ptr<ObjectAttributes>)obj->attributes;
+		if( att == nullptr)
+			Logging::debug("Error");
 		if( att->needsOwnAssembly )
 			return obj->objectAssembly;
 
@@ -46,11 +46,11 @@ asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(mtap_MayaObject *obj
 
 // we have a very flat hierarchy, what means we do not have hierarchies of assemblies.
 // all assemblies are placed in the world, as well as all assemblyInstances
-asr::AssemblyInstance *AppleseedRenderer::getAssemblyInstFromMayaObject(mtap_MayaObject *obj)
+asr::AssemblyInstance *AppleseedRenderer::getAssemblyInstFromMayaObject(std::shared_ptr<MayaObject> obj)
 {
-	asr::AssemblyInstance *assemblyInst = NULL;
+	asr::AssemblyInstance *assemblyInst = nullptr;
 	MString assInstName = obj->getAssemblyInstName();
-	logger.debug(MString("Searching assembly instance in world: ") + assInstName);
+	Logging::debug(MString("Searching assembly instance in world: ") + assInstName);
 	assemblyInst = this->masterAssembly->assembly_instances().get_by_name(assInstName.asChar());
 	return assemblyInst;
 }
@@ -71,7 +71,7 @@ void AppleseedRenderer::mayaColorToFloat(MColor& col, float *floatCol, float *al
 void AppleseedRenderer::removeColorEntityIfItExists(MString& colorName)
 {
 	asr::ColorEntity *entity = this->scenePtr->colors().get_by_name(colorName.asChar());
-	if( entity != NULL)
+	if( entity != nullptr)
 	{
 		this->scenePtr->colors().remove(entity);
 	}
@@ -100,7 +100,7 @@ MString AppleseedRenderer::defineColor(MFnDependencyNode& shader, MString& attri
 	MColor col(0,0,0);
 	if(!getColor(attributeName, shader, col))
 	{
-		logger.error(MString("Unable to get color values from node: ") + shader.name());
+		Logging::error(MString("Unable to get color values from node: ") + shader.name());
 		return "";
 	}
 	MString colorName = shader.name() + "_" + attributeName;
@@ -122,11 +122,11 @@ void AppleseedRenderer::removeTextureEntityIfItExists(MString& textureName)
 {
 	MString textureInstanceName = textureName + "_texInst";
 	asr::Texture *texture = this->scenePtr->textures().get_by_name(textureName.asChar());
-	if( texture != NULL)
+	if( texture != nullptr)
 		this->scenePtr->textures().remove(texture);
 
 	asr::TextureInstance *textureInstance = this->scenePtr->texture_instances().get_by_name(textureInstanceName.asChar());
-	if( textureInstance != NULL)
+	if( textureInstance != nullptr)
 		this->scenePtr->texture_instances().remove(textureInstance);
 }
 
@@ -135,7 +135,7 @@ MString AppleseedRenderer::getTextureColorProfile(MFnDependencyNode& fileTexture
 	MString colorProfileName;
 	int profileId = 0;
 	getEnum(MString("colorProfile"), fileTextureNode, profileId);
-	logger.debug(MString("Color profile from fileNode: ") + profileId);
+	Logging::debug(MString("Color profile from fileNode: ") + profileId);
 	
 	MStringArray colorProfiles;
 	colorProfiles.append("srgb"); //0 == none == default == sRGB
@@ -159,9 +159,9 @@ void AppleseedRenderer::defineTexture(MObject& fileTextureObj)
 	if((!pystring::endswith(fileTextureName.asChar(), ".exr") && (!pystring::endswith(fileTextureName.asChar(), ".png"))) || (fileTextureName.length() == 0))
 	{
 		if( fileTextureName.length() == 0)
-			logger.warning(MString("FileTextureName has no content."));
+			Logging::warning(MString("FileTextureName has no content."));
 		else
-			logger.warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
+			Logging::warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
 		return;
 	}
 
@@ -170,7 +170,7 @@ void AppleseedRenderer::defineTexture(MObject& fileTextureObj)
 	MString colorProfile = getTextureColorProfile(fileTextureNode);
 	
 	asr::ParamArray params;
-	logger.detail(MString("Now inserting file name: ") + fileTextureName);
+	Logging::detail(MString("Now inserting file name: ") + fileTextureName);
 	params.insert("filename", fileTextureName.asChar()); 
 	params.insert("color_space", colorProfile.asChar());
 	
@@ -228,16 +228,16 @@ MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& att
 	MFnDependencyNode fileTextureNode(inputNode, &stat);
 	MString textureName = fileTextureNode.name() + "_texture";
 
-	logger.info(MString("Found fileTextureNode: ") + fileTextureNode.name());
+	Logging::info(MString("Found fileTextureNode: ") + fileTextureNode.name());
 	MString fileTextureName = "";
 	getString(MString("fileTextureName"), fileTextureNode, fileTextureName);
-	logger.info(MString("Found filename: ") + fileTextureName);
+	Logging::info(MString("Found filename: ") + fileTextureName);
 	if( !pystring::endswith(fileTextureName.asChar(), ".exr") || (fileTextureName.length() == 0))
 	{
 		if( fileTextureName.length() == 0)
-			logger.warning(MString("FileTextureName has no content."));
+			Logging::warning(MString("FileTextureName has no content."));
 		else
-			logger.warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
+			Logging::warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
 		return textureDefinition;
 	}
 
@@ -246,7 +246,7 @@ MString AppleseedRenderer::defineTexture(MFnDependencyNode& shader, MString& att
 	MString colorProfile = getTextureColorProfile(fileTextureNode);
 	
 	asr::ParamArray params;
-	logger.debug(MString("Now inserting file name: ") + fileTextureName);
+	Logging::debug(MString("Now inserting file name: ") + fileTextureName);
 	params.insert("filename", fileTextureName.asChar());      // OpenEXR only for now. The param is called filename but it can be a path
 	params.insert("color_space", colorProfile.asChar());
 	
@@ -311,7 +311,7 @@ void AppleseedRenderer::fillTransformMatices(MMatrix matrix, asr::AssemblyInstan
 			asf::Transformd::from_local_to_parent(appMatrix));
 }
 
-void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix)
+void AppleseedRenderer::fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix)
 {
 	assInstance->transform_sequence().clear();
 	size_t numSteps =  obj->transformMatrices.size();
@@ -334,7 +334,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Assembly
 	}
 }
 
-void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::AssemblyInstance *assInstance)
+void AppleseedRenderer::fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance)
 {
 	assInstance->transform_sequence().clear();
 	size_t numSteps =  obj->transformMatrices.size();
@@ -356,7 +356,7 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Assembly
 	}
 }
 
-void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *assInstance)
+void AppleseedRenderer::fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance)
 {
 	assInstance->transform_sequence().clear();
 	size_t numSteps =  obj->transformMatrices.size();
@@ -382,14 +382,14 @@ void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Camera *
 		colMatrix.matrix[3][1] = transformMatrix.matrix[3][1];
 		colMatrix.matrix[3][2] = transformMatrix.matrix[3][2];
 		this->MMatrixToAMatrix(colMatrix, appMatrix);
-		logger.trace(MString("cam mat ") + colMatrix.matrix[3][0] + " " + colMatrix.matrix[3][1] + " " + colMatrix.matrix[3][2]);
+		Logging::trace(MString("cam mat ") + colMatrix.matrix[3][0] + " " + colMatrix.matrix[3][1] + " " + colMatrix.matrix[3][2]);
 		assInstance->transform_sequence().set_transform(
 			start + stepSize * matrixId,
 			asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
 
-void AppleseedRenderer::fillTransformMatices(mtap_MayaObject *obj, asr::Light *light)
+void AppleseedRenderer::fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Light *light)
 {
 	asf::Matrix4d appMatrix;
 	MMatrix colMatrix = obj->transformMatrices[0];

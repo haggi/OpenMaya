@@ -1,32 +1,29 @@
-#include "utilities/logging.h"
-#include "utilities/tools.h"
 #include "mtap_MayaObject.h"
-#include "mtap_mayaScene.h"
-
 #include <maya/MPlugArray.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MDagPathArray.h>
+
+#include "utilities/logging.h"
+#include "utilities/tools.h"
+#include "mtap_mayaScene.h"
+#include "world.h"
 
 static Logging logger;
 
 mtap_ObjectAttributes::mtap_ObjectAttributes()
 {
 	needsOwnAssembly = false;
-	assemblyObject = NULL;
 	objectMatrix.setToIdentity();
 }
 
-mtap_ObjectAttributes::mtap_ObjectAttributes(mtap_ObjectAttributes *other)
+mtap_ObjectAttributes::mtap_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
-	if( other != NULL)
+	if( other )
 	{
-		needsOwnAssembly = false;
-		assemblyObject = other->assemblyObject;
 		hasInstancerConnection = other->hasInstancerConnection;
 		objectMatrix = other->objectMatrix;
 	}else{
-		needsOwnAssembly = false;
 		this->hasInstancerConnection = false;
-		assemblyObject = NULL;
 		objectMatrix.setToIdentity();
 	}
 };
@@ -44,9 +41,9 @@ MString mtap_MayaObject::getAssemblyName()
 {
 	if( this->isInstanced() || (this->instancerParticleId > -1))
 	{
-		if( this->origObject != NULL )
+		if( this->origObject)
 		{
-			mtap_MayaObject *orig = (mtap_MayaObject *)this->origObject;
+			std::shared_ptr<mtap_MayaObject> orig = std::static_pointer_cast<mtap_MayaObject>(this->origObject);
 			return orig->getAssemblyName();
 		}
 	}
@@ -82,54 +79,45 @@ MString mtap_MayaObject::getObjectName()
 
 
 // after the creation of an attribute node, ALL objects have a assemblyObject, either the parent one or the object itself.
-mtap_MayaObject *mtap_MayaObject::getAssemblyObject()
+std::shared_ptr<MayaObject> mtap_MayaObject::getAssemblyObject()
 {
-	if( this->attributes != NULL )
-		return ((mtap_ObjectAttributes *)this->attributes)->assemblyObject;
-	return NULL; // only happens if obj is world
+	//if(this->attributes)
+	//	return ((std::shared_ptr<ObjectAttributes>)this->attributes)->assemblyObject;
+	return nullptr; // only happens if obj is world
 }
 
 asr::Assembly *mtap_MayaObject::getObjectAssembly()
 {
-	//if( this->attributes != NULL )
+	//if( this->attributes != nullptr )
 	//{
-	//	mtap_ObjectAttributes *att = (mtap_ObjectAttributes *)this->attributes;
-	//	if( att != NULL )
+	//	std::shared_ptr<ObjectAttributes>att = (std::shared_ptr<ObjectAttributes>)this->attributes;
+	//	if( att != nullptr )
 	//	{
-	//		if( att->assemblyObject != NULL )
+	//		if( att->assemblyObject != nullptr )
 	//		{
 	//			return att->assemblyObject->objectAssembly;
 	//		}
 	//	}
 	//}
-	if( this->origObject != NULL )
-		return ((mtap_MayaObject *)this->origObject)->objectAssembly;
-	return this->objectAssembly;
+	//if( this->origObject != nullptr )
+	//	return ((std::shared_ptr<MayaObject> )this->origObject)->objectAssembly;
+	//return this->objectAssembly;
+	return nullptr;
 }
 
 mtap_MayaObject::mtap_MayaObject(MObject& mobject) : MayaObject(mobject)
 {
-	objectAssembly = NULL;
+	objectAssembly = nullptr;
 }
 
 mtap_MayaObject::mtap_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
-	objectAssembly = NULL;
-	//logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	objectAssembly = nullptr;
+	//Logging::debug(MString("created obj: ") + this->dagPath.fullPathName());
 }
 
 mtap_MayaObject::~mtap_MayaObject()
-{
-	if( this->attributes != NULL)
-		delete (mtap_ObjectAttributes *)this->attributes;
-}
-
-void mtap_MayaObject::getMaterials()
-{
-	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
-	{
-	}
-}
+{}
 
 
 bool mtap_MayaObject::geometryShapeSupported()
@@ -147,15 +135,14 @@ bool mtap_MayaObject::geometryShapeSupported()
 	return false;
 }
 
-
 //
 //	The purpose of this method is to compare object attributes and inherit them if appropriate.
 //	e.g. lets say we assign a color to the top node of a hierarchy. Then all child nodes will be
 //	called and this method is used. 
 //
-mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
+std::shared_ptr<ObjectAttributes>mtap_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	mtap_ObjectAttributes *myAttributes = new mtap_ObjectAttributes((mtap_ObjectAttributes *)parentAttributes);
+	std::shared_ptr<ObjectAttributes> myAttributes = std::shared_ptr<ObjectAttributes>(new mtap_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{
@@ -174,8 +161,8 @@ mtap_ObjectAttributes *mtap_MayaObject::getObjectAttributes(ObjectAttributes *pa
 
 	if( this->needsAssembly() || myAttributes->hasInstancerConnection)
 	{
-		myAttributes->needsOwnAssembly = true;
-		myAttributes->assemblyObject = this;
+		//myAttributes->needsOwnAssembly = true;
+		//myAttributes->assemblyObject = this;
 		myAttributes->objectMatrix.setToIdentity();
 	}
 
@@ -198,7 +185,7 @@ bool mtap_MayaObject::needsAssembly()
 	// Maybe I have to parse the hierarchy below and check the nodes for a geometry/camera/light node.
 	// So at the moment I let all transform nodes receive their own transforms. This will result in a 
 	// translation of the complete hierarchy as assemblies/assembly instances.	
-	if(this->scenePtr->renderType == MayaScene::IPR)
+	if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::IPRRENDER)
 	{
 		if( this->isTransform())
 		{
@@ -215,25 +202,25 @@ bool mtap_MayaObject::needsAssembly()
 
 	if( this->hasInstancerConnection)
 	{
-		logger.debug(MString("obj has instancer connection -> needs assembly."));
+		Logging::debug(MString("obj has instancer connection -> needs assembly."));
 		return true;
 	}
 
 	if( this->isInstanced() )
 	{
-		logger.debug(MString("obj has more than 1 parent -> needs assembly."));
+		Logging::debug(MString("obj has more than 1 parent -> needs assembly."));
 		return true;
 	}
 
 	if( this->isObjAnimated())
 	{
-		logger.debug(MString("Object is animated -> needs assembly."));
+		Logging::debug(MString("Object is animated -> needs assembly."));
 		return true;
 	}
 
 	if(isLightTransform(this->dagPath))
 	{
-		logger.debug(MString("Object is light transform -> needs assembly."));
+		Logging::debug(MString("Object is light transform -> needs assembly."));
 		return true;
 	}
 
@@ -244,18 +231,18 @@ bool mtap_MayaObject::needsAssembly()
 //
 //	At the moment only meshes are supported - shapes!
 //
-bool mtap_MayaObject::isGeo()
-{
-	if( this->mobject.hasFn(MFn::kMesh))
-		return true;
-	if( this->scenePtr->isLight(this->mobject))
-		return true;
-	return false;
-}
-
-bool mtap_MayaObject::isTransform()
-{
-	if( this->mobject.hasFn(MFn::kTransform))
-		return true;
-	return false;
-}
+//bool mtap_MayaObject::isGeo()
+//{
+//	if( this->mobject.hasFn(MFn::kMesh))
+//		return true;
+//	if( this->scenePtr->isLight(this->mobject))
+//		return true;
+//	return false;
+//}
+//
+//bool mtap_MayaObject::isTransform()
+//{
+//	if( this->mobject.hasFn(MFn::kTransform))
+//		return true;
+//	return false;
+//}

@@ -15,13 +15,13 @@ using namespace AppleRender;
 void AppleseedRenderer::updateCamera(bool shape)
 {
 	MStatus stat;
-	MayaObject *cam = NULL;
+	MayaObject *cam = nullptr;
 
 	// There is at least one camera
 	for(int objId = 0; objId < this->mtap_scene->camList.size(); objId++)
 	{
-		mtap_MayaObject *cam = (mtap_MayaObject *)this->mtap_scene->camList[objId];
-		if( cam == NULL)
+		std::shared_ptr<MayaObject> cam = (std::shared_ptr<MayaObject> )this->mtap_scene->camList[objId];
+		if( cam == nullptr)
 			continue;
 		if( this->mtap_scene->renderType == MayaScene::IPR)
 		{
@@ -30,12 +30,12 @@ void AppleseedRenderer::updateCamera(bool shape)
 		}
 		asr::Camera *camera = this->scenePtr->get_camera();
 		if( !shape )
-			if( camera == NULL )
+			if( camera == nullptr )
 				shape = true;
 		if( shape )
 		{
 			// update the complete camera and place it into the scene
-			logger.debug(MString("Creating camera shape: ") + cam->shortName);
+			Logging::debug(MString("Creating camera shape: ") + cam->shortName);
 			float horizontalFilmAperture = 24.892f;
 			float verticalFilmAperture = 18.669f;
 			float imageAspect = (float)renderGlobals->imgHeight / (float)renderGlobals->imgWidth;
@@ -87,7 +87,7 @@ void AppleseedRenderer::updateCamera(bool shape)
 			this->scenePtr->set_camera(appleCam);
 			break; // only one camera is supported at the moment
 		}else{
-			logger.debug(MString("Updating camera transform: ") + cam->shortName);
+			Logging::debug(MString("Updating camera transform: ") + cam->shortName);
 			fillTransformMatices(cam, this->scenePtr->get_camera());	
 			break; // only one camera is supported at the moment
 		}

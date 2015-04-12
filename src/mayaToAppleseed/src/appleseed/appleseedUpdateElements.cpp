@@ -12,12 +12,12 @@ static Logging logger;
 
 using namespace AppleRender;
 
-void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
+void AppleseedRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
 {
 
 	Logging::debug(MString("asr::updateTransform: ") + obj->shortName);
 	// if we have no object assembly, there is no need to update/create the assemblyInstance
-	if( this->getObjectAssembly(obj) == NULL )
+	if( this->getObjectAssembly(obj) == nullptr )
 	{
 		Logging::debug(MString("no obj assembly, skipping: ") + obj->shortName);
 		return;
@@ -41,13 +41,13 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 	
 	asr::AssemblyInstance *assemblyInstance = this->getObjectAssemblyInstance(obj);
 
-	if( assemblyInstance == NULL)
+	if( assemblyInstance == nullptr)
 	{
 		if( obj->visible || (obj->instancerParticleId > -1))
 			assemblyInstance = this->createObjectAssemblyInstance(obj);
 	}
 
-	if( assemblyInstance != NULL)
+	if( assemblyInstance != nullptr)
 	{
 		assemblyInstance->transform_sequence().clear();
 		fillTransformMatices(obj, assemblyInstance);
@@ -60,7 +60,7 @@ void AppleseedRenderer::updateTransform(mtap_MayaObject *obj)
 	}
 }
 
-asr::Assembly *AppleseedRenderer::createObjectAssembly(mtap_MayaObject *obj)
+asr::Assembly *AppleseedRenderer::createObjectAssembly(std::shared_ptr<MayaObject> obj)
 {
 	asf::auto_release_ptr<asr::Assembly> assembly = asr::AssemblyFactory::create( obj->getAssemblyName().asChar(), asr::ParamArray());
 	this->scenePtr->assemblies().insert(assembly);
@@ -68,13 +68,13 @@ asr::Assembly *AppleseedRenderer::createObjectAssembly(mtap_MayaObject *obj)
 	return assemblyPtr;
 }
 
-asr::Assembly *AppleseedRenderer::getObjectAssembly(mtap_MayaObject *obj)
+asr::Assembly *AppleseedRenderer::getObjectAssembly(std::shared_ptr<MayaObject> obj)
 {
 	if( obj->isInstanced() || (obj->instancerParticleId > -1))
 	{
-		if( obj->origObject != NULL )
+		if( obj->origObject != nullptr )
 		{
-			mtap_MayaObject *orig = (mtap_MayaObject *)obj->origObject;
+			std::shared_ptr<MayaObject> orig = (std::shared_ptr<MayaObject> )obj->origObject;
 			return this->scenePtr->assemblies().get_by_name(orig->getAssemblyName().asChar());
 		}
 	}
@@ -82,19 +82,19 @@ asr::Assembly *AppleseedRenderer::getObjectAssembly(mtap_MayaObject *obj)
 }
 
 
-asr::AssemblyInstance *AppleseedRenderer::createObjectAssemblyInstance(mtap_MayaObject *obj)
+asr::AssemblyInstance *AppleseedRenderer::createObjectAssemblyInstance(std::shared_ptr<MayaObject> obj)
 {
-	logger.detail(MString("createObjectAssemblyInstance: ") + obj->shortName);		
+	Logging::detail(MString("createObjectAssemblyInstance: ") + obj->shortName);		
 	MString assemblyName = obj->getAssemblyName();
 	if( obj->mobject.hasFn(MFn::kShape))
 	{
 		
-		if( obj->parent != NULL)
+		if( obj->parent != nullptr)
 		{
-			obj = (mtap_MayaObject *)obj->parent;
+			obj = (std::shared_ptr<MayaObject> )obj->parent;
 			if( !obj->mobject.hasFn(MFn::kTransform) )
 			{
-				logger.error(MString("Object is not a transform: and it's parent is not a transform: ") + obj->shortName);
+				Logging::error(MString("Object is not a transform: and it's parent is not a transform: ") + obj->shortName);
 				return 0;
 			}
 		}
@@ -113,19 +113,19 @@ asr::AssemblyInstance *AppleseedRenderer::createObjectAssemblyInstance(mtap_Maya
 	return assemblyInstance;
 }
 
-asr::AssemblyInstance *AppleseedRenderer::getObjectAssemblyInstance(mtap_MayaObject *obj)
+asr::AssemblyInstance *AppleseedRenderer::getObjectAssemblyInstance(std::shared_ptr<MayaObject> obj)
 {
 	this->defineMasterAssembly(); // make sure that we have a master
 
 	if( obj->mobject.hasFn(MFn::kShape))
 	{
 		
-		if( obj->parent != NULL)
+		if( obj->parent != nullptr)
 		{
-			obj = (mtap_MayaObject *)obj->parent;
+			obj = (std::shared_ptr<MayaObject> )obj->parent;
 			if( !obj->mobject.hasFn(MFn::kTransform) )
 			{
-				logger.error(MString("Object is not a transform: and it's parent is not a transform: ") + obj->shortName);
+				Logging::error(MString("Object is not a transform: and it's parent is not a transform: ") + obj->shortName);
 				return 0;
 			}
 		}
@@ -136,15 +136,15 @@ asr::AssemblyInstance *AppleseedRenderer::getObjectAssemblyInstance(mtap_MayaObj
 	return ai;
 }
 
-asr::Object *AppleseedRenderer::createObjectGeometry(mtap_MayaObject *obj)
+asr::Object *AppleseedRenderer::createObjectGeometry(std::shared_ptr<MayaObject> obj)
 {
-	asr::Object *object = NULL;
+	asr::Object *object = nullptr;
 	return object;
 }
 
-asr::Object *AppleseedRenderer::getObjectGeometry(mtap_MayaObject *obj)
+asr::Object *AppleseedRenderer::getObjectGeometry(std::shared_ptr<MayaObject> obj)
 {
-	asr::Object *object = NULL;
+	asr::Object *object = nullptr;
 	if( obj->mobject.hasFn(MFn::kMesh))
 	{
 		this->masterAssembly->objects().get_by_name(obj->getObjectName().asChar());	
@@ -153,7 +153,7 @@ asr::Object *AppleseedRenderer::getObjectGeometry(mtap_MayaObject *obj)
 }
 
 
-void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
+void AppleseedRenderer::updateShape(std::shared_ptr<MayaObject> obj)
 {
 	Logging::debug(MString("asr::updateShape: ") + obj->shortName);
 
@@ -176,7 +176,7 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 	// for instances we have an already existing assembly.
 	// in case of instances we will have one original geometry which will receive the assembly_instance automatically
 	// the other instances will be updated here
-	if( objectAssembly == NULL)
+	if( objectAssembly == nullptr)
 	{
 		objectAssembly = this->createObjectAssembly(obj);
 	}else{
@@ -191,15 +191,15 @@ void AppleseedRenderer::updateShape(mtap_MayaObject *obj)
 	if( obj->mobject.hasFn(MFn::kMesh))
 	{
 		asr::Object *geometryObject = objectAssembly->objects().get_by_name(obj->getObjectName().asChar());
-		if( geometryObject != NULL)
+		if( geometryObject != nullptr)
 		{
-			logger.debug(MString("updateShape: Geo found in assembly: ") + obj->getObjectName());
+			Logging::debug(MString("updateShape: Geo found in assembly: ") + obj->getObjectName());
 			if( !obj->shapeConnected )
 			{
-				logger.debug(MString("updateShape: Geo shape has no input connection - no deformation, skip"));
+				Logging::debug(MString("updateShape: Geo shape has no input connection - no deformation, skip"));
 				return;
 			}else{
-				logger.debug(MString("updateShape: Geo shape is connected, calling addDeform"));
+				Logging::debug(MString("updateShape: Geo shape is connected, calling addDeform"));
 				addDeformStep(obj, objectAssembly);
 				return;
 			}
@@ -215,27 +215,27 @@ void AppleseedRenderer::updateEntities()
 	//	return;
 
 	//size_t numElements = this->interactiveUpdateList.size() + this->interactiveUpdateMOList.size();
-	//logger.debug(MString("AppleseedRenderer::updateEntities: Found ") + (int)numElements + " element(s) for update.");
-	//std::vector<mtap_MayaObject *>::iterator iter;
+	//Logging::debug(MString("AppleseedRenderer::updateEntities: Found ") + (int)numElements + " element(s) for update.");
+	//std::vector<std::shared_ptr<MayaObject> >::iterator iter;
 	//std::vector<MObject>::iterator moIter;
 
 	//for( iter = this->interactiveUpdateList.begin(); iter != this->interactiveUpdateList.end(); iter++)
 	//{
-	//	mtap_MayaObject *obj = *iter;
+	//	std::shared_ptr<MayaObject> obj = *iter;
 
 	//	if( obj->mobject.hasFn(MFn::kTransform))
 	//	{
-	//		logger.debug(MString("Found transform for update: ") + obj->shortName);
+	//		Logging::debug(MString("Found transform for update: ") + obj->shortName);
 	//		updateTransform(obj);
 	//	}
 	//	if( obj->mobject.hasFn(MFn::kMesh))
 	//	{
-	//		logger.debug(MString("Found mesh for update: ") + obj->shortName);
+	//		Logging::debug(MString("Found mesh for update: ") + obj->shortName);
 	//		updateObject(obj);
 	//	}
 	//	if( obj->mobject.hasFn(MFn::kLight))
 	//	{
-	//		logger.debug(MString("Found light for update: ") + obj->shortName);
+	//		Logging::debug(MString("Found light for update: ") + obj->shortName);
 	//		updateLight(obj);
 
 	//		if( isSunLight(obj))
@@ -248,27 +248,27 @@ void AppleseedRenderer::updateEntities()
 	//	MFnDependencyNode depFn(mobj);
 	//	if( depFn.typeId().id() == RENDERGLOBALS_NODE)
 	//	{
-	//		logger.debug(MString("Found mtap_renderGlobals for update"));
+	//		Logging::debug(MString("Found mtap_renderGlobals for update"));
 	//		this->defineEnvironment(this->renderGlobals);
 	//	}
 	//	if( mobj.hasFn(MFn::kLambert))
 	//	{
-	//		logger.debug(MString("Found kLambert for update"));
+	//		Logging::debug(MString("Found kLambert for update"));
 	//		updateShader(mobj);
 	//	}
 	//	if( depFn.typeId().id() == PHYSICAL_SURFACE_SHADER)
 	//	{
-	//		logger.debug(MString("Found physSurfaceShader for update"));
+	//		Logging::debug(MString("Found physSurfaceShader for update"));
 	//		updateShader(mobj);
 	//	}
 	//}
 }
 
-void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
+void AppleseedRenderer::updateObject(std::shared_ptr<MayaObject> obj)
 {	
 	//MString assemblyName = obj->fullName;
 	//MString assemblyInstName = obj->dagPath.fullPathName();
-	//asr::AssemblyInstance *assemblyInstance = NULL;
+	//asr::AssemblyInstance *assemblyInstance = nullptr;
 	//
 	////asr::Assembly *parentAssembly = (asr::Assembly *)obj->objectAssembly->get_parent();
 
@@ -280,12 +280,12 @@ void AppleseedRenderer::updateObject(mtap_MayaObject *obj)
 	//}else{
 	//	assemblyInstance = this->project->get_scene()->assembly_instances().get_by_name(assemblyInstName.asChar());
 	//}
-	//if( assemblyInstance == NULL)
+	//if( assemblyInstance == nullptr)
 	//{
-	//	logger.debug(MString("Assembly for object ") + obj->shortName + " not found. Skipping.");
+	//	Logging::debug(MString("Assembly for object ") + obj->shortName + " not found. Skipping.");
 	//	return;
 	//}
-	//logger.debug(MString("Update object ") + obj->shortName);
+	//Logging::debug(MString("Update object ") + obj->shortName);
 	//fillTransformMatices(obj, assemblyInstance);
 }
 
