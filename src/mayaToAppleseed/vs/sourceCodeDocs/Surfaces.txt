@@ -1,0 +1,166 @@
+
+#bsdf_blend
+bsdf0,message,BSDF 1,
+bsdf1,message,BSDF 2,
+weight,varying_scalar,Weight,0.5
+
+#kelemen_brdf
+matte_reflectance_multiplier,varying_scalar,Matte Reflectance Multiplier,1.0
+roughness,uniform_scalar,Roughness,0.5
+specular_reflectance,varying_color,Specular Reflectance,0.5
+matte_reflectance,varying_color,Matte Reflectance,0.5
+specular_reflectance_multiplier,uniform_scalar,Specular Reflectance Multiplier,1.0
+
+#specular_btdf
+transmittance,varying_color,Transmittance,0.5
+reflectance,varying_color,Reflectance,0.5
+from_ior,float,From Index of Refraction,1.0
+to_ior,float,To Index of Refraction,1.5
+transmittance_multiplier,varying_scalar,Transmittance Multiplier,1.0
+reflectance_multiplier,varying_scalar,Reflectance Multiplier,1.0
+
+#lambertian_brdf
+reflectance,varying_color,Reflectance,0.5
+reflectance_multiplier,varying_scalar,Reflectance Multiplier,1.0
+
+#bsdf_mix
+bsdf0,message,BSDF 1,
+bsdf1,message,BSDF 2,
+weight1,varying_scalar,Weight 2,0.5
+weight0,varying_scalar,Weight 1,0.5
+
+#diffuse_btdf
+transmittance,varying_color,Transmittance,0.5
+transmittance_multiplier,varying_scalar,Transmittance Multiplier,1.0
+
+#specular_brdf
+reflectance,varying_color,Reflectance,0.5
+reflectance_multiplier,varying_scalar,Reflectance Multiplier,1.0
+
+#microfacet_brdf
+reflectance,varying_color,Reflectance,0.5
+mdf,enum,Microfacet Distribution Function,blinn,beckmann:blinn:ggx:ward
+glossiness_multiplier,varying_scalar,Glossiness Multiplier,1.0
+glossiness,varying_scalar,Glossiness,0.5
+fresnel_multiplier,varying_scalar,Fresnel Multiplier,1.0
+reflectance_multiplier,varying_scalar,Reflectance Multiplier,1.0
+
+#ashikhmin_brdf
+glossy_reflectance,varying_color,Glossy Reflectance,0.5
+shininess_v,varying_scalar,Shininess V,100.0
+shininess_u,varying_scalar,Shininess U,100.0
+fresnel_multiplier,varying_scalar,Fresnel Multiplier,1.0
+diffuse_reflectance_multiplier,varying_scalar,Diffuse Reflectance Multiplier,1.0
+glossy_reflectance_multiplier,varying_scalar,Glossy Reflectance Multiplier,1.0
+diffuse_reflectance,varying_color,Diffuse Reflectance,0.5
+
+#physical_surface_shader
+back_lighting_samples,float,Back Lighting Samples,1
+alpha_multiplier,varying_scalar,Alpha Multiplier,1.0
+aerial_persp_sky_color,varying_color,Aerial Perspective Sky Color,0.5
+aerial_persp_mode,enum,Aerial Perspective Mode,none,none:environment_shader:sky_color
+aerial_persp_distance,float,Aerial Perspective Distance,1000.0
+aerial_persp_intensity,float,Aerial Perspective Intensity,0.01
+translucency,varying_scalar,Translucency,0.0
+color_multiplier,varying_scalar,Color Multiplier,1.0
+front_lighting_samples,float,Front Lighting Samples,1
+
+#diagnostic_surface_shader
+mode,enum,Mode,coverage,ambient_occlusion:assembly_instances:barycentric:bitangent:coverage:depth:geometric_normal:materials:object_instances:original_shading_normal:regions:shading_normal:sides:tangent:triangles:uv:wireframe
+
+#ao_surface_shader
+max_distance,float,Maximum Occlusion Distance,1.0
+samples,float,Samples,16
+sampling_method,enum,Sampling Method,uniform,cosine:uniform
+
+#fast_sss_surface_shader
+ambient_sss,uniform_scalar,Ambient SSS,0.0
+light_samples,float,Light Samples,1
+power,float,Power,1.0
+albedo,varying_color,Albedo,0.5
+view_dep_sss,uniform_scalar,View-Dependent SSS,0.0
+distortion,float,Normal Distortion,0.0
+scale,float,Geometric Scale,1.0
+occlusion_samples,float,Occlusion Samples,1
+diffuse,uniform_scalar,Diffuse Lighting,0.0
+
+#constant_surface_shader
+color,varying_color,Color,0.5
+alpha_source,enum,Alpha Source,color,color:material
+color_multiplier,varying_scalar,Color Multiplier,1.0
+alpha_multiplier,varying_scalar,Alpha Multiplier,1.0
+
+#voxel_ao_surface_shader
+
+#surface_shader_collection
+surface_shader2,message,Surface Shader 2,
+surface_shader3,message,Surface Shader 3,
+surface_shader1,message,Surface Shader 1,
+surface_shader6,message,Surface Shader 6,
+surface_shader7,message,Surface Shader 7,
+surface_shader4,message,Surface Shader 4,
+surface_shader5,message,Surface Shader 5,
+surface_shader8,message,Surface Shader 8,
+
+#smoke_surface_shader
+
+#constant_hemisphere_environment_edf
+upper_hemi_radiance,varying_color,Upper Hemisphere Radiance,0.7
+lower_hemi_radiance,varying_color,Lower Hemisphere Radiance,0.3
+
+#diffuse_edf
+cast_indirect_light,boolean,Cast Indirect Light,true
+radiance,varying_color,Radiance,1.0
+radiance_multiplier,varying_scalar,Radiance Multiplier,1.0
+importance_multiplier,float,Importance Multiplier,1.0
+
+#mirrorball_map_environment_edf
+radiance,varying_color,Radiance,1.0
+radiance_multiplier,varying_scalar,Radiance Multiplier,1.0
+
+#constant_environment_edf
+radiance,varying_color,Radiance,1.0
+
+#latlong_map_environment_edf
+vertical_shift,uniform_scalar,Vertical Shift,0.0
+radiance,varying_scalar,Radiance,1.0
+radiance_multiplier,varying_scalar,Radiance Multiplier,1.0
+horizontal_shift,uniform_scalar,Horizontal Shift,0.0
+
+#gradient_environment_edf
+zenith_radiance,varying_color,Zenith Radiance,0.7
+horizon_radiance,varying_color,Horizon Radiance,0.3
+
+#preetham_environment_edf
+saturation_multiplier,uniform_scalar,Saturation Multiplier,1.0
+horizon_shift,float,Horizon Shift,0.0
+turbidity_multiplier,uniform_scalar,Turbidity Multiplier,2.0
+luminance_gamma,uniform_scalar,Luminance Gamma,1.0
+turbidity,varying_scalar,Turbidity,1.0
+luminance_multiplier,uniform_scalar,Luminance Multiplier,1.0
+sun_phi,uniform_scalar,Sun Phi Angle,0.0
+sun_theta,uniform_scalar,Sun Theta Angle,45.0
+
+#cone_edf
+cast_indirect_light,boolean,Cast Indirect Light,true
+angle,uniform_scalar,Angle,90.0
+radiance,varying_color,Radiance,1.0
+radiance_multiplier,varying_scalar,Radiance Multiplier,1.0
+importance_multiplier,float,Importance Multiplier,1.0
+
+#hosek_environment_edf
+saturation_multiplier,uniform_scalar,Saturation Multiplier,1.0
+horizon_shift,float,Horizon Shift,0.0
+ground_albedo,uniform_scalar,Ground Albedo,0.3
+turbidity_multiplier,uniform_scalar,Turbidity Multiplier,2.0
+luminance_gamma,uniform_scalar,Luminance Gamma,1.0
+turbidity,varying_scalar,Turbidity,1.0
+luminance_multiplier,uniform_scalar,Luminance Multiplier,1.0
+sun_phi,uniform_scalar,Sun Phi Angle,0.0
+sun_theta,uniform_scalar,Sun Theta Angle,45.0
+
+#disk_texture_2d
+color_space,enum,Color Space,srgb,ciexyz:linear_rgb:srgb
+filename,string,File Path,
+
+#writable_texture_2d

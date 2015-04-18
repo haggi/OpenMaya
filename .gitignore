@@ -24,7 +24,7 @@ src/mayaToNox/
 src/mayaToFluid/
 src/mayaToMitsuba/
 src/mayaToCorona/docs/betaTesters.txt
-src/mayaToCorona/vs2010/x64/
+src/mayaToCorona/vs/x64/
 *.igmesh
-src/mayaToIndigo/vs2010/x64/
-src/mayaToThea/vs2010/x64/
+src/mayaToIndigo/vs/x64/
+src/mayaToThea/vs/x64/

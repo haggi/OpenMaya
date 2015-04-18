@@ -15,7 +15,9 @@
 *.pyc
 Debug/
 Release/
+x64/
 ipch/
+Release2014/
 *.sdf
 *.suo
 *.opensdf

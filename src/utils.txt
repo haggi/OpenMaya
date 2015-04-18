@@ -1,0 +1,6 @@
+to check dependencies:
+dumpbin /DEPENDENTS ..\bin\LibLux.dll
+
+to check plugins:
+loadLibrary64.exe xxx.mll
+
