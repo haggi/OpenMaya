@@ -29,7 +29,7 @@ CoronaRenderer::CoronaRenderer()
 	this->context.colorMappingData = nullptr;
 	MObject renderGlobalsNode = getRenderGlobalsNode();
 	this->renderFbGlobalsNodeCallbackId = 0;
-	//this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -90,9 +90,9 @@ void CoronaRenderer::interactiveFbCallback()
 void CoronaRenderer::updateCameraFbCallback(MObject& camera)
 {
 	MStatus stat;
-	//if (this->renderFbCamNodeCallbackId != 0)
-	//	MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
-	//this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	if (this->renderFbCamNodeCallbackId != 0)
+		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+	this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 

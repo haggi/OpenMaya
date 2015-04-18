@@ -1,0 +1,8 @@
+This is how it is supposed to work:
+
+1. a render view update process is started via MTimerMessage callback 
+2. a renderProcess() is started in a seperate thread.
+3. during rendering and while MRenderView::endRender is not called, the render view update process updates the renderView from black to blue
+4. after rendering is done another thread updates the color which should be displayed in the render view from black to white.
+
+--> the renderView does not recognzite the postRenderProcess updates any more.

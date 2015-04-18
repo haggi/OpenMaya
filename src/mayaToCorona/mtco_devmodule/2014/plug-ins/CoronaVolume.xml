@@ -1,0 +1,44 @@
+<fragment uiName="CoronaVolume" name="CoronaVolume" type="plumbing" class="ShadeFragment" version="1.0">
+  <description><![CDATA[Computes Oren-Nayar diffuse component]]></description>
+  <properties>
+    <float3 name="attenuationColor"/>
+    <float3 name="volumeEmissionColor"/>    
+  </properties>
+  <values>
+    <float3 name="attenuationColor" value="0.0,0.0,0.0" />
+    <float3 name="volumeEmissionColor" value="0.0,0.0,0.0" />
+  </values>
+  <outputs>
+    <float3 name="outColor" />
+  </outputs>
+  <implementation>
+    <implementation render="OGSRenderer" language="Cg" lang_version="2.1">
+      <function_name val="CoronaVolume" />
+      <source>
+        <![CDATA[
+float3 CoronaVolume(
+        float3 attenuationColor,
+        float3 volumeEmissionColor
+        )
+{
+    return attenuationColor + volumeEmissionColor;
+}
+		]]>
+      </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="HLSL" lang_version="11.0">
+      <function_name val="CoronaVolume" />
+      <source>
+        <![CDATA[
+		]]>
+      </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="GLSL" lang_version="3.0">
+      <function_name val="CoronaVolume" />
+      <source>
+        <![CDATA[
+		]]>
+      </source>
+    </implementation>
+  </implementation>
+</fragment>

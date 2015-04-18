@@ -1,0 +1,72 @@
+<fragment uiName="coronaGeom" name="coronaGeom" type="plumbing" class="ShadeFragment" version="1.0">
+	<description><![CDATA[Computes shader geometric components (dot products)]]></description>
+	<properties>
+		<float3 name="Nw" flags="varyingInputParam" />
+		<float3 name="Lw" />
+		<float3 name="HLw" />
+		<float3 name="Vw" flags="varyingInputParam" />
+	</properties>
+	<values>
+		<float3 name="Lw" value="0.0,0.0,0.0" />
+		<float3 name="HLw" value="0.0,0.0,0.0" />
+	</values>
+	<outputs>
+		<float4 name="coronaGeom" />
+	</outputs>
+	<implementation>
+	<implementation render="OGSRenderer" language="Cg" lang_version="2.1">
+		<function_name val="coronaGeom" />
+		<source><![CDATA[
+float4 coronaGeom(
+	float3 Nw,
+	float3 Lw,
+	float3 HLw,
+	float3 Vw)
+{
+	float3 Hw = normalize(HLw + Vw);
+	float NL = saturate(dot(Nw, Lw));
+	float NV = saturate(dot(Nw, Vw));
+	float NH = saturate(dot(Nw, Hw));
+	float VH = dot(Vw, Hw);
+	return float4(NL, NV, NH, VH);
+}
+		]]></source>
+	</implementation>
+	<implementation render="OGSRenderer" language="HLSL" lang_version="11.0">
+		<function_name val="coronaGeom" />
+		<source><![CDATA[
+float4 coronaGeom(
+	float3 Nw,
+	float3 Lw,
+	float3 HLw,
+	float3 Vw)
+{
+	float3 Hw = normalize(HLw + Vw);
+	float NL = saturate(dot(Nw, Lw));
+	float NV = saturate(dot(Nw, Vw));
+	float NH = saturate(dot(Nw, Hw));
+	float VH = dot(Vw, Hw);
+	return float4(NL, NV, NH, VH);
+}
+		]]></source>
+	</implementation>
+	<implementation render="OGSRenderer" language="GLSL" lang_version="3.0">
+		<function_name val="coronaGeom" />
+		<source><![CDATA[
+vec4 coronaGeom(
+	vec3 Nw,
+	vec3 Lw,
+	vec3 HLw,
+	vec3 Vw)
+{
+	vec3 Hw = normalize(HLw + Vw);
+	float NL = saturate(dot(Nw, Lw));
+	float NV = saturate(dot(Nw, Vw));
+	float NH = saturate(dot(Nw, Hw));
+	float VH = dot(Vw, Hw);
+	return vec4(NL, NV, NH, VH);
+}
+		]]></source>
+	</implementation>
+	</implementation>
+</fragment>

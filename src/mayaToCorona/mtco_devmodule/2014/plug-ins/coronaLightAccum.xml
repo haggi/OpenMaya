@@ -1,0 +1,17 @@
+<fragment uiName="coronaLightAccum" name="coronaLightAccum" type="accum" class="ShadeFragment" version="1.0">
+	<description><![CDATA[Accumulates specular & diffuse irradiance for 16 lights]]></description>
+	<properties>
+		<float3 name="scaledDiffuse" />
+		<float3 name="scaledSpecular" />
+		<string name="selector" />
+	</properties>
+	<values>
+		<string name="selector" value="mayaLightSelector16" />
+	</values>
+	<outputs>
+		<alias name="scaledDiffuse" />
+		<alias name="scaledSpecular" />
+	</outputs>
+	<implementation>
+	</implementation>
+</fragment>
