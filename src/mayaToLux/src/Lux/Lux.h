@@ -1,22 +1,23 @@
 #ifndef MTLU_LUX_H
 #define MTLU_LUX_H
 
-#include <boost/shared_ptr.hpp>
-
+#include <maya/MTypes.h>
 #include "rendering/renderer.h"
 #include <maya/MObject.h>
 #include <maya/MPointArray.h>
 #include <maya/MMatrix.h>
 #include <maya/MString.h>
 #include <vector>
+#include <memory>
+
 #include "lux_api.h"
 
 #include <iostream>
 #include <fstream>
 #include <map>
 
-typedef boost::shared_ptr<lux_instance> Instance;
-typedef boost::shared_ptr<lux_paramset> ParamSet;
+typedef std::shared_ptr<lux_instance> Instance;
+typedef std::shared_ptr<lux_paramset> ParamSet;
 
 // create a new instance with proper destruction
 Instance CreateInstance(const std::string name);
@@ -24,8 +25,8 @@ Instance CreateInstance(const std::string name);
 // create a new paramset with proper destruction
 ParamSet CreateParamSet();
 
-class mtlu_MayaScene;
-class mtlu_RenderGlobals;
+class MayaScene;
+class RenderGlobals;
 class mtlu_MayaObject;
 
 
@@ -49,13 +50,9 @@ struct AttrParam
 
 #define AttrParams std::vector<AttrParam>	
 
-class LuxRenderer : public Renderer
+class LuxRenderer : public MayaTo::Renderer
 {
 public:
-
-	mtlu_MayaScene *mtlu_scene;
-	mtlu_RenderGlobals *mtlu_renderGlobals;
-
 	std::vector<mtlu_MayaObject *> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
 
@@ -63,56 +60,46 @@ public:
 	~LuxRenderer();
 	virtual void render();
 	virtual void initializeRenderer();
-	virtual void updateShape(MayaObject *obj);
-	virtual void updateTransform(MayaObject *obj);
 	virtual void IPRUpdateEntities();
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
+	virtual void interactiveFbCallback(){};
+	virtual void unInitializeRenderer(){};
+	virtual void updateShape(std::shared_ptr<MayaObject> obj);
+	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
 
 	// testing
 	void getMeshPoints(MPointArray& pointArray);
-
 
 	static void getFramebufferThread( void *dummy);
 	static bool isRendering;
 
 	void defineSampling();
-
 	void defineRenderer();
-
 	void definePixelFilter();
-
 	void defineSurfaceIntegrator();
-
 	void defineAccelerator();
-
-	void defineCamera();
-	
+	void defineCamera();	
 	void defineFilm();
-
-	//void transformGeometry(mtlu_MayaObject *obj, bool doMotionblur); 
-	void transformGeometry(mtlu_MayaObject *obj, bool doMotionblur); 
-	void transformCamera(mtlu_MayaObject *obj, bool doMotionblur); 
-
+	void transformGeometry(MayaObject *obj, bool doMotionblur); 
+	void transformCamera(MayaObject *obj, bool doMotionblur); 
 	void defineGeometry();
-	void defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef);
-	void createAreaLightMesh(mtlu_MayaObject *obj);
-	bool isLightMesh(mtlu_MayaObject *obj);
-	
+	void defineTriangleMesh(MayaObject *obj, bool noObjectDef);
+	void createAreaLightMesh(MayaObject *obj);
+	bool isLightMesh(MayaObject *obj);
 	void defineLights();
-	void defineDirectionalLight(mtlu_MayaObject *obj);
-	void defineSpotLight(mtlu_MayaObject *obj);
-	void defineSunLight(mtlu_MayaObject *obj);
-	void defineEnvironmentLight(mtlu_MayaObject *obj);
-	void definePointLight(mtlu_MayaObject *obj);
-	void defineAreaLight(mtlu_MayaObject *obj);
-	bool isSunLight(mtlu_MayaObject *obj);
+	void defineDirectionalLight(MayaObject *obj);
+	void defineSpotLight(MayaObject *obj);
+	void defineSunLight(MayaObject *obj);
+	void defineEnvironmentLight(MayaObject *obj);
+	void definePointLight(MayaObject *obj);
+	void defineAreaLight(MayaObject *obj);
+	bool isSunLight(MayaObject *obj);
 
 	void defineEnvironment();
 
 	void defineShaders();
 	void shaderCreator(MObject& mobject);
-
 	
 	// writing files
 	std::ofstream luxFile;

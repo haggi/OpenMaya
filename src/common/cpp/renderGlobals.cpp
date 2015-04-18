@@ -425,7 +425,9 @@ bool RenderGlobals::getDefaultGlobals()
 	this->basePath = getStringAttr("basePath", depFn, "");
 	this->exportSceneFileName = getStringAttr("exportSceneFileName", depFn, "");
 	this->imagePath = getStringAttr("imagePath", depFn, "");
-
+	this->threads = getIntAttr("threads", depFn, 4);
+	this->translatorVerbosity = getEnumInt("translatorVerbosity", depFn);
+	this->rendererVerbosity = getEnumInt("rendererVerbosity", depFn);
 	this->good = true;
 	return true;
 }

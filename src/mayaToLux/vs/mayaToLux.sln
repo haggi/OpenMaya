@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mayaToLux", "mayaToLux.vcxproj", "{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug2014|x64 = Debug2014|x64
+		Debug2015|x64 = Debug2015|x64
+		Release2014|x64 = Release2014|x64
+		Release2014NoOpenCl|x64 = Release2014NoOpenCl|x64
+		Release2015|x64 = Release2015|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Debug2014|x64.ActiveCfg = Debug2014|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Debug2014|x64.Build.0 = Debug2014|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Debug2015|x64.ActiveCfg = Debug2015|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Debug2015|x64.Build.0 = Debug2015|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2014|x64.ActiveCfg = Release2014|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2014|x64.Build.0 = Release2014|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2014NoOpenCl|x64.ActiveCfg = Release2014NoOpenCl|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2014NoOpenCl|x64.Build.0 = Release2014NoOpenCl|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2015|x64.ActiveCfg = Release2015|x64
+		{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}.Release2015|x64.Build.0 = Release2015|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -8,15 +8,16 @@
 
 #define MAYATOCMDNAME "mayatoLux"
 
-class  MayaToLux: public MPxCommand
+class  MayaToLux : public MPxCommand
 {
 public:
-					MayaToLux();
-	virtual			~MayaToLux(); 
+	MayaToLux();
+	virtual			~MayaToLux();
 	static MSyntax	newSyntax();
 
-	MStatus     	doIt( const MArgList& args );
+	MStatus     	doIt(const MArgList& args);
 	static void*	creator();
+	void setLogLevel();
 
 private:
 };

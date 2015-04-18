@@ -5,12 +5,14 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MColor.h>
 
-#include "../mtlu_common/mtlu_renderGlobals.h"
-#include "../mtlu_common/mtlu_mayaScene.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
 #include "../mtlu_common/mtlu_material.h"
+#include "../mtlu_common/mtlu_mayaObject.h"
 
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
+#include "world.h"
 
 //#include "utilities/logging.h"
 //static Logging logger;
@@ -355,9 +357,12 @@ void LuxRenderer::shaderCreator(MObject& mobject)
 
 void LuxRenderer::defineShaders()
 {
-	for( size_t i = 0; i < this->mtlu_scene->objectList.size(); i++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+
+	for( auto mobj:mayaScene->objectList)
 	{
-		mtlu_MayaObject *obj = (mtlu_MayaObject *)this->mtlu_scene->objectList[i];
+		std::shared_ptr<mtlu_MayaObject> obj = std::static_pointer_cast<mtlu_MayaObject>(mobj);
+
 		if( obj->visible )
 		{
 			if( obj->shadingGroups.length() > 0)
@@ -365,17 +370,15 @@ void LuxRenderer::defineShaders()
 				// place the whole shader/material creation in the getMaterials method later..
 				obj->getMaterials();
 
-				for( size_t mId = 0; mId < obj->materialList.size(); mId++)
+				for( auto mmat:obj->materialList)
 				{
-					mtlu_Material *mat =  (mtlu_Material *)obj->materialList[mId];
+					std::shared_ptr<mtlu_Material> mat = std::static_pointer_cast<mtlu_Material>(mmat);
 					logger.debug(MString("Define material: ") + mat->materialName);
-
-					//SNODE_LIST::iterator iter = 
 					int start = (int)mat->surfaceShaderNet.shaderList.size() - 1;
 					for( int sId = start; sId >= 0; sId--)
 					{
-						logger.debug(MString("Exporting shader node: ") + mat->surfaceShaderNet.shaderList[sId]->fullName);
-						this->shaderCreator(mat->surfaceShaderNet.shaderList[sId]->mobject);
+						logger.debug(MString("Exporting shader node: ") + mat->surfaceShaderNet.shaderList[sId].fullName);
+						this->shaderCreator(mat->surfaceShaderNet.shaderList[sId].mobject);
 					}
 					
 				}

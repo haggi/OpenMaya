@@ -1,13 +1,17 @@
-#include "mayatoLux.h"
+#include "MayaToLux.h"
 #include <maya/MGlobal.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mtlu_common/mtlu_mayaScene.h"
-#include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
+#include "utilities/logging.h"
+#include "utilities/tools.h"
+#include "utilities/attrTools.h"
+#include "world.h"
 
-static Logging logger;
+#if MAYA_API_VERSION >= 201600
+
+#endif
 
 void* MayaToLux::creator()
 {
@@ -22,104 +26,118 @@ MSyntax MayaToLux::newSyntax()
 	MSyntax syntax;
 	MStatus stat;
 
-	stat = syntax.addFlag( "-cam", "-camera", MSyntax::kString);
-	stat = syntax.addFlag( "-wi", "-width", MSyntax::kLong);
-	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
+	stat = syntax.addFlag("-cam", "-camera", MSyntax::kString);
+	stat = syntax.addFlag("-s", "-state");
+	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
+	stat = syntax.addFlag("-hi", "-height", MSyntax::kLong);
 	// Flag -startIPR
-	stat = syntax.addFlag( "-sar", "-startIpr");
+	stat = syntax.addFlag("-sar", "-startIpr");
 	// Flag -stopIPR
-	syntax.addFlag( "-str", "-stopIpr");
+	syntax.addFlag("-str", "-stopIpr");
 	// Flag -pauseIPR
-	syntax.addFlag( "-par", "-pauseIpr");
-	
+	syntax.addFlag("-par", "-pauseIpr");
+
 	return syntax;
 }
 
-MStatus MayaToLux::doIt( const MArgList& args)
+void MayaToLux::setLogLevel()
+{
+	MObject globalsObj = getRenderGlobalsNode();
+	if (globalsObj == MObject::kNullObj)
+	{
+		Logging::setLogLevel(Logging::Debug);
+		return;
+	}
+	MFnDependencyNode globalsNode(globalsObj);
+	int logLevel = getIntAttr("translatorVerbosity", globalsNode, 0);
+	Logging::setLogLevel((Logging::LogLevel)logLevel);
+}
+
+MStatus MayaToLux::doIt(const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayatoLux...");
-	logger.setLogLevel(Logging::Debug);
-	
+	MGlobal::displayInfo("Executing MayaToLux...");
+
+	setLogLevel();
+
 	MArgDatabase argData(syntax(), args);
-	
-	int width = -1;
-	int height = -1;
 
-	if ( argData.isFlagSet("-width", &stat))
+	if (argData.isFlagSet("-state", &stat))
 	{
-		argData.getFlagArgument("-width", 0, width);
-		logger.debug(MString("width: ") + width);
+		Logging::debug(MString("state: ???"));
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATETRANSLATING)
+			setResult("rstatetranslating");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATERENDERING)
+			setResult("rstaterendering");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATEDONE)
+			setResult("rstatedone");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATENONE)
+			setResult("rstatenone");
+		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATESTOPPED)
+			setResult("rstatestopped");
+		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-height", &stat))
+	if (argData.isFlagSet("-stopIpr", &stat))
 	{
-		argData.getFlagArgument("-height", 0, height);
-		logger.debug(MString("height: ") + height);
-	}
-
-	if ( argData.isFlagSet("-stopIpr", &stat))
-	{
-		logger.debug(MString("-stopIpr"));
+		Logging::debug(MString("-stopIpr"));
 		EventQueue::Event e;
 		e.type = EventQueue::Event::IPRSTOP;
 		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-pauseIpr", &stat))
+	if (argData.isFlagSet("-pauseIpr", &stat))
 	{
-		logger.debug(MString("-pauseIpr"));
+		Logging::debug(MString("-pauseIpr"));
+		Logging::debug(MString("-stopIpr"));
+		EventQueue::Event e;
+		e.type = EventQueue::Event::IPRPAUSE;
+		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	MayaScene::RenderType rtype = MayaScene::NORMAL;
-	if ( argData.isFlagSet("-startIpr", &stat))
+	// I have to request useRenderRegion here because as soon the command is finished, what happens immediatly after the command is 
+	// put into the queue, the value is set back to false.
+	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
+	MObject drg = objectFromName("defaultRenderGlobals");
+	MFnDependencyNode drgfn(drg);
+	cmdArgs->useRenderRegion = drgfn.findPlug("useRenderRegion").asBool();
+
+
+	if (argData.isFlagSet("-startIpr", &stat))
 	{
-		logger.debug(MString("-startIpr"));
-		rtype = MayaScene::IPR;
-	}else{
-		logger.debug(MString("normal render"));
+		Logging::debug(MString("-startIpr"));
+		cmdArgs->renderType = MayaTo::MayaToWorld::WorldRenderType::IPRRENDER;
 	}
 
-	// if we are here, we want a normal or an startIPR rendering, so initialize the scene
-	mtlu_MayaScene *mayaScene = new mtlu_MayaScene(rtype);
-	
-	if( !mayaScene->good )
+	if (argData.isFlagSet("-width", &stat))
 	{
-		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
-		return MS::kFailure;
+		argData.getFlagArgument("-width", 0, cmdArgs->width);
+		Logging::debug(MString("width: ") + cmdArgs->width);
 	}
 
-	if( !mayaScene->parseScene(MayaScene::HIERARCHYPARSE) )
+	if (argData.isFlagSet("-height", &stat))
 	{
-		logger.error("Problems have occurred during parsing of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
+		argData.getFlagArgument("-height", 0, cmdArgs->height);
+		Logging::debug(MString("height: ") + cmdArgs->height);
+	}
 
-	if ( argData.isFlagSet("-camera", &stat))
+	if (argData.isFlagSet("-camera", &stat))
 	{
-	    MDagPath camera;
-        MSelectionList selectionList;
+		MDagPath camera;
+		MSelectionList selectionList;
 		argData.getFlagArgument("-camera", 0, selectionList);
-        stat = selectionList.getDagPath(0, camera);
+		stat = selectionList.getDagPath(0, camera);
 		camera.extendToShape();
-		logger.debug(MString("camera: ") + camera.fullPathName());
-		mayaScene->setCurrentCamera(camera);
-	}			
+		Logging::debug(MString("camera: ") + camera.fullPathName());
+		cmdArgs->cameraDagPath = camera;
+	}
 
-	if( height > 0)
-		mayaScene->renderGlobals->imgHeight = height;
+	EventQueue::Event e;
+	e.cmdArgsData = std::move(cmdArgs);
+	e.type = EventQueue::Event::INITRENDER;
+	theRenderEventQueue()->push(e);
 
-	if( width > 0)
-		mayaScene->renderGlobals->imgWidth = width;
-
-	if(!mayaScene->renderScene())
-	{
-		logger.error("Problems have occurred during rendering of the scene. Sorry cannot proceed.\n\n");
-		return MS::kFailure;
-	}	
-
-	MGlobal::displayInfo("mayatoLux rendering done.\n");
 	return MStatus::kSuccess;
 }

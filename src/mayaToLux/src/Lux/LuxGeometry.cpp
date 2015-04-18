@@ -8,17 +8,18 @@
 #include <maya/MFnDependencyNode.h>
 #include <time.h>
 
-#include "../mtlu_common/mtlu_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
 #include "LuxUtils.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
-
 #include "utilities/logging.h"
+#include "world.h"
+
 static Logging logger;
 
-bool LuxRenderer::isLightMesh(mtlu_MayaObject *obj)
+bool LuxRenderer::isLightMesh(MayaObject *obj)
 {
 	MStatus stat;
 	MObject result = MObject::kNullObj;
@@ -41,7 +42,7 @@ bool LuxRenderer::isLightMesh(mtlu_MayaObject *obj)
 	return false;
 }
 
-void LuxRenderer::createAreaLightMesh(mtlu_MayaObject *obj)
+void LuxRenderer::createAreaLightMesh(MayaObject *obj)
 {
 	MString meshName("");
 	MFnDependencyNode depFn(obj->mobject);
@@ -77,7 +78,7 @@ void LuxRenderer::createAreaLightMesh(mtlu_MayaObject *obj)
 	}
 }
 
-void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = false)
+void LuxRenderer::defineTriangleMesh(MayaObject *obj, bool noObjectDef = false)
 {
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
@@ -315,14 +316,16 @@ void LuxRenderer::defineTriangleMesh(mtlu_MayaObject *obj, bool noObjectDef = fa
 
 void LuxRenderer::defineGeometry()
 {
-	for( size_t i = 0; i < this->mtlu_scene->objectList.size(); i++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	for( auto obj:mayaScene->objectList)
 	{
-		mtlu_MayaObject *obj = (mtlu_MayaObject *)this->mtlu_scene->objectList[i];
 		if( obj->visible )
 		{
 			if( obj->mobject.hasFn(MFn::kMesh))
 			{
-				if( isLightMesh(obj))
+				if( isLightMesh(obj.get()))
 				{
 					logger.debug(MString("Mesh: "));
 				}
@@ -337,18 +340,18 @@ void LuxRenderer::defineGeometry()
 					//this->lux->shape("sphere", boost::get_pointer(triParams));
 					//this->lux->objectEnd();
 
-					if( this->mtlu_renderGlobals->exportSceneFile)
+					if( renderGlobals->exportSceneFile)
 					{
 						float r = 0.3;
 						this->luxFile << "ObjectBegin \"" << obj->fullNiceName.asChar() << "\"\n";
 						this->luxFile << "Shape \"sphere\" \"float radius\" [" << r << "]\n";
 						this->luxFile << "ObjectEnd\n";
 					}
-					this->defineTriangleMesh(obj);
+					this->defineTriangleMesh(obj.get());
 				}
 
-				bool doMotionblur = this->mtlu_renderGlobals->doMb && (obj->motionBlurred) && (obj->transformMatrices.size() > 1);
-				transformGeometry(obj, doMotionblur);
+				bool doMotionblur = renderGlobals->doMb && (obj->motionBlurred) && (obj->transformMatrices.size() > 1);
+				transformGeometry(obj.get(), doMotionblur);
 			}
 		}
 	}

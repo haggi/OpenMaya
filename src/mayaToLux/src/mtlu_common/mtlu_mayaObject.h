@@ -11,7 +11,7 @@ class mtlu_ObjectAttributes : public ObjectAttributes
 {
 public:
 	mtlu_ObjectAttributes();
-	mtlu_ObjectAttributes(mtlu_ObjectAttributes *other);
+	mtlu_ObjectAttributes(std::shared_ptr<ObjectAttributes> other);
 	MMatrix objectMatrix;
 };
 
@@ -25,7 +25,7 @@ public:
 	~mtlu_MayaObject();
 
 	virtual bool geometryShapeSupported();
-	virtual mtlu_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes);
 	virtual void getMaterials();
 };
 

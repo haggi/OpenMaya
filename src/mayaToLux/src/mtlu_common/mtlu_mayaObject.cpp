@@ -14,7 +14,7 @@ mtlu_ObjectAttributes::mtlu_ObjectAttributes()
 	objectMatrix.setToIdentity();
 }
 
-mtlu_ObjectAttributes::mtlu_ObjectAttributes(mtlu_ObjectAttributes *other)
+mtlu_ObjectAttributes::mtlu_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
 	if( other != NULL)
 	{
@@ -31,7 +31,7 @@ void mtlu_MayaObject::getMaterials()
 {
 	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
 	{
-		mtlu_Material *mat = new mtlu_Material(this->shadingGroups[sgId]);
+		std::shared_ptr<mtlu_Material> mat = std::shared_ptr<mtlu_Material>(new mtlu_Material(this->shadingGroups[sgId]));
 		this->materialList.push_back(mat);
 	}
 }
@@ -46,10 +46,7 @@ mtlu_MayaObject::mtlu_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 }
 
 mtlu_MayaObject::~mtlu_MayaObject()
-{
-	if( this->attributes != NULL)
-		delete (mtlu_ObjectAttributes *)this->attributes;
-}
+{}
 
 bool mtlu_MayaObject::geometryShapeSupported()
 {
@@ -67,9 +64,9 @@ bool mtlu_MayaObject::geometryShapeSupported()
 //	e.g. lets say we assign a color to the top node of a hierarchy. Then all child nodes will be
 //	called and this method is used. 
 //
-mtlu_ObjectAttributes *mtlu_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
+std::shared_ptr<ObjectAttributes> mtlu_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	mtlu_ObjectAttributes *myAttributes = new mtlu_ObjectAttributes((mtlu_ObjectAttributes *)parentAttributes);
+	std::shared_ptr<mtlu_ObjectAttributes> myAttributes = std::shared_ptr<mtlu_ObjectAttributes>(new mtlu_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{

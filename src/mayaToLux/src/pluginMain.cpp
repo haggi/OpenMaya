@@ -56,6 +56,8 @@
 #include "textures/windyTexture.h"
 #include "textures/uvTexture.h"
 
+#include "world.h"
+
 #define VENDOR "haggis vfx & animation"
 #define VERSION "0.2"
 
@@ -297,6 +299,12 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	setRendererName("Lux");
+	setRendererShortCutName("mtLux");
+	setRendererHome(getenv("MTLux_HOME"));
+
+	MayaTo::defineWorld();
+
 	return status;
 }
 
@@ -306,7 +314,9 @@ MStatus uninitializePlugin( MObject obj)
 	MFnPlugin plugin( obj );
 
 	const MString UserClassify( "shader/surface" );
-	
+
+	MayaTo::deleteWorld();
+
 	std::cout << "deregister mtap cmd\n";
 	status = plugin.deregisterCommand( MAYATOCMDNAME );
 	if (!status) {

@@ -8,18 +8,19 @@
 
 #include <time.h>
 
-#include "../mtlu_common/mtlu_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
 #include "LuxUtils.h"
 #include "../mtlu_common/mtlu_shadingNode.h"
 #include "../mtlu_common/mtlu_Material.h"
 #include "utilities/tools.h"
-
+#include "world.h"
 #include "utilities/logging.h"
 static Logging logger;
 
-void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = false)
+void LuxRenderer::transformCamera(MayaObject *obj, bool doMotionblur = false)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	MFnCamera camFn(obj->mobject);
 	int tmId = 0;
 
@@ -43,20 +44,20 @@ void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = fals
 
 		lux->lookAt(camEye.x, camEye.y, camEye.z, camInterest.x, camInterest.y, camInterest.z, camUp.x, camUp.y, camUp.z);
 
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "Lookat " << camEye.x <<" "<< camEye.y<<" "<<camEye.z<<" "<<camInterest.x<<" "<<camInterest.y<<" "<<camInterest.z<<" "<<camUp.x<<" "<<camUp.y<<" "<<camUp.z<<"\n";
 
 	}else{
 
 		size_t numMbSteps = obj->transformMatrices.size();
 		float mbsteps[1024];
-		float stepSize = this->mtlu_renderGlobals->mbLength/(numMbSteps - 1);
+		float stepSize = renderGlobals->mbLength/(numMbSteps - 1);
 
 		for( int mbStep = 0; mbStep < numMbSteps; mbStep++)
 			mbsteps[mbStep] = stepSize * mbStep;
 				
 		lux->motionBegin(numMbSteps, mbsteps);
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 		{
 			this->luxFile << "MotionBegin [";
 			for( int mbs = 0; mbs < numMbSteps; mbs++)
@@ -87,18 +88,19 @@ void LuxRenderer::transformCamera(mtlu_MayaObject *obj, bool doMotionblur = fals
 				setZUp(camInterest);
 				setZUp(camUp);
 				lux->lookAt(camEye.x, camEye.y, camEye.z, camInterest.x, camInterest.y, camInterest.z, camUp.x, camUp.y, camUp.z);
-				if( this->mtlu_renderGlobals->exportSceneFile)
+				if( renderGlobals->exportSceneFile)
 					this->luxFile << "LookAt " << camEye.x <<" "<< camEye.y<<" "<<camEye.z<<" "<<camInterest.x<<" "<<camInterest.y<<" "<<camInterest.z<<" "<<camUp.x<<" "<<camUp.y<<" "<<camUp.z<<"\n";
 			}
 		}
 		lux->motionEnd();
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "MotionEnd\n";
 	}
 }
 
-void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = false)
+void LuxRenderer::transformGeometry(MayaObject *obj, bool doMotionblur = false)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	float fm[16];
 	MString objectInstanceName = obj->fullNiceName;
 
@@ -116,7 +118,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 			this->lux->attributeBegin();
 			this->lux->transform(fm);
 
-			if( this->mtlu_renderGlobals->exportSceneFile)
+			if( renderGlobals->exportSceneFile)
 			{
 				this->luxFile << "Transform [";
 				for( uint i = 0; i < 16; i++)
@@ -132,7 +134,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 					logger.debug(MString("Trying to define material 0 ") + obj->materialList[0]->materialName);
 					if( obj->materialList[0]->surfaceShaderNet.shaderList.size() > 0)
 					{
-						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)obj->materialList[0]->surfaceShaderNet.shaderList[0];
+						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)&obj->materialList[0]->surfaceShaderNet.shaderList[0];
 						logger.debug(MString("Trying to define surface shading node 0 ") + snode->fullName);
 						this->lux->namedMaterial(snode->fullName.asChar());
 					}
@@ -140,7 +142,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 			}
 
 			this->lux->objectInstance(objectInstanceName.asChar());
-			if( this->mtlu_renderGlobals->exportSceneFile)
+			if( renderGlobals->exportSceneFile)
 				this->luxFile << "ObjectInstance \"" << objectInstanceName.asChar() << "\"\n";
 
 			this->lux->attributeEnd();
@@ -149,12 +151,12 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 	}else{
 
 		lux->attributeBegin();
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "AttributeBegin\n";
 		{
 			size_t numMbSteps = obj->transformMatrices.size();
 			float mbsteps[1024];
-			float stepSize = this->mtlu_renderGlobals->mbLength/(numMbSteps - 1);
+			float stepSize = renderGlobals->mbLength/(numMbSteps - 1);
 						
 			for( int mbStep = 0; mbStep < numMbSteps; mbStep++)
 			{
@@ -162,7 +164,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 			}
 
 			lux->motionBegin(numMbSteps, mbsteps);
-			if( this->mtlu_renderGlobals->exportSceneFile)
+			if(renderGlobals->exportSceneFile)
 			{
 				this->luxFile << "MotionBegin [";
 				for( int mbs = 0; mbs < numMbSteps; mbs++)
@@ -179,7 +181,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 					MMatrix tm = obj->transformMatrices[tId];
 					setZUp(tm, fm);
 					this->lux->transform(fm);
-					if( this->mtlu_renderGlobals->exportSceneFile)
+					if( renderGlobals->exportSceneFile)
 					{
 						this->luxFile << "Transform [";
 						for( uint i = 0; i < 16; i++)
@@ -191,7 +193,7 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 				}
 			}
 			lux->motionEnd();
-			if( this->mtlu_renderGlobals->exportSceneFile)
+			if( renderGlobals->exportSceneFile)
 				this->luxFile << "MotionEnd\n";
 
 			{
@@ -200,18 +202,18 @@ void LuxRenderer::transformGeometry(mtlu_MayaObject *obj, bool doMotionblur = fa
 					logger.debug(MString("Trying to define material 0 ") + obj->materialList[0]->materialName);
 					if( obj->materialList[0]->surfaceShaderNet.shaderList.size() > 0)
 					{
-						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)obj->materialList[0]->surfaceShaderNet.shaderList[0];
+						mtlu_ShadingNode *snode = (mtlu_ShadingNode *)&(obj->materialList[0]->surfaceShaderNet.shaderList[0]);
 						logger.debug(MString("Trying to define surface shading node 0 ") + snode->fullName);
 						this->lux->namedMaterial(snode->fullName.asChar());
 					}
 				}
 			}
 			this->lux->objectInstance(objectInstanceName.asChar());
-			if( this->mtlu_renderGlobals->exportSceneFile)
+			if( renderGlobals->exportSceneFile)
 				this->luxFile << "ObjectInstance \"" << objectInstanceName.asChar() << "\"\n";
 		}
 		lux->attributeEnd();
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "AttributeEnd\n";
 	}
 }

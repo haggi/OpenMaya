@@ -81,6 +81,12 @@ class LuxRenderer(Renderer.MayaToRenderer):
         envDict['pskTurb'].setEnable(True)
         envDict['pskSamples'].setEnable(True)
 
+    def LuxCommonGlobalsCreateTab(self):
+        self.OpenMayaCommonGlobalsCreateTab()            
+
+    def LuxCommonGlobalsUpdateTab(self):
+        self.OpenMayaCommonGlobalsUpdateTab()            
+
     
     def LuxSurfaceIntegratorCreateTab(self):
         log.debug("LuxSurfaceIntegratorCreateTab()")

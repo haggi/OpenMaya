@@ -1,15 +1,13 @@
 #include "Lux.h"
 #include <iostream>
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <maya/MStringArray.h>
 
 #include "threads/renderQueueWorker.h"
 #include "utilities/tools.h"
-
-#include "../mtlu_common/mtlu_renderGlobals.h"
-#include "../mtlu_common/mtlu_mayaScene.h"
+#include "utilities/attrTools.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
+#include "world.h"
 
 #include "utilities/logging.h"
 static Logging logger;
@@ -36,11 +34,51 @@ LuxRenderer::~LuxRenderer()
 void LuxRenderer::initializeRenderer()
 {}
 
-void LuxRenderer::updateShape(MayaObject *obj)
-{}
+void LuxRenderer::updateShape(std::shared_ptr<MayaObject> obj)
+{
+	if( obj->instanceNumber > 0)
+		return;
+	
+	if( !obj->geometryShapeSupported() )
+		return;
+	
+	if( !obj->visible)
+		if( !obj->attributes->hasInstancerConnection )
+			return;		
+}
 
-void LuxRenderer::updateTransform(MayaObject *obj)
-{}
+void LuxRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
+{
+	//	mtlu_MayaObject *obj = (mtlu_MayaObject *)mobj;
+	//	//logger.trace(MString("mtlu_MayaScene::transformUpdateCallback"));
+	//
+	//	//logger.debug(MString("mtlu_updateObj: ") + mobj->dagPath.fullPathName());
+	//
+	//	if( isCamera(obj->mobject))
+	//	{
+	//		this->mtlu_renderer.updateTransform(obj);
+	//		return;
+	//	}
+	//
+	//	// if this is an instance of an object which has an assembly, then update it,
+	//	// if not, ignore instance.
+	//	if( obj->instanceNumber > 0)
+	//	{
+	//		if( obj->origObject == NULL)
+	//			return;
+	//
+	//	}else{
+	//		if( obj->instancerParticleId > -1)
+	//		{
+	//			if( obj->origObject == NULL)
+	//			{
+	//				logger.debug(MString("transformUpdateCallback: obj orig obj == NULL with instancerParticleId > -1"));
+	//				return;
+	//			}
+	//		}else{
+	//		}
+	//	}
+}
 
 void LuxRenderer::IPRUpdateEntities()
 {}
@@ -78,9 +116,13 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 	LuxRenderer *luxRenderer = (LuxRenderer*)pointer;
 	
 	//Context::UpdateFramebuffer
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
 
-	int width = luxRenderer->mtlu_renderGlobals->imgWidth;
-	int height = luxRenderer->mtlu_renderGlobals->imgHeight;
+	int width, height;
+	renderGlobals->getWidthHeight(width, height);
+
 	EventQueue::Event e;
 
 	while( isRendering )
@@ -92,9 +134,9 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 		const unsigned char *fb = luxRenderer->lux->framebuffer();
 		const float *ffb = luxRenderer->lux->floatFramebuffer();
 		const float *fa = luxRenderer->lux->alphaBuffer();
-		e.data = NULL;
 		size_t numPixels = width * height;
-		RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+		std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+		RV_PIXEL *pixels = pixelsPtr.get();
 		unsigned int mayaPixel = 0;
 
 		if( fb != NULL )
@@ -120,12 +162,10 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 		e.tile_xmin = e.tile_ymin = 0;
 		e.tile_xmax = width - 1;
 		e.tile_ymax = height - 1;
-		e.data = pixels;
+		e.pixelData = pixelsPtr;
 		e.type = EventQueue::Event::FRAMEUPDATE;
 		theRenderEventQueue()->push(e);
-
-		boost::this_thread::sleep(boost::posix_time::milliseconds(luxRenderer->mtlu_renderGlobals->uiupdateinterval * 1000));
-
+		std::this_thread::sleep_for(std::chrono::milliseconds(getIntAttr("uiupdateinterval", gFn, 100)));
 	}
 
 	logger.debug("Update framebuffer thread done.");
@@ -134,49 +174,72 @@ void LuxRenderer::getFramebufferThread( void *pointer)
 
 void LuxRenderer::defineSampling()
 {
-	const char *samplerNames[] = {"random", "lowdiscrepancy", "metropolis"};
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	const char *samplerNames[] = { "random", "lowdiscrepancy", "metropolis" };
 	MStringArray samplers(samplerNames, 3);
 	ParamSet samplerParams = CreateParamSet();
-	samplerParams->AddBool("noiseaware", &this->mtlu_renderGlobals->noiseaware);
+	bool noiseAware = getBoolAttr("noiseaware", gFn, true);
+	samplerParams->AddBool("noiseaware", &noiseAware);
 
-	if( (samplers[this->mtlu_renderGlobals->sampler] == "random") || (samplers[this->mtlu_renderGlobals->sampler] == "lowdiscrepancy"))
+	MString sampler = samplers[getIntAttr("sampler", gFn, 0)];
+	if ((sampler == "random") || (sampler == "lowdiscrepancy"))
 	{
-		samplerParams->AddInt("pixelsamples", &this->mtlu_renderGlobals->numSamples);
+		int pixelsamples = getIntAttr("numSamples", gFn, 4);
+		samplerParams->AddInt("pixelsamples", &pixelsamples);
 		const char *pixelSamplerNames[] = {"hilbert", "linear", "vegas", "lowdiscrepancy", "tile", "random"};
-		samplerParams->AddString("pixelsampler", &pixelSamplerNames[this->mtlu_renderGlobals->pixelSampler]);
+		int samplerNameInt = getIntAttr("pixelSampler", gFn, 0);
+		samplerParams->AddString("pixelsampler", &pixelSamplerNames[samplerNameInt]);
 	}
-	if( (samplers[this->mtlu_renderGlobals->sampler] == "metropolis"))
+	if ((sampler == "metropolis"))
 	{
-		samplerParams->AddInt("maxconsecrejects", &this->mtlu_renderGlobals->maxconsecrejects);
-		samplerParams->AddFloat("largemutationprob", &this->mtlu_renderGlobals->largemutationprob);
-		samplerParams->AddFloat("mutationrange", &this->mtlu_renderGlobals->mutationRange);
-		samplerParams->AddBool("usevariance", &this->mtlu_renderGlobals->usevariance);
-		samplerParams->AddBool("usecooldown", &this->mtlu_renderGlobals->usecooldown);
+		int mcr = getIntAttr("maxconsecrejects", gFn, 1);
+		samplerParams->AddInt("maxconsecrejects", &mcr);
+		float fval = getFloatAttr("largemutationprob", gFn, 1.0);
+		samplerParams->AddFloat("largemutationprob", &fval);
+		fval = getFloatAttr("mutationrange", gFn, 1.0);
+		samplerParams->AddFloat("mutationrange", &fval);
+		bool bval = getBoolAttr("usevariance", gFn, true);
+		samplerParams->AddBool("usevariance", &bval);
+		bval = getBoolAttr("usecooldown", gFn, true);
+		samplerParams->AddBool("usecooldown", &bval);
 	}
 
-	this->lux->sampler(samplerNames[this->mtlu_renderGlobals->sampler], boost::get_pointer(samplerParams));
+	this->lux->sampler(sampler.asChar(), boost::get_pointer(samplerParams));
 }
 
 void LuxRenderer::defineAccelerator()
 {
-	const char *rendererNames[] = {"kdtree", "qbvh", "grid", "unsafekdtree", "bvh", "none"};
-	const char *rendererName = rendererNames[this->mtlu_renderGlobals->accelerator];
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	const char *rendererNames[] = { "kdtree", "qbvh", "grid", "unsafekdtree", "bvh", "none" };
+	const char *rendererName = rendererNames[getEnumInt("accelerator", gFn)];
 	ParamSet accParams = CreateParamSet();
 
 	if( MString(rendererName) == "kdtree")
 	{
-		accParams->AddInt("intersectcost", &this->mtlu_renderGlobals->kdIntersectcost);
-		accParams->AddInt("traversalcost", &this->mtlu_renderGlobals->kdTraversalcost);
-		accParams->AddFloat("emptybonus", &this->mtlu_renderGlobals->kdEmptybonus);
-		accParams->AddInt("maxprims", &this->mtlu_renderGlobals->kdMaxprims);
-		accParams->AddInt("maxdepth", &this->mtlu_renderGlobals->kdMaxdepth);
+		int intVal = getIntAttr("kdIntersectcost", gFn, 80);
+		accParams->AddInt("intersectcost", &intVal);
+		intVal = getIntAttr("kdTraversalcost", gFn, 1);
+		accParams->AddInt("traversalcost", &intVal);
+		float floatVal = getFloatAttr("kdEmptybonus", gFn, 0.5f);
+		accParams->AddFloat("emptybonus", &floatVal);
+		intVal = getIntAttr("kdMaxprims", gFn, 1);
+		accParams->AddInt("maxprims", &intVal);
+		intVal = getIntAttr("kdMaxdepth", gFn, -1);
+		accParams->AddInt("maxdepth", &intVal);
 	}
 
 	if( MString(rendererName) == "qbvh")
 	{
-		accParams->AddInt("maxprimsperleaf", &this->mtlu_renderGlobals->maxprimsperleaf);
-		accParams->AddInt("fullsweepthreshold", &this->mtlu_renderGlobals->fullsweepthreshold);
-		accParams->AddInt("skipfactor", &this->mtlu_renderGlobals->skipfactor);
+		int intVal = getIntAttr("maxprimsperleaf", gFn, 4);
+		accParams->AddInt("maxprimsperleaf", &intVal);
+		intVal = getIntAttr("fullsweepthreshold", gFn, 4*4);
+		accParams->AddInt("fullsweepthreshold", &intVal);
+		intVal = getIntAttr("skipfactor", gFn, 1);
+		accParams->AddInt("skipfactor", &intVal);
 	}
 
 	this->lux->accelerator(rendererName, boost::get_pointer(accParams));
@@ -184,182 +247,264 @@ void LuxRenderer::defineAccelerator()
 
 void LuxRenderer::defineRenderer()
 {
-	const char *rendererNames[] = {"sampler", "hybrid", "sppm"};
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	const char *rendererNames[] = { "sampler", "hybrid", "sppm" };
 	ParamSet rendererParams = CreateParamSet();
-	this->lux->renderer(rendererNames[this->mtlu_renderGlobals->renderer], boost::get_pointer(rendererParams));
+	this->lux->renderer(rendererNames[getEnumInt("renderer", gFn)], boost::get_pointer(rendererParams));
 }
 
 void LuxRenderer::definePixelFilter()
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
 	const char *filterNames[] = {"box", "triangle", "gaussian", "mitchell", "sinc"};
 	MStringArray filters(filterNames, 5);
+	MString filter = filters[getEnumInt("pixelfilter", gFn)];
 	ParamSet filterParams = CreateParamSet();
-	logger.debug(MString("Define pixel filter: ") + filters[this->mtlu_renderGlobals->pixelfilter]);
-	filterParams->AddFloat("xwidth", &this->mtlu_renderGlobals->filterWidth);
-	filterParams->AddFloat("ywidth", &this->mtlu_renderGlobals->filterHeight);
-	logger.debug(MString("Define pixel filter: ") + filters[this->mtlu_renderGlobals->pixelfilter] + " width: " + this->mtlu_renderGlobals->filterWidth);
-	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "gaussian"))
+	float floatVal = getFloatAttr("filterWidth", gFn, 2.0f);
+	filterParams->AddFloat("xwidth", &floatVal);
+	floatVal = getFloatAttr("filterHeight", gFn, 2.0f);
+	filterParams->AddFloat("ywidth", &floatVal);
+	if(filter == "gaussian")
 	{
-		filterParams->AddFloat("alpha", &this->mtlu_renderGlobals->filterAlpha);
+		floatVal = getFloatAttr("filterAlpha", gFn, 2.0f);
+		filterParams->AddFloat("alpha", &floatVal);
 	}
-	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "mitchell"))
+	if(filter == "mitchell")
 	{
-		filterParams->AddFloat("B", &this->mtlu_renderGlobals->B);
-		filterParams->AddFloat("C", &this->mtlu_renderGlobals->C);
-		filterParams->AddBool("supersample", &this->mtlu_renderGlobals->mSupersample);
+		floatVal = getFloatAttr("B", gFn, .33f);
+		filterParams->AddFloat("B", &floatVal);
+		floatVal = getFloatAttr("C", gFn, .33f);
+		filterParams->AddFloat("C", &floatVal);
+		bool boolVar = getBoolAttr("mSupersample", gFn, false);
+		filterParams->AddBool("supersample", &boolVar);
 	}
-	if( (filters[this->mtlu_renderGlobals->pixelfilter] == "sinc"))
+	if (filter == "sinc")
 	{
-		filterParams->AddFloat("tau", &this->mtlu_renderGlobals->sincTau);
+		floatVal = getFloatAttr("sincTau", gFn, 3.0f);
+		filterParams->AddFloat("tau", &floatVal);
 	}
-	this->lux->pixelFilter(filterNames[this->mtlu_renderGlobals->pixelfilter], boost::get_pointer(filterParams));
+	this->lux->pixelFilter(filter.asChar(), boost::get_pointer(filterParams));
 }
 
 void LuxRenderer::defineSurfaceIntegrator()
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	bool boolValue;
+	int intValue;
+	float floatValue;
+
 	const char *integratorNames[] = {"bidirectional", "path", "exphotonmap", "directlighting", "igi", "distributedpath", "sppm"}; 
 	MStringArray integrators(integratorNames, 7);
 	ParamSet iParams = CreateParamSet();
-	
-	if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] != "sppm")
+	int renderer = getEnumInt("renderer", gFn);
+	MString integrator = integratorNames[getEnumInt("surfaceIntegrator", gFn)];
+	const char *lStrategies[] = { "one", "all", "auto", "importance", "powerimp", "allpowerimp", "logpowerimp" };
+	MString strategy = lStrategies[getEnumInt("lightStrategy", gFn)];
+	const char *ls = strategy.asChar();
+
+	if (integrator != "sppm")
 	{
-		const char *lStrategies[]= {"one","all","auto","importance","powerimp","allpowerimp","logpowerimp"};
-		iParams->AddString("lightstrategy", &lStrategies[this->mtlu_renderGlobals->lightStrategy]);
-		iParams->AddInt("shadowraycount", &this->mtlu_renderGlobals->shadowraycount);
+		iParams->AddString("lightstrategy", &ls);
+		int intVal = getIntAttr("shadowraycount", gFn, 1);
+		iParams->AddInt("shadowraycount", &intVal);
 	}
 
-	// Bidirectional - hybrid or sampler only
-	if(this->mtlu_renderGlobals->renderer < 2)
+	//// Bidirectional - hybrid or sampler only
+	if (renderer < 2)
 	{
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "bidirectional")
+		if (integrator == "bidirectional")
 		{
-			const char *lStrategies[]= {"one","all","auto","importance","powerimp","allpowerimp","logpowerimp"};
-			const char *ls = lStrategies[this->mtlu_renderGlobals->lightStrategy];
 			// hybrid requires "one"
-			if( this->mtlu_renderGlobals->renderer == 1 )
+			if (renderer == 1)
 				ls = lStrategies[0];
 			iParams->AddString("lightpathstrategy", &ls);
-			iParams->AddInt("eyedepth", &this->mtlu_renderGlobals->eyedepth);
-			iParams->AddFloat("lightrrthreshold",&this->mtlu_renderGlobals->lightrrthreshold);
-			iParams->AddFloat("eyerrthreshold",&this->mtlu_renderGlobals->eyerrthreshold);
+			intValue = getIntAttr("eyedepth", gFn, 8);
+			iParams->AddInt("eyedepth", &intValue);
+			floatValue = getFloatAttr("lightrrthreshold", gFn, 0.0);
+			iParams->AddFloat("lightrrthreshold", &floatValue);
+			floatValue = getFloatAttr("eyerrthreshold", gFn, 0.0);
+			iParams->AddFloat("eyerrthreshold", &floatValue);
 		}
 
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "path")
+		if (integrator == "path")
 		{
-			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->pathMaxdepth);
-			iParams->AddBool("includeenvironment", &this->mtlu_renderGlobals->includeenvironment);
-			iParams->AddBool("directlightsampling", &this->mtlu_renderGlobals->directlightsampling);
-			const char *rrstrategys[] = {"none", "probability", "efficiency"};
-			const char *rrstrategy = rrstrategys[this->mtlu_renderGlobals->rrstrategy];
+			intValue = getIntAttr("phMaxdepth", gFn, 5);
+			iParams->AddInt("phMaxdepth", &intValue);
+			boolValue = getBoolAttr("includeenvironment", gFn, true);
+			iParams->AddBool("includeenvironment", &boolValue);
+			boolValue = getBoolAttr("directlightsampling", gFn, true);
+			iParams->AddBool("directlightsampling", &boolValue);
+			floatValue = getFloatAttr("rrcontinueprob", gFn, .65);
+			iParams->AddFloat("rrcontinueprob", &floatValue);
+			const char *rrstrategys[] = { "none", "probability", "efficiency" };
+			const char *rrstrategy = rrstrategys[getEnumInt("rrstrategy", gFn)];
 			iParams->AddString("rrstrategy", &rrstrategy);	
-			iParams->AddFloat("rrcontinueprob", &this->mtlu_renderGlobals->rrcontinueprob);
 		}
 	}
 
 	// direct/photonmap - sampler only
-	if(this->mtlu_renderGlobals->renderer == 0)
+	if (renderer == 0)
 	{
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "direct")
+		if (integrator == "direct")
 		{
-			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->pathMaxdepth);
+			intValue = getIntAttr("pathMaxdepth", gFn, 20000);
+			iParams->AddInt("maxdepth", &intValue);
 			const char *rrstrategys[] = {"none", "probability", "efficiency"};
-			const char *rrstrategy = rrstrategys[this->mtlu_renderGlobals->rrstrategy];
+			const char *rrstrategy = rrstrategys[getEnumInt("rrstrategy", gFn)];
 			iParams->AddString("rrstrategy", &rrstrategy);						
 		}
 
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "exphotonmap")
+		if (integrator == "exphotonmap")
 		{
 			const char *phRenderingmodes[] =  { "directlighting","path" };
-			const char *phRenderingmode = phRenderingmodes[this->mtlu_renderGlobals->phRenderingmode];
+			const char *phRenderingmode = phRenderingmodes[getEnumInt("phRenderingmode", gFn)];
 			iParams->AddString("renderingmode", &phRenderingmode);
-			iParams->AddInt("causticphotons", &this->mtlu_renderGlobals->phCausticphotons);
-			iParams->AddInt("indirectphotons", &this->mtlu_renderGlobals->phIndirectphotons);
-			iParams->AddInt("directphotons", &this->mtlu_renderGlobals->phDirectphotons);
-			iParams->AddInt("radiancephotons", &this->mtlu_renderGlobals->phRadiancephotons);
-			iParams->AddInt("nphotonsused", &this->mtlu_renderGlobals->phNphotonsused);
-			iParams->AddFloat("maxphotondist", &this->mtlu_renderGlobals->phMaxphotondist);
-			iParams->AddInt("maxdepth", &this->mtlu_renderGlobals->phMaxdepth);
-			iParams->AddInt("maxphotondepth", &this->mtlu_renderGlobals->phMaxphotondepth);
-			iParams->AddBool("finalgather", &this->mtlu_renderGlobals->phFinalgather);
-			iParams->AddInt("finalgathersamples", &this->mtlu_renderGlobals->phFinalgathersamples);
-			iParams->AddFloat("gatherangle", &this->mtlu_renderGlobals->phGatherangle);
+			intValue = getIntAttr("phCausticphotons", gFn, 20000);
+			iParams->AddInt("causticphotons", &intValue);
+			intValue = getIntAttr("phIndirectphotons", gFn, 200000);
+			iParams->AddInt("indirectphotons", &intValue);
+			intValue = getIntAttr("phDirectphotons", gFn, 200000);
+			iParams->AddInt("directphotons", &intValue);
+			intValue = getIntAttr("phRadiancephotons", gFn, 200000);
+			iParams->AddInt("radiancephotons", &intValue);
+			intValue = getIntAttr("phNphotonsused", gFn, 50);
+			iParams->AddInt("nphotonsused", &intValue);
+			floatValue = getFloatAttr("phMaxphotondist", gFn, 0.5);
+			iParams->AddFloat("maxphotondist", &floatValue);
+			intValue = getIntAttr("phMaxdepth", gFn, 5);
+			iParams->AddInt("maxdepth", &intValue);
+			intValue = getIntAttr("maxphotondepth", gFn, 16);
+			iParams->AddInt("maxphotondepth", &intValue);
+			boolValue = getBoolAttr("phFinalgather", gFn, true);
+			iParams->AddBool("finalgather", &boolValue);
+			intValue = getIntAttr("phFinalgathersamples", gFn, 32);
+			iParams->AddInt("finalgathersamples", &intValue);
+			floatValue = getFloatAttr("phGatherangle", gFn, 10.0);
+			iParams->AddFloat("gatherangle", &floatValue);
+			floatValue = getFloatAttr("rrcontinueprob", gFn, .65);
+			iParams->AddFloat("rrcontinueprob", &floatValue);
+			floatValue = getFloatAttr("phDistancethreshold", gFn, 1.25);
+			iParams->AddFloat("phDistancethreshold", &floatValue);
+
 			const char *phRrstrategys[] =  { "none","probability","efficiency" };
-			const char *phRrstrategy = phRrstrategys[this->mtlu_renderGlobals->phRrstrategy];
+			const char *phRrstrategy = phRrstrategys[getEnumInt("phRrstrategy", gFn)];
 			iParams->AddString("rrstrategy", &phRrstrategy);
-			iParams->AddFloat("rrcontinueprob", &this->mtlu_renderGlobals->phRrcontinueprob);
-			iParams->AddFloat("distancethreshold", &this->mtlu_renderGlobals->phDistancethreshold);
 		}
 		
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "distributedpath")
+		if (integrator == "distributedpath")
 		{
 			const char *renderingmodes[] =  { "directlighting","path" };
-			const char *renderingmode = renderingmodes[this->mtlu_renderGlobals->renderingmode];
-			iParams->AddString("renderingmode", &renderingmode);
+			const char *rmode = renderingmodes[getEnumInt("renderingmode", gFn)];
+			iParams->AddString("renderingmode", &rmode);
 			const char *strategys[] =  { "auto","all","one" };
-			const char *strategy = strategys[this->mtlu_renderGlobals->strategy];
+			const char *strategy = strategys[getEnumInt("strategy", gFn)];
 			iParams->AddString("strategy", &strategy);
-			iParams->AddBool("directsampleall", &this->mtlu_renderGlobals->directsampleall);
-			iParams->AddInt("directsamples", &this->mtlu_renderGlobals->directsamples);
-			iParams->AddBool("indirectsampleall", &this->mtlu_renderGlobals->indirectsampleall);
-			iParams->AddInt("indirectsamples", &this->mtlu_renderGlobals->indirectsamples);
-			iParams->AddInt("diffusereflectdepth", &this->mtlu_renderGlobals->diffusereflectdepth);
-			iParams->AddInt("diffusereflectsamples", &this->mtlu_renderGlobals->diffusereflectsamples);
-			iParams->AddInt("diffuserefractdepth", &this->mtlu_renderGlobals->diffuserefractdepth);
-			iParams->AddInt("diffuserefractsamples", &this->mtlu_renderGlobals->diffuserefractsamples);
-			iParams->AddBool("directdiffuse", &this->mtlu_renderGlobals->directdiffuse);
-			iParams->AddBool("indirectdiffuse", &this->mtlu_renderGlobals->indirectdiffuse);
-			iParams->AddInt("glossyreflectdepth", &this->mtlu_renderGlobals->glossyreflectdepth);
-			iParams->AddInt("glossyreflectsamples", &this->mtlu_renderGlobals->glossyreflectsamples);
-			iParams->AddInt("glossyrefractdepth", &this->mtlu_renderGlobals->glossyrefractdepth);
-			iParams->AddInt("glossyrefractsamples", &this->mtlu_renderGlobals->glossyrefractsamples);
-			iParams->AddBool("directglossy", &this->mtlu_renderGlobals->directglossy);
-			iParams->AddBool("indirectglossy", &this->mtlu_renderGlobals->indirectglossy);
-			iParams->AddInt("specularreflectdepth", &this->mtlu_renderGlobals->specularreflectdepth);
-			iParams->AddInt("specularrefractdepth", &this->mtlu_renderGlobals->specularrefractdepth);
-			iParams->AddBool("diffusereflectreject", &this->mtlu_renderGlobals->diffusereflectreject);
-			iParams->AddBool("diffuserefractreject", &this->mtlu_renderGlobals->diffuserefractreject);
-			iParams->AddInt("diffusereflectreject_threshold", &this->mtlu_renderGlobals->diffusereflectreject_threshold);
-			iParams->AddInt("diffuserefractreject_threshold", &this->mtlu_renderGlobals->diffuserefractreject_threshold);
-			iParams->AddBool("glossyreflectreject", &this->mtlu_renderGlobals->glossyreflectreject);
-			iParams->AddBool("glossyrefractreject", &this->mtlu_renderGlobals->glossyrefractreject);
-			iParams->AddInt("glossyreflectreject_threshold", &this->mtlu_renderGlobals->glossyreflectreject_threshold);
-			iParams->AddInt("glossyrefractreject_threshold", &this->mtlu_renderGlobals->glossyrefractreject_threshold);
+			boolValue = getBoolAttr("directsampleall", gFn, true);
+			iParams->AddBool("directsampleall", &boolValue);
+			intValue = getIntAttr("directsamples", gFn, 1);
+			iParams->AddInt("directsamples", &intValue);
+			boolValue = getBoolAttr("indirectsampleall", gFn, false);
+			iParams->AddBool("indirectsampleall", &boolValue);
+			intValue = getIntAttr("indirectsamples", gFn, 1);
+			iParams->AddInt("indirectsamples", &intValue);
+			intValue = getIntAttr("diffusereflectdepth", gFn, 3);
+			iParams->AddInt("diffusereflectdepth", &intValue);
+			intValue = getIntAttr("diffusereflectsamples", gFn, 1);
+			iParams->AddInt("diffusereflectsamples", &intValue);
+			intValue = getIntAttr("diffuserefractdepth", gFn, 5);
+			iParams->AddInt("diffuserefractdepth", &intValue);
+			intValue = getIntAttr("diffuserefractsamples", gFn, 1);
+			iParams->AddInt("diffuserefractsamples", &intValue);
+			boolValue = getBoolAttr("directdiffuse", gFn, true);
+			iParams->AddBool("directdiffuse", &boolValue);
+			boolValue = getBoolAttr("indirectdiffuse", gFn, true);
+			iParams->AddBool("indirectdiffuse", &boolValue);
+			intValue = getIntAttr("glossyreflectdepth", gFn, 2);
+			iParams->AddInt("glossyreflectdepth", &intValue);
+			intValue = getIntAttr("glossyreflectsamples", gFn, 1);
+			iParams->AddInt("glossyreflectsamples", &intValue);
+			intValue = getIntAttr("glossyrefractdepth", gFn, 5);
+			iParams->AddInt("glossyrefractdepth", &intValue);
+			intValue = getIntAttr("glossyrefractsamples", gFn, 1);
+			iParams->AddInt("glossyrefractsamples", &intValue);
+			boolValue = getBoolAttr("directglossy", gFn, true);
+			iParams->AddBool("directglossy", &boolValue);
+			boolValue = getBoolAttr("indirectglossy", gFn, true);
+			iParams->AddBool("indirectglossy", &boolValue);
+			intValue = getIntAttr("specularreflectdepth", gFn, 3);
+			iParams->AddInt("specularreflectdepth", &intValue);
+			intValue = getIntAttr("specularrefractdepth", gFn, 3);
+			iParams->AddInt("specularrefractdepth", &intValue);
+			boolValue = getBoolAttr("diffusereflectreject", gFn, false);
+			iParams->AddBool("diffusereflectreject", &boolValue);
+			boolValue = getBoolAttr("diffuserefractreject", gFn, false);
+			iParams->AddBool("diffuserefractreject", &boolValue);
+			intValue = getIntAttr("diffusereflectreject_threshold", gFn, 10.0);
+			iParams->AddInt("diffusereflectreject_threshold", &intValue);
+			intValue = getIntAttr("diffuserefractreject_threshold", gFn, 10.0);
+			iParams->AddInt("diffuserefractreject_threshold", &intValue);
+			boolValue = getBoolAttr("glossyreflectreject", gFn, false);
+			iParams->AddBool("glossyreflectreject", &boolValue);
+			boolValue = getBoolAttr("glossyrefractreject", gFn, false);
+			iParams->AddBool("glossyrefractreject", &boolValue);
+			intValue = getIntAttr("glossyreflectreject_threshold", gFn, 10.0);
+			iParams->AddInt("glossyreflectreject_threshold", &intValue);
+			intValue = getIntAttr("glossyrefractreject_threshold", gFn, 10.0);
+			iParams->AddInt("glossyrefractreject_threshold", &intValue);
 		}
 
 	}
 
-	// sppm only
-	if(this->mtlu_renderGlobals->renderer == 2)
+	//// sppm only
+	if (renderer == 2)
 	{
-		if( integrators[this->mtlu_renderGlobals->surfaceIntegrator] == "sppm")
+		if (integrator == "sppm")
 		{
 			const char *photonsamplers[]= {"halton", "amc"};
-			const char *photonsampler= photonsamplers[this->mtlu_renderGlobals->photonsampler];
+			const char *photonsampler = photonsamplers[getEnumInt("photonsampler", gFn)];
 			iParams->AddString("photonsampler", &photonsampler);
 			const char *lookupaccels[] = {"hybridhashgrid","kdtree","grid","hashgrid","parallelhashgrid"};
-			const char *lookupaccel = lookupaccels[this->mtlu_renderGlobals->lookupaccel];
+			const char *lookupaccel = lookupaccels[getEnumInt("lookupaccel", gFn)];
 			iParams->AddString("lookupaccel", &lookupaccel);
 			const char *pixelsamplers[] = {"hilbert", "linear", "tile", "vegas"};
-			const char *pixelsampler = pixelsamplers[this->mtlu_renderGlobals->sppmpixelsampler] ;
+			const char *pixelsampler = pixelsamplers[getEnumInt("sppmpixelsampler", gFn)];
 			iParams->AddString("pixelsampler", &pixelsampler);
-			iParams->AddFloat("parallelhashgridspare", &this->mtlu_renderGlobals->parallelhashgridspare);
-			iParams->AddBool("includeenvironment", &this->mtlu_renderGlobals->sppmincludeenvironment);
-			iParams->AddBool("directlightsampling", &this->mtlu_renderGlobals->sppmdirectlightsampling);
-			iParams->AddInt("photonperpass", &this->mtlu_renderGlobals->photonperpass);
-			iParams->AddInt("startk", &this->mtlu_renderGlobals->startk);
-			iParams->AddFloat("alpha", &this->mtlu_renderGlobals->alpha);
-			iParams->AddFloat("glossythreshold", &this->mtlu_renderGlobals->glossythreshold);
-			iParams->AddFloat("startradius", &this->mtlu_renderGlobals->startradius);
-			iParams->AddBool("useproba", &this->mtlu_renderGlobals->useproba);
-			iParams->AddInt("wavelengthstratification", &this->mtlu_renderGlobals->wavelengthstratification);
-			iParams->AddBool("debug", &this->mtlu_renderGlobals->debug);
-			iParams->AddBool("storeglossy", &this->mtlu_renderGlobals->storeglossy);
-			iParams->AddInt("maxeyedepth", &this->mtlu_renderGlobals->maxeyedepth);
-			iParams->AddInt("maxphotondepth", &this->mtlu_renderGlobals->maxphotondepth);
+			floatValue = getFloatAttr("parallelhashgridspare", gFn, 1.0);
+			iParams->AddFloat("parallelhashgridspare", &floatValue);
+			boolValue = getBoolAttr("includeenvironment", gFn, true);
+			iParams->AddBool("includeenvironment", &boolValue);
+			boolValue = getBoolAttr("directlightsampling", gFn, true);
+			iParams->AddBool("directlightsampling", &boolValue);
+			intValue = getIntAttr("photonperpass", gFn, 1000000);
+			iParams->AddInt("photonperpass", &intValue);
+			intValue = getIntAttr("startk", gFn, 0);
+			iParams->AddInt("startk", &intValue);
+			floatValue = getFloatAttr("alpha", gFn, 0.7);
+			iParams->AddFloat("alpha", &floatValue);
+			floatValue = getFloatAttr("glossythreshold", gFn, 100);
+			iParams->AddFloat("glossythreshold", &floatValue);
+			floatValue = getFloatAttr("startradius", gFn, 2.0);
+			iParams->AddFloat("startradius", &floatValue);
+			boolValue = getBoolAttr("useproba", gFn, true);
+			iParams->AddBool("useproba", &boolValue);
+			intValue = getIntAttr("wavelengthstratification", gFn, 8);
+			iParams->AddInt("wavelengthstratification", &intValue);
+			boolValue = getBoolAttr("debug", gFn, false);
+			iParams->AddBool("debug", &boolValue);
+			boolValue = getBoolAttr("storeglossy", gFn, false);
+			iParams->AddBool("storeglossy", &boolValue);
+			intValue = getIntAttr("maxeyedepth", gFn, 16);
+			iParams->AddInt("maxeyedepth", &intValue);
+			intValue = getIntAttr("maxphotondepth", gFn, 16);
+			iParams->AddInt("maxphotondepth", &intValue);
 		}
 	}
 
-	this->lux->surfaceIntegrator(integratorNames[this->mtlu_renderGlobals->surfaceIntegrator], boost::get_pointer(iParams));
+	this->lux->surfaceIntegrator(integrator.asChar(), boost::get_pointer(iParams));
 }
 
 
@@ -367,15 +512,17 @@ void LuxRenderer::render()
 {
 	logger.debug(MString("Render lux."));
 	EventQueue::Event e;
-
-	int width = this->mtlu_renderGlobals->imgWidth;
-	int height = this->mtlu_renderGlobals->imgHeight;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	
+	int width, height;
+	renderGlobals->getWidthHeight(width, height);
 
 	MPointArray pointArray;
 	getMeshPoints(pointArray);
 	isRendering = false;
 
-	MString outputPath = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".lxs";
+	MString outputPath = renderGlobals->basePath + "/" + renderGlobals->imageName + "." + (int)renderGlobals->currentFrame + ".lxs";
 	logger.debug(MString("Writing scene file to: ") + outputPath);
 	luxFile.open(outputPath.asChar());
 
@@ -401,7 +548,7 @@ void LuxRenderer::render()
 		this->definePixelFilter();
 
 		lux->worldBegin();
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "WorldBegin\n";
 
 		this->defineShaders();
@@ -411,30 +558,33 @@ void LuxRenderer::render()
 		this->defineGeometry();
 
 		lux->worldEnd();
-		if( this->mtlu_renderGlobals->exportSceneFile)
+		if( renderGlobals->exportSceneFile)
 			this->luxFile << "WorldEnd\n";
 
 		luxFile.close();
 
 		isRendering = true;
 
+		MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
 		// wait for the WorldEnd thread to start running
 		// this isn't terribly reliable, cpp_api should be modified
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 		boost::thread(LuxRenderer::getFramebufferThread, this);
 
-		for( int tid = 0; tid < this->mtlu_renderGlobals->threads; tid++)
+		for( int tid = 0; tid < renderGlobals->threads; tid++)
 			lux->addThread();
 
 		lux->wait();
+
+		MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
 
 		isRendering = false;
 		const unsigned char *fb = lux->framebuffer();
 		const float *ffb = lux->floatFramebuffer();
 		const float *fa = lux->alphaBuffer();
-		e.data = NULL;
 		size_t numPixels = width * height;
-		RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+		std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+		RV_PIXEL *pixels = pixelsPtr.get();
 		unsigned int mayaPixel = 0;
 
 		if( fb != NULL )
@@ -458,7 +608,7 @@ void LuxRenderer::render()
 		e.tile_xmin = e.tile_ymin = 0;
 		e.tile_xmax = width - 1;
 		e.tile_ymax = height - 1;
-		e.data = pixels;
+		e.pixelData = pixelsPtr;
 
 		// saveFLM needs extension
 		filename = filename + ".flm";

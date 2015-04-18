@@ -1,27 +1,33 @@
 #include "Lux.h"
 
-#include "../mtlu_common/mtlu_mayaScene.h"
-#include "../mtlu_common/mtlu_mayaObject.h"
+#include "mayaScene.h"
+#include "mayaObject.h"
 #include "LuxUtils.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-
 #include "utilities/logging.h"
+#include "world.h"
+
 static Logging logger;
 
 void LuxRenderer::defineFilm()
 {
-	int width = this->mtlu_renderGlobals->imgWidth;
-	int height = this->mtlu_renderGlobals->imgHeight;
-	MString outputPath = this->mtlu_renderGlobals->basePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame + ".lxs";
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+
+	int width, height;
+	renderGlobals->getWidthHeight(width, height);
+
+	MString outputPath = renderGlobals->basePath + "/" + renderGlobals->imageName + "." + (int)renderGlobals->currentFrame + ".lxs";
 	// file path without extension, will be added automatically by the renderer
-	MString fileName = this->mtlu_renderGlobals->imagePath + "/" + this->mtlu_renderGlobals->imageName + "." + (int)this->mtlu_renderGlobals->currentFrame;
+	MString fileName = renderGlobals->imagePath + "/" + renderGlobals->imageName + "." + (int)renderGlobals->currentFrame;
 	const char *filename = fileName.asChar();
 	const int xres = width;
 	const int yres = height;
 	const bool write_png = true;
-	const int halttime = this->mtlu_renderGlobals->halttime;
-	const int haltspp = this->mtlu_renderGlobals->haltspp;
+	const int halttime = getIntAttr("halttime", depFn, 10);
+	const int haltspp = getIntAttr("haltspp", depFn, 10);
 	int displayinterval = 3;
 
 	ParamSet fp = CreateParamSet();

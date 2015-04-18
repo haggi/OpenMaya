@@ -3,6 +3,7 @@
 #include "memory/memoryInfo.h"
 #include <maya/MGlobal.h>
 #include <maya/MFileIO.h>
+#include <stdio.h>
 
 static EventQueue::concurrent_queue<EventQueue::Event> LogEventQueue;
 

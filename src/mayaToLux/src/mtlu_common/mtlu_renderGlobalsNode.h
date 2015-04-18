@@ -42,7 +42,6 @@ static    MObject sunGain;
 static    MObject turbidity;
 static    MObject skySamples;
 static    MObject sunRelSize;
-static    MObject imageFormat;
 static    MObject premultiplyAlpha;
 static    MObject haltspp;
 static    MObject halttime;

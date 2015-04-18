@@ -2,7 +2,7 @@
 #include <maya/MFnLight.h>
 #include <maya/MPlugArray.h>
 
-#include "../mtlu_common/mtlu_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtlu_common/mtlu_mayaObject.h"
 #include "LuxUtils.h"
 #include "utilities/tools.h"
@@ -10,12 +10,17 @@
 #include "utilities/pystring.h"
 
 #include "utilities/logging.h"
+#include "world.h"
+
 static Logging logger;
 
 // it is a directional sunlight if it is connected to luxGlobals node
-bool LuxRenderer::isSunLight(mtlu_MayaObject *obj)
+bool LuxRenderer::isSunLight(MayaObject *obj)
 {
-	if( !this->mtlu_renderGlobals->usePhysicalSky )
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	if( !getBoolAttr("usePhysicalSky", gFn, false) )
 		return false;
 
 	MStatus stat;
@@ -56,7 +61,7 @@ bool LuxRenderer::isSunLight(mtlu_MayaObject *obj)
 	return false;
 }
 
-void LuxRenderer::defineAreaLight(mtlu_MayaObject *obj)
+void LuxRenderer::defineAreaLight(MayaObject *obj)
 {
 	MFnLight lightFn(obj->mobject);
 	
@@ -107,8 +112,10 @@ void LuxRenderer::defineAreaLight(mtlu_MayaObject *obj)
 }
 
 
-void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
+void LuxRenderer::defineDirectionalLight(MayaObject *obj)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
 	MFnLight lightFn(obj->mobject);
 	float from[3]= {0,20,50};
 	float to[3]= {0,0,0};
@@ -142,12 +149,13 @@ void LuxRenderer::defineDirectionalLight(mtlu_MayaObject *obj)
 
 	lux->lightSource("distant", boost::get_pointer(lp));
 
-	if( this->mtlu_renderGlobals->exportSceneFile)
+	if( renderGlobals->exportSceneFile)
 		this->luxFile << "LightSource \"distant\" \"point from\" [" << from[0]<<" " << from[1]<<" " << from[2]<<"] \"point to\" [" << to[0]<<" " << to[1]<<" " << to[2]<<"]\n"; 
 }
 
-void LuxRenderer::definePointLight(mtlu_MayaObject *obj)
+void LuxRenderer::definePointLight(MayaObject *obj)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	MFnLight lightFn(obj->mobject);
 	logger.debug(MString("Translating point light ") + obj->shortName);
 
@@ -181,12 +189,13 @@ void LuxRenderer::definePointLight(mtlu_MayaObject *obj)
 
 	lux->lightSource("point", boost::get_pointer(lp));
 
-	if( this->mtlu_renderGlobals->exportSceneFile)
+	if( renderGlobals->exportSceneFile)
 		this->luxFile << "LightSource \"point\" \"color L\" [" << "\n"; 
 }
 
-void LuxRenderer::defineSpotLight(mtlu_MayaObject *obj)
+void LuxRenderer::defineSpotLight(MayaObject *obj)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	MFnLight lightFn(obj->mobject);
 	logger.debug(MString("Translating spot light ") + obj->shortName);
 
@@ -233,12 +242,13 @@ void LuxRenderer::defineSpotLight(mtlu_MayaObject *obj)
 
 	lux->lightSource("spot", boost::get_pointer(lp));
 
-	if( this->mtlu_renderGlobals->exportSceneFile)
+	if( renderGlobals->exportSceneFile)
 		this->luxFile << "LightSource \"spot\" \"color L\" [" << "\n"; 
 }
 
-void LuxRenderer::defineSunLight(mtlu_MayaObject *obj)
+void LuxRenderer::defineSunLight(MayaObject *obj)
 {
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	logger.debug(MString("Translating sun light ") + obj->shortName);
 	MFnLight lightFn(obj->mobject);
 	MVector sunDir(0,0,1);
@@ -246,9 +256,10 @@ void LuxRenderer::defineSunLight(mtlu_MayaObject *obj)
 	float sundir[3];
 	setZUp(sunDir, sundir);
 
-	float relsize = this->mtlu_renderGlobals->sunRelSize;
-	float turbidity = this->mtlu_renderGlobals->turbidity;
-	int nsamples = this->mtlu_renderGlobals->skySamples;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	float relsize = getFloatAttr("sunRelSize", gFn, 0.1f);
+	float turbidity = getFloatAttr("turbidity", gFn, 0.2f);
+	int nsamples = getIntAttr("skySamples", gFn, 4);
 
 	float gain = 1.0f;
 	getFloat(MString("intensity"), lightFn, gain);
@@ -265,11 +276,11 @@ void LuxRenderer::defineSunLight(mtlu_MayaObject *obj)
 	// 2) physical sky but no physical sun
 	// 3) physical sky and physical sun
 
-	if( !this->mtlu_renderGlobals->usePhysicalSky )
+	if (!getBoolAttr("usePhysicalSky", gFn, false))
 	{
 		lux->lightSource("sun", boost::get_pointer(lp));
 	}else{
-		if( this->mtlu_renderGlobals->physicalSun )
+		if (!getBoolAttr("physicalSun", gFn, false))
 			lux->lightSource("sunsky2", boost::get_pointer(lp));
 		else
 			lux->lightSource("sky2", boost::get_pointer(lp));
@@ -279,9 +290,10 @@ void LuxRenderer::defineSunLight(mtlu_MayaObject *obj)
 	//	this->luxFile << "LightSource \"distant\" \"color L\" [" << "\n"; 
 }
 
-void LuxRenderer::defineEnvironmentLight(mtlu_MayaObject *obj)
+void LuxRenderer::defineEnvironmentLight(MayaObject *obj)
 {
 
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	MFnLight lightFn(obj->mobject);
 	logger.debug(MString("Translating environment light ") + obj->shortName);
 	
@@ -309,45 +321,44 @@ void LuxRenderer::defineEnvironmentLight(mtlu_MayaObject *obj)
 
 	lux->lightSource("infinite", boost::get_pointer(lp));
 
-	if( this->mtlu_renderGlobals->exportSceneFile)
+	if( renderGlobals->exportSceneFile)
 		this->luxFile << "LightSource \"infinite\" \"color L\" [" << "\n"; 
 }
 
 void LuxRenderer::defineLights()
 {
-	for( size_t lightId = 0; lightId < this->mtlu_scene->lightList.size(); lightId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	for( auto obj:mayaScene->lightList)
 	{
-		mtlu_MayaObject *obj = (mtlu_MayaObject *)this->mtlu_scene->lightList[lightId];
-
 		if( !obj->visible )
 			continue;
 
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))
 		{
-			if( isSunLight(obj) )
-				this->defineSunLight(obj);
+			if( isSunLight(obj.get()) )
+				this->defineSunLight(obj.get());
 			else
-				this->defineDirectionalLight(obj);
+				this->defineDirectionalLight(obj.get());
 		}
 
 		if( obj->mobject.hasFn(MFn::kPointLight))
 		{
-			this->definePointLight(obj);
+			this->definePointLight(obj.get());
 		}
 
 		if( obj->mobject.hasFn(MFn::kSpotLight))
 		{
-			this->defineSpotLight(obj);
+			this->defineSpotLight(obj.get());
 		}
 
 		if( obj->mobject.hasFn(MFn::kAmbientLight))
 		{
-			this->defineEnvironmentLight(obj);
+			this->defineEnvironmentLight(obj.get());
 		}
 
 		if( obj->mobject.hasFn(MFn::kAreaLight))
 		{
-			this->defineAreaLight(obj);
+			this->defineAreaLight(obj.get());
 		}
 	}
 }

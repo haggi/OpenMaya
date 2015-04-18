@@ -34,7 +34,6 @@ MObject MayaToLuxGlobals::sunGain;
 MObject MayaToLuxGlobals::turbidity;
 MObject MayaToLuxGlobals::skySamples;
 MObject MayaToLuxGlobals::sunRelSize;
-MObject MayaToLuxGlobals::imageFormat;
 MObject MayaToLuxGlobals::premultiplyAlpha;
 MObject MayaToLuxGlobals::haltspp;
 MObject MayaToLuxGlobals::halttime;
@@ -137,7 +136,12 @@ MObject MayaToLuxGlobals::storeglossy;
 
 
 MayaToLuxGlobals::MayaToLuxGlobals()
-{}
+{
+	imageFormatList.append("Bmp");
+	imageFormatList.append("Exr");
+	imageFormatList.append("Jpg");
+	imageFormatList.append("Png");
+}
 
 MayaToLuxGlobals::~MayaToLuxGlobals()
 {}
@@ -222,9 +226,6 @@ MStatus	MayaToLuxGlobals::initialize()
 	chainLength = nAttr.create("chainLength", "chainLength",  MFnNumericData::kInt, 2000);
 	CHECK_MSTATUS(addAttribute( chainLength ));
 
-	mutationRange = nAttr.create("mutationRange", "mutationRange",  MFnNumericData::kFloat, 0.1);
-	CHECK_MSTATUS(addAttribute( mutationRange ));
-
 	usePhysicalSky = nAttr.create("usePhysicalSky", "usePhysicalSky",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( usePhysicalSky ));
 
@@ -245,12 +246,6 @@ MStatus	MayaToLuxGlobals::initialize()
 
 	sunRelSize = nAttr.create("sunRelSize", "sunRelSize",  MFnNumericData::kFloat, 1.0);
 	CHECK_MSTATUS(addAttribute( sunRelSize ));
-
-	imageFormat = eAttr.create("imageFormat", "imageFormat", 1, &stat);
-	stat = eAttr.addField( "Exr", 0 );
-	stat = eAttr.addField( "Png", 1 );
-	stat = eAttr.addField( "Tga", 2 );
-	CHECK_MSTATUS(addAttribute( imageFormat ));
 
 	premultiplyAlpha = nAttr.create("premultiplyAlpha", "premultiplyAlpha",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( premultiplyAlpha ));

@@ -36,9 +36,6 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{983a5ccb-92c0-4f40-8e3f-28a9cab13b2e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common\dummyRenderer">
-      <UniqueIdentifier>{22efe55d-4c09-4cb3-89fe-aa87930770de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="mtlu_common">
       <UniqueIdentifier>{70de2472-49c1-4d70-b529-399a19d3cda2}</UniqueIdentifier>
     </Filter>
@@ -47,6 +44,9 @@
     </Filter>
     <Filter Include="Source Files\Textures">
       <UniqueIdentifier>{23f59913-120f-4a91-af19-46da8c60809c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\swatchesRenderer">
+      <UniqueIdentifier>{d9e15ea1-0329-46ca-bb6d-bc731901cd2f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,9 +70,6 @@
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp">
       <Filter>common\utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\shadingtools\readShaderDefs.cpp">
-      <Filter>common\shadingTools</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp">
       <Filter>common\shadingTools</Filter>
@@ -101,14 +98,8 @@
     <ClCompile Include="..\src\pluginMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyRenderer.cpp">
-      <Filter>common\dummyRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp">
       <Filter>common\threads</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\common\cpp\dummyRenderer\dummyScene.cpp">
-      <Filter>common\dummyRenderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp">
       <Filter>common\utilities</Filter>
@@ -356,6 +347,54 @@
     <ClCompile Include="..\src\shaders\velvetMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp">
+      <Filter>common\mayarendernodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\world.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Lux\LuxWorld.cpp">
+      <Filter>Source Files\Lux</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtlu_common\mtlu_mayaObjectFactory.cpp">
+      <Filter>mtlu_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtlu_common\mtlu_mayaRendererFactory.cpp">
+      <Filter>mtlu_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtlu_common\mtlu_swatchRendererInterface.cpp">
+      <Filter>mtlu_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
+      <Filter>common\shadingTools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -403,14 +442,8 @@
     <ClInclude Include="..\..\common\cpp\threads\threads.h">
       <Filter>common\threads</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyRenderer.h">
-      <Filter>common\dummyRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h">
       <Filter>common\threads</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\cpp\dummyRenderer\dummyScene.h">
-      <Filter>common\dummyRenderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h">
       <Filter>common\utilities</Filter>
@@ -648,6 +681,48 @@
     </ClInclude>
     <ClInclude Include="..\src\shaders\velvetMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayarendernodes\standinMeshNode.h">
+      <Filter>common\mayarendernodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h">
+      <Filter>common\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderProcess.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\world.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
+      <Filter>common\shadingTools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
