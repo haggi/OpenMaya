@@ -40,7 +40,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <OutputFile>$(OutDir)$(TargetName)_maya2014$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>

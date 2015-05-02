@@ -305,7 +305,6 @@ shader_start:CoronaSurface
 	inatt:attenuationDist:float
 	inatt:volumeSSSMode:bool
 	inatt:normalCamera:vector
-	outatt:outColor:color
 shader_end
 
 shader_start:CoronaLight
@@ -344,7 +343,6 @@ shader_start:CoronaLight
 	inatt:emissionGlossyness:float
 	inatt:emitLight:bool
 	inatt:normalCamera:vector
-	outatt:outColor:color
 shader_end
 
 shader_start:CoronaVolume
@@ -382,7 +380,6 @@ shader_start:CoronaVolume
 	inatt:alphaMode:enum
 	inatt:attenuationDist:float
 	inatt:normalCamera:vector
-	outatt:outColor:color
 shader_end
 
 shader_start:CoronaRaytype
@@ -390,7 +387,6 @@ shader_start:CoronaRaytype
 	inatt:reflectMaterial:color
 	inatt:refractMaterial:color
 	inatt:directMaterial:color
-	outatt:outColor:color
 shader_end
 
 shader_start:OSLNode
@@ -399,6 +395,11 @@ shader_start:OSLNode
 	inatt:script:string
 	outatt:outColor:color
 shader_end
+
+shader_start:CoronaLayered
+	inatt:materialEntryAmount:color
+shader_end
+
 
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

@@ -1,4 +1,5 @@
 #include <maya/MFnNumericAttribute.h>
+#include <maya/MFnStringData.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnGenericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
@@ -99,6 +100,7 @@ MObject MayaToCoronaGlobals::bvh_cost_iteration;
 MObject MayaToCoronaGlobals::bvh_cost_triangle;
 MObject MayaToCoronaGlobals::bvh_leafSizeMin;
 MObject MayaToCoronaGlobals::bvh_leafSizeMax;
+MObject MayaToCoronaGlobals::exposure_type;
 MObject MayaToCoronaGlobals::colorMapping_gamma;
 MObject MayaToCoronaGlobals::colorMapping_colorTemperature;
 MObject MayaToCoronaGlobals::colorMapping_useSimpleExposure;
@@ -107,6 +109,9 @@ MObject MayaToCoronaGlobals::colorMapping_tint;
 MObject MayaToCoronaGlobals::colorMapping_useContrast;
 MObject MayaToCoronaGlobals::colorMapping_contrast;
 MObject MayaToCoronaGlobals::colorMapping_highlightCompression;
+MObject MayaToCoronaGlobals::colorMapping_fStop;
+MObject MayaToCoronaGlobals::colorMapping_iso;
+MObject MayaToCoronaGlobals::colorMapping_shutterSpeed;
 MObject MayaToCoronaGlobals::ppm_samplesPerIter;
 MObject MayaToCoronaGlobals::ppm_photonsPerIter;
 MObject MayaToCoronaGlobals::ppm_alpha;
@@ -138,6 +143,7 @@ MObject MayaToCoronaGlobals::sunSizeMulti;
 MObject MayaToCoronaGlobals::dumpAndResume;
 MObject MayaToCoronaGlobals::dumpExrFile;
 MObject MayaToCoronaGlobals::uhdCacheType;
+MObject MayaToCoronaGlobals::globalVolume;
 //	------------- automatically created attributes end ----------- // 
 
 
@@ -573,6 +579,30 @@ MStatus	MayaToCoronaGlobals::initialize()
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( colorMapping_highlightCompression ));
 
+	colorMapping_fStop = nAttr.create("colorMapping_fStop", "colorMapping_fStop", MFnNumericData::kFloat, 16.0);
+	nAttr.setMin(.001);
+	nAttr.setMax(50.0);
+	CHECK_MSTATUS(addAttribute(colorMapping_fStop));
+
+	colorMapping_iso = nAttr.create("colorMapping_iso", "colorMapping_iso", MFnNumericData::kFloat, 100.0);
+	nAttr.setMin(.001);
+	nAttr.setSoftMin(100.00);
+	nAttr.setSoftMax(800.0);
+	nAttr.setMax(999999.0);
+	CHECK_MSTATUS(addAttribute(colorMapping_iso));
+
+	colorMapping_shutterSpeed = nAttr.create("colorMapping_shutterSpeed", "colorMapping_shutterSpeed", MFnNumericData::kFloat, 50.0);
+	nAttr.setMin(.001);
+	nAttr.setMax(999999.0);
+	nAttr.setSoftMin(20.00);
+	nAttr.setSoftMax(1000.0);
+	CHECK_MSTATUS(addAttribute(colorMapping_shutterSpeed));
+
+	exposure_type = eAttr.create("exposure_type", "exposure_type", 0, &stat);
+	stat = eAttr.addField("Simple Exposure", 0);
+	stat = eAttr.addField("Photographic Exposure", 1);
+	CHECK_MSTATUS(addAttribute(exposure_type));
+
 	ppm_samplesPerIter = nAttr.create("ppm_samplesPerIter", "ppm_samplesPerIter",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( ppm_samplesPerIter ));
 
@@ -619,8 +649,12 @@ MStatus	MayaToCoronaGlobals::initialize()
 	renderstamp_inFile = nAttr.create("renderstamp_inFile", "renderstamp_inFile",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( renderstamp_inFile ));
 
-	renderStamp = tAttr.create("renderStamp", "renderStamp",  MFnNumericData::kString);
-	CHECK_MSTATUS(addAttribute( renderStamp ));
+	MFnStringData fnStringData;
+	MObject defaultString;
+	defaultString = fnStringData.create("Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr");
+	renderStamp = tAttr.create("renderStamp", "renderStamp", MFnNumericData::kString, defaultString);
+	CHECK_MSTATUS(addAttribute(renderStamp));
+	
 
 	bgColor = nAttr.createColor("bgColor", "bgColor");
 	nAttr.setDefault(1.0,1.0,1.0);
@@ -689,6 +723,9 @@ MStatus	MayaToCoronaGlobals::initialize()
 	stat = eAttr.addField("Still", 0);
 	stat = eAttr.addField("Animation", 1);
 	CHECK_MSTATUS(addAttribute(uhdCacheType));
+
+	globalVolume = mAttr.create("globalVolume", "globalVolume");
+	CHECK_MSTATUS(addAttribute(globalVolume));
 
 //	------------- automatically created attributes end ----------- // 
 

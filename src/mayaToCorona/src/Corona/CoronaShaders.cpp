@@ -74,6 +74,10 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_FLOAT)
 		{
 			float f = getFloatAttr(attributeName.asChar(), depFn, 0.0f);
+			MString multiplierName = attributeName + "Multiplier";
+			MPlug multiplierPlug = depFn.findPlug(multiplierName);
+			if (!multiplierPlug.isNull())
+				f *= multiplierPlug.asFloat();
 			rgbColor = Corona::Rgb(f, f, f);
 		}
 	}
@@ -122,10 +126,99 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 	MFnDependencyNode depFn(materialNode);
 
-	for (size_t i = 0; i < dataList.size(); i++ )
+	// if we do a swatch render, we always want to create a new data object
+	if (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING)
 	{
-		if (dataList[i].mtlName == depFn.name())
-			return dataList[i].data.createMaterial();
+		for (size_t i = 0; i < dataList.size(); i++)
+		{
+			if (dataList[i].mtlName == depFn.name())
+				return dataList[i].data.createMaterial();
+		}
+	}
+
+	if (depFn.typeName() == "CoronaLayered")
+	{
+		Logging::debug(MString("Defining layered material: ") + depFn.name());
+		MPlug baseMatPlug = depFn.findPlug("baseMaterial");
+		if (baseMatPlug.isNull() || !baseMatPlug.isConnected())
+			return defineDefaultMaterial();
+		MPlugArray connected;
+		baseMatPlug.connectedTo(connected, true, false);
+		if (connected.length() == 0)
+			return defineDefaultMaterial();
+		MObject connectedMat = connected[0].node();
+		MString connectedMatName = MFnDependencyNode(connectedMat).typeName();
+		std::vector<std::string> validNames = {"CoronaSurface", "CoronaLight", "CoronaVolume"};
+		bool found = false;
+		for (auto n : validNames)
+			if (connectedMatName == n.c_str())
+				found = true;
+		if (!found )
+			return defineDefaultMaterial();
+
+		Corona::NativeMtlData data;
+		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
+
+		Logging::debug(MString("Defining layered base Material: ") + connectedMatName);
+		Corona::SharedPtr<Corona::IMaterial> connectedBaseMat = defineCoronaMaterial(connectedMat, obj);
+		Corona::LayeredMtlData layerData;
+		layerData.baseMtl = connectedBaseMat;
+		Corona::LayeredMtlData::MtlEntry baseEntry;
+		baseEntry.material = connectedBaseMat;
+		baseEntry.amount = Corona::ColorOrMap(Corona::Rgb(1, 1, 1), nullptr);
+		layerData.layers.push(baseEntry);
+
+		MPlug entryPlug = depFn.findPlug("materialEntry");
+		MPlug mtlEntryPlug = depFn.findPlug("materialEntryMtl");
+		MPlug amountEntryPlug = depFn.findPlug("materialEntryAmount");
+		
+		Logging::debug(MString("Defining layers: "));
+		if (mtlEntryPlug.numElements() == amountEntryPlug.numElements())
+		{
+			Logging::debug(MString("Found ") + mtlEntryPlug.numElements() + " material entries.");
+			for (uint pId = 0; pId < mtlEntryPlug.numElements(); pId++)
+			{
+				MPlug mPlug = mtlEntryPlug[pId];
+				MPlug aPlug = amountEntryPlug[pId];
+				if (!mPlug.isConnected())
+					continue;
+
+				MPlugArray inputs;
+				mPlug.connectedTo(inputs, true, false);
+				if (inputs.length() == 0)
+					continue;
+
+				// check for valid connection
+				MString matType = MFnDependencyNode(inputs[0].node()).typeName();
+				MString nodeName = MFnDependencyNode(inputs[0].node()).name();
+				bool found = false;
+				for (auto n : validNames)
+					if (matType == n.c_str())
+						found = true;
+				if (!found)
+					continue;
+
+				Logging::debug(MString("Creating entry ") + pId + " Shader: " + nodeName);
+				Corona::LayeredMtlData::MtlEntry entry;
+				entry.material = defineCoronaMaterial(inputs[0].node(), obj);
+				MString attName = aPlug.name();
+				MStringArray strArray;
+				attName.split('.', strArray);
+				if (strArray.length() > 1)
+					attName = strArray[strArray.length()-1];
+				entry.amount = defineAttribute(attName, materialNode);
+				layerData.layers.push(entry);
+			}
+		}
+
+		//mtlData md;
+		//md.data = layerData;
+		//md.mtlName = depFn.name();
+		//dataList.push_back(md);
+
+		return layerData.createMaterial();
+
+		//return defineDefaultMaterial();
 	}
 
 	if (depFn.typeName() == "CoronaSurface")
@@ -153,12 +246,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
 		if (obj != nullptr)
 		{
-			float rcRadius = 0.0001;
-			getFloat(MString("roundCornersRadius"), depFn, rcRadius);
-			data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
 			MPlug rcMultiPlug = depFn.findPlug("roundCornersRadiusMultiplier");
 			if (!rcMultiPlug.isNull())
 				rcMultiPlug.setFloat(globalScaleFactor);
+			data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
 			//data.roundedCorners.radius = rcRadius * globalScaleFactor;
 			getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
 		}
@@ -292,7 +383,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
 		//bool disableSampling = false;
 		//getBool("emissionDisableSampling", depFn, disableSampling);
-
+		data.opacity = defineAttribute(MString("opacity"), depFn, network);
 		// if the CoronaLight shader is not supposed to emit light, it should be used as something like a self illuminated BG
 		// so we turn off visible in GI and disableSampling. 
 		if (getBoolAttr("emitLight", depFn, true))

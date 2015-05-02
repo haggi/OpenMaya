@@ -98,6 +98,12 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addSeparator() 
         self.addControl("mtco_bokehBitmap", label="Bokeh Bitmap")
         self.endLayout()
+
+    def buildObjectSetTemplate(self, nodeName):
+        self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Corona" ,collapse=1)
+        self.addControl("mtco_mtlOverride", label="Material Override")
+        self.endLayout()
         
     def buildCoronaTemplates(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
@@ -115,6 +121,8 @@ class AECoronaNodeTemplate(BaseTemplate):
             self.buildFileTemplate(nodeName)
         if self.thisNode.type() == "mesh":
             self.buildMeshTemplate(nodeName)
+        if self.thisNode.type() == "objectSet":
+            self.buildObjectSetTemplate(nodeName)
             
     def buildBody(self, nodeName):
         self.buildCoronaTemplates(nodeName)

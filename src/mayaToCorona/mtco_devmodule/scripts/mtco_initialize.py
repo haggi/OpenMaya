@@ -8,6 +8,7 @@ import Renderer as Renderer
 import optimizeTextures
 import Corona.aeNodeTemplates as aet
 import Corona.passesUI
+import Corona.menu as coronaMenu
 
 reload(Renderer)
 
@@ -31,6 +32,16 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if not pm.pluginInfo("coronaPassesNode.py", q=True, loaded=True):
             pm.loadPlugin("coronaPassesNode.py")
         
+    def logoCallbackProcedure(self):
+        pass
+         
+    def createRendererMenu(self):
+        self.rendererMenu = coronaMenu.CoronaMenu()
+    
+    def removeRendererMenu(self):
+        if self.rendererMenu is not None:
+            pm.deleteUI(self.rendererMenu)
+        self.rendererMenu = None
     
     def getEnumList(self, attr):
         return [(i, v) for i, v in enumerate(attr.getEnums().keys())]
@@ -46,6 +57,50 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def CoronaCommonGlobalsUpdateTab(self):
         self.OpenMayaCommonGlobalsUpdateTab()            
+
+    def disConnectGlobalVolume(self, *args):
+        if not self.rendererTabUiDict.has_key('common'):
+            return        
+        uiDict = self.rendererTabUiDict['common']    
+        
+        if self.renderGlobalsNode.globalVolume.isConnected():
+            inConnection = self.renderGlobalsNode.globalVolume.inputs(p=True)[0]
+            inConnection // self.renderGlobalsNode.globalVolume
+        self.updateGlobalVolume()
+
+    def connectGlobalVolume(self, *args):
+        if not self.rendererTabUiDict.has_key('common'):
+            return        
+        uiDict = self.rendererTabUiDict['common']    
+         
+        volumeShader = pm.createNode("CoronaVolume")
+        volumeShader.outColor >> self.renderGlobalsNode.globalVolume         
+        self.updateGlobalVolume()
+        
+    def selectGlobalVolume(self, *args):
+        if self.renderGlobalsNode.globalVolume.isConnected():
+            pm.select(self.renderGlobalsNode.globalVolume.inputs()[0])
+            
+        
+    def updateGlobalVolume(self):
+        if not self.rendererTabUiDict.has_key('common'):
+            return        
+        uiDict = self.rendererTabUiDict['common']    
+        
+        uiDict['globalVolumePopUp'].deleteAllItems()
+        if self.renderGlobalsNode.globalVolume.isConnected():
+            inputNode = self.renderGlobalsNode.globalVolume.inputs()[0]
+            uiDict['globalVolumeText'].setText(inputNode)
+            uiDict['globalVolumePopUpConnect'] = pm.menuItem(label="Disconnect" + inputNode, parent=uiDict['globalVolumePopUp'], command = self.disConnectGlobalVolume)
+            uiDict['globalVolumePopUpSelect'] = pm.menuItem(label="Select VolumeShader", parent=uiDict['globalVolumePopUp'], command = self.selectGlobalVolume) 
+        else:
+            uiDict['globalVolumeText'].setText("")
+            uiDict['globalVolumePopUpConnect'] = pm.menuItem(label="Connect new Volume Shader", parent=uiDict['globalVolumePopUp'], command = self.connectGlobalVolume)
+            
+#             uiDict['globalVolumeButton'].setLabel("Disconnect {0}".format(inputNode))
+#         else:
+#             uiDict['globalVolumeButton'].setLabel("Connect Volume Shader.")
+            
         
     def CoronaRendererCreateTab(self):
         log.debug("CoronaRendererCreateTab()")
@@ -110,17 +165,22 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 # self.addRenderGlobalsUIElement(attName = 'bvh_leafSizeMin', uiType = 'int', displayName = 'Bvh_leafsizemin', default='2', data='minmax:1:1000', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'bvh_leafSizeMax', uiType = 'int', displayName = 'Bvh_leafsizemax', default='6', data='minmax:2:1000', uiDict=uiDict)
 
-                with pm.frameLayout(label="Color Mapping", collapsable=True, collapse=True):
+                with pm.frameLayout(label="Color Mapping", collapsable=True, collapse=True):                    
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_gamma', uiType = 'float', displayName = 'Colormapping_gamma', default='2.2', data='minmax:0.01:10.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_highlightCompression', uiType = 'float', displayName = 'Highlight Compression', default='1.0', data='minmax:0.01:99.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_colorTemperature', uiType = 'float', displayName = 'Color Temperature', default='6500.0', data='minmax:1000.0:99999.0', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_tint', uiType = 'color', displayName = 'Tint', default='1.0:1.0:1.0', uiDict=uiDict)
-                        pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
-                        self.addRenderGlobalsUIElement(attName = 'colorMapping_simpleExposure', uiType = 'float', displayName = 'Simple Exposure', default='1.0', uiDict=uiDict)
-                        pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'colorMapping_contrast', uiType = 'float', displayName = 'Contrast', default='1.0', data='minmax:1.0:99.0', uiDict=uiDict)
+                        pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'exposure_type', uiType = 'enum', displayName = 'Exposure Type', default='0', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                        with pm.columnLayout(self.rendererName + 'sexColumnLayout', adjustableColumn=True, width=400) as uiDict["simpleExposureLO"]:
+                        #self.addRenderGlobalsUIElement(attName = 'colorMapping_useSimpleExposure', uiType = 'bool', displayName = 'Use Simple Exposure', default='true', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                            self.addRenderGlobalsUIElement(attName = 'colorMapping_simpleExposure', uiType = 'float', displayName = 'Simple Exposure', default='1.0', uiDict=uiDict)
+                        with pm.columnLayout(self.rendererName + 'pexColumnLayout', adjustableColumn=True, width=400) as uiDict["photographicExposureLO"]:
+                            self.addRenderGlobalsUIElement(attName = 'colorMapping_fStop', uiType = 'float', displayName = 'FStop', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'colorMapping_iso', uiType = 'float', displayName = 'ISO', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName = 'colorMapping_shutterSpeed', uiType = 'float', displayName = 'Shutter Speed', uiDict=uiDict)
 
                 with pm.frameLayout(label="Environment", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
@@ -155,14 +215,19 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         uiDict['physSkyFrame'] = physSkyFrame
                         uiDict['physSkyPreetham'] = physSkyPreetham
                         uiDict['physSkyRawafake'] = physSkyRawafake
+                        uiDict['globalVolumeText'] = pm.textFieldGrp(label = "Global Volume", editable=False)
+                        uiDict['globalVolumePopUp'] = pm.popupMenu(button=1)
+                        self.updateGlobalVolume()
 
 
                 with pm.frameLayout(label="Features", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='doShading', uiType='bool', displayName='Do Shading', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='doDof', uiType='bool', displayName='Depth of Field:', default='True', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='doMotionBlur', uiType='bool', displayName='Motion Blur:', default='True', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName='xftimesamples', uiType='int', displayName='Mb Samples:', default='2', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                        self.addRenderGlobalsUIElement(attName='doMotionBlur', uiType='bool', displayName='Motion Blur:', default='True', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
+                        with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400) as uiDict['mbSettingsFrame']:
+                            self.addRenderGlobalsUIElement(attName='xftimesamples', uiType='int', displayName='Transform Samples:', default='2', uiDict=uiDict)
+                            self.addRenderGlobalsUIElement(attName='geotimesamples', uiType='int', displayName='Geo Samples:', default='2', uiDict=uiDict)
                         # self.addRenderGlobalsUIElement(attName = 'random_sampler', uiType = 'enum', displayName = 'Random_Sampler', default='5d_highd', data='5d_highd:Shared:Maximal_value', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Dump and Resume', default='false', uiDict=uiDict)
@@ -172,7 +237,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_inFile', uiType = 'bool', displayName = 'Save File with Stamp', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads', default=8, uiDict=uiDict)
-                    
 
 # self.addRenderGlobalsUIElement(attName='adaptiveSampling', uiType='bool', displayName='Adaptive Sampling:', default='True', uiDict=uiDict)
 # self.addRenderGlobalsUIElement(attName = 'lowThreadPriority', uiType = 'bool', displayName = 'Lowthreadpriority', default='true', uiDict=uiDict)
@@ -232,7 +296,19 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             uiDict['progressiveCL'].setManage(True)
             uiDict['bucketCL'].setManage(False)
             uiDict['VCMCL'].setManage(True)
+
+        if self.renderGlobalsNode.doMotionBlur.get():
+            uiDict['mbSettingsFrame'].setEnable(True)
+        else:
+            uiDict['mbSettingsFrame'].setEnable(False)
         
+        if self.renderGlobalsNode.exposure_type.get() == 0: #simple exposure
+            uiDict["simpleExposureLO"].setManage(True)
+            uiDict["photographicExposureLO"].setManage(False)
+        else:
+            uiDict["simpleExposureLO"].setManage(False)
+            uiDict["photographicExposureLO"].setManage(True)
+            
 #         for key in uiDict:
 #             if key.startswith("progressive_"):                
 #                 uiDict[key].setEnable(False)
@@ -333,7 +409,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 with pm.frameLayout(label="Secondary GI ", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                         with pm.frameLayout(label="UHD Cache Settings ", collapsable=True, collapse=False) as UHDFrame:
-                            pass
+                            self.addRenderGlobalsUIElement(attName='uhdCacheType', uiType='enum', displayName='Mode', uiDict=uiDict)
                         with pm.frameLayout(label="HD Cache Settings ", collapsable=True, collapse=False) as HDFrame:
                             self.addRenderGlobalsUIElement(attName = 'gi_hdCache_precompMult', uiType = 'float', displayName = 'Precom Density', default='1.0', data='minmax:0.0:99.0', uiDict=uiDict)
                             self.addRenderGlobalsUIElement(attName = 'gi_hdCache_interpolationCount', uiType = 'int', displayName = 'Interpolation Count', default='3', data='1:64', uiDict=uiDict)
@@ -342,12 +418,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                             self.addRenderGlobalsUIElement(attName = 'gi_hdCache_maxRecords', uiType = 'int', displayName = 'Max Records', default='100000', data='minmax:1000:999000', uiDict=uiDict)
                             self.addRenderGlobalsUIElement(attName = 'gi_hdCache_glossyThreshold', uiType = 'float', displayName = 'Glossy Threshold', default='0.9', data='minmax:0.0:1.0', uiDict=uiDict)
                             self.addRenderGlobalsUIElement(attName = 'gi_hdCache_writePasses', uiType = 'int', displayName = 'Write # of Passes', default='0', data='minmax:0:9999999', uiDict=uiDict)
-                        with pm.frameLayout(label="Interpolation accuracy ", collapsable=True, collapse=False):
-                            with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                                self.addRenderGlobalsUIElement(attName = 'gi_hdCache_dirSensitivity', uiType = 'float', displayName = 'Direction', default='2.0', data='minmax:0.001:100.0', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName = 'gi_hdCache_posSensitivity', uiType = 'float', displayName = 'Position', default='20.0', data='minmax:0.0:100.0', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName = 'gi_hdCache_normalSensitivity', uiType = 'float', displayName = 'Normal', default='3.0', data='minmax:0.0:10.0', uiDict=uiDict)
-                        with pm.frameLayout(label="Load/Save", collapsable=True, collapse=False):
+                            with pm.frameLayout(label="Interpolation accuracy ", collapsable=True, collapse=False):
+                                with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
+                                    self.addRenderGlobalsUIElement(attName = 'gi_hdCache_dirSensitivity', uiType = 'float', displayName = 'Direction', default='2.0', data='minmax:0.001:100.0', uiDict=uiDict)
+                                    self.addRenderGlobalsUIElement(attName = 'gi_hdCache_posSensitivity', uiType = 'float', displayName = 'Position', default='20.0', data='minmax:0.0:100.0', uiDict=uiDict)
+                                    self.addRenderGlobalsUIElement(attName = 'gi_hdCache_normalSensitivity', uiType = 'float', displayName = 'Normal', default='3.0', data='minmax:0.0:10.0', uiDict=uiDict)
+                        with pm.frameLayout(label="Load/Save", collapsable=True, collapse=False) as uiDict['loadSaveFrame']:
                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
                                 self.addRenderGlobalsUIElement(attName='gi_hdCache_precalcMode', uiType='enum', displayName='Precalc Mode', uiDict=uiDict)
                                 self.addRenderGlobalsUIElement(attName='gi_saveSecondary', uiType = 'bool', displayName = 'Save Cache After Render', default='false', uiDict=uiDict)
@@ -393,12 +469,18 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if not self.rendererTabUiDict.has_key('gi'):
             return        
         uiDict = self.rendererTabUiDict['gi']    
+        if self.renderGlobalsNode.gi_secondarySolver.get() < 2:
+            uiDict['UHDFrame'].setManage(False)
+            uiDict['HDFrame'].setManage(False)
+            uiDict['loadSaveFrame'].setManage(False)
+        if self.renderGlobalsNode.gi_secondarySolver.get() > 1:
+            uiDict['loadSaveFrame'].setManage(True)
         if self.renderGlobalsNode.gi_secondarySolver.get() == 2: #hd cache
-            uiDict['UHDFrame'].setEnable(False)
-            uiDict['HDFrame'].setEnable(True)
+            uiDict['UHDFrame'].setManage(False)
+            uiDict['HDFrame'].setManage(True)
         if self.renderGlobalsNode.gi_secondarySolver.get() == 3: #hd cache
-            uiDict['UHDFrame'].setEnable(True)
-            uiDict['HDFrame'].setEnable(False)
+            uiDict['UHDFrame'].setManage(True)
+            uiDict['HDFrame'].setManage(False)
 
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
@@ -522,8 +604,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
     def registerNodeExtensions(self):
         """Register Corona specific node extensions. e.g. camera type, diaphram_blades and others
         """
-        pm.addExtension(nodeType="camera", longName="mtco_iso", attributeType="float", defaultValue=100.0)
-        pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0, minValue=0.001, softMaxValue=2048.0)
+#         pm.addExtension(nodeType="camera", longName="mtco_iso", attributeType="float", defaultValue=100.0)
+#         pm.addExtension(nodeType="camera", longName="mtco_shutterSpeed", attributeType="float", defaultValue=125.0, minValue=0.001, softMaxValue=2048.0)
         pm.addExtension(nodeType="camera", longName="mtco_useBokeh", attributeType="bool", defaultValue=False)
         pm.addExtension(nodeType="camera", longName="mtco_circularBlades", attributeType="bool", defaultValue=True)
         pm.addExtension(nodeType="camera", longName="mtco_blades", attributeType="long", defaultValue=6)
@@ -533,7 +615,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapG', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )
         pm.addExtension( nodeType='camera', longName='mtco_bokehBitmapB', attributeType='float', parent='mtco_bokehBitmap', defaultValue = 0.0 )  
         pm.addExtension( nodeType='camera', longName='mtco_cameraType', attributeType='enum', enumName="Perspective:Cylindrical:Spherical", defaultValue = 0.0)
-        
         
         # exponent for sun light
         pm.addExtension(nodeType="directionalLight", longName="mtco_sun_multiplier", attributeType="float", defaultValue=1.0)
@@ -565,10 +646,10 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
         
         # dummy color for legacy viewport
-        pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3')
-        pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )
-        pm.addExtension( nodeType='CoronaSurface', longName='colorG', attributeType='float', parent='color', defaultValue = 0.7 )
-        pm.addExtension( nodeType='CoronaSurface', longName='colorB', attributeType='float', parent='color', defaultValue = 0.7 )  
+        #pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3')
+        #pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )
+        #pm.addExtension( nodeType='CoronaSurface', longName='colorG', attributeType='float', parent='color', defaultValue = 0.7 )
+        #pm.addExtension( nodeType='CoronaSurface', longName='colorB', attributeType='float', parent='color', defaultValue = 0.7 )  
         
         pm.addExtension( nodeType='samplerInfo', longName='outDPdu', usedAsColor=True, attributeType='float3' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPduR', attributeType='float', parent='outDPdu' )
@@ -581,6 +662,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvB', attributeType='float', parent='outDPdv' )        
 
         pm.addExtension( nodeType='coronaGlobals', longName='AOVs', attributeType='message', multi=True)
+        
+        pm.addExtension( nodeType='objectSet', longName='mtco_mtlOverride', attributeType='message')
 
             
     def removeLogFile(self):
@@ -588,6 +671,16 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 
     def showLogFile(self):
         pass
+    
+    def connectNodeToNodeOverrideCallback(self, srcNode, destNode):
+        log.debug("connectNodeToNodeOverrideCallback {0} {1}".format(srcNode, destNode))
+        dn = pm.PyNode(destNode)
+        sn = pm.PyNode(srcNode)
+        if dn.type() in ["CoronaSurface"]:
+            if sn.hasAttr("outColor"):
+                sn.outColor >> dn.diffuse
+                return 0
+        return 1
     
     def createRenderNode(self, nodeType=None, postCommand=None):
         log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
@@ -700,6 +793,8 @@ def initRenderer():
         log.debug("Init renderer Corona")
         theRenderer().registerRenderer()
         loadAETemplates()
+        theRenderer().createRendererMenu()
+
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Corona FAILED")

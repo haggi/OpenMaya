@@ -25,6 +25,10 @@
       <Configuration>Release2015</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2016|x64">
+      <Configuration>Release2016</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13DB921B-B2E7-42AA-8B4D-34B7CE3E5F43}</ProjectGuid>
@@ -57,6 +61,10 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -84,17 +92,20 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(Configuration).props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(Configuration).props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">
-    <OutDir>..\mtco_devmodule\plug-ins</OutDir>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">
     <OutDir>..\mtco_devmodule\plug-ins</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
     <OutDir>..\mtco_devmodule\2015\plug-ins</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
       <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
@@ -120,7 +131,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
     <ClCompile>
-      <AdditionalOptions>/Zi /I "." /c %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
@@ -152,7 +162,6 @@
       <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libboost_regex-vc120-mt-gd-1_55.lib;libboost_wave-vc120-mt-gd-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)_maya2016$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
@@ -198,6 +207,19 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">
+    <ClCompile>
+      <AdditionalOptions>/c /Zc:inline %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin /LTCG %(AdditionalOptions)</AdditionalOptions>
+      <ImportLibrary>Debug/mayaToCorona.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">
     <ClCompile>
       <AdditionalOptions>/c /Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFile>Debug/mayaToCorona.pch</PrecompiledHeaderOutputFile>
@@ -336,6 +358,7 @@
     <ClCompile Include="..\src\mtco_common\mtco_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\rvCmd.cpp" />
+    <ClCompile Include="..\src\shaders\coronaLayeredMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
@@ -443,6 +466,7 @@
     <ClInclude Include="..\src\mtco_common\mtco_renderGlobalsNode.h" />
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\rvCmd.h" />
+    <ClInclude Include="..\src\shaders\coronaLayeredMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
@@ -455,6 +479,7 @@
     <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
     <ClInclude Include="..\src\shaders\TestShader.h" />
     <ClInclude Include="..\src\shaders\textureBase.h" />
+    <ClInclude Include="..\src\Version.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtco_devmodule\ressources\releaseNotes.txt" />

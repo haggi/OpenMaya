@@ -21,6 +21,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
+    <OutDir>..\mtco_devmodule\2016\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -35,9 +36,7 @@
       <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;$(LLVM)\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;H:\UserDatenHaggi\Documents\coding\zlib\zlib-1.2.8Deploy\lib\zlibstatic.lib;H:\UserDatenHaggi\Documents\coding\png\png1610Deploy_vs2013\lib\libpng16_static.lib;libtiff.lib;H:\UserDatenHaggi\Documents\coding\jpg\jpeg-9aDeploy_vs2013\lib\jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2016.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="CORONA_ROOT">

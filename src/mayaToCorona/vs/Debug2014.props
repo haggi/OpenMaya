@@ -10,7 +10,9 @@
     <OPENEXR>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\openexr_deploy</OPENEXR>
     <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <OutDir>..\mtco_devmodule\2014\plug-ins</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_ROOT)\include;..\..\common\cpp;$(OSL)/include;$(OIIO)/include;$(ILM_BASE)/include;$(OPENEXR)/include</AdditionalIncludeDirectories>

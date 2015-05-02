@@ -16,6 +16,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MDrawRegistry.h>
 #include <maya/MDGModifier.h>
+#include <maya/MFnDependencyNode.h>
 
 // IFF type ID
 // Each node requires a unique identifier which is used by
@@ -45,6 +46,16 @@ void CoronaSurface::postConstructor( )
 	MStatus stat;
 	setMPSafe( true );
 	this->setExistWithoutInConnections(true);
+
+	//MFnDependencyNode depFn(this->thisMObject());
+	//if (depFn.findAlias("diffuse", diffuse))
+	//{
+	//	MGlobal::displayInfo("Found alias.");
+	//}
+	//else{
+	//	depFn.setAlias("diffuse", "color", MPlug(depFn.findPlug("color")));
+	//	MGlobal::displayInfo("Set alias.");
+	//}
 }
 
 
@@ -147,7 +158,6 @@ MStatus CoronaSurface::initialize()
 	MFnMessageAttribute mAttr;
 
     MStatus status; 
-
 
 	diffuse = nAttr.createColor("diffuse", "diffuse");
 	nAttr.setKeyable(true);

@@ -31,7 +31,6 @@
     <Link>
       <AdditionalLibraryDirectories>$(CORONA_ROOT)/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(OPENEXR)/lib;$(OSL)/lib;$(ILM_BASE)/lib;$(OIIO)/lib;$(TIFF)/lib;$(JPEG)/lib;$(ZLIB)/lib;$(PNG)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;oslexec_d.lib;oslcomp_d.lib;oslquery_d.lib;$(LLVM)\lib\*.lib;Half_d.lib;Iex_d.lib;Imath_d.lib;IlmThread_d.lib;OpenImageIO_d.lib;zlibstatic.lib;libpng16_static.lib;libtiff.lib;jpeg.lib;IlmImf_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)_maya2015$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>

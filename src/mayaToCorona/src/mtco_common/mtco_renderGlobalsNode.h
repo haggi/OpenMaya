@@ -107,6 +107,7 @@ static    MObject bvh_cost_iteration;
 static    MObject bvh_cost_triangle;
 static    MObject bvh_leafSizeMin;
 static    MObject bvh_leafSizeMax;
+static    MObject exposure_type;
 static    MObject colorMapping_gamma;
 static    MObject colorMapping_colorTemperature;
 static    MObject colorMapping_useSimpleExposure;
@@ -115,6 +116,9 @@ static    MObject colorMapping_tint;
 static    MObject colorMapping_useContrast;
 static    MObject colorMapping_contrast;
 static    MObject colorMapping_highlightCompression;
+static    MObject colorMapping_fStop;
+static    MObject colorMapping_iso;
+static    MObject colorMapping_shutterSpeed;
 static    MObject ppm_samplesPerIter;
 static    MObject ppm_photonsPerIter;
 static    MObject ppm_alpha;
@@ -146,6 +150,7 @@ static    MObject sunSizeMulti;
 static    MObject dumpAndResume;
 static    MObject dumpExrFile;
 static    MObject uhdCacheType;
+static    MObject globalVolume;
 //	------------- automatically created attributes end ----------- // 
 
 };

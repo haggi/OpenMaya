@@ -159,26 +159,35 @@ void CoronaRenderer::defineColorMapping()
 	context.colorMappingData->tint = toCorona(getColorAttr("colorMapping_tint", depFn));
 	context.colorMappingData->exposure.simple.exponent = getFloatAttr("colorMapping_simpleExposure", depFn, 0.0f);
 	context.colorMappingData->highlightCompression = getFloatAttr("colorMapping_highlightCompression", depFn, 1.0f);
-	context.colorMappingData->photographicExposure = !getBoolAttr("colorMapping_useSimpleExposure", depFn, true);
+	context.colorMappingData->photographicExposure = getEnumInt("exposure_type", depFn) == 1;
+	//context.colorMappingData->photographicExposure = !getBoolAttr("colorMapping_useSimpleExposure", depFn, true);
 
-	// v2.8 exposure from camera
-	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
-	// to be able to modify color mapping after rendering we check for mayaScene
-	// after rendering, the mayaScene object is deleted, but we should have a renderCam object defined insted.
-	if (mayaScene)
+	// release 0.39 override camera settings
+	if (context.colorMappingData->photographicExposure)
 	{
-		for (auto cam : mayaScene->camList)
-		{
-			if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
-				continue;
-			defineColorMappingFromCam(cam->mobject);
-			break;
-		}
+		context.colorMappingData->exposure.photographic.fStop = getFloatAttr("colorMapping_fStop", depFn, 5.6);
+		context.colorMappingData->exposure.photographic.iso = getFloatAttr("colorMapping_iso", depFn, 100.0);
+		context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("colorMapping_shutterSpeed", depFn, 250.0f);
 	}
-	else{
-		if ( renderCam != MObject::kNullObj)
-			defineColorMappingFromCam(renderCam);
-	}
+
+	//// v2.8 exposure from camera
+	//std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	//// to be able to modify color mapping after rendering we check for mayaScene
+	//// after rendering, the mayaScene object is deleted, but we should have a renderCam object defined insted.
+	//if (mayaScene)
+	//{
+	//	for (auto cam : mayaScene->camList)
+	//	{
+	//		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
+	//			continue;
+	//		defineColorMappingFromCam(cam->mobject);
+	//		break;
+	//	}
+	//}
+	//else{
+	//	if ( renderCam != MObject::kNullObj)
+	//		defineColorMappingFromCam(renderCam);
+	//}
 }
 //void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 
 //{

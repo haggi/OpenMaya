@@ -8,13 +8,12 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	MStatus status;
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-	if ((rType == MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
-	{
-		oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-	}
 	if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
 	{
 		oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
+	}
+	else{
+		oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 	}
 
 	size_t numNodes = sn.shaderList.size();

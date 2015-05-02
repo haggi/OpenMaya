@@ -505,13 +505,12 @@ namespace MAYATO_OSL
 		//OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 		OSL::OSLShadingNetworkRenderer *r;
 		MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-		if ((rType == MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
-		{
-			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		}
 		if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
 		{
 			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
+		}else
+		{
+			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
 		}
 
 		if (r == nullptr)

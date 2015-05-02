@@ -24,6 +24,7 @@
 #include "shaders/CoronaSurfaceMaterial.h"
 #include "shaders/CoronaSurfaceMaterialOverride.h"
 #include "shaders/coronaOSLNode.h"
+#include "shaders/coronaLayeredMaterial.h"
 
 #include "shaders/TestShader.h"
 #include "world.h"
@@ -61,12 +62,16 @@ static const MString CoronaRaytypeRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaRaytypeDrawDBClassification("drawdb/shader/surface/CoronaRaytype");
 static const MString CoronaRaytypeFullClassification("shader/surface:corona/material:" + CoronaRaytypeDrawDBClassification);
 
+static const MString CoronaLayeredRegistrantId("CoronaSurfacePlugin");
+static const MString CoronaLayeredDrawDBClassification("drawdb/shader/surface/CoronaLayered");
+static const MString CoronaLayeredFullClassification("shader/surface:corona/material:" + CoronaLayeredDrawDBClassification);
 
 static const MString TestShaderClassification("shader/surface:");
 
+static bool licenseChecked = false;
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.38"
+#define VERSION "0.40"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -79,7 +84,6 @@ MStatus initializePlugin( MObject obj )
 	MGlobal::displayInfo(MString("OSL ") + oslVersion.c_str());
 	MGlobal::displayInfo(MString("BOOST ") + boostVersion.c_str());
 	MGlobal::displayInfo(MString("OpenEXR ") + openExrVersion.c_str());
-
 
 	MStatus   status;
 	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
@@ -94,6 +98,7 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS(plugin.registerNode("CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaRaytype", CoronaRaytype::id, CoronaRaytype::creator, CoronaRaytype::initialize, MPxNode::kDependNode, &CoronaRaytypeFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaLayered", CoronaLayered::id, CoronaLayered::creator, CoronaLayered::initialize, MPxNode::kDependNode, &CoronaLayeredFullClassification));
 
 	CHECK_MSTATUS(plugin.registerNode("TestShader", TestShader::id, TestShader::creator, TestShader::initialize, MPxNode::kDependNode, &TestShaderClassification));
 
@@ -149,6 +154,19 @@ MStatus initializePlugin( MObject obj )
 
 	Corona::ICore::initLib(Corona::APP_MAYA);
 
+	if (!licenseChecked)
+	{
+		Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
+		if (!li.isUsable())
+		{
+			if (MGlobal::mayaState() != MGlobal::kBatch)
+			{
+				Corona::ICore::doLicensePopup();
+				licenseChecked = true;
+			}
+		}
+	}
+
 	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();
 	MayaTo::getWorldPtr()->shaderSearchPath.append(loadPath);
@@ -173,6 +191,7 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS(plugin.deregisterNode(CoronaSurface::id));
 	CHECK_MSTATUS(plugin.deregisterNode(OSLNode::id));
 	CHECK_MSTATUS(plugin.deregisterNode(CoronaRaytype::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaLayered::id));
 
 	CHECK_MSTATUS(plugin.deregisterNode(TestShader::id));
 

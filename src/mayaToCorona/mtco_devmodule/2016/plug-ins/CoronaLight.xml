@@ -1,0 +1,38 @@
+<fragment uiName="CoronaLight" name="CoronaLight" type="plumbing" class="ShadeFragment" version="1.0">
+	<description><![CDATA[Computes Oren-Nayar diffuse component]]></description>
+	<properties>
+		<float name="emissionColorMultiplier" />
+		<float3 name="emissionColor"/>
+	</properties>
+	<values>
+    <float  name="emissionColorMultiplier" value="0.0" />
+    <float3 name="emissionColor" value="0.0,0.0,0.0" />
+  </values>
+	<outputs>
+		<float3 name="outColor" />
+	</outputs>
+	<implementation>
+	<implementation render="OGSRenderer" language="Cg" lang_version="2.1">
+		<function_name val="CoronaLight" />
+		<source>
+  <![CDATA[
+float3 CoronaLight(
+        float emissionColorMultiplier,
+        float3 emissionColor)
+{
+    return emissionColor * emissionColorMultiplier;
+}
+		]]></source>
+	</implementation>
+	<implementation render="OGSRenderer" language="HLSL" lang_version="11.0">
+		<function_name val="CoronaLight" />
+		<source><![CDATA[
+		]]></source>
+	</implementation>
+	<implementation render="OGSRenderer" language="GLSL" lang_version="3.0">
+		<function_name val="CoronaLight" />
+		<source><![CDATA[
+		]]></source>
+	</implementation>
+	</implementation>
+</fragment>

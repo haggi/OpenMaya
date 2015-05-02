@@ -14,6 +14,10 @@ This is the new maya renderer implementation which first works for the new 2016 
 class mtco_MayaRenderer : public MPxRenderer
 {
 public:
+	RefreshParams refreshParams;
+	static bool isRendering;
+
+	mtco_MayaRenderer();
 	static void* creator();
 	virtual MStatus startAsync(const JobParams& params);
 	virtual MStatus stopAsync();
@@ -41,6 +45,9 @@ public:
 	virtual MStatus destroyScene();
 
 	virtual bool isSafeToUnload();
+
+private:
+	int width, height;
 
 };
 #endif // maya2016

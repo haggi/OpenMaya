@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <CORONA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToCorona\devkit\CoronaApi</CORONA_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-12.0</BOOST_ROOT>
-    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2016</MAYA_ROOT>
     <OSL>H:\UserDatenHaggi\Documents\coding\OpenShadingLanguage\deploy_vs2012</OSL>
     <OIIO>H:\UserDatenHaggi\Documents\coding\oiio\deploy_vs2012</OIIO>
     <ILM_BASE>H:\UserDatenHaggi\Documents\coding\openExr\openexr2.2\ilmbase_deploy</ILM_BASE>
@@ -18,7 +18,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.mll</TargetExt>
-    <OutDir>..\mtco_devmodule\2015\plug-ins</OutDir>
+    <OutDir>..\mtco_devmodule\2016\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -26,7 +26,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <PreprocessorDefinitions>MAYA2016;WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;HAS_OVERRIDE;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAYA2015;WIN32;NDEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;OSL_LLVM_VERSION=35;HAS_OVERRIDE;OSL_STATIC_LIBRARY;USE_BOOST_WAVE;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;OIIO_STATIC_BUILD=1;OSL_FAST_MATH=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>

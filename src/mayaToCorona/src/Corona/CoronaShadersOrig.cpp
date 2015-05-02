@@ -105,6 +105,20 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 				return;
 
 			MObject surfaceShader = getConnectedInNode(shadingGroup, "surfaceShader");
+
+			// check obj set overrides
+			MObject connectedSet = getConnectedObjSet(obj->dagPath);
+			if (connectedSet != MObject::kNullObj)
+			{
+				MFnDependencyNode setFn(connectedSet);
+				Logging::debug(MString("Found connected object set:") + setFn.name());
+				MPlug shaderOverride = setFn.findPlug("mtco_mtlOverride");
+				if (!shaderOverride.isNull())
+				{
+					surfaceShader = getConnectedInNode(shaderOverride);
+				}
+			}
+
 			// raytype shader is a special case. Here a material set gets different materials, so I have to call defineCoronaMaterial several times
 			MFnDependencyNode shaderMat(surfaceShader);
 			Corona::SharedPtr<Corona::IMaterial> base = nullptr;

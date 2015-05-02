@@ -1,4 +1,5 @@
 #include "Corona.h"
+#include "maya/MPlugArray.h"
 #include "../mtco_common/mtco_mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "renderGlobals.h"
@@ -11,6 +12,7 @@
 #include "CoronaOSLMap.h"
 #include "CoronaSky.h"
 #include "CoronaUtils.h"
+
 
 static Logging logger;
 
@@ -85,6 +87,26 @@ void CoronaRenderer::defineEnvironment()
 		texmap->initSky();
 		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
 	}
+
+	// set global volume environment
+	if (depFn.findPlug("globalVolume").isConnected())
+	{
+		Logging::debug("globalVolume is connected.");
+		MPlugArray plugArray;
+		MPlug gv = depFn.findPlug("globalVolume");
+		gv.connectedTo(plugArray, true, false);
+		if (plugArray.length() > 0)
+		{
+			Logging::debug(MString("Connected plug: ") + plugArray[0].name());
+			MFnDependencyNode sourceNode(plugArray[0].node());
+			if (sourceNode.typeName() == "CoronaVolume")
+			{
+				Logging::debug(MString("Connected node is from type CoronaVolume: ") + sourceNode.name());
+				this->context.scene->setGlobalMedium(defineCoronaMaterial(sourceNode.object(), nullptr));
+			}
+		}
+	}
+	//
 }
 
 

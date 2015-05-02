@@ -8,6 +8,7 @@
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
 #include "world.h"
+#include "Version.h"
 
 #include <fstream>
 #include <iostream>
@@ -31,6 +32,7 @@ MSyntax MayaToCorona::newSyntax()
 
 	stat = syntax.addFlag("-cam", "-camera", MSyntax::kString);
 	stat = syntax.addFlag("-s", "-state");
+	stat = syntax.addFlag("-ver", "-version");
 	stat = syntax.addFlag("-ci", "-canDoIPR");
 	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
 	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
@@ -60,24 +62,35 @@ void MayaToCorona::setLogLevel()
 MStatus MayaToCorona::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayaToCorona...");
-	
-	setLogLevel();
 
 	MArgDatabase argData(syntax(), args);
+
+	if (argData.isFlagSet("-version", &stat))
+	{
+		MStringArray res;
+		for (auto v : getFullVersionString())
+			res.append(v.c_str());
+		setResult(res);
+		
+		return MS::kSuccess;
+	}
+
+	MGlobal::displayInfo("Executing mayaToCorona...");
+	setLogLevel();
 
 	if (argData.isFlagSet("-state", &stat))
 	{
 		Logging::debug(MString("state: ???"));
-		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATETRANSLATING)
+		MayaTo::MayaToWorld::WorldRenderState rstate = MayaTo::getWorldPtr()->renderState;
+		if (rstate == MayaTo::MayaToWorld::RSTATETRANSLATING)
 				setResult("rstatetranslating");
-		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATERENDERING)
+		if (rstate == MayaTo::MayaToWorld::RSTATERENDERING)
 			setResult("rstaterendering");
-		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATEDONE)
+		if (rstate == MayaTo::MayaToWorld::RSTATEDONE)
 			setResult("rstatedone");
-		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATENONE)
+		if (rstate == MayaTo::MayaToWorld::RSTATENONE)
 			setResult("rstatenone");
-		if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::RSTATESTOPPED)
+		if (rstate == MayaTo::MayaToWorld::RSTATESTOPPED)
 			setResult("rstatestopped");
 		return MS::kSuccess;
 	}

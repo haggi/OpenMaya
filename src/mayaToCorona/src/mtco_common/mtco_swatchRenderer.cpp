@@ -19,7 +19,6 @@ mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, M
 	Logging::setLogLevel(Logging::Debug);
 #endif
 
-	Logging::debug("------------mtco_SwatchRendererInterface created.");
 	this->imgDone = false;
 	this->inProgress = false;
 
@@ -27,20 +26,20 @@ mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, M
 	this->renderNode = renderNode;
 	this->swatchWidth = imageResolution;
 	this->imageData = (float *)malloc(sizeof(float)* this->swatchWidth * this->swatchWidth * 4);
-
-	// testing
-	int index = 0;
-	for (int y = 0; y < this->swatchWidth; y++)
-	{
-		for (int x = 0; x < this->swatchWidth; x++)
-		{
-			//int index = y * this->swatchWidth + x;
-			this->imageData[index++] = rnd();
-			this->imageData[index++] = rnd();
-			this->imageData[index++] = rnd();
-			this->imageData[index++] = 1.0f;
-		}
-	}
+	memset(this->imageData, 0, sizeof(float)* this->swatchWidth * this->swatchWidth * 4);
+	//// testing
+	//int index = 0;
+	//for (int y = 0; y < this->swatchWidth; y++)
+	//{
+	//	for (int x = 0; x < this->swatchWidth; x++)
+	//	{
+	//		//int index = y * this->swatchWidth + x;
+	//		this->imageData[index++] = rnd();
+	//		this->imageData[index++] = rnd();
+	//		this->imageData[index++] = rnd();
+	//		this->imageData[index++] = 1.0f;
+	//	}
+	//}
 }
 
 mtco_SwatchRendererInterface::~mtco_SwatchRendererInterface()
@@ -92,135 +91,7 @@ void mtco_SwatchRendererInterface::fillDummySwatch(MImage& image)
 }
 
 void mtco_SwatchRendererInterface::createCoronaScene()
-{	
-	//context.scene->setBackground(Corona::ColorOrMap(Corona::Rgb::WHITE*0.5f));
-	//Corona::AnimatedPos origin = Corona::AnimatedPos(Corona::Pos(0.0f, -2.4f, 4.f));
-	//Corona::AnimatedPos target = Corona::AnimatedPos(Corona::Pos(0.0f, 0.0f, 0.0f));
-	//context.scene->getCamera().createPerspective(origin, target, Corona::AnimatedDir(Corona::Dir::UNIT_Z), Corona::AnimatedFloat(Corona::DEG_TO_RAD(30.0f)));
-
-	//Corona::IGeometryGroup* sphere = context.scene->addGeomGroup();
-
-	//int pindex = 0, nindex = 0;
-	//for (int i = 0; i < sphere_numPoints; i++)
-	//{
-	//	int index = i * 3;
-	//	MPoint p(sphere_points[index], sphere_points[index + 1], sphere_points[index + 2]);
-	//	sphere->getVertices().push(Corona::Pos(p.x, p.y, p.z));
-	//}
-	//for (int i = 0; i < sphere_numNormals; i++)
-	//{
-	//	int index = i * 3;
-	//	MVector n(sphere_normals[index], sphere_normals[index + 1], sphere_normals[index + 2]);
-	//	sphere->getNormals().push(Corona::Dir(n.x, n.y, n.z));
-	//}
-	//int uvindex = 0;
-	//for (int i = 0; i < sphere_numUvs; i++)
-	//{
-	//	int index = i * 2;
-	//	sphere->getMapCoords().push(Corona::Pos(sphere_uvs[index], sphere_uvs[index + 1], 0.0));
-	//	sphere->getMapCoordIndices().push(sphere->getMapCoordIndices().size());
-	//}
-
-	//pindex = 0;
-	//nindex = 0;
-	//uvindex = 0;
-	//for (int i = 0; i < sphere_numTris; i++)
-	//{
-	//	Corona::TriangleData tri;
-	//	int index = i * 3;
-	//	tri.materialId = 0;
-	//	tri.v[0][0] = sphere_triPointIds[index];
-	//	tri.v[0][1] = sphere_triPointIds[index + 1];
-	//	tri.v[0][2] = sphere_triPointIds[index + 2];
-	//	tri.t[0] = sphere_triUvIds[index];
-	//	tri.t[1] = sphere_triUvIds[index + 1];
-	//	tri.t[2] = sphere_triUvIds[index + 2];
-	//	tri.n[0][0] = sphere_triNormalIds[index];
-	//	tri.n[0][1] = sphere_triNormalIds[index + 1];
-	//	tri.n[0][2] = sphere_triNormalIds[index + 2];
-	//	sphere->addPrimitive(tri);
-	//}
-	////Corona::AffineTm atm(Corona::AffineTm::IDENTITY);
-	//float f[4][4] = { 1.0, 0, 0.0, 0,
-	//				  0.0, 0, 1.0, 0,
-	//				    0, -1.0, 0, 0,
-	//				  0, 0, 0, 1.0 };
-	//MMatrix m(f);
-	//Corona::Float4 row1(1.0, 0.0, 0.0, 0.0);
-	//Corona::Float4 row2(0.0, 0.0, -1.0, 0.0);
-	//Corona::Float4 row3(0.0, 1.0, 0.0, 0.0);
-	//Corona::AffineTm atm = Corona::AffineTm(row1, row2, row3);
-	//Corona::IInstance* instance = sphere->addInstance(atm);
-
-	//// ------------ Shader assignment ----------------
-
-	////MFnDependencyNode depFn(dependNode);
-	//////MColor col(1.0,0.0,0.0);
-	////MColor col = getColorAttr("diffuse", depFn);
-	////Corona::NativeMtlData sdata;
-	////sdata.components.diffuse.setColor(Corona::Rgb(col.r, col.g, col.b));
-	////sdata.components.reflect.setColor(1.0f);
-	////col = getColorAttr("emissionColor", depFn);
-	////Corona::ColorOrMap com  = Corona::ColorOrMap(Corona::Rgb(col.r, col.g, col.b), nullptr);
-	////sdata.emission.color.setColor(Corona::Rgb(rnd(), rnd(), rnd()));
-	//Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(dependNode);
-
-	////Corona::SharedPtr<Corona::IMaterial> mat = sdata.createMaterial();
-	//instance->addMaterial(Corona::IMaterialSet(mat));
-
-	//// -------------- box ----------------------
-
-	//Corona::IGeometryGroup* box = context.scene->addGeomGroup();
-	//
-	//for (int i = 0; i < box_numPoints; i++)
-	//{
-	//	int index = i * 3;
-	//	MPoint p(box_points[index], box_points[index + 1], box_points[index + 2]);
-	//	box->getVertices().push(Corona::Pos(p.x, p.y, p.z));
-	//}
-	//for (int i = 0; i < box_numNormals; i++)
-	//{
-	//	int index = i * 3;
-	//	MVector n(box_normals[index], box_normals[index + 1], box_normals[index + 2]);
-	//	box->getNormals().push(Corona::Dir(n.x, n.y, n.z));
-	//}
-	//
-	//for (int i = 0; i < box_numUvs; i++)
-	//{
-	//	int index = i * 2;
-	//	box->getMapCoords().push(Corona::Pos(box_uvs[index], box_uvs[index + 1], 0.0));
-	//	box->getMapCoordIndices().push(box->getMapCoordIndices().size());
-	//}
-
-	//pindex = 0;
-	//nindex = 0;
-	//uvindex = 0;
-	//int box_numTris = 36/3;
-	//for (int i = 0; i < box_numTris; i++)
-	//{
-	//	int index = i * 3;
-	//	Corona::TriangleData tri;
-	//	tri.materialId = 0;
-	//	tri.v[0][0] = box_triPointIds[index];
-	//	tri.v[0][1] = box_triPointIds[index + 1];
-	//	tri.v[0][2] = box_triPointIds[index + 2];
-	//	tri.t[0] = box_triUvIds[index];
-	//	tri.t[1] = box_triUvIds[index + 1];
-	//	tri.t[2] = box_triUvIds[index + 2];
-	//	tri.n[0][0] = box_triNormalIds[index];
-	//	tri.n[0][1] = box_triNormalIds[index + 1];
-	//	tri.n[0][2] = box_triNormalIds[index + 2];
-	//	box->addPrimitive(tri);
-	//}
-
-	//Corona::IInstance* binstance = box->addInstance(atm, nullptr, nullptr);
-
-	//Corona::NativeMtlData data;
-	//data.components.diffuse.setMap(new CheckerMap);
-	//Corona::SharedPtr<Corona::IMaterial> bmat = data.createMaterial();
-	//binstance->addMaterial(Corona::IMaterialSet(bmat));
-	//context.scene->addLightShader(new Light);
-}
+{}
 
 void mtco_SwatchRendererInterface::getImageData(MImage& imageRef)
 {
@@ -254,7 +125,6 @@ void mtco_SwatchRendererInterface::saveImageData(Context *c)
 			Logging::error(errorMsg);
 			break;
 		}
-		//uint rowPos = (rowId * (height - 1)) * numPixelsInRow;
 		uint rowPos = (height - 1 - rowId) * numPixelsInRow;
 		for (int x = 0; x < numPixelsInRow; x++)
 		{
@@ -271,6 +141,11 @@ void mtco_SwatchRendererInterface::saveImageData(Context *c)
 
 void mtco_SwatchRendererInterface::renderSwatch()
 {
+	Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
+	if (!li.isUsable())
+	{
+		return;
+	}
 	Context *c = new Context();
 
 	this->inProgress = true;
@@ -295,11 +170,7 @@ void mtco_SwatchRendererInterface::renderSwatch()
 
 	//defineSettings();
 	c->fb = c->core->createFb();
-	//Corona::Stack<Corona::SharedPtr<Corona::IRenderPass>> rp;
-	//c->fb->initFb(c->settings, rp);
 	c->fb->initFb(c->settings, c->renderPasses);
-
-	//this->createCoronaScene();
 
 	// test that the now ready scene and settings do not have any errors
  	c->core->sanityCheck(c->scene);

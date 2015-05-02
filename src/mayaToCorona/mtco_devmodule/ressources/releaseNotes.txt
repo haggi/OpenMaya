@@ -1,5 +1,23 @@
+release 0.40
+- fixed broken swatches rendering (due to data reusage)
+- make swatches preview black in rendering to avoid confusion
+- added Corona menu
+- implemented objects set material overrides
+- removed camera update callback
+- implemented global volume material
+- fixed wrong scaling in round corners
+- added a first implementation of layered shaders
+
+release 0.39
+- fixed wrong evaluation of sun if bg is not physical sky
+- modified license check from the main thread (at plugin load time)
+- make renderstamp usable
+- using photographic exposure from renderglobals instead of camera
+
 release 0.38
-- 
+- fixed wrong swatch render/uirender interaction 
+- fixed a colorMapping regression
+- updated tx workflow
 
 release 0.37
 - switched to new Corona API with new license procedure

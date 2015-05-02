@@ -46,7 +46,11 @@ void CoronaRenderer::defineLights()
 	MObjectArray nodeList;
 	MStatus stat;
 
-	if( renderGlobals->useSunLightConnection )
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
+	int bgType = getEnumInt("bgType", depFn);
+
+	if( renderGlobals->useSunLightConnection)
 	{
 		getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
 		if( nodeList.length() > 0)

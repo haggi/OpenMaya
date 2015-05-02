@@ -38,8 +38,8 @@ CoronaRenderer::~CoronaRenderer()
 
 	if (this->renderFbGlobalsNodeCallbackId != 0)
 		MNodeMessage::removeCallback(this->renderFbGlobalsNodeCallbackId);
-	if (this->renderFbCamNodeCallbackId != 0)
-		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+	//if (this->renderFbCamNodeCallbackId != 0)
+	//	MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
 
 	if (context.logger != nullptr)
 	{
@@ -90,9 +90,9 @@ void CoronaRenderer::interactiveFbCallback()
 void CoronaRenderer::updateCameraFbCallback(MObject& camera)
 {
 	MStatus stat;
-	if (this->renderFbCamNodeCallbackId != 0)
-		MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
-	this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	//if (this->renderFbCamNodeCallbackId != 0)
+	//	MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
+	//this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
 
 
@@ -115,10 +115,6 @@ void CoronaRenderer::render()
 {
 	Logging::debug("CoronaRenderer::render");
 
-	if (MGlobal::mayaState() != MGlobal::kBatch)
-	{
-		Corona::ICore::doLicensePopup();
-	}
 	Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
 	if (!li.isUsable())
 	{
@@ -126,8 +122,12 @@ void CoronaRenderer::render()
 		MGlobal::displayError(MString("Sorry! Could not get a valid license.") + reason);
 		return;
 	}
+
 	//createTestScene();
 	//OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
+
+	// set this value here. In case we have a swatch rendering ongoing, we have to make sure that the correct osl renderer is used.
+	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::UIRENDER);
 
 	//this->clearMaterialLists();
 	this->defineCamera();
@@ -144,16 +144,20 @@ void CoronaRenderer::render()
 	info.defaultFilePath = basePath;
 	context.core->beginSession(context.scene, context.settings, context.fb, context.logger, info);
 	int maxCount=100, count=0;
-	while (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATENONE)
+	MayaTo::MayaToWorld::WorldRenderState st = MayaTo::getWorldPtr()->getRenderState();
+	
+	while (st == MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		count++;
 		if (count >= maxCount)
 		{
-			Logging::warning("RState is not RSTATENONE, but wait is over...");
+			Logging::warning("WorldRenderState is RSTATERENDERING, but wait is over...");
 			break;
 		}
+		st = MayaTo::getWorldPtr()->getRenderState();
 	}
+	
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
 	context.core->renderFrame(); // blocking render call
 	context.core->endSession();

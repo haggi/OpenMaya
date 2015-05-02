@@ -18,7 +18,7 @@ void CoronaRenderer::framebufferCallback()
 	//	DispatchMessage(&msg);
 	//}
 
-	//MFnDependencyNode depFn(getRenderGlobalsNode());
+	MFnDependencyNode depFn(getRenderGlobalsNode());
 	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
 
@@ -34,7 +34,11 @@ void CoronaRenderer::framebufferCallback()
 		return;
 
 	Corona::Pixel p = renderer-> context.fb->getImageSize();
-	const Corona::String rstamp = "Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr";
+	MString renderStamp = depFn.findPlug("renderStamp").asString();
+	Corona::String rstamp = renderStamp.asChar();
+
+	if (renderStamp.length() == 0)
+		rstamp = Corona::String("Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr");
 	
 	int width = p.x;
 	int height = p.y;
