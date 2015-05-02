@@ -42,6 +42,7 @@ RenderGlobals::RenderGlobals()
 	this->imageName = "";
 	this->basePath = "";
 	this->exportSceneFileName = "";
+	this->useSunLightConnection = false;
 	this->imagePath = "";
 	this->getDefaultGlobals();
 	this->imageFormatString = getEnumString(MString("imageFormat"), MFnDependencyNode(getRenderGlobalsNode()));
@@ -428,6 +429,7 @@ bool RenderGlobals::getDefaultGlobals()
 	this->threads = getIntAttr("threads", depFn, 4);
 	this->translatorVerbosity = getEnumInt("translatorVerbosity", depFn);
 	this->rendererVerbosity = getEnumInt("rendererVerbosity", depFn);
+	this->useSunLightConnection = getBoolAttr("useSunLightConnection", depFn, false);
 	this->good = true;
 	return true;
 }

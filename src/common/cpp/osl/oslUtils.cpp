@@ -1,3 +1,4 @@
+#include <filesystem>
 #include "oslUtils.h"
 #include <maya/MPlugArray.h>
 #include <maya/MFnDependencyNode.h>
@@ -7,6 +8,7 @@
 #include "utilities/attrTools.h"
 #include "utilities/pystring.h"
 #include "shadingtools/shaderDefs.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -18,13 +20,22 @@ namespace MAYATO_OSL{
 
 	void saveOSLNodeNameInArray(MString& oslNodeName)
 	{
-		DefinedOSLNodes.push_back(oslNodeName);
+		if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::SWATCHRENDER)
+			DefinedOSLSWNodes.push_back(oslNodeName);
+		else
+			DefinedOSLNodes.push_back(oslNodeName);
 	}
 
 	bool doesOSLNodeAlreadyExist(MString& oslNode)
 	{
-		for (size_t i = 0; i < DefinedOSLNodes.size(); i++)
-			if (DefinedOSLNodes[i] == oslNode)
+		std::vector<MString> nodes;
+		if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::SWATCHRENDER)
+			nodes = DefinedOSLSWNodes;
+		else
+			nodes = DefinedOSLNodes;
+
+		for (auto node:nodes)
+			if (node == oslNode)
 				return true;
 		return false;
 	}
@@ -133,7 +144,7 @@ namespace MAYATO_OSL{
 
 		if (sa.type == "string")
 		{
-			paramArray.push_back(OSLParameter(sa.name.c_str(), getString(sa.name.c_str(), depFn)));
+			MString stringParameter = getString(sa.name.c_str(), depFn);
 			if (sa.name == "fileTextureName")
 			{
 				// to support udim textures we check if we have a file texture node here.
@@ -170,12 +181,25 @@ namespace MAYATO_OSL{
 					else{
 						ext = fileName.substr(pos+1);
 						Logging::debug(MString("Extension for file texture: ") + fileName.c_str() + " is " + ext.c_str());
+						//if (ext == "exr")
+						//{
+							std::string txFileName = fileName + ".exr.tx";
+							std::tr2::sys::path p = std::tr2::sys::path(txFileName);
+							if (std::tr2::sys::exists(p))
+							{
+								Logging::debug(MString("texture file has a .exr.tx extension, using ") + txFileName.c_str() + " instead of original one");
+								ext = ext +".exr.tx";
+								if (uvTilingMode == 0)
+									stringParameter = txFileName.c_str();
+							}
+						//}
 						paramArray.push_back(OSLParameter("ext", ext));
 					}
 
 					paramArray.push_back(OSLParameter("uvTilingMode", uvTilingMode));
 				}
 			}
+			paramArray.push_back(OSLParameter(sa.name.c_str(), stringParameter));
 		}
 		if (sa.type == "float")
 		{
@@ -727,6 +751,7 @@ namespace MAYATO_OSL{
 		projectionNodes.clear();
 		projectionConnectNodes.clear();
 		DefinedOSLNodes.clear();
+		DefinedOSLSWNodes.clear();
 	}
 
 	void connectProjectionNodes(MObject& projNode)

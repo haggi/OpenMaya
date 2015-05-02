@@ -30,6 +30,8 @@ struct MeshData{
 	MFloatVectorArray normals;
 };
 
+// the idea of objectAttributes is to share informations down the whole hierarchy.
+// an attribute will be created with its parent as argument so it can copy the interesting data
 class ObjectAttributes
 {
 public:

@@ -36,6 +36,7 @@ private:
 	static    MObject doMotionBlur;
 	static    MObject doDof;
 	static	  MObject xftimesamples;
+	static	  MObject geotimesamples;
 	static	  MObject motionBlurRange;
 	static	  MObject motionBlurType;
 	// 

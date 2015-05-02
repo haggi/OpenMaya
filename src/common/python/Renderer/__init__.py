@@ -23,7 +23,7 @@ class MayaToRenderer(object):
         self.ipr_isrunning = False
         self.imageFormatCtrl = None
         self.openMayaCommonGlobals = None
-    
+        
     def addRenderGlobalsUIElement(self, attName=None, uiType=None, displayName=None, default=None, data=None, uiDict=None, callback=None):
         uiUtils.addRenderGlobalsUIElement(self.renderGlobalsNodeName, attName, uiType, displayName, default, data, uiDict, callback)
     # the render callback is called with arguments like this
@@ -315,6 +315,7 @@ global proc updateMayaImageFormatControl()
         pm.callbacks(addCallback=self.hyperShadePanelBuildCreateSubMenuCallback, hook='hyperShadePanelBuildCreateSubMenu', owner=self.pluginName)
         pm.callbacks(addCallback=self.buildRenderNodeTreeListerContentCallback, hook='buildRenderNodeTreeListerContent', owner=self.pluginName)
         pm.callbacks(addCallback=self.createRenderNodeCallback, hook='createRenderNodeCommand', owner=self.pluginName)
+        pm.callbacks(addCallback=self.connectNodeToNodeOverrideCallback, hook='connectNodeToNodeOverrideCallback', owner=self.pluginName)
         
         
         
@@ -340,6 +341,9 @@ global proc updateMayaImageFormatControl()
                 buildNodeCmd = "string $cmd = \"{0}\"; python($cmd);".format(buildNodeCmd)
                 #log.debug("buildNodeCmd {0}".format(buildNodeCmd))
                 return buildNodeCmd
+
+    def connectNodeToNodeOverrideCallback(self, srcNode, destNode):
+        return 1    
     
     def registerRenderer(self):
         log.debug("registerRenderer")
@@ -377,7 +381,7 @@ global proc updateMayaImageFormatControl()
         pm.renderer(self.rendererName, edit=True, iprRenderSubMenuProcedure=self.renderCallback("iprRenderSubMenuProcedure"))
         pm.renderer(self.rendererName, edit=True, isRunningIprProcedure=self.renderCallback("isRunningIprProcedure"))
         pm.renderer(self.rendererName, edit=True, refreshIprRenderProcedure=self.renderCallback("refreshIprRenderProcedure"))
-        pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
+        #pm.renderer(self.rendererName, edit=True, logoCallbackProcedure=self.renderCallback("logoCallbackProcedure"))
         pm.renderer(self.rendererName, edit=True, logoImageName=self.rendererName + ".png")
         pm.renderer(self.rendererName, edit=True, renderDiagnosticsProcedure=self.renderCallback("renderDiagnosticsProcedure"))
         
@@ -604,7 +608,7 @@ global proc updateMayaImageFormatControl()
             
     def logoCallbackProcedure(self):
         pass
-            
+    
     def logoImageName(self):
         return self.rendererName + ".png"
     

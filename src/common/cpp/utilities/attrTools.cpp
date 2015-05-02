@@ -304,8 +304,24 @@ bool getColor(MString& plugName, MFnDependencyNode& dn, MColor& value)
 	MStatus stat = MS::kSuccess;
 	bool result = false;
 	float r, g, b;
+
+	std::string pn = plugName.asChar();
+	int index = -1;
+	if (pn[pn.size() - 1] == ']')
+	{
+		size_t found = pn.rfind('[');
+		if (found != std::string::npos)
+		{
+			MString indexString = pn.substr(found + 1, pn.size() - 3).c_str();
+			pn = pn.substr(0, found);
+			index = indexString.asInt();
+		}
+	}
+	
 	// I suppose the attribute is a color and has 3 children
-	MPlug plug = dn.findPlug(plugName, stat);
+	MPlug plug = dn.findPlug(pn.c_str(), stat);
+	if (index >= 0)
+		plug = plug[index];
 	if (!stat)
 		return result;
 	if (plug.numChildren() < 3)
@@ -571,6 +587,18 @@ ATTR_TYPE getPlugAttrType(const char *plugName, MFnDependencyNode& dn)
 {
 	MDGContext ctx = MDGContext::fsNormal;
 	MStatus stat = MS::kSuccess;
+
+	std::string pn = plugName;
+	if (pn[pn.length() - 1] == ']')
+	{
+		size_t found = pn.rfind('[');
+		if (found != std::string::npos)
+		{
+			pn = pn.substr(0, found);
+		}
+	}
+	plugName = pn.c_str();
+
 	MPlug plug = dn.findPlug(plugName, &stat);
 	if( !stat )
 		return ATTR_TYPE::ATTR_TYPE_NONE;

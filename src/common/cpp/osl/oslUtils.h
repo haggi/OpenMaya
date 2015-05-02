@@ -215,6 +215,7 @@ namespace MAYATO_OSL{
 	typedef std::vector<Connection> ConnectionArray;
 
 	static std::vector<MString> DefinedOSLNodes;
+	static std::vector<MString> DefinedOSLSWNodes;
 
 	void listProjectionHistory(MObject& mobject, ProjectionUtil& util);
 	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn, OSLParamArray& paramArray);

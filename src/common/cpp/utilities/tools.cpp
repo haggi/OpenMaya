@@ -315,6 +315,67 @@ bool CheckVisibility( MDagPath& dagPath )
 	return true;
 }
 
+MObject getTransformNode(MDagPath& dagPath)
+{
+	MFnDagNode node;
+	MStatus stat = MStatus::kSuccess;
+	while (stat == MStatus::kSuccess)
+	{
+		MFnDagNode node;
+		node.setObject(dagPath.node());
+		if (dagPath.node().hasFn(MFn::kTransform))
+			return dagPath.node();
+		stat = dagPath.pop();
+	}
+	return MObject::kNullObj;
+}
+
+// return the first connected object set
+MObject getConnectedObjSet(MDagPath& dagPath)
+{
+	MFnDagNode node;
+	MStatus stat = MStatus::kSuccess;
+	while (stat == MStatus::kSuccess)
+	{
+		MFnDagNode node;
+		node.setObject(dagPath.node());
+		if (dagPath.node().hasFn(MFn::kTransform))
+		{
+			MFnDependencyNode depFn(dagPath.node());
+			MPlug instObjGrps = depFn.findPlug("instObjGroups");
+			if (!instObjGrps.isNull())
+			{
+				if (instObjGrps.numElements() > 0)
+				{
+					for (uint i = 0; i < instObjGrps.numElements(); i++)
+					{
+						if (instObjGrps[i].isConnected())
+						{
+							MPlugArray outPlugs;
+							instObjGrps[i].connectedTo(outPlugs, false, true);
+							if (outPlugs.length() > 0)
+							{
+								for (uint k = 0; k < outPlugs.length(); k++)
+								{
+									if (outPlugs[k].node().hasFn(MFn::kSet))
+									{
+										if (MFnDependencyNode(outPlugs[k].node()).typeName() == "objectSet")
+										{
+											return outPlugs[k].node();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		stat = dagPath.pop();
+	}
+	return MObject::kNullObj;
+}
+
 MString matrixToString(MMatrix& matrix)
 {
 	MString matString("");
@@ -392,7 +453,7 @@ MObject getOtherSideSourceNode(MString& plugName, MObject& thisObject, bool chec
 		{
 			plug = plug.parent();
 		}
-		if (getAttributeNameFromPlug(plug) == plugName)
+		if ((getAttributeNameFromPlug(plug) == plugName) || (getAttributeNameFromPlug(plug) == plugName.substring(0, plugName.length()-4)))
 		{
 			connectedPlug = pa[pId];
 		}
@@ -599,6 +660,17 @@ bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool
 	MStatus stat;
 	MPlugArray pa;
 	depFn.getConnections(pa);
+	std::vector<std::string> stringParts;
+	pystring::split(attrName, stringParts, ".");
+	MString attName = attrName;
+	if (stringParts.size() > 1)
+		attName = stringParts.back().c_str();
+	if (pystring::endswith(attrName, "]"))
+	{
+		int found = attName.rindex('[');
+		if (found >= 0)
+			attName = attName.substring(0, found-1);
+	}
 
 	for (uint pId = 0; pId < pa.length(); pId++)
 	{
@@ -615,9 +687,11 @@ bool isConnected(const char *attrName, MFnDependencyNode& depFn, bool dest, bool
 		if (primaryChild)
 			while (plug.isChild())
 				plug = plug.parent();
+		MString plugName = plug.name();
 		if (plug.isElement())
 			plug = plug.array();
-		if ((getAttributeNameFromPlug(plug) == attrName))
+		MString attNameFromPlug = getAttributeNameFromPlug(plug);
+		if ((attNameFromPlug == attName))
 			return true;
 	}
 	return false;

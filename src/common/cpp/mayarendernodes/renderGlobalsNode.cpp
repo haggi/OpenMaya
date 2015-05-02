@@ -25,6 +25,7 @@ MObject MayaRenderGlobalsNode::motionBlurType;
 
 MObject MayaRenderGlobalsNode::doDof;
 MObject MayaRenderGlobalsNode::xftimesamples;
+MObject MayaRenderGlobalsNode::geotimesamples;
 
 MObject MayaRenderGlobalsNode::threads;
 
@@ -145,9 +146,12 @@ MStatus	MayaRenderGlobalsNode::initialize()
 	
 	doDof = nAttr.create("doDof", "doDof", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( doDof ));
+
 	xftimesamples = nAttr.create("xftimesamples", "xftimesamples", MFnNumericData::kInt, 2);
-	CHECK_MSTATUS(addAttribute( xftimesamples ));
-	
+	CHECK_MSTATUS(addAttribute(xftimesamples));
+	geotimesamples = nAttr.create("geotimesamples", "geotimesamples", MFnNumericData::kInt, 2);
+	CHECK_MSTATUS(addAttribute(geotimesamples));
+
 
 	MString numCpu = getenv("NUMBER_OF_PROCESSORS");
 	int numberOfProcessors = numCpu.asInt();

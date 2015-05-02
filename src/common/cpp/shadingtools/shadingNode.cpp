@@ -129,6 +129,8 @@ void ShadingNode::getConnectedInputObjects(MObjectArray& objectArray)
 {
 	MStatus stat;
 	MFnDependencyNode depFn(this->mobject);
+	MStringArray aliasArray;
+	depFn.getAliasList(aliasArray);
 	MObjectArray objectList;
 	MPlugArray connections;
 	depFn.getConnections(connections);

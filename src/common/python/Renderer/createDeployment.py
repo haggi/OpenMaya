@@ -233,15 +233,12 @@ def createDeploymentCombined(renderer, shortCut):
         return
 
     for mayaVersionName in ["2014", "2015", "2016"]:
-        try:
-            mayaVersionSubPlugInDir = "{deploymentDir}/{mayaVersion}/plug-ins".format(deploymentDir=devDestDir, mayaVersion=mayaVersionName)
-            print "Creating version depenedent directory", mayaVersionSubPlugInDir
-            os.makedirs(mayaVersionSubPlugInDir)
-            pluginFile = path.path(sourceDir + "/" +  mayaVersionName + "/plug-ins/mayaTo" + renderer.capitalize() + "_maya" + mayaVersionName + ".mll")
-            pluginDestFile = mayaVersionSubPlugInDir + "/mayaTo" + renderer.capitalize() + ".mll"
-            shutil.copy2(pluginFile, pluginDestFile)
-        except:
-            print "Unable to make plugins for", mayaVersionName
+        mayaVersionSubPlugInDir = "{deploymentDir}/{mayaVersion}/plug-ins".format(deploymentDir=devDestDir, mayaVersion=mayaVersionName)
+        print "Creating version depenedent directory", mayaVersionSubPlugInDir
+        os.makedirs(mayaVersionSubPlugInDir)
+        pluginFile = path.path(sourceDir + "/" +  mayaVersionName + "/plug-ins/mayaTo" + renderer.capitalize() + ".mll")
+        pluginDestFile = mayaVersionSubPlugInDir + "/mayaTo" + renderer.capitalize() + ".mll"
+        shutil.copy2(pluginFile, pluginDestFile)
     # get folders from dev module
     devFolders = ['shaders']
     
@@ -262,12 +259,10 @@ def createDeploymentCombined(renderer, shortCut):
     
     #mll
     pluginsDir = path.path(sourceDir + "/plug-ins/")
-    for plugIn in pluginsDir.listdir("*.mll"):
-        destMayaVersion = plugIn.split("_")[-1].replace("maya", "").split(".")[0]
+    xmlFiles = pluginsDir.listdir("*.xml")    
+    for destMayaVersion in ["2014", "2015", "2016"]:
         plugInDestDir = devDestDir + "/" + destMayaVersion + "/plug-ins"
-    
-        files = pluginsDir.listdir("*.xml")
-        for xmlFile in files:
+        for xmlFile in xmlFiles:
             print "Copy xml file", xmlFile
             shutil.copy(xmlFile, plugInDestDir)
             
@@ -289,7 +284,7 @@ def createDeploymentCombined(renderer, shortCut):
         destBinDir = devDestDir + "/bin/"
         if not destBinDir.exists():
             destBinDir.makedirs()
-        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_gl_vc_corona.dll", "wxmsw30u_vc_corona.dll", "Config-6773585.conf", "oslc.exe", "oslinfo.exe"]:
+        for f in ["Corona_Release.dll", "CoronaOpenExr2.dll", "wxmsw30u_gl_vc_corona.dll", "wxmsw30u_vc_corona.dll", "Config-6773585.conf", "oslc.exe", "maketx.exe", "oslinfo.exe"]:
             sourceFile = binDir + "/" + f
             destFile =   destBinDir + f
             print "Copy ", sourceFile, "to", destFile

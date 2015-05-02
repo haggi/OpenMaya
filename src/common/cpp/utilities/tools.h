@@ -167,6 +167,10 @@ bool isCameraTransform(MDagPath& dagPath);
 
 bool isCamera(MObject obj);
 
+MObject getTransformNode(MDagPath& dagPath);
+
+MObject getConnectedObjSet(MDagPath& dagPath);
+
 bool isCameraRenderable(MObject obj);
 
 void makeUniqueArray( MObjectArray& );

@@ -512,7 +512,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 			break;
 
 		case EventQueue::Event::FRAMEUPDATE:
-			Logging::debug("Event::FRAMEUPDATE");
+			//Logging::debug("Event::FRAMEUPDATE");
 			RenderQueueWorker::updateRenderView(e);
 			break;
 

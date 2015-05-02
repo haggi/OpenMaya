@@ -17,7 +17,7 @@ MSwatchRenderBase* SwatchRenderer::creator(MObject dependNode, MObject renderNod
 
 SwatchRenderer::SwatchRenderer(MObject dependNode, MObject renderNode, int imageResolution) : MSwatchRenderBase(dependNode, renderNode, imageResolution)
 {
-	MGlobal::displayInfo(MString("SwatchRenderer called with dependNode ") + getObjectName(dependNode) + " and renderNode " + getObjectName(renderNode));
+	//MGlobal::displayInfo(MString("SwatchRenderer called with dependNode ") + getObjectName(dependNode) + " and renderNode " + getObjectName(renderNode));
 	this->renderInterface = SwatchRendererInterfaceFactory().createSwatchRendererInterface(dependNode, renderNode, imageResolution);
 }
 
@@ -31,18 +31,20 @@ SwatchRenderer::~SwatchRenderer()
 bool SwatchRenderer::doIteration()
 {
 	MStatus status;
-	MGlobal::displayInfo("doIteration called.");
+	//MGlobal::displayInfo("doIteration called.");
 	image().create(resolution(), resolution(), 4, MImage::kFloat);
 
 	// if another render process is rendering then...
-	if (MayaTo::getWorldPtr()->getRenderState() == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING)
+	MayaTo::MayaToWorld::WorldRenderState rState = MayaTo::getWorldPtr()->getRenderState();
+	MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
+	if ((rState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
 	{
 		this->renderInterface->getImageData(this->image()); // copy empty image
 		image().convertPixelFormat(MImage::kByte);
-		return true;
+		return false;
 	}
 	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER);
-	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING);
 	this->renderInterface->renderSwatch();
 	this->renderInterface->getImageData(this->image());
 	image().convertPixelFormat(MImage::kByte);
