@@ -48,22 +48,25 @@ std::vector<asr::Entity *> definedEntities;
 
 AppleseedRenderer::AppleseedRenderer()
 {
-	std::auto_ptr<asf::ILogTarget> log_target(asf::create_console_log_target(stderr));
+	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
 	asr::global_logger().add_target(log_target.get());
 }
 
 AppleseedRenderer::~AppleseedRenderer()
-{}
+{
+	asr::global_logger().remove_target(log_target.get());
+}
 
 void AppleseedRenderer::initializeRenderer()
 {
-	definedEntities.clear();
-	this->project = asr::ProjectFactory::create("mtap_project");
-	project->add_default_configurations();
-	asf::auto_release_ptr<asr::Scene> sceneEntity = asr::SceneFactory::create();
-	project->set_scene(sceneEntity);
-	scene = project->get_scene();
-	defineConfig();
+	RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
+	//definedEntities.clear();
+	//this->project = asr::ProjectFactory::create("mtap_project");
+	//project->add_default_configurations();
+	//asf::auto_release_ptr<asr::Scene> sceneEntity = asr::SceneFactory::create();
+	//project->set_scene(sceneEntity);
+	//scene = project->get_scene();
+	//defineConfig();
 }
 
 void AppleseedRenderer::unInitializeRenderer()
@@ -71,14 +74,19 @@ void AppleseedRenderer::unInitializeRenderer()
 	//Logging::debug("Releasing scene");
 	//this->scene.reset();
 	//this->project->get_scene()->release();
-	Logging::debug("Releasing project");
-	this->project.release();
-	Logging::debug("Releasing done.");
+	//Logging::debug("Releasing project");
+	//this->project.release();
+	//Logging::debug("Releasing done.");
 }
 
 void AppleseedRenderer::defineProject()
 {
+	// Create an empty project.
+	project = asr::ProjectFactory::create("test project");
 	project->search_paths().push_back("data");
+
+	// Add default configurations to the project.
+	project->add_default_configurations();
 
 	// Set the number of samples. This is the main quality parameter: the higher the
 	// number of samples, the smoother the image but the longer the rendering time.
@@ -86,9 +94,12 @@ void AppleseedRenderer::defineProject()
 		.get_by_name("final")->get_parameters()
 		.insert_path("uniform_pixel_renderer.samples", "25");
 
+	// Create a scene.
+	asf::auto_release_ptr<asr::Scene> scene(asr::SceneFactory::create());
+
 	// Create an assembly.
 	asf::auto_release_ptr<asr::Assembly> assembly(
-		asr::AssemblyFactory::create(
+		asr::AssemblyFactory().create(
 		"assembly",
 		asr::ParamArray()));
 
@@ -136,7 +147,7 @@ void AppleseedRenderer::defineProject()
 		project->search_paths(),
 		"cube",
 		asr::ParamArray()
-		.insert("filename", "C:/daten/3dprojects/mayaToAppleseed/renderData/scene.obj"),
+		.insert("filename", "scene.obj"),
 		objects);
 
 	// Insert all the objects into the assembly.
@@ -275,6 +286,9 @@ void AppleseedRenderer::defineProject()
 		.insert("camera", scene->get_camera()->get_name())
 		.insert("resolution", "640 480")
 		.insert("color_space", "srgb")));
+
+	// Bind the scene to the project.
+	project->set_scene(scene);
 
 }
 
@@ -529,26 +543,59 @@ void AppleseedRenderer::defineProject()
 void AppleseedRenderer::render()
 {
 	Logging::debug("AppleseedRenderer::render");
+
+	// Create a log target that outputs to stderr, and binds it to the renderer's global logger.
+	// Eventually you will probably want to redirect log messages to your own target. For this
+	// you will need to implement foundation::ILogTarget (foundation/utility/log/ilogtarget.h).
+
+	//std::auto_ptr<asf::ILogTarget> log_target(asf::create_console_log_target(stderr));
+	//asr::global_logger().add_target(log_target.get());
+
+	//// Print appleseed's version string.
+	//RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
+
+
 	defineProject();
 
-	// Print appleseed's version string.
-	RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
 
 	// Create the master renderer.
 	asr::DefaultRendererController renderer_controller;
-	asr::MasterRenderer renderer(
+	asr::MasterRenderer mrenderer(
 		project.ref(),
 		project->configurations().get_by_name("final")->get_inherited_parameters(),
 		&renderer_controller);
 
 	// Render the frame.
-	renderer.render();
+	mrenderer.render();
+
+	project.release();
 
 	// Save the frame to disk.
-	project->get_frame()->write_main_image("C:/daten/3dprojects/mayaToAppleseed/images/test.png");
+	//project->get_frame()->write_main_image("h:/as/test.png");
 
 	// Save the project to disk.
-	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/test.appleseed");
+	//asr::ProjectFileWriter::write(project.ref(), "h:/as/test.appleseed");
+}
+
+
+	//// Print appleseed's version string.
+	//RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
+
+	//// Create the master renderer.
+	//asr::DefaultRendererController renderer_controller;
+	//asr::MasterRenderer renderer(
+	//	project.ref(),
+	//	project->configurations().get_by_name("final")->get_inherited_parameters(),
+	//	&renderer_controller);
+
+	//// Render the frame.
+	//renderer.render();
+
+	//// Save the frame to disk.
+	//project->get_frame()->write_main_image("C:/daten/3dprojects/mayaToAppleseed/images/test.png");
+
+	//// Save the project to disk.
+	//asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/test.appleseed");
 
 //
 //	bool isIpr = this->mtap_scene->renderType == MayaScene::IPR;
@@ -616,4 +663,3 @@ void AppleseedRenderer::render()
 //		}
 //	}
 //
-}

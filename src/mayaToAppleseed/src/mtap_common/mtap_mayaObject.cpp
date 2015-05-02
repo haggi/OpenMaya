@@ -14,17 +14,22 @@ mtap_ObjectAttributes::mtap_ObjectAttributes()
 {
 	needsOwnAssembly = false;
 	objectMatrix.setToIdentity();
+	this->assemblyObject = nullptr;
 }
 
-mtap_ObjectAttributes::mtap_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
+mtap_ObjectAttributes::mtap_ObjectAttributes(std::shared_ptr<ObjectAttributes> otherAttr)
 {
-	if( other )
+	std::shared_ptr<mtap_ObjectAttributes> other = std::static_pointer_cast<mtap_ObjectAttributes>(otherAttr);
+
+	this->hasInstancerConnection = false;
+	objectMatrix.setToIdentity();
+	this->assemblyObject = nullptr;
+
+	if (other)
 	{
 		hasInstancerConnection = other->hasInstancerConnection;
 		objectMatrix = other->objectMatrix;
-	}else{
-		this->hasInstancerConnection = false;
-		objectMatrix.setToIdentity();
+		assemblyObject = other->assemblyObject;
 	}
 };
 
@@ -79,29 +84,38 @@ MString mtap_MayaObject::getObjectName()
 
 
 // after the creation of an attribute node, ALL objects have a assemblyObject, either the parent one or the object itself.
-std::shared_ptr<MayaObject> mtap_MayaObject::getAssemblyObject()
+MayaObject *mtap_MayaObject::getAssemblyMayaObject()
 {
-	//if(this->attributes)
-	//	return ((std::shared_ptr<ObjectAttributes>)this->attributes)->assemblyObject;
+	if (this->attributes)
+	{
+		std::shared_ptr<mtap_ObjectAttributes> att = std::static_pointer_cast<mtap_ObjectAttributes>(this->attributes);
+		return att->assemblyObject;
+	}
 	return nullptr; // only happens if obj is world
 }
 
 asr::Assembly *mtap_MayaObject::getObjectAssembly()
 {
-	//if( this->attributes != nullptr )
-	//{
-	//	std::shared_ptr<ObjectAttributes>att = (std::shared_ptr<ObjectAttributes>)this->attributes;
-	//	if( att != nullptr )
-	//	{
-	//		if( att->assemblyObject != nullptr )
-	//		{
-	//			return att->assemblyObject->objectAssembly;
-	//		}
-	//	}
-	//}
-	//if( this->origObject != nullptr )
-	//	return ((std::shared_ptr<MayaObject> )this->origObject)->objectAssembly;
-	//return this->objectAssembly;
+	if( this->attributes != nullptr )
+	{
+		std::shared_ptr<mtap_ObjectAttributes> att = std::static_pointer_cast<mtap_ObjectAttributes>(this->attributes);
+		if( att != nullptr )
+		{
+			if( att->assemblyObject != nullptr )
+			{
+				mtap_MayaObject *o = (mtap_MayaObject *)att->assemblyObject;
+				return o->objectAssembly;
+			}
+		}
+	}
+
+	if (this->origObject != nullptr)
+	{
+		std::shared_ptr<mtap_MayaObject> mtapo = std::static_pointer_cast<mtap_MayaObject>(this->origObject);
+		return mtapo->objectAssembly;
+	}
+
+	return this->objectAssembly;
 	return nullptr;
 }
 
@@ -142,7 +156,7 @@ bool mtap_MayaObject::geometryShapeSupported()
 //
 std::shared_ptr<ObjectAttributes>mtap_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	std::shared_ptr<ObjectAttributes> myAttributes = std::shared_ptr<ObjectAttributes>(new mtap_ObjectAttributes(parentAttributes));
+	std::shared_ptr<mtap_ObjectAttributes> myAttributes = std::shared_ptr<mtap_ObjectAttributes>(new mtap_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{
@@ -161,15 +175,92 @@ std::shared_ptr<ObjectAttributes>mtap_MayaObject::getObjectAttributes(std::share
 
 	if( this->needsAssembly() || myAttributes->hasInstancerConnection)
 	{
-		//myAttributes->needsOwnAssembly = true;
-		//myAttributes->assemblyObject = this;
+		myAttributes->needsOwnAssembly = true;
+		myAttributes->assemblyObject = this;
 		myAttributes->objectMatrix.setToIdentity();
+		createAssembly();
 	}
 
 	this->attributes = myAttributes;
 	return myAttributes;
 }
 
+
+void mtap_MayaObject::createAssembly()
+{
+	// instances do not need own assembly
+	if( this->instanceNumber > 0)
+		return;
+
+	//
+	//	//if( obj->objectAssembly == nullptr)
+	//	//	return;
+	//
+	//	//if( !obj->visible && !obj->isVisiblityAnimated() && !obj->isInstanced())
+	//	//	return;
+	//
+	//	//// simply add instances for all paths
+	//	//MFnDagNode objNode(obj->mobject);
+	//	//MDagPathArray pathArray;
+	//	//objNode.getAllPaths(pathArray);
+	//
+	//	//this->mtap_renderer.interactiveAIList.clear();
+	//
+	//	//for( uint pId = 0; pId < pathArray.length(); pId++)
+	//	//{
+	//	//	// if the object itself is not visible and the path is the one of the original shape, ignore it
+	//	//	// this way we can hide the original geometry and make only the instances visible
+	//	//	if( (!obj->visible) && (pId == 0))
+	//	//		continue;
+	//	//	MDagPath currentPath = pathArray[pId];
+	//	//	if(!IsVisible(currentPath))
+	//	//		continue;
+	//	//	MString assemblyInstName = currentPath.fullPathName() + "assemblyInstance";
+	//	//	Logging::debug(MString("Define assembly instance for obj: ") + obj->shortName + " path " + currentPath.fullPathName() + " assInstName: " + assemblyInstName );		    
+	//	//	asf::auto_release_ptr<asr::AssemblyInstance> ai = asr::AssemblyInstanceFactory::create(
+	//	//	assemblyInstName.asChar(),
+	//	//	asr::ParamArray(),
+	//	//	obj->objectAssembly->get_name());
+	//
+	//	//	this->mtap_renderer.interactiveAIList.push_back(ai.get());
+	//
+	//	//	// if world, then add a global scene scaling.
+	//	//	if( obj->shortName == "world")
+	//	//	{
+	//	//		asf::Matrix4d appMatrix;
+	//	//		MMatrix transformMatrix;
+	//	//		transformMatrix.setToIdentity();
+	//	//		transformMatrix *= this->renderGlobals->sceneScaleMatrix;
+	//	//		this->mtap_renderer.MMatrixToAMatrix(transformMatrix, appMatrix);
+	//	//		ai->transform_sequence().set_transform(0.0,	asf::Transformd::from_local_to_parent(appMatrix));
+	//	//		this->mtap_renderer.scenePtr->assembly_instances().insert(ai);
+	//	//		continue;
+	//	//	}
+	//	//	if( this->renderType == MayaScene::IPR)
+	//	//	{
+	//	//		if( obj->parent != nullptr)
+	//	//		{
+	//	//			std::shared_ptr<MayaObject> parent = (std::shared_ptr<MayaObject> )obj->parent;
+	//	//			if( parent->objectAssembly != nullptr)
+	//	//			{
+	//	//				Logging::debug(MString("Insert assembly instance ") + obj->shortName + " into parent " + parent->shortName);
+	//	//				parent->objectAssembly->assembly_instances().insert(ai);
+	//	//			}else{
+	//	//				//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//	//				this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//	//			}
+	//	//		}else{
+	//	//			//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//	//			this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//	//		}
+	//	//	}else{
+	//	//		//this->mtap_renderer.scene->assembly_instances().insert(ai);
+	//	//		this->mtap_renderer.masterAssembly->assembly_instances().insert(ai);
+	//	//	}
+	//	//}
+	////}
+
+}
 //
 // objects needs own assembly if:
 //		- it is instanced
