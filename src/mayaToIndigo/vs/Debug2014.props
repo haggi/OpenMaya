@@ -8,6 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
+    <OutDir>../mtin_devmodule/$(MAYA_VERSION)/plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -20,14 +21,12 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib/vs2010_64_debug;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(INDIGO_ROOT)/lib/vs2012_64_debug;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="INDIGO_ROOT">

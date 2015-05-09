@@ -13,7 +13,7 @@ class mtin_ObjectAttributes : public ObjectAttributes
 {
 public:
 	mtin_ObjectAttributes();
-	mtin_ObjectAttributes(mtin_ObjectAttributes *other);
+	mtin_ObjectAttributes(std::shared_ptr<ObjectAttributes> other);
 	MMatrix objectMatrix;
 };
 
@@ -32,7 +32,7 @@ public:
 	std::vector<MString> iesProfilePaths;
 
 	virtual bool geometryShapeSupported();
-	virtual mtin_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = NULL);
 	virtual void getMaterials();
 };
 

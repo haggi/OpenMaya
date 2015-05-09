@@ -9,12 +9,20 @@
       <Configuration>Debug2015</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug2016|x64">
+      <Configuration>Debug2016</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release2014|x64">
       <Configuration>Release2014</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release2015|x64">
       <Configuration>Release2015</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release2016|x64">
+      <Configuration>Release2016</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -25,9 +33,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
@@ -35,9 +48,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
@@ -53,6 +71,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(Configuration).props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(Configuration).props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(Configuration).props" />
@@ -61,13 +83,19 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(Configuration).props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(Configuration).props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">.mll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">.mll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">.mll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2014|x64'">.mll</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">.mll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">.mll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2014|x64'">
     <ClCompile>
@@ -85,6 +113,21 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
+    <ClCompile>
+      <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">
     <ClCompile>
       <AdditionalOptions>/Gm /GR /GS /EHsc /Zi /I "." /D "WIN32" /D "_DEBUG" /RTC1 /c %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -127,6 +170,20 @@
     <PostBuildEvent />
     <PostBuildEvent />
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>indigo_sdk_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\rendercmd.cpp" />
@@ -134,12 +191,22 @@
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp" />
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -163,12 +230,15 @@
     <ClCompile Include="..\src\Indigo\IndigoToneMapper.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoUtils.cpp" />
     <ClCompile Include="..\src\mayaToIndigo.cpp" />
+    <ClCompile Include="..\src\mtin_common\mtin_mayaObjectFactory.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_mayaSceneFactory.cpp" />
+    <ClCompile Include="..\src\mtin_common\mtin_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_swatchRenderer.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_mayaObject.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_mayaScene.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobalsNode.cpp" />
+    <ClCompile Include="..\src\mtin_common\mtin_swtchesInterfaceFactory.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_world.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\Indigo\IndigoEnvironment.cpp" />
@@ -198,6 +268,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h" />
@@ -206,11 +277,20 @@
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h" />
+    <ClInclude Include="..\..\common\cpp\renderProcess.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h" />
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
@@ -224,6 +304,7 @@
     <ClInclude Include="..\src\Indigo\IndigoImgExport.h" />
     <ClInclude Include="..\src\Indigo\IndigoRendererController.h" />
     <ClInclude Include="..\src\Indigo\Indigo.h" />
+    <ClInclude Include="..\src\Indigo\Version.h" />
     <ClInclude Include="..\src\mayaToIndigo.h" />
     <ClInclude Include="..\src\mtin_common\mtin_swatchRenderer.h" />
     <ClInclude Include="..\src\mtin_common\mtin_mayaObject.h" />

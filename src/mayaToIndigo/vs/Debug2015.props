@@ -5,9 +5,11 @@
     <INDIGO_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToIndigo\devkit\IndigoSDK</INDIGO_ROOT>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-11.0</BOOST_ROOT>
     <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
+    <MAYA_VERSION>2015</MAYA_VERSION>
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
+    <OutDir>../mtin_devmodule/$(MAYA_VERSION)/plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -25,9 +27,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtin_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="INDIGO_ROOT">
@@ -40,6 +40,10 @@
     </BuildMacro>
     <BuildMacro Include="MAYA_ROOT">
       <Value>$(MAYA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MAYA_VERSION">
+      <Value>$(MAYA_VERSION)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

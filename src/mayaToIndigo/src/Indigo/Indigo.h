@@ -24,11 +24,7 @@ inline const std::string toStdString(const Indigo::String& s)
 class IndigoRenderer : public MayaTo::Renderer
 {
 public:
-
-	mtin_MayaScene *mtin_scene;
-	mtin_RenderGlobals *mtin_renderGlobals;
-
-	std::vector<mtin_MayaObject *> interactiveUpdateList;
+	std::vector<std::shared_ptr<MayaObject>> interactiveUpdateList;
 	std::vector<MObject> interactiveUpdateMOList;
 
 	Indigo::RendererRef rendererRef;
@@ -47,23 +43,26 @@ public:
 	virtual void defineCamera();
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
-	void defineMesh(mtin_MayaObject *obj);
-	void addGeometry(mtin_MayaObject *obj);
+	void defineMesh(std::shared_ptr<mtin_MayaObject>obj);
+	void addGeometry(std::shared_ptr<mtin_MayaObject>obj);
 	virtual void defineLights();
 
 	virtual void render();
 	
 	virtual void initializeRenderer();
-	virtual void updateShape(MayaObject *obj);
-	virtual void updateTransform(MayaObject *obj);
+	virtual void unInitializeRenderer(){};
+	virtual void updateShape(std::shared_ptr<MayaObject>obj);
+	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
 	virtual void IPRUpdateEntities();
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
+	virtual void interactiveFbCallback(){};
+
 	void parse();
-	void framebufferCallback();
+	static void framebufferCallback();
 	void createRenderSettings();
 
-	void defineShadingNodes(mtin_MayaObject *obj);
+	void defineShadingNodes(std::shared_ptr<mtin_MayaObject> obj);
 	void createIndigoShadingNode(ShadingNode& snode);
 	void createIndigoDefaultMaterial();
 	void setIndependentParameter(Reference<Indigo::WavelengthIndependentParam>& p, MFnDependencyNode& depFn, MString attrName, MString type);
@@ -72,7 +71,7 @@ public:
 	void setNormalMapParameter(Reference<Indigo::Vec3Param>& p, MFnDependencyNode& depFn, MString attrName, MString type);
 	void createToneMapper();
 	
-	void createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj);
+	void createTransform(const Indigo::SceneNodeModelRef& model, std::shared_ptr<mtin_MayaObject> obj);
 };
 
 #endif

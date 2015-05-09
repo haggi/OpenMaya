@@ -2,9 +2,10 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtin_common/mtin_renderGlobals.h"
-#include "../mtin_common/mtin_mayaScene.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
 #include "../mtin_common/mtin_mayaObject.h"
+#include "world.h"
 
 #include <maya/MFnCamera.h>
 
@@ -12,9 +13,12 @@ static Logging logger;
 
 void IndigoRenderer::defineCamera()
 {
-	for( uint camId = 0; camId < this->mtin_scene->camList.size(); camId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	for (auto mobj : mayaScene->camList)
 	{
-		mtin_MayaObject *icam = (mtin_MayaObject *)this->mtin_scene->camList[camId];
+		std::shared_ptr<mtin_MayaObject> icam(std::static_pointer_cast<mtin_MayaObject>(mobj));
 		MFnCamera camFn(icam->dagPath);
 		float lensRadius = 0.01;
 		getFloat(MString("mtin_lensRadius"), camFn, lensRadius); 
@@ -28,9 +32,9 @@ void IndigoRenderer::defineCamera()
 		MMatrix m = icam->transformMatrices[0];
 		MPoint pos, rot, scale;
 		getMatrixComponents(m, pos, rot, scale);
-		camPos *= this->mtin_renderGlobals->globalConversionMatrix;
-		camUp *= this->mtin_renderGlobals->globalConversionMatrix;
-		camView *=  this->mtin_renderGlobals->globalConversionMatrix;
+		camPos *= renderGlobals->globalConversionMatrix;
+		camUp *= renderGlobals->globalConversionMatrix;
+		camView *=  renderGlobals->globalConversionMatrix;
 		camUp.normalize();
 		camView.normalize();
 
@@ -41,7 +45,7 @@ void IndigoRenderer::defineCamera()
 		logger.debug(MString("Using camera: ") + icam->fullName);
 
 		Indigo::SceneNodeCameraRef cam(new Indigo::SceneNodeCamera());
-		if( this->mtin_renderGlobals->doDof )
+		if( renderGlobals->doDof )
 			cam->lens_radius = lensRadius;
 		else
 			cam->lens_radius = lensRadius / 10000.0;

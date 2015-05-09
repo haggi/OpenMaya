@@ -19,10 +19,9 @@
 #include "shaders/inMediumBasicMaterial.h"
 
 #include "world.h"
+#include "Indigo/Version.h"
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.11"
-
 
 static const MString inISLNodeRegistrantId("inISLNodePlugin");
 static const MString inISLNodeDrawDBClassification("drawdb/shader/surface/inISLNode");
@@ -66,9 +65,12 @@ MStatus initializePlugin( MObject obj )
 {
 	const MString	UserClassify( "shader/surface" );
 
-	MGlobal::displayInfo(MString("Loading plugin MayaToIndigo version: ") + MString(VERSION));
+	std::vector<std::string> versionStrings = getFullVersionString();
+	MGlobal::displayInfo(MString("MayaToIndigo version: ") + versionStrings[0].c_str());
+	MGlobal::displayInfo(MString("Indigo Core: "));
+
 	MStatus   status;
-	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
+	MFnPlugin plugin( obj, VENDOR,  versionStrings[0].c_str(), "Any");
 
 #ifdef HAS_OVERRIDE
 	CHECK_MSTATUS( MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator( inGlossyTransparentsDrawDBClassification, inGlossyTransparentsRegistrantId,inGlossyTransparentOverride::creator));
@@ -128,6 +130,8 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
+	MayaTo::defineWorld();
+
 	return status;
 }
 
@@ -138,6 +142,8 @@ MStatus uninitializePlugin( MObject obj)
 
 	const MString UserClassify( "shader/surface" );
 	
+	MayaTo::deleteWorld();
+
 #ifdef HAS_OVERRIDE
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inGlossyTransparentsDrawDBClassification, inGlossyTransparentsRegistrantId));
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::deregisterSurfaceShadingNodeOverrideCreator(inPhongsDrawDBClassification, inPhongsRegistrantId));
@@ -193,8 +199,6 @@ MStatus uninitializePlugin( MObject obj)
 		status.perror("Problem executing cmd: mtin_initialize.unregister()");
 		return status;
 	}
-
-	defineWorld();
 
 	return status;
 }

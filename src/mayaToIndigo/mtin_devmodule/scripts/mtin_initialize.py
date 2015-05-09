@@ -30,14 +30,18 @@ class IndigoRenderer(Renderer.MayaToRenderer):
         Renderer.MayaToRenderer.__init__(self, rendererName, moduleName)
         self.rendererTabUiDict = {}
         self.pluginBasePath = path.path(__file__).parent.parent
-
-        
     
     def getEnumList(self, attr):
         return [(i, v) for i,v in enumerate(attr.getEnums().keys())]
 
     def updateTest(self, dummy = None):
         print "UpdateTest", dummy             
+
+    def IndigoCommonGlobalsCreateTab(self):
+        self.OpenMayaCommonGlobalsCreateTab()            
+
+    def IndigoCommonGlobalsUpdateTab(self):
+        self.OpenMayaCommonGlobalsUpdateTab()            
 
     def updateEnvironment(self, dummy=None):
         

@@ -1,34 +1,41 @@
 #include "Indigo.h"
 #include "utilities/tools.h"
-#include "../mtin_common/mtin_renderGlobals.h"
+#include "utilities/attrTools.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
+#include "world.h"
 
 void IndigoRenderer::createToneMapper()
 {
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
 	Indigo::SceneNodeTonemappingRef tone_mapping(new Indigo::SceneNodeTonemapping());
 
-	switch(this->mtin_renderGlobals->tone_mapper)
+	switch(getEnumInt("tone_mapper", gFn))
 	{
 	case 0:
 		{
 			tone_mapping->setType(Indigo::SceneNodeTonemapping::Linear);
-			tone_mapping->scale = this->mtin_renderGlobals->tone_linearScale;
+			tone_mapping->scale = getFloatAttr("tone_linearScale", gFn, 1.0);
 		}
 		break;
 	case 1:
 		{
 			tone_mapping->setType(Indigo::SceneNodeTonemapping::Reinhard);
-			tone_mapping->pre_scale = this->mtin_renderGlobals->tone_reinhardPreScale;
-			tone_mapping->post_scale = this->mtin_renderGlobals->tone_reinhardPostScale;
-			tone_mapping->burn = this->mtin_renderGlobals->tone_reinhardBurn;
+			tone_mapping->pre_scale = getFloatAttr("tone_reinhardPreScale", gFn, 1.0);
+			tone_mapping->post_scale = getFloatAttr("tone_reinhardPostScale", gFn, 1.0);
+			tone_mapping->burn = getFloatAttr("tone_reinhardBurn", gFn, 10.0);
 		}
 		break;
 	case 2:
 		{
 			tone_mapping->setType(Indigo::SceneNodeTonemapping::Camera);
-			tone_mapping->ev_adjust = this->mtin_renderGlobals->tone_cameraEv_adjust;
-			tone_mapping->film_iso = this->mtin_renderGlobals->tone_cameraFilm_iso;
+			tone_mapping->ev_adjust = getFloatAttr("tone_cameraEv_adjust", gFn, 0.0);
+			tone_mapping->film_iso = getFloatAttr("tone_cameraFilm_iso", gFn, 100.0);
 			MString cameraFunc = (getRendererHome() + "ressources/");
-			tone_mapping->response_function_path = Indigo::String(this->mtin_renderGlobals->tone_cameraResponse_function_path.asChar());
+			tone_mapping->response_function_path = Indigo::String(getStringAttr("tone_cameraResponse_function_path", gFn, "").asChar());
 		}
 		break;
 	default:

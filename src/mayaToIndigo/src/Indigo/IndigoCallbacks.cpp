@@ -3,34 +3,40 @@
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 #include "../mtin_common/mtin_renderGlobals.h"
+#include "world.h"
 
 static Logging logger;
 
 void IndigoRenderer::framebufferCallback()
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<IndigoRenderer> renderer = std::static_pointer_cast<IndigoRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
 		return;
 
-	if( !this->rendererStarted )
+	if (!renderer->rendererStarted)
 		return;
 
-	if( this->toneMapperRef.isNull())
+	if (renderer->toneMapperRef.isNull())
 		return;
 
-	this->toneMapperRef->startToneMapping();
-	while(!this->toneMapperRef->isToneMappingDone())
+	renderer->toneMapperRef->startToneMapping();
+	while (!renderer->toneMapperRef->isToneMappingDone())
 	{
 		Sleep(10);
 	}
 
-	float *data = floatBufferRef->dataPtr();
-	int width = floatBufferRef->width();
-	int height = floatBufferRef->height();
+	float *data = renderer->floatBufferRef->dataPtr();
+	int width = renderer->floatBufferRef->width();
+	int height = renderer->floatBufferRef->height();
 
 	size_t numPixels = width * height;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+	RV_PIXEL *pixels = pixelsPtr.get();
 
 	for( int y = (height - 1); y >= 0 ; y--)
 	{
@@ -38,7 +44,7 @@ void IndigoRenderer::framebufferCallback()
 		for( int x = 0; x < width; x++)
 		{
 			uint pixelIndex = y * width + x;
-			const float *indigoPixel = floatBufferRef->getPixel(x, indigoFbY);
+			const float *indigoPixel = renderer->floatBufferRef->getPixel(x, indigoFbY);
 			pixels[pixelIndex].r = indigoPixel[0] * 255.9f;
 			pixels[pixelIndex].g = indigoPixel[1] * 255.9f;
 			pixels[pixelIndex].b = indigoPixel[2] * 255.9f;
@@ -46,7 +52,7 @@ void IndigoRenderer::framebufferCallback()
 		}
 	}
 
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.tile_xmin = 0;
 	e.tile_ymin = 0;
 	e.tile_xmax = width - 1;

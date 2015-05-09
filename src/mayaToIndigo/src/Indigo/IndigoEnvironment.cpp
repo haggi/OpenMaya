@@ -2,18 +2,22 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtin_common/mtin_renderGlobals.h"
-#include "../mtin_common/mtin_mayaScene.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
 #include "../mtin_common/mtin_mayaObject.h"
+#include "world.h"
 
 static Logging logger;
 
 void IndigoRenderer::defineEnvironment()
 {
-	MObject indigoGlobals = objectFromName(MString("indigoGlobals"));
-	MFnDependencyNode globalsNode(indigoGlobals);
 
-	switch( this->mtin_renderGlobals->environmentType )
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	switch (getEnumInt("environmentType", gFn))
 	{
 		case 0: // off
 		{ 
@@ -31,18 +35,14 @@ void IndigoRenderer::defineEnvironment()
 				texturePath = texName.asChar();
 			}
 			MFnDependencyNode fileTexNode(fileTexObj);
-			MColor bgColor(1,1,1);
-			getColor("environmentColor", globalsNode, bgColor);
-			int mapType = 0;
-			getInt("environmentMapType", globalsNode, mapType);
+			MColor bgColor = getColorAttr("environmentColor", gFn);
+			int mapType = getIntAttr("environmentMapType", gFn, 0);
 			Indigo::SceneNodeBackgroundSettingsRef background_settings(new Indigo::SceneNodeBackgroundSettings());
-
 			Reference<Indigo::DiffuseMaterial> mat(new Indigo::DiffuseMaterial());
-
 			// Albedo should be zero.
 			mat->albedo = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(0))));
-
 			Indigo::Texture texture;
+
 			if( useTexture )
 			{
 				texture.path = texturePath;
@@ -69,7 +69,7 @@ void IndigoRenderer::defineEnvironment()
 			}
 
 			// Base emission is the emitted spectral radiance. No effect here?
-			double multiplier = (double)this->mtin_renderGlobals->environmentMapMultiplier * 1000.0;
+			double multiplier = (double)getFloatAttr("environmentMapMultiplier", gFn, 1.0) * 1000.0;
 			mat->base_emission = Reference<Indigo::WavelengthDependentParam>(new Indigo::ConstantWavelengthDependentParam(Reference<Indigo::Spectrum>(new Indigo::UniformSpectrum(multiplier))));
 
 			background_settings->background_material = mat;
@@ -80,7 +80,7 @@ void IndigoRenderer::defineEnvironment()
 		{
 			// first get the globals node and serach for a directional light connection
 			MObjectArray nodeList;
-			getConnectedInNodes(MString("sunLightConnection"), indigoGlobals, nodeList);
+			getConnectedInNodes(MString("sunLightConnection"), gFn.object(), nodeList);
 			if( nodeList.length() > 0)
 			{
 				MObject sunObj = nodeList[0];
@@ -89,7 +89,7 @@ void IndigoRenderer::defineEnvironment()
 					// we suppose what's connected here is a dir light transform
 					MVector lightDir(0,0,1); // default dir light dir
 					MFnDagNode sunDagNode(sunObj);
-					lightDir *= sunDagNode.transformationMatrix() * this->mtin_renderGlobals->globalConversionMatrix;
+					lightDir *= sunDagNode.transformationMatrix() * renderGlobals->globalConversionMatrix;
 					lightDir.normalize();
 
 					Indigo::SceneNodeBackgroundSettingsRef background_settings_node(new Indigo::SceneNodeBackgroundSettings());
@@ -97,14 +97,14 @@ void IndigoRenderer::defineEnvironment()
 					
 					MString sky_model;
 					int modelId;
-					getEnum("sky_model", globalsNode, modelId, sky_model);
+					getEnum("sky_model", gFn, modelId, sky_model);
 					sun_sky_mat->model = sky_model.asChar();
 					sun_sky_mat->enable_sky = true;
-					getBool("extra_atmospheric", globalsNode, sun_sky_mat->extra_atmospheric);
+					getBool("extra_atmospheric", gFn, sun_sky_mat->extra_atmospheric);
 					sun_sky_mat->name = "sunsky";
-					getUInt("sky_layer", globalsNode, sun_sky_mat->sky_layer);
-					getUInt("sun_layer", globalsNode, sun_sky_mat->sun_layer);
-					getDouble(MString("turbidity"), globalsNode, sun_sky_mat->turbidity);
+					getUInt("sky_layer", gFn, sun_sky_mat->sky_layer);
+					getUInt("sun_layer", gFn, sun_sky_mat->sun_layer);
+					getDouble(MString("turbidity"), gFn, sun_sky_mat->turbidity);
 
 					sun_sky_mat->sundir = Indigo::Vec3d(lightDir.x, lightDir.y, lightDir.z); // Direction to sun.
 

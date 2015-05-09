@@ -15,11 +15,12 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "../mtin_common/mtin_mayaObject.h"
-#include "../mtin_common/mtin_mayaScene.h"
+#include "mayaScene.h"
+#include "world.h"
 
 static Logging logger;
 
-void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
+void IndigoRenderer::defineMesh(std::shared_ptr<mtin_MayaObject>  obj)
 {
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
@@ -222,14 +223,14 @@ void IndigoRenderer::defineMesh(mtin_MayaObject *obj)
 
 		//sceneRootRef->addChildNode(model);
 
-void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
+void  IndigoRenderer::addGeometry(std::shared_ptr<mtin_MayaObject> obj)
 {		
 	Indigo::SceneNodeMeshRef meshRef = obj->meshRef;
 	Indigo::SceneNodeMaterialRef matRef = obj->matRef;
 
 	if( (obj->isInstanced() || obj->isInstancerObject ) && (obj->origObject != 0))
 	{
-		mtin_MayaObject *origObj = (mtin_MayaObject *)obj->origObject;
+		std::shared_ptr<mtin_MayaObject> origObj(std::static_pointer_cast<mtin_MayaObject>(obj->origObject));
 		meshRef = origObj->meshRef;
 		matRef = origObj->matRef;
 	}
@@ -277,9 +278,12 @@ void  IndigoRenderer::addGeometry(mtin_MayaObject *obj )
 
 void IndigoRenderer::defineGeometry()
 {
-	for(size_t objId = 0; objId < this->mtin_scene->objectList.size(); objId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	for (auto mobj : mayaScene->objectList)
 	{
-		mtin_MayaObject *obj = (mtin_MayaObject *)this->mtin_scene->objectList[objId];
+		std::shared_ptr<mtin_MayaObject> obj(std::static_pointer_cast<mtin_MayaObject>(mobj));
 		if( !obj->mobject.hasFn(MFn::kMesh))
 			continue;
 
@@ -294,10 +298,10 @@ void IndigoRenderer::defineGeometry()
 		this->addGeometry(obj);
 	}
 
-	for(size_t objId = 0; objId < this->mtin_scene->instancerNodeElements.size(); objId++)
+	for (auto mobj : mayaScene->instancerNodeElements)
 	{
-		mtin_MayaObject *obj = (mtin_MayaObject *)this->mtin_scene->instancerNodeElements[objId];
-		if( !obj->mobject.hasFn(MFn::kMesh))
+		std::shared_ptr<mtin_MayaObject> obj(std::static_pointer_cast<mtin_MayaObject>(mobj));
+		if (!obj->mobject.hasFn(MFn::kMesh))
 			continue;
 		this->addGeometry(obj);
 	}

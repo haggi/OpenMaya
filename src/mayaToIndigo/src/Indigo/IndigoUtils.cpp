@@ -16,14 +16,19 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "../mtin_common/mtin_mayaObject.h"
-#include "../mtin_common/mtin_mayaScene.h"
+#include "mayaScene.h"
+#include "world.h"
 
 static Logging logger;
 
 
-void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mtin_MayaObject *obj)
+void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, std::shared_ptr<mtin_MayaObject> obj)
 {
-	if( this->mtin_renderGlobals->doMb)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	if (renderGlobals->doMb)
 	{
 		MPoint pos, oscale, rot;
 		for( uint mId = 0; mId < obj->transformMatrices.size(); mId++)
@@ -34,7 +39,7 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 				time = (double)mId/((double)(obj->transformMatrices.size() - 1));
 
 			MMatrix m = obj->transformMatrices[mId];
-			m = m * this->mtin_renderGlobals->globalConversionMatrix;
+			m = m * renderGlobals->globalConversionMatrix;
 			getMatrixComponents(m, pos, rot, oscale);
 			MMatrix scale;
 			scale.setToIdentity();
@@ -66,7 +71,7 @@ void IndigoRenderer::createTransform(const Indigo::SceneNodeModelRef& model, mti
 	}else{
 		MPoint pos, scale, rot;
 		MMatrix m = obj->transformMatrices[0];
-		m = m * this->mtin_renderGlobals->globalConversionMatrix;
+		m = m * renderGlobals->globalConversionMatrix;
 		getMatrixComponents(m, pos, rot, scale);
 		Indigo::KeyFrame posKf(0.0, Indigo::Vec3d(pos.x, pos.y, pos.z), Indigo::AxisAngle().identity());
 		model->keyframes.push_back(posKf);

@@ -917,7 +917,7 @@ void IndigoRenderer::createIndigoShadingNode(ShadingNode& snode)
 
 }
 
-void IndigoRenderer::defineShadingNodes(mtin_MayaObject *obj)
+void IndigoRenderer::defineShadingNodes(std::shared_ptr<mtin_MayaObject> obj)
 {
 	this->currentIESPathList.clear();
 

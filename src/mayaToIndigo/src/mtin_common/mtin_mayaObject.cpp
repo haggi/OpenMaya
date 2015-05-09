@@ -13,7 +13,7 @@ mtin_ObjectAttributes::mtin_ObjectAttributes()
 	objectMatrix.setToIdentity();
 }
 
-mtin_ObjectAttributes::mtin_ObjectAttributes(mtin_ObjectAttributes *other)
+mtin_ObjectAttributes::mtin_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
 	if( other != NULL)
 	{
@@ -40,10 +40,7 @@ mtin_MayaObject::mtin_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 }
 
 mtin_MayaObject::~mtin_MayaObject()
-{
-	if( this->attributes != NULL)
-		delete (mtin_ObjectAttributes *)this->attributes;
-}
+{}
 
 void mtin_MayaObject::getMaterials()
 {
@@ -68,9 +65,9 @@ bool mtin_MayaObject::geometryShapeSupported()
 //	e.g. lets say we assign a color to the top node of a hierarchy. Then all child nodes will be
 //	called and this method is used. 
 //
-mtin_ObjectAttributes *mtin_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
+std::shared_ptr<ObjectAttributes>  mtin_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	mtin_ObjectAttributes *myAttributes = new mtin_ObjectAttributes((mtin_ObjectAttributes *)parentAttributes);
+	std::shared_ptr<ObjectAttributes> myAttributes = std::shared_ptr<ObjectAttributes>(new mtin_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{

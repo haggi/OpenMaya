@@ -45,6 +45,9 @@
     <Filter Include="common\translators">
       <UniqueIdentifier>{2a28f46a-b40f-4722-b926-505c84b0ed12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common\swatchesRenderer">
+      <UniqueIdentifier>{3b0bf0bc-2e60-4e97-a7e5-5a5bd675175f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -248,6 +251,45 @@
     <ClCompile Include="..\..\common\cpp\world.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtin_common\mtin_swtchesInterfaceFactory.cpp">
+      <Filter>mtin_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtin_common\mtin_mayaObjectFactory.cpp">
+      <Filter>mtin_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtin_common\mtin_rendererFactory.cpp">
+      <Filter>mtin_common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -417,6 +459,39 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\world.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Indigo\Version.h">
+      <Filter>Source Files\Indigo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderProcess.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h">
+      <Filter>common\threads</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
