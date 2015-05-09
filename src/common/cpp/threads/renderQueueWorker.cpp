@@ -444,6 +444,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 					float f = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->updateFrameNumber();
 					RenderProcess::doPreFrameJobs();
 					RenderProcess::doPrepareFrame();
+					//MayaTo::getWorldPtr()->worldRendererPtr->render();
 					RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);
 				}
 				else{

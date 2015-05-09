@@ -360,9 +360,7 @@ def createDeploymentCombined(renderer, shortCut):
         shutil.copytree(basePath + "/" + folder, deployDir + "/" + folder)
     
 if __name__ == "__main__":
-    #createDeployment("appleseed", "mtap", "2013")    
-    #createDeployment("corona", "mtco", "2014")    
-    #createDeployment("corona", "mtco", "2015")
-    createDeploymentCombined("corona", "mtco")
+    #createDeployment("appleseed", "mtap")    
+    #createDeploymentCombined("corona", "mtco")
+    createDeploymentCombined("indigo", "mtin")
     print "Deployment creation done"
-    #createDeployment("indigo", "mtin", "2014")

@@ -37,7 +37,8 @@ private:
 			if (GetAsyncKeyState(VK_ESCAPE))
 			//if (false)
 			{
-				std::cout << "Esc key pressed.\n";
+				//std::cout << "Esc key pressed.\n";
+				//std::cout.flush();
 				Compute::escPressed = true;
 				if (Compute::autoexit)
 					done = true;
@@ -48,7 +49,8 @@ private:
 			if (!done && !Compute::checkDone)
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
-		std::cout << "checkInterrupt done.\n";
+		//std::cout << "checkInterrupt done.\n";
+		std::cout.flush();
 	}
 
 public:
@@ -68,6 +70,13 @@ public:
 		Compute::autoexit = autoExit;
 		Compute::checkThread = std::thread(checkInterrupt);
 
+#ifdef WIN32
+		int count = 0;
+		while (GetAsyncKeyState(VK_ESCAPE) && (count++ < 10))
+		{
+			GetAsyncKeyState(VK_ESCAPE);
+		}
+#endif
 		if (useWaitCursor)
 		{
 			if (MRenderView::doesRenderEditorExist())

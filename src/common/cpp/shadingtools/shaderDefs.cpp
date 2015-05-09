@@ -120,9 +120,9 @@ void ShaderDefinitions::readShaderDefinitions()
 	this->shadingNodes.push_back(sn);
 
 	Logging::debug(MString("home dir: ") + getRendererHome());
-	Logging::debug(MString("shader defs file: ") + getRendererHome() + "ressources/shaderDefinitions.txt");
+	Logging::debug(MString("shader defs file: ") + getRendererHome() + "resources/shaderDefinitions.txt");
 	
-	std::string shaderDefFile = (getRendererHome() + "ressources/shaderDefinitions.txt").asChar();
+	std::string shaderDefFile = (getRendererHome() + "resources/shaderDefinitions.txt").asChar();
 
 	std::ifstream shaderFile(shaderDefFile.c_str());
 	if( !shaderFile.good())
@@ -249,7 +249,7 @@ ShadingNode findShadingNode(MObject mobject)
 {
 	// the reading is performed the very first time it is used. 
 	// it cannot be automatically read by constructor because
-	// at this point the variables for ressources path are not yet defined.
+	// at this point the variables for resources path are not yet defined.
 	if( !GlobalShaderDefinitions.readDone )
 		GlobalShaderDefinitions.readShaderDefinitions();
 
@@ -260,7 +260,7 @@ ShadingNode findShadingNode(MString nodeType)
 {
 	// the reading is performed the very first time it is used. 
 	// it cannot be automatically read by constructor because
-	// at this point the variables for ressources path are not yet defined.
+	// at this point the variables for resources path are not yet defined.
 	if( !GlobalShaderDefinitions.readDone )
 		GlobalShaderDefinitions.readShaderDefinitions();
 
