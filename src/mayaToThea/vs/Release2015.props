@@ -2,12 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
+    <MAYA_VERSION>2015</MAYA_VERSION>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
-    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2015</MAYA_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya$(MAYA_VERSION)</MAYA_ROOT>
     <THEA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToThea\devkit\TheaSDK_v1.3.05.1086\TheaSDK_v1.3.05.1086\Source</THEA_ROOT>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\mtth_devmodule\$(MAYA_VERSION)\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -30,11 +32,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(Configuration)\$(ProjectName).mll ..\mtco_devmodule\plug-ins\$(ProjectName)_maya2014.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="MAYA_VERSION">
+      <Value>$(MAYA_VERSION)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
     <BuildMacro Include="BOOST_ROOT">
       <Value>$(BOOST_ROOT)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>

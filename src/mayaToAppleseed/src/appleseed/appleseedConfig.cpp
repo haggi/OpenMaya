@@ -66,57 +66,57 @@ void AppleseedRenderer::addRenderParams(asr::ParamArray& paramArray)
 
 void AppleseedRenderer::defineConfig()
 {
-	Logging::debug("AppleseedRenderer::defineConfig");
-	MFnDependencyNode renderGlobalsFn(getRenderGlobalsNode());
-	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
-	
-	addRenderParams(this->project->configurations().get_by_name("final")->get_parameters());
-	addRenderParams(this->project->configurations().get_by_name("interactive")->get_parameters());
+	//Logging::debug("AppleseedRenderer::defineConfig");
+	//MFnDependencyNode renderGlobalsFn(getRenderGlobalsNode());
+	//std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	//
+	//addRenderParams(this->project->configurations().get_by_name("final")->get_parameters());
+	//addRenderParams(this->project->configurations().get_by_name("interactive")->get_parameters());
 
-	if (getBoolAttr("adaptiveSampling", renderGlobalsFn, true))
-	{
-		this->project->configurations()
-			.get_by_name("final")->get_parameters()
-			.insert_path("generic_tile_renderer.sampler", "adaptive");
-		this->project->configurations()
-			.get_by_name("interactive")->get_parameters()
-			.insert_path("generic_tile_renderer.sampler", "adaptive");
-	}
-
-	if( renderGlobals->getUseRenderRegion() )
-	{
-		int left, right, bottom, top;
-		int imgWidth, imgHeight;
-		renderGlobals->getWidthHeight(imgWidth, imgHeight);
-		renderGlobals->getRenderRegion(left, bottom, right, top);
-		int ybot = (imgHeight - bottom);
-		int ytop = (imgHeight - top);
-		int ymin = ybot <  ytop ? ybot :  ytop;
-		int ymax = ybot >  ytop ? ybot :  ytop;
-		MString regionString = MString("") + left + " " + ymin + " " + right + " " + ymax;
-		Logging::debug("Render region is turned on rendering: " + regionString);
-		this->project->configurations()
-        .get_by_name("final")->get_parameters()
-		.insert_path("generic_tile_renderer.crop_window", regionString.asChar());
-	}
-
-	//if( !renderGlobals->enable_caustics )
+	//if (getBoolAttr("adaptiveSampling", renderGlobalsFn, true))
 	//{
 	//	this->project->configurations()
- //       .get_by_name("final")->get_parameters()
-	//	.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
+	//		.get_by_name("final")->get_parameters()
+	//		.insert_path("generic_tile_renderer.sampler", "adaptive");
 	//	this->project->configurations()
- //       .get_by_name("interactive")->get_parameters()
-	//	.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
+	//		.get_by_name("interactive")->get_parameters()
+	//		.insert_path("generic_tile_renderer.sampler", "adaptive");
 	//}
 
-	this->project->configurations()
-    .get_by_name("final")->get_parameters()
-	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
-	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
-	this->project->configurations()
-    .get_by_name("interactive")->get_parameters()
-	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
-	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
+	//if( renderGlobals->getUseRenderRegion() )
+	//{
+	//	int left, right, bottom, top;
+	//	int imgWidth, imgHeight;
+	//	renderGlobals->getWidthHeight(imgWidth, imgHeight);
+	//	renderGlobals->getRenderRegion(left, bottom, right, top);
+	//	int ybot = (imgHeight - bottom);
+	//	int ytop = (imgHeight - top);
+	//	int ymin = ybot <  ytop ? ybot :  ytop;
+	//	int ymax = ybot >  ytop ? ybot :  ytop;
+	//	MString regionString = MString("") + left + " " + ymin + " " + right + " " + ymax;
+	//	Logging::debug("Render region is turned on rendering: " + regionString);
+	//	this->project->configurations()
+ //       .get_by_name("final")->get_parameters()
+	//	.insert_path("generic_tile_renderer.crop_window", regionString.asChar());
+	//}
+
+	////if( !renderGlobals->enable_caustics )
+	////{
+	////	this->project->configurations()
+ ////       .get_by_name("final")->get_parameters()
+	////	.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
+	////	this->project->configurations()
+ ////       .get_by_name("interactive")->get_parameters()
+	////	.insert_path((lightingEngine + ".enable_caustics").asChar(), "false");
+	////}
+
+	//this->project->configurations()
+ //   .get_by_name("final")->get_parameters()
+	//.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
+	//.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
+	//this->project->configurations()
+ //   .get_by_name("interactive")->get_parameters()
+	//.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
+	//.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
 }
 

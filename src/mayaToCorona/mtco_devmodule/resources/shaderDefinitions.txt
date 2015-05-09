@@ -1,0 +1,405 @@
+# supported maya shaders
+shader_start:lambert
+	inatt:color:color
+	inatt:transparency:color
+	outatt:outColor:color
+shader_end
+
+shader_start:coronaGlobals
+	inatt:bgColor:color
+shader_end
+
+shader_start:spotLight
+	inatt:color:color
+shader_end
+
+# supported maya textures
+shader_start:file
+	inatt:fileTextureName:string
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	inatt:uvCoord:float2
+	inatt:fromSRGB:bool
+	inatt:toSRGB:bool
+	inatt:textureFilter:enumint
+	inatt:textureFilterWidth:float
+	inatt:textureBlur:float
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:reverse
+	inatt:input:vector
+	outatt:output:vector
+shader_end
+
+shader_start:displacementShader
+	outatt:displacement:float
+shader_end
+
+shader_start:luminance
+	inatt:value:color
+	outatt:outValue:float
+shader_end
+
+shader_start:projection
+	inatt:image:color
+	inatt:projType:int
+	inatt:transparency:color
+	inatt:uAngle:float
+	inatt:vAngle:float
+	inatt:placementMatrix:matrix
+	inatt:uvCoord:vector
+	outatt:outUVCoord:vector
+	outatt:outColor:color
+shader_end
+
+shader_start:rgbToHsv
+	inatt:inRgb:color
+	outatt:outHsv:color
+shader_end
+
+shader_start:hsvToRgb
+	inatt:inHsv:color
+	outatt:outRgb:color
+shader_end
+
+shader_start:grid
+	inatt:lineColor:color
+	inatt:fillerColor:color
+	inatt:uWidth:float
+	inatt:vWidth:float
+	inatt:contrast:float
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:condition
+	inatt:firstTerm:float
+	inatt:secondTerm:float
+	inatt:operation:int
+	inatt:colorIfTrue:color
+	inatt:colorIfFalse:color
+	outatt:outColor:color
+shader_end
+
+shader_start:clamp
+	inatt:min:vector
+	inatt:max:vector
+	inatt:input:vector
+	outatt:output:vector
+shader_end
+
+shader_start:setRange
+	inatt:oldMin:vector
+	inatt:oldMax:vector
+	inatt:min:vector
+	inatt:max:vector
+	inatt:value:vector
+	outatt:outValue:vector
+shader_end
+
+shader_start:bulge
+	inatt:uWidth:float
+	inatt:vWidth:float
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	inatt:uvCoord:float2
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:place2dTexture
+	inatt:uvCoord:vector
+	inatt:repeatU:float
+	inatt:repeatV:float
+	inatt:offsetU:float
+	inatt:offsetV:float
+	inatt:rotateUV:float
+	outatt:outUV:vector
+shader_end
+
+shader_start:place3dTexture
+	inatt:matrix:matrix
+	outatt:worldInverseMatrix:matrix
+shader_end
+
+shader_start:ramp
+	inatt:colorEntryList:color
+	inatt:type:int
+	inatt:interpolation:int
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outAlpha:float
+	outatt:outColor:color
+shader_end
+
+shader_start:solidFractal
+	inatt:placementMatrix:matrix
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:blendColors
+	inatt:color1:color
+	inatt:color2:color
+	inatt:blender:float
+	outatt:output:color
+shader_end
+
+shader_start:bump2d
+	inatt:bumpValue:float
+	inatt:bumpDepth:float
+	inatt:bumpInterp:int
+	inatt:normalMap:color
+	inatt:normalCamera:vector
+	outatt:outNormal:vector
+shader_end
+
+shader_start:multiplyDivide
+	inatt:operation:int
+	inatt:input1:vector
+	inatt:input2:vector
+	outatt:output:vector
+shader_end
+
+shader_start:checker
+	inatt:color1:color
+	inatt:color2:color
+	inatt:contrast:float
+	inatt:uvCoord:float2
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outAlpha:float
+	outatt:outColor:color
+shader_end
+
+shader_start:noise
+	inatt:threshold:float
+	inatt:amplitude:float
+	inatt:ratio:float
+	inatt:frequencyRatio:float
+	inatt:depthMax:int
+	inatt:inflection:int
+	inatt:inTime:float
+	inatt:frequency:float
+	inatt:implode:float
+	inatt:implodeCenter:vector
+	inatt:noiseType:int
+	inatt:density:float
+	inatt:spottyness:float
+	inatt:sizeRand:float
+	inatt:randomness:float
+	inatt:falloff:int
+	inatt:numWaves:int
+	inatt:uvCoord:vector
+	inatt:defaultColor:color
+	inatt:colorGain:color
+	inatt:colorOffset:color
+	inatt:alphaGain:float
+	inatt:alphaOffset:float
+	inatt:alphaIsLuminance:int
+	inatt:invert:int
+	outatt:outColor:color
+	outatt:outAlpha:float
+shader_end
+
+shader_start:samplerInfo
+	outatt:normalCamera:vector
+	outatt:pointWorld:vector
+	outatt:uvCoord:vector
+	outatt:facingRatio:float
+	outatt:outDPdu:vector
+	outatt:outDPdv:vector
+shader_end
+
+shader_start:contrast
+	inatt:value:vector
+	inatt:contrast:vector
+	inatt:bias:vector
+	outatt:outValue:vector
+shader_end
+
+shader_start:gammaCorrect
+	inatt:value:color
+	inatt:gamma:vector
+	outatt:outValue:color
+shader_end
+
+shader_start:OSLInterface
+	inatt:inColor:color
+	inatt:inFloat:float
+	inatt:inInt:int
+	inatt:multiplier:float
+	outatt:Cout:color
+shader_end
+
+#--------------------------- automatically created attributes start ------------------------------------
+shader_start:CoronaSurface
+	inatt:opacity:color
+	inatt:emissionMultiplier:float
+	inatt:volumeScatteringAlbedo:color
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:reflectivity:color
+	inatt:castsShadows:bool
+	inatt:translucency:color
+	inatt:translucencyFraction:float
+	inatt:volumeEmissionColor:color
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeEmissionDist:float
+	inatt:roundCornersRadius:float
+	inatt:bgOverride:color
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
+	inatt:anisotropy:float
+	inatt:volumeMeanCosine:float
+	inatt:refractionIndex:float
+	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
+	inatt:attenuationDist:float
+	inatt:volumeSSSMode:bool
+	inatt:normalCamera:vector
+shader_end
+
+shader_start:CoronaLight
+	inatt:opacity:color
+	inatt:emissionMultiplier:float
+	inatt:volumeScatteringAlbedo:color
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:reflectivity:color
+	inatt:castsShadows:bool
+	inatt:translucency:color
+	inatt:translucencyFraction:float
+	inatt:volumeEmissionColor:color
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeEmissionDist:float
+	inatt:roundCornersRadius:float
+	inatt:bgOverride:color
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
+	inatt:anisotropy:float
+	inatt:volumeMeanCosine:float
+	inatt:refractionIndex:float
+	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
+	inatt:attenuationDist:float
+	inatt:volumeSSSMode:bool
+	inatt:emissionGlossyness:float
+	inatt:emitLight:bool
+	inatt:normalCamera:vector
+shader_end
+
+shader_start:CoronaVolume
+	inatt:opacity:color
+	inatt:emissionMultiplier:float
+	inatt:fresnelIor:float
+	inatt:roundCornersSamples:int
+	inatt:emissionSharpnessFakePoint:vector
+	inatt:glassMode:enum
+	inatt:attenuationColor:color
+	inatt:emissionSharpnessFake:bool
+	inatt:reflectivity:color
+	inatt:castsShadows:bool
+	inatt:translucency:color
+	inatt:translucencyFraction:float
+	inatt:anisotropyRotation:float
+	inatt:reflectionGlossiness:float
+	inatt:volumeScatteringAlbedo:color
+	inatt:volumeEmissionColor:color
+	inatt:volumeEmissionDist:float
+	inatt:volumeSSSMode:bool
+	inatt:volumeMeanCosine:float
+	inatt:roundCornersRadius:float
+	inatt:roundCornersRadiusMultiplier:float
+	inatt:bgOverride:color
+	inatt:refractionGlossiness:float
+	inatt:diffuse:color
+	inatt:refractivity:color
+	inatt:brdfType:enum
+	inatt:emissionColor:color
+	inatt:shadowCatcherMode:enum
+	inatt:anisotropy:float
+	inatt:refractionIndex:float
+	inatt:emissionDisableSampling:bool
+	inatt:alphaMode:enum
+	inatt:attenuationDist:float
+	inatt:normalCamera:vector
+shader_end
+
+shader_start:CoronaRaytype
+	inatt:baseMaterial:color
+	inatt:reflectMaterial:color
+	inatt:refractMaterial:color
+	inatt:directMaterial:color
+shader_end
+
+shader_start:OSLNode
+	inatt:color:color
+	inatt:outColor:color
+	inatt:script:string
+	outatt:outColor:color
+shader_end
+
+shader_start:CoronaLayered
+	inatt:materialEntryAmount:color
+shader_end
+
+
+#---------------------------- automatically created attributes end ------------------------------------
+#thats all

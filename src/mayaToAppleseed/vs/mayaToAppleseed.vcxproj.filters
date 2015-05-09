@@ -323,6 +323,9 @@
     <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\TestRender.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -555,6 +558,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
       <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseed\TestRender.h">
+      <Filter>Source Files\appleseed</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

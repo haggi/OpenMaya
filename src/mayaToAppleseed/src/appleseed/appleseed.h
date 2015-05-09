@@ -105,10 +105,10 @@ public:
 	void defineConfig();
 
 private:
-	asf::auto_release_ptr<asr::Project> project;
-	asr::Scene *scene;
-	std::auto_ptr<asf::ILogTarget> log_target;
-	asf::FileLogTarget *flt;
+	//asf::auto_release_ptr<asr::Project> project;
+	//asr::Scene *scene;
+	//std::auto_ptr<asf::ILogTarget> log_target;
+	//asf::FileLogTarget *flt;
 	//	
 //	std::vector<std::shared_ptr<MayaObject> > interactiveUpdateList;
 //	std::vector<MObject> interactiveUpdateMOList;
