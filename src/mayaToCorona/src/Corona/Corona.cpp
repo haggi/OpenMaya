@@ -137,7 +137,6 @@ void CoronaRenderer::render()
 
 	context.core->sanityCheck(context.scene);
 	Logging::debug(MString("registering framebuffer callback."));
-	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
 	Corona::String basePath = (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->basePath + "/corona/").asChar();
 	Logging::debug(MString("beginSession..."));
 	ICore::AdditionalInfo info;
@@ -159,6 +158,7 @@ void CoronaRenderer::render()
 	}
 	
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
+	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
 	context.core->renderFrame(); // blocking render call
 	context.core->endSession();
 	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
@@ -227,7 +227,7 @@ void CoronaRenderer::initializeRenderer()
 	context.colorMappingData = new Corona::ColorMappingData;
 
 	ConfParser parser;
-	Corona::String resPath = (getRendererHome() + "ressources/").asChar();
+	Corona::String resPath = (getRendererHome() + "resources/").asChar();
 	Logging::debug(MString("parser: ") + (resPath + CORONA_DEFAULT_CONF_FILENAME).cStr());
 	parser.parseFile(resPath + CORONA_DEFAULT_CONF_FILENAME, context.settings, ConfParser::CREATE_IF_NONEXISTENT);
 

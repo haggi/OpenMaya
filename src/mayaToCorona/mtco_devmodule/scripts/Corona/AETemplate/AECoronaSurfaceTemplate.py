@@ -1,5 +1,6 @@
 import pymel.core as pm
 import logging
+from getpass import getuser
 
 log = logging.getLogger("ui")
 
@@ -17,18 +18,44 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         BaseTemplate.__init__(self,nodeName)
         log.debug("AECoronaSurfaceTemplate")
         self.thisNode = None
+        self.bumpCtrl = None
         self.node = pm.PyNode(self.nodeName)
         pm.mel.AEswatchDisplay(nodeName)
         self.beginScrollLayout()
         self.buildBody(nodeName)
-        self.addExtraControls("ExtraControls")
+        if getuser() != "haggi":
+            self.suppress("glassMode")
+            self.suppress("emissionSharpnessFake")
+            self.suppress("castsShadows")
+            self.suppress("volumeEmissionColor")
+            self.suppress("volumeEmissionDist")
+            self.suppress("roundCornersRadiusMultiplier")
+            self.suppress("bgOverride")
+            self.suppress("emissionDisableSampling")
+            self.suppress("shadowCatcherMode")
+            self.suppress("iesProfile")
+            self.suppress("translucenceCoeff")
+            self.suppress("diffuseReflectivity")
+            self.suppress("transparency")
+        self.addExtraControls("ExtraControls")        
         self.endScrollLayout()
-        
+    
+    def bumpNew(self, attribute):
+        pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)        
+        attName = attribute
+        self.bumpCtrl = pm.attrNavigationControlGrp(attribute=attribute, label="Bump Map") 
+        pm.setUITemplate("attributeEditorTemplate", popTemplate=True)                
+                    
+    def bumpReplace(self, attribute):
+        if self.bumpCtrl is not None:
+            pm.attrNavigationControlGrp(self.bumpCtrl, edit=True, attribute=attribute) 
+    
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Diffuse" ,collapse=0)
         self.addControl("diffuse", label="Diffuse Color")
         self.addControl("diffuseMultiplier", label="Diffuse Level")
+        self.callCustom(self.bumpNew, self.bumpReplace,"normalCamera")
         self.addSeparator()
         self.addControl("translucency", label="Translucency")
         self.addControl("translucencyFraction", label="Translucency Fraction")

@@ -482,16 +482,12 @@
     <ClInclude Include="..\src\Version.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\mtco_devmodule\ressources\releaseNotes.txt" />
-    <None Include="..\mtco_devmodule\ressources\shaderDefinitions.txt" />
+    <None Include="..\mtco_devmodule\resources\mayaStart.bat" />
     <None Include="..\mtco_devmodule\shaders\constant.osl" />
     <None Include="..\mtco_devmodule\shaders\CoronaOSL.osl" />
     <None Include="..\mtco_devmodule\shaders\file.osl" />
     <None Include="..\mtco_devmodule\shaders\place2dTexture.osl" />
     <None Include="..\mtco_devmodule\shaders\test.osl" />
-    <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
-    <None Include="sourceCodeDocs\globalsNodeAttributes.txt" />
-    <None Include="sourceCodeDocs\materials.txt" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaLight.xml" />
@@ -504,9 +500,11 @@
     <Xml Include="..\mtco_devmodule\plug-ins\coronaSpecular.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaSurface.xml" />
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaVolume.xml" />
+    <Xml Include="..\mtco_devmodule\resources\CoronaRenderer.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\utils.txt" />
+    <Text Include="..\mtco_devmodule\resources\releaseNotes.txt" />
+    <Text Include="..\mtco_devmodule\resources\shaderDefinitions.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

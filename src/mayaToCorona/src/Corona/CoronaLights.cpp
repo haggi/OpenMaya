@@ -237,6 +237,7 @@ void CoronaRenderer::defineLights()
 				{
 					data.emission.excluded.nodes.push(excludedObj.get());
 				}
+				data.emission.disableSampling = false;
 
 				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);

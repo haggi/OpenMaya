@@ -194,7 +194,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                                 self.addRenderGlobalsUIElement(attName='bgColor', uiType='color', displayName='Background Color', default='0.4:0.4:1.0', uiDict=uiDict)
                         with pm.frameLayout(label="Physical Sky", collapsable=True, collapse=False) as physSkyFrame:
                             with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                                self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
                                 self.addRenderGlobalsUIElement(attName = 'sunSizeMulti', uiType = 'float', displayName = 'Sun Size Multiplier', default='1.0', uiDict=uiDict)
                                 pm.separator()
                                 self.addRenderGlobalsUIElement(attName = 'pSkyModel', uiType = 'enum', displayName = 'Sky Model', default='0', data='Preetham:Rawafake:Hosek', uiDict=uiDict, callback=self.CoronaRendererUpdateTab)
@@ -215,6 +214,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         uiDict['physSkyFrame'] = physSkyFrame
                         uiDict['physSkyPreetham'] = physSkyPreetham
                         uiDict['physSkyRawafake'] = physSkyRawafake
+                        self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
                         uiDict['globalVolumeText'] = pm.textFieldGrp(label = "Global Volume", editable=False)
                         uiDict['globalVolumePopUp'] = pm.popupMenu(button=1)
                         self.updateGlobalVolume()

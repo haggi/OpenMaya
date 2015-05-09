@@ -155,7 +155,7 @@ void mtco_SwatchRendererInterface::renderSwatch()
 	c->settings = new Settings();
 
 	//Corona::ConfParser parser;
-	//Corona::String resPath = (getRendererHome() + "ressources/").asChar();
+	//Corona::String resPath = (getRendererHome() + "resources/").asChar();
 	//Corona::String defPath = "Config-" + Corona::toStr(Corona::PropertyDescriptor::descriptorsHash()) + ".conf";
 	//parser.parseFile(resPath + defPath, c->settings, Corona::ConfParser::CREATE_IF_NONEXISTENT);
 

@@ -115,7 +115,10 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 				MPlug shaderOverride = setFn.findPlug("mtco_mtlOverride");
 				if (!shaderOverride.isNull())
 				{
-					surfaceShader = getConnectedInNode(shaderOverride);
+
+					MObject connectedObject = getConnectedInNode(shaderOverride);
+					if (connectedObject != MObject::kNullObj)
+						surfaceShader = connectedObject;
 				}
 			}
 

@@ -18,7 +18,7 @@ class AboutWindow(pm.ui.Window):
         license = versionData[7].split("\r\n")
         with pm.columnLayout('AboutLayout') as StandinLayout:
             with pm.rowColumnLayout('AboutColumnLayout', nc=2, columnWidth=((1, 160), (2, 220)), co=(2, "left", 10)):
-                pm.text(label="mayaToCorna:", align="right")
+                pm.text(label="mayaToCorona:", align="right")
                 pm.text(label=versionData[0], align="left")
                 pm.text(label="Corna version:", align="right")
                 pm.text(label=versionData[1], align="left")

@@ -2,6 +2,7 @@ import pymel.core as pm
 import logging
 import traceback
 import sys
+from getpass import getuser
 
 log = logging.getLogger("ui")
 
@@ -25,6 +26,10 @@ class AECoronaLayeredTemplate(BaseTemplate):
         self.beginScrollLayout()
         self.buildBody(nodeName)
         self.addExtraControls("ExtraControls")
+        if getuser() != "haggi":
+            self.suppress("outColor")
+            self.suppress("materialEntry")
+            self.suppress("materialEntryAmount")
         self.endScrollLayout()
 
     def addLayer(self, *args):
@@ -156,7 +161,7 @@ class AECoronaLayeredTemplate(BaseTemplate):
         log.debug("layersReplace {0}".format(attribute))
         pm.setUITemplate("attributeEditorTemplate", pushTemplate=True)
         materialEntries = self.thisNode.materialEntryMtl.numElements()
-        print "layersReplace: node has ", self.thisNode.materialEntryMtl.numElements(), "layers"
+        #print "layersReplace: node has ", self.thisNode.materialEntryMtl.numElements(), "layers"
         if self.layersUi is not None:
             pm.deleteUI(self.layersUi)
         with pm.columnLayout(adj=True, parent=self.uiParent) as self.layersUi:

@@ -28,6 +28,7 @@
 
 #include "shaders/TestShader.h"
 #include "world.h"
+#include "Version.h"
 
 #if MAYA_API_VERSION >= 201600
 #include "mtco_common/mtco_mayaRenderer.h"
@@ -64,29 +65,27 @@ static const MString CoronaRaytypeFullClassification("shader/surface:corona/mate
 
 static const MString CoronaLayeredRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaLayeredDrawDBClassification("drawdb/shader/surface/CoronaLayered");
-static const MString CoronaLayeredFullClassification("shader/surface:corona/material:" + CoronaLayeredDrawDBClassification);
+static const MString CoronaLayeredFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaLayeredDrawDBClassification);
 
 static const MString TestShaderClassification("shader/surface:");
 
 static bool licenseChecked = false;
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.40"
+//#define VERSION "0.40"
 
 MStatus initializePlugin( MObject obj )
 {
-	std::string oiio = OIIO_VERSION_STRING;
-	std::string oslVersion = OSL_LIBRARY_VERSION_STRING;
-	std::string boostVersion = BOOST_LIB_VERSION;
-	std::string openExrVersion = OPENEXR_VERSION_STRING;
-	MGlobal::displayInfo(MString("MayaToCorona version: ") + MString(VERSION));
-	MGlobal::displayInfo(MString("OIIO ") + oiio.c_str());
-	MGlobal::displayInfo(MString("OSL ") + oslVersion.c_str());
-	MGlobal::displayInfo(MString("BOOST ") + boostVersion.c_str());
-	MGlobal::displayInfo(MString("OpenEXR ") + openExrVersion.c_str());
+	std::vector<std::string> versionStrings = getFullVersionString();
+	MGlobal::displayInfo(MString("MayaToCorona version: ") + versionStrings[0].c_str());
+	MGlobal::displayInfo(MString("Corona Core: ") + +versionStrings[1].c_str());
+	MGlobal::displayInfo(MString("OIIO ") + +versionStrings[2].c_str());
+	MGlobal::displayInfo(MString("OSL ") + +versionStrings[3].c_str());
+	MGlobal::displayInfo(MString("BOOST ") + +versionStrings[4].c_str());
+	MGlobal::displayInfo(MString("OpenEXR ") + +versionStrings[5].c_str());
 
 	MStatus   status;
-	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
+	MFnPlugin plugin(obj, VENDOR, versionStrings[0].c_str(), "Any");
 
 #ifdef HAS_OVERRIDE
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaSurfacesDrawDBClassification, CoronaSurfacesRegistrantId, CoronaSurfaceOverride::creator));
