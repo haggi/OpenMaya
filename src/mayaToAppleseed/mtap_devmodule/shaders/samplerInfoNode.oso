@@ -1,0 +1,30 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader samplerInfo
+oparam	vector	pointWorld	0 0 0 		 %read{2147483647,-1} %write{0,0}
+oparam	vector	normalCamera	0 0 0 		 %read{2147483647,-1} %write{2,2}
+oparam	vector	normalWorld	0 0 0 		 %read{2147483647,-1} %write{1,1}
+oparam	vector	uvCoord	0 0 0 		 %read{2147483647,-1} %write{3,4}
+global	point	P	 %read{0,0} %write{2147483647,-1}
+global	normal	N	 %read{1,2} %write{2147483647,-1}
+global	float	u	 %read{3,3} %write{2147483647,-1}
+global	float	v	 %read{4,4} %write{2147483647,-1}
+const	int	$const1	0		 %read{3,3} %write{2147483647,-1}
+const	int	$const2	1		 %read{4,4} %write{2147483647,-1}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl:5
+# 	normalWorld = N;
+	assign		pointWorld P 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl"} %line{5} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl:6
+# 	normalCamera = N;
+	assign		normalWorld N 	%line{6} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl:7
+# 	uvCoord[0] = u;
+	assign		normalCamera N 	%line{7} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl:8
+# 	uvCoord[1] = v;
+	compassign	uvCoord $const1 u 	%line{8} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\samplerInfoNode.osl:9
+# }
+	compassign	uvCoord $const2 v 	%line{9} %argrw{"wrr"}
+	end

@@ -1,0 +1,4 @@
+shader place3dTexture(matrix inMatrix = 0, output matrix worldInverseMatrix = 0)
+{
+	worldInverseMatrix = 1.0/inMatrix;
+}

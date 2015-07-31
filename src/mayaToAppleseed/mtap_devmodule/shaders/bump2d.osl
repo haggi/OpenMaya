@@ -1,0 +1,21 @@
+shader bump2d (float bumpValue = 0, float bumpDepth = 1.0, int bumpInterp = 0, vector normalCamera = N, vector normalMap = vector(0,0,0),output vector outNormal = 1)
+{
+	normal dNormal = normalCamera;
+	
+	if( bumpInterp > 0)
+	{
+		if( isconnected(normalMap) )
+		{
+			dNormal[0] = normalMap[0];
+			dNormal[1] = normalMap[1];
+			dNormal[2] = normalMap[2];
+		}
+	}
+
+	if( bumpInterp == 0)
+	{
+		dNormal = (bumpValue * bumpDepth);
+	}
+	outNormal = dNormal;
+}
+

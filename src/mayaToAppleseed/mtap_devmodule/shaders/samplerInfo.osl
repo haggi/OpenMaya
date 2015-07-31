@@ -1,0 +1,14 @@
+
+// I added some more infos than we can find in maya sampler node. Simply add the output attribute and connect it.
+
+shader samplerInfo ( output vector pointWorld = 0, output vector normalCamera = 0, output vector normalWorld = 0, output vector uvCoord=0, output vector outDPdu=0, output vector outDPdv = 0, output float facingRatio = 0.0)
+{
+	pointWorld = P;
+	normalWorld = N;
+	normalCamera = N;
+	uvCoord[0] = u;
+	uvCoord[1] = v;
+	outDPdu = dPdu;
+	outDPdv = dPdv;
+	facingRatio = abs(dot(-I, N));
+}

@@ -1,0 +1,4 @@
+shader clamp(vector inMin=0, vector inMax=0, vector input=0, output vector outOutput=0)
+{
+	outOutput = clamp(input, inMin, inMax);
+}

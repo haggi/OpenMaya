@@ -1,0 +1,112 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.2dev
+surface testBG
+global	vector	I	%read{0,0} %write{2147483647,-1} %derivs
+global	closure color	Ci	%read{2147483647,-1} %write{28,28}
+local	float	___315_theta	%read{8,8} %write{4,4} %derivs
+local	float	___315_phi	%read{9,9} %write{7,7} %derivs
+local	vector	___315_uvw	%read{10,10} %write{8,9} %derivs
+local	vector	___316_angles	%read{11,12} %write{10,10} %derivs
+local	vector	___316_uvw	%read{20,20} %write{16,19} %derivs
+local	float	___316_theta	%read{18,18} %write{11,11} %derivs
+local	float	___316_phi	%read{14,14} %write{12,12} %derivs
+local	vector	dir	%read{3,6} %write{0,0} %derivs
+local	vector	uvw	%read{21,23} %write{20,20} %derivs
+local	float	s	%read{25,25} %write{22,22} %derivs
+local	float	t	%read{25,25} %write{24,24} %derivs
+local	color	C	%read{27,27} %write{25,25}
+const	string	$const1	"angles_to_unit_square"		%read{1,1} %write{2147483647,-1}
+const	string	$const2	"unit_vector_to_angles"		%read{2,2} %write{2147483647,-1}
+const	int	$const3	1		%read{3,25} %write{2147483647,-1}
+temp	float	$tmp1	%read{4,4} %write{3,3} %derivs
+const	int	$const4	2		%read{5,5} %write{2147483647,-1}
+temp	float	$tmp2	%read{7,7} %write{5,5} %derivs
+const	int	$const5	0		%read{6,21} %write{2147483647,-1}
+temp	float	$tmp3	%read{7,7} %write{6,6} %derivs
+const	float	$const6	0.5		%read{13,13} %write{2147483647,-1}
+const	float	$const7	3.1415927		%read{13,17} %write{2147483647,-1}
+temp	float	$tmp4	%read{15,15} %write{13,13} %derivs
+temp	float	$tmp5	%read{15,15} %write{14,14} %derivs
+temp	float	$tmp6	%read{16,16} %write{15,15} %derivs
+const	float	$const8	1		%read{17,17} %write{2147483647,-1}
+temp	float	$tmp7	%read{18,18} %write{17,17} %derivs
+temp	float	$tmp8	%read{19,19} %write{18,18} %derivs
+temp	float	$tmp9	%read{22,22} %write{21,21} %derivs
+const	float	$const10	10		%read{22,24} %write{2147483647,-1}
+temp	float	$tmp10	%read{24,24} %write{23,23} %derivs
+const	string	$const11	"C:/daten/3dprojects/mayaToAppleseed/sourceimages/06-Tatami_Room_B_8k.jpg"		%read{25,25} %write{2147483647,-1}
+const	string	$const12	"wrap"		%read{25,25} %write{2147483647,-1}
+const	string	$const13	"periodic"		%read{25,25} %write{2147483647,-1}
+const	string	$const14	"interp"		%read{25,25} %write{2147483647,-1}
+const	string	$const15	"cubit"		%read{25,25} %write{2147483647,-1}
+const	string	$const16	"width"		%read{25,25} %write{2147483647,-1}
+const	string	$const17	"blur"		%read{25,25} %write{2147483647,-1}
+const	float	$const18	0.1		%read{25,25} %write{2147483647,-1}
+temp	closure color	$tmp11	%read{28,28} %write{26,26}
+const	string	$const19	"background"		%read{26,26} %write{2147483647,-1}
+temp	color	$tmp12	%read{28,28} %write{27,27}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:33
+# 	vector uvw = angles_to_unit_square(dir); 
+	normalize	dir I 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl"} %line{33} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:34
+# 	float s = uvw[0] * 10;
+	functioncall	$const1 21 	%line{34} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:20
+# 	vector uvw;
+	functioncall	$const2 11 	%line{20} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:7
+#     float phi = atan2(dir[2], dir[0]);
+	compref		$tmp1 dir $const3 	%line{7} %argrw{"wrr"}
+	acos		___315_theta $tmp1 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:8
+# 	
+	compref		$tmp2 dir $const4 	%line{8} %argrw{"wrr"}
+	compref		$tmp3 dir $const5 	%argrw{"wrr"}
+	atan2		___315_phi $tmp2 $tmp3 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:11
+# 	uvw[1] = phi;
+	compassign	___315_uvw $const5 ___315_theta 	%line{11} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:12
+# 	
+	compassign	___315_uvw $const3 ___315_phi 	%line{12} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:14
+# }
+	assign		___316_angles ___315_uvw 	%line{14} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:22
+# 	float phi = angles[1];
+	compref		___316_theta ___316_angles $const5 	%line{22} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:23
+# 
+	compref		___316_phi ___316_angles $const3 	%line{23} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:25
+#     uvw[1] = (1.0 / M_PI) * theta;
+	div		$tmp4 $const6 $const7 	%line{25} %argrw{"wrr"}
+	add		$tmp5 ___316_phi $const7 	%argrw{"wrr"}
+	mul		$tmp6 $tmp4 $tmp5 	%argrw{"wrr"}
+	compassign	___316_uvw $const5 $tmp6 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:26
+# 	
+	div		$tmp7 $const8 $const7 	%line{26} %argrw{"wrr"}
+	mul		$tmp8 $tmp7 ___316_theta 	%argrw{"wrr"}
+	compassign	___316_uvw $const3 $tmp8 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:28
+# }
+	assign		uvw ___316_uvw 	%line{28} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:35
+# 	float t = uvw[1] * 10;
+	compref		$tmp9 uvw $const5 	%line{35} %argrw{"wrr"}
+	mul		s $tmp9 $const10 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:36
+#     //Ci = color(fabs(dir[0]), fabs(dir[1]), fabs(dir[2])) * background();
+	compref		$tmp10 uvw $const3 	%line{36} %argrw{"wrr"}
+	mul		t $tmp10 $const10 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:38
+#     Ci = color(C) * background();
+	texture		C $const11 s t $const12 $const13 $const14 $const15 $const16 $const3 $const17 $const18 	%line{38} %argrw{"wrrrrrrrrrrr"} %argderivs{2,3}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\testBG.osl:39
+#     //Ci = color(uvw[0], uvw[1], 0) * background();
+	closure		$tmp11 $const19 	%line{39} %argrw{"wr"}
+	assign		$tmp12 C 	%argrw{"wr"}
+	mul		Ci $tmp11 $tmp12 	%argrw{"wrr"}
+	end

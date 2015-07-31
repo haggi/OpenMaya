@@ -1,0 +1,40 @@
+shader condition( float firstTerm = 0, float secondTerm = 0, int operation = 0, vector colorIfTrue = 0, vector colorIfFalse = 0, output vector outColor= 0)
+{
+	outColor = colorIfFalse;
+	if( operation == 0)
+	{
+		if( firstTerm == secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+	if( operation == 1)
+	{
+		if( firstTerm != secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+	if( operation == 2)
+	{
+		if( firstTerm > secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+	if( operation == 3)
+	{
+		if( firstTerm >= secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+	if( operation == 4)
+	{
+		if( firstTerm < secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+	if( operation == 5)
+	{
+		if( firstTerm <= secondTerm )
+			outColor = colorIfTrue;
+		return;
+	}
+}

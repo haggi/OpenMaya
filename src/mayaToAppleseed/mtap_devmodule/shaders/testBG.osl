@@ -1,0 +1,40 @@
+
+
+vector unit_vector_to_angles( vector dir)
+{
+
+    float theta = acos(dir[1]);
+    float phi = atan2(dir[2], dir[0]);
+	
+	vector uvw;
+	uvw[0] = theta;
+	uvw[1] = phi;
+	
+	return uvw;
+}
+
+
+vector angles_to_unit_square( vector dir)
+{
+	vector angles = unit_vector_to_angles(dir);
+	vector uvw;
+	float theta = angles[0];
+	float phi = angles[1];
+
+    uvw[0] = (0.5 / M_PI) * (phi + M_PI);
+    uvw[1] = (1.0 / M_PI) * theta;
+	
+	return uvw;
+}
+
+surface testBG()
+{
+    vector dir = normalize(I);
+	vector uvw = angles_to_unit_square(dir); 
+	float s = uvw[0] * 10;
+	float t = uvw[1] * 10;
+    //Ci = color(fabs(dir[0]), fabs(dir[1]), fabs(dir[2])) * background();
+	color C = texture("C:/daten/3dprojects/mayaToAppleseed/sourceimages/06-Tatami_Room_B_8k.jpg", s, t, "wrap", "periodic", "interp", "cubit", "width", 1, "blur", .1);	
+    Ci = color(C) * background();
+    //Ci = color(uvw[0], uvw[1], 0) * background();
+}

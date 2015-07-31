@@ -1,0 +1,42 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader solidFractal
+param	matrix	placementMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{1,3} %write{2147483647,-1}
+param	float	exposure	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorGain	1 1 1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorOffset	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	alphaIsLuminance	1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	invert	0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	vector	outColor	0 0 0 		 %read{2147483647,-1} %write{6,6}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{2147483647,-1}
+global	point	P	 %read{4,4} %write{2147483647,-1}
+local	matrix	m	 %read{4,4} %write{0,3}
+local	point	PP	 %read{5,5} %write{4,4}
+local	color	nc	 %read{6,6} %write{5,5}
+const	int	$const1	1		 %read{0,0} %write{2147483647,-1}
+temp	int	$tmp1	 %read{2,2} %write{1,1}
+const	string	$const2	"noise"		 %read{5,5} %write{2147483647,-1}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:6
+# 	if( isconnected(placementMatrix))
+	assign		m $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl"} %line{6} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:7
+# 	{
+	isconnected	$tmp1 placementMatrix 	%line{7} %argrw{"wr"}
+	if		$tmp1 4 4 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:9
+# 	}
+	assign		m placementMatrix 	%line{9} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:12
+# 	color nc = noise("noise", PP);
+	transform	PP m P 	%line{12} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:13
+# 	outColor = vector(nc);
+	noise		nc $const2 PP 	%line{13} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\solidFractal.osl:14
+# }
+	assign		outColor nc 	%line{14} %argrw{"wr"}
+	end
