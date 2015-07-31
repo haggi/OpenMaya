@@ -82,7 +82,6 @@ void CoronaRenderer::defineLights()
 
 				Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
 				SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
-
 				Corona::Rgb avgColor(1, 1, 1);
 				if (sky != nullptr)
 				{
@@ -99,7 +98,12 @@ void CoronaRenderer::defineLights()
 				sun.visibleRefract = true;
 				sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
 				this->context.scene->getSun() = sun;
-
+				sky->initSky();
+				if (sky != nullptr)
+				{
+					avgColor = sky->sc();
+					this->context.scene->getSun().color = sColor * avgColor;
+				}
 			}
 		}
 	}
@@ -238,6 +242,7 @@ void CoronaRenderer::defineLights()
 					data.emission.excluded.nodes.push(excludedObj.get());
 				}
 				data.emission.disableSampling = false;
+				//data.emission.useTwoSidedEmission = true;
 
 				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
@@ -245,6 +250,7 @@ void CoronaRenderer::defineLights()
 				ms.visibility.direct = visible;
 				ms.visibility.reflect = visible;
 				ms.visibility.refract = visible;
+				
 				obj->instance->addMaterial(ms);
 			}
 		}

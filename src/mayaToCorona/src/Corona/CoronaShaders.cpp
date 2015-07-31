@@ -10,8 +10,11 @@
 #include "osl/oslUtils.h"
 #include "../coronaOSL/coronaOSLMapUtil.h"
 #include "CoronaUtils.h"
+#include "CoronaMap.h"
 #include "world.h"
 #include "renderGlobals.h"
+
+#include "CoronaMap.h"
 
 static Logging logger;
 
@@ -224,13 +227,16 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	if (depFn.typeName() == "CoronaSurface")
 	{
 		Corona::NativeMtlData data;
+
+		//mtco_MapLoader loader;
+		//Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap("C:/daten/3dprojects/mayaToCorona/sourceimages/redBlue.exr");
+		//data.components.diffuse = Corona::ColorOrMap(Corona::Rgb(0, 1, 0), texmap);
 		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network);
 		data.components.translucency = defineAttribute(MString("translucency"), depFn, network);
 		data.translucencyLevel = defineAttribute(MString("translucencyFraction"), depFn, network);
 		//data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network);
 		data.components.reflect = defineAttribute(MString("reflectivity"), depFn, network);
 		const Corona::BsdfLobeType bsdfType[] = { Corona::BSDF_ASHIKHMIN, Corona::BSDF_PHONG, Corona::BSDF_WARD };
-		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
 		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
 		data.reflect.fresnelIor = defineAttribute(MString("fresnelIor"), depFn, network);
 		data.reflect.anisotropy = defineAttribute(MString("anisotropy"), depFn, network);
@@ -381,6 +387,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		Corona::NativeMtlData data;
 		// ---- emission ----
 		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
+		data.emission.useTwoSidedEmission = getBoolAttr("doubleSidedEmission", depFn, false);
+		//data.emission.color.setMap(new SidedMap);
+		data.emission.emissionGlossiness = getFloatAttr("emissionGlossiness", depFn, 0.0f);
+		//data.components.diffuse.setMap(new SidedMap);
 		//bool disableSampling = false;
 		//getBool("emissionDisableSampling", depFn, disableSampling);
 		data.opacity = defineAttribute(MString("opacity"), depFn, network);
@@ -417,11 +427,12 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			getBool("emissionSharpnessFake", depFn, sharpnessFake);
 			data.emission.sharpnessFake = sharpnessFake;
 			//MVector point(0, 0, 0);
-			MMatrix centerM = obj->transformMatrices[0];
+			MMatrix c = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
+			MMatrix centerM = obj->transformMatrices[0] * c;
 			MPoint p(centerM[3][0], centerM[3][1], centerM[3][2]);
 			//getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
 			data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(p.x, p.y, p.z));
-
+			
 			// ---- ies profiles -----
 			MStatus stat;
 			MPlug iesPlug = depFn.findPlug("iesProfile", &stat);

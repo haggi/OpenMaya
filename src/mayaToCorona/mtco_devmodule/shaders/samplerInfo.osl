@@ -10,5 +10,5 @@ shader samplerInfo ( output vector pointWorld = 0, output vector normalCamera = 
 	uvCoord[1] = v;
 	outDPdu = dPdu;
 	outDPdv = dPdv;
-	facingRatio = abs(dot(I, N));
+	facingRatio = abs(dot(-I, N));
 }

@@ -33,7 +33,7 @@ namespace MayaTo{
 		this->addObjectPtr("oslRenderer", r);
 
 		OSL::OSLShadingNetworkRenderer *swatchRenderer = new OSL::OSLShadingNetworkRenderer();
-		this->addObjectPtr("oslSwatchRenderer", r);
+		this->addObjectPtr("oslSwatchRenderer", swatchRenderer);
 
 		std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
 		Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());

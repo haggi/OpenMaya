@@ -295,7 +295,8 @@ Corona::Dir OSLMap::evalBump(const Corona::IShadeContext& context, Corona::Textu
 
 void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output) 
 {
-        STOP; //currently not supported
+	output.resize(512, 512);
+	STOP; //currently not supported
 }
 
 OSLMap::~OSLMap()

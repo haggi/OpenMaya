@@ -132,6 +132,7 @@ public:
 			if( ctx[i] != nullptr )
 			{
 				shadingsys->release_context(ctx[i]);
+				ctx[i] = nullptr;
 			}
 
 			if( thread_info[i] != nullptr )

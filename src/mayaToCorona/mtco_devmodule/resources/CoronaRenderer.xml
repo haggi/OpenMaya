@@ -26,15 +26,15 @@
         "t" the parameter types, used in help description.
         "h" the help description.
 -->
-<renderer desc="Mantra renderer">
-  <melheader s='string $opt=""; string $rl=""; string $rp=""; float $resize=-1.; loadPlugin mayatomantra;'/>
-  <meltrailer s='setMayaSoftwareLayers($rl, $rp); setImageSizePercent($resize);mayaBatchRenderProcedure(0, "", "", "Mantra", $opt); '/>
+<renderer desc="Corona renderer">
+  <melheader s='string $opt=""; string $rl=""; string $rp=""; float $resize=-1.; loadPlugin mayaToCorona;'/>
+  <meltrailer s='setMayaSoftwareLayers($rl, $rp); setImageSizePercent($resize);mayaBatchRenderProcedure(0, "", "", "Corona", $opt); '/>
   <sep/>
   <!-- ______________________________________________________________ -->
   <sep desc="General purpose flags:"/>
   <mel n="rd" p="1" s='workspace -rt "images" "%1";workspace -rt "depth" "%1";' t="path" h="Directory in which to store image files"/>
   <attrString n="im" s="defaultRenderGlobals.imageFilePrefix" t="filename" h="Image file output name"/>
-  <attr n="v" s="mayaToMantraGlobals.translatorVerbosity" t="int" h="Verbosity level (0-6)"/>
+  <attr n="v" s="mayaToCorona.translatorVerbosity" t="int" h="Verbosity level (0-6)"/>
   <sep/>
   <!-- ______________________________________________________________ -->
   <sep desc="Frame numbering options"/>

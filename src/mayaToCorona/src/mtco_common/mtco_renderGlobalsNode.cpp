@@ -144,7 +144,7 @@ MObject MayaToCoronaGlobals::dumpAndResume;
 MObject MayaToCoronaGlobals::dumpExrFile;
 MObject MayaToCoronaGlobals::uhdCacheType;
 MObject MayaToCoronaGlobals::globalVolume;
-//	------------- automatically created attributes end ----------- // 
+MObject MayaToCoronaGlobals::useCoronaVFB;
 
 
 MayaToCoronaGlobals::MayaToCoronaGlobals()
@@ -183,7 +183,8 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	MStatus stat = MStatus::kSuccess;
 
-//	------------- automatically created attributes start ----------- // 
+	useCoronaVFB = nAttr.create("useCoronaVFB", "useCoronaVFB", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(useCoronaVFB));
 
 	exportOnly = nAttr.create("exportOnly", "exportOnly", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( exportOnly ));

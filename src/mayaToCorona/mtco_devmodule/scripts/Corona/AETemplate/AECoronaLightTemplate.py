@@ -33,6 +33,7 @@ class AECoronaLightTemplate(BaseTemplate):
         self.addControl("opacity", label="Opacity")
         self.addControl("emitLight", label="Emit Light")
         self.addControl("emissionGlossyness", label="Directionality")
+        self.addControl("doubleSidedEmission", label="Double Sided")
         self.addSeparator()
         self.addControl("iesProfile", label="IES Profile")
         self.addControl("emissionSharpnessFake", label="Sharp Patterns")

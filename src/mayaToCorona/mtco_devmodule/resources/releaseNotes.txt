@@ -1,7 +1,15 @@
+release 0.42
+- fixed render stamp visibility 
+- added light directionality
+- added mesh/area light double sided option
+- fixed some physical sky problems
+
 release 0.41
 - fixed a problem with esc key which caused a premature stop of the next rendering.
 - fixed set shading override if no shader is connected
 - added bump map attribute to corona surface shader #142
+- reimplemented batch rendering
+- added highly experimental CoronaVFB
 
 release 0.40
 - fixed broken swatches rendering (due to data reusage)

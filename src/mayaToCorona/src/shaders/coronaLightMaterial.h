@@ -57,6 +57,7 @@ protected:
 	static    MObject volumeSSSMode;
 	static    MObject emissionGlossyness;
 	static    MObject emitLight;
+	static    MObject doubleSidedEmission;
 	
 	static    MObject iesProfile;
 

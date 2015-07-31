@@ -11,7 +11,7 @@
 #define VENDOR "haggis vfx & animation"
 
 #define MTXX_VERSION_MAJOR 0
-#define MTXX_VERSION_MINOR 41
+#define MTXX_VERSION_MINOR 42
 #define MTXX_VERSION_PATCH 0
 #define MTXX_VERSION_RELEASE_TYPE dev
 
@@ -27,9 +27,10 @@ inline std::vector<std::string> getFullVersionString()
 {
 	std::vector<std::string> versionData;
 	Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
+	Corona::String libVersion = Corona::ICore::getLibVersion();
 	std::string license = li.getDescription();
 	versionData.push_back(MTXX_VERSION_STRING);
-	versionData.push_back(CORONA_BUILD_NAME);
+	versionData.push_back(libVersion.cStr());
 	versionData.push_back(OIIO_VERSION_STRING);
 	versionData.push_back(OSL_LIBRARY_VERSION_STRING);
 	versionData.push_back(BOOST_LIB_VERSION);

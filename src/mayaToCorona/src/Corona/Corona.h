@@ -14,6 +14,7 @@
 #include "shadingtools/material.h"
 #include "threads/queue.h"
 #include "utilities/logging.h"
+#include "CoronaVFB.h"
 
 class mtco_MayaScene;
 class mtco_MayaObject;
@@ -130,6 +131,7 @@ public:
 
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	Context context;
+	CornoaVfbCallbacks vfbCallbacks;
 
 	CoronaRenderer();
 	virtual ~CoronaRenderer();

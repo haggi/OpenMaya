@@ -165,10 +165,10 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 	e.type = EventQueue::Event::INITRENDER;
 	theRenderEventQueue()->push(e);
 	
-	//MGlobal::displayInfo("mglobal:displayInfo mayaToCorona...");
-	//std::cout << "std::cout test mayaToCorona..." << std::endl;
-	//std::cout.flush();
-	//MGlobal::executeCommand(MString("trace ") + "\"trace - test mayaToCorona...\"", true);
-	
+	//
+	if (MGlobal::mayaState() == MGlobal::kBatch)
+	{
+		RenderQueueWorker::startRenderQueueWorker();
+	}
 	return MStatus::kSuccess;
 }

@@ -151,6 +151,7 @@ static    MObject dumpAndResume;
 static    MObject dumpExrFile;
 static    MObject uhdCacheType;
 static    MObject globalVolume;
+static    MObject useCoronaVFB;
 //	------------- automatically created attributes end ----------- // 
 
 };

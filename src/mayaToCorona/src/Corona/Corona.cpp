@@ -123,6 +123,8 @@ void CoronaRenderer::render()
 		return;
 	}
 
+	context.scene = context.core->createScene();
+
 	//createTestScene();
 	//OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
 
@@ -170,6 +172,20 @@ void CoronaRenderer::render()
 	std::string statsString = tsystem->getstats(3);
 	Logging::debug(statsString.c_str());
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
+
+	// it is simpler to remove the data completly than to update single elements at the moment.
+	if (context.scene != nullptr)
+	{
+		context.core->destroyScene(context.scene);
+		context.scene = nullptr;
+	}
+
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	if (gFn.findPlug("useCoronaVFB").asBool())
+		if (MGlobal::mayaState() != MGlobal::kBatch)
+			context.core->getWxVfb().renderFinished();
+
 }
 
 // init all data which will be used during a rendering.
@@ -177,7 +193,7 @@ void CoronaRenderer::render()
 void CoronaRenderer::initializeRenderer()
 {
 	Logging::debug("CoronaRenderer::initializeRenderer()");
-
+	MFnDependencyNode gFn(getRenderGlobalsNode());
 	clearDataList(); // clear nativeMtlData
 
 	if (MGlobal::mayaState() != MGlobal::kBatch)
@@ -222,9 +238,12 @@ void CoronaRenderer::initializeRenderer()
 
 	context.settings = new Settings();
 	context.core = ICore::createInstance();
-	context.scene = context.core->createScene();
 	context.logger = new mtco_Logger(context.core);
 	context.colorMappingData = new Corona::ColorMappingData;
+	
+	if (gFn.findPlug("useCoronaVFB").asBool())
+		if (MGlobal::mayaState() != MGlobal::kBatch)
+			vfbCallbacks.core = context.core;
 
 	ConfParser parser;
 	Corona::String resPath = (getRendererHome() + "resources/").asChar();
@@ -237,6 +256,10 @@ void CoronaRenderer::initializeRenderer()
 	context.fb = context.core->createFb();
 	context.fb->initFb(context.settings, context.renderPasses);
 	context.core->sanityCheck(context.settings);
+
+	if (gFn.findPlug("useCoronaVFB").asBool())
+		if (MGlobal::mayaState() != MGlobal::kBatch)
+			context.core->getWxVfb().renderStarted(context.fb, &vfbCallbacks, IWxVfb::EnviroConfig());
 
 	// this can be extracted and placed in a button function in the render globals
 	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
@@ -270,11 +293,15 @@ void CoronaRenderer::initializeRenderer()
 void CoronaRenderer::unInitializeRenderer()
 {
 	Logging::debug("CoronaRenderer::unInitializeRenderer()");
+
+	//context.core->getWxVfb().showWindow(false);
+
 	if (context.scene != nullptr)
 	{
 		context.core->destroyScene(context.scene);
 		context.scene = nullptr;
 	}
+
 	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::RTYPENONE);
 }
 

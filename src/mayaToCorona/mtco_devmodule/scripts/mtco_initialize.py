@@ -36,7 +36,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pass
          
     def createRendererMenu(self):
-        self.rendererMenu = coronaMenu.CoronaMenu()
+        if not pm.about(batch=True):
+            self.rendererMenu = coronaMenu.CoronaMenu()
     
     def removeRendererMenu(self):
         if self.rendererMenu is not None:
@@ -232,6 +233,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Dump and Resume', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Dump Exr File', default='""', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'useCoronaVFB', uiType = 'bool', displayName = 'Use Corona VFB', uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Renderstamp', default='true', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_inFile', uiType = 'bool', displayName = 'Save File with Stamp', default='false', uiDict=uiDict)

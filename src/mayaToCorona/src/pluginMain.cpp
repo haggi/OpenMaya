@@ -1,17 +1,16 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
+#include <fstream>
+
 #include <maya/MDrawRegistry.h>
 #include <maya/MSwatchRenderRegister.h>
-
-#include "OpenImageIO/oiioversion.h"
-#include "OSL/oslversion.h"
-#include "boost/version.hpp"
-#include "OpenEXR\OpenExrConfig.h"
+#include <maya/MSceneMessage.h>
 
 #include "CoronaCore/api/Api.h"
 #include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
 #include "utilities/tools.h"
+#include "utilities/logging.h"
 
 #include "threads/renderQueueWorker.h"
 #include "swatchesRenderer\swatchRenderer.h"
@@ -72,7 +71,6 @@ static const MString TestShaderClassification("shader/surface:");
 static bool licenseChecked = false;
 
 #define VENDOR "haggis vfx & animation"
-//#define VERSION "0.40"
 
 MStatus initializePlugin( MObject obj )
 {
@@ -84,7 +82,7 @@ MStatus initializePlugin( MObject obj )
 	MGlobal::displayInfo(MString("BOOST ") + +versionStrings[4].c_str());
 	MGlobal::displayInfo(MString("OpenEXR ") + +versionStrings[5].c_str());
 
-	MStatus   status;
+	MStatus   status = MS::kSuccess;
 	MFnPlugin plugin(obj, VENDOR, versionStrings[0].c_str(), "Any");
 
 #ifdef HAS_OVERRIDE
@@ -135,7 +133,6 @@ MStatus initializePlugin( MObject obj )
 	}
 
 	MString cmd = MString("import mtco_initialize as minit; minit.initRenderer()");
-	MGlobal::displayInfo("try to register...");
 	status = MGlobal::executePythonCommand(cmd, true, false);
 	if(!status)
 	{
@@ -152,7 +149,6 @@ MStatus initializePlugin( MObject obj )
 #endif
 
 	Corona::ICore::initLib(Corona::APP_MAYA);
-
 	if (!licenseChecked)
 	{
 		Corona::LicenseInfo li = Corona::ICore::getLicenseInfo();
@@ -175,7 +171,7 @@ MStatus initializePlugin( MObject obj )
 
 MStatus uninitializePlugin( MObject obj)
 {
-	MStatus   status;
+	MStatus   status = MS::kSuccess;
 	MFnPlugin plugin( obj );
 
 	MayaTo::deleteWorld();

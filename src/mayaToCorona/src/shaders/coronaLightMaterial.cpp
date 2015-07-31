@@ -114,6 +114,7 @@ MObject CoronaLight::volumeSSSMode;
 MObject CoronaLight::emissionGlossyness;
 MObject CoronaLight::emitLight;
 MObject CoronaLight::iesProfile;
+MObject CoronaLight::doubleSidedEmission;
 
 
 // This node does not need to perform any special actions on creation or
@@ -335,6 +336,10 @@ MStatus CoronaLight::initialize()
 
 	volumeSSSMode = nAttr.create("volumeSSSMode", "volumeSSSMode",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( volumeSSSMode ));
+
+	doubleSidedEmission = nAttr.create("doubleSidedEmission", "doubleSidedEmission", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(doubleSidedEmission));
+	
 
 //---------------------------- automatically created attributes end ------------------------------------
 

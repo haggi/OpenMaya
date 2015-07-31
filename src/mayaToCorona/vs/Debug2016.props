@@ -25,7 +25,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_INCLUDE);..\..\common\cpp;$(OSL)/include;$(OIIO)/include;$(ILM_BASE)/include;$(OPENEXR)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CORONA_ROOT)\include;$(BOOST_ROOT)\include;$(MAYA_INCLUDE);..\..\common\cpp;$(OSL)/include;$(OIIO)/include;$(ILM_BASE)/include;$(OPENEXR)/include</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>

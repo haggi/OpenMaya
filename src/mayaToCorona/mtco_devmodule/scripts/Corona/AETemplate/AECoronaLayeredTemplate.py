@@ -167,13 +167,15 @@ class AECoronaLayeredTemplate(BaseTemplate):
         with pm.columnLayout(adj=True, parent=self.uiParent) as self.layersUi:
             for layerNumber in range(materialEntries):
                 layerIndex = self.thisNode.materialEntryMtl.elementByPhysicalIndex(layerNumber).index()
-                with pm.frameLayout(label="Layer {0}".format(layerNumber), collapsable=True, collapse=False):
+                with pm.frameLayout(label="Layer {0}".format(layerNumber), collapsable=True, collapse=False) as fl:
                     print "create layer", layerNumber
                     with pm.columnLayout(adj=True):
                         attribute = self.thisNode.materialEntryMtl[layerIndex]
-                        tf = pm.textFieldGrp(label="Shader", editable=False)
+                        #tf = pm.textFieldGrp(label="Shader", editable=False)
                         if attribute.isConnected():
-                            tf.setText(attribute.inputs(p=1)[0])
+                            pm.frameLayout(fl, edit=True, label=attribute.inputs(p=1)[0])
+                        #    tf.setText(attribute.inputs(p=1)[0])
+                        
                         pm.attrColorSliderGrp(label="Material", at=attribute)
                         attribute = self.thisNode.materialEntryAmount[layerIndex]
                         pm.attrColorSliderGrp(label="Amount", at=attribute)

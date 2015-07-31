@@ -411,6 +411,10 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\..\common\cpp\world.h" />
+    <ClInclude Include="..\mtco_devmodule\shaders\mayaUtils.h" />
+    <ClInclude Include="..\mtco_devmodule\shaders\noise_utils.h" />
+    <ClInclude Include="..\mtco_devmodule\shaders\oslutil.h" />
+    <ClInclude Include="..\mtco_devmodule\shaders\stdosl.h" />
     <ClInclude Include="..\src\coronaOSL\coronaOSLMapUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -460,6 +464,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaVFB.h" />
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaRenderer.h" />
@@ -483,11 +488,39 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtco_devmodule\resources\mayaStart.bat" />
+    <None Include="..\mtco_devmodule\shaders\blendColors.osl" />
+    <None Include="..\mtco_devmodule\shaders\bulge.osl" />
+    <None Include="..\mtco_devmodule\shaders\bump2d.osl" />
+    <None Include="..\mtco_devmodule\shaders\checker.osl" />
+    <None Include="..\mtco_devmodule\shaders\clamp.osl" />
+    <None Include="..\mtco_devmodule\shaders\colorToFloat.osl" />
+    <None Include="..\mtco_devmodule\shaders\condition.osl" />
     <None Include="..\mtco_devmodule\shaders\constant.osl" />
+    <None Include="..\mtco_devmodule\shaders\contrast.osl" />
     <None Include="..\mtco_devmodule\shaders\CoronaOSL.osl" />
     <None Include="..\mtco_devmodule\shaders\file.osl" />
+    <None Include="..\mtco_devmodule\shaders\floatToColor.osl" />
+    <None Include="..\mtco_devmodule\shaders\floatToVector.osl" />
+    <None Include="..\mtco_devmodule\shaders\gammaCorrect.osl" />
+    <None Include="..\mtco_devmodule\shaders\grid.osl" />
+    <None Include="..\mtco_devmodule\shaders\hsvToRgb.osl" />
+    <None Include="..\mtco_devmodule\shaders\luminance.osl" />
+    <None Include="..\mtco_devmodule\shaders\multiplyDivide.osl" />
+    <None Include="..\mtco_devmodule\shaders\noise.osl" />
+    <None Include="..\mtco_devmodule\shaders\OSLInterface.osl" />
     <None Include="..\mtco_devmodule\shaders\place2dTexture.osl" />
+    <None Include="..\mtco_devmodule\shaders\place3dTexture.osl" />
+    <None Include="..\mtco_devmodule\shaders\projection.osl" />
+    <None Include="..\mtco_devmodule\shaders\ramp.osl" />
+    <None Include="..\mtco_devmodule\shaders\reverse.osl" />
+    <None Include="..\mtco_devmodule\shaders\rgbToHsv.osl" />
+    <None Include="..\mtco_devmodule\shaders\samplerInfo.osl" />
+    <None Include="..\mtco_devmodule\shaders\samplerInfoNode.osl" />
+    <None Include="..\mtco_devmodule\shaders\setRange.osl" />
+    <None Include="..\mtco_devmodule\shaders\solidFractal.osl" />
     <None Include="..\mtco_devmodule\shaders\test.osl" />
+    <None Include="..\mtco_devmodule\shaders\utilityNodes.osl" />
+    <None Include="..\mtco_devmodule\shaders\vectorToFloat.osl" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\mtco_devmodule\plug-ins\CoronaLight.xml" />

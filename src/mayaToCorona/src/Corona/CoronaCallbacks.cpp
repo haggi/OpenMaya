@@ -11,21 +11,25 @@ static Logging logger;
 
 void CoronaRenderer::framebufferCallback()
 {
-	//MSG msg;
-	//while (PeekMessage(&msg, NULL, 0, 0, TRUE))
-	//{
-	//	TranslateMessage(&msg);
-	//	DispatchMessage(&msg);
-	//}
-
 	MFnDependencyNode depFn(getRenderGlobalsNode());
 	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
 	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
+	MString renderStamp = depFn.findPlug("renderStamp").asString();
+	Corona::String rstamp = renderStamp.asChar();
 
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
 		return;
+
+	if (depFn.findPlug("useCoronaVFB").asBool())
+	{
+		renderer->context.fb->updateRenderStamp(rstamp, true);
+		// force VFB redraw
+		//renderer->context.core->getWxVfb().refresh();
+		return;
+	}
 
 	if (!renderer || !renderGlobals || (renderer->context.fb == nullptr))
 		return;
@@ -33,9 +37,7 @@ void CoronaRenderer::framebufferCallback()
 	if( renderGlobals->exportSceneFile)
 		return;
 
-	Corona::Pixel p = renderer-> context.fb->getImageSize();
-	MString renderStamp = depFn.findPlug("renderStamp").asString();
-	Corona::String rstamp = renderStamp.asChar();
+	Corona::Pixel p = renderer->context.fb->getImageSize();
 
 	if (renderStamp.length() == 0)
 		rstamp = Corona::String("Time: %pt | Passes: %pp | Primitives: %si | Rays/s : %pr");
@@ -59,8 +61,7 @@ void CoronaRenderer::framebufferCallback()
 	RV_PIXEL *pixels = pixelsPtr.get();
 	uint numPixelsInRow = p.x;
 	bool doToneMapping = true;
-	//bool showRenderStamp = getBoolAttr("renderstamp_use", depFn, true);
-	bool showRenderStamp = true;
+	bool showRenderStamp = getBoolAttr("renderstamp_use", depFn, true);
 	Corona::Pixel firstPixelInRow(0, 0);
 	Corona::Rgb *outColors = new Corona::Rgb[numPixelsInRow];
 	float *outAlpha = new float[numPixelsInRow];

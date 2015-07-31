@@ -27,19 +27,6 @@ mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, M
 	this->swatchWidth = imageResolution;
 	this->imageData = (float *)malloc(sizeof(float)* this->swatchWidth * this->swatchWidth * 4);
 	memset(this->imageData, 0, sizeof(float)* this->swatchWidth * this->swatchWidth * 4);
-	//// testing
-	//int index = 0;
-	//for (int y = 0; y < this->swatchWidth; y++)
-	//{
-	//	for (int x = 0; x < this->swatchWidth; x++)
-	//	{
-	//		//int index = y * this->swatchWidth + x;
-	//		this->imageData[index++] = rnd();
-	//		this->imageData[index++] = rnd();
-	//		this->imageData[index++] = rnd();
-	//		this->imageData[index++] = 1.0f;
-	//	}
-	//}
 }
 
 mtco_SwatchRendererInterface::~mtco_SwatchRendererInterface()
@@ -51,15 +38,7 @@ mtco_SwatchRendererInterface::~mtco_SwatchRendererInterface()
 }
 
 void mtco_SwatchRendererInterface::defineSettings()
-{
-	//context.settings->set(Corona::PARAM_IMAGE_WIDTH, this->swatchWidth);
-	//context.settings->set(Corona::PARAM_IMAGE_HEIGHT, this->swatchWidth);
-	//context.settings->set(Corona::PARAM_PROGRESSIVE_TIME_LIMIT, 1000);
-	//context.settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, 3);
-	//context.settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_PROGRESSIVE);
-
-	//context.settings->set(Corona::PARAM_EXPORT_PATH, "C:/daten/3dprojects/mayaToCorona/data/swatch.scn");
-}
+{}
 
 void mtco_SwatchRendererInterface::init()
 {
@@ -167,7 +146,6 @@ void mtco_SwatchRendererInterface::renderSwatch()
 	c->core->setupMtlPreviewScene(config, c->scene, c->settings);
 	c->settings->set(Corona::PARAM_IMAGE_WIDTH, this->swatchWidth);
 	c->settings->set(Corona::PARAM_IMAGE_HEIGHT, this->swatchWidth);
-
 	//defineSettings();
 	c->fb = c->core->createFb();
 	c->fb->initFb(c->settings, c->renderPasses);

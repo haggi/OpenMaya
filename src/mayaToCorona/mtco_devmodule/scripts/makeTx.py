@@ -39,6 +39,7 @@ class FileTexture:
         if subprocess.call(cmd, shell = True) is not 0:
             log.error("Conversion failed")
         else:
+           
             path.path(destFileTmp).rename(self.destFile)
             print "Done"               
     

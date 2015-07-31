@@ -29,29 +29,50 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 {
 	Corona::IGeometryGroup* geom = this->context.scene->addGeomGroup();
     
+    geom->getVertices().push(Corona::Pos(-1, 1, 0));
+    geom->getVertices().push(Corona::Pos( 1, 1, 0));
     geom->getVertices().push(Corona::Pos(-1, -1, 0));
-    geom->getVertices().push(Corona::Pos(-1, 1,  0));
-    geom->getVertices().push(Corona::Pos( 1, 1,  0));
     geom->getVertices().push(Corona::Pos( 1, -1, 0));
 
 
-    geom->getNormals().push(Corona::Dir(0, 1, 0));
-    geom->getMapCoords().push(Corona::Pos(0, 0, 0));
-    geom->getMapCoordIndices().push(0);
-	
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+
+	geom->getMapCoords().push(Corona::Pos(0, 0, 0));
+	geom->getMapCoordIndices().push(0);
+	geom->getMapCoords().push(Corona::Pos(1, 0, 0));
+	geom->getMapCoordIndices().push(1);
+	geom->getMapCoords().push(Corona::Pos(1, 1, 0));
+	geom->getMapCoordIndices().push(2);
+	geom->getMapCoords().push(Corona::Pos(0, 1, 0));
+	geom->getMapCoordIndices().push(3);
+
 	Corona::TriangleData tri;
 	tri.v[0][0] = 0;
 	tri.v[0][1] = 1;
 	tri.v[0][2] = 2;
 	tri.n[0][0] = 0;
-	tri.n[0][1] = 0;
-	tri.n[0][2] = 0;
+	tri.n[0][1] = 1;
+	tri.n[0][2] = 2;
+	tri.t[0] = 0;
+	tri.t[1] = 1;
+	tri.t[2] = 2;
 	tri.materialId = 0;
 	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
 	geom->addPrimitive(tri);
-	tri.v[0][0] = 0;
-	tri.v[0][1] = 2;
+	tri.v[0][0] = 2;
+	tri.v[0][1] = 1;
 	tri.v[0][2] = 3;
+	tri.n[0][0] = 2;
+	tri.n[0][1] = 1;
+	tri.n[0][2] = 3;
+	tri.t[0] = 2;
+	tri.t[1] = 1;
+	tri.t[2] = 3;
+	tri.materialId = 0;
+	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
 	geom->addPrimitive(tri);
 
 	return geom;
@@ -100,7 +121,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 					{
 						Logging::error(MString("File texture extension is not supported: ") + fileTexturePath);
 					}else{
-						MapLoader loader;
+						mtco_MapLoader loader;
 						displacementMap = loader.loadBitmap(fileTexturePath.asChar());
 						hasDisplacement = true;
 					}
@@ -257,7 +278,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
 		{
 			MPoint& p = md.points[vtxId];
-			//Logging::debug(MString("Pt id: ") + vtxId + ": " + p.x + " " + p.y + " " + p.z);
+			//Logging::debug(MString("geom->getVertices().push(Corona::Pos(") + p.x + ", " + p.y + ", " + p.z + " ));");
 			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
 		}
 	
@@ -265,6 +286,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		for (uint nId = 0; nId < md.normals.length(); nId++)
 		{
 			MFloatVector& n =  md.normals[nId];
+			//Logging::debug(MString("geom->getNormals().push(Corona::Pos(") + n.x + ", " + n.y + ", " + n.z + " ));");
 			//Logging::debug(MString("N id: ") + nId + ": " + n.x + " " + n.y + " " + n.z);
 			geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
 		}
@@ -272,14 +294,24 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 
 	for( uint tId = 0; tId < uArray.length(); tId++)
 	{
-		//Logging::debug(MString("uv id: ") + tId + ": " + uArray[tId] + " " + uArray[tId]);
+		size_t mcl = geom->getMapCoordIndices().size();
+		geom->getMapCoordIndices().push(mcl);
+		//Logging::debug(MString("geom->getMapCoordIndices().push(") + mcl + ");");
 		geom->getMapCoords().push(Corona::Pos(uArray[tId], vArray[tId], 0.0f));
-		geom->getMapCoordIndices().push(geom->getMapCoordIndices().size());
+		//Logging::debug(MString("geom->getMapCoords().push(Corona::Pos(") + uArray[tId] + ", " + vArray[tId] + ", 0.0f));");
+		//Logging::debug(MString("Geom - Add Uvs : ") + uArray[tId] + " " + vArray[tId]);
 	}   
+
+	//geom->getMapCoordIndices().push(geom->getMapCoordIndices().size());
 
 	obj->geom = geom;
 	int numTris = triPointIds.length() / 3;
 	
+	//context.core->sanityCheck(context.scene);
+
+	//Logging::debug(MString("Corona::TriangleData tri;"));
+
+	//Logging::debug(MString("for (uint triId = 0; triId < ") + numTris + ";  triId++)\n{");
 	for (uint triId = 0; triId < numTris; triId++)
 	{
 		uint index = triId * 3;
@@ -349,7 +381,6 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 			geom->addPrimitive(tri);			
 		}
 		else{
-
 			Corona::TriangleData tri;
 
 			tri.v.setSegments(numSteps - 1);
@@ -360,9 +391,16 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 				tri.v[stepId][0] = vtxId0 + numVertices * stepId;
 				tri.v[stepId][1] = vtxId1 + numVertices * stepId;
 				tri.v[stepId][2] = vtxId2 + numVertices * stepId;
+				//Logging::debug(MString("TriId ") + triId + " vtx: " + vtxId0 + " " + vtxId1 + " " + vtxId2);
 				tri.n[stepId][0] = normalId0 + numNormals * stepId;
 				tri.n[stepId][1] = normalId1 + numNormals * stepId;
 				tri.n[stepId][2] = normalId2 + numNormals * stepId;
+				//Logging::debug(MString("tri.v[") + stepId + "][0] = " + (vtxId0 + numVertices * stepId) + ";");
+				//Logging::debug(MString("tri.v[") + stepId + "][1] = " + (vtxId1 + numVertices * stepId) + ";");
+				//Logging::debug(MString("tri.v[") + stepId + "][2] = " + (vtxId2 + numVertices * stepId) + ";");
+				//Logging::debug(MString("tri.n[") + stepId + "][0] = " + (normalId0 + numNormals * stepId) + ";");
+				//Logging::debug(MString("tri.n[") + stepId + "][1] = " + (normalId1 + numNormals * stepId) + ";");
+				//Logging::debug(MString("tri.n[") + stepId + "][2] = " + (normalId2 + numNormals * stepId) + ";");
 			}
 
 			if (numUvs > 0)
@@ -370,12 +408,20 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 				tri.t[0] = uvId0;
 				tri.t[1] = uvId1;
 				tri.t[2] = uvId2;
+				//Logging::debug(MString("tri.t[0] = ") + uvId0 + ";");
+				//Logging::debug(MString("tri.t[1] = ") + uvId1 + ";");
+				//Logging::debug(MString("tri.t[2] = ") + uvId2 + ";");
 			}
+			//Logging::debug(MString("tri.materialId = ") + perFaceShadingGroup + ";");
 			tri.materialId = perFaceShadingGroup;
+			//Logging::debug(MString("tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;"));
 			tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+			//Logging::debug(MString("geom->addPrimitive(tri);"));
 			geom->addPrimitive(tri);
+			//context.core->sanityCheck(context.scene);
 		}
 	}
+	//Logging::debug("}");
 	obj->perFaceAssignments.clear();
 	obj->meshDataList.clear();
 }
@@ -442,6 +488,8 @@ void CoronaRenderer::defineGeometry()
 		else{
 			this->defineMaterial(obj->instance, obj);
 		}
+
+		//context.core->sanityCheck(context.scene);
 	}
 
 	for (auto mobj : mayaScene->instancerNodeElements)
