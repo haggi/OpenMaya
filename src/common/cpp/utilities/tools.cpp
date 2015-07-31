@@ -1465,7 +1465,6 @@ bool isChildOf(MPlug& parent, MPlug& child)
 	return false;
 }
 
-
 MDagPath getDagPathFromName(MString name)
 {
 	MDagPath dagPath;
@@ -1475,4 +1474,23 @@ MDagPath getDagPathFromName(MString name)
 		sList.getDagPath(0, dagPath);
 	}
 	return dagPath;
+}
+
+bool isSunLight(MObject& obj)
+{
+	MObjectArray nodeList;
+	MStatus stat;
+	getConnectedInNodes(MString("sunLightConnection"), getRenderGlobalsNode(), nodeList);
+	if (nodeList.length() > 0)
+	{
+		MObject sunObj = nodeList[0];
+		if (sunObj.hasFn(MFn::kTransform))
+		{
+			MFnDagNode sunDagNode(sunObj);
+			MObject sunDagObj = sunDagNode.child(0, &stat);
+			if (sunDagObj == obj)
+				return true;
+		}
+	}
+	return false;
 }

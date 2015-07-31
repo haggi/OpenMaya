@@ -100,6 +100,7 @@ namespace MayaTo{
 		void afterOpenScene();
 		void afterNewScene();
 
+		static void beforeExitCallback(void *);
 		static void callAfterOpenCallback(void *);
 		static void callAfterNewCallback(void *);
 		static MCallbackId afterOpenCallbackId;
@@ -118,7 +119,7 @@ namespace MayaTo{
 	struct CmdArgs{
 		CmdArgs()
 		{
-			MFnDependencyNode defaultGlobals(objectFromName("defaultRenderGlobals"));
+			MFnDependencyNode defaultGlobals(objectFromName("defaultResolution"));
 			width = defaultGlobals.findPlug("width").asInt();
 			height = defaultGlobals.findPlug("height").asInt();
 			renderType = MayaToWorld::WorldRenderType::UIRENDER;

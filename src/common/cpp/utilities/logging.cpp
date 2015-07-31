@@ -2,22 +2,8 @@
 #include "utilities/logging.h"
 #include "memory/memoryInfo.h"
 #include <maya/MGlobal.h>
-#include <maya/MFileIO.h>
 #include <stdio.h>
-
-static EventQueue::concurrent_queue<EventQueue::Event> LogEventQueue;
-
-EventQueue::concurrent_queue<EventQueue::Event> *theLogEventQueue()
-{
-	return &LogEventQueue;
-}
-
-inline void logEvent(MString m)
-{
-	EventQueue::Event e;
-	e.message = m;
-	theLogEventQueue()->push(e);
-}
+#include <thread>
 
 void Logging::setLogLevel( Logging::LogLevel level)
 {
@@ -44,100 +30,72 @@ void Logging::setLogLevel( Logging::LogLevel level)
 	log_level = level;
 }
 
-void Logging::setOutType(Logging::OutputType outtype)
-{
-	log_outtype = outtype;
-}
-
-void Logging::trace(MString logString)
-{
-#if MAYA_API_VERSION >= 201500
-	MStringArray strArray;
-	logString.split('\n', strArray);
-	for (uint i = 0; i < strArray.length(); i++)
-	{
-		logString = strArray[i];
-		logString.substitute("\"", "\\\"");
-		MString cmd = MString("trace ") + "\"" + logString + "\";";
-		MGlobal::executeCommand(cmd);
-	}
-#else
-	std::cout << "trace: " << logString.asChar() << "\n";
-	std::cout.flush();
-#endif
-}
-
-void Logging::info(MString logString, int level)
+void Logging::info(MString logString)
 {
 	if (log_level == 5)
 		return;
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
 	if (log_level >= Logging::Info)
-	{
-		//Logging::trace(outString);
-		logEvent(outString);
-		//std::cout << outString.asChar() << "\n";
-		//std::cout.flush();
-	}
+		COUT(outString);
 }
 
-void Logging::warning(MString logString, int level)
+void Logging::warning(MString logString)
 {
 	if (log_level == 5)
 		return;
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
-	//Logging::trace(outString);
-	logEvent(outString);
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
+	if (log_level >= Logging::Warning)
+		COUT(outString);
 }
 
-void Logging::error(MString logString, int level)
+void Logging::error(MString logString)
 {
 	if (log_level == 5)
 		return;
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
 	if (log_level >= Logging::Error)
 	{
-		//Logging::trace(outString);
-		logEvent(outString);
-		//std::cout << outString.asChar() << "\n";
-		//std::cout.flush();
+		COUT(outString);
 	}
 }
 
-void Logging::debug(MString logString, int level)
+void Logging::debug(MString logString)
+{
+	if (log_level == 5)
+		return;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
+	if (log_level >= Logging::Debug)
+	{
+		COUT(outString);
+	}
+}
+
+void Logging::debugs(MString logString, int level)
 {
 	if (log_level == 5)
 		return;
 	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
 	if (log_level >= Logging::Debug)
 	{
-		//Logging::trace(outString);
-		logEvent(outString);
-		//std::cout << outString.asChar() << "\n";
-		//std::cout.flush();
+		COUT(outString);
 	}
 }
 
-void Logging::progress(MString logString, int level)
+void Logging::progress(MString logString)
 {
 	if (log_level == 5)
 		return;
-	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " + makeSpace(level) + logString;
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
 	if (log_level >= Logging::Progress)
 	{
-		//Logging::trace(outString);
-		logEvent(outString);
-		//std::cout << outString.asChar() << "\n";
-		//std::cout.flush();
+		COUT(outString);
 	}
 }
 
-void Logging::detail(MString logString, int level)
+void Logging::detail(MString logString)
 {
-}
-
-void Logging::feature(MString logString, int level)
-{
+	MString outString = MString("Mem: ") + getCurrentUsage() + "MB " +  logString;
+	COUT(outString);
 }
 
 MString makeSpace(int level)
@@ -146,16 +104,4 @@ MString makeSpace(int level)
 	for( int i = 0; i < level; i++)
 		space += "\t";
 	return space;
-}
-
-MCallbackId LoggingWorker::startId = 0;
-bool LoggingWorker::terminateLoop = false;
-
-void LoggingWorker::LoggingWorkerLoop(float time, float lastTime, void *userPtr)
-{
-	EventQueue::Event e;
-	if (theLogEventQueue()->try_pop(e))
-	{
-		Logging::trace(e.message);
-	}
 }

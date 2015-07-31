@@ -53,6 +53,8 @@ RenderGlobals::RenderGlobals()
 	this->setRendererAxis();
 	this->defineGlobalConversionMatrix();
 	this->currentFrameIndex = 0;
+	this->sceneScale = 1.0;
+	this->filterSize = 3.0;
 }
 
 RenderGlobals::~RenderGlobals()
@@ -64,19 +66,21 @@ bool RenderGlobals::frameListDone()
 {
 	return currentFrameIndex >= this->frameList.size();
 }
+
 float RenderGlobals::getFrameNumber()
 {
-	if (currentFrameIndex < this->frameList.size())
-		return this->frameList[currentFrameIndex];
-	else
-		return this->frameList.back();
+	return currentFrameNumber;
 }
 float RenderGlobals::updateFrameNumber()
 {
 	if (currentFrameIndex < this->frameList.size())
-		return this->frameList[currentFrameIndex++];
-	else
+	{
+		currentFrameNumber = this->frameList[currentFrameIndex++];
+		return currentFrameNumber;
+	}
+	else{
 		return this->frameList.back();
+	}
 }
 
 float RenderGlobals::toMillimeters(float mm)
@@ -151,7 +155,7 @@ void RenderGlobals::defineGlobalConversionMatrix()
 		break;
 	};
 
-	scaleFactor = internalScaleFactor/rendererScaleFactor;
+	scaleFactor = internalScaleFactor/rendererScaleFactor * sceneScale;
 	scaleMatrix[0][0] = scaleMatrix[1][1] = scaleMatrix[2][2] = scaleFactor;
 
 	scaleMatrix = scaleMatrix * sceneScaleMatrix;
@@ -194,7 +198,7 @@ MString RenderGlobals::getImageExt()
 
 void RenderGlobals::getImageName()
 {
-	double fn = this->currentFrame;
+	double fn = getFrameNumber();
 	MCommonRenderSettingsData data;
 	MRenderUtil::getCommonRenderSettings(data);
 	MObject renderLayer = MFnRenderLayer::currentLayer();		
@@ -430,6 +434,9 @@ bool RenderGlobals::getDefaultGlobals()
 	this->translatorVerbosity = getEnumInt("translatorVerbosity", depFn);
 	this->rendererVerbosity = getEnumInt("rendererVerbosity", depFn);
 	this->useSunLightConnection = getBoolAttr("useSunLightConnection", depFn, false);
+	this->tilesize = getIntAttr("tileSize", depFn, 64);
+	this->sceneScale = getFloatAttr("sceneScale", depFn, 1.0f);
+	this->filterSize = getFloatAttr("filterSize", depFn, 3.0f);
 	this->good = true;
 	return true;
 }

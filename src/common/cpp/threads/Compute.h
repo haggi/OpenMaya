@@ -27,7 +27,9 @@ private:
 	static bool checkDone;
 	static std::thread checkThread;
 	static bool usewaitcursor;
-
+#ifdef WIN32
+	static HWND windowHandle;
+#endif
 	static void checkInterrupt()
 	{
 		bool done = false;
@@ -35,10 +37,18 @@ private:
 		{
 #ifdef WIN32
 			if (GetAsyncKeyState(VK_ESCAPE))
-			//if (false)
 			{
-				//std::cout << "Esc key pressed.\n";
-				//std::cout.flush();
+				//HWND fgh = GetForegroundWindow();
+				//HWND handle = GetActiveWindow();
+				//if (Compute::windowHandle == GetActiveWindow())
+				//{
+				//	std::cout << "Current esc active window is init window.\n";
+				//	std::cout.flush();
+				//}
+				//else{
+				//	std::cout << "Current esc active window is NOT init window - skipping.\n";
+				//	std::cout.flush();
+				//}
 				Compute::escPressed = true;
 				if (Compute::autoexit)
 					done = true;
@@ -64,6 +74,7 @@ public:
 
 	void beginComputation(bool autoExit = true, bool useWaitCursor = true)
 	{
+		Compute::windowHandle = GetForegroundWindow();
 		Compute::escPressed = false;
 		Compute::checkDone = false;
 		Compute::usewaitcursor = useWaitCursor;
@@ -102,6 +113,7 @@ bool Compute::escPressed = false;
 bool Compute::autoexit = false;
 bool Compute::checkDone = false;
 bool Compute::usewaitcursor = false;
+HWND Compute::windowHandle = 0;
 std::thread Compute::checkThread;
 
 #endif

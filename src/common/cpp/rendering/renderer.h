@@ -25,6 +25,7 @@ namespace MayaTo{
 		// all interactive callbacks should be pushed into the worker queue with INTERACTIVEFBCALLBACK so that we don't get
 		// any race conditions if the callback takes longer than the next call.
 		virtual void interactiveFbCallback() = 0;
+		//virtual void framebufferCallback() = 0;
 
 		virtual void render() = 0;
 		// initializeRenderer is called before rendering starts

@@ -275,20 +275,16 @@ void RenderQueueWorker::renderQueueWorkerTimerCallback( float time, float lastTi
 void RenderQueueWorker::computationEventThread()
 {
 	bool done = false;
+	bool renderingStarted = false;
 	while (!done)
 	{
+		if (MayaTo::getWorldPtr()->getRenderState() == MayaTo::MayaToWorld::RSTATERENDERING)
+			renderingStarted = true;
+		if (renderingStarted && (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::RSTATERENDERING))
+			done = true;
 		if (renderComputation.isInterruptRequested() && (MayaTo::getWorldPtr()->getRenderState() == MayaTo::MayaToWorld::RSTATERENDERING))
 		{
-			//std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
-			//if (scene != nullptr)
-			//{
-			//	if (!scene->renderingStarted)
-			//	{
-			//		Logging::debug("interrupt request, but rendering not yet started. Skipping.");
-			//		return;
-			//	}
-			//}
-			Logging::detail("computationEventThread::InterruptRequested.");
+			Logging::debug("computationEventThread::InterruptRequested.");
 			done = true;
 			EventQueue::Event e;
 			e.type = EventQueue::Event::INTERRUPT;
@@ -296,6 +292,8 @@ void RenderQueueWorker::computationEventThread()
 		}
 		if (!done)
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		else
+			Logging::debug("computationEventThread done");
 	}
 }
 
@@ -322,17 +320,14 @@ void RenderQueueWorker::updateRenderView(EventQueue::Event& e)
 		{
 			// we have cases where the the the render mrender view has changed but the framebuffer callback may have still the old settings.
 			// here we make sure we do not exceed the renderView area.
-			if ((e.tile_xmin != 0) || (e.tile_xmax != width - 1) || (e.tile_ymin != 0) || (e.tile_ymax != height - 1))
+			if (renderGlobals->getUseRenderRegion())
 			{
-				if (renderGlobals->getUseRenderRegion())
+				if ((e.tile_xmin != 0) || (e.tile_xmax != width - 1) || (e.tile_ymin != 0) || (e.tile_ymax != height - 1))
 				{
 					uint left, right, bottom, top;
 					MRenderView::getRenderRegion(left, right, bottom, top);
 					if ((left != e.tile_xmin) || (right != e.tile_xmax) || (bottom != e.tile_ymin) || (top != e.tile_ymax))
 						return;
-				}
-				else{
-					return;
 				}
 			}
 			MRenderView::updatePixels(e.tile_xmin, e.tile_xmax, e.tile_ymin, e.tile_ymax, e.pixelData.get());
@@ -344,8 +339,8 @@ void RenderQueueWorker::updateRenderView(EventQueue::Event& e)
 void RenderQueueWorker::sendFinalizeIfQueueEmpty(void *)
 {
 	
-	while( theRenderEventQueue()->size() > 0)
-		boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+	while (theRenderEventQueue()->size() > 0)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 	Logging::detail("sendFinalizeIfQueueEmpty: queue is nullptr, sending finalize.");
 	EventQueue::Event e;
@@ -402,30 +397,30 @@ void RenderQueueWorker::startRenderQueueWorker()
 				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATETRANSLATING);
 				std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 
-				// we only need renderComputation (means esc-able rendering) if we render in UI (==NORMAL)
-				if(mayaScene->renderType == MayaScene::NORMAL)
+				if (MGlobal::mayaState() != MGlobal::kBatch)
 				{
-					renderComputation.beginComputation();
-					void *data = nullptr;
+					// we only need renderComputation (means esc-able rendering) if we render in UI (==NORMAL)
+					if (mayaScene->renderType == MayaScene::NORMAL)
+					{
+						renderComputation.beginComputation();
+						void *data = nullptr;
+					}
 				}
-
 				RenderProcess::doPreRenderJobs();
 				e.type = EventQueue::Event::FRAMERENDER;
 				theRenderEventQueue()->push(e);
 
-				std::thread cet = std::thread(RenderQueueWorker::computationEventThread);
-				cet.detach();
+				if (MGlobal::mayaState() != MGlobal::kBatch)
+				{
+					std::thread cet = std::thread(RenderQueueWorker::computationEventThread);
+					cet.detach();
+				}
 
-				//// calculate numtiles
-				//int numTX = (int)ceil((float)width/(float)MayaTo::getWorldPtr()->worldRenderGlobalsPtr->tilesize);
-				//int numTY = (int)ceil((float)height/(float)MayaTo::getWorldPtr()->worldRenderGlobalsPtr->tilesize);
-				//numTiles = numTX * numTY;
-				//// Here we set the output type to output window.
-				//// This will use the trace() command. The reason is that otherways the output will not be printed until 
-				//// the end of rendering.
-				//Logging::setOutType(Logging::OutputWindow);
-				//Logging::debug(MString("start render thread: "));
-				////mayaScene->startRenderThread();
+				// calculate numtiles
+				int numTX = (int)ceil((float)width/(float)MayaTo::getWorldPtr()->worldRenderGlobalsPtr->tilesize);
+				int numTY = (int)ceil((float)height/(float)MayaTo::getWorldPtr()->worldRenderGlobalsPtr->tilesize);
+				numTiles = numTX * numTY;
+				tilesDone = 0;
 				//if(mayaScene->renderType == MayaScene::IPR)
 				//{
 				//	RenderQueueWorker::addCallbacks();
@@ -439,13 +434,16 @@ void RenderQueueWorker::startRenderQueueWorker()
 			{
 				Logging::debug("Event::Framerender");
 
-				if(!MayaTo::getWorldPtr()->worldRenderGlobalsPtr->frameListDone())
+				if (RenderQueueWorker::sceneThread.joinable())
+					RenderQueueWorker::sceneThread.join();
+
+				if (!MayaTo::getWorldPtr()->worldRenderGlobalsPtr->frameListDone())
 				{ 
-					float f = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->updateFrameNumber();
+					MayaTo::getWorldPtr()->worldRenderGlobalsPtr->updateFrameNumber();
 					RenderProcess::doPreFrameJobs();
 					RenderProcess::doPrepareFrame();
 					//MayaTo::getWorldPtr()->worldRendererPtr->render();
-					RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);
+					RenderQueueWorker::sceneThread = std::thread(RenderQueueWorker::renderProcessThread);					
 				}
 				else{
 					e.type = EventQueue::Event::RENDERDONE;
@@ -483,14 +481,14 @@ void RenderQueueWorker::startRenderQueueWorker()
 			{
 				// stopp callbacks and empty queue before finalizing the rendering.
 				Logging::debug("Event::RENDERDONE");
-				renderComputation.endComputation();
+				if (MGlobal::mayaState() != MGlobal::kBatch)
+					renderComputation.endComputation();
 				if( MayaTo::getWorldPtr()->worldScenePtr->renderType ==  MayaScene::IPR)
 				{
 					RenderQueueWorker::removeCallbacks();
 				}
 				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATEDONE);
 				terminateLoop = true;
-				RenderQueueWorker::sceneThread.join();
 
 				setEndTime();
 				if (MRenderView::doesRenderEditorExist())

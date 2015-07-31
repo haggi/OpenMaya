@@ -3,6 +3,10 @@
 
 #include <maya/MString.h>
 #include <maya/MTimerMessage.h>
+#include <thread>
+#include <maya/MStreamUtils.h>
+
+#define COUT(msg) MStreamUtils::stdOutStream() << msg << "\n"
 
 class Logging
 {
@@ -21,27 +25,17 @@ public:
 	};
 
 	static void setLogLevel( Logging::LogLevel level);
-	static void setOutType( Logging::OutputType outtype);
-	static void info(MString logString, int level = 0);
-	static void warning(MString logString, int level = 0);
-	static void error(MString logString, int level = 0);
-	static void debug(MString logString, int level = 0);
-	static void progress(MString logString, int level = 0);
-	static void detail(MString logString, int level = 0);
-	static void feature(MString logString, int level = 0);
-	static void trace(MString logString);
+	static void info(MString logString);
+	static void warning(MString logString);
+	static void error(MString logString);
+	static void debug(MString logString);
+	static void debugs(MString logString, int level);
+	static void progress(MString logString);
+	static void detail(MString logString);
 };
 
 MString makeSpace(int level);
 static  Logging::LogLevel log_level = Logging::Info;
 static  Logging::OutputType log_outtype = Logging::ScriptEditor;
-
-
-class LoggingWorker{
-public:
-	static MCallbackId startId;
-	static bool terminateLoop;
-	static void LoggingWorkerLoop(float time, float lastTime, void *userPtr);
-};
 
 #endif

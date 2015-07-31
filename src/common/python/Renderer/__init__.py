@@ -24,8 +24,8 @@ class MayaToRenderer(object):
         self.imageFormatCtrl = None
         self.openMayaCommonGlobals = None
         
-    def addRenderGlobalsUIElement(self, attName=None, uiType=None, displayName=None, default=None, data=None, uiDict=None, callback=None):
-        uiUtils.addRenderGlobalsUIElement(self.renderGlobalsNodeName, attName, uiType, displayName, default, data, uiDict, callback)
+    def addRenderGlobalsUIElement(self, attName=None, uiType=None, displayName=None, default=None, data=None, uiDict=None, callback=None, anno=None):
+        uiUtils.addRenderGlobalsUIElement(self.renderGlobalsNodeName, attName, uiType, displayName, default, data, uiDict, callback, anno)
     # the render callback is called with arguments like this
     # renderCmd 640 480 1 1 perspShape " -layer defaultRenderLayer"
     # if the renderCmd is replaced with a python call it may not get all informations so we 

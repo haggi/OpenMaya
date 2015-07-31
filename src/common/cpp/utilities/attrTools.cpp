@@ -5,8 +5,26 @@
 #include <maya/MPlugArray.h>
 #include <maya/MMatrix.h>
 #include <maya/MFnMatrixData.h>
+#include <maya/MAngle.h>
 
 #include "attrTools.h"
+
+float getDegree(const char* plugName, MFnDependencyNode& dn)
+{
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	return plug.asMAngle().asDegrees();
+}
+
+float getRadians(const char* plugName, MFnDependencyNode& dn)
+{
+	MStatus stat = MS::kSuccess;
+	bool result = false;
+	MPlug plug = dn.findPlug(plugName, &stat);
+	return plug.asMAngle().asRadians();
+}
+
 
 float getFloatAttr(const char* plugName, MFnDependencyNode& dn, float defaultValue)
 {
@@ -634,3 +652,4 @@ int getChildId(MPlug& plug)
 	}
 	return -1;
 }
+

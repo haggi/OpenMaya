@@ -54,9 +54,11 @@ def connectUIElement(uiElement, attribute):
         return
     pm.connectControl(uiElement, attribute, index = 2)
 
-def addRenderGlobalsUIElement(renderGlobalsNodeName = None, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None, callback=None):
+def addRenderGlobalsUIElement(renderGlobalsNodeName = None, attName = None, uiType = None, displayName = None, default=None, data=None, uiDict=None, callback=None, anno=None):
     
     attribute = pm.Attribute(renderGlobalsNodeName + "." + attName)
     uiElement = addUIElement(uiType, attribute, displayName, callback, renderGlobalsNodeName)
+    if anno:
+        uiElement.setAnnotation(anno)
     connectUIElement(uiElement, attribute)
     uiDict[attName] = uiElement

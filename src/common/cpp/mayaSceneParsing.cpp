@@ -26,7 +26,7 @@ std::vector<std::shared_ptr<MayaObject>>  origObjects;
 
 bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, std::shared_ptr<ObjectAttributes> parentAttributes, std::shared_ptr<MayaObject> parentObject)
 {
-	Logging::debug(MString("parse: ") + currentPath.fullPathName(), level);
+	Logging::debugs(MString("parse: ") + currentPath.fullPathName(), level);
 
 	std::shared_ptr<MayaObject> mo = MayaTo::MayaObjectFactory().createMayaObject(currentPath);
 	std::shared_ptr<ObjectAttributes> currentAttributes = mo->getObjectAttributes(parentAttributes);
@@ -46,7 +46,7 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, std::shared
 			MFnDagNode onode(origObjects[iId]->mobject);
 			if (onode.object() == node.object())
 			{
-				Logging::debug(MString("Orig Node found:") + onode.fullPathName(), level);
+				Logging::debugs(MString("Orig Node found:") + onode.fullPathName(), level);
 				mo->origObject = origObjects[iId];
 				break;
 			}

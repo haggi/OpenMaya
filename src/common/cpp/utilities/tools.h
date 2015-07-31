@@ -13,7 +13,7 @@
 #include <io.h>
 #include <fstream>
 #include <math.h>
-
+#include <memory>
 #include <vector>
 
 static MString RendererName;
@@ -198,5 +198,7 @@ void uniqueMObjectArray(MObjectArray& cleanMe);
 MPlug getParentPlug(MPlug& p);
 
 bool isChildOf(MPlug& parent, MPlug& child);
+
+bool isSunLight(MObject& obj);
 #endif
 

@@ -267,8 +267,8 @@ def createDeploymentCombined(renderer, shortCut):
             shutil.copy(xmlFile, plugInDestDir)
             
     #ressources
-    scDir = path.path(sourceDir + "/ressources")
-    shutil.copytree(scDir, devDestDir + "/ressources")
+    scDir = path.path(sourceDir + "/resources")
+    shutil.copytree(scDir, devDestDir + "/resources")
     
     manuapPdf = None
     #bin
@@ -361,6 +361,6 @@ def createDeploymentCombined(renderer, shortCut):
     
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap")    
-    #createDeploymentCombined("corona", "mtco")
-    createDeploymentCombined("indigo", "mtin")
+    createDeploymentCombined("corona", "mtco")
+    #createDeploymentCombined("indigo", "mtin")
     print "Deployment creation done"
