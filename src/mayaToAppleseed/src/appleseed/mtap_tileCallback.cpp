@@ -17,7 +17,8 @@ void mtap_ITileCallback::pre_render(
         const size_t height)
 {
 	size_t numPixels = width * height;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+	RV_PIXEL *pixels = pixelsPtr.get();
 	
 	for( size_t yy = 0; yy < height; yy++)
 	{
@@ -43,7 +44,7 @@ void mtap_ITileCallback::pre_render(
 	size_t y1 = y + height;
 
 	EventQueue::Event e;
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.type = EventQueue::Event::PRETILE;
 	e.tile_xmin = x;
 	e.tile_xmax = x1;
@@ -109,13 +110,14 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 void mtap_ITileCallback::post_render(
 		const asr::Frame* frame)
 {
-	//Logging::debug(MString("Post render interactive frame:"));
+	Logging::debug(MString("Post render frame."));
 	asf::Image img = frame->image();
 	const asf::CanvasProperties& frame_props = img.properties();
 	size_t numPixels = frame_props.m_canvas_width * frame_props.m_canvas_height;
 	
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-	
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+	RV_PIXEL *pixels = pixelsPtr.get();
+
 	for( int x = 0; x < numPixels; x++)
 	{
 		pixels[x].r = 255.0f;
@@ -162,7 +164,7 @@ void mtap_ITileCallback::post_render(
 	}
 
 	EventQueue::Event e;
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.type = EventQueue::Event::TILEDONE;
 	e.tile_xmin = 0;
 	e.tile_xmax = frame_props.m_canvas_width - 1;
@@ -208,8 +210,9 @@ void mtap_ITileCallback::post_render_tile(
 	size_t tw =  tile.get_width();
 	size_t th =  tile.get_height();
 	size_t numPixels = tw * th;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
-	for( size_t yy = 0; yy < th; yy++)
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+	RV_PIXEL *pixels = pixelsPtr.get();
+	for (size_t yy = 0; yy < th; yy++)
 	{
 		for( size_t xx = 0; xx < tw; xx++)
 		{
@@ -231,7 +234,7 @@ void mtap_ITileCallback::post_render_tile(
     size_t maxy = img.properties().m_canvas_height - y - 1;
 
 	EventQueue::Event e;
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.type = EventQueue::Event::TILEDONE;
 	e.tile_xmin = x;
 	e.tile_xmax = x1;

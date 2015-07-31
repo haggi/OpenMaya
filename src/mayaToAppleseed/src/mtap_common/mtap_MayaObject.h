@@ -18,8 +18,7 @@ public:
 	mtap_ObjectAttributes(std::shared_ptr<ObjectAttributes>);
 	bool needsOwnAssembly;
 	MMatrix objectMatrix;
-	//std::shared_ptr<MayaObject> assemblyObject; // maya object which contains the corresponding
-	MayaObject *assemblyObject; // maya object which contains the corresponding
+	MayaObject *assemblyObject; // mayaObject above for which an assembly will be created
 };
 
 class mtap_MayaObject : public MayaObject
@@ -31,14 +30,14 @@ public:
 
 	virtual bool geometryShapeSupported();
 	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = nullptr);
-	MayaObject *getAssemblyMayaObject();
-	MString getAssemblyInstName();
-	MString getAssemblyName();
-	MString getObjectName();
+	//MayaObject *getAssemblyMayaObject();
+	//MString getAssemblyInstName();
+	//MString getAssemblyName();
+	//MString getObjectName();
 	bool needsAssembly();
 	void createAssembly();
-	asr::Assembly *getObjectAssembly();
-	asr::Assembly *objectAssembly;
+	//asr::Assembly *getObjectAssembly();
+	//asr::Assembly *objectAssembly;
 };
 
 #endif

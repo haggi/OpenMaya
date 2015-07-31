@@ -77,15 +77,18 @@ As mentioned, geometry and other elements are not visible outside the current as
 	AssemblyInstance "geoT2RealInstance" "geoT2"	
 
 Well it simply will not work this way because we try to access the "geoT2" assembly from outside the hierarchy.
+And the whole thing is getting worser if you have a child of the instance which is animated. The animated one needs it's own assembly because only assmembly instances can 
+have animted transforms to generate motionblur.
 
 So what can we do?
 My solution looks as follows:
 
-1 ) check if a geometry or transform node need its own assembly
+1 ) check if a geometry shape needs its own assembly
 		own assembly is needed if:
 					- we have motionblur and animated transforms
 					- we have true instances
 					- the object is a light which can be animated and have motionblur
+
 2 ) create an assembly for all these nodes
 
 3 ) put all geometry below this node into the corresponding assembly unless we discover another node below which needs an assembly
@@ -110,15 +113,20 @@ This leads to a quite flat hierarchy:
 
 4 ) All lights will have their own assembly in the top level assembly
 
-
 During the scene translation first all objects are scanned and during creation they get an attribute to see if they need their own assembly.
-If they do not need an assembly, the objects will get a link to their parent assembly.
+If they do not need an assembly, the objects will get a link to their parent assembly mayaObject. If they need one, the assembly object is the object itself.
 
-Then in a second stage after scene parsing, all assemblies are created. 
-After assembly creation the assembly instances are created, simply create an instance for all assemblies.
+Next we have the scene update stage where all geometry/instances are updated for all motionSteps. 
+We only care about deform steps because transforms are implicit.
+For the very first motion step, we:
+	- create the geometry/light
+	- check if the assembly exists, if not create one
+	- put the geometry into the assembly
+	- create an assembly instance if it does not yet exists
 
-Next we have the scene update stage where all geometry/instances are updated and the instances will receive their transformation matrix.
-
+For all further motionsteps:
+	- check if geometry exists and do an update if animated/deformed
+	- check if assembly exists an update transform if animated
 
 ---------------------------------------------------
 

@@ -48,6 +48,24 @@ class AEappleseedNodeTemplate(BaseTemplate):
             self.addControl("mtap_standin_path", label="Proxy File") 
             self.endLayout()
                                    
+        if self.thisNode.type() == "spotLight":
+            self.beginLayout("AppleSeed" ,collapse=1)
+            self.addControl("mtap_cast_indirect_light", label="Cast Indirect Light")                        
+            self.addControl("mtap_importance_multiplier", label="Importance Multiplier")                        
+            self.endLayout()
+
+        if self.thisNode.type() == "directionalLight":
+            self.beginLayout("AppleSeed" ,collapse=1)
+            self.addControl("mtap_cast_indirect_light", label="Cast Indirect Light")                        
+            self.addControl("mtap_importance_multiplier", label="Importance Multiplier")                        
+            self.endLayout()
+
+        if self.thisNode.type() == "pointLight":
+            self.beginLayout("AppleSeed" ,collapse=1)
+            self.addControl("mtap_cast_indirect_light", label="Cast Indirect Light")                        
+            self.addControl("mtap_importance_multiplier", label="Importance Multiplier")                        
+            self.endLayout()
+                                   
 #        if self.thisNode.type() == "shadingEngine":
 #            self.beginLayout("AppleSeed" ,collapse=1)
 #            self.addControl("mtap_mat_bsdf", label="Bsdf")                                    

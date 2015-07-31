@@ -35,8 +35,6 @@
 #include "renderer/api/environmentshader.h"
 #include "renderer/api/edf.h"
 
-namespace asf = foundation;
-namespace asr = renderer;
 
 void doTestRender();
 

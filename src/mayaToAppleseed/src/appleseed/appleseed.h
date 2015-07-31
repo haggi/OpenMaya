@@ -42,10 +42,9 @@
 #include <maya/MFnMeshData.h>
 
 #include "rendering/renderer.h"
-//#include "mtap_tileCallback.h"
-//#include "../mtap_common/mtap_mayaObject.h"
-//#include "mtap_rendererController.h"
-
+#include "mtap_tileCallback.h"
+#include "../mtap_common/mtap_mayaObject.h"
+#include "mtap_rendererController.h"
 
 #include "utilities/MiniMap.h"
 
@@ -60,6 +59,7 @@
 #define CONST_SHADER			0x0011CF43
 #define DIAGNOSTIC_SHADER		0x0011CF44
 #define SMOKE_SHADER			0x0011CF47
+
 
 class mtap_MayaScene;
 class mtap_RenderGlobals;
@@ -78,10 +78,10 @@ public:
 	AppleseedRenderer();
 	~AppleseedRenderer();
 
-	virtual void defineCamera(){};
-	virtual void defineEnvironment(){};
-	virtual void defineGeometry(){};
-	virtual void defineLights(){};
+	virtual void defineCamera();
+	virtual void defineEnvironment();
+	virtual void defineGeometry();
+	virtual void defineLights();
 	virtual void render();
 	// initializeRenderer is called before rendering starts
 	// it should prepare all data which can/should be reused during
@@ -93,23 +93,32 @@ public:
 	// the geometry is defined at the very first step and later this definition will be updated for every motion step.
 	// Other renderers will need a complete definition of all motionblur steps at once, so the motion steps will be
 	// in the geometry e.g. with obj->addMeshData(); and at the very last step, everything is defined.
-	virtual void updateShape(std::shared_ptr<MayaObject> obj){};
+	virtual void updateShape(std::shared_ptr<MayaObject> obj);
 	// This method is necessary only if the renderer is able to update the transform definition interactively.
 	// In other cases, the world space transform will be defined directly during the creation of the geometry.
-	virtual void updateTransform(std::shared_ptr<MayaObject> obj){};
-	virtual void abortRendering(){};
+	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
+	virtual void abortRendering();
 	virtual void interactiveFbCallback(){};
 
 	void defineProject();
 	void addRenderParams(asr::ParamArray& paramArray);//add current render settings to all render configurations 
 	void defineConfig();
+	void defineOutput();
+	void createMesh(std::shared_ptr<MayaObject> obj, asr::MeshObjectArray& meshArray, bool& isProxyArray);
+	void createMesh(std::shared_ptr<mtap_MayaObject> obj);
+	asr::Project *getProjectPtr(){ return this->project.get(); };
+	asf::StringArray defineMaterial(std::shared_ptr<mtap_MayaObject> obj);
+	asr::ShaderGroup *currentShaderGroup;
 
 private:
-	//asf::auto_release_ptr<asr::Project> project;
-	//asr::Scene *scene;
-	//std::auto_ptr<asf::ILogTarget> log_target;
-	//asf::FileLogTarget *flt;
-	//	
+	asf::auto_release_ptr<asr::Project> project;
+	//asr::MasterRenderer masterRenderer;
+	std::auto_ptr<asf::ILogTarget> log_target;
+	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
+	//	asr::MasterRenderer *masterRenderer;
+	mtap_IRendererController mtap_controller;
+
+
 //	std::vector<std::shared_ptr<MayaObject> > interactiveUpdateList;
 //	std::vector<MObject> interactiveUpdateMOList;
 //	std::vector<asr::AssemblyInstance *> interactiveAIList;
@@ -121,7 +130,6 @@ private:
 //	void defineProject();
 //	void defineConfig();
 //	void addRenderParams(asr::ParamArray& pa);
-//	void defineOutput();
 //	void defineColor(MString& name, MColor& color, float intensity = 1.0f, MString colorSpace = "srgb");
 //	void addDefaultMaterial(asr::Assembly *assembly);
 //	void defineObjectMaterial(mtap_RenderGlobals *renderGlobals, std::shared_ptr<MayaObject> obj, asf::StringArray& materialNames);
@@ -186,8 +194,6 @@ private:
 //
 //	void defineMaterial(MObject shadingGroup);
 //
-//	asr::MasterRenderer *masterRenderer;
-//	mtap_IRendererController mtap_controller;
 //
 //	void putObjectIntoAssembly(asr::Assembly *assembly, std::shared_ptr<MayaObject> obj, MMatrix matrix); 
 //	void putObjectIntoAssembly(asr::Assembly *assembly, std::shared_ptr<MayaObject> obj); 
@@ -229,13 +235,6 @@ private:
 //	MString getTextureColorProfile(MFnDependencyNode& fileTextureNode);
 //
 //	asf::auto_release_ptr<asr::Camera> camera;
-//	asf::auto_release_ptr<mtap_ITileCallbackFactory> tileCallbackFac;
-//	
-//    std::auto_ptr<asf::ILogTarget> log_target;
-//
-//	//asf::auto_release_ptr<asf::LogTargetBase> log_target;
-//	asf::auto_release_ptr<asf::FileLogTarget> m_log_target;
-//	//asf::LogTargetBase *log_targetPtr;
 //
 //	void addDeformStep(std::shared_ptr<MayaObject> obj, asr::Assembly *assembly);
 };

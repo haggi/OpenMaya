@@ -17,7 +17,6 @@ public:
 	static	MTypeId		id;
 
 private:
-	// 8, 16, 32 etc.
 	static    MObject bitdepth;
 	static    MObject colorSpace;
 	static	  MObject clamping;
@@ -35,6 +34,12 @@ private:
 	static	  MObject next_event_estimation;
 	static	  MObject rr_min_path_length;
 	static	  MObject max_path_length;
+	static	  MObject path_tracing_max_path_length;
+	static	  MObject path_tracing_rr_min_path_length;
+	static	  MObject photon_tracing_max_path_length;
+	static	  MObject photon_tracing_rr_min_path_length;
+	static	  MObject tile_ordering;
+	static	  MObject sampling_mode;
 	static	  MObject max_ray_intensity;
 	static	  MObject assemblySBVH;
 	static	  MObject pixel_renderer;
@@ -80,6 +85,8 @@ private:
 	static	  MObject light_photons_per_pass;
 	static	  MObject max_photons_per_estimate;
 	static	  MObject photons_per_pass;
+	static	  MObject photon_type;
+
 };
 
 #endif

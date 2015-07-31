@@ -9,8 +9,6 @@
 #include "utilities/attrTools.h"
 #include "world.h"
 
-#include "appleseed\TestRender.h"
-
 void* MayaToAppleseed::creator()
 {
 	return new MayaToAppleseed();
@@ -59,12 +57,6 @@ MStatus MayaToAppleseed::doIt(const MArgList& args)
 	setLogLevel();
 
 	MArgDatabase argData(syntax(), args);
-
-	{
-		MGlobal::displayInfo("Executing MayaToAppleseed testrender.");
-		doTestRender();
-		return MS::kSuccess;
-	}
 
 	if (argData.isFlagSet("-state", &stat))
 	{

@@ -34,9 +34,14 @@ MObject MayaToAppleseedGlobals::bsdfSamples;
 MObject MayaToAppleseedGlobals::next_event_estimation;
 MObject MayaToAppleseedGlobals::rr_min_path_length;
 MObject MayaToAppleseedGlobals::max_path_length;
+MObject MayaToAppleseedGlobals::path_tracing_max_path_length;
+MObject MayaToAppleseedGlobals::path_tracing_rr_min_path_length;
+MObject MayaToAppleseedGlobals::photon_tracing_max_path_length;
+MObject MayaToAppleseedGlobals::photon_tracing_rr_min_path_length;
 MObject MayaToAppleseedGlobals::max_ray_intensity;
 MObject MayaToAppleseedGlobals::assemblySBVH;
-
+MObject MayaToAppleseedGlobals::tile_ordering;
+MObject MayaToAppleseedGlobals::sampling_mode;
 
 MObject MayaToAppleseedGlobals::texCacheSize;
 MObject MayaToAppleseedGlobals::environmentMap;
@@ -70,6 +75,9 @@ MObject MayaToAppleseedGlobals::photons_per_pass;
 
 MObject MayaToAppleseedGlobals::pixel_renderer;
 MObject MayaToAppleseedGlobals::frameRendererPasses;
+
+MObject MayaToAppleseedGlobals::photon_type;
+
 
 
 MayaToAppleseedGlobals::MayaToAppleseedGlobals()
@@ -105,6 +113,18 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	MFnMessageAttribute mAttr;
 	MStatus stat = MStatus::kSuccess;
 
+	sampling_mode = eAttr.create("sampling_mode", "sampling_mode", 0, &stat);
+	stat = eAttr.addField("qmc", 0);
+	stat = eAttr.addField("rng", 1);
+	CHECK_MSTATUS(addAttribute(sampling_mode));
+
+	tile_ordering = eAttr.create("tile_ordering", "tile_ordering", 2, &stat);
+	stat = eAttr.addField("linear", 0);
+	stat = eAttr.addField("spiral", 1);
+	stat = eAttr.addField("hilbert", 2);
+	stat = eAttr.addField("random", 3);
+	CHECK_MSTATUS(addAttribute(tile_ordering));
+
 	bitdepth = eAttr.create( "bitdepth", "bitdepth", 3, &stat);
 	stat = eAttr.addField( "8bit  Integer", 0 );
 	stat = eAttr.addField( "16bit Integer", 1 );
@@ -126,7 +146,7 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( colorSpace ));
 
 	lightingEngine = eAttr.create( "lightingEngine", "lightingEngine", 0, &stat);
-	stat = eAttr.addField( "Path tracing", 0 );
+	stat = eAttr.addField( "Unidirectional Path tracing", 0 );
 	stat = eAttr.addField( "Distributed Raytracing", 1 );
 	stat = eAttr.addField( "Stochastic Progressive Photon Mapping", 2 );
 	CHECK_MSTATUS(addAttribute( lightingEngine ));
@@ -173,11 +193,23 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	assemblySBVH = nAttr.create("assemblySBVH", "assemblySBVH",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( assemblySBVH ));
 
+	max_path_length = nAttr.create("max_path_length", "max_path_length", MFnNumericData::kFloat, 8.0f);
+	CHECK_MSTATUS(addAttribute(max_path_length));
+
 	rr_min_path_length = nAttr.create("rr_min_path_length", "rr_min_path_length",  MFnNumericData::kFloat, 3.0f);
 	CHECK_MSTATUS(addAttribute( rr_min_path_length ));
 
-	max_path_length = nAttr.create("max_path_length", "max_path_length",  MFnNumericData::kFloat, 0.0f);
-	CHECK_MSTATUS(addAttribute( max_path_length ));
+	path_tracing_max_path_length = nAttr.create("path_tracing_max_path_length", "path_tracing_max_path_length", MFnNumericData::kFloat, 0.0f);
+	CHECK_MSTATUS(addAttribute(path_tracing_max_path_length));
+
+	path_tracing_rr_min_path_length = nAttr.create("path_tracing_rr_min_path_length", "path_tracing_rr_min_path_length", MFnNumericData::kFloat, 8.0f);
+	CHECK_MSTATUS(addAttribute(path_tracing_rr_min_path_length));
+
+	photon_tracing_max_path_length = nAttr.create("photon_tracing_max_path_length", "photon_tracing_max_path_length", MFnNumericData::kFloat, 8.0f);
+	CHECK_MSTATUS(addAttribute(photon_tracing_max_path_length));
+
+	photon_tracing_rr_min_path_length = nAttr.create("photon_tracing_rr_min_path_length", "photon_tracing_rr_min_path_length", MFnNumericData::kFloat, 3.0f);
+	CHECK_MSTATUS(addAttribute(photon_tracing_rr_min_path_length));
 
 	max_ray_intensity = nAttr.create("max_ray_intensity", "max_ray_intensity",  MFnNumericData::kFloat, 0.0f);
 	CHECK_MSTATUS(addAttribute( max_ray_intensity ));
@@ -191,12 +223,14 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( assemblyPolyTheshold ));
 
 	environmentType = eAttr.create( "environmentType", "environmentType", 0, &stat);
-	stat = eAttr.addField( "Constant", 0 );
-	stat = eAttr.addField( "Gradient", 1 );
-	stat = eAttr.addField( "Latitude Longitude", 2 );
-	stat = eAttr.addField( "Mirror Ball", 3 );
-	stat = eAttr.addField( "Physical Sky", 4 );
-	CHECK_MSTATUS(addAttribute( environmentType ));
+	stat = eAttr.addField("Constant", 0);
+	stat = eAttr.addField("ConstantHemisphere", 1);
+	stat = eAttr.addField("Gradient", 2);
+	stat = eAttr.addField("Latitude Longitude", 3 );
+	stat = eAttr.addField("Mirror Ball", 4 );
+	stat = eAttr.addField("Physical Sky", 5);
+	stat = eAttr.addField("OSL Environment", 6);
+	CHECK_MSTATUS(addAttribute(environmentType));
 
 	environmentColor = nAttr.createColor("environmentColor", "environmentColor");
 	nAttr.setDefault(0.6f, 0.7f, 0.9f);
@@ -282,8 +316,11 @@ MStatus	MayaToAppleseedGlobals::initialize()
 	sppmAlpha = nAttr.create("sppmAlpha", "sppmAlpha",  MFnNumericData::kFloat, .8f);
 	CHECK_MSTATUS(addAttribute( sppmAlpha ));
 
-	dl_mode = tAttr.create("dl_mode", "dl_mode",  MFnNumericData::kString);
-	CHECK_MSTATUS(addAttribute( dl_mode ));
+	dl_mode = eAttr.create("dl_mode", "dl_mode", 0, &stat);
+	stat = eAttr.addField("RT Direct Lighting", 0);
+	stat = eAttr.addField("SPPM Direct Lighting", 1);
+	stat = eAttr.addField("No Direct Lighting", 2);
+	CHECK_MSTATUS(addAttribute(dl_mode));
 
 	env_photons_per_pass = nAttr.create("env_photons_per_pass", "env_photons_per_pass",  MFnNumericData::kInt, 100000);
 	CHECK_MSTATUS(addAttribute( env_photons_per_pass ));
@@ -299,6 +336,11 @@ MStatus	MayaToAppleseedGlobals::initialize()
 
 	photons_per_pass = nAttr.create("photons_per_pass", "photons_per_pass",  MFnNumericData::kInt, 100000);
 	CHECK_MSTATUS(addAttribute( photons_per_pass ));
+
+	photon_type = eAttr.create("photon_type", "photon_type", 1, &stat);
+	stat = eAttr.addField("Monochromatic", 0);
+	stat = eAttr.addField("Polychromatic", 1);
+	CHECK_MSTATUS(addAttribute(photon_type));
 
 	return stat;
 

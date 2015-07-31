@@ -310,12 +310,13 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                 with pm.frameLayout(label="Pixel Sampler", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        #attr = pm.Attribute(self.renderGlobalsNodeName + ".pixel_renderer")
-                        #ui = pm.attrEnumOptionMenuGrp(label="Pixel Sampler", at=self.renderGlobalsNodeName + ".pixel_renderer", ei=self.getEnumList(attr)) 
-                        self.addRenderGlobalsUIElement(attName = 'pixel_renderer', uiType = 'enum', displayName = 'Pixel Sampler', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                        # attr = pm.Attribute(self.renderGlobalsNodeName + ".pixel_renderer")
+                        # ui = pm.attrEnumOptionMenuGrp(label="Pixel Sampler", at=self.renderGlobalsNodeName + ".pixel_renderer", ei=self.getEnumList(attr)) 
+                        self.addRenderGlobalsUIElement(attName='pixel_renderer', uiType='enum', displayName='Pixel Sampler', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
                         self.addRenderGlobalsUIElement(attName='minSamples', uiType='int', displayName='Min Samples', default=False, uiDict=uiDict)                        
                         self.addRenderGlobalsUIElement(attName='maxSamples', uiType='int', displayName='Max Samples', default=False, uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName='maxError', uiType='float', displayName='Max Error', default=False, uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName='enable_diagnostics', uiType='bool', displayName="Diagnostic AOV's", default=False, uiDict=uiDict)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName='frameRendererPasses', uiType='int', displayName='Passes', uiDict=uiDict)
                         
@@ -342,33 +343,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
                     
                 with pm.frameLayout(label="Lighting Engine", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                        attr = pm.Attribute(self.renderGlobalsNodeName + ".lightingEngine")
-                        ui = pm.attrEnumOptionMenuGrp(label="Lighting Engine", at=self.renderGlobalsNodeName + ".lightingEngine", ei=self.getEnumList(attr)) 
-                        with pm.frameLayout(label="Common Settings", collapsable=True, collapse=False):
-                            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                                self.addRenderGlobalsUIElement(attName='maxTraceDepth', uiType='int', displayName='Max Trace Depth', uiDict=uiDict)                        
-                                self.addRenderGlobalsUIElement(attName='rr_min_path_length', uiType='float', displayName='RR Min Path Len', uiDict=uiDict)                        
-                                self.addRenderGlobalsUIElement(attName='enable_caustics', uiType='bool', displayName='Enable Caustics', default=False, uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='enable_ibl', uiType='bool', displayName='Enable IBL', default=False, uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='enable_dl', uiType='bool', displayName='Enable Direct Light', default=False, uiDict=uiDict)
-                                
-                                self.addRenderGlobalsUIElement(attName='directLightSamples', uiType='int', displayName='Direct Light Samples', uiDict=uiDict)                        
-                                self.addRenderGlobalsUIElement(attName='environmentSamples', uiType='int', displayName='Environment Samples', uiDict=uiDict)                        
-                                
-                                self.addRenderGlobalsUIElement(attName='diffuseDepth', uiType='int', displayName='Diffuse Depth', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='glossyDepth', uiType='int', displayName='Glossy Depth', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='max_ray_intensity', uiType='float', displayName='Max Ray Intensity', uiDict=uiDict)                        
-
-                        uiDict["SPPM Settings"] = pm.frameLayout(label="SPPM Settings", collapsable=True, collapse=False)
-                        with uiDict["SPPM Settings"]:
-                            with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
-                                self.addRenderGlobalsUIElement(attName='sppmAlpha', uiType='float', displayName='Alpha', uiDict=uiDict)                        
-                                self.addRenderGlobalsUIElement(attName='env_photons_per_pass', uiType='int', displayName='Env Photons PP', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='light_photons_per_pass', uiType='int', displayName='Light Photons PP', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='photons_per_pass', uiType='int', displayName='Photons PP', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='max_photons_per_estimate', uiType='int', displayName='Max Photons Per Estimate', uiDict=uiDict)
-                                self.addRenderGlobalsUIElement(attName='initial_radius', uiType='float', displayName='Initial Radius', uiDict=uiDict)                        
-                                
+                        self.addRenderGlobalsUIElement(attName='lightingEngine', uiType='enum', displayName='Lighting Engine', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                        with pm.frameLayout(label="Lighting Engine Settings", collapsable=True, collapse=False) as uiDict['LE_framelayout']:
+                            with pm.columnLayout(self.rendererName + "LEColumnLayout", adjustableColumn=True, width=400) as uiDict['LE_layout']:
+                                pass
+                            
                 with pm.frameLayout(label="Renderer", collapsable=True, collapse=True):
                     with pm.columnLayout(self.rendererName + "ColumnLayout", adjustableColumn=True, width=400):
                         self.addRenderGlobalsUIElement(attName='threads', uiType='int', displayName='Threads:', uiDict=uiDict)
@@ -392,25 +371,69 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         if not self.rendererTabUiDict.has_key('common'):
             return
         
-        envDict = self.rendererTabUiDict['common']
-        
+        uiDict = self.rendererTabUiDict['common']
+
         if self.renderGlobalsNode.pixel_renderer.get() == 0:
-            envDict['maxSamples'].setLabel("Max Samples")
-            envDict['minSamples'].setEnable(True)
-            envDict['maxSamples'].setEnable(True)
-            envDict['maxError'].setEnable(True)
+            uiDict['maxSamples'].setLabel("Max Samples")
+            uiDict['maxSamples'].setEnable(True)
+            uiDict['minSamples'].setManage(True)
+            uiDict['maxError'].setManage(True)
             
         if self.renderGlobalsNode.pixel_renderer.get() == 1:
-            envDict['minSamples'].setEnable(False)
-            envDict['maxError'].setEnable(False)
-            envDict['maxSamples'].setLabel("Samples")
-
-        if self.renderGlobalsNode.lightingEngine.get() == 0: #path tracing
-            envDict["SPPM Settings"].setEnable(False)
+            uiDict['minSamples'].setManage(False)
+            uiDict['maxError'].setManage(False)
+            uiDict['maxSamples'].setLabel("Samples")
+                    
+        pm.deleteUI(uiDict['LE_layout'])
+        with pm.columnLayout(self.rendererName + "LEColumnLayout", adjustableColumn=True, width=400, parent=uiDict['LE_framelayout']) as uiDict['LE_layout']:                
+            if self.renderGlobalsNode.lightingEngine.get() == 0:  # path tracer
+                self.addRenderGlobalsUIElement(attName='enable_ibl', uiType='bool', displayName='Enable IBL', default=False, uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                self.addRenderGlobalsUIElement(attName='enable_caustics', uiType='bool', displayName='Enable Caustics', default=False, uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='enable_dl', uiType='bool', displayName='Enable Direct Light', default=False, uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                pm.separator()
+                self.addRenderGlobalsUIElement(attName='environmentSamples', uiType='int', displayName='Environment Samples', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='directLightSamples', uiType='int', displayName='Direct Light Samples', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='max_ray_intensity', uiType='float', displayName='Max Ray Intensity', anno='Clamp intensity of rays (after the first bounce) to this value to reduce fireflies', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='max_path_length', uiType='float', displayName='Max Bounces', uiDict=uiDict)                        
+                if not self.renderGlobalsNode.enable_ibl.get():
+                    uiDict['environmentSamples'].setEnable(False)
+                else:
+                    uiDict['environmentSamples'].setEnable(True)
+                if not self.renderGlobalsNode.enable_dl.get():
+                    uiDict['directLightSamples'].setEnable(False)
+                else:
+                    uiDict['directLightSamples'].setEnable(True)
+                
+            if self.renderGlobalsNode.lightingEngine.get() == 1:  # distributed ray tracer
+                self.addRenderGlobalsUIElement(attName='enable_ibl', uiType='bool', displayName='Enable IBL', default=False, uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                pm.separator()
+                self.addRenderGlobalsUIElement(attName='environmentSamples', uiType='int', displayName='Environment Samples', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='directLightSamples', uiType='int', displayName='Direct Light Samples', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='maxTraceDepth', uiType='int', displayName='Max Bounces', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='rr_min_path_length', uiType='float', displayName='RR Start Bounce', anno='Consider pruning low contribution paths starting with this bounce', uiDict=uiDict)                        
+                if not self.renderGlobalsNode.enable_ibl.get():
+                    uiDict['environmentSamples'].setEnable(False)
+                else:
+                    uiDict['environmentSamples'].setEnable(True)
+                    
+            if self.renderGlobalsNode.lightingEngine.get() == 2:  # sppm
+                self.addRenderGlobalsUIElement(attName='enable_ibl', uiType='bool', displayName='Enable IBL', default=False, uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                self.addRenderGlobalsUIElement(attName='enable_caustics', uiType='bool', displayName='Enable Caustics', default=False, uiDict=uiDict)
+                pm.separator()
+                self.addRenderGlobalsUIElement(attName='dl_mode', uiType='enum', displayName='Direct Lighting Mode', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                pm.separator()
+                self.addRenderGlobalsUIElement(attName='path_tracing_max_path_length', uiType='int', displayName='Max Bounces', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='light_photons_per_pass', uiType='int', displayName='Light Photons PP', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='env_photons_per_pass', uiType='int', displayName='Env Photons PP', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='max_photons_per_estimate', uiType='int', displayName='Max Photons Per Estimate', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='photon_type', uiType='enum', displayName='Photon Type', default='0', uiDict=uiDict, callback=self.AppleseedRendererUpdateTab)
+                self.addRenderGlobalsUIElement(attName='photon_tracing_rr_min_path_length', uiType='int', displayName='Min Bounces', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='photon_tracing_max_path_length', uiType='int', displayName='Max Bounces', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='photons_per_pass', uiType='int', displayName='Photons Per Pass', uiDict=uiDict)
+                self.addRenderGlobalsUIElement(attName='initial_radius', uiType='float', displayName='Initial Radius', anno='Initial photon gathering radius in percent of the scene diameter.', uiDict=uiDict)                        
+                self.addRenderGlobalsUIElement(attName='sppmAlpha', uiType='float', displayName='Alpha', anno='Evolution rate of photon gathering radius', uiDict=uiDict)                        
             
-        if self.renderGlobalsNode.lightingEngine.get() == 2: #sppm
-            envDict["SPPM Settings"].setEnable(True)
-        
+                    
     def xmlFileBrowse(self, args=None):
         print "xmlfile", args
         filename = pm.fileDialog2(fileMode=0, caption="XML Export File Name")
@@ -497,6 +520,13 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_method", attributeType="enum", enumName="none:normal:incoming_direction:outgoing_direction", defaultValue=0)
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_distance", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="mesh", longName="mtap_standin_path", dataType="string", usedAsFilename=True)
+
+        pm.addExtension(nodeType="spotLight", longName="mtap_cast_indirect_light", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="spotLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
+        pm.addExtension(nodeType="directionalLight", longName="mtap_cast_indirect_light", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="directionalLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
+        pm.addExtension(nodeType="pointLight", longName="mtap_cast_indirect_light", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="pointLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
         
         # shading group
 #        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_bsdf", attributeType="message")
