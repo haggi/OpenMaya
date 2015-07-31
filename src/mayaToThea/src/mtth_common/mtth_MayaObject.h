@@ -14,10 +14,8 @@ class mtth_ObjectAttributes : public ObjectAttributes
 {
 public:
 	mtth_ObjectAttributes();
-	mtth_ObjectAttributes(mtth_ObjectAttributes *other);
-	MMatrix objectMatrix;
+	mtth_ObjectAttributes(std::shared_ptr<ObjectAttributes> other);
 };
-
 
 
 class mtth_MayaObject : public MayaObject
@@ -33,7 +31,7 @@ public:
 	boost::shared_ptr<TheaSDK::SurfaceMesh> mesh;
 
 	virtual bool geometryShapeSupported();
-	virtual mtth_ObjectAttributes *getObjectAttributes(ObjectAttributes *parentAttributes = NULL);
+	virtual std::shared_ptr<ObjectAttributes> getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes = nullptr);
 	virtual void getMaterials();
 };
 

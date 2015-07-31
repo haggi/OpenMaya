@@ -4,28 +4,34 @@
 
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtth_common/mtth_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtth_common/mtth_mayaObject.h"
-
+#include "world.h"
 
 void TheaRenderer::defineCamera()
 {
-	for( size_t objId = 0; objId < this->mtth_scene->camList.size(); objId++)
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+
+	for (auto obj : mayaScene->camList)
 	{
-		mtth_MayaObject *obj = (mtth_MayaObject *)this->mtth_scene->camList[objId];
 		MFnCamera camFn(obj->mobject);
 		
-		if( (this->mtth_scene->camList.size() > 1) && (!getBoolAttr("renderable", camFn, false)) )
+		if (!isCameraRenderable(obj->mobject) && (!(obj->dagPath == mayaScene->uiCamera)))
+		{
 			continue;
+		}
 
-		MMatrix m = obj->transformMatrices[0] * this->mtth_renderGlobals->globalConversionMatrix;
+		MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 		uint width, height;
-		width = this->mtth_renderGlobals->imgWidth;
-		height = this->mtth_renderGlobals->imgHeight;
+		int width_, height_;
+		renderGlobals->getWidthHeight(width_, height_);
+		width = width_;
+		height = height_;
 		bool success = true;
 		float focalLen = camFn.focalLength();
 		float focusDistance = getFloatAttr("focusDistance", camFn, 10.0f);
-		focusDistance *= this->mtth_renderGlobals->scaleFactor;
+		focusDistance *= renderGlobals->scaleFactor;
 		float fStop = getFloatAttr("fStop", camFn, 5.6f);
 
 		TheaSDK::Transform cameraPos;
@@ -34,7 +40,7 @@ void TheaRenderer::defineCamera()
 		TheaSDK::Transform tn;
 		cameraPos = cameraPos * tn.RotateX(-DegToRad(180.0));
 
-		if( this->mtth_renderGlobals->exportSceneFile )
+		if( renderGlobals->exportSceneFile )
 		{
 			TheaSDK::XML::Camera cam;
 			cam.name = obj->shortName.asChar();
@@ -47,7 +53,7 @@ void TheaRenderer::defineCamera()
 			
 			if( getBoolAttr("depthOfField", camFn, false))
 			{
-				if( this->mtth_renderGlobals->doDof)
+				if( renderGlobals->doDof)
 				{
 					cam.focusDistance = focusDistance;
 					cam.depthOfField = getFloatAttr("mtth_focusRange", camFn, 0.1);

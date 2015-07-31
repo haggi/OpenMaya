@@ -2,7 +2,7 @@
 #include <maya/MGlobal.h>
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
-#include "../mtin_common/mtin_renderGlobals.h"
+#include "renderGlobals.h"
 #include "world.h"
 
 static Logging logger;

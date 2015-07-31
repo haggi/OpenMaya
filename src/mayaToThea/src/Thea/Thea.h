@@ -23,10 +23,7 @@
 
 #include "TheaXMLUtil.h"
 
-class mtth_MayaScene;
-class mtth_RenderGlobals;
 class mtth_MayaObject;
-
 
 class TheaShadingNode
 {
@@ -85,15 +82,13 @@ class TheaRenderer : public MayaTo::Renderer
 {
 public:
 
-	mtth_MayaScene *mtth_scene;
-	mtth_RenderGlobals *mtth_renderGlobals;
-
 	TheaSDK::Scene scene;
 	TheaSDK::XML::Scene sceneXML;
 	bool isGood;
 
-	std::vector<mtth_MayaObject *> interactiveUpdateList;
-	std::vector<MObject> interactiveUpdateMOList;
+	//std::vector<std::shared_ptr<MayaObject>> interactiveUpdateList;
+	//std::vector<MObject> interactiveUpdateMOList;
+	virtual void interactiveFbCallback();
 
 	TheaRenderer();
 	~TheaRenderer();
@@ -107,14 +102,15 @@ public:
 	virtual void render();
 
 	virtual void initializeRenderer();
-	virtual void updateShape(MayaObject *obj);
-	virtual void updateTransform(MayaObject *obj);
+	virtual void unInitializeRenderer();
+	virtual void updateShape(std::shared_ptr<MayaObject> obj);
+	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
 	virtual void IPRUpdateEntities();
 	virtual void reinitializeIPRRendering();
 	virtual void abortRendering();
 
 	void defineMesh(mtth_MayaObject *obj);
-	void frameBufferCallback();
+	static void frameBufferCallback();
 	static void renderEndCallback( void *ptr );
 	void doTestRender();
 	void matrixToTransform(MMatrix& m, TheaSDK::Transform& t);

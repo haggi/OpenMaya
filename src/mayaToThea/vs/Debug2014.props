@@ -5,14 +5,14 @@
     <MAYA_VERSION>2014</MAYA_VERSION>
     <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0</BOOST_ROOT>
     <MAYA_ROOT>C:\Program Files\Autodesk\Maya$(MAYA_VERSION)</MAYA_ROOT>
-    <THEA_ROOT>H:\UserDatenHaggi\Documents\coding\OpenMaya\src\mayaToThea\devkit\TheaSDK_v1.3.05.1086\TheaSDK_v1.3.05.1086\Source</THEA_ROOT>
+    <THEA_ROOT>$(CODING_ROOT)\mayaToThea\devkit\TheaSDK\Source</THEA_ROOT>
   </PropertyGroup>
   <PropertyGroup>
     <OutDir>..\mtth_devmodule\$(MAYA_VERSION)\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(THEA_ROOT);$(BOOST_ROOT);$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THEA_ROOT);$(BOOST_ROOT)/include;$(MAYA_ROOT)\include;..\..\common\cpp</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -20,7 +20,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(THEA_ROOT)/Workspace/lib_vc10;$(BOOST_ROOT)/lib64-msvc-10.0;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(THEA_ROOT)/SDK/lib;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;TheaSDK_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />

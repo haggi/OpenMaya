@@ -15,8 +15,9 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "../mtth_common/mtth_mayaScene.h"
+#include "mayaScene.h"
 #include "../mtth_common/mtth_mayaObject.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -62,6 +63,11 @@ static Logging logger;
 
 void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+
 	MObject meshObject = obj->mobject;
 	MStatus stat = MStatus::kSuccess;
 	MFnMesh meshFn(meshObject, &stat);
@@ -88,7 +94,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 		float2 uv;
 		if( !s )
 		{
-			logger.debug(MString("Error: ") + s.errorString());
+			Logging::debug(MString("Error: ") + s.errorString());
 			continue;
 		}
 		vertexNormals.append(n);
@@ -97,7 +103,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 		if( !s )
 		{
 			validUvs = false;
-			logger.debug(MString("Error: ") + s.errorString());
+			Logging::debug(MString("Error: ") + s.errorString());
 			continue;
 		}
 		vtxU.append(uv[0]);
@@ -107,12 +113,12 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 	MFloatArray uArray, vArray;
 	meshFn.getUVs(uArray, vArray);
 
-	logger.debug(MString("Translating mesh object ") + meshFn.name().asChar());
+	Logging::debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
 
-	logger.debug(MString("numVtx ") + points.length() + " numNormals " + vertexNormals.length() + " numUv " + vtxU.length());
+	Logging::debug(MString("numVtx ") + points.length() + " numNormals " + vertexNormals.length() + " numUv " + vtxU.length());
 
-	if( this->mtth_renderGlobals->exportSceneFile )
+	if( renderGlobals->exportSceneFile )
 	{
 		obj->xmlMesh = boost::shared_ptr<TheaSDK::XML::TriangularMesh>(new TheaSDK::XML::TriangularMesh);
 		obj->xmlMesh->name=obj->shortName.asChar();
@@ -123,7 +129,7 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 		{
 			obj->xmlMesh->pointList.push_back(TheaSDK::MeshPoint3D(points[ptId].x,points[ptId].y,points[ptId].z));
 			//obj->xmlMesh->normalList.push_back(TheaSDK::Normal3D(vertexNormals[ptId].x,vertexNormals[ptId].y,vertexNormals[ptId].z));
-			//logger.debug(MString("pt ") + ptId + " normal: " + vertexNormals[ptId].x + " " + vertexNormals[ptId].y + " " + vertexNormals[ptId].z);
+			//Logging::debug(MString("pt ") + ptId + " normal: " + vertexNormals[ptId].x + " " + vertexNormals[ptId].y + " " + vertexNormals[ptId].z);
 			if( validUvs )
 				obj->xmlMesh->uvMap[0].push_back(TheaSDK::UVPair(vtxU[ptId], vtxV[ptId]));
 		}
@@ -190,7 +196,12 @@ void TheaRenderer::defineMesh( mtth_MayaObject *obj)
 
 void TheaRenderer::defineGeometry()
 {
-	if( this->mtth_renderGlobals->exportSceneFile )
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
+
+	if (renderGlobals->exportSceneFile)
 	{
 		TheaSDK::XML::BasicBSDF grayBsdf;
 		grayBsdf.setDiffuseTexture(TheaSDK::XML::RgbTexture(0.5f,0.5f,0.5f));
@@ -200,9 +211,9 @@ void TheaRenderer::defineGeometry()
 		sceneXML.addMaterial(grayMat);
 	}
 
-	for( size_t objId = 0; objId < this->mtth_scene->objectList.size(); objId++)
+	for( auto mobj:scene->objectList)
 	{
-		mtth_MayaObject *obj = (mtth_MayaObject *)this->mtth_scene->objectList[objId];
+		std::shared_ptr<mtth_MayaObject> obj = std::static_pointer_cast<mtth_MayaObject>(mobj);
 
 		if( !obj->visible )
 			continue;
@@ -213,16 +224,17 @@ void TheaRenderer::defineGeometry()
 		MString objName;
 		if( obj->instanceNumber > 0)
 		{
-			if( this->mtth_renderGlobals->exportSceneFile )
+			if( renderGlobals->exportSceneFile )
 			{
 				if( obj->origObject != NULL )
 				{
-					objName = ((mtth_MayaObject *)obj->origObject)->xmlMesh->name.c_str();
+					std::shared_ptr<mtth_MayaObject> orig = std::static_pointer_cast<mtth_MayaObject>(obj->origObject);
+					objName = orig->xmlMesh->name.c_str();
 				}
 			}
 		}else{
-			defineMesh(obj);
-			if( this->mtth_renderGlobals->exportSceneFile )
+			defineMesh(obj.get());
+			if( renderGlobals->exportSceneFile )
 			{	
 				if( obj->xmlMesh )
 				{
@@ -232,26 +244,26 @@ void TheaRenderer::defineGeometry()
 			}
 		}
 
-		if( this->mtth_renderGlobals->exportSceneFile )
+		if( renderGlobals->exportSceneFile )
 		{	
 			obj->xmlModel = boost::shared_ptr<TheaSDK::XML::Model>(new TheaSDK::XML::Model(obj->parent->shortName.asChar()));
-			this->defineShader(obj);
+			this->defineShader(obj.get());
 			//obj->xmlModel->materialName="DefaultMat";
 
 			obj->xmlModel->surface = TheaSDK::XML::Surface(TheaSDK::XML::SurfaceInstance(objName.asChar()));
 
 			TheaSDK::Transform objBasePos;
-			MMatrix modelTransform = obj->transformMatrices[0] * this->mtth_renderGlobals->globalConversionMatrix;
+			MMatrix modelTransform = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
 			matrixToTransform(modelTransform, objBasePos);
 			obj->xmlModel->frame = objBasePos;
 
-			if( this->mtth_renderGlobals->doMb )
+			if( renderGlobals->doMb )
 			{
 				TheaSDK::Transform objBasePosInverse = objBasePos.inverse();
 				TheaSDK::Transform objPos;
 				for( size_t mId = 0; mId < obj->transformMatrices.size(); mId++)
 				{
-					MMatrix m = obj->transformMatrices[mId] * this->mtth_renderGlobals->globalConversionMatrix;
+					MMatrix m = obj->transformMatrices[mId] * renderGlobals->globalConversionMatrix;
 					matrixToTransform(m, objPos);
 					obj->xmlModel->motion.addFrame(mId, objBasePosInverse * objPos);
 				}

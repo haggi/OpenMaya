@@ -5,8 +5,8 @@ import pymel.core as pm
 
 log = logging.getLogger("mtTheaLogger")
 
-def compileOSLShaders():
-    oslShaderPath = path.path("H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders")
+def compileOSLShaders(renderer="Corona"):
+    oslShaderPath = path.path("H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaTo{0}/mt{1}_devmodule/shaders".format(renderer, renderer[:2].lower()))
     oslShadersToCompile = []
     for p in oslShaderPath.listdir("*.osl"):
         oslFile = path.path(p)

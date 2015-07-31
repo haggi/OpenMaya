@@ -1,8 +1,8 @@
 #include "Thea.h"
 #include <map>
 #include <SDK/Integration/sdk.basics.h>
-#include "../mtth_common/mtth_renderGlobals.h"
-#include "../mtth_common/mtth_mayaScene.h"
+#include "renderGlobals.h"
+#include "mayaScene.h"
 #include "../mtth_common/mtth_mayaObject.h"
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
@@ -10,6 +10,7 @@
 #include "shadingtools/shadingUtils.h"
 #include "shadingtools/material.h"
 #include "TheaXMLUtil.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -23,7 +24,12 @@ static std::vector<Object> objList;
 
 void TheaRenderer::createDefaultMaterial()
 {
-	if( this->mtth_renderGlobals->exportSceneFile )
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
+
+	if( renderGlobals->exportSceneFile )
 	{
 		TheaSDK::XML::BasicBSDF grayBsdf;
 		grayBsdf.setDiffuseTexture(TheaSDK::XML::RgbTexture(1.0f,0.3f,0.7f));
@@ -36,17 +42,17 @@ void TheaRenderer::createDefaultMaterial()
 
 bool TheaRenderer::assignDefinedShader(mtth_MayaObject *obj, Material& mat)
 {
-	logger.debug(MString("assignDefinedShader - search for materials surface shader ") + mat.materialName);
+	Logging::debug(MString("assignDefinedShader - search for materials surface shader ") + mat.materialName);
 	if( mat.surfaceShaderNet.shaderList.size() > 0 )
 	{
 		ShadingNode surfaceShader = mat.surfaceShaderNet.shaderList.back();
-		logger.debug(MString("search for surface shader ") + surfaceShader.fullName);
+		Logging::debug(MString("search for surface shader ") + surfaceShader.fullName);
 		TheaShadingNode tsn;
 		if( theaShadingMap.find(surfaceShader.fullName.asChar(), tsn))
 		{
 			if( tsn.type == TheaShadingNode::MATERIAL )
 			{
-				logger.debug(MString("Found existing surface shader: ") + surfaceShader.fullName);
+				Logging::debug(MString("Found existing surface shader: ") + surfaceShader.fullName);
 				obj->xmlModel->materialName = (XMATPTR tsn.data)->getName();
 				return true;
 			}
@@ -95,7 +101,7 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 				Object co = objList[oId];
 				if (co.mayaName == shaderName)
 				{
-					logger.debug(MString("Found connected layer shader: ") + shaderName + " in layer " + lId);
+					Logging::debug(MString("Found connected layer shader: ") + shaderName + " in layer " + lId);
 					co.identifier = MString("./Layer #") + lId + "/" + co.mayaName;
 					//o.childObjectList.push_back(co);
 					o.LayerList.push_back(co);
@@ -104,7 +110,7 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 				{
 					if (co.mayaName == textureName)
 					{
-						logger.debug(MString("Found connected layer textureName: ") + textureName + " in layer " + lId);
+						Logging::debug(MString("Found connected layer textureName: ") + textureName + " in layer " + lId);
 						co.identifier = MString("./Weight Map #") + lId + "/" + co.mayaName;
 						//o.childObjectList.push_back(co);	
 						o.LayerTextureList.push_back(co);
@@ -178,19 +184,19 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 
 			MPlug directPlug = getDirectConnectedPlug(sa.name.c_str(), depFn, true);
 			MString nodeName = getObjectName(directPlug.node());
-			logger.debug(MString("Search for connected obj ") + nodeName);
+			Logging::debug(MString("Search for connected obj ") + nodeName);
 			for( size_t oId = 0; oId < objList.size(); oId++)
 			{
 				Object co = objList[oId];
 				if (co.mayaName == nodeName)
 				{
-					logger.debug(MString("Found connected obj ") + co.mayaName);
+					Logging::debug(MString("Found connected obj ") + co.mayaName);
 					if(co.type == "Texture" )
 					{
 						if( sa.type == "color" )
 						{
 							//"./Diffuse/Bitmap Texture"
-							logger.debug(MString("found bitmap texture ") + sa.name.c_str());
+							Logging::debug(MString("found bitmap texture ") + sa.name.c_str());
 							co.identifier = MString("./") + getTexMap(sa.name) + "/" + co.identifier;
 						}else{
 							//"./Roughness Map/Bitmap Texture"
@@ -217,23 +223,28 @@ void TheaRenderer::assignObjParameters(ShadingNode& sn, Object& o)
 
 void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 {
-	logger.debug("createTheaShadingNode");
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
+
+	Logging::debug("createTheaShadingNode");
 	MFnDependencyNode depFn(sn.mobject);
 	initMaps();
 
 
 	if (sn.typeName == "TheaMaterial")
 	{
-		logger.debug(MString("Defining theaMaterial: ") + sn.fullName);
+		Logging::debug(MString("Defining theaMaterial: ") + sn.fullName);
 
-		if (this->mtth_renderGlobals->exportSceneFile)
+		if (renderGlobals->exportSceneFile)
 		{
 			// reuse already defined materials
 			for (size_t oId = 0; oId < objList.size(); oId++)
 			{
 				if (objList[oId].mayaName == sn.fullName)
 				{
-					logger.debug(MString("Reusing material ") + sn.fullName);
+					Logging::debug(MString("Reusing material ") + sn.fullName);
 					obj->xmlModel->materialName = sn.fullName.asChar();
 					return;
 				}
@@ -247,7 +258,7 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 			Object o(sn.fullName, sn.fullName, "Material", "Physically Layered Material", "Physically Layered Material");
 			assignObjParameters(sn, o);
 			o.integrate = true;
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 
 			material->setRawXMLDescription(o.get().asChar());
@@ -257,8 +268,8 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 		}
 	}
 	else if (sn.typeName == "BasicBSDF"){
-		logger.debug(MString("Defining BasicBSDF: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining BasicBSDF: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Material", "Basic Material", "Basic Material");
 			assignObjParameters(sn, o);
@@ -266,8 +277,8 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 		}
 	}
 	else if (sn.typeName == "DiffuseLight"){
-		logger.debug(MString("Defining Diffuse emitter: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining Diffuse emitter: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Emittance", "Diffuse Light", "Diffuse Light");
 			assignObjParameters(sn, o);
@@ -275,8 +286,8 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 		}
 	}
 	else if (sn.typeName == "GlossyBSDF"){
-		logger.debug(MString("Defining GlossyBSDF: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining GlossyBSDF: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Material", "Glossy Material", "Glossy Material");
 			assignObjParameters(sn, o);
@@ -285,137 +296,137 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 		}
 	}
 	else if (sn.typeName == "file"){
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Bitmap Texture", "Bitmap Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaBlackBody"){
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "BlackBody Texture", "BlackBody Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaChecker")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Checker Texture", "Checker Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaConcentric")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Concentric Texture", "Concentric Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaCurl")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Curl Texture", "Curl Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaGradient")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Gradient Texture", "Gradient Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaMarble")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Marble Texture", "Marble Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaPerlin")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Perlin Texture", "Perlin Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaVoronoi")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Voronoi Texture", "Voronoi Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaWindy")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Windy Texture", "Windy Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaWireframe")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Wireframe Texture", "Wireframe Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "TheaWood")
 	{
-		logger.debug(MString("Defining file: ") + sn.fullName);
-		if (this->mtth_renderGlobals->exportSceneFile)
+		Logging::debug(MString("Defining file: ") + sn.fullName);
+		if (renderGlobals->exportSceneFile)
 		{
 			Object o(sn.fullName, sn.fullName, "Texture", "Wood Texture", "Wood Texture");
 			assignObjParameters(sn, o);
-			logger.debug(o.get());
+			Logging::debug(o.get());
 			objList.push_back(o);
 		}
 	}
 	else if (sn.typeName == "lambert"){
-		if (this->mtth_renderGlobals->exportSceneFile)
+		if (renderGlobals->exportSceneFile)
 		{
 			TheaSDK::XML::Material *lambMat = new TheaSDK::XML::Material;
 
@@ -436,7 +447,7 @@ void TheaRenderer::createTheaShadingNode(ShadingNode& sn, mtth_MayaObject *obj)
 		}
 	}
 	else{
-		if( this->mtth_renderGlobals->exportSceneFile )
+		if (renderGlobals->exportSceneFile)
 		{
 			obj->xmlModel->materialName="DefaultMaterial";
 		}
@@ -458,7 +469,7 @@ void TheaRenderer::defineShader(mtth_MayaObject *obj)
 		for( int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++ )
 		{
 			ShadingNode sn = mat.surfaceShaderNet.shaderList[shadingNodeId];
-			logger.debug(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
+			Logging::debug(MString("SNode Id: ") + shadingNodeId + " " + sn.fullName);
 			this->createTheaShadingNode(mat.surfaceShaderNet.shaderList[shadingNodeId], obj);
 		}
 	}

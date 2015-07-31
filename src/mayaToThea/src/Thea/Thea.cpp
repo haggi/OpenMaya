@@ -5,14 +5,16 @@
 #include "utilities/logging.h"
 #include "utilities/pystring.h"
 #include "utilities/tools.h"
-#include "../mtth_common/mtth_mayaScene.h"
+#include "mayaScene.h"
+#include "renderGlobals.h"
+#include "world.h"
 
 TheaRenderer::TheaRenderer()
 {
 	isGood = true;
 	
-	if(!TheaSDK::Init())
-		isGood = false;
+	//if(!TheaSDK::Init())
+	//	isGood = false;
 }
 
 TheaRenderer::~TheaRenderer()
@@ -26,22 +28,29 @@ void TheaRenderer::renderEndCallback( void *ptr )
 
 }
 
+void TheaRenderer::interactiveFbCallback(){}
+
 void TheaRenderer::render()
 {
 	clearMaterialLists();
 
-	MString fileName = this->mtth_scene->getFileName();
-	this->mtth_renderGlobals->exportSceneFile = true; // trigger use of XML commands
-	if( this->mtth_renderGlobals->exportSceneFile )
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
+	MString fileName = scene->getFileName();
+	renderGlobals->exportSceneFile = true; // trigger use of XML commands
+	if (renderGlobals->exportSceneFile)
 		this->sceneXML = TheaSDK::XML::Scene(fileName.asChar());
 	else
 		this->scene = TheaSDK::Scene::New(fileName.asChar());
 
 	MString moduleDir = getRendererHome();
-	MString gpuDriver = moduleDir + "bin/Plugins/Presto/presto-x64.dll";
-	MString cpuDriver = moduleDir + "bin/Plugins/Presto/presto-x86-x64.dll";
+	MString gpuDriver = moduleDir + "bin/Plugins/Presto/presto-x64.cuda.dll";
+	MString cpuDriver = moduleDir + "bin/Plugins/Presto/presto-x64.cpu.dll";
 
-	bool gpuSuccess = TheaSDK::Kernel::Root().initPrestoGPUDriver(gpuDriver.asChar());
+	bool gpuSuccess = TheaSDK::Kernel::Root().initPrestoCUDADriver(gpuDriver.asChar());
 	bool cpuSuccess = TheaSDK::Kernel::Root().initPrestoCPUDriver(cpuDriver.asChar());
 	if( !gpuSuccess )
 		Logging::error("Unable to load presto gpu driver.");
@@ -51,7 +60,6 @@ void TheaRenderer::render()
 	if(!isGood )
 	{
 		EventQueue::Event e;
-		e.data = NULL;
 		e.type = EventQueue::Event::FRAMEDONE;
 		theRenderEventQueue()->push(e);
 		return;
@@ -63,7 +71,7 @@ void TheaRenderer::render()
 	this->defineLights();
 	this->defineEnvironment();
 	
-	if( this->mtth_renderGlobals->exportSceneFile )
+	if (renderGlobals->exportSceneFile)
 	{
 		std::string currentFile = MFileIO::currentFile().asChar();
 		std::vector<std::string> parts;
@@ -80,12 +88,18 @@ void TheaRenderer::render()
 
 	volatile bool isrendering=true;
 
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
+	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
+
 	// don't start asynchronus because we are in a seperate task anyway
 	bool ok = TheaSDK::StartRendering(renderEndCallback, (void *)this, false, false);
+	framebufferCallback();
 
-	this->mtth_renderGlobals->getImageName();
-	MString filename = this->mtth_renderGlobals->imageOutputFile.asChar();
-	std::string imgFormatExt = this->mtth_renderGlobals->imageOutputFile.toLowerCase().asChar();
+	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
+
+	renderGlobals->getImageName();
+	MString filename = renderGlobals->imageOutputFile.asChar();
+	std::string imgFormatExt = renderGlobals->imageOutputFile.toLowerCase().asChar();
 	std::vector<std::string> fileParts;
 	pystring::split(imgFormatExt, fileParts, ".");
 	std::string ext = fileParts.back();
@@ -94,16 +108,17 @@ void TheaRenderer::render()
 	TheaSDK::SaveImage(filename.asChar());
 
 	EventQueue::Event e;
-	e.data = NULL;
 	e.type = EventQueue::Event::FRAMEDONE;
 	theRenderEventQueue()->push(e);
 }
 
 void TheaRenderer::initializeRenderer()
 {}
-void TheaRenderer::updateShape(MayaObject *obj)
+void TheaRenderer::unInitializeRenderer()
 {}
-void TheaRenderer::updateTransform(MayaObject *obj)
+void TheaRenderer::updateShape(std::shared_ptr<MayaObject> obj)
+{}
+void TheaRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
 {}
 void TheaRenderer::IPRUpdateEntities()
 {}

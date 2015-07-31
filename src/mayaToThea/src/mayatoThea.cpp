@@ -3,15 +3,19 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mtth_common/mtth_mayaScene.h"
+#include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
-#include "threads/renderQueueWorker.h"
-#include "mayaSceneFactory.h"
-#include "mtth_common/mtth_renderGlobals.h"
+#include "world.h"
+#include "Thea/Version.h"
 
-static Logging logger;
+#include <fstream>
+#include <iostream>
+
+#if MAYA_API_VERSION >= 201600
+
+#endif
 
 void* MayaToThea::creator()
 {
@@ -26,22 +30,25 @@ MSyntax MayaToThea::newSyntax()
 	MSyntax syntax;
 	MStatus stat;
 
-	stat = syntax.addFlag( "-cam", "-camera", MSyntax::kString);
-	stat = syntax.addFlag( "-wi", "-width", MSyntax::kLong);
-	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
+	stat = syntax.addFlag("-cam", "-camera", MSyntax::kString);
+	stat = syntax.addFlag("-s", "-state");
+	stat = syntax.addFlag("-ver", "-version");
+	stat = syntax.addFlag("-ci", "-canDoIPR");
+	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
+	stat = syntax.addFlag("-hi", "-height", MSyntax::kLong);
 	// Flag -startIPR
-	stat = syntax.addFlag( "-sar", "-startIpr");
+	stat = syntax.addFlag("-sar", "-startIpr");
 	// Flag -stopIPR
-	syntax.addFlag( "-str", "-stopIpr");
+	syntax.addFlag("-str", "-stopIpr");
 	// Flag -pauseIPR
-	syntax.addFlag( "-par", "-pauseIpr");
-	
+	syntax.addFlag("-par", "-pauseIpr");
+
 	return syntax;
 }
 
 void MayaToThea::setLogLevel()
 {
-	MObject globalsObj = objectFromName("theaGlobals");
+	MObject globalsObj = getRenderGlobalsNode();
 	if (globalsObj == MObject::kNullObj)
 	{
 		Logging::setLogLevel(Logging::Debug);
@@ -52,85 +59,111 @@ void MayaToThea::setLogLevel()
 	Logging::setLogLevel((Logging::LogLevel)logLevel);
 }
 
-
-MStatus MayaToThea::doIt( const MArgList& args)
+MStatus MayaToThea::doIt(const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
-	MGlobal::displayInfo("Executing mayaToThea...");
-	
-	setLogLevel();
-	
+
 	MArgDatabase argData(syntax(), args);
-	
-	int width = -1;
-	int height = -1;
 
-	MayaScene *mayaScene = MayaTo::MayaSceneFactory().getMayaScene();
-
-	if( !mayaScene->good )
+	if (argData.isFlagSet("-version", &stat))
 	{
-		logger.error("Problems have occurred during creation of mayaScene(). Sorry cannot proceed.\n\n");
-		MayaTo::MayaSceneFactory().deleteMaysScene();
-		return MS::kFailure;
+		MStringArray res;
+		for (auto v : getFullVersionString())
+			res.append(v.c_str());
+		setResult(res);
+
+		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-width", &stat))
+	MGlobal::displayInfo("Executing mayaToThea...");
+	setLogLevel();
+
+	if (argData.isFlagSet("-state", &stat))
 	{
-		argData.getFlagArgument("-width", 0, width);
-		logger.debug(MString("width: ") + width);
-		if( width > 0 )
-			mayaScene->renderGlobals->imgWidth = width;
+		Logging::debug(MString("state: ???"));
+		MayaTo::MayaToWorld::WorldRenderState rstate = MayaTo::getWorldPtr()->renderState;
+		if (rstate == MayaTo::MayaToWorld::RSTATETRANSLATING)
+			setResult("rstatetranslating");
+		if (rstate == MayaTo::MayaToWorld::RSTATERENDERING)
+			setResult("rstaterendering");
+		if (rstate == MayaTo::MayaToWorld::RSTATEDONE)
+			setResult("rstatedone");
+		if (rstate == MayaTo::MayaToWorld::RSTATENONE)
+			setResult("rstatenone");
+		if (rstate == MayaTo::MayaToWorld::RSTATESTOPPED)
+			setResult("rstatestopped");
+		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-height", &stat))
+	if (argData.isFlagSet("-canDoIPR", &stat))
 	{
-		argData.getFlagArgument("-height", 0, height);
-		logger.debug(MString("height: ") + height);
-		if( height > 0 )
-			mayaScene->renderGlobals->imgHeight = height;
+		if (MayaTo::getWorldPtr()->canDoIPR())
+			setResult("yes");
+		else
+			setResult("no");
+		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-stopIpr", &stat))
+	if (argData.isFlagSet("-stopIpr", &stat))
 	{
-		logger.debug(MString("-stopIpr"));
+		Logging::debug(MString("-stopIpr"));
 		EventQueue::Event e;
 		e.type = EventQueue::Event::IPRSTOP;
 		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-pauseIpr", &stat))
+	if (argData.isFlagSet("-pauseIpr", &stat))
 	{
-		logger.debug(MString("-pauseIpr"));
-		logger.debug(MString("-stopIpr"));
+		Logging::debug(MString("-pauseIpr"));
+		Logging::debug(MString("-stopIpr"));
 		EventQueue::Event e;
 		e.type = EventQueue::Event::IPRPAUSE;
 		theRenderEventQueue()->push(e);
 		return MS::kSuccess;
 	}
 
-	if ( argData.isFlagSet("-startIpr", &stat))
+	// I have to request useRenderRegion here because as soon the command is finished, what happens immediatly after the command is 
+	// put into the queue, the value is set back to false.
+	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
+	MObject drg = objectFromName("defaultRenderGlobals");
+	MFnDependencyNode drgfn(drg);
+	cmdArgs->useRenderRegion = drgfn.findPlug("useRenderRegion").asBool();
+
+
+	if (argData.isFlagSet("-startIpr", &stat))
 	{
-		logger.debug(MString("-startIpr"));
-		mayaScene->setRenderType(MayaScene::IPR);
+		Logging::debug(MString("-startIpr"));
+		cmdArgs->renderType = MayaTo::MayaToWorld::WorldRenderType::IPRRENDER;
 	}
-	
-	if ( argData.isFlagSet("-camera", &stat))
+
+	if (argData.isFlagSet("-width", &stat))
 	{
-	    MDagPath camera;
-        MSelectionList selectionList;
+		argData.getFlagArgument("-width", 0, cmdArgs->width);
+		Logging::debug(MString("width: ") + cmdArgs->width);
+	}
+
+	if (argData.isFlagSet("-height", &stat))
+	{
+		argData.getFlagArgument("-height", 0, cmdArgs->height);
+		Logging::debug(MString("height: ") + cmdArgs->height);
+	}
+
+	if (argData.isFlagSet("-camera", &stat))
+	{
+		MDagPath camera;
+		MSelectionList selectionList;
 		argData.getFlagArgument("-camera", 0, selectionList);
-        stat = selectionList.getDagPath(0, camera);
+		stat = selectionList.getDagPath(0, camera);
 		camera.extendToShape();
-		logger.debug(MString("camera: ") + camera.fullPathName());
-		mayaScene->setCurrentCamera(camera);
-	}			
+		Logging::debug(MString("camera: ") + camera.fullPathName());
+		cmdArgs->cameraDagPath = camera;
+	}
 
 	EventQueue::Event e;
+	e.cmdArgsData = std::move(cmdArgs);
 	e.type = EventQueue::Event::INITRENDER;
 	theRenderEventQueue()->push(e);
-	
-	RenderQueueWorker::startRenderQueueWorker();
-	
+
 	return MStatus::kSuccess;
 }

@@ -85,7 +85,6 @@
     <Link>
       <AdditionalOptions>/subsystem:windows /dll /debug /export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
       <ProgramDatabaseFile>Debug/mayaToThea.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>$(THEA_ROOT)/Workspace/lib_vc12;$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent />
   </ItemDefinitionGroup>
@@ -128,14 +127,22 @@
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayarendernodes\standinMeshNode.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaScene.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp" />
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp" />
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp" />
     <ClCompile Include="..\..\common\cpp\rendering\renderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\material.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
@@ -146,7 +153,9 @@
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
     <ClCompile Include="..\..\common\cpp\world.cpp" />
-    <ClCompile Include="..\src\mtth_common\mtth_mayaSceneFactory.cpp" />
+    <ClCompile Include="..\src\mtth_common\mtth_mayaObjectFactory.cpp" />
+    <ClCompile Include="..\src\mtth_common\mtth_mayaRenderer.cpp" />
+    <ClCompile Include="..\src\mtth_common\mtth_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtth_common\mtth_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\shaders\BasicBSDFMaterial.cpp" />
     <ClCompile Include="..\src\shaders\BasicBSDFMaterialOverride.cpp" />
@@ -222,6 +231,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\rendercmd.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\renderGlobalsNode.h" />
     <ClInclude Include="..\..\common\cpp\mayarendernodes\standinLocatorNode.h" />
@@ -230,7 +240,11 @@
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\renderGlobals.h" />
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h" />
     <ClInclude Include="..\..\common\cpp\rendering\renderer.h" />
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h" />
+    <ClInclude Include="..\..\common\cpp\renderProcess.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\material.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
@@ -238,6 +252,7 @@
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
@@ -248,6 +263,7 @@
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\..\common\cpp\world.h" />
+    <ClInclude Include="..\src\mtth_common\mtth_mayaRenderer.h" />
     <ClInclude Include="..\src\shaders\BasicBSDFMaterial.h" />
     <ClInclude Include="..\src\shaders\BasicBSDFMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\BssdfBSDFMaterial.h" />
@@ -294,6 +310,7 @@
     <ClInclude Include="..\src\Thea\TheaXMLUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\src\Thea\Version.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\mtth_devmodule\ressources\CornellBox.xml" />

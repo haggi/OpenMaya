@@ -235,8 +235,6 @@
     <ClCompile Include="..\src\mtin_common\mtin_rendererFactory.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_swatchRenderer.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_mayaObject.cpp" />
-    <ClCompile Include="..\src\mtin_common\mtin_mayaScene.cpp" />
-    <ClCompile Include="..\src\mtin_common\mtin_renderGlobals.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobalsNode.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_swtchesInterfaceFactory.cpp" />
     <ClCompile Include="..\src\mtin_common\mtin_world.cpp" />
@@ -308,8 +306,6 @@
     <ClInclude Include="..\src\mayaToIndigo.h" />
     <ClInclude Include="..\src\mtin_common\mtin_swatchRenderer.h" />
     <ClInclude Include="..\src\mtin_common\mtin_mayaObject.h" />
-    <ClInclude Include="..\src\mtin_common\mtin_mayaScene.h" />
-    <ClInclude Include="..\src\mtin_common\mtin_renderGlobals.h" />
     <ClInclude Include="..\src\mtin_common\mtin_renderGlobalsNode.h" />
     <ClInclude Include="..\src\shaders\inBlendMaterial.h" />
     <ClInclude Include="..\src\shaders\inBlendMaterialOverride.h" />

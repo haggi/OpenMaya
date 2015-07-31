@@ -1,6 +1,5 @@
 #include "Indigo.h"
 #include "IndigoImgExport.h"
-#include "../mtin_common/mtin_renderGlobals.h"
 #include "renderGlobals.h"
 #include "threads/renderQueueWorker.h"
 #include "utilities/logging.h"
@@ -33,6 +32,7 @@
 #include <IndigoLock.h>
 #include <IndigoHardwareInfo.h>
 #include <IndigoMaterialSerialisation.h>
+#include <IndigoDataManager.h>
 
 #include <iostream>
 #include <fstream>
@@ -45,9 +45,6 @@ static Logging logger;
 
 void writeUInt8BufferToBMP(const Indigo::String& path, uint8* buffer, size_t w, size_t h);
 void writeFloatBufferToBMP(const Indigo::String& path, float* buffer, size_t w, size_t h);
-
-
-
 
 const size_t render_width = 800;
 const size_t render_height = 600;
@@ -115,7 +112,34 @@ void IndigoRenderer::render()
 		return;
 	}
 
-	
+	// Get GPU Info and Hardware ID.  This is just here for demonstration purposes and is not needed to start the render.
+	{
+		Indigo::HardwareInfoRef hw_info(new Indigo::HardwareInfo(context));
+
+		//
+		// Get GPU Info.
+		Indigo::Handle<Indigo::GPUInfoList> GPUinfos = hw_info->queryGPUInfo();
+
+		// Do something with it.
+		Indigo::Vector<Indigo::GPUInfo> gpu_info_copy = GPUinfos->getGPUInfos();
+
+		//
+		// Get hardware ID
+		Indigo::Handle<Indigo::HardwareIdentifier> hardwareID = hw_info->getHardwareIdentifier();
+
+		// Hardware ID is empty. There was an error.
+		if (hardwareID->getHardwareID().empty())
+		{
+			const Indigo::String error_string = hardwareID->getError();
+		}
+		else
+		{
+			// Great success.
+			const Indigo::String hw_id_string = hardwareID->getHardwareID();
+		}
+	}
+
+
 	// Create the renderer
 	//Indigo::RendererRef renderer(new Indigo::Renderer(context));
 	rendererRef = Indigo::RendererRef(new Indigo::Renderer(context));
@@ -178,8 +202,9 @@ void IndigoRenderer::render()
 		theRenderEventQueue()->push(e);
 		return;
 	}
+	Indigo::DataManagerRef data_manager = new Indigo::DataManager(context);
 
-	result = rendererRef->initialiseWithScene(sceneRootRef, render_buffer, command_line_args); // Non-blocking.
+	result = rendererRef->initialiseWithScene(sceneRootRef, render_buffer, command_line_args, data_manager); // Non-blocking.
 	if(result != Indigo::INDIGO_SUCCESS)
 	{
 		std::cerr << "Renderer failed to initialise(), error code: " << result << std::endl;

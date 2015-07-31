@@ -30,9 +30,8 @@
 #include "textures/synthesis.h"
 #include "textures/blackBody.h"
 
-
 #include "world.h"
-
+#include "Thea\Version.h"
 
 static const MString swatchName("TheaRenderSwatch");
 static const MString swatchFullName(":swatch/TheaRenderSwatch");
@@ -75,15 +74,27 @@ static const MString SynthesisClassification("Thea/texture/TheaSynthesis");
 static const MString BlackbodyClassification("Thea/texture/TheaBlackbody");
 
 #define VENDOR "haggis vfx & animation"
-#define VERSION "0.02"
 
 MStatus initializePlugin( MObject obj )
 {
 	const MString	UserClassify( "shader/surface" );
 
-	MGlobal::displayInfo(MString("Loading plugin MayaToThea version: ") + MString(VERSION));
+	if (!TheaSDK::Init())
+	{
+			cerr << "cannot init TheaSDK \n";
+			return MS::kFailure;
+	}
+
+	std::vector<std::string> versionStrings = getFullVersionString();
+	MGlobal::displayInfo(MString("MayaToCorona version: ") + versionStrings[0].c_str());
+	MGlobal::displayInfo(MString("Thea Version: ") + +versionStrings[1].c_str());
+	MGlobal::displayInfo(MString("Thea Version Number: ") + +versionStrings[2].c_str());
+	MGlobal::displayInfo(MString("Thea Edition ") + +versionStrings[3].c_str());
+	MGlobal::displayInfo(MString("BOOST ") + +versionStrings[4].c_str());
+
+	MGlobal::displayInfo(MString("Loading plugin MayaToThea version: ") + MString(versionStrings[0].c_str()));
 	MStatus   status;
-	MFnPlugin plugin( obj, VENDOR, VERSION, "Any");
+	MFnPlugin plugin(obj, VENDOR, versionStrings[0].c_str(), "Any");
 
 
 #ifdef HAS_OVERRIDE
@@ -154,7 +165,7 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-	defineWorld();
+	MayaTo::defineWorld();
 
 	return status;
 }

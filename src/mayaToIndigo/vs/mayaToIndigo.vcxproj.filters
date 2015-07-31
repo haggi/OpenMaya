@@ -21,9 +21,6 @@
     <Filter Include="common\mayarendernodes">
       <UniqueIdentifier>{8580b335-0787-4bf6-88a9-a50a4fe96c23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ressources">
-      <UniqueIdentifier>{f40734d1-1307-4116-8ce5-7bd286f02559}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Indigo">
       <UniqueIdentifier>{831bd360-ab0c-4180-b2e7-a04f84982b9c}</UniqueIdentifier>
     </Filter>
@@ -47,6 +44,9 @@
     </Filter>
     <Filter Include="common\swatchesRenderer">
       <UniqueIdentifier>{3b0bf0bc-2e60-4e97-a7e5-5a5bd675175f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{f40734d1-1307-4116-8ce5-7bd286f02559}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,12 +114,6 @@
       <Filter>Source Files\Indigo</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mtin_common\mtin_mayaObject.cpp">
-      <Filter>mtin_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtin_common\mtin_mayaScene.cpp">
-      <Filter>mtin_common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mtin_common\mtin_renderGlobals.cpp">
       <Filter>mtin_common</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mtin_common\mtin_renderGlobalsNode.cpp">
@@ -346,12 +340,6 @@
     <ClInclude Include="..\src\mayatoIndigo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mtin_common\mtin_mayaScene.h">
-      <Filter>mtin_common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mtin_common\mtin_renderGlobals.h">
-      <Filter>mtin_common</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mtin_common\mtin_renderGlobalsNode.h">
       <Filter>mtin_common</Filter>
     </ClInclude>
@@ -496,19 +484,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="sourceCodeDocs\globalsNodeAttributes.txt">
-      <Filter>ressources</Filter>
+      <Filter>resources</Filter>
     </None>
     <None Include="sourceCodeDocs\materials.txt">
-      <Filter>ressources</Filter>
+      <Filter>resources</Filter>
     </None>
     <None Include="..\mtin_devmodule\ressources\shaderDefinitions.txt">
-      <Filter>ressources</Filter>
+      <Filter>resources</Filter>
     </None>
     <None Include="sourceCodeDocs\volumes.txt">
-      <Filter>ressources</Filter>
+      <Filter>resources</Filter>
     </None>
     <None Include="..\mtin_devmodule\ressources\releaseNotes.txt">
-      <Filter>ressources</Filter>
+      <Filter>resources</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -164,9 +164,6 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mtth_common\mtth_mayaSceneFactory.cpp">
-      <Filter>mtth_common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Thea\TestRenderer.cpp">
       <Filter>Source Files\Thea</Filter>
     </ClCompile>
@@ -271,6 +268,39 @@
     </ClCompile>
     <ClCompile Include="..\..\common\cpp\world.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderGlobalsFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\renderProcess.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
+      <Filter>common\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\threads\Compute.cpp">
+      <Filter>common\threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtth_common\mtth_mayaObjectFactory.cpp">
+      <Filter>mtth_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtth_common\mtth_mayaRenderer.cpp">
+      <Filter>mtth_common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mtth_common\mtth_rendererFactory.cpp">
+      <Filter>mtth_common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -468,6 +498,30 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\world.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\mayaObjectFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderGlobalsFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\renderProcess.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\rendererFactory.h">
+      <Filter>common\rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\threads\Compute.h">
+      <Filter>common\threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mtth_common\mtth_mayaRenderer.h">
+      <Filter>mtth_common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Thea\Version.h">
+      <Filter>Source Files\Thea</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

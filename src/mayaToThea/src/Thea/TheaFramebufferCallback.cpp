@@ -2,12 +2,17 @@
 #include <maya/MGlobal.h>
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
-#include "../mtth_common/mtth_renderGlobals.h"
+#include "renderGlobals.h"
+#include "world.h"
 
 static Logging logger;
 
 void TheaRenderer::frameBufferCallback()
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
 	EventQueue::Event e;
 
 	if( MGlobal::mayaState() == MGlobal::kBatch)
@@ -16,11 +21,15 @@ void TheaRenderer::frameBufferCallback()
 	if( !TheaSDK::CheckImageUpdate() )
 		return;
 
-	uint width = this->mtth_renderGlobals->imgWidth;
-	uint height = this->mtth_renderGlobals->imgHeight;
+	int width_, height_;
+	uint width, height;
+	renderGlobals->getWidthHeight(width_, height_);
+	width = width_;
+	height = height_;
 
 	size_t numPixels = width * height;
-	RV_PIXEL* pixels = new RV_PIXEL[numPixels];
+	std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
+	RV_PIXEL *pixels = pixelsPtr.get();
 
 	TheaSDK::Truecolor *data;
 	TheaSDK::GetBitmap(width,height,data,true);
@@ -41,7 +50,7 @@ void TheaRenderer::frameBufferCallback()
 	}
 	TheaSDK::ClearImageUpdate();
 	
-	e.data = pixels;
+	e.pixelData = pixelsPtr;
 	e.tile_xmin = 0;
 	e.tile_ymin = 0;
 	e.tile_xmax = width - 1;

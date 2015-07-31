@@ -5,8 +5,9 @@
 #include <SDK/Integration/sdk.plus.h>
 #include <SDK/XML/sdk.xml.importer.h>
 
-#include "../mtth_common/mtth_renderGlobals.h"
+#include "renderGlobals.h"
 #include "utilities/logging.h"
+#include "world.h"
 
 static Logging logger;
 
@@ -81,6 +82,11 @@ void SaveTemporaryImage(time_t &startTimer)
 
 void TheaRenderer::doTestRender()
 {
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	std::shared_ptr<MayaScene> scene = MayaTo::getWorldPtr()->worldScenePtr;
+
 	const char *filename = "H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToThea/mtth_devmodule/ressources/CornellBox.xml";
 
 	if (TheaSDK::Init()==false)
@@ -96,9 +102,10 @@ void TheaRenderer::doTestRender()
 		TheaSDK::Shutdown();
 		return;
 	}
-	
-	MString imgSize = MString() + this->mtth_renderGlobals->imgWidth + "x" + this->mtth_renderGlobals->imgHeight;
-	logger.info(MString("img size: ") + imgSize);
+	int width, height;
+	renderGlobals->getWidthHeight(width, height);
+	MString imgSize = MString() + width + "x" + height;
+	Logging::info(MString("img size: ") + imgSize);
 	if (TheaSDK::SetActiveNthCamera(0,imgSize.asChar())==false)
 	{
 		std::cout << "Can not set first active camera, perhaps there are no cameras defined!\n";
@@ -110,13 +117,6 @@ void TheaRenderer::doTestRender()
 
 	time_t startTimer;
 	time(&startTimer);
-
-	if (TheaSDK::ShowImage(true)==false)
-	{
-		std::cout << "Warning: can not show rendered image!\n";
-		std::cout.flush();
-	}
-
 
 // another loop that ends with a callback!
 	volatile bool isrendering=true;

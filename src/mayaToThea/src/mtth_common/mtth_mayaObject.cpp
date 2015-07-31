@@ -13,7 +13,7 @@ mtth_ObjectAttributes::mtth_ObjectAttributes()
 	objectMatrix.setToIdentity();
 }
 
-mtth_ObjectAttributes::mtth_ObjectAttributes(mtth_ObjectAttributes *other)
+mtth_ObjectAttributes::mtth_ObjectAttributes(std::shared_ptr<ObjectAttributes> other)
 {
 	if( other != NULL)
 	{
@@ -32,20 +32,16 @@ mtth_MayaObject::mtth_MayaObject(MObject& mobject) : MayaObject(mobject)
 
 mtth_MayaObject::mtth_MayaObject(MDagPath& mobject) : MayaObject(mobject)
 {
-	logger.debug(MString("created obj: ") + this->dagPath.fullPathName());
+	Logging::debug(MString("created obj: ") + this->dagPath.fullPathName());
 }
 
 mtth_MayaObject::~mtth_MayaObject()
-{
-	if( this->attributes != NULL)
-		delete (mtth_ObjectAttributes *)this->attributes;
-}
+{}
 
 void mtth_MayaObject::getMaterials()
 {
 	for( uint sgId = 0; sgId < this->shadingGroups.length(); sgId++)
-	{
-	}
+	{}
 }
 
 bool mtth_MayaObject::geometryShapeSupported()
@@ -64,9 +60,9 @@ bool mtth_MayaObject::geometryShapeSupported()
 //	e.g. lets say we assign a color to the top node of a hierarchy. Then all child nodes will be
 //	called and this method is used. 
 //
-mtth_ObjectAttributes *mtth_MayaObject::getObjectAttributes(ObjectAttributes *parentAttributes)
+std::shared_ptr<ObjectAttributes> mtth_MayaObject::getObjectAttributes(std::shared_ptr<ObjectAttributes> parentAttributes)
 {
-	mtth_ObjectAttributes *myAttributes = new mtth_ObjectAttributes((mtth_ObjectAttributes *)parentAttributes);
+	std::shared_ptr<ObjectAttributes> myAttributes = std::shared_ptr<ObjectAttributes>(new mtth_ObjectAttributes(parentAttributes));
 
 	if( this->hasInstancerConnection)
 	{

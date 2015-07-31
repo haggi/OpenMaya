@@ -1,17 +1,22 @@
 #include "Thea.h"
 #include <maya/MFnDependencyNode.h>
-#include "../mtth_common/mtth_mayaScene.h"
+#include "mayaScene.h"
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
 #include "utilities/tools.h"
 #include <SDK/XML/sdk.xml.environment.h>
 #include <SDK/Integration/sdk.basics.h>
+#include "world.h"
 
 static Logging logger;
 
 void TheaRenderer::defineIBLNode(TheaSDK::XML::EnvironmentOptions::IBLMap& iblMap, const char *attName)
 {
-	MObject fileNodeObject = getConnectedFileTextureObject(MString(attName),MFnDependencyNode(this->mtth_renderGlobals->renderGlobalsMobject));
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
+	MObject fileNodeObject = getConnectedFileTextureObject(MString(attName), depFn);
 	if(fileNodeObject != MObject::kNullObj)
 	{
 		MFnDependencyNode fileNode(fileNodeObject);
@@ -37,39 +42,54 @@ void TheaRenderer::defineIBLNode(TheaSDK::XML::EnvironmentOptions::IBLMap& iblMa
 
 TheaSDK::Normal3D TheaRenderer::getSunDirection()
 {
+	MFnDependencyNode depFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
 	TheaSDK::Normal3D sunDir;
 
-	MFnDependencyNode globalsNode(this->mtth_renderGlobals->renderGlobalsMobject);
 	MObjectArray nodeList;
-	getConnectedInNodes(MString("sunLightConnection"), this->mtth_renderGlobals->renderGlobalsMobject, nodeList);
+	getConnectedInNodes(MString("sunLightConnection"), getRenderGlobalsNode(), nodeList);
 	if( nodeList.length() > 0)	
 	{
 		MVector lightDir(0,0,1);
 		MFnDagNode sunDagNode(nodeList[0]);
 		//lightDir *= this->mtth_renderGlobals->globalConversionMatrix.inverse();
 		lightDir *= sunDagNode.transformationMatrix();
-		lightDir *= this->mtth_renderGlobals->globalConversionMatrix;
+		lightDir *= renderGlobals->globalConversionMatrix;
 		lightDir.normalize();
 		return TheaSDK::Normal3D(lightDir.x,lightDir.y,lightDir.z);
 	}
-
-	return TheaSDK::Normal3D(this->mtth_renderGlobals->sunDirection.x,this->mtth_renderGlobals->sunDirection.y,this->mtth_renderGlobals->sunDirection.z);
+	float sunDirX = 0.0f, sunDirY = 0.0f, sunDirZ = 1.0f;
+	MPlug sunDirPlug = depFn.findPlug("sunDirection");
+	if (!sunDirPlug.isNull())
+	{
+		sunDirX = sunDirPlug.child(0).asFloat();
+		sunDirY = sunDirPlug.child(1).asFloat();
+		sunDirZ = sunDirPlug.child(2).asFloat();
+	}
+	return TheaSDK::Normal3D(sunDirX, sunDirY, sunDirZ);
 }
 
 void TheaRenderer::defineEnvironment()
 {
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	std::shared_ptr<TheaRenderer> renderer = std::static_pointer_cast<TheaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
 
-	if( this->mtth_renderGlobals->exportSceneFile )
+	if( renderGlobals->exportSceneFile )
 	{	
-		TheaSDK::XML::EnvironmentOptions env;		
-		switch(this->mtth_renderGlobals->illumination)
+		TheaSDK::XML::EnvironmentOptions env;	
+		int illumination = getEnumInt("illumination", gFn);
+		switch (illumination)
 		{
 		case 0:
 			break;
 		case 1: // dome light
 			{
 				env.illumination = TheaSDK::DomeIllumination;
-				TheaSDK::Rgb bgColor(this->mtth_renderGlobals->backgroundColor.r,this->mtth_renderGlobals->backgroundColor.g,this->mtth_renderGlobals->backgroundColor.b);
+				MColor bg = getColorAttr("backgroundColor", gFn);
+				TheaSDK::Rgb bgColor(bg.r, bg.g, bg.b);
 				env.backgroundColor = bgColor;
 			}
 			break;
@@ -85,32 +105,32 @@ void TheaRenderer::defineEnvironment()
 		case 3: // physical sky
 			{
 				env.illumination = TheaSDK::PhysicalSkyIllumination;
-				env.turbidity = this->mtth_renderGlobals->turbidity;
-				env.ozone = this->mtth_renderGlobals->ozone;
-				env.waterVapor = this->mtth_renderGlobals->waterVapor;
-				env.turbidityCoefficient = this->mtth_renderGlobals->turbidityCoefficient;
-				env.wavelengthExponent = this->mtth_renderGlobals->wavelengthExponent;
-				env.albedo = this->mtth_renderGlobals->albedo;	
+				env.turbidity = getFloatAttr("turbidity", gFn, 2.5f);
+				env.ozone = getFloatAttr("ozone", gFn, 0.35f);
+				env.waterVapor = getFloatAttr("waterVapor", gFn, 2.0f);
+				env.turbidityCoefficient = getFloatAttr("turbidityCoefficient", gFn, .046f);
+				env.wavelengthExponent = getFloatAttr("wavelengthExponent", gFn, 1.3f);
+				env.albedo = getFloatAttr("albedo", gFn, .5f);
 
-				env.location = this->mtth_renderGlobals->location.asChar();
+				env.location = getStringAttr("location", gFn, "").asChar();
 
-				env.timezone = this->mtth_renderGlobals->timezone; // from -12 to +12.
-				env.date = this->mtth_renderGlobals->date.asChar(); // format dd/mm/yy.
-				env.localtime = this->mtth_renderGlobals->localtime.asChar(); // format hh/mm/ss.
+				env.timezone = getIntAttr("timezone", gFn, 0); // from -12 to +12.
+				env.date = getStringAttr("date", gFn, "").asChar(); // format dd/mm/yy.
+				env.localtime = getStringAttr("localtime", gFn, "").asChar(); // format hh/mm/ss.
 
-				env.latitude = this->mtth_renderGlobals->latitude;
-				env.longitude = this->mtth_renderGlobals->longitude;
+				env.latitude = getFloatAttr("latitude", gFn, .0f);
+				env.longitude = getFloatAttr("longitude", gFn, .0f);
 
 				env.sunDirection = this->getSunDirection();
-				env.sunPolarAngle = this->mtth_renderGlobals->sunPolarAngle; // in degrees.
-				env.sunAzimuth = this->mtth_renderGlobals->sunAzimuth; // in degrees.
+				env.sunPolarAngle = getFloatAttr("sunPolarAngle", gFn, -1.0f); // in degrees.
+				env.sunAzimuth = getFloatAttr("sunAzimuth", gFn, -1.0f); // in degrees.
 			}
 			break;
 		default:
 			break;				
 		};
 
-		if(this->mtth_renderGlobals->illumination > 0)
+		if (illumination > 0)
 		{
 			this->sceneXML.setEnvironmentOptions(env);
 		}
