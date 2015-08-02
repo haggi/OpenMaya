@@ -126,40 +126,67 @@ MStatus asDisneyMaterial::initialize()
 
     MStatus status; 
 
-	max_distance = nAttr.create("max_distance", "max_distance",  MFnNumericData::kFloat, 1.0);
-	CHECK_MSTATUS(addAttribute( max_distance ));
+	BaseColor = nAttr.createColor("BaseColor", "BaseColor");
+	nAttr.setDefault(0.5, 0.5, 0.5);
+	CHECK_MSTATUS(addAttribute(BaseColor));
 
-	sampling_method = eAttr.create("sampling_method", "sampling_method", 1, &status);
-	status = eAttr.addField( "cosine", 0 );
-	status = eAttr.addField( "uniform", 1 );
-	CHECK_MSTATUS(addAttribute( sampling_method ));
+	Subsurface = nAttr.create("Subsurface", "Subsurface", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Subsurface));
 
-	samples = nAttr.create("samples", "samples",  MFnNumericData::kInt, 16);
-	CHECK_MSTATUS(addAttribute( samples ));
+	Metallic = nAttr.create("Metallic", "Metallic", MFnNumericData::kFloat, 0.5);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Metallic));
 
-	vector Normal = N,
-		vector Tangent = APPLESEED_DEFAULT_TANGENT,
-		color BaseColor = 0.5,
-		float Subsurface = 0,
-		float Metallic = 0,
-		float Specular = 0.5,
-		float SpecularTint = 0,
-		float Anisotropic = 0,
-		float Roughness = 0.5,
-		float Sheen = 0,
-		float SheenTint = 0.5,
-		float Clearcoat = 0,
-		float ClearcoatGloss = 1
+	Specular = nAttr.create("Specular", "Specular", MFnNumericData::kFloat, 0.5);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Specular));
+
+	SpecularTint = nAttr.create("SpecularTint", "SpecularTint", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(SpecularTint));
+
+	Anisotropic = nAttr.create("Anisotropic", "Anisotropic", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Anisotropic));
+
+	Roughness = nAttr.create("Roughness", "Roughness", MFnNumericData::kFloat, 0.5);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Roughness));
+
+	Sheen = nAttr.create("Sheen", "Sheen", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Sheen));
+
+	SheenTint = nAttr.create("SheenTint", "SheenTint", MFnNumericData::kFloat, 0.5);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(SheenTint));
+
+	Clearcoat = nAttr.create("Clearcoat", "Clearcoat", MFnNumericData::kFloat, 0.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(Clearcoat));
+
+	ClearcoatGloss = nAttr.create("ClearcoatGloss", "ClearcoatGloss", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	CHECK_MSTATUS(addAttribute(ClearcoatGloss));
 	
-	aTranslucenceCoeff = nAttr.create( "translucenceCoeff", "tc",
-            MFnNumericData::kFloat, 0, &status );
+	aTranslucenceCoeff = nAttr.create( "translucenceCoeff", "tc", MFnNumericData::kFloat, 0, &status );
     CHECK_MSTATUS( status );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );
     CHECK_MSTATUS( nAttr.setDefault( 0.0f ) );
 
-    aDiffuseReflectivity = nAttr.create( "diffuseReflectivity", "drfl",
-            MFnNumericData::kFloat, 0, &status );
+    aDiffuseReflectivity = nAttr.create( "diffuseReflectivity", "drfl", MFnNumericData::kFloat, 0, &status );
     CHECK_MSTATUS( status );
     CHECK_MSTATUS( nAttr.setKeyable( true ) );
     CHECK_MSTATUS( nAttr.setStorable( true ) );

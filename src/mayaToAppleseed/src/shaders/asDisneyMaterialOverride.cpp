@@ -1,16 +1,7 @@
-//-
-// ===========================================================================
-// Copyright 2012 Autodesk, Inc. All rights reserved.
-//
-// Use of this software is subject to the terms of the Autodesk license
-// agreement provided at the time of installation or download, or which
-// otherwise accompanies this software in either electronic or hard copy form.
-// ===========================================================================
-//+
-
-//#ifdef HAS_OVERRIDE
-
+#include <maya/MGlobal.h>
 #include "asDisneyMaterialOverride.h"
+#include <maya/MFragmentManager.h>
+#include "world.h"
 
 MHWRender::MPxSurfaceShadingNodeOverride* asDisneyMaterialOverride::creator(const MObject& obj)
 {
@@ -20,6 +11,30 @@ MHWRender::MPxSurfaceShadingNodeOverride* asDisneyMaterialOverride::creator(cons
 asDisneyMaterialOverride::asDisneyMaterialOverride(const MObject& obj)
 : MPxSurfaceShadingNodeOverride(obj)
 {
+	//MHWRender::MRenderer* theRenderer = MHWRender::MRenderer::theRenderer();
+	//if (theRenderer)
+	//{
+	//	MHWRender::MFragmentManager* fragmentMgr = theRenderer->getFragmentManager();
+	//	if (fragmentMgr)
+	//	{
+	//		for (uint i = 0; i < MayaTo::getWorldPtr()->shaderSearchPath.length(); i++)
+	//			fragmentMgr->addFragmentPath(MayaTo::getWorldPtr()->shaderSearchPath[i]);
+
+	//		MString fragment = "asDisneyMaterial";
+	//		bool fragAdded = fragmentMgr->hasFragment(fragment);
+	//		if (!fragAdded)
+	//		{
+	//			fragAdded = (fragment == fragmentMgr->addShadeFragmentFromFile(fragment + ".xml", false));
+	//			if (fragAdded)
+	//			{
+	//				MGlobal::displayInfo(MString("Successfully loaded fragment ") + fragment + ".xml");
+	//			}
+	//			else{
+	//				MGlobal::displayInfo(MString("Could not load fragment ") + fragment + ".xml");
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 asDisneyMaterialOverride::~asDisneyMaterialOverride()

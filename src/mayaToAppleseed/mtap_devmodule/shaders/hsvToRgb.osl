@@ -1,7 +1,0 @@
-shader hsvToRrb( vector inHsv = 0, output vector outRgb = 0)
-{
-	outRgb = vector(transformc("hsv", "rgb", color(inHsv)));
-}
-
-
-

@@ -68,7 +68,11 @@ void AppleseedRenderer::initializeRenderer()
 	std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
 	Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
 	project->search_paths().push_back(oslShaderPath.c_str());
-
+	for (uint i = 0; i < MayaTo::getWorldPtr()->shaderSearchPath.length(); i++)
+	{
+		Logging::debug(MString("Search path: ") + MayaTo::getWorldPtr()->shaderSearchPath[i]);
+		project->search_paths().push_back(MayaTo::getWorldPtr()->shaderSearchPath[i].asChar());
+	}
 	defineConfig();
 	defineScene(this->project.get());
 	defineMasterAssembly(this->project.get());

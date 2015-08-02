@@ -1,4 +1,0 @@
-shader CoronaOSL (color inColor = 1, output color Cout = 0)
-{
-	Cout = inColor ;
-}

@@ -1,11 +1,11 @@
 #ifndef MAYA_RENDERER_H
 #define MAYA_RENDERER_H
 
-#if MAYA_API_VERSION >= 201600
 
 #include <maya/MTypes.h>
 #include <map>
 
+#if MAYA_API_VERSION >= 201600
 
 #include <maya/MPxRenderer.h>
 

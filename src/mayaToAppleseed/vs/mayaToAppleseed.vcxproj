@@ -217,7 +217,6 @@
     <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -233,6 +232,7 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingNode.cpp" />
     <ClCompile Include="..\..\common\cpp\shadingtools\shadingUtils.cpp" />
+    <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\Compute.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\queue.cpp" />
     <ClCompile Include="..\..\common\cpp\threads\renderQueueWorker.cpp" />
@@ -245,7 +245,7 @@
     <ClCompile Include="..\..\common\cpp\world.cpp" />
     <ClCompile Include="..\src\appleseed\appleseed.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedCamera.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -259,16 +259,18 @@
     </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedCreateOSLShader.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedEnvironment.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedFrameOutput.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedFrameOutput.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -276,14 +278,16 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedLights.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedMaterial.cpp" />
+    <ClCompile Include="..\src\appleseed\appleseedMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedMeshWalker.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
@@ -313,7 +317,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedUpdateElements.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -321,7 +324,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\appleseedUtils.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -329,7 +332,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\mtap_rendererController.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -337,7 +340,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\appleseed\mtap_tileCallback.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -346,8 +349,10 @@
     </ClCompile>
     <ClCompile Include="..\src\appleseed\TestRender.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_material.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaObject.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaObjectFactory.cpp" />
+    <ClCompile Include="..\src\mtap_common\mtap_mayaRenderer.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaScene.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_mayaSceneFactory.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_renderGlobals.cpp">
@@ -375,52 +380,127 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\mtap_common\mtap_swatchRenderer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\mtap_common\mtap_swatchRendererInterfaceFactory.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_world.cpp" />
     <ClCompile Include="..\src\pluginMain.cpp" />
-    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asBsdf_blendMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asBsdf_blendMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asBsdf_mixMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asBsdf_mixMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asCone_edfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asCone_edfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asMaterialMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asMaterialMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterial.cpp" />
-    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.cpp" />
+    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAo_surface_shaderMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_blendMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_blendMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_mixMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asBsdf_mixMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asCone_edfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asCone_edfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_btdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDiffuse_edfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asDisneyMaterial.cpp" />
+    <ClCompile Include="..\src\shaders\asDisneyMaterialOverride.cpp" />
+    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asKelemen_brdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asLambertian_brdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMaterialMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMaterialMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_brdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSpecular_btdfMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h" />
@@ -432,7 +512,6 @@
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h" />
     <ClInclude Include="..\..\common\cpp\memory\memoryInfo.h" />
     <ClInclude Include="..\..\common\cpp\osl\oslUtils.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -449,6 +528,10 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h" />
     <ClInclude Include="..\..\common\cpp\threads\Compute.h" />
     <ClInclude Include="..\..\common\cpp\threads\queue.h" />
     <ClInclude Include="..\..\common\cpp\threads\renderQueueWorker.h" />
@@ -471,7 +554,7 @@
     </ClInclude>
     <ClInclude Include="..\src\appleseed\appleseedUtils.h" />
     <ClInclude Include="..\src\appleseed\mtap_rendererController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -479,7 +562,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\appleseed\mtap_tileCallback.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
@@ -487,8 +570,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\appleseed\TestRender.h" />
+    <ClInclude Include="..\src\appleseed\version.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
-    <ClInclude Include="..\src\mtap_common\mtap_MayaObject.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_material.h" />
+    <ClInclude Include="..\src\mtap_common\mtap_mayaRenderer.h" />
     <ClInclude Include="..\src\mtap_common\mtap_mayaScene.h" />
     <ClInclude Include="..\src\mtap_common\mtap_renderGlobals.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
@@ -519,50 +604,124 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\mtap_common\mtap_swatchRenderer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterial.h" />
-    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asBsdf_blendMaterial.h" />
-    <ClInclude Include="..\src\shaders\asBsdf_blendMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asBsdf_mixMaterial.h" />
-    <ClInclude Include="..\src\shaders\asBsdf_mixMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asCone_edfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asCone_edfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterial.h" />
-    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.h" />
-    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterial.h" />
-    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asMaterialMaterial.h" />
-    <ClInclude Include="..\src\shaders\asMaterialMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterial.h" />
-    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterial.h" />
-    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterial.h" />
-    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAo_surface_shaderMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asAshikhmin_brdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_blendMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_blendMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_mixMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asBsdf_mixMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asCone_edfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asCone_edfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asConstant_surface_shaderMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiagnostic_surface_shaderMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_btdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDiffuse_edfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asDisneyMaterial.h" />
+    <ClInclude Include="..\src\shaders\asDisneyMaterialOverride.h" />
+    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asFast_sss_surface_shaderMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asKelemen_brdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asLambertian_brdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMaterialMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMaterialMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asMicrofacet_brdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asPhysical_surface_shaderMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_brdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSpecular_btdfMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterial.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\asSurface_shader_collectionMaterialOverride.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\releaseNotes.txt" />

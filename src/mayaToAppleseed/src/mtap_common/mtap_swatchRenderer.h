@@ -1,20 +1,22 @@
 #ifndef MTAP_SWATCH_RENDERER
 #define MTAP_SWATCH_RENDERER
 
-#include <maya/MSwatchRenderBase.h> 
+#include "swatchesRenderer/SwatchRendererInterface.h"
 
-class mtap_SwatchGenerator : public MSwatchRenderBase
+class mtap_SwatchRendererInterface : SwatchRendererInterface
 {
-
 public:
-   mtap_SwatchGenerator(MObject dependNode, MObject renderNode, int imageResolution);
-   ~mtap_SwatchGenerator();
+	mtap_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution);
+	~mtap_SwatchRendererInterface();
+	MObject renderNode;
+	MObject dependNode;
 
-   static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
+	virtual void init();
+	virtual void loadGeometry();
+	virtual void renderSwatch();
+	virtual void getImage(MImage& imageRef);
+	virtual void getImageData(MImage& imageRef);
 
-   virtual bool doIteration();
-
+	virtual void fillDummySwatch(MImage& image);
 };
-
-
 #endif

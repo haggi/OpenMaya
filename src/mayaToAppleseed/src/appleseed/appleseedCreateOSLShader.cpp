@@ -24,6 +24,11 @@ MString oslTypeToMString(MAYATO_OSL::OSLParameter param)
 	if (param.type == OSL::TypeDesc::TypeVector)
 	{
 		MAYATO_OSL::SimpleVector &v = boost::get<MAYATO_OSL::SimpleVector>(param.value);
+		result = MString("vector ") + v.f[0] + " " + v.f[1] + " " + v.f[2];
+	}
+	if (param.type == OSL::TypeDesc::TypeColor)
+	{
+		MAYATO_OSL::SimpleVector &v = boost::get<MAYATO_OSL::SimpleVector>(param.value);
 		result = MString("color ") + v.f[0] + " " + v.f[1] + " " + v.f[2];
 	}
 	if (param.type == OSL::TypeDesc::TypeString)

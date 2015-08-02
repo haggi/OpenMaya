@@ -1,12 +1,11 @@
-#include "mtap_MayaRenderer.h"
+#include "mtap_mayaRenderer.h"
 #include "utilities/logging.h"
-
-#if MAYA_API_VERSION >= 201600
 
 #include <thread>
 #include <vector>
-#include <maya/MPxRenderer.h>
 #include <maya/MGlobal.h>
+
+#if MAYA_API_VERSION >= 201600
 
 #define kNumChannels 4
 bool mtap_MayaRenderer::running = false;

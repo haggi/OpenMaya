@@ -1,3 +1,7 @@
+// This file is part of OpenShadingLanguage.
+// Modified by Esteban Tovagliari, The appleseedhq Organization.
+// Original license follows.
+
 /////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2009-2010 Sony Pictures Imageworks Inc., et al.  All Rights Reserved.
 //
@@ -29,6 +33,15 @@
 #ifndef STDOSL_H
 #define STDOSL_H
 
+// appleseed version
+#define APPLESEED_VERSION_MAJOR     1
+#define APPLESEED_VERSION_MINOR     2
+#define APPLESEED_VERSION_PATCH     0
+
+#define APPLESEED_VERSION               \
+    APPLESEED_VERSION_MAJOR * 10000 +   \
+    APPLESEED_VERSION_MINOR * 100 +     \
+    APPLESEED_VERSION_PATCH
 
 #ifndef M_PI
 #define M_PI       3.1415926535897932        /* pi */
@@ -213,7 +226,7 @@ void fresnel (vector I, normal N, float eta,
         F *= sqr (beta / (g+c));
         Kr = F;
         Kt = (1.0 - Kr) * eta*eta;
-        // OPT: the following recomputes some of the above values, but it 
+        // OPT: the following recomputes some of the above values, but it
         // gives us the same result as if the shader-writer called refract()
         T = refract(I, N, eta);
     } else {
@@ -401,7 +414,7 @@ color transformc (string from, string to, color x)
     return transformc (to, r);
 }
 
- 
+
 
 // Matrix functions
 
@@ -467,95 +480,91 @@ string concat (string a, string b, string c, string d, string e, string f) {
 
 // Texture
 
-
+/*************************************************************/
 // Closures
+/*************************************************************/
+
+/********************************/
+// appleseed specific closures
+
+// Specular component of Ashikhmin-Shirley (anisotropic Phong model)
+// without Fresnel term.
+closure color as_ashikhmin_shirley(
+    normal N,
+    vector T,
+    float nu,
+    float nv) BUILTIN;
+
+closure color as_disney(
+        normal N,
+        vector T,
+        color  base_color,
+        float  subsurface,
+        float  metallic,
+        float  specular,
+        float  specular_tint,
+        float  anisotropic,
+        float  roughness,
+        float  sheen,
+        float  sheen_tint,
+        float  clearcoat,
+        float  clearcoat_gloss) BUILTIN;
+
+closure color as_velvet(normal N, float alpha) BUILTIN;
+
+/********************************/
+// Standard OSL closures
+
+closure color background() BUILTIN;
+closure color debug(string tag) BUILTIN;
+
+closure color emission() BUILTIN;
+
+closure color reflection(normal N) BUILTIN;
+closure color refraction(normal N, float eta) BUILTIN;
+
+closure color microfacet(string distribution, normal N, vector T, float xalpha,
+                         float yalpha, float eta, int refract) BUILTIN;
+
+closure color microfacet(string distribution, normal N, float alpha, float eta, int refract)
+{
+    return microfacet(distribution, N, vector(0), alpha, alpha, eta, refract);
+}
+
+closure color microfacet_ggx(normal N, float ag, float eta)
+{
+    return microfacet("ggx", N, ag, eta, 0);
+}
+
+closure color microfacet_ggx_refraction(normal N, float ag, float eta)
+{
+    return microfacet("ggx", N, ag, eta, 1);
+}
+
+closure color microfacet_beckmann(normal N, float ab, float eta)
+{
+    return microfacet("beckmann", N, ab, eta, 0);
+}
+
+closure color microfacet_beckmann_refraction(normal N, float ab, float eta)
+{
+    return microfacet("beckmann", N, ab, eta, 1);
+}
 
 closure color diffuse(normal N) BUILTIN;
-closure color translucent(normal N) BUILTIN;
-closure color reflection(normal N, float eta) BUILTIN;
-closure color reflection(normal N) { return reflection (N, 0.0); }
-closure color refraction(normal N, float eta) BUILTIN;
-closure color dielectric(normal N, float eta) BUILTIN;
-closure color transparent() BUILTIN;
-closure color microfacet_ggx(normal N, float ag, float eta) BUILTIN;
-closure color microfacet_ggx_refraction(normal N, float ag, float eta) BUILTIN;
-closure color microfacet_beckmann(normal N, float ab, float eta) BUILTIN;
-closure color microfacet_beckmann_refraction(normal N, float ab, float eta) BUILTIN;
-closure color microfacet(string distribution, normal N, vector U, float xalpha,
-                         float yalpha, float eta, int refract) BUILTIN;
-closure color microfacet(string distribution, normal N, float alpha, float eta,
-                         int refr)
-{
-    return microfacet(distribution, N, vector(0), alpha, alpha, eta, refr);
-}
-closure color ward(normal N, vector T,float ax, float ay) BUILTIN;
-closure color phong(normal N, float exponent) BUILTIN;
-closure color phong_ramp(normal N, float exponent, color colors[8]) BUILTIN;
-closure color hair_diffuse(vector T) BUILTIN;
-closure color hair_specular(vector T, float offset, float exponent) BUILTIN;
-closure color ashikhmin_velvet(normal N, float sigma, float eta) BUILTIN;
-closure color westin_backscatter(normal N, float roughness) BUILTIN;
-closure color westin_sheen(normal N, float edginess) BUILTIN;
-closure color bssrdf_cubic(color radius) BUILTIN;
-closure color emission(float inner_angle, float outer_angle) BUILTIN;
-closure color emission(float outer_angle) BUILTIN;
-closure color emission() BUILTIN;
-closure color debug(string tag) BUILTIN;
-closure color background() BUILTIN;
 closure color holdout() BUILTIN;
-closure color subsurface(float eta, float g, color mfp, color albedo) BUILTIN;
+closure color translucent(normal N) BUILTIN;
+closure color transparent() BUILTIN;
 
-closure color cloth(normal N, float s, float t, float dsdx, float dtdx, float dsdy, float dtdy,
-                    float area_scaled, vector dPdu, color diff_warp_col, color diff_weft_col,
-                    color spec_warp_col, color spec_weft_col, float fresnel_warp, float fresnel_weft,
-                    float spread_x_mult, float spread_y_mult, int pattern, float pattern_angle,
-                    float warp_width_scale, float weft_width_scale, float thread_count_mult_u,
-                    float thread_count_mult_v) BUILTIN;
-closure color cloth_specular(normal N, color spec_col[4], float eta[4], int thread_pattern[4],
-                             float pattern_weight[4], int   current_thread, float brdf_interp,
-                             float btf_interp, float uux, float vvx, float area_scaled, vector dPdu,
-                             float eccentricity[4], float angle[4], float Kx[4], float Ky[4],
-                             float Sx[4], float Sy[4]) BUILTIN;
-closure color fakefur_diffuse(normal N, vector T, float fur_reflectivity, float fur_transmission,
-                              float shadow_start, float shadow_end, float fur_attenuation, float fur_density,
-                              float fur_avg_radius, float fur_length, float fur_shadow_fraction) BUILTIN;
-closure color fakefur_specular(normal N, vector T, float offset, float exp, float fur_reflectivity,
-                               float fur_transmission, float shadow_start, float shadow_end,
-                               float fur_attenuation, float fur_density, float fur_avg_radius,
-                               float fur_length, float fur_shadow_fraction) BUILTIN;
+closure color oren_nayar(normal N, float roughness) BUILTIN;
 
-closure color fakefur_skin(vector N, vector T, float fur_reflectivity, float fur_transmission,
-                           float shadow_start, float shadow_end, float fur_attenuation, float fur_density,
-                           float fur_avg_radius, float fur_length) BUILTIN;
-
-
-closure color cloth(normal N, float s, float t, color diff_warp, color diff_weft, 
-                    color spec_warp, color spec_weft, float fresnel_warp, float fresnel_weft,
-                    float spread_x_mult, float spread_y_mult, int pattern, float pattern_angle,
-                    float warp_width_scale, float weft_width_scale, float thread_count_mult_u,
-                    float thread_count_mult_v)
+closure color phong(normal N, float exponent)
 {
-
-    return cloth(N, s, t, Dx(s), Dx(t), Dy(s), Dy(t), area(P), dPdu, diff_warp, diff_weft, spec_warp, spec_weft,
-                 fresnel_warp, fresnel_weft, spread_x_mult, spread_y_mult, pattern, pattern_angle, 
-                 warp_width_scale, weft_width_scale, thread_count_mult_u, thread_count_mult_v);
+    return as_ashikhmin_shirley(N, vector(0), exponent, exponent);
 }
-
-closure color cloth(normal N, float s, float t, color diff_warp, color diff_weft, 
-                    color spec_warp, color spec_weft, float fresnel_warp, float fresnel_weft,
-                    float spread_x_mult, float spread_y_mult, int pattern, float pattern_angle,
-                    float warp_width_scale, float weft_width_scale, float thread_count_mult_u,
-                    float thread_count_mult_v, string tok, string val)
-{
-
-    return cloth(N, s, t, Dx(s), Dx(t), Dy(s), Dy(t), area(P), dPdu, diff_warp, diff_weft, spec_warp, spec_weft,
-                 fresnel_warp, fresnel_weft, spread_x_mult, spread_y_mult, pattern, pattern_angle, 
-                 warp_width_scale, weft_width_scale, thread_count_mult_u, thread_count_mult_v, tok, val);
-}
-
-
 
 // Renderer state
+int backfacing () BUILTIN;
 int raytype (string typename) BUILTIN;
 // the individual 'isFOOray' functions are deprecated
 int iscameraray () { return raytype("camera"); }
@@ -580,3 +589,4 @@ int getmatrix (string fromspace, output matrix M) {
 #undef PERCOMP2F
 
 #endif /* STDOSL_H */
+
