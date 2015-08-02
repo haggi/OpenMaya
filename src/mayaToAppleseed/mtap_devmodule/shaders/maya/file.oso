@@ -1,0 +1,1727 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader file
+param	vector	uvCoord	0 0 0 		 %read{2,5} %write{2147483647,-1} %derivs
+param	string	fileTextureName	"" 		 %read{719,719} %write{2147483647,-1}
+param	string	baseName	"" 		 %read{9,704} %write{2147483647,-1}
+param	string	ext	"" 		 %read{9,704} %write{2147483647,-1}
+param	int	uvTilingMode	2 		 %read{710,728} %write{2147483647,-1}
+param	int	fromSRGB	0 		 %read{736,736} %write{2147483647,-1}
+param	int	toSRGB	0 		 %read{786,786} %write{2147483647,-1}
+param	int	textureFilter	0 		 %read{733,733} %write{2147483647,-1}
+param	float	textureFilterWidth	1 		 %read{735,735} %write{2147483647,-1}
+param	float	textureBlur	0 		 %read{735,735} %write{2147483647,-1}
+param	float	exposure	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	defaultColor	0.5 0.5 0.5 		 %read{2147483647,-1} %write{2147483647,-1}
+param	vector	colorGain	1 1 1 		 %read{833,833} %write{2147483647,-1}
+param	vector	colorOffset	0 0 0 		 %read{834,834} %write{2147483647,-1}
+param	float	alphaGain	1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	float	alphaOffset	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	alphaIsLuminance	1 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	invert	0 		 %read{836,836} %write{2147483647,-1}
+oparam	vector	outColor	0 0 0 		 %read{839,839} %write{838,838}
+oparam	float	outAlpha	0 		 %read{2147483647,-1} %write{840,840}
+global	float	u	 %read{0,0} %write{2147483647,-1} %derivs
+global	float	v	 %read{1,1} %write{2147483647,-1} %derivs
+local	vector	___301_result	 %read{833,835} %write{832,834}
+local	float	___306_f	 %read{745,779} %write{744,774}
+local	color	___310_outColor	 %read{790,829} %write{789,828}
+local	color	___311_outColor	 %read{740,785} %write{739,784}
+local	float	s	 %read{706,735} %write{0,4} %derivs
+local	float	t	 %read{707,735} %write{1,731} %derivs
+local	string[100]	filenames	 %read{730,730} %write{10,505}
+local	string[100]	filenamesMudbox	 %read{727,727} %write{507,705}
+local	int	umap	 %read{709,717} %write{706,706}
+local	int	vmap	 %read{708,715} %write{707,707}
+local	int	udim	 %read{712,730} %write{709,718}
+local	string	filename	 %read{735,735} %write{719,730}
+local	string[4]	filters	 %read{733,733} %write{732,732}
+local	string	filter	 %read{735,735} %write{733,733}
+local	int	numChannels	 %read{2147483647,-1} %write{734,734}
+local	color	C	 %read{739,830} %write{735,829}
+local	vector	CB	 %read{837,838} %write{835,837}
+temp	int	$tmp1	 %read{3,3} %write{2,2}
+const	int	$const1	0		 %read{4,802} %write{2147483647,-1}
+const	int	$const2	1		 %read{5,815} %write{2147483647,-1}
+temp	string	$tmp2	 %read{10,10} %write{9,9}
+const	string	$const3	"%s%d.%s"		 %read{9,504} %write{2147483647,-1}
+const	int	$const4	10		 %read{6,716} %write{2147483647,-1}
+temp	int	$tmp3	 %read{7,7} %write{6,6}
+temp	int	$tmp4	 %read{8,8} %write{7,7}
+const	int	$const5	1001		 %read{8,503} %write{2147483647,-1}
+temp	int	$tmp5	 %read{9,9} %write{8,8}
+temp	string	$tmp6	 %read{15,15} %write{14,14}
+temp	int	$tmp7	 %read{12,12} %write{11,11}
+temp	int	$tmp8	 %read{13,13} %write{12,12}
+temp	int	$tmp9	 %read{14,14} %write{13,13}
+temp	string	$tmp10	 %read{20,20} %write{19,19}
+temp	int	$tmp11	 %read{17,17} %write{16,16}
+const	int	$const6	2		 %read{17,828} %write{2147483647,-1}
+temp	int	$tmp12	 %read{18,18} %write{17,17}
+temp	int	$tmp13	 %read{19,19} %write{18,18}
+temp	string	$tmp14	 %read{25,25} %write{24,24}
+temp	int	$tmp15	 %read{22,22} %write{21,21}
+const	int	$const7	3		 %read{22,728} %write{2147483647,-1}
+temp	int	$tmp16	 %read{23,23} %write{22,22}
+temp	int	$tmp17	 %read{24,24} %write{23,23}
+temp	string	$tmp18	 %read{30,30} %write{29,29}
+temp	int	$tmp19	 %read{27,27} %write{26,26}
+const	int	$const8	4		 %read{27,694} %write{2147483647,-1}
+temp	int	$tmp20	 %read{28,28} %write{27,27}
+temp	int	$tmp21	 %read{29,29} %write{28,28}
+temp	string	$tmp22	 %read{35,35} %write{34,34}
+temp	int	$tmp23	 %read{32,32} %write{31,31}
+const	int	$const9	5		 %read{32,696} %write{2147483647,-1}
+temp	int	$tmp24	 %read{33,33} %write{32,32}
+temp	int	$tmp25	 %read{34,34} %write{33,33}
+temp	string	$tmp26	 %read{40,40} %write{39,39}
+temp	int	$tmp27	 %read{37,37} %write{36,36}
+const	int	$const10	6		 %read{37,698} %write{2147483647,-1}
+temp	int	$tmp28	 %read{38,38} %write{37,37}
+temp	int	$tmp29	 %read{39,39} %write{38,38}
+temp	string	$tmp30	 %read{45,45} %write{44,44}
+temp	int	$tmp31	 %read{42,42} %write{41,41}
+const	int	$const11	7		 %read{42,700} %write{2147483647,-1}
+temp	int	$tmp32	 %read{43,43} %write{42,42}
+temp	int	$tmp33	 %read{44,44} %write{43,43}
+temp	string	$tmp34	 %read{50,50} %write{49,49}
+temp	int	$tmp35	 %read{47,47} %write{46,46}
+const	int	$const12	8		 %read{47,702} %write{2147483647,-1}
+temp	int	$tmp36	 %read{48,48} %write{47,47}
+temp	int	$tmp37	 %read{49,49} %write{48,48}
+temp	string	$tmp38	 %read{55,55} %write{54,54}
+temp	int	$tmp39	 %read{52,52} %write{51,51}
+const	int	$const13	9		 %read{52,704} %write{2147483647,-1}
+temp	int	$tmp40	 %read{53,53} %write{52,52}
+temp	int	$tmp41	 %read{54,54} %write{53,53}
+temp	string	$tmp42	 %read{60,60} %write{59,59}
+temp	int	$tmp43	 %read{57,57} %write{56,56}
+temp	int	$tmp44	 %read{58,58} %write{57,57}
+temp	int	$tmp45	 %read{59,59} %write{58,58}
+temp	string	$tmp46	 %read{65,65} %write{64,64}
+temp	int	$tmp47	 %read{62,62} %write{61,61}
+temp	int	$tmp48	 %read{63,63} %write{62,62}
+temp	int	$tmp49	 %read{64,64} %write{63,63}
+const	int	$const14	11		 %read{65,529} %write{2147483647,-1}
+temp	string	$tmp50	 %read{70,70} %write{69,69}
+temp	int	$tmp51	 %read{67,67} %write{66,66}
+temp	int	$tmp52	 %read{68,68} %write{67,67}
+temp	int	$tmp53	 %read{69,69} %write{68,68}
+const	int	$const15	12		 %read{70,531} %write{2147483647,-1}
+temp	string	$tmp54	 %read{75,75} %write{74,74}
+temp	int	$tmp55	 %read{72,72} %write{71,71}
+temp	int	$tmp56	 %read{73,73} %write{72,72}
+temp	int	$tmp57	 %read{74,74} %write{73,73}
+const	int	$const16	13		 %read{75,533} %write{2147483647,-1}
+temp	string	$tmp58	 %read{80,80} %write{79,79}
+temp	int	$tmp59	 %read{77,77} %write{76,76}
+temp	int	$tmp60	 %read{78,78} %write{77,77}
+temp	int	$tmp61	 %read{79,79} %write{78,78}
+const	int	$const17	14		 %read{80,535} %write{2147483647,-1}
+temp	string	$tmp62	 %read{85,85} %write{84,84}
+temp	int	$tmp63	 %read{82,82} %write{81,81}
+temp	int	$tmp64	 %read{83,83} %write{82,82}
+temp	int	$tmp65	 %read{84,84} %write{83,83}
+const	int	$const18	15		 %read{85,537} %write{2147483647,-1}
+temp	string	$tmp66	 %read{90,90} %write{89,89}
+temp	int	$tmp67	 %read{87,87} %write{86,86}
+temp	int	$tmp68	 %read{88,88} %write{87,87}
+temp	int	$tmp69	 %read{89,89} %write{88,88}
+const	int	$const19	16		 %read{90,539} %write{2147483647,-1}
+temp	string	$tmp70	 %read{95,95} %write{94,94}
+temp	int	$tmp71	 %read{92,92} %write{91,91}
+temp	int	$tmp72	 %read{93,93} %write{92,92}
+temp	int	$tmp73	 %read{94,94} %write{93,93}
+const	int	$const20	17		 %read{95,541} %write{2147483647,-1}
+temp	string	$tmp74	 %read{100,100} %write{99,99}
+temp	int	$tmp75	 %read{97,97} %write{96,96}
+temp	int	$tmp76	 %read{98,98} %write{97,97}
+temp	int	$tmp77	 %read{99,99} %write{98,98}
+const	int	$const21	18		 %read{100,543} %write{2147483647,-1}
+temp	string	$tmp78	 %read{105,105} %write{104,104}
+temp	int	$tmp79	 %read{102,102} %write{101,101}
+temp	int	$tmp80	 %read{103,103} %write{102,102}
+temp	int	$tmp81	 %read{104,104} %write{103,103}
+const	int	$const22	19		 %read{105,545} %write{2147483647,-1}
+temp	string	$tmp82	 %read{110,110} %write{109,109}
+temp	int	$tmp83	 %read{107,107} %write{106,106}
+temp	int	$tmp84	 %read{108,108} %write{107,107}
+temp	int	$tmp85	 %read{109,109} %write{108,108}
+const	int	$const23	20		 %read{110,547} %write{2147483647,-1}
+temp	string	$tmp86	 %read{115,115} %write{114,114}
+temp	int	$tmp87	 %read{112,112} %write{111,111}
+temp	int	$tmp88	 %read{113,113} %write{112,112}
+temp	int	$tmp89	 %read{114,114} %write{113,113}
+const	int	$const24	21		 %read{115,549} %write{2147483647,-1}
+temp	string	$tmp90	 %read{120,120} %write{119,119}
+temp	int	$tmp91	 %read{117,117} %write{116,116}
+temp	int	$tmp92	 %read{118,118} %write{117,117}
+temp	int	$tmp93	 %read{119,119} %write{118,118}
+const	int	$const25	22		 %read{120,551} %write{2147483647,-1}
+temp	string	$tmp94	 %read{125,125} %write{124,124}
+temp	int	$tmp95	 %read{122,122} %write{121,121}
+temp	int	$tmp96	 %read{123,123} %write{122,122}
+temp	int	$tmp97	 %read{124,124} %write{123,123}
+const	int	$const26	23		 %read{125,553} %write{2147483647,-1}
+temp	string	$tmp98	 %read{130,130} %write{129,129}
+temp	int	$tmp99	 %read{127,127} %write{126,126}
+temp	int	$tmp100	 %read{128,128} %write{127,127}
+temp	int	$tmp101	 %read{129,129} %write{128,128}
+const	int	$const27	24		 %read{130,555} %write{2147483647,-1}
+temp	string	$tmp102	 %read{135,135} %write{134,134}
+temp	int	$tmp103	 %read{132,132} %write{131,131}
+temp	int	$tmp104	 %read{133,133} %write{132,132}
+temp	int	$tmp105	 %read{134,134} %write{133,133}
+const	int	$const28	25		 %read{135,557} %write{2147483647,-1}
+temp	string	$tmp106	 %read{140,140} %write{139,139}
+temp	int	$tmp107	 %read{137,137} %write{136,136}
+temp	int	$tmp108	 %read{138,138} %write{137,137}
+temp	int	$tmp109	 %read{139,139} %write{138,138}
+const	int	$const29	26		 %read{140,559} %write{2147483647,-1}
+temp	string	$tmp110	 %read{145,145} %write{144,144}
+temp	int	$tmp111	 %read{142,142} %write{141,141}
+temp	int	$tmp112	 %read{143,143} %write{142,142}
+temp	int	$tmp113	 %read{144,144} %write{143,143}
+const	int	$const30	27		 %read{145,561} %write{2147483647,-1}
+temp	string	$tmp114	 %read{150,150} %write{149,149}
+temp	int	$tmp115	 %read{147,147} %write{146,146}
+temp	int	$tmp116	 %read{148,148} %write{147,147}
+temp	int	$tmp117	 %read{149,149} %write{148,148}
+const	int	$const31	28		 %read{150,563} %write{2147483647,-1}
+temp	string	$tmp118	 %read{155,155} %write{154,154}
+temp	int	$tmp119	 %read{152,152} %write{151,151}
+temp	int	$tmp120	 %read{153,153} %write{152,152}
+temp	int	$tmp121	 %read{154,154} %write{153,153}
+const	int	$const32	29		 %read{155,565} %write{2147483647,-1}
+temp	string	$tmp122	 %read{160,160} %write{159,159}
+temp	int	$tmp123	 %read{157,157} %write{156,156}
+temp	int	$tmp124	 %read{158,158} %write{157,157}
+temp	int	$tmp125	 %read{159,159} %write{158,158}
+const	int	$const33	30		 %read{160,567} %write{2147483647,-1}
+temp	string	$tmp126	 %read{165,165} %write{164,164}
+temp	int	$tmp127	 %read{162,162} %write{161,161}
+temp	int	$tmp128	 %read{163,163} %write{162,162}
+temp	int	$tmp129	 %read{164,164} %write{163,163}
+const	int	$const34	31		 %read{165,569} %write{2147483647,-1}
+temp	string	$tmp130	 %read{170,170} %write{169,169}
+temp	int	$tmp131	 %read{167,167} %write{166,166}
+temp	int	$tmp132	 %read{168,168} %write{167,167}
+temp	int	$tmp133	 %read{169,169} %write{168,168}
+const	int	$const35	32		 %read{170,571} %write{2147483647,-1}
+temp	string	$tmp134	 %read{175,175} %write{174,174}
+temp	int	$tmp135	 %read{172,172} %write{171,171}
+temp	int	$tmp136	 %read{173,173} %write{172,172}
+temp	int	$tmp137	 %read{174,174} %write{173,173}
+const	int	$const36	33		 %read{175,573} %write{2147483647,-1}
+temp	string	$tmp138	 %read{180,180} %write{179,179}
+temp	int	$tmp139	 %read{177,177} %write{176,176}
+temp	int	$tmp140	 %read{178,178} %write{177,177}
+temp	int	$tmp141	 %read{179,179} %write{178,178}
+const	int	$const37	34		 %read{180,575} %write{2147483647,-1}
+temp	string	$tmp142	 %read{185,185} %write{184,184}
+temp	int	$tmp143	 %read{182,182} %write{181,181}
+temp	int	$tmp144	 %read{183,183} %write{182,182}
+temp	int	$tmp145	 %read{184,184} %write{183,183}
+const	int	$const38	35		 %read{185,577} %write{2147483647,-1}
+temp	string	$tmp146	 %read{190,190} %write{189,189}
+temp	int	$tmp147	 %read{187,187} %write{186,186}
+temp	int	$tmp148	 %read{188,188} %write{187,187}
+temp	int	$tmp149	 %read{189,189} %write{188,188}
+const	int	$const39	36		 %read{190,579} %write{2147483647,-1}
+temp	string	$tmp150	 %read{195,195} %write{194,194}
+temp	int	$tmp151	 %read{192,192} %write{191,191}
+temp	int	$tmp152	 %read{193,193} %write{192,192}
+temp	int	$tmp153	 %read{194,194} %write{193,193}
+const	int	$const40	37		 %read{195,581} %write{2147483647,-1}
+temp	string	$tmp154	 %read{200,200} %write{199,199}
+temp	int	$tmp155	 %read{197,197} %write{196,196}
+temp	int	$tmp156	 %read{198,198} %write{197,197}
+temp	int	$tmp157	 %read{199,199} %write{198,198}
+const	int	$const41	38		 %read{200,583} %write{2147483647,-1}
+temp	string	$tmp158	 %read{205,205} %write{204,204}
+temp	int	$tmp159	 %read{202,202} %write{201,201}
+temp	int	$tmp160	 %read{203,203} %write{202,202}
+temp	int	$tmp161	 %read{204,204} %write{203,203}
+const	int	$const42	39		 %read{205,585} %write{2147483647,-1}
+temp	string	$tmp162	 %read{210,210} %write{209,209}
+temp	int	$tmp163	 %read{207,207} %write{206,206}
+temp	int	$tmp164	 %read{208,208} %write{207,207}
+temp	int	$tmp165	 %read{209,209} %write{208,208}
+const	int	$const43	40		 %read{210,587} %write{2147483647,-1}
+temp	string	$tmp166	 %read{215,215} %write{214,214}
+temp	int	$tmp167	 %read{212,212} %write{211,211}
+temp	int	$tmp168	 %read{213,213} %write{212,212}
+temp	int	$tmp169	 %read{214,214} %write{213,213}
+const	int	$const44	41		 %read{215,589} %write{2147483647,-1}
+temp	string	$tmp170	 %read{220,220} %write{219,219}
+temp	int	$tmp171	 %read{217,217} %write{216,216}
+temp	int	$tmp172	 %read{218,218} %write{217,217}
+temp	int	$tmp173	 %read{219,219} %write{218,218}
+const	int	$const45	42		 %read{220,591} %write{2147483647,-1}
+temp	string	$tmp174	 %read{225,225} %write{224,224}
+temp	int	$tmp175	 %read{222,222} %write{221,221}
+temp	int	$tmp176	 %read{223,223} %write{222,222}
+temp	int	$tmp177	 %read{224,224} %write{223,223}
+const	int	$const46	43		 %read{225,593} %write{2147483647,-1}
+temp	string	$tmp178	 %read{230,230} %write{229,229}
+temp	int	$tmp179	 %read{227,227} %write{226,226}
+temp	int	$tmp180	 %read{228,228} %write{227,227}
+temp	int	$tmp181	 %read{229,229} %write{228,228}
+const	int	$const47	44		 %read{230,595} %write{2147483647,-1}
+temp	string	$tmp182	 %read{235,235} %write{234,234}
+temp	int	$tmp183	 %read{232,232} %write{231,231}
+temp	int	$tmp184	 %read{233,233} %write{232,232}
+temp	int	$tmp185	 %read{234,234} %write{233,233}
+const	int	$const48	45		 %read{235,597} %write{2147483647,-1}
+temp	string	$tmp186	 %read{240,240} %write{239,239}
+temp	int	$tmp187	 %read{237,237} %write{236,236}
+temp	int	$tmp188	 %read{238,238} %write{237,237}
+temp	int	$tmp189	 %read{239,239} %write{238,238}
+const	int	$const49	46		 %read{240,599} %write{2147483647,-1}
+temp	string	$tmp190	 %read{245,245} %write{244,244}
+temp	int	$tmp191	 %read{242,242} %write{241,241}
+temp	int	$tmp192	 %read{243,243} %write{242,242}
+temp	int	$tmp193	 %read{244,244} %write{243,243}
+const	int	$const50	47		 %read{245,601} %write{2147483647,-1}
+temp	string	$tmp194	 %read{250,250} %write{249,249}
+temp	int	$tmp195	 %read{247,247} %write{246,246}
+temp	int	$tmp196	 %read{248,248} %write{247,247}
+temp	int	$tmp197	 %read{249,249} %write{248,248}
+const	int	$const51	48		 %read{250,603} %write{2147483647,-1}
+temp	string	$tmp198	 %read{255,255} %write{254,254}
+temp	int	$tmp199	 %read{252,252} %write{251,251}
+temp	int	$tmp200	 %read{253,253} %write{252,252}
+temp	int	$tmp201	 %read{254,254} %write{253,253}
+const	int	$const52	49		 %read{255,605} %write{2147483647,-1}
+temp	string	$tmp202	 %read{260,260} %write{259,259}
+temp	int	$tmp203	 %read{257,257} %write{256,256}
+temp	int	$tmp204	 %read{258,258} %write{257,257}
+temp	int	$tmp205	 %read{259,259} %write{258,258}
+const	int	$const53	50		 %read{260,607} %write{2147483647,-1}
+temp	string	$tmp206	 %read{265,265} %write{264,264}
+temp	int	$tmp207	 %read{262,262} %write{261,261}
+temp	int	$tmp208	 %read{263,263} %write{262,262}
+temp	int	$tmp209	 %read{264,264} %write{263,263}
+const	int	$const54	51		 %read{265,609} %write{2147483647,-1}
+temp	string	$tmp210	 %read{270,270} %write{269,269}
+temp	int	$tmp211	 %read{267,267} %write{266,266}
+temp	int	$tmp212	 %read{268,268} %write{267,267}
+temp	int	$tmp213	 %read{269,269} %write{268,268}
+const	int	$const55	52		 %read{270,611} %write{2147483647,-1}
+temp	string	$tmp214	 %read{275,275} %write{274,274}
+temp	int	$tmp215	 %read{272,272} %write{271,271}
+temp	int	$tmp216	 %read{273,273} %write{272,272}
+temp	int	$tmp217	 %read{274,274} %write{273,273}
+const	int	$const56	53		 %read{275,613} %write{2147483647,-1}
+temp	string	$tmp218	 %read{280,280} %write{279,279}
+temp	int	$tmp219	 %read{277,277} %write{276,276}
+temp	int	$tmp220	 %read{278,278} %write{277,277}
+temp	int	$tmp221	 %read{279,279} %write{278,278}
+const	int	$const57	54		 %read{280,615} %write{2147483647,-1}
+temp	string	$tmp222	 %read{285,285} %write{284,284}
+temp	int	$tmp223	 %read{282,282} %write{281,281}
+temp	int	$tmp224	 %read{283,283} %write{282,282}
+temp	int	$tmp225	 %read{284,284} %write{283,283}
+const	int	$const58	55		 %read{285,617} %write{2147483647,-1}
+temp	string	$tmp226	 %read{290,290} %write{289,289}
+temp	int	$tmp227	 %read{287,287} %write{286,286}
+temp	int	$tmp228	 %read{288,288} %write{287,287}
+temp	int	$tmp229	 %read{289,289} %write{288,288}
+const	int	$const59	56		 %read{290,619} %write{2147483647,-1}
+temp	string	$tmp230	 %read{295,295} %write{294,294}
+temp	int	$tmp231	 %read{292,292} %write{291,291}
+temp	int	$tmp232	 %read{293,293} %write{292,292}
+temp	int	$tmp233	 %read{294,294} %write{293,293}
+const	int	$const60	57		 %read{295,621} %write{2147483647,-1}
+temp	string	$tmp234	 %read{300,300} %write{299,299}
+temp	int	$tmp235	 %read{297,297} %write{296,296}
+temp	int	$tmp236	 %read{298,298} %write{297,297}
+temp	int	$tmp237	 %read{299,299} %write{298,298}
+const	int	$const61	58		 %read{300,623} %write{2147483647,-1}
+temp	string	$tmp238	 %read{305,305} %write{304,304}
+temp	int	$tmp239	 %read{302,302} %write{301,301}
+temp	int	$tmp240	 %read{303,303} %write{302,302}
+temp	int	$tmp241	 %read{304,304} %write{303,303}
+const	int	$const62	59		 %read{305,625} %write{2147483647,-1}
+temp	string	$tmp242	 %read{310,310} %write{309,309}
+temp	int	$tmp243	 %read{307,307} %write{306,306}
+temp	int	$tmp244	 %read{308,308} %write{307,307}
+temp	int	$tmp245	 %read{309,309} %write{308,308}
+const	int	$const63	60		 %read{310,627} %write{2147483647,-1}
+temp	string	$tmp246	 %read{315,315} %write{314,314}
+temp	int	$tmp247	 %read{312,312} %write{311,311}
+temp	int	$tmp248	 %read{313,313} %write{312,312}
+temp	int	$tmp249	 %read{314,314} %write{313,313}
+const	int	$const64	61		 %read{315,629} %write{2147483647,-1}
+temp	string	$tmp250	 %read{320,320} %write{319,319}
+temp	int	$tmp251	 %read{317,317} %write{316,316}
+temp	int	$tmp252	 %read{318,318} %write{317,317}
+temp	int	$tmp253	 %read{319,319} %write{318,318}
+const	int	$const65	62		 %read{320,631} %write{2147483647,-1}
+temp	string	$tmp254	 %read{325,325} %write{324,324}
+temp	int	$tmp255	 %read{322,322} %write{321,321}
+temp	int	$tmp256	 %read{323,323} %write{322,322}
+temp	int	$tmp257	 %read{324,324} %write{323,323}
+const	int	$const66	63		 %read{325,633} %write{2147483647,-1}
+temp	string	$tmp258	 %read{330,330} %write{329,329}
+temp	int	$tmp259	 %read{327,327} %write{326,326}
+temp	int	$tmp260	 %read{328,328} %write{327,327}
+temp	int	$tmp261	 %read{329,329} %write{328,328}
+const	int	$const67	64		 %read{330,635} %write{2147483647,-1}
+temp	string	$tmp262	 %read{335,335} %write{334,334}
+temp	int	$tmp263	 %read{332,332} %write{331,331}
+temp	int	$tmp264	 %read{333,333} %write{332,332}
+temp	int	$tmp265	 %read{334,334} %write{333,333}
+const	int	$const68	65		 %read{335,637} %write{2147483647,-1}
+temp	string	$tmp266	 %read{340,340} %write{339,339}
+temp	int	$tmp267	 %read{337,337} %write{336,336}
+temp	int	$tmp268	 %read{338,338} %write{337,337}
+temp	int	$tmp269	 %read{339,339} %write{338,338}
+const	int	$const69	66		 %read{340,639} %write{2147483647,-1}
+temp	string	$tmp270	 %read{345,345} %write{344,344}
+temp	int	$tmp271	 %read{342,342} %write{341,341}
+temp	int	$tmp272	 %read{343,343} %write{342,342}
+temp	int	$tmp273	 %read{344,344} %write{343,343}
+const	int	$const70	67		 %read{345,641} %write{2147483647,-1}
+temp	string	$tmp274	 %read{350,350} %write{349,349}
+temp	int	$tmp275	 %read{347,347} %write{346,346}
+temp	int	$tmp276	 %read{348,348} %write{347,347}
+temp	int	$tmp277	 %read{349,349} %write{348,348}
+const	int	$const71	68		 %read{350,643} %write{2147483647,-1}
+temp	string	$tmp278	 %read{355,355} %write{354,354}
+temp	int	$tmp279	 %read{352,352} %write{351,351}
+temp	int	$tmp280	 %read{353,353} %write{352,352}
+temp	int	$tmp281	 %read{354,354} %write{353,353}
+const	int	$const72	69		 %read{355,645} %write{2147483647,-1}
+temp	string	$tmp282	 %read{360,360} %write{359,359}
+temp	int	$tmp283	 %read{357,357} %write{356,356}
+temp	int	$tmp284	 %read{358,358} %write{357,357}
+temp	int	$tmp285	 %read{359,359} %write{358,358}
+const	int	$const73	70		 %read{360,647} %write{2147483647,-1}
+temp	string	$tmp286	 %read{365,365} %write{364,364}
+temp	int	$tmp287	 %read{362,362} %write{361,361}
+temp	int	$tmp288	 %read{363,363} %write{362,362}
+temp	int	$tmp289	 %read{364,364} %write{363,363}
+const	int	$const74	71		 %read{365,649} %write{2147483647,-1}
+temp	string	$tmp290	 %read{370,370} %write{369,369}
+temp	int	$tmp291	 %read{367,367} %write{366,366}
+temp	int	$tmp292	 %read{368,368} %write{367,367}
+temp	int	$tmp293	 %read{369,369} %write{368,368}
+const	int	$const75	72		 %read{370,651} %write{2147483647,-1}
+temp	string	$tmp294	 %read{375,375} %write{374,374}
+temp	int	$tmp295	 %read{372,372} %write{371,371}
+temp	int	$tmp296	 %read{373,373} %write{372,372}
+temp	int	$tmp297	 %read{374,374} %write{373,373}
+const	int	$const76	73		 %read{375,653} %write{2147483647,-1}
+temp	string	$tmp298	 %read{380,380} %write{379,379}
+temp	int	$tmp299	 %read{377,377} %write{376,376}
+temp	int	$tmp300	 %read{378,378} %write{377,377}
+temp	int	$tmp301	 %read{379,379} %write{378,378}
+const	int	$const77	74		 %read{380,655} %write{2147483647,-1}
+temp	string	$tmp302	 %read{385,385} %write{384,384}
+temp	int	$tmp303	 %read{382,382} %write{381,381}
+temp	int	$tmp304	 %read{383,383} %write{382,382}
+temp	int	$tmp305	 %read{384,384} %write{383,383}
+const	int	$const78	75		 %read{385,657} %write{2147483647,-1}
+temp	string	$tmp306	 %read{390,390} %write{389,389}
+temp	int	$tmp307	 %read{387,387} %write{386,386}
+temp	int	$tmp308	 %read{388,388} %write{387,387}
+temp	int	$tmp309	 %read{389,389} %write{388,388}
+const	int	$const79	76		 %read{390,659} %write{2147483647,-1}
+temp	string	$tmp310	 %read{395,395} %write{394,394}
+temp	int	$tmp311	 %read{392,392} %write{391,391}
+temp	int	$tmp312	 %read{393,393} %write{392,392}
+temp	int	$tmp313	 %read{394,394} %write{393,393}
+const	int	$const80	77		 %read{395,661} %write{2147483647,-1}
+temp	string	$tmp314	 %read{400,400} %write{399,399}
+temp	int	$tmp315	 %read{397,397} %write{396,396}
+temp	int	$tmp316	 %read{398,398} %write{397,397}
+temp	int	$tmp317	 %read{399,399} %write{398,398}
+const	int	$const81	78		 %read{400,663} %write{2147483647,-1}
+temp	string	$tmp318	 %read{405,405} %write{404,404}
+temp	int	$tmp319	 %read{402,402} %write{401,401}
+temp	int	$tmp320	 %read{403,403} %write{402,402}
+temp	int	$tmp321	 %read{404,404} %write{403,403}
+const	int	$const82	79		 %read{405,665} %write{2147483647,-1}
+temp	string	$tmp322	 %read{410,410} %write{409,409}
+temp	int	$tmp323	 %read{407,407} %write{406,406}
+temp	int	$tmp324	 %read{408,408} %write{407,407}
+temp	int	$tmp325	 %read{409,409} %write{408,408}
+const	int	$const83	80		 %read{410,667} %write{2147483647,-1}
+temp	string	$tmp326	 %read{415,415} %write{414,414}
+temp	int	$tmp327	 %read{412,412} %write{411,411}
+temp	int	$tmp328	 %read{413,413} %write{412,412}
+temp	int	$tmp329	 %read{414,414} %write{413,413}
+const	int	$const84	81		 %read{415,669} %write{2147483647,-1}
+temp	string	$tmp330	 %read{420,420} %write{419,419}
+temp	int	$tmp331	 %read{417,417} %write{416,416}
+temp	int	$tmp332	 %read{418,418} %write{417,417}
+temp	int	$tmp333	 %read{419,419} %write{418,418}
+const	int	$const85	82		 %read{420,671} %write{2147483647,-1}
+temp	string	$tmp334	 %read{425,425} %write{424,424}
+temp	int	$tmp335	 %read{422,422} %write{421,421}
+temp	int	$tmp336	 %read{423,423} %write{422,422}
+temp	int	$tmp337	 %read{424,424} %write{423,423}
+const	int	$const86	83		 %read{425,673} %write{2147483647,-1}
+temp	string	$tmp338	 %read{430,430} %write{429,429}
+temp	int	$tmp339	 %read{427,427} %write{426,426}
+temp	int	$tmp340	 %read{428,428} %write{427,427}
+temp	int	$tmp341	 %read{429,429} %write{428,428}
+const	int	$const87	84		 %read{430,675} %write{2147483647,-1}
+temp	string	$tmp342	 %read{435,435} %write{434,434}
+temp	int	$tmp343	 %read{432,432} %write{431,431}
+temp	int	$tmp344	 %read{433,433} %write{432,432}
+temp	int	$tmp345	 %read{434,434} %write{433,433}
+const	int	$const88	85		 %read{435,677} %write{2147483647,-1}
+temp	string	$tmp346	 %read{440,440} %write{439,439}
+temp	int	$tmp347	 %read{437,437} %write{436,436}
+temp	int	$tmp348	 %read{438,438} %write{437,437}
+temp	int	$tmp349	 %read{439,439} %write{438,438}
+const	int	$const89	86		 %read{440,679} %write{2147483647,-1}
+temp	string	$tmp350	 %read{445,445} %write{444,444}
+temp	int	$tmp351	 %read{442,442} %write{441,441}
+temp	int	$tmp352	 %read{443,443} %write{442,442}
+temp	int	$tmp353	 %read{444,444} %write{443,443}
+const	int	$const90	87		 %read{445,681} %write{2147483647,-1}
+temp	string	$tmp354	 %read{450,450} %write{449,449}
+temp	int	$tmp355	 %read{447,447} %write{446,446}
+temp	int	$tmp356	 %read{448,448} %write{447,447}
+temp	int	$tmp357	 %read{449,449} %write{448,448}
+const	int	$const91	88		 %read{450,683} %write{2147483647,-1}
+temp	string	$tmp358	 %read{455,455} %write{454,454}
+temp	int	$tmp359	 %read{452,452} %write{451,451}
+temp	int	$tmp360	 %read{453,453} %write{452,452}
+temp	int	$tmp361	 %read{454,454} %write{453,453}
+const	int	$const92	89		 %read{455,685} %write{2147483647,-1}
+temp	string	$tmp362	 %read{460,460} %write{459,459}
+temp	int	$tmp363	 %read{457,457} %write{456,456}
+temp	int	$tmp364	 %read{458,458} %write{457,457}
+temp	int	$tmp365	 %read{459,459} %write{458,458}
+const	int	$const93	90		 %read{460,687} %write{2147483647,-1}
+temp	string	$tmp366	 %read{465,465} %write{464,464}
+temp	int	$tmp367	 %read{462,462} %write{461,461}
+temp	int	$tmp368	 %read{463,463} %write{462,462}
+temp	int	$tmp369	 %read{464,464} %write{463,463}
+const	int	$const94	91		 %read{465,689} %write{2147483647,-1}
+temp	string	$tmp370	 %read{470,470} %write{469,469}
+temp	int	$tmp371	 %read{467,467} %write{466,466}
+temp	int	$tmp372	 %read{468,468} %write{467,467}
+temp	int	$tmp373	 %read{469,469} %write{468,468}
+const	int	$const95	92		 %read{470,691} %write{2147483647,-1}
+temp	string	$tmp374	 %read{475,475} %write{474,474}
+temp	int	$tmp375	 %read{472,472} %write{471,471}
+temp	int	$tmp376	 %read{473,473} %write{472,472}
+temp	int	$tmp377	 %read{474,474} %write{473,473}
+const	int	$const96	93		 %read{475,693} %write{2147483647,-1}
+temp	string	$tmp378	 %read{480,480} %write{479,479}
+temp	int	$tmp379	 %read{477,477} %write{476,476}
+temp	int	$tmp380	 %read{478,478} %write{477,477}
+temp	int	$tmp381	 %read{479,479} %write{478,478}
+const	int	$const97	94		 %read{480,695} %write{2147483647,-1}
+temp	string	$tmp382	 %read{485,485} %write{484,484}
+temp	int	$tmp383	 %read{482,482} %write{481,481}
+temp	int	$tmp384	 %read{483,483} %write{482,482}
+temp	int	$tmp385	 %read{484,484} %write{483,483}
+const	int	$const98	95		 %read{485,697} %write{2147483647,-1}
+temp	string	$tmp386	 %read{490,490} %write{489,489}
+temp	int	$tmp387	 %read{487,487} %write{486,486}
+temp	int	$tmp388	 %read{488,488} %write{487,487}
+temp	int	$tmp389	 %read{489,489} %write{488,488}
+const	int	$const99	96		 %read{490,699} %write{2147483647,-1}
+temp	string	$tmp390	 %read{495,495} %write{494,494}
+temp	int	$tmp391	 %read{492,492} %write{491,491}
+temp	int	$tmp392	 %read{493,493} %write{492,492}
+temp	int	$tmp393	 %read{494,494} %write{493,493}
+const	int	$const100	97		 %read{495,701} %write{2147483647,-1}
+temp	string	$tmp394	 %read{500,500} %write{499,499}
+temp	int	$tmp395	 %read{497,497} %write{496,496}
+temp	int	$tmp396	 %read{498,498} %write{497,497}
+temp	int	$tmp397	 %read{499,499} %write{498,498}
+const	int	$const101	98		 %read{500,703} %write{2147483647,-1}
+temp	string	$tmp398	 %read{505,505} %write{504,504}
+temp	int	$tmp399	 %read{502,502} %write{501,501}
+temp	int	$tmp400	 %read{503,503} %write{502,502}
+temp	int	$tmp401	 %read{504,504} %write{503,503}
+const	int	$const102	99		 %read{505,705} %write{2147483647,-1}
+temp	string	$tmp402	 %read{507,507} %write{506,506}
+const	string	$const103	"%su%dv%d.%s"		 %read{506,704} %write{2147483647,-1}
+temp	string	$tmp403	 %read{509,509} %write{508,508}
+temp	string	$tmp404	 %read{511,511} %write{510,510}
+temp	string	$tmp405	 %read{513,513} %write{512,512}
+temp	string	$tmp406	 %read{515,515} %write{514,514}
+temp	string	$tmp407	 %read{517,517} %write{516,516}
+temp	string	$tmp408	 %read{519,519} %write{518,518}
+temp	string	$tmp409	 %read{521,521} %write{520,520}
+temp	string	$tmp410	 %read{523,523} %write{522,522}
+temp	string	$tmp411	 %read{525,525} %write{524,524}
+temp	string	$tmp412	 %read{527,527} %write{526,526}
+temp	string	$tmp413	 %read{529,529} %write{528,528}
+temp	string	$tmp414	 %read{531,531} %write{530,530}
+temp	string	$tmp415	 %read{533,533} %write{532,532}
+temp	string	$tmp416	 %read{535,535} %write{534,534}
+temp	string	$tmp417	 %read{537,537} %write{536,536}
+temp	string	$tmp418	 %read{539,539} %write{538,538}
+temp	string	$tmp419	 %read{541,541} %write{540,540}
+temp	string	$tmp420	 %read{543,543} %write{542,542}
+temp	string	$tmp421	 %read{545,545} %write{544,544}
+temp	string	$tmp422	 %read{547,547} %write{546,546}
+temp	string	$tmp423	 %read{549,549} %write{548,548}
+temp	string	$tmp424	 %read{551,551} %write{550,550}
+temp	string	$tmp425	 %read{553,553} %write{552,552}
+temp	string	$tmp426	 %read{555,555} %write{554,554}
+temp	string	$tmp427	 %read{557,557} %write{556,556}
+temp	string	$tmp428	 %read{559,559} %write{558,558}
+temp	string	$tmp429	 %read{561,561} %write{560,560}
+temp	string	$tmp430	 %read{563,563} %write{562,562}
+temp	string	$tmp431	 %read{565,565} %write{564,564}
+temp	string	$tmp432	 %read{567,567} %write{566,566}
+temp	string	$tmp433	 %read{569,569} %write{568,568}
+temp	string	$tmp434	 %read{571,571} %write{570,570}
+temp	string	$tmp435	 %read{573,573} %write{572,572}
+temp	string	$tmp436	 %read{575,575} %write{574,574}
+temp	string	$tmp437	 %read{577,577} %write{576,576}
+temp	string	$tmp438	 %read{579,579} %write{578,578}
+temp	string	$tmp439	 %read{581,581} %write{580,580}
+temp	string	$tmp440	 %read{583,583} %write{582,582}
+temp	string	$tmp441	 %read{585,585} %write{584,584}
+temp	string	$tmp442	 %read{587,587} %write{586,586}
+temp	string	$tmp443	 %read{589,589} %write{588,588}
+temp	string	$tmp444	 %read{591,591} %write{590,590}
+temp	string	$tmp445	 %read{593,593} %write{592,592}
+temp	string	$tmp446	 %read{595,595} %write{594,594}
+temp	string	$tmp447	 %read{597,597} %write{596,596}
+temp	string	$tmp448	 %read{599,599} %write{598,598}
+temp	string	$tmp449	 %read{601,601} %write{600,600}
+temp	string	$tmp450	 %read{603,603} %write{602,602}
+temp	string	$tmp451	 %read{605,605} %write{604,604}
+temp	string	$tmp452	 %read{607,607} %write{606,606}
+temp	string	$tmp453	 %read{609,609} %write{608,608}
+temp	string	$tmp454	 %read{611,611} %write{610,610}
+temp	string	$tmp455	 %read{613,613} %write{612,612}
+temp	string	$tmp456	 %read{615,615} %write{614,614}
+temp	string	$tmp457	 %read{617,617} %write{616,616}
+temp	string	$tmp458	 %read{619,619} %write{618,618}
+temp	string	$tmp459	 %read{621,621} %write{620,620}
+temp	string	$tmp460	 %read{623,623} %write{622,622}
+temp	string	$tmp461	 %read{625,625} %write{624,624}
+temp	string	$tmp462	 %read{627,627} %write{626,626}
+temp	string	$tmp463	 %read{629,629} %write{628,628}
+temp	string	$tmp464	 %read{631,631} %write{630,630}
+temp	string	$tmp465	 %read{633,633} %write{632,632}
+temp	string	$tmp466	 %read{635,635} %write{634,634}
+temp	string	$tmp467	 %read{637,637} %write{636,636}
+temp	string	$tmp468	 %read{639,639} %write{638,638}
+temp	string	$tmp469	 %read{641,641} %write{640,640}
+temp	string	$tmp470	 %read{643,643} %write{642,642}
+temp	string	$tmp471	 %read{645,645} %write{644,644}
+temp	string	$tmp472	 %read{647,647} %write{646,646}
+temp	string	$tmp473	 %read{649,649} %write{648,648}
+temp	string	$tmp474	 %read{651,651} %write{650,650}
+temp	string	$tmp475	 %read{653,653} %write{652,652}
+temp	string	$tmp476	 %read{655,655} %write{654,654}
+temp	string	$tmp477	 %read{657,657} %write{656,656}
+temp	string	$tmp478	 %read{659,659} %write{658,658}
+temp	string	$tmp479	 %read{661,661} %write{660,660}
+temp	string	$tmp480	 %read{663,663} %write{662,662}
+temp	string	$tmp481	 %read{665,665} %write{664,664}
+temp	string	$tmp482	 %read{667,667} %write{666,666}
+temp	string	$tmp483	 %read{669,669} %write{668,668}
+temp	string	$tmp484	 %read{671,671} %write{670,670}
+temp	string	$tmp485	 %read{673,673} %write{672,672}
+temp	string	$tmp486	 %read{675,675} %write{674,674}
+temp	string	$tmp487	 %read{677,677} %write{676,676}
+temp	string	$tmp488	 %read{679,679} %write{678,678}
+temp	string	$tmp489	 %read{681,681} %write{680,680}
+temp	string	$tmp490	 %read{683,683} %write{682,682}
+temp	string	$tmp491	 %read{685,685} %write{684,684}
+temp	string	$tmp492	 %read{687,687} %write{686,686}
+temp	string	$tmp493	 %read{689,689} %write{688,688}
+temp	string	$tmp494	 %read{691,691} %write{690,690}
+temp	string	$tmp495	 %read{693,693} %write{692,692}
+temp	string	$tmp496	 %read{695,695} %write{694,694}
+temp	string	$tmp497	 %read{697,697} %write{696,696}
+temp	string	$tmp498	 %read{699,699} %write{698,698}
+temp	string	$tmp499	 %read{701,701} %write{700,700}
+temp	string	$tmp500	 %read{703,703} %write{702,702}
+temp	string	$tmp501	 %read{705,705} %write{704,704}
+temp	int	$tmp502	 %read{709,709} %write{708,708}
+temp	int	$tmp503	 %read{711,711} %write{710,710}
+temp	int	$tmp504	 %read{714,714} %write{713,713}
+temp	int	$tmp505	 %read{716,716} %write{715,715}
+temp	int	$tmp506	 %read{718,718} %write{716,716}
+temp	int	$tmp507	 %read{718,718} %write{717,717}
+temp	int	$tmp508	 %read{721,721} %write{720,720}
+temp	int	$tmp509	 %read{722,726} %write{721,725}
+temp	int	$tmp510	 %read{724,724} %write{723,723}
+temp	int	$tmp511	 %read{725,725} %write{724,724}
+temp	int	$tmp512	 %read{729,729} %write{728,728}
+const	float	$const104	1		 %read{731,822} %write{2147483647,-1}
+const	string[4]	$const105	"smartcubic" "cubic" "linear" "closest" 		 %read{732,732} %write{2147483647,-1}
+const	string	$const106	"wrap"		 %read{735,735} %write{2147483647,-1}
+const	string	$const107	"periodic"		 %read{735,735} %write{2147483647,-1}
+const	string	$const108	"interp"		 %read{735,735} %write{2147483647,-1}
+const	string	$const109	"width"		 %read{735,735} %write{2147483647,-1}
+const	string	$const110	"blur"		 %read{735,735} %write{2147483647,-1}
+temp	int	$tmp513	 %read{737,737} %write{736,736}
+const	string	$const111	"fromSRGBToLinear"		 %read{738,738} %write{2147483647,-1}
+temp	float	$tmp514	 %read{754,754} %write{747,753}
+temp	float	$tmp515	 %read{743,743} %write{740,740}
+const	string	$const112	"floatFromSRGB"		 %read{741,771} %write{2147483647,-1}
+const	float	$const113	0		 %read{744,774} %write{2147483647,-1}
+const	string	$const114	"clamp"		 %read{742,772} %write{2147483647,-1}
+temp	float	$tmp516	 %read{744,744} %write{743,743}
+const	float	$const115	0.039280001		 %read{745,775} %write{2147483647,-1}
+temp	int	$tmp517	 %read{746,746} %write{745,745}
+const	float	$const116	12.92		 %read{747,820} %write{2147483647,-1}
+const	float	$const117	2.4000001		 %read{752,822} %write{2147483647,-1}
+temp	float	$tmp518	 %read{752,752} %write{751,751}
+const	float	$const118	0.055		 %read{749,827} %write{2147483647,-1}
+temp	float	$tmp519	 %read{750,750} %write{749,749}
+const	float	$const119	1.0549999		 %read{750,826} %write{2147483647,-1}
+temp	float	$tmp520	 %read{751,751} %write{750,750}
+temp	float	$tmp521	 %read{753,753} %write{752,752}
+temp	float	$tmp522	 %read{769,769} %write{762,768}
+temp	float	$tmp523	 %read{758,758} %write{755,755}
+temp	float	$tmp524	 %read{759,759} %write{758,758}
+temp	int	$tmp525	 %read{761,761} %write{760,760}
+temp	float	$tmp526	 %read{767,767} %write{766,766}
+temp	float	$tmp527	 %read{765,765} %write{764,764}
+temp	float	$tmp528	 %read{766,766} %write{765,765}
+temp	float	$tmp529	 %read{768,768} %write{767,767}
+temp	float	$tmp530	 %read{784,784} %write{777,783}
+temp	float	$tmp531	 %read{773,773} %write{770,770}
+temp	float	$tmp532	 %read{774,774} %write{773,773}
+temp	int	$tmp533	 %read{776,776} %write{775,775}
+temp	float	$tmp534	 %read{782,782} %write{781,781}
+temp	float	$tmp535	 %read{780,780} %write{779,779}
+temp	float	$tmp536	 %read{781,781} %write{780,780}
+temp	float	$tmp537	 %read{783,783} %write{782,782}
+temp	int	$tmp538	 %read{787,787} %write{786,786}
+const	string	$const120	"fromLinearToSRGB"		 %read{788,788} %write{2147483647,-1}
+temp	float	$tmp539	 %read{802,802} %write{794,801}
+temp	float	$tmp540	 %read{792,797} %write{790,790}
+const	string	$const121	"floatToSRGB"		 %read{791,817} %write{2147483647,-1}
+const	float	$const122	0.0031308001		 %read{792,818} %write{2147483647,-1}
+temp	int	$tmp541	 %read{793,793} %write{792,792}
+temp	float	$tmp542	 %read{800,800} %write{799,799}
+temp	float	$tmp543	 %read{798,798} %write{796,796}
+temp	float	$tmp544	 %read{798,798} %write{797,797}
+temp	float	$tmp545	 %read{799,799} %write{798,798}
+temp	float	$tmp546	 %read{801,801} %write{800,800}
+temp	float	$tmp547	 %read{815,815} %write{807,814}
+temp	float	$tmp548	 %read{805,810} %write{803,803}
+temp	int	$tmp549	 %read{806,806} %write{805,805}
+temp	float	$tmp550	 %read{813,813} %write{812,812}
+temp	float	$tmp551	 %read{811,811} %write{809,809}
+temp	float	$tmp552	 %read{811,811} %write{810,810}
+temp	float	$tmp553	 %read{812,812} %write{811,811}
+temp	float	$tmp554	 %read{814,814} %write{813,813}
+temp	float	$tmp555	 %read{828,828} %write{820,827}
+temp	float	$tmp556	 %read{818,823} %write{816,816}
+temp	int	$tmp557	 %read{819,819} %write{818,818}
+temp	float	$tmp558	 %read{826,826} %write{825,825}
+temp	float	$tmp559	 %read{824,824} %write{822,822}
+temp	float	$tmp560	 %read{824,824} %write{823,823}
+temp	float	$tmp561	 %read{825,825} %write{824,824}
+temp	float	$tmp562	 %read{827,827} %write{826,826}
+temp	vector	$tmp563	 %read{832,832} %write{830,830}
+const	string	$const123	"colorBalance"		 %read{831,831} %write{2147483647,-1}
+const	vector	$const124	1 1 1		 %read{837,837} %write{2147483647,-1}
+temp	color	$tmp565	 %read{840,840} %write{839,839}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:54
+# 	float t = v;
+	assign		s u 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl"} %line{54} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:55
+# 	if( isconnected(uvCoord))
+	assign		t v 	%line{55} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:56
+# 	{
+	isconnected	$tmp1 uvCoord 	%line{56} %argrw{"wr"}
+	if		$tmp1 6 6 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:58
+# 		t = uvCoord[1];
+	compref		s uvCoord $const1 	%line{58} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:59
+# 	}
+	compref		t uvCoord $const2 	%line{59} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:70
+#     // The magic here is that the 'format' calls, since their parameters in this
+	mul		$tmp3 $const4 $const1 	%line{70} %argrw{"wrr"}
+	add		$tmp4 $tmp3 $const1 	%argrw{"wrr"}
+	add		$tmp5 $tmp4 $const5 	%argrw{"wrr"}
+	format		$tmp2 $const3 baseName $tmp5 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const1 $tmp2 	%argrw{"wrr"}
+	mul		$tmp7 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp8 $tmp7 $const2 	%argrw{"wrr"}
+	add		$tmp9 $tmp8 $const5 	%argrw{"wrr"}
+	format		$tmp6 $const3 baseName $tmp9 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const2 $tmp6 	%argrw{"wrr"}
+	mul		$tmp11 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp12 $tmp11 $const6 	%argrw{"wrr"}
+	add		$tmp13 $tmp12 $const5 	%argrw{"wrr"}
+	format		$tmp10 $const3 baseName $tmp13 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const6 $tmp10 	%argrw{"wrr"}
+	mul		$tmp15 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp16 $tmp15 $const7 	%argrw{"wrr"}
+	add		$tmp17 $tmp16 $const5 	%argrw{"wrr"}
+	format		$tmp14 $const3 baseName $tmp17 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const7 $tmp14 	%argrw{"wrr"}
+	mul		$tmp19 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp20 $tmp19 $const8 	%argrw{"wrr"}
+	add		$tmp21 $tmp20 $const5 	%argrw{"wrr"}
+	format		$tmp18 $const3 baseName $tmp21 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const8 $tmp18 	%argrw{"wrr"}
+	mul		$tmp23 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp24 $tmp23 $const9 	%argrw{"wrr"}
+	add		$tmp25 $tmp24 $const5 	%argrw{"wrr"}
+	format		$tmp22 $const3 baseName $tmp25 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const9 $tmp22 	%argrw{"wrr"}
+	mul		$tmp27 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp28 $tmp27 $const10 	%argrw{"wrr"}
+	add		$tmp29 $tmp28 $const5 	%argrw{"wrr"}
+	format		$tmp26 $const3 baseName $tmp29 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const10 $tmp26 	%argrw{"wrr"}
+	mul		$tmp31 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp32 $tmp31 $const11 	%argrw{"wrr"}
+	add		$tmp33 $tmp32 $const5 	%argrw{"wrr"}
+	format		$tmp30 $const3 baseName $tmp33 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const11 $tmp30 	%argrw{"wrr"}
+	mul		$tmp35 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp36 $tmp35 $const12 	%argrw{"wrr"}
+	add		$tmp37 $tmp36 $const5 	%argrw{"wrr"}
+	format		$tmp34 $const3 baseName $tmp37 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const12 $tmp34 	%argrw{"wrr"}
+	mul		$tmp39 $const4 $const1 	%argrw{"wrr"}
+	add		$tmp40 $tmp39 $const13 	%argrw{"wrr"}
+	add		$tmp41 $tmp40 $const5 	%argrw{"wrr"}
+	format		$tmp38 $const3 baseName $tmp41 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const13 $tmp38 	%argrw{"wrr"}
+	mul		$tmp43 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp44 $tmp43 $const1 	%argrw{"wrr"}
+	add		$tmp45 $tmp44 $const5 	%argrw{"wrr"}
+	format		$tmp42 $const3 baseName $tmp45 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const4 $tmp42 	%argrw{"wrr"}
+	mul		$tmp47 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp48 $tmp47 $const2 	%argrw{"wrr"}
+	add		$tmp49 $tmp48 $const5 	%argrw{"wrr"}
+	format		$tmp46 $const3 baseName $tmp49 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const14 $tmp46 	%argrw{"wrr"}
+	mul		$tmp51 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp52 $tmp51 $const6 	%argrw{"wrr"}
+	add		$tmp53 $tmp52 $const5 	%argrw{"wrr"}
+	format		$tmp50 $const3 baseName $tmp53 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const15 $tmp50 	%argrw{"wrr"}
+	mul		$tmp55 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp56 $tmp55 $const7 	%argrw{"wrr"}
+	add		$tmp57 $tmp56 $const5 	%argrw{"wrr"}
+	format		$tmp54 $const3 baseName $tmp57 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const16 $tmp54 	%argrw{"wrr"}
+	mul		$tmp59 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp60 $tmp59 $const8 	%argrw{"wrr"}
+	add		$tmp61 $tmp60 $const5 	%argrw{"wrr"}
+	format		$tmp58 $const3 baseName $tmp61 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const17 $tmp58 	%argrw{"wrr"}
+	mul		$tmp63 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp64 $tmp63 $const9 	%argrw{"wrr"}
+	add		$tmp65 $tmp64 $const5 	%argrw{"wrr"}
+	format		$tmp62 $const3 baseName $tmp65 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const18 $tmp62 	%argrw{"wrr"}
+	mul		$tmp67 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp68 $tmp67 $const10 	%argrw{"wrr"}
+	add		$tmp69 $tmp68 $const5 	%argrw{"wrr"}
+	format		$tmp66 $const3 baseName $tmp69 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const19 $tmp66 	%argrw{"wrr"}
+	mul		$tmp71 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp72 $tmp71 $const11 	%argrw{"wrr"}
+	add		$tmp73 $tmp72 $const5 	%argrw{"wrr"}
+	format		$tmp70 $const3 baseName $tmp73 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const20 $tmp70 	%argrw{"wrr"}
+	mul		$tmp75 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp76 $tmp75 $const12 	%argrw{"wrr"}
+	add		$tmp77 $tmp76 $const5 	%argrw{"wrr"}
+	format		$tmp74 $const3 baseName $tmp77 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const21 $tmp74 	%argrw{"wrr"}
+	mul		$tmp79 $const4 $const2 	%argrw{"wrr"}
+	add		$tmp80 $tmp79 $const13 	%argrw{"wrr"}
+	add		$tmp81 $tmp80 $const5 	%argrw{"wrr"}
+	format		$tmp78 $const3 baseName $tmp81 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const22 $tmp78 	%argrw{"wrr"}
+	mul		$tmp83 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp84 $tmp83 $const1 	%argrw{"wrr"}
+	add		$tmp85 $tmp84 $const5 	%argrw{"wrr"}
+	format		$tmp82 $const3 baseName $tmp85 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const23 $tmp82 	%argrw{"wrr"}
+	mul		$tmp87 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp88 $tmp87 $const2 	%argrw{"wrr"}
+	add		$tmp89 $tmp88 $const5 	%argrw{"wrr"}
+	format		$tmp86 $const3 baseName $tmp89 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const24 $tmp86 	%argrw{"wrr"}
+	mul		$tmp91 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp92 $tmp91 $const6 	%argrw{"wrr"}
+	add		$tmp93 $tmp92 $const5 	%argrw{"wrr"}
+	format		$tmp90 $const3 baseName $tmp93 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const25 $tmp90 	%argrw{"wrr"}
+	mul		$tmp95 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp96 $tmp95 $const7 	%argrw{"wrr"}
+	add		$tmp97 $tmp96 $const5 	%argrw{"wrr"}
+	format		$tmp94 $const3 baseName $tmp97 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const26 $tmp94 	%argrw{"wrr"}
+	mul		$tmp99 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp100 $tmp99 $const8 	%argrw{"wrr"}
+	add		$tmp101 $tmp100 $const5 	%argrw{"wrr"}
+	format		$tmp98 $const3 baseName $tmp101 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const27 $tmp98 	%argrw{"wrr"}
+	mul		$tmp103 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp104 $tmp103 $const9 	%argrw{"wrr"}
+	add		$tmp105 $tmp104 $const5 	%argrw{"wrr"}
+	format		$tmp102 $const3 baseName $tmp105 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const28 $tmp102 	%argrw{"wrr"}
+	mul		$tmp107 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp108 $tmp107 $const10 	%argrw{"wrr"}
+	add		$tmp109 $tmp108 $const5 	%argrw{"wrr"}
+	format		$tmp106 $const3 baseName $tmp109 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const29 $tmp106 	%argrw{"wrr"}
+	mul		$tmp111 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp112 $tmp111 $const11 	%argrw{"wrr"}
+	add		$tmp113 $tmp112 $const5 	%argrw{"wrr"}
+	format		$tmp110 $const3 baseName $tmp113 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const30 $tmp110 	%argrw{"wrr"}
+	mul		$tmp115 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp116 $tmp115 $const12 	%argrw{"wrr"}
+	add		$tmp117 $tmp116 $const5 	%argrw{"wrr"}
+	format		$tmp114 $const3 baseName $tmp117 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const31 $tmp114 	%argrw{"wrr"}
+	mul		$tmp119 $const4 $const6 	%argrw{"wrr"}
+	add		$tmp120 $tmp119 $const13 	%argrw{"wrr"}
+	add		$tmp121 $tmp120 $const5 	%argrw{"wrr"}
+	format		$tmp118 $const3 baseName $tmp121 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const32 $tmp118 	%argrw{"wrr"}
+	mul		$tmp123 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp124 $tmp123 $const1 	%argrw{"wrr"}
+	add		$tmp125 $tmp124 $const5 	%argrw{"wrr"}
+	format		$tmp122 $const3 baseName $tmp125 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const33 $tmp122 	%argrw{"wrr"}
+	mul		$tmp127 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp128 $tmp127 $const2 	%argrw{"wrr"}
+	add		$tmp129 $tmp128 $const5 	%argrw{"wrr"}
+	format		$tmp126 $const3 baseName $tmp129 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const34 $tmp126 	%argrw{"wrr"}
+	mul		$tmp131 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp132 $tmp131 $const6 	%argrw{"wrr"}
+	add		$tmp133 $tmp132 $const5 	%argrw{"wrr"}
+	format		$tmp130 $const3 baseName $tmp133 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const35 $tmp130 	%argrw{"wrr"}
+	mul		$tmp135 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp136 $tmp135 $const7 	%argrw{"wrr"}
+	add		$tmp137 $tmp136 $const5 	%argrw{"wrr"}
+	format		$tmp134 $const3 baseName $tmp137 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const36 $tmp134 	%argrw{"wrr"}
+	mul		$tmp139 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp140 $tmp139 $const8 	%argrw{"wrr"}
+	add		$tmp141 $tmp140 $const5 	%argrw{"wrr"}
+	format		$tmp138 $const3 baseName $tmp141 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const37 $tmp138 	%argrw{"wrr"}
+	mul		$tmp143 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp144 $tmp143 $const9 	%argrw{"wrr"}
+	add		$tmp145 $tmp144 $const5 	%argrw{"wrr"}
+	format		$tmp142 $const3 baseName $tmp145 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const38 $tmp142 	%argrw{"wrr"}
+	mul		$tmp147 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp148 $tmp147 $const10 	%argrw{"wrr"}
+	add		$tmp149 $tmp148 $const5 	%argrw{"wrr"}
+	format		$tmp146 $const3 baseName $tmp149 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const39 $tmp146 	%argrw{"wrr"}
+	mul		$tmp151 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp152 $tmp151 $const11 	%argrw{"wrr"}
+	add		$tmp153 $tmp152 $const5 	%argrw{"wrr"}
+	format		$tmp150 $const3 baseName $tmp153 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const40 $tmp150 	%argrw{"wrr"}
+	mul		$tmp155 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp156 $tmp155 $const12 	%argrw{"wrr"}
+	add		$tmp157 $tmp156 $const5 	%argrw{"wrr"}
+	format		$tmp154 $const3 baseName $tmp157 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const41 $tmp154 	%argrw{"wrr"}
+	mul		$tmp159 $const4 $const7 	%argrw{"wrr"}
+	add		$tmp160 $tmp159 $const13 	%argrw{"wrr"}
+	add		$tmp161 $tmp160 $const5 	%argrw{"wrr"}
+	format		$tmp158 $const3 baseName $tmp161 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const42 $tmp158 	%argrw{"wrr"}
+	mul		$tmp163 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp164 $tmp163 $const1 	%argrw{"wrr"}
+	add		$tmp165 $tmp164 $const5 	%argrw{"wrr"}
+	format		$tmp162 $const3 baseName $tmp165 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const43 $tmp162 	%argrw{"wrr"}
+	mul		$tmp167 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp168 $tmp167 $const2 	%argrw{"wrr"}
+	add		$tmp169 $tmp168 $const5 	%argrw{"wrr"}
+	format		$tmp166 $const3 baseName $tmp169 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const44 $tmp166 	%argrw{"wrr"}
+	mul		$tmp171 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp172 $tmp171 $const6 	%argrw{"wrr"}
+	add		$tmp173 $tmp172 $const5 	%argrw{"wrr"}
+	format		$tmp170 $const3 baseName $tmp173 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const45 $tmp170 	%argrw{"wrr"}
+	mul		$tmp175 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp176 $tmp175 $const7 	%argrw{"wrr"}
+	add		$tmp177 $tmp176 $const5 	%argrw{"wrr"}
+	format		$tmp174 $const3 baseName $tmp177 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const46 $tmp174 	%argrw{"wrr"}
+	mul		$tmp179 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp180 $tmp179 $const8 	%argrw{"wrr"}
+	add		$tmp181 $tmp180 $const5 	%argrw{"wrr"}
+	format		$tmp178 $const3 baseName $tmp181 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const47 $tmp178 	%argrw{"wrr"}
+	mul		$tmp183 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp184 $tmp183 $const9 	%argrw{"wrr"}
+	add		$tmp185 $tmp184 $const5 	%argrw{"wrr"}
+	format		$tmp182 $const3 baseName $tmp185 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const48 $tmp182 	%argrw{"wrr"}
+	mul		$tmp187 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp188 $tmp187 $const10 	%argrw{"wrr"}
+	add		$tmp189 $tmp188 $const5 	%argrw{"wrr"}
+	format		$tmp186 $const3 baseName $tmp189 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const49 $tmp186 	%argrw{"wrr"}
+	mul		$tmp191 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp192 $tmp191 $const11 	%argrw{"wrr"}
+	add		$tmp193 $tmp192 $const5 	%argrw{"wrr"}
+	format		$tmp190 $const3 baseName $tmp193 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const50 $tmp190 	%argrw{"wrr"}
+	mul		$tmp195 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp196 $tmp195 $const12 	%argrw{"wrr"}
+	add		$tmp197 $tmp196 $const5 	%argrw{"wrr"}
+	format		$tmp194 $const3 baseName $tmp197 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const51 $tmp194 	%argrw{"wrr"}
+	mul		$tmp199 $const4 $const8 	%argrw{"wrr"}
+	add		$tmp200 $tmp199 $const13 	%argrw{"wrr"}
+	add		$tmp201 $tmp200 $const5 	%argrw{"wrr"}
+	format		$tmp198 $const3 baseName $tmp201 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const52 $tmp198 	%argrw{"wrr"}
+	mul		$tmp203 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp204 $tmp203 $const1 	%argrw{"wrr"}
+	add		$tmp205 $tmp204 $const5 	%argrw{"wrr"}
+	format		$tmp202 $const3 baseName $tmp205 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const53 $tmp202 	%argrw{"wrr"}
+	mul		$tmp207 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp208 $tmp207 $const2 	%argrw{"wrr"}
+	add		$tmp209 $tmp208 $const5 	%argrw{"wrr"}
+	format		$tmp206 $const3 baseName $tmp209 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const54 $tmp206 	%argrw{"wrr"}
+	mul		$tmp211 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp212 $tmp211 $const6 	%argrw{"wrr"}
+	add		$tmp213 $tmp212 $const5 	%argrw{"wrr"}
+	format		$tmp210 $const3 baseName $tmp213 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const55 $tmp210 	%argrw{"wrr"}
+	mul		$tmp215 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp216 $tmp215 $const7 	%argrw{"wrr"}
+	add		$tmp217 $tmp216 $const5 	%argrw{"wrr"}
+	format		$tmp214 $const3 baseName $tmp217 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const56 $tmp214 	%argrw{"wrr"}
+	mul		$tmp219 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp220 $tmp219 $const8 	%argrw{"wrr"}
+	add		$tmp221 $tmp220 $const5 	%argrw{"wrr"}
+	format		$tmp218 $const3 baseName $tmp221 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const57 $tmp218 	%argrw{"wrr"}
+	mul		$tmp223 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp224 $tmp223 $const9 	%argrw{"wrr"}
+	add		$tmp225 $tmp224 $const5 	%argrw{"wrr"}
+	format		$tmp222 $const3 baseName $tmp225 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const58 $tmp222 	%argrw{"wrr"}
+	mul		$tmp227 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp228 $tmp227 $const10 	%argrw{"wrr"}
+	add		$tmp229 $tmp228 $const5 	%argrw{"wrr"}
+	format		$tmp226 $const3 baseName $tmp229 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const59 $tmp226 	%argrw{"wrr"}
+	mul		$tmp231 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp232 $tmp231 $const11 	%argrw{"wrr"}
+	add		$tmp233 $tmp232 $const5 	%argrw{"wrr"}
+	format		$tmp230 $const3 baseName $tmp233 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const60 $tmp230 	%argrw{"wrr"}
+	mul		$tmp235 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp236 $tmp235 $const12 	%argrw{"wrr"}
+	add		$tmp237 $tmp236 $const5 	%argrw{"wrr"}
+	format		$tmp234 $const3 baseName $tmp237 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const61 $tmp234 	%argrw{"wrr"}
+	mul		$tmp239 $const4 $const9 	%argrw{"wrr"}
+	add		$tmp240 $tmp239 $const13 	%argrw{"wrr"}
+	add		$tmp241 $tmp240 $const5 	%argrw{"wrr"}
+	format		$tmp238 $const3 baseName $tmp241 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const62 $tmp238 	%argrw{"wrr"}
+	mul		$tmp243 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp244 $tmp243 $const1 	%argrw{"wrr"}
+	add		$tmp245 $tmp244 $const5 	%argrw{"wrr"}
+	format		$tmp242 $const3 baseName $tmp245 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const63 $tmp242 	%argrw{"wrr"}
+	mul		$tmp247 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp248 $tmp247 $const2 	%argrw{"wrr"}
+	add		$tmp249 $tmp248 $const5 	%argrw{"wrr"}
+	format		$tmp246 $const3 baseName $tmp249 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const64 $tmp246 	%argrw{"wrr"}
+	mul		$tmp251 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp252 $tmp251 $const6 	%argrw{"wrr"}
+	add		$tmp253 $tmp252 $const5 	%argrw{"wrr"}
+	format		$tmp250 $const3 baseName $tmp253 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const65 $tmp250 	%argrw{"wrr"}
+	mul		$tmp255 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp256 $tmp255 $const7 	%argrw{"wrr"}
+	add		$tmp257 $tmp256 $const5 	%argrw{"wrr"}
+	format		$tmp254 $const3 baseName $tmp257 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const66 $tmp254 	%argrw{"wrr"}
+	mul		$tmp259 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp260 $tmp259 $const8 	%argrw{"wrr"}
+	add		$tmp261 $tmp260 $const5 	%argrw{"wrr"}
+	format		$tmp258 $const3 baseName $tmp261 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const67 $tmp258 	%argrw{"wrr"}
+	mul		$tmp263 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp264 $tmp263 $const9 	%argrw{"wrr"}
+	add		$tmp265 $tmp264 $const5 	%argrw{"wrr"}
+	format		$tmp262 $const3 baseName $tmp265 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const68 $tmp262 	%argrw{"wrr"}
+	mul		$tmp267 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp268 $tmp267 $const10 	%argrw{"wrr"}
+	add		$tmp269 $tmp268 $const5 	%argrw{"wrr"}
+	format		$tmp266 $const3 baseName $tmp269 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const69 $tmp266 	%argrw{"wrr"}
+	mul		$tmp271 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp272 $tmp271 $const11 	%argrw{"wrr"}
+	add		$tmp273 $tmp272 $const5 	%argrw{"wrr"}
+	format		$tmp270 $const3 baseName $tmp273 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const70 $tmp270 	%argrw{"wrr"}
+	mul		$tmp275 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp276 $tmp275 $const12 	%argrw{"wrr"}
+	add		$tmp277 $tmp276 $const5 	%argrw{"wrr"}
+	format		$tmp274 $const3 baseName $tmp277 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const71 $tmp274 	%argrw{"wrr"}
+	mul		$tmp279 $const4 $const10 	%argrw{"wrr"}
+	add		$tmp280 $tmp279 $const13 	%argrw{"wrr"}
+	add		$tmp281 $tmp280 $const5 	%argrw{"wrr"}
+	format		$tmp278 $const3 baseName $tmp281 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const72 $tmp278 	%argrw{"wrr"}
+	mul		$tmp283 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp284 $tmp283 $const1 	%argrw{"wrr"}
+	add		$tmp285 $tmp284 $const5 	%argrw{"wrr"}
+	format		$tmp282 $const3 baseName $tmp285 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const73 $tmp282 	%argrw{"wrr"}
+	mul		$tmp287 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp288 $tmp287 $const2 	%argrw{"wrr"}
+	add		$tmp289 $tmp288 $const5 	%argrw{"wrr"}
+	format		$tmp286 $const3 baseName $tmp289 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const74 $tmp286 	%argrw{"wrr"}
+	mul		$tmp291 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp292 $tmp291 $const6 	%argrw{"wrr"}
+	add		$tmp293 $tmp292 $const5 	%argrw{"wrr"}
+	format		$tmp290 $const3 baseName $tmp293 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const75 $tmp290 	%argrw{"wrr"}
+	mul		$tmp295 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp296 $tmp295 $const7 	%argrw{"wrr"}
+	add		$tmp297 $tmp296 $const5 	%argrw{"wrr"}
+	format		$tmp294 $const3 baseName $tmp297 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const76 $tmp294 	%argrw{"wrr"}
+	mul		$tmp299 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp300 $tmp299 $const8 	%argrw{"wrr"}
+	add		$tmp301 $tmp300 $const5 	%argrw{"wrr"}
+	format		$tmp298 $const3 baseName $tmp301 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const77 $tmp298 	%argrw{"wrr"}
+	mul		$tmp303 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp304 $tmp303 $const9 	%argrw{"wrr"}
+	add		$tmp305 $tmp304 $const5 	%argrw{"wrr"}
+	format		$tmp302 $const3 baseName $tmp305 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const78 $tmp302 	%argrw{"wrr"}
+	mul		$tmp307 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp308 $tmp307 $const10 	%argrw{"wrr"}
+	add		$tmp309 $tmp308 $const5 	%argrw{"wrr"}
+	format		$tmp306 $const3 baseName $tmp309 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const79 $tmp306 	%argrw{"wrr"}
+	mul		$tmp311 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp312 $tmp311 $const11 	%argrw{"wrr"}
+	add		$tmp313 $tmp312 $const5 	%argrw{"wrr"}
+	format		$tmp310 $const3 baseName $tmp313 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const80 $tmp310 	%argrw{"wrr"}
+	mul		$tmp315 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp316 $tmp315 $const12 	%argrw{"wrr"}
+	add		$tmp317 $tmp316 $const5 	%argrw{"wrr"}
+	format		$tmp314 $const3 baseName $tmp317 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const81 $tmp314 	%argrw{"wrr"}
+	mul		$tmp319 $const4 $const11 	%argrw{"wrr"}
+	add		$tmp320 $tmp319 $const13 	%argrw{"wrr"}
+	add		$tmp321 $tmp320 $const5 	%argrw{"wrr"}
+	format		$tmp318 $const3 baseName $tmp321 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const82 $tmp318 	%argrw{"wrr"}
+	mul		$tmp323 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp324 $tmp323 $const1 	%argrw{"wrr"}
+	add		$tmp325 $tmp324 $const5 	%argrw{"wrr"}
+	format		$tmp322 $const3 baseName $tmp325 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const83 $tmp322 	%argrw{"wrr"}
+	mul		$tmp327 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp328 $tmp327 $const2 	%argrw{"wrr"}
+	add		$tmp329 $tmp328 $const5 	%argrw{"wrr"}
+	format		$tmp326 $const3 baseName $tmp329 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const84 $tmp326 	%argrw{"wrr"}
+	mul		$tmp331 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp332 $tmp331 $const6 	%argrw{"wrr"}
+	add		$tmp333 $tmp332 $const5 	%argrw{"wrr"}
+	format		$tmp330 $const3 baseName $tmp333 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const85 $tmp330 	%argrw{"wrr"}
+	mul		$tmp335 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp336 $tmp335 $const7 	%argrw{"wrr"}
+	add		$tmp337 $tmp336 $const5 	%argrw{"wrr"}
+	format		$tmp334 $const3 baseName $tmp337 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const86 $tmp334 	%argrw{"wrr"}
+	mul		$tmp339 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp340 $tmp339 $const8 	%argrw{"wrr"}
+	add		$tmp341 $tmp340 $const5 	%argrw{"wrr"}
+	format		$tmp338 $const3 baseName $tmp341 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const87 $tmp338 	%argrw{"wrr"}
+	mul		$tmp343 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp344 $tmp343 $const9 	%argrw{"wrr"}
+	add		$tmp345 $tmp344 $const5 	%argrw{"wrr"}
+	format		$tmp342 $const3 baseName $tmp345 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const88 $tmp342 	%argrw{"wrr"}
+	mul		$tmp347 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp348 $tmp347 $const10 	%argrw{"wrr"}
+	add		$tmp349 $tmp348 $const5 	%argrw{"wrr"}
+	format		$tmp346 $const3 baseName $tmp349 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const89 $tmp346 	%argrw{"wrr"}
+	mul		$tmp351 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp352 $tmp351 $const11 	%argrw{"wrr"}
+	add		$tmp353 $tmp352 $const5 	%argrw{"wrr"}
+	format		$tmp350 $const3 baseName $tmp353 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const90 $tmp350 	%argrw{"wrr"}
+	mul		$tmp355 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp356 $tmp355 $const12 	%argrw{"wrr"}
+	add		$tmp357 $tmp356 $const5 	%argrw{"wrr"}
+	format		$tmp354 $const3 baseName $tmp357 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const91 $tmp354 	%argrw{"wrr"}
+	mul		$tmp359 $const4 $const12 	%argrw{"wrr"}
+	add		$tmp360 $tmp359 $const13 	%argrw{"wrr"}
+	add		$tmp361 $tmp360 $const5 	%argrw{"wrr"}
+	format		$tmp358 $const3 baseName $tmp361 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const92 $tmp358 	%argrw{"wrr"}
+	mul		$tmp363 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp364 $tmp363 $const1 	%argrw{"wrr"}
+	add		$tmp365 $tmp364 $const5 	%argrw{"wrr"}
+	format		$tmp362 $const3 baseName $tmp365 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const93 $tmp362 	%argrw{"wrr"}
+	mul		$tmp367 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp368 $tmp367 $const2 	%argrw{"wrr"}
+	add		$tmp369 $tmp368 $const5 	%argrw{"wrr"}
+	format		$tmp366 $const3 baseName $tmp369 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const94 $tmp366 	%argrw{"wrr"}
+	mul		$tmp371 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp372 $tmp371 $const6 	%argrw{"wrr"}
+	add		$tmp373 $tmp372 $const5 	%argrw{"wrr"}
+	format		$tmp370 $const3 baseName $tmp373 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const95 $tmp370 	%argrw{"wrr"}
+	mul		$tmp375 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp376 $tmp375 $const7 	%argrw{"wrr"}
+	add		$tmp377 $tmp376 $const5 	%argrw{"wrr"}
+	format		$tmp374 $const3 baseName $tmp377 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const96 $tmp374 	%argrw{"wrr"}
+	mul		$tmp379 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp380 $tmp379 $const8 	%argrw{"wrr"}
+	add		$tmp381 $tmp380 $const5 	%argrw{"wrr"}
+	format		$tmp378 $const3 baseName $tmp381 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const97 $tmp378 	%argrw{"wrr"}
+	mul		$tmp383 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp384 $tmp383 $const9 	%argrw{"wrr"}
+	add		$tmp385 $tmp384 $const5 	%argrw{"wrr"}
+	format		$tmp382 $const3 baseName $tmp385 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const98 $tmp382 	%argrw{"wrr"}
+	mul		$tmp387 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp388 $tmp387 $const10 	%argrw{"wrr"}
+	add		$tmp389 $tmp388 $const5 	%argrw{"wrr"}
+	format		$tmp386 $const3 baseName $tmp389 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const99 $tmp386 	%argrw{"wrr"}
+	mul		$tmp391 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp392 $tmp391 $const11 	%argrw{"wrr"}
+	add		$tmp393 $tmp392 $const5 	%argrw{"wrr"}
+	format		$tmp390 $const3 baseName $tmp393 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const100 $tmp390 	%argrw{"wrr"}
+	mul		$tmp395 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp396 $tmp395 $const12 	%argrw{"wrr"}
+	add		$tmp397 $tmp396 $const5 	%argrw{"wrr"}
+	format		$tmp394 $const3 baseName $tmp397 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const101 $tmp394 	%argrw{"wrr"}
+	mul		$tmp399 $const4 $const13 	%argrw{"wrr"}
+	add		$tmp400 $tmp399 $const13 	%argrw{"wrr"}
+	add		$tmp401 $tmp400 $const5 	%argrw{"wrr"}
+	format		$tmp398 $const3 baseName $tmp401 ext 	%argrw{"wrrrr"}
+	aassign		filenames $const102 $tmp398 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:86
+# 
+	format		$tmp402 $const103 baseName $const1 $const1 ext 	%line{86} %argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const1 $tmp402 	%argrw{"wrr"}
+	format		$tmp403 $const103 baseName $const2 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const2 $tmp403 	%argrw{"wrr"}
+	format		$tmp404 $const103 baseName $const6 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const6 $tmp404 	%argrw{"wrr"}
+	format		$tmp405 $const103 baseName $const7 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const7 $tmp405 	%argrw{"wrr"}
+	format		$tmp406 $const103 baseName $const8 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const8 $tmp406 	%argrw{"wrr"}
+	format		$tmp407 $const103 baseName $const9 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const9 $tmp407 	%argrw{"wrr"}
+	format		$tmp408 $const103 baseName $const10 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const10 $tmp408 	%argrw{"wrr"}
+	format		$tmp409 $const103 baseName $const11 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const11 $tmp409 	%argrw{"wrr"}
+	format		$tmp410 $const103 baseName $const12 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const12 $tmp410 	%argrw{"wrr"}
+	format		$tmp411 $const103 baseName $const13 $const1 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const13 $tmp411 	%argrw{"wrr"}
+	format		$tmp412 $const103 baseName $const1 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const4 $tmp412 	%argrw{"wrr"}
+	format		$tmp413 $const103 baseName $const2 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const14 $tmp413 	%argrw{"wrr"}
+	format		$tmp414 $const103 baseName $const6 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const15 $tmp414 	%argrw{"wrr"}
+	format		$tmp415 $const103 baseName $const7 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const16 $tmp415 	%argrw{"wrr"}
+	format		$tmp416 $const103 baseName $const8 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const17 $tmp416 	%argrw{"wrr"}
+	format		$tmp417 $const103 baseName $const9 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const18 $tmp417 	%argrw{"wrr"}
+	format		$tmp418 $const103 baseName $const10 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const19 $tmp418 	%argrw{"wrr"}
+	format		$tmp419 $const103 baseName $const11 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const20 $tmp419 	%argrw{"wrr"}
+	format		$tmp420 $const103 baseName $const12 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const21 $tmp420 	%argrw{"wrr"}
+	format		$tmp421 $const103 baseName $const13 $const2 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const22 $tmp421 	%argrw{"wrr"}
+	format		$tmp422 $const103 baseName $const1 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const23 $tmp422 	%argrw{"wrr"}
+	format		$tmp423 $const103 baseName $const2 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const24 $tmp423 	%argrw{"wrr"}
+	format		$tmp424 $const103 baseName $const6 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const25 $tmp424 	%argrw{"wrr"}
+	format		$tmp425 $const103 baseName $const7 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const26 $tmp425 	%argrw{"wrr"}
+	format		$tmp426 $const103 baseName $const8 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const27 $tmp426 	%argrw{"wrr"}
+	format		$tmp427 $const103 baseName $const9 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const28 $tmp427 	%argrw{"wrr"}
+	format		$tmp428 $const103 baseName $const10 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const29 $tmp428 	%argrw{"wrr"}
+	format		$tmp429 $const103 baseName $const11 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const30 $tmp429 	%argrw{"wrr"}
+	format		$tmp430 $const103 baseName $const12 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const31 $tmp430 	%argrw{"wrr"}
+	format		$tmp431 $const103 baseName $const13 $const6 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const32 $tmp431 	%argrw{"wrr"}
+	format		$tmp432 $const103 baseName $const1 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const33 $tmp432 	%argrw{"wrr"}
+	format		$tmp433 $const103 baseName $const2 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const34 $tmp433 	%argrw{"wrr"}
+	format		$tmp434 $const103 baseName $const6 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const35 $tmp434 	%argrw{"wrr"}
+	format		$tmp435 $const103 baseName $const7 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const36 $tmp435 	%argrw{"wrr"}
+	format		$tmp436 $const103 baseName $const8 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const37 $tmp436 	%argrw{"wrr"}
+	format		$tmp437 $const103 baseName $const9 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const38 $tmp437 	%argrw{"wrr"}
+	format		$tmp438 $const103 baseName $const10 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const39 $tmp438 	%argrw{"wrr"}
+	format		$tmp439 $const103 baseName $const11 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const40 $tmp439 	%argrw{"wrr"}
+	format		$tmp440 $const103 baseName $const12 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const41 $tmp440 	%argrw{"wrr"}
+	format		$tmp441 $const103 baseName $const13 $const7 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const42 $tmp441 	%argrw{"wrr"}
+	format		$tmp442 $const103 baseName $const1 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const43 $tmp442 	%argrw{"wrr"}
+	format		$tmp443 $const103 baseName $const2 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const44 $tmp443 	%argrw{"wrr"}
+	format		$tmp444 $const103 baseName $const6 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const45 $tmp444 	%argrw{"wrr"}
+	format		$tmp445 $const103 baseName $const7 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const46 $tmp445 	%argrw{"wrr"}
+	format		$tmp446 $const103 baseName $const8 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const47 $tmp446 	%argrw{"wrr"}
+	format		$tmp447 $const103 baseName $const9 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const48 $tmp447 	%argrw{"wrr"}
+	format		$tmp448 $const103 baseName $const10 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const49 $tmp448 	%argrw{"wrr"}
+	format		$tmp449 $const103 baseName $const11 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const50 $tmp449 	%argrw{"wrr"}
+	format		$tmp450 $const103 baseName $const12 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const51 $tmp450 	%argrw{"wrr"}
+	format		$tmp451 $const103 baseName $const13 $const8 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const52 $tmp451 	%argrw{"wrr"}
+	format		$tmp452 $const103 baseName $const1 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const53 $tmp452 	%argrw{"wrr"}
+	format		$tmp453 $const103 baseName $const2 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const54 $tmp453 	%argrw{"wrr"}
+	format		$tmp454 $const103 baseName $const6 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const55 $tmp454 	%argrw{"wrr"}
+	format		$tmp455 $const103 baseName $const7 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const56 $tmp455 	%argrw{"wrr"}
+	format		$tmp456 $const103 baseName $const8 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const57 $tmp456 	%argrw{"wrr"}
+	format		$tmp457 $const103 baseName $const9 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const58 $tmp457 	%argrw{"wrr"}
+	format		$tmp458 $const103 baseName $const10 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const59 $tmp458 	%argrw{"wrr"}
+	format		$tmp459 $const103 baseName $const11 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const60 $tmp459 	%argrw{"wrr"}
+	format		$tmp460 $const103 baseName $const12 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const61 $tmp460 	%argrw{"wrr"}
+	format		$tmp461 $const103 baseName $const13 $const9 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const62 $tmp461 	%argrw{"wrr"}
+	format		$tmp462 $const103 baseName $const1 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const63 $tmp462 	%argrw{"wrr"}
+	format		$tmp463 $const103 baseName $const2 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const64 $tmp463 	%argrw{"wrr"}
+	format		$tmp464 $const103 baseName $const6 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const65 $tmp464 	%argrw{"wrr"}
+	format		$tmp465 $const103 baseName $const7 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const66 $tmp465 	%argrw{"wrr"}
+	format		$tmp466 $const103 baseName $const8 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const67 $tmp466 	%argrw{"wrr"}
+	format		$tmp467 $const103 baseName $const9 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const68 $tmp467 	%argrw{"wrr"}
+	format		$tmp468 $const103 baseName $const10 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const69 $tmp468 	%argrw{"wrr"}
+	format		$tmp469 $const103 baseName $const11 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const70 $tmp469 	%argrw{"wrr"}
+	format		$tmp470 $const103 baseName $const12 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const71 $tmp470 	%argrw{"wrr"}
+	format		$tmp471 $const103 baseName $const13 $const10 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const72 $tmp471 	%argrw{"wrr"}
+	format		$tmp472 $const103 baseName $const1 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const73 $tmp472 	%argrw{"wrr"}
+	format		$tmp473 $const103 baseName $const2 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const74 $tmp473 	%argrw{"wrr"}
+	format		$tmp474 $const103 baseName $const6 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const75 $tmp474 	%argrw{"wrr"}
+	format		$tmp475 $const103 baseName $const7 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const76 $tmp475 	%argrw{"wrr"}
+	format		$tmp476 $const103 baseName $const8 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const77 $tmp476 	%argrw{"wrr"}
+	format		$tmp477 $const103 baseName $const9 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const78 $tmp477 	%argrw{"wrr"}
+	format		$tmp478 $const103 baseName $const10 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const79 $tmp478 	%argrw{"wrr"}
+	format		$tmp479 $const103 baseName $const11 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const80 $tmp479 	%argrw{"wrr"}
+	format		$tmp480 $const103 baseName $const12 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const81 $tmp480 	%argrw{"wrr"}
+	format		$tmp481 $const103 baseName $const13 $const11 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const82 $tmp481 	%argrw{"wrr"}
+	format		$tmp482 $const103 baseName $const1 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const83 $tmp482 	%argrw{"wrr"}
+	format		$tmp483 $const103 baseName $const2 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const84 $tmp483 	%argrw{"wrr"}
+	format		$tmp484 $const103 baseName $const6 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const85 $tmp484 	%argrw{"wrr"}
+	format		$tmp485 $const103 baseName $const7 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const86 $tmp485 	%argrw{"wrr"}
+	format		$tmp486 $const103 baseName $const8 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const87 $tmp486 	%argrw{"wrr"}
+	format		$tmp487 $const103 baseName $const9 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const88 $tmp487 	%argrw{"wrr"}
+	format		$tmp488 $const103 baseName $const10 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const89 $tmp488 	%argrw{"wrr"}
+	format		$tmp489 $const103 baseName $const11 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const90 $tmp489 	%argrw{"wrr"}
+	format		$tmp490 $const103 baseName $const12 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const91 $tmp490 	%argrw{"wrr"}
+	format		$tmp491 $const103 baseName $const13 $const12 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const92 $tmp491 	%argrw{"wrr"}
+	format		$tmp492 $const103 baseName $const1 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const93 $tmp492 	%argrw{"wrr"}
+	format		$tmp493 $const103 baseName $const2 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const94 $tmp493 	%argrw{"wrr"}
+	format		$tmp494 $const103 baseName $const6 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const95 $tmp494 	%argrw{"wrr"}
+	format		$tmp495 $const103 baseName $const7 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const96 $tmp495 	%argrw{"wrr"}
+	format		$tmp496 $const103 baseName $const8 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const97 $tmp496 	%argrw{"wrr"}
+	format		$tmp497 $const103 baseName $const9 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const98 $tmp497 	%argrw{"wrr"}
+	format		$tmp498 $const103 baseName $const10 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const99 $tmp498 	%argrw{"wrr"}
+	format		$tmp499 $const103 baseName $const11 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const100 $tmp499 	%argrw{"wrr"}
+	format		$tmp500 $const103 baseName $const12 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const101 $tmp500 	%argrw{"wrr"}
+	format		$tmp501 $const103 baseName $const13 $const13 ext 	%argrw{"wrrrrr"}
+	aassign		filenamesMudbox $const102 $tmp501 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:92
+#     int vmap = int(t);
+	assign		umap s 	%line{92} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:93
+#     int udim = 10*vmap + umap;
+	assign		vmap t 	%line{93} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:94
+# 	if( uvTilingMode == 1) //ZBrush 0-based u<U>v<V>
+	mul		$tmp502 $const4 vmap 	%line{94} %argrw{"wrr"}
+	add		udim $tmp502 umap 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:95
+# 		udim = udim * 1;
+	eq		$tmp503 uvTilingMode $const2 	%line{95} %argrw{"wrr"}
+	if		$tmp503 713 713 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:96
+# 	if( uvTilingMode == 2) //Mudbox 1-based u<U>v<V>
+	mul		udim udim $const2 	%line{96} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:97
+# 		udim = 10*(vmap+1) + (umap+1);
+	eq		$tmp504 uvTilingMode $const6 	%line{97} %argrw{"wrr"}
+	if		$tmp504 719 719 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:98
+# 		
+	add		$tmp505 vmap $const2 	%line{98} %argrw{"wrr"}
+	mul		$tmp506 $const4 $tmp505 	%argrw{"wrr"}
+	add		$tmp507 umap $const2 	%argrw{"wrr"}
+	add		udim $tmp506 $tmp507 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:100
+# 	if( uvTilingMode == 1 || uvTilingMode == 2)
+	assign		filename fileTextureName 	%line{100} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:101
+# 		filename = filenamesMudbox[udim]; 
+	eq		$tmp508 uvTilingMode $const2 	%line{101} %argrw{"wrr"}
+	neq		$tmp509 $tmp508 $const1 	%argrw{"wrr"}
+	if		$tmp509 723 726 	%argrw{"r"}
+	eq		$tmp510 uvTilingMode $const6 	%argrw{"wrr"}
+	neq		$tmp511 $tmp510 $const1 	%argrw{"wrr"}
+	assign		$tmp509 $tmp511 	%argrw{"wr"}
+	if		$tmp509 728 728 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:102
+# 	if( uvTilingMode == 3)
+	aref		filename filenamesMudbox udim 	%line{102} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:103
+# 		filename = filenames[udim];
+	eq		$tmp512 uvTilingMode $const7 	%line{103} %argrw{"wrr"}
+	if		$tmp512 731 731 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:104
+# 		
+	aref		filename filenames udim 	%line{104} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:109
+# 	string filters[4] = {"smartcubic", "cubic", "linear", "closest"};
+	sub		t $const104 t 	%line{109} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:110
+# 	string filter = filters[textureFilter];
+	assign		filters $const105 	%line{110} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:111
+# 	int numChannels = 0;		
+	aref		filter filters textureFilter 	%line{111} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:112
+# 	color C = texture(filename, s, t, "wrap", "periodic", "interp", filter, "width", textureFilterWidth, "blur", textureBlur);
+	assign		numChannels $const1 	%line{112} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:113
+# 	if( fromSRGB > 0)
+	texture		C filename s t $const106 $const107 $const108 filter $const109 textureFilterWidth $const110 textureBlur 	%line{113} %argrw{"wrrrrrrrrrrr"} %argderivs{2,3}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:114
+# 	{
+	gt		$tmp513 fromSRGB $const1 	%line{114} %argrw{"wrr"}
+	if		$tmp513 786 786 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:116
+# 	}
+	functioncall	$const111 786 	%line{116} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:34
+# 	outColor[0] = floatFromSRGB(outColor[0]);
+	assign		___311_outColor C 	%line{34} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:35
+# 	outColor[1] = floatFromSRGB(outColor[1]);
+	compref		$tmp515 ___311_outColor $const1 	%line{35} %argrw{"wrr"}
+	functioncall	$const112 754 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:6
+#     if (f <= 0.03928)
+	functioncall	$const114 745 	%line{6} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h:157
+# PERCOMP2 (max)
+	min		$tmp516 $tmp515 $const104 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h"} %line{157} %argrw{"wrr"}
+	max		___306_f $tmp516 $const113 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:7
+# 	{
+	le		$tmp517 ___306_f $const115 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp517 749 749 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:9
+# 	}
+	div		$tmp514 ___306_f $const116 	%line{9} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:11
+# }
+	add		$tmp519 ___306_f $const118 	%line{11} %argrw{"wrr"}
+	div		$tmp520 $tmp519 $const119 	%argrw{"wrr"}
+	log		$tmp518 $tmp520 	%argrw{"wr"}
+	mul		$tmp521 $const117 $tmp518 	%argrw{"wrr"}
+	exp		$tmp514 $tmp521 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:35
+# 	outColor[1] = floatFromSRGB(outColor[1]);
+	compassign	___311_outColor $const1 $tmp514 	%line{35} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:36
+# 	outColor[2] = floatFromSRGB(outColor[2]);
+	compref		$tmp523 ___311_outColor $const2 	%line{36} %argrw{"wrr"}
+	functioncall	$const112 769 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:6
+#     if (f <= 0.03928)
+	functioncall	$const114 760 	%line{6} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h:157
+# PERCOMP2 (max)
+	min		$tmp524 $tmp523 $const104 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h"} %line{157} %argrw{"wrr"}
+	max		___306_f $tmp524 $const113 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:7
+# 	{
+	le		$tmp525 ___306_f $const115 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp525 764 764 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:9
+# 	}
+	div		$tmp522 ___306_f $const116 	%line{9} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:11
+# }
+	add		$tmp527 ___306_f $const118 	%line{11} %argrw{"wrr"}
+	div		$tmp528 $tmp527 $const119 	%argrw{"wrr"}
+	log		$tmp526 $tmp528 	%argrw{"wr"}
+	mul		$tmp529 $const117 $tmp526 	%argrw{"wrr"}
+	exp		$tmp522 $tmp529 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:36
+# 	outColor[2] = floatFromSRGB(outColor[2]);
+	compassign	___311_outColor $const2 $tmp522 	%line{36} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:37
+# 	return outColor;
+	compref		$tmp531 ___311_outColor $const6 	%line{37} %argrw{"wrr"}
+	functioncall	$const112 784 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:6
+#     if (f <= 0.03928)
+	functioncall	$const114 775 	%line{6} %argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h:157
+# PERCOMP2 (max)
+	min		$tmp532 $tmp531 $const104 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h"} %line{157} %argrw{"wrr"}
+	max		___306_f $tmp532 $const113 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:7
+# 	{
+	le		$tmp533 ___306_f $const115 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl"} %line{7} %argrw{"wrr"}
+	if		$tmp533 779 779 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:9
+# 	}
+	div		$tmp530 ___306_f $const116 	%line{9} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:11
+# }
+	add		$tmp535 ___306_f $const118 	%line{11} %argrw{"wrr"}
+	div		$tmp536 $tmp535 $const119 	%argrw{"wrr"}
+	log		$tmp534 $tmp536 	%argrw{"wr"}
+	mul		$tmp537 $const117 $tmp534 	%argrw{"wrr"}
+	exp		$tmp530 $tmp537 	%argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:37
+# 	return outColor;
+	compassign	___311_outColor $const6 $tmp530 	%line{37} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:38
+# }
+	assign		C ___311_outColor 	%line{38} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:118
+# 	{
+	gt		$tmp538 toSRGB $const1 	%line{118} %argrw{"wrr"}
+	if		$tmp538 830 830 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:120
+# 	}
+	functioncall	$const120 830 	%line{120} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:25
+# 	outColor[0] = floatToSRGB(outColor[0]);
+	assign		___310_outColor C 	%line{25} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:26
+# 	outColor[1] = floatToSRGB(outColor[1]);
+	compref		$tmp540 ___310_outColor $const1 	%line{26} %argrw{"wrr"}
+	functioncall	$const121 802 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:16
+# 	{
+	le		$tmp541 $tmp540 $const122 	%line{16} %argrw{"wrr"}
+	if		$tmp541 796 796 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:18
+# 	}
+	mul		$tmp539 $tmp540 $const116 	%line{18} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:20
+# }
+	div		$tmp543 $const104 $const117 	%line{20} %argrw{"wrr"}
+	log		$tmp544 $tmp540 	%argrw{"wr"}
+	mul		$tmp545 $tmp543 $tmp544 	%argrw{"wrr"}
+	exp		$tmp542 $tmp545 	%argrw{"wr"}
+	mul		$tmp546 $const119 $tmp542 	%argrw{"wrr"}
+	sub		$tmp539 $tmp546 $const118 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:26
+# 	outColor[1] = floatToSRGB(outColor[1]);
+	compassign	___310_outColor $const1 $tmp539 	%line{26} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:27
+# 	outColor[2] = floatToSRGB(outColor[2]);
+	compref		$tmp548 ___310_outColor $const2 	%line{27} %argrw{"wrr"}
+	functioncall	$const121 815 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:16
+# 	{
+	le		$tmp549 $tmp548 $const122 	%line{16} %argrw{"wrr"}
+	if		$tmp549 809 809 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:18
+# 	}
+	mul		$tmp547 $tmp548 $const116 	%line{18} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:20
+# }
+	div		$tmp551 $const104 $const117 	%line{20} %argrw{"wrr"}
+	log		$tmp552 $tmp548 	%argrw{"wr"}
+	mul		$tmp553 $tmp551 $tmp552 	%argrw{"wrr"}
+	exp		$tmp550 $tmp553 	%argrw{"wr"}
+	mul		$tmp554 $const119 $tmp550 	%argrw{"wrr"}
+	sub		$tmp547 $tmp554 $const118 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:27
+# 	outColor[2] = floatToSRGB(outColor[2]);
+	compassign	___310_outColor $const2 $tmp547 	%line{27} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:28
+# 	return outColor;
+	compref		$tmp556 ___310_outColor $const6 	%line{28} %argrw{"wrr"}
+	functioncall	$const121 828 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:16
+# 	{
+	le		$tmp557 $tmp556 $const122 	%line{16} %argrw{"wrr"}
+	if		$tmp557 822 822 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:18
+# 	}
+	mul		$tmp555 $tmp556 $const116 	%line{18} %argrw{"wrr"}
+	return
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:20
+# }
+	div		$tmp559 $const104 $const117 	%line{20} %argrw{"wrr"}
+	log		$tmp560 $tmp556 	%argrw{"wr"}
+	mul		$tmp561 $tmp559 $tmp560 	%argrw{"wrr"}
+	exp		$tmp558 $tmp561 	%argrw{"wr"}
+	mul		$tmp562 $const119 $tmp558 	%argrw{"wrr"}
+	sub		$tmp555 $tmp562 $const118 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:28
+# 	return outColor;
+	compassign	___310_outColor $const6 $tmp555 	%line{28} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:29
+# }
+	assign		C ___310_outColor 	%line{29} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:122
+# 	if( invert )
+	assign		$tmp563 C 	%line{122} %argrw{"wr"}
+	functioncall	$const123 836 	%argrw{"r"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\mayaUtils.h:26
+# 	vector result = c;
+	assign		___301_result $tmp563 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\mayaUtils.h"} %line{26} %argrw{"wr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\mayaUtils.h:27
+# 	result *= colorGain;
+	mul		___301_result ___301_result colorGain 	%line{27} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\mayaUtils.h:28
+# 	result += colorOffset;
+	add		___301_result ___301_result colorOffset 	%line{28} %argrw{"wrr"}
+# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\mayaUtils.h:29
+# 	return result;
+	assign		CB ___301_result 	%line{29} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:123
+# 	if( uvTilingMode == 1) //ZBrush 0-based u<U>v<V>
+	if		invert 838 838 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl"} %line{123} %argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:125
+# 	if( uvTilingMode == 2) //Mudbox 1-based u<U>v<V>
+	sub		CB $const124 CB 	%line{125} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:127
+# 		
+	assign		outColor CB 	%line{127} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\file.osl:128
+#     string filename = fileTextureName; 
+	assign		$tmp565 outColor 	%line{128} %argrw{"wr"}
+	luminance	outAlpha $tmp565 	%argrw{"wr"}
+	end

@@ -1,0 +1,23 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader as_facing_ratio
+param	vector	Normal	0 0 0 		 %read{2147483647,-1} %write{0,0}
+param	vector	Incident	0 0 0 		 %read{2147483647,-1} %write{1,1}
+oparam	float	FacingRatio	0 		 %read{2147483647,-1} %write{3,3}
+global	vector	I	 %read{1,2} %write{2147483647,-1}
+global	normal	N	 %read{0,2} %write{2147483647,-1}
+temp	float	$tmp1	 %read{3,3} %write{2,2}
+code Normal
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl:38
+#     vector Incident = I,
+	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl"} %line{38} %argrw{"wr"}
+code Incident
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl:39
+#     output float FacingRatio = 0
+	assign		Incident I 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl"} %line{39} %argrw{"wr"}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl:43
+# }
+	dot		$tmp1 I N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\utility\\as_facing_ratio.osl"} %line{43} %argrw{"wrr"}
+	fabs		FacingRatio $tmp1 	%argrw{"wr"}
+	end

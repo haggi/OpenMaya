@@ -1,0 +1,61 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader bump2d
+param	float	bumpValue	0 		 %read{14,14} %write{2147483647,-1}
+param	float	bumpDepth	1 		 %read{14,14} %write{2147483647,-1}
+param	int	bumpInterp	0 		 %read{2,12} %write{2147483647,-1}
+param	vector	normalCamera	0 0 0 		 %read{1,1} %write{0,0}
+param	vector	normalMap	0 0 0 		 %read{4,10} %write{2147483647,-1}
+oparam	vector	outNormal	1 1 1 		 %read{2147483647,-1} %write{16,16}
+global	normal	N	 %read{0,0} %write{2147483647,-1}
+local	normal	dNormal	 %read{16,16} %write{1,15}
+const	int	$const1	0		 %read{2,12} %write{2147483647,-1}
+temp	int	$tmp1	 %read{3,3} %write{2,2}
+temp	int	$tmp2	 %read{5,5} %write{4,4}
+temp	float	$tmp3	 %read{7,7} %write{6,6}
+const	int	$const2	1		 %read{8,9} %write{2147483647,-1}
+temp	float	$tmp4	 %read{9,9} %write{8,8}
+const	int	$const3	2		 %read{10,11} %write{2147483647,-1}
+temp	float	$tmp5	 %read{11,11} %write{10,10}
+temp	int	$tmp6	 %read{13,13} %write{12,12}
+temp	float	$tmp7	 %read{15,15} %write{14,14}
+code normalCamera
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:2
+# {
+	assign		normalCamera N 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl"} %line{2} %argrw{"wr"}
+code ___main___
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:4
+# 	
+	assign		dNormal normalCamera 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl"} %line{4} %argrw{"wr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:6
+# 	{
+	gt		$tmp1 bumpInterp $const1 	%line{6} %argrw{"wrr"}
+	if		$tmp1 12 12 	%argrw{"r"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:8
+# 		{
+	isconnected	$tmp2 normalMap 	%line{8} %argrw{"wr"}
+	if		$tmp2 12 12 	%argrw{"r"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:10
+# 			dNormal[1] = normalMap[1];
+	compref		$tmp3 normalMap $const1 	%line{10} %argrw{"wrr"}
+	compassign	dNormal $const1 $tmp3 	%argrw{"wrr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:11
+# 			dNormal[2] = normalMap[2];
+	compref		$tmp4 normalMap $const2 	%line{11} %argrw{"wrr"}
+	compassign	dNormal $const2 $tmp4 	%argrw{"wrr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:12
+# 		}
+	compref		$tmp5 normalMap $const3 	%line{12} %argrw{"wrr"}
+	compassign	dNormal $const3 $tmp5 	%argrw{"wrr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:16
+# 	{
+	eq		$tmp6 bumpInterp $const1 	%line{16} %argrw{"wrr"}
+	if		$tmp6 16 16 	%argrw{"r"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:18
+# 	}
+	mul		$tmp7 bumpValue bumpDepth 	%line{18} %argrw{"wrr"}
+	assign		dNormal $tmp7 	%argrw{"wr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\bump2d.osl:20
+# }
+	assign		outNormal dNormal 	%line{20} %argrw{"wr"}
+	end

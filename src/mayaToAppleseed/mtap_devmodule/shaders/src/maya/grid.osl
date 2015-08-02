@@ -1,0 +1,36 @@
+#include "mayaUtils.h"
+
+vector Contrast(vector c, vector d, float f) 
+{
+   return mix((c + d) / 2.0, c, f);
+}
+shader grid(vector lineColor=1, vector fillerColor=0, float uWidth=.1, float vWidth = 0.1, vector uvCoord=0, float contrast = 0.5, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
+{
+   float filter = 1;
+   float filterOffset = 0;
+
+   float ss = uvCoord[0];
+   float tt = 1.0 - uvCoord[1];
+   ss = mod(ss, 1.000001);
+   tt = mod(tt, 1.000001);
+
+   // set fw to zero at the moment
+   float fw = 0.0;
+
+   float dss = fw * 2.0;
+   float dtt = fw * 2.0;
+
+   float f = filteredPulseTrain(uWidth, 1.0, ss + uWidth * 0.5, dss);
+             filteredPulseTrain(vWidth, 1.0, tt + vWidth * 0.5, dtt);
+
+   vector lc = Contrast(lineColor, fillerColor, contrast);
+   vector fc = Contrast(fillerColor, lineColor, contrast);	
+   
+   outColor = mix(lc, fc, f);
+
+	vector C = colorBalance(outColor, colorGain, colorOffset);
+	outColor = C;	
+	if( alphaIsLuminance == 1)
+		outAlpha = luminance(color(outColor));   
+   
+}

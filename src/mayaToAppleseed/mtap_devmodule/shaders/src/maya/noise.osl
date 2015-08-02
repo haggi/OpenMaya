@@ -1,0 +1,184 @@
+#include "mayaUtils.h"
+//#include "noise_utils.h"
+
+shader noise(
+   float threshold = 0.0,
+   float amplitude = 1.0,
+   float ratio = 0.707,
+   float frequencyRatio = 2.0,
+   int depthMax = 3,
+   int inflection = 0,
+   float inTime = 0.0,
+   float frequency = 8.0,
+   float implode = 0.0,
+   vector implodeCenter = vector(0.5, 0.5 , 0.0),
+   int noiseType = 1,
+   float density = 1.0,
+   float spotynes = 0.1,
+   float sizeRand = 0.0,
+   float randomnes = 1.0,
+   int falloff = 0,
+   int numWaves = 6,
+   vector uvCoord = 0,
+   MAYA_COLORBALANCE,
+   MAYA_DEFAULT_OUTPUT   )
+{
+	float s = u;
+	float t = v;
+	if( isconnected(uvCoord))
+	{
+		s = uvCoord[0];
+		t = uvCoord[1];
+	}
+	vector pp = vector(s, t, 0.0);
+	if (implode)
+	{
+	  vector icp = vector(implodeCenter[0], implodeCenter[1], 0.0);
+	  vector dp = pp - icp;
+	  dp = dp / pow(length(dp), implode);
+	  pp = dp + icp;
+	}
+	int depth[2] = {0, depthMax};
+	float ripples[3] = {2, 2, 2};
+	vector pn = pp * frequency;
+	
+	float noiseVal = 0.0;
+	if(noiseType == 0) // perlin
+	{
+      if (inflection)
+      {
+//         noiseVal = amplitude * fTurb(pn, inTime, 1.0, frequencyRatio, depth, ratio, ripples);
+      }
+      else
+      {
+//         noiseVal = fBm(pn, inTime, amplitude, depth, 1, frequencyRatio, ratio);
+			float amp = amplitude;
+			vector pp = pn;
+			float sum = 0;
+			int i = 0;
+			float lacunarity = 1.0;
+			int octaves[2] = {depth[0], depth[1]};
+			
+			float pixelSize = sampleArea();
+			float nyquist = 2.0 * pixelSize;
+			float pixel = 1.0;
+
+			while ((i < octaves[1] && pixel > nyquist) || i < octaves[0])
+			{
+			  sum += amp * noise(pp * lacunarity, time);
+			  amp *= ratio;
+			  lacunarity *= frequencyRatio;
+			  pixel /= frequencyRatio;
+			  ++i;
+			}
+
+			if (pixel > pixelSize && i <= octaves[1])
+			{
+			  float weight = clamp(pixel/pixelSize - 1.0, 0.0, 1.0);
+			  sum += weight * amp * noise(pp * lacunarity, time);
+			}
+			noiseVal = sum;
+			printf("sum %f\n", sum);
+      }
+	}	
+	if(noiseType == 1) // billow
+	{
+	}	
+	if(noiseType == 2) // wave
+	{
+	}	
+	if(noiseType == 3) // wispy
+	{
+	}	
+	if(noiseType == 4) // spacetime
+	{
+	}	
+	outColor = vector(1,0,0) * noiseVal;
+	outColor = colorBalance(outColor, colorGain, colorOffset);		
+}
+/*
+shader_evaluate
+{
+   float noiseVal = 0.0f;
+
+   switch (noiseType)
+   {
+   case NT_PERLIN:
+      if (inflection)
+      {
+         noiseVal = amplitude * fTurbulence(sg, pn, time, 1.0f, frequencyRatio, depth, ratio, ripples,
+      }
+      else
+      {
+         noiseVal = fBm(sg, pn, time, amplitude, depth, 1, frequencyRatio, ratio,
+      }
+      break;
+   case NT_BILLOW:
+      {
+         float radius = sqrt(0.5f * density,
+         noiseVal = BillowNoise(pn, time, 2, radius, sizeRand, randomnes, falloff, spotynes, depthMax, frequencyRatio, ratio, amplitude,
+      }
+      break;
+   case NT_WAVE:
+      {
+         float x = s * frequency;
+         float y = t * frequency;
+         float amp = amplitude;
+
+         float waveValue = 0.0f;
+         int i;
+
+         for (i=0; i<depthMax; ++i)
+         {
+            if(isinf(x * 2.0f * (float)AI_PI) || isinf(y * 2.0f * (float)AI_PI))
+               break;
+            float noiseValue = CosWaves(x, y, time, numWaves,
+            x *= frequencyRatio;
+            y *= frequencyRatio;
+
+            if (inflection)
+            {
+               noiseValue = fabs(noiseValue,
+            }
+
+            waveValue += amp * noiseValue;
+            amp *= ratio;
+         }
+
+         if (!inflection)
+         {
+            waveValue = 0.5f * waveValue + 0.5f;
+         }
+         
+         noiseVal = waveValue;
+      }
+      break;
+   case NT_WISPY:
+      pn += AiPerlin3(pn / 2.0f) * 1.3f;
+      if (inflection)
+      {
+         noiseVal = amplitude * fTurbulence(sg, pn, time, 1.0f, frequencyRatio, depth, ratio, ripples,
+      }
+      else
+      {
+         noiseVal = fBm(sg, pn, time, amplitude, depth, 1, frequencyRatio, ratio,
+      }
+      break;
+   case NT_SPACETIME:
+      if (inflection)
+      {
+         noiseVal = amplitude * fTurbulence(sg, pn, time, 1.0f, frequencyRatio, depth, ratio, ripples,
+      }
+      else
+      {
+         noiseVal = fBm(sg, pn, time, amplitude, depth, 1, frequencyRatio, ratio,
+      }
+      break;
+   }
+
+   noiseVal = CLAMP(noiseVal + threshold, 0.0f, 1.0,
+
+   AiRGBACreate(sg->out.RGBA, noiseVal, noiseVal, noiseVal, noiseVal,
+   MayaColorBalance(sg, node, p_defaultColor, sg->out.RGBA,
+}
+*/

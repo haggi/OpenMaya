@@ -1,0 +1,19 @@
+
+shader multiplyDivide ( vector input1 = 0, vector input2 = 0, int operation = 0, output vector outOutput=0)
+{
+	outOutput = input1;
+	if( operation == 1) //multiply
+	{
+		outOutput = input1 * input2;
+	}
+	if( operation == 2) //divide
+	{
+		outOutput = input1 / input2;
+	}
+	if( operation == 3) //pow
+	{
+		outOutput[0] = pow(input1[0],input2[0]);
+		outOutput[1] = pow(input1[1],input2[1]);
+		outOutput[2] = pow(input1[2],input2[2]);
+	}
+}

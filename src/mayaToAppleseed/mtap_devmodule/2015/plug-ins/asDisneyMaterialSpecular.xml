@@ -1,0 +1,109 @@
+<fragment uiName="coronaSpecular" name="coronaSpecular" type="plumbing" class="ShadeFragment" version="1.0">
+  <description><![CDATA[Computes blinn specular component]]></description>
+  <properties>
+    <float3 name="specularI" />
+    <float4 name="shaderGeomInput" />
+    <float3 name="specularColor" />
+    <float name="eccentricity" />
+    <float name="specularRollOff" />
+  </properties>
+  <values>
+    <float3 name="specularI" value="0.0,0.0,0.0" />
+    <float4 name="shaderGeomInput" value="0.0,0.0,0.0,0.0" />
+    <float3 name="specularColor" value="1.0,1.0,1.0" />
+    <float name="eccentricity" value="0.1" />
+    <float name="specularRollOff" value="0.7" />
+  </values>
+  <outputs>
+    <float3 name="outColor" />
+  </outputs>
+  <implementation>
+    <implementation render="OGSRenderer" language="Cg" lang_version="2.1">
+      <function_name val="coronaSpecular" />
+      <source>
+        <![CDATA[
+float3 coronaSpecular(
+	float3 specularI,
+	float4 NL_NV_NH_VH,
+	float3 specularColor,
+	float ecc,
+	float rolloff)
+{
+	const float eps = 0.00001f;
+	float ecc2 = ecc * ecc - 1.0f;
+	float NH = NL_NV_NH_VH.z;
+	float d = (ecc2 + 1.0f) / (1.0f + ecc2 * NH * NH);
+	d *= 2.0f * d * d;
+	float NL = NL_NV_NH_VH.x;
+	float NV = NL_NV_NH_VH.y;
+	float VH = NL_NV_NH_VH.w + eps;
+	NH *= 0.5f;
+	float g = saturate(min(NH*NV/VH, NH*NL/VH));
+	float k = max((1.0f - NV), (1.0f - NL));
+	k = k * k * k;
+	float f = k + (1.0f - k) * rolloff;
+	return specularI * saturate(d * f * g) * specularColor;
+}
+		]]>
+      </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="HLSL" lang_version="11.0">
+      <function_name val="coronaSpecular" />
+      <source>
+        <![CDATA[
+float3 coronaSpecular(
+	float3 specularI,
+	float4 NL_NV_NH_VH,
+	float3 specularColor,
+	float ecc,
+	float rolloff)
+{
+	const float eps = 0.00001f;
+	float ecc2 = ecc * ecc - 1.0f;
+	float NH = NL_NV_NH_VH.z;
+	float d = (ecc2 + 1.0f) / (1.0f + ecc2 * NH * NH);
+	d *= 2.0f * d * d;
+	float NL = NL_NV_NH_VH.x;
+	float NV = NL_NV_NH_VH.y;
+	float VH = NL_NV_NH_VH.w + eps;
+	NH *= 0.5f;
+	float g = saturate(min(NH*NV/VH, NH*NL/VH));
+	float k = max((1.0f - NV), (1.0f - NL));
+	k = k * k * k;
+	float f = k + (1.0f - k) * rolloff;
+	return specularI * saturate(d * f * g) * specularColor;
+}
+		]]>
+      </source>
+    </implementation>
+    <implementation render="OGSRenderer" language="GLSL" lang_version="3.0">
+      <function_name val="coronaSpecular" />
+      <source>
+        <![CDATA[
+vec3 coronaSpecular(
+	vec3 specularI,
+	vec4 NL_NV_NH_VH,
+	vec3 specularColor,
+	float ecc,
+	float rolloff)
+{
+	const float eps = 0.00001f;
+	float ecc2 = ecc * ecc - 1.0f;
+	float NH = NL_NV_NH_VH.z;
+	float d = (ecc2 + 1.0f) / (1.0f + ecc2 * NH * NH);
+	d *= 2.0f * d * d;
+	float NL = NL_NV_NH_VH.x;
+	float NV = NL_NV_NH_VH.y;
+	float VH = NL_NV_NH_VH.w + eps;
+	NH *= 0.5f;
+	float g = saturate(min(NH*NV/VH, NH*NL/VH));
+	float k = max((1.0f - NV), (1.0f - NL));
+	k = k * k * k;
+	float f = k + (1.0f - k) * rolloff;
+	return specularI * saturate(d * f * g) * specularColor;
+}
+		]]>
+      </source>
+    </implementation>
+  </implementation>
+</fragment>

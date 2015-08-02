@@ -1,0 +1,28 @@
+#include "mayaUtils.h"
+
+shader bulge(float uWidth=0, float vWidth=0, vector uvCoord = 0, MAYA_COLORBALANCE, MAYA_DEFAULT_OUTPUT)
+{
+	vector uvw;
+	float s = 0.0;
+	float t = 0.0;
+	if( isconnected(uvCoord))
+	{
+		s = uvCoord[0];
+		t = uvCoord[1];
+	}else{
+		s = u;
+		t = v;
+	}
+	t = 1.0 - t;
+
+	s = mod(s, WRAPMAX);
+	t = mod(t, WRAPMAX);
+    
+	float a = smoothstep(uWidth / 2, .5, s) * (1 - smoothstep(0.5, 1 - (uWidth / 2), s));
+	float b = smoothstep(vWidth / 2, .5, t) * (1 - smoothstep(0.5, 1 - (vWidth / 2), t));
+	vector C = sqrt(abs(a * b));
+	
+	C = colorBalance(C, colorGain, colorOffset);
+	outColor = C;	
+	outAlpha = luminance(color(outColor));
+}

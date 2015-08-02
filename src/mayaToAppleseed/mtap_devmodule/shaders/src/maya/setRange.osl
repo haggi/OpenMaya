@@ -1,0 +1,28 @@
+shader setRange(vector value=0, vector inMin=0, vector inMax = 1, vector oldMin = 0, vector oldMax = 1, output vector outValue = 0)
+{
+	vector clippedColor = value;
+	
+	if( clippedColor[0] < oldMin[0] )
+		clippedColor[0] = oldMin[0];
+	if( clippedColor[1] < oldMin[1] )
+		clippedColor[1] = oldMin[1];
+	if( clippedColor[2] < oldMin[2] )
+		clippedColor[2] = oldMin[2];
+
+	if( clippedColor[0] > oldMax[0] )
+		clippedColor[0] = oldMax[0];
+	if( clippedColor[1] > oldMax[1] )
+		clippedColor[1] = oldMax[1];
+	if( clippedColor[2] > oldMax[2] )
+		clippedColor[3] = oldMax[2];
+		
+	float dOld = 0.0;
+	float dNew = 0.0;
+	for( int i = 0; i < 3; i++)
+	{
+		dOld = oldMax[i] - oldMin[i];
+		dNew = inMax[i] - inMin[i];
+		outValue[i] = clippedColor[i] * dOld/dNew;
+	}
+	
+}

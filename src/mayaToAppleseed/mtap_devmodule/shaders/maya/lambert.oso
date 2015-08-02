@@ -1,0 +1,44 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+surface lambert
+param	vector	Normal	0 0 0 		 %read{1,1} %write{0,0}
+param	float	inDiffuse	0.80000001 		 %read{3,3} %write{2147483647,-1}
+param	vector	inColor	1 1 1 		 %read{2,2} %write{2147483647,-1}
+param	vector	incandescence	0 0 0 		 %read{6,6} %write{2147483647,-1}
+param	vector	transparency	0 0 0 		 %read{10,10} %write{2147483647,-1}
+oparam	closure color	outColor			 %read{2147483647,-1} %write{12,12}
+global	normal	N	 %read{0,0} %write{2147483647,-1}
+temp	closure color	$tmp1	 %read{4,4} %write{1,1}
+const	string	$const1	"diffuse"		 %read{1,1} %write{2147483647,-1}
+temp	color	$tmp2	 %read{3,3} %write{2,2}
+temp	color	$tmp3	 %read{4,4} %write{3,3}
+temp	closure color	$tmp4	 %read{8,8} %write{4,4}
+temp	closure color	$tmp5	 %read{7,7} %write{5,5}
+const	string	$const2	"emission"		 %read{5,5} %write{2147483647,-1}
+temp	color	$tmp6	 %read{7,7} %write{6,6}
+temp	closure color	$tmp7	 %read{8,8} %write{7,7}
+temp	closure color	$tmp8	 %read{12,12} %write{8,8}
+temp	closure color	$tmp9	 %read{11,11} %write{9,9}
+const	string	$const3	"transparent"		 %read{9,9} %write{2147483647,-1}
+temp	color	$tmp10	 %read{11,11} %write{10,10}
+temp	closure color	$tmp11	 %read{12,12} %write{11,11}
+code Normal
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl:6
+#     float inDiffuse = 0.8,
+	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl"} %line{6} %argrw{"wr"}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl:16
+# }
+	closure		$tmp1 $const1 Normal 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl"} %line{16} %argrw{"wrr"}
+	assign		$tmp2 inColor 	%argrw{"wr"}
+	mul		$tmp3 inDiffuse $tmp2 	%argrw{"wrr"}
+	mul		$tmp4 $tmp1 $tmp3 	%argrw{"wrr"}
+	closure		$tmp5 $const2 	%argrw{"wr"}
+	assign		$tmp6 incandescence 	%argrw{"wr"}
+	mul		$tmp7 $tmp5 $tmp6 	%argrw{"wrr"}
+	add		$tmp8 $tmp4 $tmp7 	%argrw{"wrr"}
+	closure		$tmp9 $const3 	%argrw{"wr"}
+	assign		$tmp10 transparency 	%argrw{"wr"}
+	mul		$tmp11 $tmp9 $tmp10 	%argrw{"wrr"}
+	add		outColor $tmp8 $tmp11 	%argrw{"wrr"}
+	end

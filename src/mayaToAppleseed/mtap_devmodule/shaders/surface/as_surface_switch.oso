@@ -1,0 +1,18 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader as_surface_switch
+param	closure color	BSDF1			 %read{1,1} %write{2147483647,-1}
+param	closure color	BSDF2			 %read{2,2} %write{2147483647,-1}
+param	int	Cond	1 		 %read{0,0} %write{2147483647,-1}
+oparam	closure color	BSDF			 %read{2147483647,-1} %write{1,2}
+code ___main___
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_switch.osl:41
+#         BSDF = BSDF1;
+	if		Cond 2 3 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_switch.osl"} %line{41} %argrw{"r"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_switch.osl:42
+#     else
+	assign		BSDF BSDF1 	%line{42} %argrw{"wr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_switch.osl:44
+# }
+	assign		BSDF BSDF2 	%line{44} %argrw{"wr"}
+	end

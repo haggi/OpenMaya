@@ -1,0 +1,49 @@
+<fragment uiName="coronaOutput" name="coronaOutput" type="structure" class="ShadeFragment" version="1.0">
+	<description><![CDATA[Struct output for onb shader]]></description>
+	<properties>
+		<struct name="coronaOutput" struct_name="coronaOutput" />
+	</properties>
+	<values>
+	</values>
+	<outputs>
+		<alias name="coronaOutput" struct_name="coronaOutput" />
+		<float3 name="outColor" />
+		<float3 name="outTransparency" />
+		<float4 name="outSurfaceFinal" />
+	</outputs>
+	<implementation>
+	<implementation render="OGSRenderer" language="Cg" lang_version="2.1">
+		<function_name val="" />
+		<declaration name="coronaOutput"><![CDATA[
+struct coronaOutput
+{
+	float3 outColor;
+	float3 outTransparency;
+	float4 outSurfaceFinal;
+};
+		]]></declaration>
+	</implementation>
+	<implementation render="OGSRenderer" language="HLSL" lang_version="11.0">
+		<function_name val="" />
+		<declaration name="coronaOutput"><![CDATA[
+struct coronaOutput
+{
+	float3 outColor;
+	float3 outTransparency;
+	float4 outSurfaceFinal;
+};
+		]]></declaration>
+	</implementation>
+	<implementation render="OGSRenderer" language="GLSL" lang_version="3.0">
+		<function_name val="" />
+		<declaration name="coronaOutput"><![CDATA[
+struct coronaOutput
+{
+	vec3 outColor;
+	vec3 outTransparency;
+	vec4 outSurfaceFinal;
+};
+		]]></declaration>
+	</implementation>
+	</implementation>
+</fragment>

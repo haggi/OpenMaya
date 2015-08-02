@@ -1,0 +1,19 @@
+shader contrast(vector value = 0, vector contrast = 0, vector bias = 0, output vector outValue = 0)
+{
+	float log05 = log(0.5);
+
+	vector modifiedValue;
+	modifiedValue[0] = pow(value[0], log05 / log(bias[0]));
+	modifiedValue[1] = pow(value[1], log05 / log(bias[1]));
+	modifiedValue[2] = pow(value[2], log05 / log(bias[2]));
+
+	// Contrast convert calculation based on Perlin's gain function
+	outValue[0] = modifiedValue[0] < 0.5 ? 0.5 * pow(2.0 * modifiedValue[0], contrast[0]) : 1.0 - 0.5 * pow(2.0 * (1.0 - modifiedValue[0]), contrast[0]);
+	outValue[1] = modifiedValue[1] < 0.5 ? 0.5 * pow(2.0 * modifiedValue[1], contrast[1]) : 1.0 - 0.5 * pow(2.0 * (1.0 - modifiedValue[1]), contrast[1]);
+	outValue[2] = modifiedValue[2] < 0.5 ? 0.5 * pow(2.0 * modifiedValue[2], contrast[2]) : 1.0 - 0.5 * pow(2.0 * (1.0 - modifiedValue[2]), contrast[2]);
+
+	// Clamp 0 to 1 to avoid INF00 or -INF00
+	outValue[0] = clamp(outValue[0], 0.0, 1.0);
+	outValue[1] = clamp(outValue[1], 0.0, 1.0);
+	outValue[2] = clamp(outValue[2], 0.0, 1.0);
+}

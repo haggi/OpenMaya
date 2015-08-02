@@ -1,0 +1,10 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+surface surfaceShaderInterface
+param	closure color	inColor			 %read{0,0} %write{2147483647,-1}
+global	closure color	Ci	 %read{2147483647,-1} %write{0,0}
+code ___main___
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\surfaceShaderInterface.osl:5
+# }
+	assign		Ci inColor 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\surfaceShaderInterface.osl"} %line{5} %argrw{"wr"}
+	end

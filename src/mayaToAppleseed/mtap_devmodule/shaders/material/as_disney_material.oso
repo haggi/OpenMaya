@@ -1,0 +1,37 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+surface as_disney_material
+param	vector	Normal	0 0 0 		 %read{3,3} %write{0,0}
+param	vector	Tangent	0 0 0 		 %read{3,3} %write{1,1}
+param	vector	BaseColor	0.5 0.5 0.5 		 %read{2,2} %write{2147483647,-1}
+param	float	Subsurface	0 		 %read{3,3} %write{2147483647,-1}
+param	float	Metallic	0 		 %read{3,3} %write{2147483647,-1}
+param	float	Specular	0.5 		 %read{3,3} %write{2147483647,-1}
+param	float	SpecularTint	0 		 %read{3,3} %write{2147483647,-1}
+param	float	Anisotropic	0 		 %read{3,3} %write{2147483647,-1}
+param	float	Roughness	0.5 		 %read{3,3} %write{2147483647,-1}
+param	float	Sheen	0 		 %read{3,3} %write{2147483647,-1}
+param	float	SheenTint	0.5 		 %read{3,3} %write{2147483647,-1}
+param	float	Clearcoat	0 		 %read{3,3} %write{2147483647,-1}
+param	float	ClearcoatGloss	1 		 %read{3,3} %write{2147483647,-1}
+oparam	closure color	outColor			 %read{2147483647,-1} %write{3,3}
+global	normal	N	 %read{0,0} %write{2147483647,-1}
+global	vector	dPdu	 %read{1,1} %write{2147483647,-1}
+temp	color	$tmp1	 %read{3,3} %write{2,2}
+const	string	$const1	"as_disney"		 %read{3,3} %write{2147483647,-1}
+code Normal
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl:37
+#     vector Tangent = APPLESEED_DEFAULT_TANGENT,
+	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl"} %line{37} %argrw{"wr"}
+code Tangent
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl:38
+#     vector BaseColor = 0.5,
+	normalize	Tangent dPdu 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl"} %line{38} %argrw{"wr"}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl:56
+#         Subsurface,
+	assign		$tmp1 BaseColor 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl"} %line{56} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\material\\as_disney_material.osl:66
+# }
+	closure		outColor $const1 Normal Tangent $tmp1 Subsurface Metallic Specular SpecularTint Anisotropic Roughness Sheen SheenTint Clearcoat ClearcoatGloss 	%line{66} %argrw{"wrrrrrrrrrrrrrr"}
+	end

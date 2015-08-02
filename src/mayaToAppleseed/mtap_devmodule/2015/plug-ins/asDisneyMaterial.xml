@@ -1,0 +1,31 @@
+<fragment_graph name="asDisneyMaterial" ref="asDisneyMaterial" class="FragmentGraph" version="1.0">
+  <fragments>
+    <fragment_ref name="asDisneyMaterialDiffuse" ref="coronaDiffuse" />
+    <fragment_ref name="coronaLightAccum" ref="coronaLightAccum" />
+    <fragment_ref name="coronaCombiner" ref="coronaCombiner" />
+    <fragment_ref name="mayaSurfaceShaderOutput" ref="mayaSurfaceShaderOutput" />
+  </fragments>
+  <connections>
+    <connect from="coronaDiffuse.outColor" to="coronaLightAccum.scaledDiffuse"/>
+    <connect from="coronaLightAccum.scaledDiffuse" to="coronaCombiner.diffuseIrradIn"/>
+    <connect from="coronaCombiner.coronaCombinerOutput" to="mayaSurfaceShaderOutput.mayaSurfaceShaderOutput" />
+  </connections>
+  <properties>
+    <float3 name="diffuse" ref="coronaCombiner.diffuseColor" />
+    <float3 name="opacity" ref="coronaCombiner.opacity" />
+    <float3 name="refractivity" ref="coronaCombiner.refractivity" />
+    <float3 name="emissionColor" ref="coronaCombiner.emission" />
+    <float3 name="diffuseI" ref="coronaDiffuse.diffuseI" />
+    <float3 name="Nw" ref="coronaDiffuse.Nw" semantic="Nw" flags="varyingInputParam" />
+    <float3 name="Lw" ref="coronaDiffuse.Lw" semantic="Lw" flags="varyingInputParam" />
+    <float3 name="Vw" ref="coronaDiffuse.Vw" semantic="Vw" flags="varyingInputParam" />
+    <string name="selector" ref="coronaLightAccum.selector" />
+  </properties>
+  <values>
+    <float3 name="diffuseI" value="0.5,0.5,0.5" />
+  </values>
+  <outputs>
+    <struct name="mayaSurfaceShaderOutput" ref="mayaSurfaceShaderOutput.mayaSurfaceShaderOutput" />
+  </outputs>
+</fragment_graph>
+ 

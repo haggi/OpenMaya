@@ -1,0 +1,35 @@
+shader place2dTexture ( float repeatU = 1.0, 
+					    float repeatV = 1.0, 
+						float offsetU = 0.0,
+						float offsetV = 0.0,
+						float rotateUV = 0.0,
+						vector uvCoord = 0,
+						output vector outUV = 0)
+{
+
+	float ss = u;
+	float tt = v;
+	if( isconnected(uvCoord))
+	{
+		ss = uvCoord[0];
+		tt = uvCoord[1];
+	}
+
+	float s = ss * repeatU;
+	float t = tt * repeatV;	
+	
+	point p0 = point(0,0,0);
+	point p1 = point(0,1,0);
+	point pRot = point(s - 0.5 * repeatU, 0.0, t - 0.5 * repeatV);
+	point result = rotate(pRot, rotateUV, p0, p1); 
+	
+	s = result[0] + 0.5 * repeatU;
+	t = result[2] + 0.5 * repeatV;
+	
+	s += offsetU;
+	t += offsetV;
+	
+	outUV[0] = s;
+	outUV[1] = t;
+	
+}

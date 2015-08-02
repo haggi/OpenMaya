@@ -1,0 +1,128 @@
+#include "mayaUtils.h"
+
+float floatFromSRGB( float srgbFloat)
+{
+	float f = clamp(srgbFloat, 0.0, 1.0);
+    if (f <= 0.03928)
+	{
+      return f/12.92;
+	}
+	return exp(2.4 * log((f + 0.055) / 1.055));
+}
+
+float floatToSRGB( float linearFloat)
+{
+	if (linearFloat <= 0.0031308)
+	{
+		return (linearFloat * 12.92);
+	}
+	return 1.055 * (exp((1 / 2.4) * log(linearFloat))) - 0.055;	
+}
+
+color fromLinearToSRGB( color linearColor)
+{
+	color outColor = linearColor;
+	outColor[0] = floatToSRGB(outColor[0]);
+	outColor[1] = floatToSRGB(outColor[1]);
+	outColor[2] = floatToSRGB(outColor[2]);
+	return outColor;
+}
+
+color fromSRGBToLinear( color srgbColor)
+{
+	color outColor = srgbColor;
+	outColor[0] = floatFromSRGB(outColor[0]);
+	outColor[1] = floatFromSRGB(outColor[1]);
+	outColor[2] = floatFromSRGB(outColor[2]);
+	return outColor;
+}
+
+shader file (vector uvCoord = 0, 
+			 string fileTextureName = "",
+			 string baseName = "",
+			 string ext = "",
+			 int uvTilingMode = 2,
+			 int fromSRGB = 0,
+			 int toSRGB = 0,
+			 int textureFilter = 0,
+			 float textureFilterWidth = 1.0,
+			 float textureBlur = 0.0,
+			 MAYA_COLORBALANCE,
+			 MAYA_DEFAULT_OUTPUT)
+{
+	float s = u;
+	float t = v;
+	if( isconnected(uvCoord))
+	{
+		s = uvCoord[0];
+		t = uvCoord[1];
+	}
+	
+// ------------------------------------------
+	
+#define NAME(i) format("%s%d.%s",baseName,i+1001, ext)
+#define TENNAMES(j)  NAME(10*j+0),NAME(10*j+1),NAME(10*j+2),NAME(10*j+3),NAME(10*j+4), \
+                    NAME(10*j+5),NAME(10*j+6),NAME(10*j+7),NAME(10*j+8),NAME(10*j+9)
+#define TENROWS     TENNAMES(0),TENNAMES(1),TENNAMES(2),TENNAMES(3),TENNAMES(4), \
+                    TENNAMES(5),TENNAMES(6),TENNAMES(7),TENNAMES(8),TENNAMES(9)
+
+    string filenames[100] = { TENROWS };
+    // The magic here is that the 'format' calls, since their parameters in this
+    // macro expansion are all constant, will be constant-folded at runtime, and thus
+    // the entire filenames[] array will become just constant memory that is initialized
+    // just once, NOT every time the shader executes.
+    // NOTE: if you expect more than 10 rows in v, adjust the above as needed.
+
+#undef NAME
+#undef TENNAMES
+#undef TENROWS
+
+// mudbox nomenclature name_u<U>v<V>.ext
+#define NAMEM(uu,vv) format("%su%dv%d.%s",baseName,uu,vv, ext)
+#define TENNAMESM(vc)  NAMEM(0, vc),NAMEM(1,vc),NAMEM(2,vc),NAMEM(3,vc),NAMEM(4,vc), NAMEM(5,vc),NAMEM(6,vc),NAMEM(7,vc),NAMEM(8,vc),NAMEM(9,vc)
+#define TENROWSM     TENNAMESM(0),TENNAMESM(1),TENNAMESM(2),TENNAMESM(3),TENNAMESM(4),TENNAMESM(5),TENNAMESM(6),TENNAMESM(7),TENNAMESM(8),TENNAMESM(9)
+
+    string filenamesMudbox[100] = { TENROWSM };
+
+#undef NAMEM
+#undef TENNAMEM
+#undef TENROWSM
+
+    int umap = int(s);
+    int vmap = int(t);
+    int udim = 10*vmap + umap;
+	if( uvTilingMode == 1) //ZBrush 0-based u<U>v<V>
+		udim = udim * 1;
+	if( uvTilingMode == 2) //Mudbox 1-based u<U>v<V>
+		udim = 10*(vmap+1) + (umap+1);
+		
+    string filename = fileTextureName; 
+	if( uvTilingMode == 1 || uvTilingMode == 2)
+		filename = filenamesMudbox[udim]; 
+	if( uvTilingMode == 3)
+		filename = filenames[udim];
+		
+	//printf("%s\n", filename);
+//-------------------------------------	
+	
+	t = 1.0 - t;
+	string filters[4] = {"smartcubic", "cubic", "linear", "closest"};
+	string filter = filters[textureFilter];
+	int numChannels = 0;		
+	color C = texture(filename, s, t, "wrap", "periodic", "interp", filter, "width", textureFilterWidth, "blur", textureBlur);
+	if( fromSRGB > 0)
+	{
+		C = fromSRGBToLinear(C);
+	}
+	if( toSRGB > 0)
+	{
+		C = fromLinearToSRGB(C);
+	}
+	vector CB = colorBalance(vector(C), colorGain, colorOffset);	
+	if( invert )
+	{
+		CB = vector(1.0) - CB;
+	}
+	outColor = CB;
+	outAlpha = luminance(color(outColor));	
+}
