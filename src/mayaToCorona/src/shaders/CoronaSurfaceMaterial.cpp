@@ -126,6 +126,8 @@ MObject CoronaSurface::attenuationDist;
 MObject CoronaSurface::volumeSSSMode;
 MObject CoronaSurface::glassType;
 MObject CoronaSurface::iesProfile;
+MObject CoronaSurface::singleScatteringOnly;
+
 
 // This node does not need to perform any special actions on creation or
 // destruction
@@ -231,9 +233,9 @@ MStatus CoronaSurface::initialize()
 	CHECK_MSTATUS(addAttribute( glassMode ));
 
 	glassType = eAttr.create("glassType", "glassType", 0, &status);
-	status = eAttr.addField("Normal", 0);
-	status = eAttr.addField("Caustic", 1);
-	status = eAttr.addField("ThinFilm", 2);
+	status = eAttr.addField("Transparent Shadows (fast)", 0);
+	status = eAttr.addField("Caustic (slow)", 1);
+	status = eAttr.addField("ThinFilm (fast)", 2);
 	CHECK_MSTATUS(addAttribute(glassType));	
 
 	attenuationColor = nAttr.createColor("attenuationColor", "attenuationColor");
@@ -351,10 +353,13 @@ MStatus CoronaSurface::initialize()
 	nAttr.setSoftMax(10.0);
 	CHECK_MSTATUS(addAttribute(attenuationDist));
 
-	volumeSSSMode = nAttr.create("volumeSSSMode", "volumeSSSMode",  MFnNumericData::kBoolean, false);
-	CHECK_MSTATUS(addAttribute( volumeSSSMode ));
+	volumeSSSMode = nAttr.create("volumeSSSMode", "volumeSSSMode", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(volumeSSSMode));
 
-//---------------------------- automatically created attributes end ------------------------------------
+	singleScatteringOnly = nAttr.create("singleScatteringOnly", "singleScatteringOnly", MFnNumericData::kBoolean, true);
+	CHECK_MSTATUS(addAttribute(singleScatteringOnly));
+
+	//---------------------------- automatically created attributes end ------------------------------------
 
 	iesProfile = tAttr.create("iesProfile", "iesProfile", MFnNumericData::kString);
 	tAttr.setUsedAsFilename(true);

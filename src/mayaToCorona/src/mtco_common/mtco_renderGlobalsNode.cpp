@@ -9,8 +9,6 @@
 
 MTypeId	MayaToCoronaGlobals::id(0x0011CF56);
 
-//	------------- automatically created attributes start ----------- // 
-
 MObject MayaToCoronaGlobals::exportOnly;
 MObject MayaToCoronaGlobals::gi_saveSecondary;
 MObject MayaToCoronaGlobals::gi_loadSecondary;
@@ -87,7 +85,7 @@ MObject MayaToCoronaGlobals::gi_photons_emitted;
 MObject MayaToCoronaGlobals::gi_photons_storeDirect;
 MObject MayaToCoronaGlobals::gi_photons_depth;
 MObject MayaToCoronaGlobals::gi_photons_lookupCount;
-MObject MayaToCoronaGlobals::gi_photons_0ilter;
+MObject MayaToCoronaGlobals::gi_photons_filter;
 MObject MayaToCoronaGlobals::gi_vpl_emittedCount;
 MObject MayaToCoronaGlobals::gi_vpl_usedCount;
 MObject MayaToCoronaGlobals::gi_vpl_progressiveBatch;
@@ -143,8 +141,18 @@ MObject MayaToCoronaGlobals::sunSizeMulti;
 MObject MayaToCoronaGlobals::dumpAndResume;
 MObject MayaToCoronaGlobals::dumpExrFile;
 MObject MayaToCoronaGlobals::uhdCacheType;
+MObject MayaToCoronaGlobals::uhdPrecision;
 MObject MayaToCoronaGlobals::globalVolume;
+MObject MayaToCoronaGlobals::globalMaterialOverride;
 MObject MayaToCoronaGlobals::useCoronaVFB;
+MObject MayaToCoronaGlobals::globalDirectOverride;
+MObject MayaToCoronaGlobals::globalReflectionOverride;
+MObject MayaToCoronaGlobals::globalRefractionOverride;
+MObject MayaToCoronaGlobals::useGlobalDirectOverride;
+MObject MayaToCoronaGlobals::useGlobalReflectionOverride;
+MObject MayaToCoronaGlobals::useGlobalRefractionOverride;
+MObject MayaToCoronaGlobals::lockSamplingPattern;
+
 
 
 MayaToCoronaGlobals::MayaToCoronaGlobals()
@@ -230,7 +238,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	stat = eAttr.addField( "Pathtracing", 1 );
 	CHECK_MSTATUS(addAttribute( gi_primarySolver ));
 
-	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 2, &stat);
+	gi_secondarySolver = eAttr.create("gi_secondarySolver", "gi_secondarySolver", 3, &stat);
 	stat = eAttr.addField( "None", 0 );
 	stat = eAttr.addField( "Pathtracing", 1 );
 	stat = eAttr.addField("HD Cache", 2);
@@ -261,7 +269,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	progressive_maxPasses = nAttr.create("progressive_maxPasses", "progressive_maxPasses",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( progressive_maxPasses ));
 
-	progressive_timeLimit = nAttr.create("progressive_timeLimit", "progressive_timeLimit",  MFnNumericData::kInt, 60);
+	progressive_timeLimit = nAttr.create("progressive_timeLimit", "progressive_timeLimit",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( progressive_timeLimit ));
 
 	lights_areaSamplesMult = nAttr.create("lights_areaSamplesMult", "lights_areaSamplesMult",  MFnNumericData::kFloat, 2.0);
@@ -275,10 +283,11 @@ MStatus	MayaToCoronaGlobals::initialize()
 	pathtracingSamples = nAttr.create("pathtracingSamples", "pathtracingSamples",  MFnNumericData::kInt, 16);
 	CHECK_MSTATUS(addAttribute( pathtracingSamples ));
 
-	lights_areaMethod = eAttr.create("lights_areaMethod", "lights_areaMethod", 1, &stat);
+	lights_areaMethod = eAttr.create("lights_areaMethod", "lights_areaMethod", 2, &stat);
 	stat = eAttr.addField( "Simple", 0 );
-	stat = eAttr.addField( "Reproject", 1 );
-	CHECK_MSTATUS(addAttribute( lights_areaMethod ));
+	stat = eAttr.addField("Reproject", 1);
+	stat = eAttr.addField("ReprojectBidir", 2);
+	CHECK_MSTATUS(addAttribute(lights_areaMethod));
 
 	raycaster_maxDepth = nAttr.create("raycaster_maxDepth", "raycaster_maxDepth",  MFnNumericData::kInt, 25);
 	CHECK_MSTATUS(addAttribute( raycaster_maxDepth ));
@@ -299,7 +308,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( image_bucketSize ));
 
 	color_exit = nAttr.createColor("color_exit", "color_exit");
-	nAttr.setDefault(0.0,0.0,1.0);
+	nAttr.setDefault(0.0,0.0,0.0);
 	CHECK_MSTATUS(addAttribute( color_exit ));
 
 	fb_internalResolutionMult = nAttr.create("fb_internalResolutionMult", "fb_internalResolutionMult",  MFnNumericData::kInt, 1);
@@ -379,79 +388,98 @@ MStatus	MayaToCoronaGlobals::initialize()
 	gi_ic_hemisphereSubdiv = nAttr.create("gi_ic_hemisphereSubdiv", "gi_ic_hemisphereSubdiv",  MFnNumericData::kInt, 7);
 	CHECK_MSTATUS(addAttribute( gi_ic_hemisphereSubdiv ));
 
+	//gi.hdCache.precompDensity
 	gi_ic_precompAmount = nAttr.create("gi_ic_precompAmount", "gi_ic_precompAmount",  MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.0);
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_precompAmount ));
 
+	//gi.ic.pathtracingCorners
 	gi_ic_pathtracingCorners = nAttr.create("gi_ic_pathtracingCorners", "gi_ic_pathtracingCorners",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( gi_ic_pathtracingCorners ));
 
+	//gi.ic.maxError
 	gi_ic_maxGeomError = nAttr.create("gi_ic_maxGeomError", "gi_ic_maxGeomError",  MFnNumericData::kFloat, 0.6);
 	nAttr.setMin(0.01);
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_maxGeomError ));
 
+	//gi.ic.smoothing
 	gi_ic_smoothing = nAttr.create("gi_ic_smoothing", "gi_ic_smoothing",  MFnNumericData::kFloat, 1.8);
 	nAttr.setMin(1.0);
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_smoothing ));
 
+	//gi.ic.colorThreshold
 	gi_ic_colorThreshold = nAttr.create("gi_ic_colorThreshold", "gi_ic_colorThreshold",  MFnNumericData::kFloat, 10.0);
 	nAttr.setMin(0.01);
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_colorThreshold ));
 
+	//gi.ic.recordSpacingMin
 	gi_ic_recordSpacingMin = nAttr.create("gi_ic_recordSpacingMin", "gi_ic_recordSpacingMin",  MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.01);
 	nAttr.setMax(500.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_recordSpacingMin ));
 
+	//gi.ic.recordSpacingMax
 	gi_ic_recordSpacingMax = nAttr.create("gi_ic_recordSpacingMax", "gi_ic_recordSpacingMax",  MFnNumericData::kFloat, 20.0);
 	nAttr.setMin(0.1);
 	nAttr.setMax(500.0);
 	CHECK_MSTATUS(addAttribute( gi_ic_recordSpacingMax ));
 
+	//gi.ic.useRotGrad
 	gi_ic_useRotationGradient = nAttr.create("gi_ic_useRotationGradient", "gi_ic_useRotationGradient",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( gi_ic_useRotationGradient ));
 
+	//gi.ic.useTransGrad
 	gi_ic_useTranslationGradient = nAttr.create("gi_ic_useTranslationGradient", "gi_ic_useTranslationGradient",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( gi_ic_useTranslationGradient ));
 
+	//gi.ic.interpolationSchema
 	gi_ic_interpolationSchema = eAttr.create("gi_ic_interpolationSchema", "gi_ic_interpolationSchema", 1, &stat);
 	stat = eAttr.addField( "Ward", 0 );
 	stat = eAttr.addField( "Tabellion", 1 );
 	CHECK_MSTATUS(addAttribute( gi_ic_interpolationSchema ));
 
+	//gi.ic.searchStructure
 	gi_ic_searchStructure = eAttr.create("gi_ic_searchStructure", "gi_ic_searchStructure", 0, &stat);
 	stat = eAttr.addField( "Multiple_octree", 0 );
 	stat = eAttr.addField( "Bvh", 1 );
 	CHECK_MSTATUS(addAttribute( gi_ic_searchStructure ));
 
+	//gi.ic.relaxedInterpolation
 	gi_ic_relaxedInterpolation = nAttr.create("gi_ic_relaxedInterpolation", "gi_ic_relaxedInterpolation",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( gi_ic_relaxedInterpolation ));
 
-	gi_ic_vizualization = eAttr.create("gi_ic_vizualization", "gi_ic_vizualization", 1, &stat);
-	stat = eAttr.addField( "Off", 0 );
-	stat = eAttr.addField( "Indirect", 1 );
+	//gi.ic.viz
+	gi_ic_vizualization = eAttr.create("gi_ic_vizualization", "gi_ic_vizualization", 2, &stat);
+	stat = eAttr.addField("Off", 0);
+	stat = eAttr.addField("Dots", 1);
+	stat = eAttr.addField("Indirect", 2);
 	CHECK_MSTATUS(addAttribute( gi_ic_vizualization ));
 
+	//gi.ic.minInterpSamples
 	gi_ic_minInterpSamples = nAttr.create("gi_ic_minInterpSamples", "gi_ic_minInterpSamples",  MFnNumericData::kInt, 2);
 	CHECK_MSTATUS(addAttribute( gi_ic_minInterpSamples ));
 
+	//gi.uhdcache.precompDensity
 	gi_hdCache_precompMult = nAttr.create("gi_hdCache_precompMult", "gi_hdCache_precompMult",  MFnNumericData::kFloat, 1.0);
 	nAttr.setMin(0.0);
 	nAttr.setMax(99.0);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_precompMult ));
 
+	//gi.hdCache.interpolationCount
 	gi_hdCache_interpolationCount = nAttr.create("gi_hdCache_interpolationCount", "gi_hdCache_interpolationCount",  MFnNumericData::kInt, 3);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_interpolationCount ));
 
+	//gi.hdCache.dirSensitivity
 	gi_hdCache_dirSensitivity = nAttr.create("gi_hdCache_dirSensitivity", "gi_hdCache_dirSensitivity",  MFnNumericData::kFloat, 2.0);
 	nAttr.setMin(0.001);
 	nAttr.setMax(100.0);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_dirSensitivity ));
 
+	//gi.hdCache.posSensitivity
 	gi_hdCache_posSensitivity = nAttr.create("gi_hdCache_posSensitivity", "gi_hdCache_posSensitivity",  MFnNumericData::kFloat, 20.0);
 	nAttr.setMin(0.0);
 	nAttr.setMax(100.0);
@@ -462,9 +490,11 @@ MStatus	MayaToCoronaGlobals::initialize()
 	nAttr.setMax(10.0);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_normalSensitivity ));
 
+	//gi.hdCache.recordQuality
 	gi_hdCache_ptSamples = nAttr.create("gi_hdCache_ptSamples", "gi_hdCache_ptSamples",  MFnNumericData::kInt, 256);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_ptSamples ));
 
+	//gi.hdCache.smoothing 
 	gi_hdCache_smoothing = nAttr.create("gi_hdCache_smoothing", "gi_hdCache_smoothing",  MFnNumericData::kFloat, 2.0);
 	nAttr.setMin(1.0);
 	nAttr.setMax(10.0);
@@ -478,6 +508,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	gi_hdCache_maxRecords = nAttr.create("gi_hdCache_maxRecords", "gi_hdCache_maxRecords",  MFnNumericData::kInt, 100000);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_maxRecords ));
 
+	//gi.hdCache.writablePasses
 	gi_hdCache_writePasses = nAttr.create("gi_hdCache_writePasses", "gi_hdCache_writePasses",  MFnNumericData::kInt, 0);
 	CHECK_MSTATUS(addAttribute( gi_hdCache_writePasses ));
 
@@ -493,11 +524,13 @@ MStatus	MayaToCoronaGlobals::initialize()
 	gi_photons_lookupCount = nAttr.create("gi_photons_lookupCount", "gi_photons_lookupCount",  MFnNumericData::kInt, 50);
 	CHECK_MSTATUS(addAttribute( gi_photons_lookupCount ));
 
-	gi_photons_0ilter = eAttr.create("gi_photons_0ilter", "gi_photons_0ilter", 0, &stat);
-	stat = eAttr.addField( "Linear", 0 );
-	stat = eAttr.addField( "Constant", 1 );
-	stat = eAttr.addField( "Gaussian", 2 );
-	CHECK_MSTATUS(addAttribute( gi_photons_0ilter ));
+	gi_photons_filter = eAttr.create("gi_photons_filter", "gi_photons_filter", 1, &stat);
+	stat = eAttr.addField( "Constant", 0 );
+	stat = eAttr.addField( "Linear", 1 );
+	stat = eAttr.addField("Epanechnikov", 2);
+	stat = eAttr.addField("Biweight", 3);
+	stat = eAttr.addField("Gaussian", 4);
+	CHECK_MSTATUS(addAttribute( gi_photons_filter ));
 
 	gi_vpl_emittedCount = nAttr.create("gi_vpl_emittedCount", "gi_vpl_emittedCount",  MFnNumericData::kInt, 1000000);
 	CHECK_MSTATUS(addAttribute( gi_vpl_emittedCount ));
@@ -513,9 +546,11 @@ MStatus	MayaToCoronaGlobals::initialize()
 	nAttr.setMax(999.0);
 	CHECK_MSTATUS(addAttribute( gi_vpl_clamping ));
 
-	gi_pathtracing_directMode = eAttr.create("gi_pathtracing_directMode", "gi_pathtracing_directMode", 1, &stat);
-	stat = eAttr.addField( "Sample_lights", 0 );
-	stat = eAttr.addField( "Mis", 1 );
+	//lights.areaMethod
+	gi_pathtracing_directMode = eAttr.create("gi_pathtracing_directMode", "gi_pathtracing_directMode", 2, &stat);
+	stat = eAttr.addField("Sample Lights", 0);
+	stat = eAttr.addField("BSDF", 1);
+	stat = eAttr.addField("Mis", 2);
 	CHECK_MSTATUS(addAttribute( gi_pathtracing_directMode ));
 
 	buckets_initialSamples = nAttr.create("buckets_initialSamples", "buckets_initialSamples",  MFnNumericData::kInt, 1);
@@ -559,8 +594,8 @@ MStatus	MayaToCoronaGlobals::initialize()
 	CHECK_MSTATUS(addAttribute( colorMapping_useSimpleExposure ));
 
 	colorMapping_simpleExposure = nAttr.create("colorMapping_simpleExposure", "colorMapping_simpleExposure",  MFnNumericData::kFloat, 0.0);
-	nAttr.setSoftMin(-1.0);
-	nAttr.setSoftMax( 1.0);
+	nAttr.setSoftMin(-5.0);
+	nAttr.setSoftMax( 5.0);
 	CHECK_MSTATUS(addAttribute(colorMapping_simpleExposure));
 
 	colorMapping_tint = nAttr.createColor("colorMapping_tint", "colorMapping_tint");
@@ -607,7 +642,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	ppm_samplesPerIter = nAttr.create("ppm_samplesPerIter", "ppm_samplesPerIter",  MFnNumericData::kInt, 1);
 	CHECK_MSTATUS(addAttribute( ppm_samplesPerIter ));
 
-	ppm_photonsPerIter = nAttr.create("ppm_photonsPerIter", "ppm_photonsPerIter",  MFnNumericData::kInt, 5000);
+	ppm_photonsPerIter = nAttr.create("ppm_photonsPerIter", "ppm_photonsPerIter", MFnNumericData::kInt, 5000000);
 	CHECK_MSTATUS(addAttribute( ppm_photonsPerIter ));
 
 	ppm_alpha = nAttr.create("ppm_alpha", "ppm_alpha",  MFnNumericData::kFloat, 0.666);
@@ -623,10 +658,14 @@ MStatus	MayaToCoronaGlobals::initialize()
 	bidir_doMis = nAttr.create("bidir_doMis", "bidir_doMis",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( bidir_doMis ));
 
-	vcm_mode = eAttr.create("vcm_mode", "vcm_mode", 0, &stat);
-	stat = eAttr.addField( "Bidir", 0 );
-	stat = eAttr.addField( "Vcm", 1 );
-	CHECK_MSTATUS(addAttribute( vcm_mode ));
+	vcm_mode = eAttr.create("vcm_mode", "vcm_mode", 4, &stat);
+	stat = eAttr.addField( "Pathtracing", 0 );
+	stat = eAttr.addField("Light Tracing", 1);
+	stat = eAttr.addField("Progressive Photon Mapping", 2);
+	stat = eAttr.addField("Bidir Photon Mapping", 3);
+	stat = eAttr.addField("Bidir Pathtracing", 4);
+	stat = eAttr.addField("Vcm", 5);
+	CHECK_MSTATUS(addAttribute(vcm_mode));
 
 	displace_useProjectionSize = nAttr.create("displace_useProjectionSize", "displace_useProjectionSize",  MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute( displace_useProjectionSize ));
@@ -666,7 +705,7 @@ MStatus	MayaToCoronaGlobals::initialize()
 	stat = eAttr.addField( "PhysicalSky", 1 );
 	CHECK_MSTATUS(addAttribute( bgType ));
 
-	pSkyModel = eAttr.create("pSkyModel", "pSkyModel", 0, &stat);
+	pSkyModel = eAttr.create("pSkyModel", "pSkyModel", 2, &stat);
 	stat = eAttr.addField( "Preetham", 0 );
 	stat = eAttr.addField( "Rawafake", 1 );
 	stat = eAttr.addField( "Hosek", 2 );
@@ -728,7 +767,35 @@ MStatus	MayaToCoronaGlobals::initialize()
 	globalVolume = mAttr.create("globalVolume", "globalVolume");
 	CHECK_MSTATUS(addAttribute(globalVolume));
 
-//	------------- automatically created attributes end ----------- // 
+	globalMaterialOverride = nAttr.createColor("globalMaterialOverride", "globalMaterialOverride");
+	CHECK_MSTATUS(addAttribute(globalMaterialOverride));
+
+	globalDirectOverride = nAttr.createColor("globalDirectOverride", "globalDirectOverride");
+	CHECK_MSTATUS(addAttribute(globalDirectOverride));
+
+	globalReflectionOverride = nAttr.createColor("globalReflectionOverride", "globalReflectionOverride");
+	CHECK_MSTATUS(addAttribute(globalReflectionOverride));
+
+	globalRefractionOverride = nAttr.createColor("globalRefractionOverride", "globalRefractionOverride");
+	CHECK_MSTATUS(addAttribute(globalRefractionOverride));
+
+	useGlobalDirectOverride = nAttr.create("useGlobalDirectOverride", "useGlobalDirectOverride", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(useGlobalDirectOverride));
+
+	useGlobalReflectionOverride = nAttr.create("useGlobalReflectionOverride", "useGlobalReflectionOverride", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(useGlobalReflectionOverride));
+
+	useGlobalRefractionOverride = nAttr.create("useGlobalRefractionOverride", "useGlobalRefractionOverride", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(useGlobalRefractionOverride));
+
+	lockSamplingPattern = nAttr.create("lockSamplingPattern", "lockSamplingPattern", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(lockSamplingPattern));
+
+	uhdPrecision = nAttr.create("uhdPrecision", "uhdPrecision", MFnNumericData::kFloat, 1.0);
+	nAttr.setMin(0.01);
+	nAttr.setSoftMax(10.0);
+	CHECK_MSTATUS(addAttribute(uhdPrecision));
+	
 
 	return stat;
 

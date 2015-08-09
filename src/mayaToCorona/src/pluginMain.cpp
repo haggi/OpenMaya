@@ -91,8 +91,8 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaVolumeDrawDBClassification, CoronaSurfacesRegistrantId, VolumeMaterialOverride::creator));
 #endif
 	CHECK_MSTATUS(plugin.registerNode("CoronaVolume", CoronaVolume::id, CoronaVolume::creator, CoronaVolume::initialize, MPxNode::kDependNode, &CoronaVolumeFullClassification));
-	CHECK_MSTATUS(plugin.registerNode("CoronaLight", CoronaLight::id, CoronaLight::creator, CoronaLight::initialize, MPxNode::kDependNode, &CoronaLightFullClassification));
-	CHECK_MSTATUS(plugin.registerNode("CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaLightMTL", CoronaLight::id, CoronaLight::creator, CoronaLight::initialize, MPxNode::kDependNode, &CoronaLightFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaMTL", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaRaytype", CoronaRaytype::id, CoronaRaytype::creator, CoronaRaytype::initialize, MPxNode::kDependNode, &CoronaRaytypeFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaLayered", CoronaLayered::id, CoronaLayered::creator, CoronaLayered::initialize, MPxNode::kDependNode, &CoronaLayeredFullClassification));

@@ -21,6 +21,13 @@ class AECoronaVolumeTemplate(BaseTemplate):
         pm.mel.AEswatchDisplay(nodeName)
         self.beginScrollLayout()
         self.buildBody(nodeName)
+        allAttributes = self.node.listAttr()
+        allowedAttributes = ["attenuationColor", "attenuationDist", "opacity", "volumeScatteringAlbedo", "singleScatteringOnly", "volumeEmissionColor", "volumeEmissionDist"]
+        for att in allAttributes:
+            att = att.split(".")[-1]
+            if not att in allowedAttributes:
+                self.suppress(att)
+        
         self.addExtraControls("ExtraControls")
         self.endScrollLayout()
         
@@ -31,7 +38,7 @@ class AECoronaVolumeTemplate(BaseTemplate):
         self.addControl("attenuationDist", label="Distance")
         self.addControl("volumeScatteringAlbedo", label="Albedo")
         self.addControl("volumeMeanCosine", label="Directionality")
-        self.addControl("volumeSSSMode", label="Use SSS Mode")
+        self.addControl("singleScatteringOnly", label="Single Bounce Only")
         self.endLayout()
         self.beginLayout("Emission" ,collapse=0)
         self.addControl("volumeEmissionColor", label="Emission Color")

@@ -10,6 +10,7 @@ OSLMap::OSLMap()
 	this->worldScale = 1.0f;
 	this->isEnvMap = false;
 	isLightMap = false;
+	multiplier = 1.0;
 }
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
@@ -145,7 +146,7 @@ Corona::Rgb OSLMap::evalColor(const Corona::IShadeContext& context, Corona::Text
 		}
 	}
     outAlpha = 1.f;
-	Corona::Rgb col(rgb[0], rgb[1], rgb[2]);
+	Corona::Rgb col(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier);
 	return col;	
 }
 

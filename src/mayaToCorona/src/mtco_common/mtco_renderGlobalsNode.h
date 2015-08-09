@@ -17,7 +17,7 @@ public:
 	static	MTypeId		id;
 
 private:
-//	------------- automatically created attributes start ----------- // 
+
 static    MObject exportOnly;
 static    MObject gi_saveSecondary;
 static    MObject gi_loadSecondary;
@@ -94,7 +94,7 @@ static    MObject gi_photons_emitted;
 static    MObject gi_photons_storeDirect;
 static    MObject gi_photons_depth;
 static    MObject gi_photons_lookupCount;
-static    MObject gi_photons_0ilter;
+static    MObject gi_photons_filter;
 static    MObject gi_vpl_emittedCount;
 static    MObject gi_vpl_usedCount;
 static    MObject gi_vpl_progressiveBatch;
@@ -150,9 +150,18 @@ static    MObject sunSizeMulti;
 static    MObject dumpAndResume;
 static    MObject dumpExrFile;
 static    MObject uhdCacheType;
+static    MObject uhdPrecision;
 static    MObject globalVolume;
+static    MObject globalMaterialOverride;
+static    MObject globalDirectOverride;
+static    MObject globalReflectionOverride;
+static    MObject globalRefractionOverride;
+static    MObject useGlobalDirectOverride;
+static    MObject useGlobalReflectionOverride;
+static    MObject useGlobalRefractionOverride;
 static    MObject useCoronaVFB;
-//	------------- automatically created attributes end ----------- // 
+static    MObject lockSamplingPattern;
+
 
 };
 

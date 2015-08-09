@@ -21,6 +21,13 @@ class AECoronaLightTemplate(BaseTemplate):
         pm.mel.AEswatchDisplay(nodeName)
         self.beginScrollLayout()
         self.buildBody(nodeName)
+        allAttributes = self.node.listAttr()
+        allowedAttributes = ["emissionColor", "emissionColorMultiplier", "opacity", "emitLight", "emissionGlossyness", "doubleSidedEmission", "iesProfile", "emissionSharpnessFake"]
+        for att in allAttributes:
+            att = att.split(".")[-1]
+            if not att in allowedAttributes:
+                print "Suppressing", att
+                self.suppress(att)
         self.addExtraControls("ExtraControls")
         self.endScrollLayout()
         

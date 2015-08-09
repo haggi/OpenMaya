@@ -31,6 +31,9 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_envPortal", label="Use as Environment Portal")
         self.addControl("mtco_areaVisible", label="Visible Geometry")
+        self.addControl("mtco_doubleSided", label="Double Sided")
+        self.addControl("mtco_visibleInReflection", label="Visible in Reflection")
+        self.addControl("mtco_visibleInRefraction", label="Visible in Refraction")
         self.endLayout()
 
     def buildBum2dTemplate(self, nodeName):
@@ -69,6 +72,12 @@ class AECoronaNodeTemplate(BaseTemplate):
 
     def updateCameraTemplate(self, nodeName):
         node = pm.PyNode(nodeName)
+        self.dimControl(node, "mtco_iso", True)        
+        self.dimControl(node, "mtco_shutterSpeed", True)        
+        if node.mtco_overrideRenderSettings.get():
+            self.dimControl(node, "mtco_iso", False)        
+            self.dimControl(node, "mtco_shutterSpeed", False)        
+        
         self.dimControl(node, "mtco_circularBlades", True)        
         self.dimControl(node, "mtco_blades", True)        
         self.dimControl(node, "mtco_bladeRotation", True)        
@@ -86,6 +95,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_cameraType", label="Projection Type")
         self.addSeparator()
+        self.addControl("mtco_overrideRenderSettings", label="Override Render Globals", changeCommand=self.updateCameraTemplate)
         self.addControl("mtco_iso", label="Iso")
         self.addControl("mtco_shutterSpeed", label="Shutter Speed")
         self.addSeparator()

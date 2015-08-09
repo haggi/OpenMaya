@@ -3,6 +3,8 @@ release 0.42
 - added light directionality
 - added mesh/area light double sided option
 - fixed some physical sky problems
+- added area light render attributes
+- added texturing for area lights
 
 release 0.41
 - fixed a problem with esc key which caused a premature stop of the next rendering.

@@ -286,7 +286,6 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		//getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
 		//data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
 
-
 		// ---- alpha mode ----
 		int alphaMode = 0;
 		getEnum(MString("alphaMode"), depFn, alphaMode);
@@ -323,7 +322,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 				if (shadowCatcherMode == 2)
 					data.shadowCatcherMode = Corona::SC_ENABLED_COMPOSITE;
 			}
-
+			
 
 			// ---- ies profiles -----
 			MStatus stat;

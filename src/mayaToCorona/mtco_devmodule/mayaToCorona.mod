@@ -2,6 +2,7 @@
 MTCorona_HOME:=
 MTCorona_SHADERS_LOCATION:=shaders
 MAYA_RENDER_DESC_PATH+:=resources
+CORONA_OSL_SHADERS_LOCATION:=shaders
 PATH+:=bin
 plug-ins: 2014/plug-ins
 MAYA_PLUG_IN_PATH+:=scripts/plug-ins
@@ -10,6 +11,7 @@ MAYA_PLUG_IN_PATH+:=scripts/plug-ins
 MTCorona_HOME:=
 MTCorona_SHADERS_LOCATION:=shaders
 MAYA_RENDER_DESC_PATH+:=resources
+CORONA_OSL_SHADERS_LOCATION:=shaders
 PATH+:=bin
 plug-ins: 2015/plug-ins
 MAYA_PLUG_IN_PATH+:=scripts/plug-ins
@@ -18,6 +20,7 @@ MAYA_PLUG_IN_PATH+:=scripts/plug-ins
 MTCorona_HOME:=
 MTCorona_SHADERS_LOCATION:=shaders
 MAYA_RENDER_DESC_PATH+:=resources
+CORONA_OSL_SHADERS_LOCATION:=shaders
 PATH+:=bin
 plug-ins: 2016/plug-ins
 MAYA_PLUG_IN_PATH+:=scripts/plug-ins
@@ -26,6 +29,7 @@ MAYA_PLUG_IN_PATH+:=scripts/plug-ins
 MTCorona_HOME:=
 MTCorona_SHADERS_LOCATION:=shaders
 MAYA_RENDER_DESC_PATH+:=resources
+CORONA_OSL_SHADERS_LOCATION:=shaders
 PATH+:=bin
 plug-ins: 2017/plug-ins
 MAYA_PLUG_IN_PATH+:=scripts/plug-ins

@@ -30,6 +30,40 @@ CoronaRenderer::CoronaRenderer()
 	MObject renderGlobalsNode = getRenderGlobalsNode();
 	this->renderFbGlobalsNodeCallbackId = 0;
 	this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+
+	int numP = Corona::PropertyDescriptor::descriptorsCount();
+	Logging::debug("Property descriptiors:");
+	for (uint i = 0; i < 2000; i++)
+	{
+		const Corona::PropertyDescriptor* pd = Corona::PropertyDescriptor::get(i);
+		if (pd)
+		{
+			MString ts;
+			Corona::Abstract::Settings::Property prop = pd->valueDefault;
+			if (pd->type == Corona::PropertyType::T_BOOL)
+			{
+				bool b = prop;
+				ts += MString(" BOOL ") + b;
+			}
+			if (pd->type == Corona::PropertyType::T_FLOAT)
+			{
+				float f = prop;
+				ts += MString(" FLOAT ") + f;
+			}
+			if (pd->type == Corona::PropertyType::T_INT)
+			{
+				int f = prop;
+				ts += MString(" INT ") + f;
+			}
+			if (pd->type == Corona::PropertyType::T_STR)
+			{
+				Corona::String f = prop;
+				ts += MString(" STRING ") + f.cStr();
+			}
+			Logging::debug(MString("Descriptor: ") + pd->name.cStr() + " id " + i + ts);
+
+		}
+	}
 }
 
 CoronaRenderer::~CoronaRenderer()

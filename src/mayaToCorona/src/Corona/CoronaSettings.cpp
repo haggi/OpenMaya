@@ -8,6 +8,10 @@
 #include "utilities/attrTools.h"
 #include "CoronaUtils.h"
 
+#if MAYA_API_VERSION > 2015
+#include <maya/MColorManagementUtilities.h>
+#endif
+
 void CoronaRenderer::defineSettings()
 {
 	MFnDependencyNode depFn(getRenderGlobalsNode());
@@ -42,7 +46,7 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_BUCKET_PASSES, getIntAttr("buckets_adaptiveSteps", depFn, 4));
 	context.settings->set(Corona::PARAM_BUCKET_ADAPTIVE_THRESHOLD, getFloatAttr("buckets_adaptiveThreshold", depFn, 0.03f));
 
-	context.settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, getIntAttr("progressive_maxPasses", depFn, 20));
+	context.settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, getIntAttr("progressive_maxPasses", depFn, 0));
 	context.settings->set(Corona::PARAM_PROGRESSIVE_TIME_LIMIT, getIntAttr("progressive_timeLimit", depFn, 60) * 1000);
 
 	context.settings->set(Corona::PARAM_VCM_MODE, getEnumInt("vcm_mode", depFn) + 4); // only last two entries 4 + 5 are relevant
@@ -63,7 +67,7 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_DISPLACE_SUBDIV_TYPE, subdivTypes[(int)getBoolAttr("displace_useProjectionSize", depFn, true)]);
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_SCREEN, getFloatAttr("displace_maxProjectSize", depFn, 2.0f));
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_WORLD, getFloatAttr("displace_maxWorldSize", depFn, 1.0f));
-	context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, getIntAttr("displace_maxSubdiv", depFn, 100));
+	//context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, getIntAttr("displace_maxSubdiv", depFn, 100));
 
 	context.settings->set(Corona::PARAM_MAX_RAY_DEPTH, getIntAttr("raycaster_maxDepth", depFn, 25));
 	context.settings->set(Corona::PARAM_EXIT_COLOR, toCorona(getColorAttr("color_exit", depFn)));
@@ -119,7 +123,13 @@ void CoronaRenderer::defineSettings()
 			context.settings->set(Corona::PARAM_UHDCACHE_PRECISION, uhd_precision * .4f);
 		}
 	}
-	context.settings->set(Corona::PARAM_COLORMAP_GAMMA, getFloatAttr("colorMapping_gamma", depFn, 2.2f));
+
+	float gamma = 2.2f;
+#if MAYA_API_VERSION > 2015
+	if (MColorManagementUtilities::isColorManagementEnabled())
+		gamma = 1.0f;
+#endif
+	context.settings->set(Corona::PARAM_COLORMAP_GAMMA, gamma);
 	context.settings->set(Corona::PARAM_COLORMAP_HIGHLIGHT_COMPRESSION, getFloatAttr("colorMapping_highlightCompression", depFn, 1.0f));
 	context.settings->set(Corona::PARAM_COLORMAP_CONTRAST, getFloatAttr("colorMapping_contrast", depFn, 1.0f));
 
@@ -128,6 +138,9 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_COLORMAP_TINT, toCorona(getColorAttr("colorMapping_tint", depFn)));
 	context.settings->set(Corona::PARAM_COLORMAP_USE_PHOTOGRAPHIC, !getBoolAttr("colorMapping_useSimpleExposure", depFn, true));
 
+	context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("colorMapping_iso", depFn, 100.0));
+	context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("colorMapping_fStop", depFn, 5.6));
+	context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("colorMapping_shutterSpeed", depFn, 250.0f));
 	// v2.8 exposure from camera
 	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 	for (auto cam : mayaScene->camList)
@@ -135,9 +148,12 @@ void CoronaRenderer::defineSettings()
 		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
 			continue;
 		MFnDependencyNode camFn(cam->mobject);
-		context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
-		context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
-		context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f/getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+		if (getBoolAttr("mtco_overrideRenderSettings", camFn, false))
+		{
+			context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
+			context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
+			context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+		}
 		break;
 	}
 }
@@ -152,15 +168,19 @@ void CoronaRenderer::defineColorMappingFromCam(MObject& cam)
 
 void CoronaRenderer::defineColorMapping()
 {
+	float gamma = 2.2f;
+#if MAYA_API_VERSION > 2015
+	if (MColorManagementUtilities::isColorManagementEnabled())
+		gamma = 1.0f;
+#endif
 	MFnDependencyNode depFn(getRenderGlobalsNode());
 	context.colorMappingData->colorTemperature = getFloatAttr("colorMapping_colorTemperature", depFn, 6500.0f);
 	context.colorMappingData->contrast = getFloatAttr("colorMapping_contrast", depFn, 1.0f);
-	context.colorMappingData->gamma = getFloatAttr("colorMapping_gamma", depFn, 2.2f);
+	context.colorMappingData->gamma = gamma;
 	context.colorMappingData->tint = toCorona(getColorAttr("colorMapping_tint", depFn));
 	context.colorMappingData->exposure.simple.exponent = getFloatAttr("colorMapping_simpleExposure", depFn, 0.0f);
 	context.colorMappingData->highlightCompression = getFloatAttr("colorMapping_highlightCompression", depFn, 1.0f);
 	context.colorMappingData->photographicExposure = getEnumInt("exposure_type", depFn) == 1;
-	//context.colorMappingData->photographicExposure = !getBoolAttr("colorMapping_useSimpleExposure", depFn, true);
 
 	// release 0.39 override camera settings
 	if (context.colorMappingData->photographicExposure)
@@ -168,26 +188,21 @@ void CoronaRenderer::defineColorMapping()
 		context.colorMappingData->exposure.photographic.fStop = getFloatAttr("colorMapping_fStop", depFn, 5.6);
 		context.colorMappingData->exposure.photographic.iso = getFloatAttr("colorMapping_iso", depFn, 100.0);
 		context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("colorMapping_shutterSpeed", depFn, 250.0f);
-	}
 
-	//// v2.8 exposure from camera
-	//std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
-	//// to be able to modify color mapping after rendering we check for mayaScene
-	//// after rendering, the mayaScene object is deleted, but we should have a renderCam object defined insted.
-	//if (mayaScene)
-	//{
-	//	for (auto cam : mayaScene->camList)
-	//	{
-	//		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
-	//			continue;
-	//		defineColorMappingFromCam(cam->mobject);
-	//		break;
-	//	}
-	//}
-	//else{
-	//	if ( renderCam != MObject::kNullObj)
-	//		defineColorMappingFromCam(renderCam);
-	//}
+		std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+		for (auto cam : mayaScene->camList)
+		{
+			if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
+				continue;
+			MFnDependencyNode camFn(cam->mobject);
+			if (getBoolAttr("mtco_overrideRenderSettings", camFn, false))
+			{
+				context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
+				context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
+				context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+			}
+		}
+	}
 }
 //void CoronaRenderer::sanityCheck(Corona::Abstract::Settings* settings) const 
 //{

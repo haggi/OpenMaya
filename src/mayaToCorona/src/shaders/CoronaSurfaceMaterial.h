@@ -59,6 +59,7 @@ protected:
 	static    MObject attenuationDist;
 	static    MObject volumeSSSMode;
 	static    MObject iesProfile;
+	static    MObject singleScatteringOnly;
 
    // Translucence coefficient
    static MObject  aTranslucenceCoeff;

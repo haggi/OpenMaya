@@ -70,11 +70,11 @@ public:
 				bool outsideDummy;
 				float ex = exposure;
 				Corona::Rgb envColor = shader.eval(context, true, outsideDummy);
-				if (c < 100)
-				{
-					std::cout << "evalEnvCol " << envColor.r() << " " << envColor.g() << " " << envColor.g() << "\n";
-					c++;
-				}
+				//if (c < 100)
+				//{
+				//	std::cout << "evalEnvCol " << envColor.r() << " " << envColor.g() << " " << envColor.g() << "\n";
+				//	c++;
+				//}
 				return envColor;
 			}
 

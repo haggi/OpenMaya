@@ -3,6 +3,7 @@
 #include "CoronaSky.h"
 #include "CoronaShaders.h"
 #include "CoronaUtils.h"
+#include "CoronaOSLMap.h"
 #include <maya/MObjectArray.h>
 #include "renderGlobals.h"
 #include "utilities/logging.h"
@@ -236,20 +237,24 @@ void CoronaRenderer::defineLights()
 				MColor lightColor = getColorAttr("color", depFn);
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
-				data.emission.color = Corona::ColorOrMap(Corona::Rgb(lightColor.r, lightColor.g, lightColor.b));
+				const Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject);			
+				OSLMap *oslmap = (OSLMap *)com.getMap();
+				oslmap->multiplier = intensity;
+				data.emission.color = com;
+				data.castsShadows = false; // a light should never cast shadows
+
 				for (auto excludedObj : obj->excludedObjects)
 				{
 					data.emission.excluded.nodes.push(excludedObj.get());
 				}
 				data.emission.disableSampling = false;
-				//data.emission.useTwoSidedEmission = true;
+				data.emission.useTwoSidedEmission = getBoolAttr("mtco_doubleSided", depFn, false);
 
 				Corona::SharedPtr<Corona::IMaterial> mat = data.createMaterial();
 				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
-				bool visible = getBoolAttr("mtco_areaVisible", depFn, true);
-				ms.visibility.direct = visible;
-				ms.visibility.reflect = visible;
-				ms.visibility.refract = visible;
+				ms.visibility.direct = getBoolAttr("mtco_areaVisible", depFn, true);
+				ms.visibility.reflect = getBoolAttr("mtco_visibleInReflection", depFn, true);
+				ms.visibility.refract = getBoolAttr("mtco_visibleInRefraction", depFn, true);
 				
 				obj->instance->addMaterial(ms);
 			}
