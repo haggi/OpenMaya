@@ -1,5 +1,6 @@
 #include "appleseed.h"
 #include "maya/MFnMesh.h"
+#include "maya/MGlobal.h"
 #include "maya/MItMeshPolygon.h"
 #include <maya/MPointArray.h>
 #include <maya/MFloatPointArray.h>
@@ -55,7 +56,31 @@ using namespace AppleRender;
 //	createMeshFromFile(obj, proxyFile, meshArray);
 //}
 
+asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::defineStandardPlane()
+{
+	asf::auto_release_ptr<asr::MeshObject> object(asr::MeshObjectFactory::create("right_wall", asr::ParamArray()));
 
+	// Vertices.
+	object->push_vertex(asr::GVector3(-1.0f, 0.0f, -1.0f));
+	object->push_vertex(asr::GVector3(-1.0f, 0.0f,  1.0f));
+	object->push_vertex(asr::GVector3( 1.0f, 0.0f,  1.0f));
+	object->push_vertex(asr::GVector3( 1.0f, 0.0f, -1.0f));
+
+	// Vertex normals.
+	object->push_vertex_normal(asr::GVector3(0.0f, 1.0f, 0.0f));
+	
+	object->push_tex_coords(asr::GVector2(0.0, 0.0));
+	object->push_tex_coords(asr::GVector2(1.0, 0.0));
+	object->push_tex_coords(asr::GVector2(1.0, 1.0));
+	object->push_tex_coords(asr::GVector2(0.0, 1.0));
+
+	// Triangles.
+	object->push_triangle(asr::Triangle(0, 1, 2, 0, 0, 0, 0, 1, 2, 0));
+	object->push_triangle(asr::Triangle(0, 2, 3, 0, 0, 0, 0, 2, 3, 0));
+
+	return object;
+
+}
 //void AppleseedRenderer::createMesh(std::shared_ptr<MayaObject> obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
 //{
 
@@ -85,19 +110,28 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
     // Create a new mesh object.
 	asf::auto_release_ptr<asr::MeshObject> mesh = asr::MeshObjectFactory::create(meshFullName.asChar(), asr::ParamArray());
 
- 	for( uint vtxId = 0; vtxId < points.length(); vtxId++)
+	Logging::debug(MString("//object ") + meshFn.name());
+	//Logging::debug(MString("MPointArray ") + obj->shortName + "Vertices(" + points.length() + ");");
+	for (uint vtxId = 0; vtxId < points.length(); vtxId++)
 	{
 		mesh->push_vertex(MPointToAppleseed(points[vtxId]));		
+		Logging::debug(obj->shortName + "Vertices.append(MPoint(" + points[vtxId].x + "," + points[vtxId].y + "," + points[vtxId].z + "));");
 	}
 	
-	for( uint nId = 0; nId < normals.length(); nId++)
+	//Logging::debug(MString("MVectorArray ") + obj->shortName + "Normals(" + normals.length() + ");");
+	for (uint nId = 0; nId < normals.length(); nId++)
 	{
 		mesh->push_vertex_normal(MPointToAppleseed(normals[nId]));
+		Logging::debug(obj->shortName + "Normals.append(MVector(" + normals[nId].x + "," + normals[nId].y + "," + normals[nId].z + "));");
 	}
 
-	for( uint tId = 0; tId < uArray.length(); tId++)
+	//Logging::debug(MString("MFloatArray") + obj->shortName + "u(" + uArray.length() + ");");
+	//Logging::debug(MString("MFloatArray") + obj->shortName + "v(" + uArray.length() + ");");
+	for (uint tId = 0; tId < uArray.length(); tId++)
 	{		
 		mesh->push_tex_coords(asr::GVector2((float)uArray[tId], (float)vArray[tId]));
+		Logging::debug(obj->shortName + "u.append(" + uArray[tId] + ");");
+		Logging::debug(obj->shortName + "v.append(" + vArray[tId] + "); ");
 	}
 
 	mesh->reserve_material_slots(obj->shadingGroups.length());
@@ -109,6 +143,8 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 
 	int numTris = triPointIds.length() / 3;
 
+	Logging::debug(MString("//MIntArray triData(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, perFaceShadingGroup"));
+	Logging::debug(MString("int ") + obj->shortName + "triData[] = {");
 	for (uint triId = 0; triId < numTris; triId++)
 	{
 		uint index = triId * 3;
@@ -123,7 +159,9 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 		int uvId1 = triUvIds[index + 1];
 		int uvId2 = triUvIds[index + 2];
 		mesh->push_triangle(asr::Triangle(vtxId0, vtxId1, vtxId2,  normalId0, normalId1, normalId2, uvId0, uvId1, uvId2, perFaceShadingGroup));
+		Logging::debug(MString("") + vtxId0 + "," + vtxId1 + "," + vtxId2 + "," + normalId0 + "," + normalId1 + "," + normalId2 + "," + uvId0 + "," + uvId1 + "," + uvId2 + "," + perFaceShadingGroup + ",");
 	}
+	Logging::debug(MString("};\n\n\n\n-------------------------------------------------------------"));
 
 	MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
 	asr::Assembly *ass = getCreateObjectAssembly(obj.get());

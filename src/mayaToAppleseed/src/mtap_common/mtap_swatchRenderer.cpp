@@ -49,13 +49,9 @@ void mtap_SwatchRendererInterface::fillDummySwatch(MImage& image)
 		for (int x = 0; x < res; x++)
 		{
 			float fac = float(y) / res;
-			//pixels[index++] = fac * rndR;
-			//pixels[index++] = fac * rndG;
-			//pixels[index++] = fac * rndB;
-			pixels[index++] = 255;
-			pixels[index++] = 0;
-			pixels[index++] = 0;
-
+			pixels[index++] = fac * rndR;
+			pixels[index++] = fac * rndG;
+			pixels[index++] = fac * rndB;
 			pixels[index++] = 1.0f;
 		}
 	}

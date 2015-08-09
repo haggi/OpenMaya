@@ -2,12 +2,19 @@
 #include "mayaSceneFactory.h"
 #include "renderGlobalsFactory.h"
 #include "utilities/logging.h"
+#include "../appleseed/swatchesRenderer/appleseedSwatchRenderer.h"
+#include "../appleseed/SwatchesRenderer/SwatchesEvent.h"
+#include <thread>
 
 static Logging logger;
 namespace MayaTo{
 
 	void MayaToWorld::cleanUp()
-	{}
+	{
+		AppleseedSwatchRenderer * appleSwRndr = (AppleseedSwatchRenderer *)this->getObjPtr("appleseedSwatchesRenderer");
+		if (appleSwRndr)
+			delete appleSwRndr;
+	}
 
 	void MayaToWorld::cleanUpAfterRender()
 	{
@@ -16,11 +23,15 @@ namespace MayaTo{
 		MayaSceneFactory().deleteMayaScene();
 	}
 
-
 	void MayaToWorld::initialize()
 	{
 		std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
 		Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
+
+		AppleseedSwatchRenderer *appleSwRndr = new AppleseedSwatchRenderer();
+		this->addObjectPtr("appleseedSwatchesRenderer", appleSwRndr);
+		std::thread swatchRenderThread(AppleseedSwatchRenderer::startAppleseedSwatchRender, appleSwRndr);
+		swatchRenderThread.detach();
 	}
 
 	void MayaToWorld::afterOpenScene()

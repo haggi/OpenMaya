@@ -188,7 +188,8 @@ void AppleseedRenderer::defineLights()
 
 		if (obj->mobject.hasFn(MFn::kAreaLight))
 		{
-			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
+			asf::auto_release_ptr<asr::MeshObject> plane = defineStandardPlane();
+			plane->set_name(obj->fullNiceName.asChar());
 		}
 
 		lightAssembly->lights().insert(light);

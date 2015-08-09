@@ -100,6 +100,7 @@ public:
 	virtual void abortRendering();
 	virtual void interactiveFbCallback(){};
 
+	asf::auto_release_ptr<asr::MeshObject> defineStandardPlane();
 	void defineProject();
 	void addRenderParams(asr::ParamArray& paramArray);//add current render settings to all render configurations 
 	void defineConfig();

@@ -51,6 +51,9 @@
     <Filter Include="common\swatchesRenderer">
       <UniqueIdentifier>{c93091ce-2f18-4256-80e4-cca47108a65c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\appleseed\SwatchesRenderer">
+      <UniqueIdentifier>{af0b4c28-de5b-4726-98d5-a5f7aa06e358}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -359,6 +362,15 @@
     <ClCompile Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.cpp">
       <Filter>common\swatchesRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\appleseedSwatchRenderer.cpp">
+      <Filter>Source Files\appleseed\SwatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\newSwatchRenderer.cpp">
+      <Filter>Source Files\appleseed\SwatchesRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\SwatchesEvent.cpp">
+      <Filter>Source Files\appleseed\SwatchesRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -621,6 +633,18 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterfaceFactory.h">
       <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchesQueue.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\newSwatchRenderer.h">
+      <Filter>common\swatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseed\SwatchesRenderer\appleseedSwatchRenderer.h">
+      <Filter>Source Files\appleseed\SwatchesRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\appleseed\SwatchesRenderer\SwatchesEvent.h">
+      <Filter>Source Files\appleseed\SwatchesRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

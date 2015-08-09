@@ -6,7 +6,10 @@
 
 #include "mayatoappleseed.h"
 #include "mtap_common/mtap_renderGlobalsNode.h"
-#include "swatchesRenderer\swatchRenderer.h"
+#include "swatchesRenderer/swatchRenderer.h"
+#include "swatchesRenderer/NewSwatchRenderer.h"
+//#include "appleseed/SwatchesRenderer/appleseedSwatchRenderer.h"
+
 #include "utilities/tools.h"
 #include "threads/renderQueueWorker.h"
 #include "world.h"
@@ -66,11 +69,6 @@ MStatus initializePlugin( MObject obj )
 	status = plugin.registerNode("asDisneyMaterial", asDisneyMaterial::id, asDisneyMaterial::creator, asDisneyMaterial::initialize, MPxNode::kDependNode, &asDisneyMaterialIdFullClassification);
 	CHECK_MSTATUS(status);
 
-	if (MGlobal::mayaState() != MGlobal::kBatch)
-	{
-		MSwatchRenderRegister::registerSwatchRender(swatchName, SwatchRenderer::creator);
-	}
-
 #if MAYA_API_VERSION >= 201600
 	status = plugin.registerRenderer("Appleseed", mtap_MayaRenderer::creator);
 	if (!status) {
@@ -100,6 +98,12 @@ MStatus initializePlugin( MObject obj )
 	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();
 	MayaTo::getWorldPtr()->shaderSearchPath.append(loadPath);
+
+	if (MGlobal::mayaState() != MGlobal::kBatch)
+	{
+		MSwatchRenderRegister::registerSwatchRender(swatchName, NewSwatchRenderer::creator);
+		//MSwatchRenderRegister::registerSwatchRender(swatchName, SwatchRenderer::creator);
+	}
 
 	cmd = MString("import Renderer.OSLTools as osl;osl.getOSODirs();");
 	MStringArray oslDirs;

@@ -347,6 +347,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\appleseedSwatchRenderer.cpp" />
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\newSwatchRenderer.cpp" />
+    <ClCompile Include="..\src\appleseed\SwatchesRenderer\SwatchesEvent.cpp" />
     <ClCompile Include="..\src\appleseed\TestRender.cpp" />
     <ClCompile Include="..\src\mayatoappleseed.cpp" />
     <ClCompile Include="..\src\mtap_common\mtap_material.cpp" />
@@ -528,6 +531,8 @@
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingNode.h" />
     <ClInclude Include="..\..\common\cpp\shadingtools\shadingUtils.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\newSwatchRenderer.h" />
+    <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchesQueue.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchGeometry.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRenderer.h" />
     <ClInclude Include="..\..\common\cpp\swatchesRenderer\swatchRendererInterface.h" />
@@ -569,6 +574,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\src\appleseed\SwatchesRenderer\appleseedSwatchRenderer.h" />
+    <ClInclude Include="..\src\appleseed\SwatchesRenderer\SwatchesEvent.h" />
     <ClInclude Include="..\src\appleseed\TestRender.h" />
     <ClInclude Include="..\src\appleseed\version.h" />
     <ClInclude Include="..\src\mayatoappleseed.h" />
