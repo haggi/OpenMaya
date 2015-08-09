@@ -276,9 +276,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sourceCodeDocs\assemblyWorkflow.txt">
-      <Filter>ressources</Filter>
-    </None>
     <None Include="sourceCodeDocs\materials.txt">
       <Filter>ressources</Filter>
     </None>

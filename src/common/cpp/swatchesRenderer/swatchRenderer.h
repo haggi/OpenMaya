@@ -5,8 +5,6 @@
 #include <maya/MString.h>
 #include <maya/MPlugArray.h>
 
-//#include "boost/shared_ptr.hpp"
-
 class SwatchRendererInterface;
 
 class SwatchRenderer: public MSwatchRenderBase

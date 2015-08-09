@@ -23,6 +23,7 @@ class MayaToRenderer(object):
         self.ipr_isrunning = False
         self.imageFormatCtrl = None
         self.openMayaCommonGlobals = None
+        self.useRendererTabPrefix = True
         
     def addRenderGlobalsUIElement(self, attName=None, uiType=None, displayName=None, default=None, data=None, uiDict=None, callback=None, anno=None):
         uiUtils.addRenderGlobalsUIElement(self.renderGlobalsNodeName, attName, uiType, displayName, default, data, uiDict, callback, anno)
@@ -143,7 +144,10 @@ class MayaToRenderer(object):
         
         createTabCmd = "{0}{1}CreateTab".format(self.rendererName, tabName) 
         updateTabCmd = "{0}{1}UpdateTab".format(self.rendererName, tabName) 
-        tabLabel = "{0}{1}".format(self.rendererName, tabName)
+        if self.useRendererTabPrefix:
+            tabLabel = "{0}{1}".format(self.rendererName, tabName)
+        else:
+            tabLabel = "{0}".format(tabName)
         createPyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, createTabCmd)
         updatePyCmd = "python(\"{0}{1}()\");".format(self.baseRenderMelCommand, updateTabCmd)
         melCreateCmd = "global proc {0}()\n{{\t{1}\n}}\n".format(createTabCmd, createPyCmd)

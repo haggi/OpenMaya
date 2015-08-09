@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "utilities/tools.h"
+#include "utilities/logging.h"
 #include "swatchRendererInterfaceFactory.h"
 #include "../world.h"
 
@@ -17,7 +18,7 @@ MSwatchRenderBase* SwatchRenderer::creator(MObject dependNode, MObject renderNod
 
 SwatchRenderer::SwatchRenderer(MObject dependNode, MObject renderNode, int imageResolution) : MSwatchRenderBase(dependNode, renderNode, imageResolution)
 {
-	//MGlobal::displayInfo(MString("SwatchRenderer called with dependNode ") + getObjectName(dependNode) + " and renderNode " + getObjectName(renderNode));
+	Logging::debug("Create Swatch Renderer.");
 	this->renderInterface = SwatchRendererInterfaceFactory().createSwatchRendererInterface(dependNode, renderNode, imageResolution);
 }
 
