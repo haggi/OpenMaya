@@ -3,7 +3,8 @@
 #include "world.h"
 #include "appleseed.h"
 #include "renderer/modeling/shadergroup/shadergroup.h"
-#include "OpenImageIO\typedesc.h"
+#include "OpenImageIO/typedesc.h"
+#include "OSL/oslexec.h"
 
 MString oslTypeToMString(MAYATO_OSL::OSLParameter param)
 {
@@ -89,3 +90,45 @@ void MAYATO_OSL::connectOSLShaders(ConnectionArray& ca)
 	}
 }
 
+void MAYATO_OSLUTIL::OSLUtilClass::connectOSLShaders(MAYATO_OSL::ConnectionArray& ca)
+{
+	for (auto connection : ca)
+	{
+		const char *srcLayer = connection.sourceNode.asChar();
+		const char *srcAttr = connection.sourceAttribute.asChar();
+		const char *destLayer = connection.destNode.asChar();
+		MString destAttr = connection.destAttribute;
+		if (destAttr == "color")
+			destAttr = "inColor";
+		Logging::debug(MString("MAYATO_OSL::connectOSLShaders ") + srcLayer + "." + srcAttr + " -> " + destLayer + "." + destAttr);
+		OSL::ShaderGroup *g = group;
+		asr::ShaderGroup *ag = (asr::ShaderGroup *)g;
+		ag->add_connection(srcLayer, srcAttr, destLayer, destAttr.asChar());
+	}
+}
+
+void MAYATO_OSLUTIL::OSLUtilClass::createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray, MString type)
+{
+	Logging::debug(MString("MAYATO_OSL::createOSLShader ") + shaderName);
+	asr::ParamArray asParamArray;
+	for (auto param : paramArray)
+	{
+
+		MString pname = param.name;
+		if (pname == "color")
+			pname = "inColor";
+
+		MString paramString = oslTypeToMString(param);
+		asParamArray.insert(pname.asChar(), paramString);
+		Logging::debug(MString("\tParam ") + param.name + " " + paramString);
+	}
+
+	if (type == "shader")
+	{
+		Logging::debug(MString("MAYATO_OSL::createOSLShader creating shader node "));
+		OSL::ShaderGroup *g = group;
+		asr::ShaderGroup *ag = (asr::ShaderGroup *)g;
+		ag->add_shader("shader", shaderNodeType.asChar(), shaderName.asChar(), asParamArray);
+	}
+
+}

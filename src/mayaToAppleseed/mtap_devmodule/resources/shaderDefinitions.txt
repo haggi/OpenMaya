@@ -38,7 +38,7 @@ shader_start:place2dTexture
 shader_end
 
 shader_start:asDisneyMaterial
-	inatt:BaseColor:vector
+	inatt:BaseColor:color
 	inatt:Subsurface:float
 	inatt:Metallic:float
 	inatt:Specular:float
@@ -48,5 +48,5 @@ shader_start:asDisneyMaterial
 	inatt:SheenTint:float
 	inatt:Clearcoat:float
 	inatt:ClearcoatGloss:float
-	outatt:outColor:vector
+	outatt:outColor:color
 shader_end

@@ -9,13 +9,17 @@
 #include <maya/MImage.h>
 #include "swatchesRenderer/swatchesQueue.h"
 
+class NewSwatchRenderer;
+
 namespace SQueue
 {
 	struct SEvent
 	{
 		int height;
-		MImage *imgPtr;
+		float *pixels;
 		bool *renderDone;
+		MObject shadingNode;
+		NewSwatchRenderer *swatchRenderer;
 	};
 
 	static concurrent_queue<SEvent> SwatchesQueue;

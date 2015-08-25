@@ -131,8 +131,16 @@ asr::Scene *getSceneFromProject(asr::Project *project)
 // we first define an assembly which contains the world assembly. This "uberMaster" contains the global transformation.
 void defineMasterAssembly(asr::Project *project)
 {
-	MMatrix conversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
-	
+
+	MMatrix conversionMatrix;
+	conversionMatrix.setToIdentity();
+	MayaTo::MayaToWorld *world = MayaTo::getWorldPtr();
+	if (world != nullptr)
+	{
+		RenderGlobals *rg = world->worldRenderGlobalsPtr.get();
+		if (rg != nullptr)
+			conversionMatrix = rg->globalConversionMatrix;
+	}
 	if (getSceneFromProject(project)->assemblies().get_by_name("sceneAssembly") == nullptr)
 	{
 		asf::auto_release_ptr<asr::Assembly> assembly(asr::AssemblyFactory().create("sceneAssembly", asr::ParamArray()));
@@ -318,6 +326,26 @@ void defineColor(MString& name, MColor& color, float intensity, MString colorSpa
 	scene->colors().insert(colorEntity);
 }
 
+void defineColor(asr::Project *project, const char *name, MColor color, float intensity, MString colorSpace)
+{
+	asr::Scene *scene = project->get_scene();
+	asr::ColorEntity *col = scene->colors().get_by_name(name);
+	if (col != nullptr)
+		scene->colors().remove(col);
+
+	float colorDef[3];
+	float alpha = color.a;
+	mayaColorToFloat(color, colorDef, &alpha);
+	asf::auto_release_ptr<asr::ColorEntity> colorEntity = asr::ColorEntityFactory::create(
+		name,
+		asr::ParamArray()
+		.insert("color_space", colorSpace.asChar())
+		.insert("multiplier", intensity),
+		asr::ColorValueArray(3, colorDef),
+		asr::ColorValueArray(1, &alpha));
+
+	scene->colors().insert(colorEntity);
+}
 // check if a texture is connected to this attribute. If yes, return the texture name, if not define the currentColor and return the color name.
 MString colorOrMap(MFnDependencyNode& shaderNode, MString& attributeName)
 {
@@ -671,4 +699,66 @@ asf::Matrix4d MMatrixToAMatrix(MMatrix mayaMatrix)
 		for (int k = 0; k < 4; k++)
 			appleMatrix[i * 4 + k] = rowMatrix[i][k];
 	return appleMatrix;
+}
+
+
+void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramArray)
+{
+
+	MFnDependencyNode depFn(obj->mobject);
+
+	if (obj->mobject.hasFn(MFn::kMesh))
+	{
+		if(!getBoolAttr("primaryVisibility", depFn, true))
+			paramArray.insert_path("visibility.camera", false);
+
+		if (!getBoolAttr("castsShadows", depFn, true))
+			paramArray.insert_path("visibility.shadow", false);
+
+		if (!getBoolAttr("visibleInRefractions", depFn, true))
+			paramArray.insert_path("visibility.transparency", false);
+
+		if (!getBoolAttr("mtap_visibleLights", depFn, true))
+			paramArray.insert_path("visibility.light", false);
+
+		if (!getBoolAttr("mtap_visibleProbe", depFn, true))
+			paramArray.insert_path("visibility.probe", false);
+
+		if (!getBoolAttr("mtap_visibleGlossy", depFn, true))
+			paramArray.insert_path("visibility.glossy", false);
+
+		if (!getBoolAttr("mtap_visibleSpecular", depFn, true))
+			paramArray.insert_path("visibility.specular", false);
+
+		if (!getBoolAttr("mtap_visibleDiffuse", depFn, true))
+			paramArray.insert_path("visibility.diffuse", false);
+	}
+
+	if (obj->mobject.hasFn(MFn::kAreaLight))
+	{
+		if (!getBoolAttr("primaryVisibility", depFn, true))
+			paramArray.insert_path("visibility.camera", false);
+
+		if (!getBoolAttr("castsShadows", depFn, true))
+			paramArray.insert_path("visibility.shadow", false);
+
+		if (!getBoolAttr("visibleInRefractions", depFn, true))
+			paramArray.insert_path("visibility.transparency", false);
+
+		if (!getBoolAttr("mtap_visibleLights", depFn, true))
+			paramArray.insert_path("visibility.light", false);
+
+		if (!getBoolAttr("mtap_visibleProbe", depFn, true))
+			paramArray.insert_path("visibility.probe", false);
+
+		if (!getBoolAttr("mtap_visibleGlossy", depFn, true))
+			paramArray.insert_path("visibility.glossy", false);
+
+		if (!getBoolAttr("mtap_visibleSpecular", depFn, true))
+			paramArray.insert_path("visibility.specular", false);
+
+		if (!getBoolAttr("mtap_visibleDiffuse", depFn, true))
+			paramArray.insert_path("visibility.diffuse", false);
+	}
+
 }

@@ -42,10 +42,16 @@ class AEappleseedNodeTemplate(BaseTemplate):
             
         if self.thisNode.type() == "mesh":
             self.beginLayout("AppleSeed" ,collapse=1)
-            self.addControl("mtap_mesh_useassembly", label="Use seperate Assembly")                        
+            #self.addControl("mtap_mesh_useassembly", label="Use seperate Assembly")                        
             self.addControl("mtap_ray_bias_method", label="Ray Bias Method", changeCommand=self.updateUI)                       
             self.addControl("mtap_ray_bias_distance", label="Ray Bias Distance") 
-            self.addControl("mtap_standin_path", label="Proxy File") 
+            #self.addControl("mtap_standin_path", label="Proxy File") 
+            self.addControl("mtap_visibleLights", label="Visible For Light Rays")
+            self.addControl("mtap_visibleProbe", label="Visible For Probe Rays")
+            self.addControl("mtap_visibleGlossy", label="Visible For Glossy Rays")
+            self.addControl("mtap_visibleSpecular", label="Visible For Specular Rays")
+            self.addControl("mtap_visibleDiffuse", label="Visible For Diffulse Rays")
+            self.addControl("mtap_visibleTransparency", label="Visible For Transparent Rays")
             self.endLayout()
                                    
         if self.thisNode.type() == "spotLight":
@@ -64,6 +70,19 @@ class AEappleseedNodeTemplate(BaseTemplate):
             self.beginLayout("AppleSeed" ,collapse=1)
             self.addControl("mtap_cast_indirect_light", label="Cast Indirect Light")                        
             self.addControl("mtap_importance_multiplier", label="Importance Multiplier")                        
+            self.endLayout()
+                                   
+        if self.thisNode.type() == "areaLight":
+            self.beginLayout("AppleSeed" ,collapse=1)
+            self.addControl("primaryVisibility", label="Primary Visibility")
+            self.addControl("castsShadows", label="Casts Shadows")
+            self.addControl("mtap_visibleLights", label="Visible For Light Rays")
+            self.addControl("mtap_visibleProbe", label="Visible For Probe Rays")
+            self.addControl("mtap_visibleGlossy", label="Visible For Glossy Rays")
+            self.addControl("mtap_visibleSpecular", label="Visible For Specular Rays")
+            self.addControl("mtap_visibleDiffuse", label="Visible For Diffulse Rays")
+            self.addControl("mtap_visibleTransparency", label="Visible For Transparent Rays")
+            
             self.endLayout()
                                    
 #        if self.thisNode.type() == "shadingEngine":

@@ -76,15 +76,20 @@ void AppleseedRenderer::defineConfig()
 	addRenderParams(this->project->configurations().get_by_name("final")->get_parameters());
 	addRenderParams(this->project->configurations().get_by_name("interactive")->get_parameters());
 
-	if (getBoolAttr("adaptiveSampling", renderGlobalsFn, true))
-	{
-		this->project->configurations()
-			.get_by_name("final")->get_parameters()
-			.insert_path("generic_tile_renderer.sampler", "adaptive");
-		this->project->configurations()
-			.get_by_name("interactive")->get_parameters()
-			.insert_path("generic_tile_renderer.sampler", "adaptive");
-	}
+	int renderer = getEnumInt("pixel_renderer", renderGlobalsFn);
+	const char *pixel_renderers[2] = { "adaptive", "uniform" };
+	const char *pixel_renderer = pixel_renderers[renderer];
+
+	this->project->configurations()
+		.get_by_name("final")->get_parameters()
+		.insert_path("pixel_renderer", pixel_renderer);
+
+	this->project->configurations()
+		.get_by_name("final")->get_parameters()
+		.insert_path("generic_tile_renderer.sampler", pixel_renderer);
+	this->project->configurations()
+		.get_by_name("interactive")->get_parameters()
+		.insert_path("generic_tile_renderer.sampler", pixel_renderer);
 
 	if( renderGlobals->getUseRenderRegion() )
 	{

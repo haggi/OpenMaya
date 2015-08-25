@@ -41,8 +41,10 @@ void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance);
 void mayaColorToFloat(MColor& col, float *floatCol, float *alpha);
 void removeColorEntityIfItExists(MString& colorName);
 void defineColor(MString& name, MColor& color, float intensity, MString colorSpace = "srgb");
+void defineColor(asr::Project *project, const char *name, MColor color, float intensity, MString colorSpace = "srgb");
 MString colorOrMap(MFnDependencyNode& shaderNode, MString& attributeName);
 void removeTextureEntityIfItExists(MString& textureName);
 MString defineTexture(MFnDependencyNode& shader, MString& attributeName);
+void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramArray);
 
 #endif

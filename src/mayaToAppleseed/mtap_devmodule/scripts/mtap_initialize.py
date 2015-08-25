@@ -520,6 +520,11 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_method", attributeType="enum", enumName="none:normal:incoming_direction:outgoing_direction", defaultValue=0)
         pm.addExtension(nodeType="mesh", longName="mtap_ray_bias_distance", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="mesh", longName="mtap_standin_path", dataType="string", usedAsFilename=True)
+        pm.addExtension(nodeType="mesh", longName="mtap_visibleLights", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="mesh", longName="mtap_visibleProbe", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="mesh", longName="mtap_visibleGlossy", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="mesh", longName="mtap_visibleSpecular", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="mesh", longName="mtap_visibleDiffuse", attributeType="bool", defaultValue=True)
 
         pm.addExtension(nodeType="spotLight", longName="mtap_cast_indirect_light", attributeType="bool", defaultValue=True)
         pm.addExtension(nodeType="spotLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
@@ -527,6 +532,15 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="directionalLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
         pm.addExtension(nodeType="pointLight", longName="mtap_cast_indirect_light", attributeType="bool", defaultValue=True)
         pm.addExtension(nodeType="pointLight", longName="mtap_importance_multiplier", attributeType="float", defaultValue=1.0)
+        
+        pm.addExtension(nodeType="areaLight", longName="primaryVisibility", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="castsShadows", attributeType="bool", defaultValue=False)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleLights", attributeType="bool", defaultValue=False)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleProbe", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleGlossy", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleSpecular", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleDiffuse", attributeType="bool", defaultValue=True)
+        pm.addExtension(nodeType="areaLight", longName="mtap_visibleTransparency", attributeType="bool", defaultValue=True)
         
         # shading group
 #        pm.addExtension(nodeType="shadingEngine", longName="mtap_mat_bsdf", attributeType="message")

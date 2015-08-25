@@ -11,6 +11,7 @@
 #include "utilities/pystring.h"
 #include "world.h"
 #include "appleseedUtils.h"
+#include "renderer/api/edf.h"
 
 static Logging logger;
 
@@ -188,18 +189,68 @@ void AppleseedRenderer::defineLights()
 
 		if (obj->mobject.hasFn(MFn::kAreaLight))
 		{
+			MString areaLightName = obj->fullNiceName;
 			asf::auto_release_ptr<asr::MeshObject> plane = defineStandardPlane();
-			plane->set_name(obj->fullNiceName.asChar());
-		}
+			plane->set_name(areaLightName.asChar());
+			MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
+			asr::Assembly *ass = getCreateObjectAssembly(obj.get());
+			ass->objects().insert(asf::auto_release_ptr<asr::Object>(plane));
+			asr::MeshObject *meshPtr = (asr::MeshObject *)ass->objects().get_by_name(areaLightName.asChar());
+			MString objectInstanceName = getObjectInstanceName(obj.get());
+			MMatrix assemblyObjectMatrix = assemblyObject->dagPath.inclusiveMatrix();
+			// rotate the defalt up pointing standard plane by 90 degree to match the area light direction
+			MTransformationMatrix tm;
+			double rotate90Deg[3] = { -M_PI_2, 0, 0 };
+			tm.setRotation(rotate90Deg, MTransformationMatrix::kXYZ);
+			MMatrix objectMatrix = tm.asMatrix();
+			MMatrix diffMatrix = objectMatrix;// *assemblyObjectMatrix;
+			asf::Matrix4d appleMatrix;
+			MMatrixToAMatrix(diffMatrix, appleMatrix);
 
-		lightAssembly->lights().insert(light);
-		//fillTransformMatices(obj, light.get());
-		//lightAssembly->lights().insert(light);
-		//asr::Assembly *master = getMasterAssemblyFromProject(this->project.get());
-		//master->assemblies().insert(lightAssembly);
-		//asf::auto_release_ptr<asr::AssemblyInstance> assInst = asr::AssemblyInstanceFactory().create(getAssemblyInstanceName(obj.get()).asChar(), asr::ParamArray(), getAssemblyName(obj.get()).asChar());
-		//master->assembly_instances().insert(assInst);
-		//master->lights().insert(light);
+			MString areaLightMaterialName = areaLightName + "_material";
+
+			MString physicalSurfaceName = areaLightName + "_physical_surface_shader";
+			MString areaLightColorName = areaLightName + "_color";
+			MString edfName = areaLightName + "_edf";
+			asr::ParamArray edfParams;
+			MString lightColor = lightColorAsString(depFn);
+			MColor color = getColorAttr("color", depFn);
+			defineColor(areaLightColorName, color, getFloatAttr("intensity", depFn, 1.0f));
+			edfParams.insert("radiance", areaLightColorName.asChar());
+			//edfParams.insert("radiance_multiplier", getFloatAttr("intensity", depFn, 1.0f));
+
+			asf::auto_release_ptr<asr::EDF> edf = asr::DiffuseEDFFactory().create(edfName.asChar(), edfParams);
+			ass->edfs().insert(edf);
+
+			ass->surface_shaders().insert(
+				asr::PhysicalSurfaceShaderFactory().create(
+				physicalSurfaceName.asChar(),
+				asr::ParamArray()));
+			
+			ass->materials().insert(
+				asr::GenericMaterialFactory().create(
+				areaLightMaterialName.asChar(),
+				asr::ParamArray()
+				.insert("surface_shader", physicalSurfaceName.asChar())
+				.insert("edf", edfName.asChar())));
+
+			asr::ParamArray objInstanceParamArray;
+			addVisibilityFlags(obj, objInstanceParamArray);
+
+			ass->object_instances().insert(
+				asr::ObjectInstanceFactory::create(
+				objectInstanceName.asChar(),
+				objInstanceParamArray,
+				meshPtr->get_name(),
+				asf::Transformd::from_local_to_parent(appleMatrix),
+				asf::StringDictionary()
+				.insert("slot0", areaLightMaterialName.asChar()),
+				asf::StringDictionary()
+				.insert("slot0", "default")));
+
+		}
+		if ( light.get() != nullptr)
+			lightAssembly->lights().insert(light);
 	}
 	//std::shared_ptr<MayaObject> mlight = obj;
 	//asf::Matrix4d appMatrix = asf::Matrix4d::identity();

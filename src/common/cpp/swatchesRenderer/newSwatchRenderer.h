@@ -13,7 +13,16 @@ public:
 	~NewSwatchRenderer();
 	static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
 	virtual bool doIteration();
+	virtual bool renderParallel();
+	void finishParallelRender();
+	void cancelParallelRendering();
+	void cancelCurrentSwatchRender();
+	void enableSwatchRender(bool enable);
+	float *floatPixels;
+	bool renderInProgress = true;
 	bool swatchRenderingDone = false;
+	MObject rNode;
+	MObject dNode;
 };
 
 #endif

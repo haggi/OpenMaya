@@ -1,10 +1,11 @@
 Version 0.32:
-- redo everything
+- restarted everything
 - removed all appleseed shaders
-- implemented disney material
-- implemented OSL
+- implemented basic disney material
+- implemented basic OSL
 - started implementation of render swatches
 - started implementation of Maya2016 hypershade renderer
+- implemented area lights (no osl area light yet)
 
 Version 0.31:
 - update to refactored framework

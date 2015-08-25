@@ -239,6 +239,7 @@
     <ClCompile Include="..\..\common\cpp\threads\threads.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\meshTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
@@ -269,7 +270,7 @@
     <ClCompile Include="..\src\appleseed\appleseedFrameOutput.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp">
+    <ClCompile Include="..\src\appleseed\appleseedGeo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">true</ExcludedFromBuild>
@@ -277,6 +278,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedLights.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>
@@ -543,11 +545,13 @@
     <ClInclude Include="..\..\common\cpp\threads\threads.h" />
     <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\meshTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
     <ClInclude Include="..\..\common\cpp\world.h" />
     <ClInclude Include="..\src\appleseed\appleseed.h" />
+    <ClInclude Include="..\src\appleseed\appleseedGeometry.h" />
     <ClInclude Include="..\src\appleseed\appleseedMeshWalker.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
@@ -734,7 +738,6 @@
     <None Include="..\releaseNotes.txt" />
     <None Include="sourceCodeDocs\assemblyWorkflow.txt" />
     <None Include="sourceCodeDocs\Materials.txt" />
-    <None Include="todo.txt" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\mtap_devmodule\resources\shaderDefinitions.txt" />
