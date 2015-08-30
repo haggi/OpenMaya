@@ -43,6 +43,7 @@
 #include <thread>
 #include <vector>
 #include <maya/MGlobal.h>
+#include <maya/MStringArray.h>
 #include <maya/MFnDependencyNode.h>
 
 #include <boost/thread/locks.hpp>
@@ -57,31 +58,50 @@
 
 mtap_MayaRenderer::mtap_MayaRenderer()
 {
+	//renderBuffer = (float*)malloc(width*height*kNumChannels*sizeof(float));
 	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
 	asr::global_logger().add_target(log_target.get());
-	
+	initProject();
+}
+
+mtap_MayaRenderer::~mtap_MayaRenderer()
+{
+	Logging::debug("~mtap_MayaRenderer");
+	asr::global_logger().remove_target(log_target.get());
+}
+
+void mtap_MayaRenderer::initProject()
+{
 	project = asr::ProjectFactory::create("mayaRendererProject");
 	project->add_default_configurations();
-	project->configurations()
-		.get_by_name("final")->get_parameters()
-		.insert_path("uniform_pixel_renderer.samples", "32");
+	project->configurations().get_by_name("final")->get_parameters().insert("rendering_threads", 16);
+	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "4");
 
 	defineScene(project.get());
 	defineMasterAssembly(project.get());
 	defineDefaultMaterial(project.get());
 
+	asr::Configuration *cfg = project->configurations().get_by_name("interactive");
+	asr::ParamArray &params = cfg->get_parameters();
+	params.insert("sample_renderer", "generic");
+	params.insert("sample_generator", "generic");
+	params.insert("tile_renderer", "generic");
+	params.insert("frame_renderer", "progressive");
+	params.insert("lighting_engine", "pt");
+	params.insert_path("progressive_frame_renderer.max_fps", "5");
+
 	MString envMapAttrName = "C:/Program Files/Autodesk/Maya2016/presets/Assets/IBL/Exterior1_Color.exr";
 
-	asr::ParamArray params;
-	params.insert("filename", envMapAttrName.asChar());   
-	params.insert("color_space", "linear_rgb");
+	asr::ParamArray fileparams;
+	fileparams.insert("filename", envMapAttrName.asChar());
+	fileparams.insert("color_space", "linear_rgb");
 
 	asf::SearchPaths searchPaths;
 	asf::auto_release_ptr<asr::Texture> textureElement(
 		asr::DiskTexture2dFactory().create(
 		"envTex",
-		params,
-		searchPaths)); 
+		fileparams,
+		searchPaths));
 
 	project->get_scene()->textures().insert(textureElement);
 
@@ -110,7 +130,7 @@ mtap_MayaRenderer::mtap_MayaRenderer()
 	if (sky != nullptr)
 		project->get_scene()->environment_edfs().remove(sky);
 	project->get_scene()->environment_edfs().insert(environmentEDF);
-	
+
 	asr::EnvironmentShader *shader = project->get_scene()->environment_shaders().get_by_name("sky_shader");
 	if (shader != nullptr)
 		project->get_scene()->environment_shaders().remove(shader);
@@ -140,7 +160,15 @@ mtap_MayaRenderer::mtap_MayaRenderer()
 		.insert("tile_size", tileSize.asChar())
 		.insert("color_space", "linear_rgb")));
 
-	renderBuffer = (float*)malloc(width*height*kNumChannels*sizeof(float));
+	project->get_frame()->get_parameters().insert("pixel_format", "float");
+
+	this->tileCallbackFac.reset(new TileCallbackFactory(this));
+	mrenderer = std::auto_ptr<asr::MasterRenderer>(new asr::MasterRenderer(
+		this->project.ref(),
+		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+		&controller,
+		this->tileCallbackFac.get()));
+
 }
 
 bool mtap_MayaRenderer::isRunningAsync()
@@ -155,14 +183,21 @@ void* mtap_MayaRenderer::creator()
 
 void mtap_MayaRenderer::render()
 {
-	ProgressParams progressParams;
-	
-	mrenderer->render();
+	ProgressParams pp;
+	pp.progress = 0.0;
+	progress(pp);
 
+	if (mrenderer.get())
+		mrenderer->render();
+	else
+		return;
 	MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/HypershadeRender.exr";
 	project->get_frame()->write_main_image(tstFile.asChar());
 	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/mayaRenderer.xml");
 	Logging::debug("renderthread done.");
+
+	pp.progress = 2.0;
+	progress(pp);
 
 }
 
@@ -174,26 +209,17 @@ static void startRenderThread(mtap_MayaRenderer* renderPtr)
 MStatus mtap_MayaRenderer::startAsync(const JobParams& params)
 {
 	Logging::debug("startAsync:");
-	Logging::debug(MString("\tJobDescr: ") + params.description);
-	this->tileCallbackFac.reset(new TileCallbackFactory(this));
-	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/mayaRenderer.xml");
-
-	mrenderer = std::auto_ptr<asr::MasterRenderer>( new asr::MasterRenderer(
-		this->project.ref(),
-		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
-		&controller,
-		this->tileCallbackFac.get()));
-
-	renderThread = std::thread(startRenderThread, this);
+	Logging::debug(MString("\tJobDescr: ") + params.description + " max threads: " + params.maxThreads);
+	//renderThread = std::thread(startRenderThread, this);
 	Logging::debug(MString("started async"));
-	//render();
 	return MStatus::kSuccess;
 };
 MStatus mtap_MayaRenderer::stopAsync()
 {
 	Logging::debug("stopAsync");
-	//controller.status = asr::IRendererController::PauseRendering;
 	controller.status = asr::IRendererController::AbortRendering;
+	if (renderThread.joinable())
+		renderThread.join();
 	return MS::kSuccess;
 }
 
@@ -201,6 +227,10 @@ MStatus mtap_MayaRenderer::beginSceneUpdate()
 {
 	Logging::debug("beginSceneUpdate");
 	controller.status = asr::IRendererController::AbortRendering;
+	if (renderThread.joinable())
+		renderThread.join();
+	if (project.get() == nullptr)
+		initProject();
 	return MStatus::kSuccess;
 };
 
@@ -327,6 +357,8 @@ MStatus mtap_MayaRenderer::translateCamera(const MUuid& id, const MObject& node)
 	camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
 	camParams.insert("f_stop", (MString("") + fStop).asChar());
 
+	const char *res = project->get_frame()->get_parameters().get_path("resolution");
+	Logging::debug(MString("Resolution from cam ") + res);
 	asf::auto_release_ptr<asr::Camera> appleCam = asr::PinholeCameraFactory().create(
 		camName.asChar(),
 		camParams);
@@ -457,15 +489,24 @@ MStatus mtap_MayaRenderer::setResolution(unsigned int w, unsigned int h)
 	this->width = w;
 	this->height = h;
 	// Update resolution buffer
-	this->renderBuffer = (float*)realloc(this->renderBuffer, w*h*kNumChannels*sizeof(float));
+	//this->renderBuffer = (float*)realloc(this->renderBuffer, w*h*kNumChannels*sizeof(float));
 
 	MString res = MString("") + width + " " + height;
-	MString tileSize = "16 16";
+	MString tileSize = "32 32";
 
 	asr::Camera *cam = project->get_scene()->get_camera();
 	MString camName = "";
 	if (cam != nullptr)
+	{
 		camName = project->get_scene()->get_camera()->get_name();
+		asr::ParamArray &camParams = cam->get_parameters();
+		MString dim = camParams.get_path("film_dimensions");
+		MStringArray values;
+		dim.split(' ', values);
+		float filmWidth = values[0].asFloat();
+		float filmHeight = filmWidth * h / (float)w;
+		camParams.insert("film_dimensions", (MString("") + filmWidth + " " + filmHeight).asChar());
+	}
 
 	project->set_frame(
 		asr::FrameFactory::create(
@@ -474,15 +515,17 @@ MStatus mtap_MayaRenderer::setResolution(unsigned int w, unsigned int h)
 		.insert("camera", camName.asChar())
 		.insert("resolution", res.asChar())
 		.insert("tile_size", tileSize.asChar())
+		.insert("pixel_format", "float")
 		.insert("color_space", "linear_rgb")));
+
+	project->get_frame()->get_parameters().insert("pixel_format", "float");
 
 	return MStatus::kSuccess;
 };
 MStatus mtap_MayaRenderer::endSceneUpdate()
 {
 	Logging::debug("endSceneUpdate");
-	// wait for thread end if it is running
-	renderThread.join();
+	controller.status = asr::IRendererController::ContinueRendering;
 	renderThread = std::thread(startRenderThread, this);
 	return MStatus::kSuccess;
 };
@@ -490,7 +533,11 @@ MStatus mtap_MayaRenderer::destroyScene()
 {
 	Logging::debug("destroyScene");
 	controller.status = asr::IRendererController::AbortRendering;
-	renderThread.join();
+	if (renderThread.joinable())
+		renderThread.join();
+	project.release();
+	objectArray.clear();
+
 	ProgressParams progressParams;
 	progressParams.progress = -1.0f;
 	progress(progressParams);
@@ -503,43 +550,99 @@ bool mtap_MayaRenderer::isSafeToUnload()
 	return true;
 };
 
-void TileCallback::post_render_tile(const asr::Frame* frame, const size_t tile_x, const size_t tile_y)
+void mtap_MayaRenderer::copyTileToBuffer(asf::Tile& tile, int tile_x, int tile_y)
 {
-	//boost::lock_guard<boost::mutex> guard(m_mutex);
-	Logging::debug("TileCallback::post_render_tile");
-
-	asf::Image img = frame->image();
-	const asf::CanvasProperties& frame_props = img.properties();
-	const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
-
-	asf::Tile float_tile_storage(
-		frame_props.m_tile_width,
-		frame_props.m_tile_height,
-		frame_props.m_channel_count,
-		asf::PixelFormatFloat);
-
-	asf::Tile uint8_tile_storage(
-		frame_props.m_tile_width,
-		frame_props.m_tile_height,
-		frame_props.m_channel_count,
-		asf::PixelFormatUInt8);
-
-	asf::Tile fp_rgb_tile(
-		tile,
-		asf::PixelFormatFloat,
-		float_tile_storage.get_storage());
-
-	frame->transform_to_output_color_space(fp_rgb_tile);
-
-	static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
-	const asf::Tile uint8_rgb_tile(
-		fp_rgb_tile,
-		asf::PixelFormatUInt8,
-		uint8_tile_storage.get_storage());
 
 	size_t tw = tile.get_width();
 	size_t th = tile.get_height();
-	size_t numPixels = tw * th;
+	size_t bufferPosX = tile_x * tw;
+	size_t bufferBase = (tile_y * th * width + tile_x * tw);
+
+	if (rb != nullptr)
+		free(rb);
+	rb = (float*)malloc( tw * th * kNumChannels * sizeof(float));
+
+	for (int y = 0; y < th; y++)
+	{
+		for (int x = 0; x < tw; x++)
+		{
+			int index = (y * tw + x) * kNumChannels;
+			
+			rb[index] = (float)tile_x;
+			rb[index + 1] = 0.0f;
+			rb[index + 2] = 1.0f;
+			rb[index + 3] = 1.0f;
+			//size_t bufferPos = ((tile_y * th + y) * width + (tile_x * tw) + x) * kNumChannels;
+			asf::uint8 *pixel = tile.pixel(x, y);
+			rb[index] = (float)pixel[0];
+			rb[index + 1] = (float)pixel[1];
+			rb[index + 2] = (float)pixel[2];
+			rb[index + 3] = (float)pixel[3];
+			//this->renderBuffer[bufferPos] = (float)pixel[0];
+			//this->renderBuffer[bufferPos+1] = (float)pixel[1];
+			//this->renderBuffer[bufferPos+2] = (float)pixel[2];
+			//this->renderBuffer[bufferPos+3] = (float)pixel[3];
+		}
+	}
+	////The image is R32G32B32A32_Float format
+	RefreshParams rp;
+	//rp.bottom = tile_y * th;
+	//rp.top = (tile_y + 1) * th - 1;
+	rp.bottom = 0;
+	rp.top = th - 1;
+	rp.bytesPerChannel = sizeof(float);
+	rp.channels = kNumChannels;
+	rp.left = 0;
+	rp.right = tw - 1;
+	rp.width = tw;
+	rp.height = th;
+	rp.data = rb;
+	refresh(rp);
+}
+
+std::mutex tile_mutex;
+
+void TileCallback::post_render_tile(const asr::Frame* frame, const size_t tile_x, const size_t tile_y)
+{
+	std::lock_guard<std::mutex> lock(tile_mutex);
+
+	//boost::lock_guard<boost::mutex> guard(m_mutex);
+	Logging::debug("TileCallback::post_render_tile");
+
+	asf::Tile& tile = frame->image().tile(tile_x, tile_y);
+	this->renderer->copyTileToBuffer(tile, tile_x, tile_y);
+	//asf::Image img = frame->image();
+	//const asf::CanvasProperties& frame_props = img.properties();
+
+	//asf::Tile float_tile_storage(
+	//	frame_props.m_tile_width,
+	//	frame_props.m_tile_height,
+	//	frame_props.m_channel_count,
+	//	asf::PixelFormatFloat);
+
+	//asf::Tile uint8_tile_storage(
+	//	frame_props.m_tile_width,
+	//	frame_props.m_tile_height,
+	//	frame_props.m_channel_count,
+	//	asf::PixelFormatUInt8);
+
+	//asf::Tile fp_rgb_tile(
+	//	tile,
+	//	asf::PixelFormatFloat,
+	//	float_tile_storage.get_storage());
+
+	//frame->transform_to_output_color_space(fp_rgb_tile);
+
+	//static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
+	//const asf::Tile uint8_rgb_tile(
+	//	fp_rgb_tile,
+	//	asf::PixelFormatUInt8,
+	//	uint8_tile_storage.get_storage());
+
+	//size_t tw = tile.get_width();
+	//size_t th = tile.get_height();
+	//size_t numPixels = tw * th;
+
 	//std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
 	//RV_PIXEL *pixels = pixelsPtr.get();
 	//for (size_t yy = 0; yy < th; yy++)

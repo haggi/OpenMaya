@@ -5,10 +5,12 @@
 #include "renderer/api/project.h"
 #include "renderer/global/globallogger.h"
 #include "renderer/api/rendering.h"
+#include "foundation/image/tile.h"
 
 #include <maya/MTypes.h>
 #include <map>
 #include <thread>
+#include <mutex>
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -43,10 +45,11 @@ public:
 	mtap_MayaRenderer *renderer;
 	explicit TileCallback(mtap_MayaRenderer *mrenderer) : renderer(mrenderer)
 	{}
+	//explicit TileCallback()
+	//{}
 	virtual ~TileCallback()
 	{}
-
-	virtual void release(){ delete this; };
+	virtual void release(){};
 	void pre_render(const size_t x,	const size_t y,	const size_t width,	const size_t height){};
 	void post_render(const asr::Frame* frame);
 	virtual void post_render_tile(const asr::Frame* frame, const size_t tile_x, const size_t tile_y);
@@ -59,6 +62,10 @@ public:
 	explicit TileCallbackFactory(mtap_MayaRenderer *renderer)
 	{
 		tileCallback = new TileCallback(renderer);
+	}
+	virtual ~TileCallbackFactory()
+	{
+		delete tileCallback;
 	}
 	virtual asr::ITileCallback* create()
 	{
@@ -80,13 +87,15 @@ class mtap_MayaRenderer : public MPxRenderer
 {
 public:
 	RefreshParams refreshParams;
+	float* rb = nullptr;
 
 	mtap_MayaRenderer();
+	virtual ~mtap_MayaRenderer();
 	static void* creator();
 	virtual MStatus startAsync(const JobParams& params);
 	virtual MStatus stopAsync();
 	virtual bool isRunningAsync();
-
+	void initProject();
 	virtual MStatus beginSceneUpdate();
 
 	virtual MStatus translateMesh(const MUuid& id, const MObject& node);
@@ -110,12 +119,12 @@ public:
 
 	virtual bool isSafeToUnload();
 
+	void copyTileToBuffer(asf::Tile& tile, int tile_x, int tile_y);
 	void render();
 
 private:
 	int width, height;
 	//Render output buffer, it is R32G32B32A32_FLOAT format.
-	float* renderBuffer;
 	std::thread renderThread;
 	asf::auto_release_ptr<asr::Project> project;
 	std::auto_ptr<asf::ILogTarget> log_target;
