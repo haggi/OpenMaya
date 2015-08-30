@@ -24,6 +24,10 @@
 #include "shaders/CoronaSurfaceMaterialOverride.h"
 #include "shaders/coronaOSLNode.h"
 #include "shaders/coronaLayeredMaterial.h"
+#include "shaders/coronaAO.h"
+#include "shaders/coronaFrontBack.h"
+#include "shaders/coronaSkyShader.h"
+#include "shaders/coronaWire.h"
 
 #include "shaders/TestShader.h"
 #include "world.h"
@@ -66,6 +70,8 @@ static const MString CoronaLayeredRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaLayeredDrawDBClassification("drawdb/shader/surface/CoronaLayered");
 static const MString CoronaLayeredFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaLayeredDrawDBClassification);
 
+static const MString CoronaTextureClassification("corona/texture:shader/texture:");
+
 static const MString TestShaderClassification("shader/surface:");
 
 static bool licenseChecked = false;
@@ -91,11 +97,16 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(CoronaVolumeDrawDBClassification, CoronaSurfacesRegistrantId, VolumeMaterialOverride::creator));
 #endif
 	CHECK_MSTATUS(plugin.registerNode("CoronaVolume", CoronaVolume::id, CoronaVolume::creator, CoronaVolume::initialize, MPxNode::kDependNode, &CoronaVolumeFullClassification));
-	CHECK_MSTATUS(plugin.registerNode("CoronaLightMTL", CoronaLight::id, CoronaLight::creator, CoronaLight::initialize, MPxNode::kDependNode, &CoronaLightFullClassification));
-	CHECK_MSTATUS(plugin.registerNode("CoronaMTL", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaLight", CoronaLight::id, CoronaLight::creator, CoronaLight::initialize, MPxNode::kDependNode, &CoronaLightFullClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaSurface", CoronaSurface::id, CoronaSurface::creator, CoronaSurface::initialize, MPxNode::kDependNode, &CoronaSurfacesFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaOSL", OSLNode::id, OSLNode::creator, OSLNode::initialize, MPxNode::kDependNode, &CoronaOSLFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaRaytype", CoronaRaytype::id, CoronaRaytype::creator, CoronaRaytype::initialize, MPxNode::kDependNode, &CoronaRaytypeFullClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaLayered", CoronaLayered::id, CoronaLayered::creator, CoronaLayered::initialize, MPxNode::kDependNode, &CoronaLayeredFullClassification));
+
+	CHECK_MSTATUS(plugin.registerNode("CoronaAO", CoronaAO::id, CoronaAO::creator, CoronaAO::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaFrontBack", CoronaFrontBack::id, CoronaFrontBack::creator, CoronaFrontBack::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaSky", CoronaSkyShader::id, CoronaSkyShader::creator, CoronaSkyShader::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaWire", CoronaWire::id, CoronaWire::creator, CoronaWire::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
 
 	CHECK_MSTATUS(plugin.registerNode("TestShader", TestShader::id, TestShader::creator, TestShader::initialize, MPxNode::kDependNode, &TestShaderClassification));
 
@@ -187,6 +198,11 @@ MStatus uninitializePlugin( MObject obj)
 	CHECK_MSTATUS(plugin.deregisterNode(OSLNode::id));
 	CHECK_MSTATUS(plugin.deregisterNode(CoronaRaytype::id));
 	CHECK_MSTATUS(plugin.deregisterNode(CoronaLayered::id));
+
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaAO::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaFrontBack::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaWire::id));
+	CHECK_MSTATUS(plugin.deregisterNode(CoronaSkyShader::id));
 
 	CHECK_MSTATUS(plugin.deregisterNode(TestShader::id));
 

@@ -13,7 +13,7 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
         
 
-class AECoronaMTLTemplate(BaseTemplate):
+class AECoronaSurfaceTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
         log.debug("AECoronaMTLTemplate")

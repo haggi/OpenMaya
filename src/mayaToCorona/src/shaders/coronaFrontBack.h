@@ -1,13 +1,11 @@
 #include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 
-// Plugin CoronaWire Shader Class //
-
-class CoronaWire : public MPxNode
+class CoronaFrontBack : public MPxNode
 {
 public:
-                    CoronaWire();
-    virtual         ~CoronaWire();
+                    CoronaFrontBack();
+    virtual         ~CoronaFrontBack();
 
     static  void *  creator();
     virtual MStatus compute( const MPlug&, MDataBlock& );

@@ -5,11 +5,21 @@ Appleseed:
 0x0011CF40	0x0011CF40	mayaToAppleseed	mtap_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_renderGlobalsNode.cpp
 0x0011CF41	0x0011CF41	mayaToAppleseed	mtap_standinLocator.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinLocator.cpp
 0x0011CF42	0x0011CF42	mayaToAppleseed	mtap_standinMeshNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinMeshNode.cpp
-0x0011CF43	0x0011CF43	mayaToAppleseed	asAo_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asAo_surface_shaderMaterial.cpp
-0x0011CF44	0x0011CF44	mayaToAppleseed	asAshikhmin_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asAshikhmin_brdfMaterial.cpp
-0x0011CF45	0x0011CF45	mayaToAppleseed	asBsdf_blendMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asBsdf_blendMaterial.cpp
-0x0011CF46	0x0011CF46	mayaToAppleseed	asBsdf_mixMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asBsdf_mixMaterial.cpp
-0x0011CF47	0x0011CF47	mayaToAppleseed	asCone_edfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asCone_edfMaterial.cpp
+0x0011CF43	0x0011CF43	mayaToAppleseed	disneyMaterial
+
+Corona:
+0x0011CF56	0x0011CF56	mayaToCorona	mtco_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\mtco_common\mtco_renderGlobalsNode.cpp
+0x0011CF57	0x0011CF57	mayaToCorona	CoronaSurfaceMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\CoronaSurfaceMaterial.cpp
+0x0011EF6F	0x0011CF58	mayaToCorona	coronaLightMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaLightMaterial.cpp
+0x0011EF70	0x0011CF5C	mayaToCorona	coronaVolumeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaVolumeMaterial.cpp
+0x0011EF71	0x0011CF5A	mayaToCorona	coronaRaytypeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaRaytypeMaterial.cpp
+0x0011CF72				mayaToCorona	coronaLayeredMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaLayeredMaterial.cpp
+
+0x0011CF44	0x0011CF44	mayaToCorona	coronaAO
+0x0011CF45	0x0011CF45	mayaToCorona	coronaWire
+0x0011CF46	0x0011CF46	mayaToCorona	coronaSky
+0x0011CF47	0x0011CF47	mayaToCorona	coronaFrontBack
+
 0x0011CF48	0x0011CF48	mayaToAppleseed	asConstant_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asConstant_surface_shaderMaterial.cpp
 0x0011CF49	0x0011CF49	mayaToAppleseed	asDiagnostic_surface_shaderMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDiagnostic_surface_shaderMaterial.cpp
 0x0011CF4A	0x0011CF4A	mayaToAppleseed	asDiffuse_btdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asDiffuse_btdfMaterial.cpp
@@ -24,14 +34,6 @@ Appleseed:
 0x0011CF53	0x0011CF53	mayaToAppleseed	asSpecular_brdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSpecular_brdfMaterial.cpp
 0x0011CF54	0x0011CF54	mayaToAppleseed	asSpecular_btdfMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSpecular_btdfMaterial.cpp
 0x0011CF55	0x0011CF55	mayaToAppleseed	asSurface_shader_collectionMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\shaders\asSurface_shader_collectionMaterial.cpp
-
-Corona:
-0x0011CF56	0x0011CF56	mayaToCorona	mtco_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\mtco_common\mtco_renderGlobalsNode.cpp
-0x0011CF57	0x0011CF57	mayaToCorona	CoronaSurfaceMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\CoronaSurfaceMaterial.cpp
-0x0011EF6F	0x0011CF58	mayaToCorona	coronaLightMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaLightMaterial.cpp
-0x0011EF70	0x0011CF5C	mayaToCorona	coronaVolumeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaVolumeMaterial.cpp
-0x0011EF71	0x0011CF5A	mayaToCorona	coronaRaytypeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaRaytypeMaterial.cpp
-0x0011CF72				mayaToCorona	coronaLayeredMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaLayeredMaterial.cpp
 
 Fuji:
 0x0011CF58	0x0011CF58	mayaToFuji	mtfu_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToFuji\src\mtfu_common\mtfu_renderGlobalsNode.cpp

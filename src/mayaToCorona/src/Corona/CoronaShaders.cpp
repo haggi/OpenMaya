@@ -11,6 +11,7 @@
 #include "../coronaOSL/coronaOSLMapUtil.h"
 #include "CoronaUtils.h"
 #include "CoronaMap.h"
+#include "coronaAOShader.h"
 #include "world.h"
 #include "renderGlobals.h"
 
@@ -56,8 +57,25 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 
 	if (isConnected(attributeName.asChar(), depFn, true, true))
 	{
-		//Logging::debug(MString("it is connected"));
  		rgbColor = Corona::Rgb(0.0, 0.0, 1.0);
+
+		// check if the connected node is a original corona node or not
+		MObject connectedObject  = getConnectedInNode(depFn.object(), attributeName.asChar());
+		MFnDependencyNode connectedNode(connectedObject);
+		const char *allowedNameStrings[] = { "CoronaAO", "CoronaSky", "CoronaWire", "CoronaFrontBack" };
+		MStringArray coronaTextureNodeNames(allowedNameStrings, 4);
+		for (uint i = 0; i < coronaTextureNodeNames.length(); i++)
+		{
+			if (connectedNode.typeName() == coronaTextureNodeNames[i])
+			{
+				Logging::debug(MString("Found a connected corona map : ") + connectedNode.name() + " -> " + attributeName);
+				if (connectedNode.typeName() == "CoronaAO")
+				{
+					texmap = new AoMap(connectedObject);
+					return Corona::ColorOrMap(rgbColor, texmap);
+				}
+			}
+		}
 		texmap = getOslTexMap(attributeName, depFn, sn);
 	}
 	else{
@@ -371,7 +389,30 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 				}
 			}
 
-
+			MFnDependencyNode globalsNode(objectFromName("coronaGlobals"));
+			bool doDirect = getBoolAttr("useGlobalDirectOverride", globalsNode, false);
+			bool doReflect = getBoolAttr("useGlobalReflectionOverride", globalsNode, false);
+			bool doRefract = getBoolAttr("useGlobalRefractionOverride", globalsNode, false);
+			if (doDirect || doReflect || doRefract)
+			{
+				Corona::ColorOrMap com;
+				data.bgOverride = Corona::SharedPtr<Corona::RaySwitcherMap>(new Corona::RaySwitcherMap(com));
+				if (doDirect)
+				{
+					com = defineAttribute(MString("globalDirectOverride"), globalsNode, network);
+					data.bgOverride->addOverride(com, Corona::RayType::RAY_DIRECT);
+				}
+				if (doReflect)
+				{
+					com = defineAttribute(MString("globalReflectionOverride"), globalsNode, network);
+					data.bgOverride->addOverride(com, Corona::RayType::RAY_REFLECTED);
+				}
+				if (doRefract)
+				{
+					com = defineAttribute(MString("globalRefractionOverride"), globalsNode, network);
+					data.bgOverride->addOverride(com, Corona::RayType::RAY_REFRACTED);
+				}
+			}
 		}
 		mtlData md;
 		md.data = data;

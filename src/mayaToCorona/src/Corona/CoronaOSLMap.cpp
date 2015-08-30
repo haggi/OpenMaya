@@ -29,6 +29,8 @@ void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::Shader
     sg.object2common = OSL::TransformationPtr(&Mobj);
 	
     // Just make it look like all shades are the result of 'raytype' rays.
+	Corona::RayType rt = context.getRayType();
+
 	std::string raytype = "camera";
 	sg.raytype = this->oslRenderer->shadingsys->raytype_bit (OSL::ustring(raytype));
 	

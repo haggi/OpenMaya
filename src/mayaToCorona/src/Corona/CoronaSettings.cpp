@@ -49,10 +49,10 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, getIntAttr("progressive_maxPasses", depFn, 0));
 	context.settings->set(Corona::PARAM_PROGRESSIVE_TIME_LIMIT, getIntAttr("progressive_timeLimit", depFn, 60) * 1000);
 
-	context.settings->set(Corona::PARAM_VCM_MODE, getEnumInt("vcm_mode", depFn) + 4); // only last two entries 4 + 5 are relevant
+	context.settings->set(Corona::PARAM_VCM_MODE, getEnumInt("vcm_mode", depFn));
 	context.settings->set(Corona::PARAM_PPM_INITIAL_RADIUS, getFloatAttr("ppm_initialRadius", depFn, 2.0f));
 	//context.settings->set(Corona::PARAM_BIDIR_DO_MIS, getBoolAttr("bidir_doMis", depFn, true));
-	context.settings->set(Corona::PARAM_PPM_PHOTONS_PER_ITER, getIntAttr("ppm_photonsPerIter", depFn, 5000)  * 1000);
+	context.settings->set(Corona::PARAM_PPM_PHOTONS_PER_ITER, getIntAttr("ppm_photonsPerIter", depFn, 5000000));
 	context.settings->set(Corona::PARAM_PPM_ALPHA, getFloatAttr("ppm_alpha", depFn, .666f));
 
 	context.settings->set(Corona::PARAM_MAX_SAMPLE_INTENSITY, getFloatAttr("maxPtSampleIntensity", depFn, 20.0f));	
@@ -70,8 +70,8 @@ void CoronaRenderer::defineSettings()
 	//context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, getIntAttr("displace_maxSubdiv", depFn, 100));
 
 	context.settings->set(Corona::PARAM_MAX_RAY_DEPTH, getIntAttr("raycaster_maxDepth", depFn, 25));
-	context.settings->set(Corona::PARAM_EXIT_COLOR, toCorona(getColorAttr("color_exit", depFn)));
-	context.settings->set(Corona::PARAM_MAX_NORMAL_DIFF, getFloatAttr("system_maxNormalDev", depFn, .55f));
+	//context.settings->set(Corona::PARAM_EXIT_COLOR, toCorona(getColorAttr("color_exit", depFn)));
+	//context.settings->set(Corona::PARAM_MAX_NORMAL_DIFF, getFloatAttr("system_maxNormalDev", depFn, .55f));
 
 	//context.settings->set(Corona::PARAM_ACCELERATION_STRUCTURE, getIntAttr("accelerationStructure", depFn, 0) + 3); // first entry is 3 == bvh4 spatial
 	//context.settings->set(Corona::PARAM_EMBREE_TRIANGLES, getEnumInt("embree_triangles", depFn));

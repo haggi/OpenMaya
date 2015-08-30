@@ -93,6 +93,36 @@ void CoronaRenderer::clearMaterialLists()
 void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr<MayaObject> mobj)
 {
 	std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(mobj);
+	
+	MFnDependencyNode globalsNode(objectFromName("coronaGlobals"));
+
+	if (getBoolAttr("useGlobalMaterialOverride", globalsNode, false))
+	{
+		MObject surfaceShader = getOtherSideNode(MString("globalMaterialOverride"), globalsNode.object());
+		// get shading group for reuse
+		MFnDependencyNode surfaceShaderNode(surfaceShader);
+		MPlug outColorPlug = surfaceShaderNode.findPlug("outColor");
+		MObject shadingGroupObject;
+		if (outColorPlug.isConnected())
+		{
+			MPlugArray outArray;
+			outColorPlug.connectedTo(outArray, false, true);
+			if (outArray.length() > 0)
+			{
+				shadingGroupObject = outArray[0].node();
+			}
+		}
+		if (shadingGroupObject != MObject::kNullObj)
+			if (assingExistingMat(shadingGroupObject, obj))
+				return;
+
+		Corona::SharedPtr<Corona::IMaterial> base = defineCoronaMaterial(surfaceShader, obj);
+		
+		Corona::IMaterialSet ms = Corona::IMaterialSet(base);
+		setRenderStats(ms, obj);
+		obj->instance->addMaterial(ms);
+		return;
+	}
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
 
 	if( obj->shadingGroups.length() > 0)
@@ -128,6 +158,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 			Corona::SharedPtr<Corona::IMaterial> reflect = nullptr;
 			Corona::SharedPtr<Corona::IMaterial> refract = nullptr;
 			Corona::SharedPtr<Corona::IMaterial> direct = nullptr;
+
 			if (shaderMat.typeName() == "CoronaRaytype")
 			{
 				MPlug basePlug = shaderMat.findPlug("base");

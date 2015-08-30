@@ -1,4 +1,4 @@
-#include "coronaWire.h"
+#include "coronaFrontBack.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -17,25 +17,25 @@
 #include <maya/MDrawRegistry.h>
 #include <maya/MDGModifier.h>
 
-MTypeId	CoronaWire::id(0x0011CF45);
+MTypeId	CoronaFrontBack::id(0x0011CF47);
 
-void CoronaWire::postConstructor( )
+void CoronaFrontBack::postConstructor( )
 {
 	MStatus stat;
 	setMPSafe( true );
 	this->setExistWithoutInConnections(true);
 }
 
-CoronaWire::CoronaWire() { }
-CoronaWire::~CoronaWire() { }
 
+CoronaFrontBack::CoronaFrontBack() { }
+CoronaFrontBack::~CoronaFrontBack() { }
 
-void* CoronaWire::creator()
+void* CoronaFrontBack::creator()
 {
-    return new CoronaWire();
+    return new CoronaFrontBack();
 }
 
-MStatus CoronaWire::initialize()
+MStatus CoronaFrontBack::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -45,11 +45,13 @@ MStatus CoronaWire::initialize()
 	MFnMessageAttribute mAttr;
 
     MStatus status; 
+
     return( MS::kSuccess );
 }
 
-MStatus CoronaWire::compute( const MPlug& plug, MDataBlock& block )
+MStatus CoronaFrontBack::compute( const MPlug& plug, MDataBlock& block )
 {
+
     return( MS::kSuccess );
 }
 

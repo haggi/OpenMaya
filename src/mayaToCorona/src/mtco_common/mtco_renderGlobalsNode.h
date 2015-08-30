@@ -152,6 +152,7 @@ static    MObject dumpExrFile;
 static    MObject uhdCacheType;
 static    MObject uhdPrecision;
 static    MObject globalVolume;
+static    MObject useGlobalMaterialOverride;
 static    MObject globalMaterialOverride;
 static    MObject globalDirectOverride;
 static    MObject globalReflectionOverride;

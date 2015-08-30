@@ -34,15 +34,20 @@ class FileTexture:
             return
         
         destFileTmp = ".".join(self.destFile.split(".")[:-1])
-        cmd = "{converterCmd} -v -oiio -o {destFile} {origFile} ".format(converterCmd=converterCmd, destFile=destFileTmp, origFile=self.path)        
+        cmd = "{converterCmd} -v -oiio -o \"{destFile}\" \"{origFile}\"".format(converterCmd=converterCmd, destFile=destFileTmp, origFile=self.path)        
         print cmd
-        if subprocess.call(cmd, shell = True) is not 0:
-            log.error("Conversion failed")
-        else:
-           
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
             path.path(destFileTmp).rename(self.destFile)
-            print "Done"               
-    
+        except subprocess.CalledProcessError as error:
+            log.error("Conversion failed.\n\t{0}".format(error.output))
+#         process = subprocess.Popen(cmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
+#         while 1:
+#             line = process.stdout.readline()
+#             if not line: break
+#             log.debug(line)
+#             pm.mel.trace(line.strip())
+            
 def optimizeFileTextureNodes():
     for f in pm.ls(type="file"):
         FileTexture(f.fileTextureName.get()).convert()

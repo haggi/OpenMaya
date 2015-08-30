@@ -237,9 +237,16 @@ void CoronaRenderer::defineLights()
 				MColor lightColor = getColorAttr("color", depFn);
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
-				const Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject);			
+				Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject);			
 				OSLMap *oslmap = (OSLMap *)com.getMap();
-				oslmap->multiplier = intensity;
+				if (oslmap != nullptr)
+				{
+					oslmap->multiplier = intensity;
+				}
+				else{
+					Corona::Rgb col = com.getConstantColor() * intensity;
+					com.setColor(col);
+				}
 				data.emission.color = com;
 				data.castsShadows = false; // a light should never cast shadows
 

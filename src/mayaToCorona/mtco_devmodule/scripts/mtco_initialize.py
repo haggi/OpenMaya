@@ -139,6 +139,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Save and Resume Render', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Saved Render File', default='""', uiDict=uiDict)
                         pm.separator()
+                        self.addRenderGlobalsUIElement(attName = 'useGlobalMaterialOverride', uiType = 'bool', displayName = 'Use Material Override', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'globalMaterialOverride', uiType = 'color', displayName = 'Global Material Override', uiDict=uiDict)
                         
                 with pm.frameLayout(label="Camera & Color Mapping", collapsable=True, collapse=True):                    
@@ -223,9 +224,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         #self.addRenderGlobalsUIElement(attName='useSunLightConnection', uiType='bool', displayName='Use Sun', uiDict=uiDict, callback=self.editSun)
                         self.addRenderGlobalsUIElement(attName = 'useGlobalDirectOverride', uiType = 'bool', displayName = 'Use Direct Override', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'globalDirectOverride', uiType = 'color', displayName = 'Direct Override', default='0.0:0.0:0.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'useGlobalReflectionOverride', uiType = 'bool', displayName = 'Use Direct Override', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
+                        self.addRenderGlobalsUIElement(attName = 'useGlobalReflectionOverride', uiType = 'bool', displayName = 'Use Reflection Override', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'globalReflectionOverride', uiType = 'color', displayName = 'Reflection Override', default='0.0:0.0:0.0', uiDict=uiDict)
-                        self.addRenderGlobalsUIElement(attName = 'useGlobalRefractionOverride', uiType = 'bool', displayName = 'Use Direct Override', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
+                        self.addRenderGlobalsUIElement(attName = 'useGlobalRefractionOverride', uiType = 'bool', displayName = 'Use Refraction Override', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'globalRefractionOverride', uiType = 'color', displayName = 'Refraction Override', default='0.0:0.0:0.0', uiDict=uiDict)
 
                         uiDict['globalVolumeText'] = pm.textFieldGrp(label = "Global Volume", editable=False)
@@ -315,6 +316,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 uiDict['physSkyPreetham'].setEnable(False)
                 uiDict['physSkyRawafake'].setEnable(False)
 
+        uiDict['globalMaterialOverride'].setEnable(False)
         uiDict['globalDirectOverride'].setEnable(False)
         uiDict['globalReflectionOverride'].setEnable(False)
         uiDict['globalRefractionOverride'].setEnable(False)
@@ -324,6 +326,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             uiDict['globalReflectionOverride'].setEnable(True)
         if self.renderGlobalsNode.useGlobalRefractionOverride.get():
             uiDict['globalRefractionOverride'].setEnable(True)
+        if self.renderGlobalsNode.useGlobalMaterialOverride.get():
+            uiDict['globalMaterialOverride'].setEnable(True)
             
     def xmlFileBrowse(self, args=None):
         filename = pm.fileDialog2(fileMode=0, caption="Export Corona File Name")
@@ -820,7 +824,6 @@ def initRenderer():
         theRenderer().registerRenderer()
         loadAETemplates()
         theRenderer().createRendererMenu()
-
     except:
         traceback.print_exc(file=sys.__stderr__)
         log.error("Init renderer Corona FAILED")

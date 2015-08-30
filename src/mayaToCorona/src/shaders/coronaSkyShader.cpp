@@ -1,4 +1,4 @@
-#include "coronaWire.h"
+#include "CoronaSkyShader.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -17,25 +17,25 @@
 #include <maya/MDrawRegistry.h>
 #include <maya/MDGModifier.h>
 
-MTypeId	CoronaWire::id(0x0011CF45);
+MTypeId	CoronaSkyShader::id(0x0011CF46);
 
-void CoronaWire::postConstructor( )
+void CoronaSkyShader::postConstructor( )
 {
 	MStatus stat;
 	setMPSafe( true );
 	this->setExistWithoutInConnections(true);
 }
 
-CoronaWire::CoronaWire() { }
-CoronaWire::~CoronaWire() { }
 
+CoronaSkyShader::CoronaSkyShader() { }
+CoronaSkyShader::~CoronaSkyShader() { }
 
-void* CoronaWire::creator()
+void* CoronaSkyShader::creator()
 {
-    return new CoronaWire();
+    return new CoronaSkyShader();
 }
 
-MStatus CoronaWire::initialize()
+MStatus CoronaSkyShader::initialize()
 {
 	MFnNumericAttribute nAttr;
 	MFnLightDataAttribute lAttr;
@@ -48,8 +48,9 @@ MStatus CoronaWire::initialize()
     return( MS::kSuccess );
 }
 
-MStatus CoronaWire::compute( const MPlug& plug, MDataBlock& block )
+MStatus CoronaSkyShader::compute( const MPlug& plug, MDataBlock& block )
 {
+
     return( MS::kSuccess );
 }
 

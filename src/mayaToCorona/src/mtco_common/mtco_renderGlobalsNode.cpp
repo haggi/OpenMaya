@@ -143,6 +143,7 @@ MObject MayaToCoronaGlobals::dumpExrFile;
 MObject MayaToCoronaGlobals::uhdCacheType;
 MObject MayaToCoronaGlobals::uhdPrecision;
 MObject MayaToCoronaGlobals::globalVolume;
+MObject MayaToCoronaGlobals::useGlobalMaterialOverride;
 MObject MayaToCoronaGlobals::globalMaterialOverride;
 MObject MayaToCoronaGlobals::useCoronaVFB;
 MObject MayaToCoronaGlobals::globalDirectOverride;
@@ -778,6 +779,9 @@ MStatus	MayaToCoronaGlobals::initialize()
 
 	globalRefractionOverride = nAttr.createColor("globalRefractionOverride", "globalRefractionOverride");
 	CHECK_MSTATUS(addAttribute(globalRefractionOverride));
+
+	useGlobalMaterialOverride = nAttr.create("useGlobalMaterialOverride", "useGlobalMaterialOverride", MFnNumericData::kBoolean, false);
+	CHECK_MSTATUS(addAttribute(useGlobalMaterialOverride));
 
 	useGlobalDirectOverride = nAttr.create("useGlobalDirectOverride", "useGlobalDirectOverride", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute(useGlobalDirectOverride));
