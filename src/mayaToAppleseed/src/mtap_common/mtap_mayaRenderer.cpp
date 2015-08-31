@@ -58,10 +58,11 @@
 
 mtap_MayaRenderer::mtap_MayaRenderer()
 {
-	//renderBuffer = (float*)malloc(width*height*kNumChannels*sizeof(float));
 	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
 	asr::global_logger().add_target(log_target.get());
 	initProject();
+	width = height = 128;
+	this->rb = (float*)malloc(width*height*kNumChannels*sizeof(float));
 }
 
 mtap_MayaRenderer::~mtap_MayaRenderer()
@@ -121,7 +122,7 @@ void mtap_MayaRenderer::initProject()
 		"sky_edf",
 		asr::ParamArray()
 		.insert("radiance", textureInstanceName.asChar())
-		.insert("radiance_multiplier", 5.0)
+		.insert("radiance_multiplier", 1.0)
 		.insert("horizontal_shift", 0.0)
 		.insert("vertical_shift", 0.0)
 		);
@@ -148,16 +149,16 @@ void mtap_MayaRenderer::initProject()
 		.insert("environment_edf", "sky_edf")
 		.insert("environment_shader", "sky_shader")));
 
-	width = height = 64;
+	width = height = initialSize;
 	MString res = MString("") + width + " " + height;
-	MString tileSize = "16 16";
+	MString tileString = MString("") + tileSize + " " + tileSize;
 
 	project->set_frame(
 		asr::FrameFactory::create(
 		"beauty",
 		asr::ParamArray()
 		.insert("resolution", res.asChar())
-		.insert("tile_size", tileSize.asChar())
+		.insert("tile_size", tileString.asChar())
 		.insert("color_space", "linear_rgb")));
 
 	project->get_frame()->get_parameters().insert("pixel_format", "float");
@@ -239,7 +240,8 @@ MStatus mtap_MayaRenderer::translateMesh(const MUuid& id, const MObject& node)
 	MObject mobject = node;
 	MFnDependencyNode depFn(mobject);
 	MString meshName = depFn.name();
-	MString meshIdName = meshName + "_" + id;
+	MString meshIdName = meshName;
+	//MString meshIdName = meshName + "_" + id;
 	MString meshInstName = meshIdName + "_instance";
 	Logging::debug(MString("translateMesh ") + meshIdName);
 
@@ -335,7 +337,6 @@ MStatus mtap_MayaRenderer::translateCamera(const MUuid& id, const MObject& node)
 	asr::Camera *camera = project->get_scene()->get_camera();
 	MFnDependencyNode depFn(node);
 	MString camName = depFn.name();
-	Logging::debug(MString("Creating camera shape: ") + depFn.name());
 	
 	float imageAspect = (float)width / (float)height;
 	asr::ParamArray camParams;
@@ -357,8 +358,6 @@ MStatus mtap_MayaRenderer::translateCamera(const MUuid& id, const MObject& node)
 	camParams.insert("focal_distance", (MString("") + focusDistance).asChar());
 	camParams.insert("f_stop", (MString("") + fStop).asChar());
 
-	const char *res = project->get_frame()->get_parameters().get_path("resolution");
-	Logging::debug(MString("Resolution from cam ") + res);
 	asf::auto_release_ptr<asr::Camera> appleCam = asr::PinholeCameraFactory().create(
 		camName.asChar(),
 		camParams);
@@ -489,10 +488,22 @@ MStatus mtap_MayaRenderer::setResolution(unsigned int w, unsigned int h)
 	this->width = w;
 	this->height = h;
 	// Update resolution buffer
-	//this->renderBuffer = (float*)realloc(this->renderBuffer, w*h*kNumChannels*sizeof(float));
+	this->rb = (float*)realloc(this->rb, w*h*kNumChannels*sizeof(float));
+
+	for (uint x = 0; x < width; x++)
+	{
+		for (uint y = 0; y < height; y++)
+		{
+			uint index = (y * width + x) * kNumChannels;
+			rb[index + 0] = x / float(width);
+			rb[index + 1] = 0.0f;
+			rb[index + 2] = y / float(height);
+			rb[index + 3] = 1.0f;
+		}
+	}
 
 	MString res = MString("") + width + " " + height;
-	MString tileSize = "32 32";
+	MString tileString = MString("") + tileSize + " " + tileSize;
 
 	asr::Camera *cam = project->get_scene()->get_camera();
 	MString camName = "";
@@ -514,7 +525,7 @@ MStatus mtap_MayaRenderer::setResolution(unsigned int w, unsigned int h)
 		asr::ParamArray()
 		.insert("camera", camName.asChar())
 		.insert("resolution", res.asChar())
-		.insert("tile_size", tileSize.asChar())
+		.insert("tile_size", tileString.asChar())
 		.insert("pixel_format", "float")
 		.insert("color_space", "linear_rgb")));
 
@@ -527,6 +538,10 @@ MStatus mtap_MayaRenderer::endSceneUpdate()
 	Logging::debug("endSceneUpdate");
 	controller.status = asr::IRendererController::ContinueRendering;
 	renderThread = std::thread(startRenderThread, this);
+	ProgressParams progressParams;
+	progressParams.progress = 0.0;
+	progress(progressParams);
+
 	return MStatus::kSuccess;
 };
 MStatus mtap_MayaRenderer::destroyScene()
@@ -535,6 +550,7 @@ MStatus mtap_MayaRenderer::destroyScene()
 	controller.status = asr::IRendererController::AbortRendering;
 	if (renderThread.joinable())
 		renderThread.join();
+	//mrenderer.release();
 	project.release();
 	objectArray.clear();
 
@@ -552,61 +568,41 @@ bool mtap_MayaRenderer::isSafeToUnload()
 
 void mtap_MayaRenderer::copyTileToBuffer(asf::Tile& tile, int tile_x, int tile_y)
 {
-
 	size_t tw = tile.get_width();
 	size_t th = tile.get_height();
-	size_t bufferPosX = tile_x * tw;
-	size_t bufferBase = (tile_y * th * width + tile_x * tw);
-
-	if (rb != nullptr)
-		free(rb);
-	rb = (float*)malloc( tw * th * kNumChannels * sizeof(float));
 
 	for (int y = 0; y < th; y++)
 	{
 		for (int x = 0; x < tw; x++)
 		{
-			int index = (y * tw + x) * kNumChannels;
+			int index = ((height - 1) - (tile_y * tileSize + y)) * width + (tile_x * tileSize) + x;
+			index *= kNumChannels;
 			
-			rb[index] = (float)tile_x;
-			rb[index + 1] = 0.0f;
-			rb[index + 2] = 1.0f;
-			rb[index + 3] = 1.0f;
-			//size_t bufferPos = ((tile_y * th + y) * width + (tile_x * tw) + x) * kNumChannels;
-			asf::uint8 *pixel = tile.pixel(x, y);
-			rb[index] = (float)pixel[0];
-			rb[index + 1] = (float)pixel[1];
-			rb[index + 2] = (float)pixel[2];
-			rb[index + 3] = (float)pixel[3];
-			//this->renderBuffer[bufferPos] = (float)pixel[0];
-			//this->renderBuffer[bufferPos+1] = (float)pixel[1];
-			//this->renderBuffer[bufferPos+2] = (float)pixel[2];
-			//this->renderBuffer[bufferPos+3] = (float)pixel[3];
+			rb[index] = tile.get_component<float>(x, y, 0);
+			rb[index + 1] = tile.get_component<float>(x, y, 1);
+			rb[index + 2] = tile.get_component<float>(x, y, 2);
+			rb[index + 3] = tile.get_component<float>(x, y, 3);
 		}
 	}
 	////The image is R32G32B32A32_Float format
-	RefreshParams rp;
-	//rp.bottom = tile_y * th;
-	//rp.top = (tile_y + 1) * th - 1;
-	rp.bottom = 0;
-	rp.top = th - 1;
-	rp.bytesPerChannel = sizeof(float);
-	rp.channels = kNumChannels;
-	rp.left = 0;
-	rp.right = tw - 1;
-	rp.width = tw;
-	rp.height = th;
-	rp.data = rb;
-	refresh(rp);
+	refreshParams.bottom = 0;
+	refreshParams.top = height - 1;
+	refreshParams.bytesPerChannel = sizeof(float);
+	refreshParams.channels = kNumChannels;
+	refreshParams.left = 0;
+	refreshParams.right = width - 1;
+	refreshParams.width = width;
+	refreshParams.height = height;
+	refreshParams.data = rb;
+	refresh(refreshParams);
 }
 
 std::mutex tile_mutex;
 
 void TileCallback::post_render_tile(const asr::Frame* frame, const size_t tile_x, const size_t tile_y)
 {
-	std::lock_guard<std::mutex> lock(tile_mutex);
+	//std::lock_guard<std::mutex> lock(tile_mutex);
 
-	//boost::lock_guard<boost::mutex> guard(m_mutex);
 	Logging::debug("TileCallback::post_render_tile");
 
 	asf::Tile& tile = frame->image().tile(tile_x, tile_y);
