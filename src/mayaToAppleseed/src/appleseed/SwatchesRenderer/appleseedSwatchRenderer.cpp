@@ -77,9 +77,9 @@ AppleseedSwatchRenderer::AppleseedSwatchRenderer()
 void AppleseedSwatchRenderer::renderSwatch()
 {
 	mrenderer->render();
-	MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.jpg";
-	project->get_frame()->write_main_image(tstFile.asChar());
-	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
+	//MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.jpg";
+	//project->get_frame()->write_main_image(tstFile.asChar());
+	//asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
 }
 
 void AppleseedSwatchRenderer::renderSwatch(NewSwatchRenderer *sr)
@@ -91,8 +91,8 @@ void AppleseedSwatchRenderer::renderSwatch(NewSwatchRenderer *sr)
 	this->setShader(sr->dNode);
 	mrenderer->render();
 	MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.exr";
-	project->get_frame()->write_main_image(tstFile.asChar());
-	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
+	//project->get_frame()->write_main_image(tstFile.asChar());
+	//asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
 
 	//project->get_frame()->transform_to_output_color_space(project->get_frame()->image());
 

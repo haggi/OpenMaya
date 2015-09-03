@@ -101,8 +101,7 @@ MStatus initializePlugin( MObject obj )
 
 	if (MGlobal::mayaState() != MGlobal::kBatch)
 	{
-		MSwatchRenderRegister::registerSwatchRender(swatchName, NewSwatchRenderer::creator);
-		//MSwatchRenderRegister::registerSwatchRender(swatchName, SwatchRenderer::creator);
+		//MSwatchRenderRegister::registerSwatchRender(swatchName, NewSwatchRenderer::creator);
 	}
 
 	cmd = MString("import Renderer.OSLTools as osl;osl.getOSODirs();");

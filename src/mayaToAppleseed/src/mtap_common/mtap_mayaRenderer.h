@@ -45,8 +45,6 @@ public:
 	mtap_MayaRenderer *renderer;
 	explicit TileCallback(mtap_MayaRenderer *mrenderer) : renderer(mrenderer)
 	{}
-	//explicit TileCallback()
-	//{}
 	virtual ~TileCallback()
 	{}
 	virtual void release(){};

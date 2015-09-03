@@ -58,10 +58,10 @@
 
 mtap_MayaRenderer::mtap_MayaRenderer()
 {
-	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
-	asr::global_logger().add_target(log_target.get());
+	//log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
+	//asr::global_logger().add_target(log_target.get());
 	initProject();
-	width = height = 128;
+	width = height = initialSize;
 	this->rb = (float*)malloc(width*height*kNumChannels*sizeof(float));
 }
 
@@ -76,8 +76,11 @@ void mtap_MayaRenderer::initProject()
 	project = asr::ProjectFactory::create("mayaRendererProject");
 	project->add_default_configurations();
 	project->configurations().get_by_name("final")->get_parameters().insert("rendering_threads", 16);
+#ifdef _DEBUG
 	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "4");
-
+#else
+	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "16");
+#endif
 	defineScene(project.get());
 	defineMasterAssembly(project.get());
 	defineDefaultMaterial(project.get());
@@ -123,8 +126,8 @@ void mtap_MayaRenderer::initProject()
 		asr::ParamArray()
 		.insert("radiance", textureInstanceName.asChar())
 		.insert("radiance_multiplier", 1.0)
-		.insert("horizontal_shift", 0.0)
-		.insert("vertical_shift", 0.0)
+		.insert("horizontal_shift", -45.0f)
+		.insert("vertical_shift", 10.0f)
 		);
 
 	asr::EnvironmentEDF *sky = project->get_scene()->environment_edfs().get_by_name("sky_edf");
@@ -148,6 +151,9 @@ void mtap_MayaRenderer::initProject()
 		asr::ParamArray()
 		.insert("environment_edf", "sky_edf")
 		.insert("environment_shader", "sky_shader")));
+
+	MColor color(0,0,0);
+	defineColor(project.get(), "black", color, 1.0f);
 
 	width = height = initialSize;
 	MString res = MString("") + width + " " + height;
@@ -192,8 +198,8 @@ void mtap_MayaRenderer::render()
 		mrenderer->render();
 	else
 		return;
-	MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/HypershadeRender.exr";
-	project->get_frame()->write_main_image(tstFile.asChar());
+	//MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/HypershadeRender.exr";
+	//project->get_frame()->write_main_image(tstFile.asChar());
 	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/mayaRenderer.xml");
 	Logging::debug("renderthread done.");
 
@@ -232,6 +238,8 @@ MStatus mtap_MayaRenderer::beginSceneUpdate()
 		renderThread.join();
 	if (project.get() == nullptr)
 		initProject();
+	project->get_frame()->clear_main_image();
+
 	return MStatus::kSuccess;
 };
 
@@ -250,6 +258,7 @@ MStatus mtap_MayaRenderer::translateMesh(const MUuid& id, const MObject& node)
 	{
 		Logging::debug(MString("Mesh object ") + meshName + " is already defined, removing...");
 		GETASM()->objects().remove(obj);
+		GETASM()->bump_version_id();
 	}
 	asf::auto_release_ptr<asr::MeshObject> mesh = MTAP_GEOMETRY::createMesh(mobject);
 	mesh->set_name(meshIdName.asChar());
@@ -290,7 +299,7 @@ MStatus mtap_MayaRenderer::translateLightSource(const MUuid& id, const MObject& 
 		MString edfName = lightIdName + "_edf";
 		asr::ParamArray edfParams;
 		MColor color = getColorAttr("color", depFn);
-		defineColor(project.get(), areaLightColorName.asChar(), color, getFloatAttr("intensity", depFn, 1.0f) * 2);
+		defineColor(project.get(), areaLightColorName.asChar(), color, getFloatAttr("intensity", depFn, 1.0f) * 10);
 		edfParams.insert("radiance", areaLightColorName.asChar());
 
 		asr::EDF *edfPtr = GETASM()->edfs().get_by_name(edfName.asChar());
@@ -375,6 +384,11 @@ MStatus mtap_MayaRenderer::translateCamera(const MUuid& id, const MObject& node)
 MStatus mtap_MayaRenderer::translateEnvironment(const MUuid& id, EnvironmentType type)
 {
 	Logging::debug("translateEnvironment");
+	IdNameStruct idName;
+	idName.id = id;
+	idName.name = MString("Environment");
+	idName.mobject = MObject::kNullObj;
+	objectArray.push_back(idName);
 	return MStatus::kSuccess;
 };
 
@@ -414,6 +428,8 @@ MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 			elementName.asChar(),
 			asf::Transformd::from_local_to_parent(appleMatrix),
 			asf::StringDictionary()
+			.insert("slot0", "default"),
+			asf::StringDictionary()
 			.insert("slot0", "default")));
 	}
 
@@ -445,6 +461,8 @@ MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 			elementName.asChar(),
 			asf::Transformd::from_local_to_parent(appleMatrix),
 			asf::StringDictionary()
+			.insert("slot0", areaLightMaterialName.asChar()),
+			asf::StringDictionary()
 			.insert("slot0", areaLightMaterialName.asChar())
 			));
 	}
@@ -474,6 +492,60 @@ MStatus mtap_MayaRenderer::setProperty(const MUuid& id, const MString& name, flo
 MStatus mtap_MayaRenderer::setProperty(const MUuid& id, const MString& name, const MString& value)
 {
 	Logging::debug(MString("setProperty string: ") + name + " " + value);
+
+	IdNameStruct idNameObj;
+	for (auto idobj : objectArray)
+	{
+		if (idobj.id == id)
+		{
+			Logging::debug(MString("Found id object for string property: ") + idobj.name);
+			if (idobj.name == "Environment")
+			{
+				if (name == "imageFile")
+				{
+					Logging::debug(MString("Setting environment image file to: ") + value);
+					asr::Texture *tex = project->get_scene()->textures().get_by_name("envTex");
+					if ( tex != nullptr)
+					{
+						Logging::debug(MString("Removing already existing env texture."));
+						project->get_scene()->textures().remove(tex);
+					}
+
+					if (value.length() == 0)
+					{
+						asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
+						if (MString(pa.get_path("radiance")) != "black")
+						{
+							pa.insert("radiance", "black");
+							project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
+						}
+					}
+					else
+					{
+						asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
+						if (MString(pa.get_path("radiance")) != "envTex_texInst")
+						{
+							pa.insert("radiance", "envTex_texInst");
+							project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
+						}
+					}
+					asr::ParamArray fileparams;
+					fileparams.insert("filename", value.asChar());
+					fileparams.insert("color_space", "linear_rgb");
+
+					asf::SearchPaths searchPaths;
+					asf::auto_release_ptr<asr::Texture> textureElement(
+						asr::DiskTexture2dFactory().create(
+						"envTex",
+						fileparams,
+						searchPaths));
+
+					project->get_scene()->textures().insert(textureElement);
+				}
+			}
+		}
+	}
+
 	return MStatus::kSuccess;
 };
 
@@ -537,10 +609,11 @@ MStatus mtap_MayaRenderer::endSceneUpdate()
 {
 	Logging::debug("endSceneUpdate");
 	controller.status = asr::IRendererController::ContinueRendering;
-	renderThread = std::thread(startRenderThread, this);
 	ProgressParams progressParams;
 	progressParams.progress = 0.0;
 	progress(progressParams);
+
+	renderThread = std::thread(startRenderThread, this);
 
 	return MStatus::kSuccess;
 };
@@ -550,7 +623,7 @@ MStatus mtap_MayaRenderer::destroyScene()
 	controller.status = asr::IRendererController::AbortRendering;
 	if (renderThread.joinable())
 		renderThread.join();
-	//mrenderer.release();
+	mrenderer.release();
 	project.release();
 	objectArray.clear();
 
@@ -604,7 +677,7 @@ void TileCallback::post_render_tile(const asr::Frame* frame, const size_t tile_x
 	//std::lock_guard<std::mutex> lock(tile_mutex);
 
 	Logging::debug("TileCallback::post_render_tile");
-
+	
 	asf::Tile& tile = frame->image().tile(tile_x, tile_y);
 	this->renderer->copyTileToBuffer(tile, tile_x, tile_y);
 	//asf::Image img = frame->image();
