@@ -14,7 +14,7 @@ namespace MayaTo{
 	public:
 		std::vector<std::shared_ptr<MayaObject>>  interactiveUpdateList;
 		std::vector<MObject> interactiveUpdateMOList;
-
+		virtual ~Renderer() {};
 
 		virtual void defineCamera() = 0;
 		virtual void defineEnvironment() = 0;

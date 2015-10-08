@@ -15,7 +15,6 @@ public:
 	~SwatchRenderer();
 	static MSwatchRenderBase* creator(MObject dependNode, MObject renderNode, int imageResolution);
 	virtual bool doIteration();
-
 public:
 	SwatchRendererInterface *renderInterface;
 };

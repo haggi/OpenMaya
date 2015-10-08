@@ -9,6 +9,7 @@
 #include <maya/MStringArray.h>
 #include <maya/MImage.h>
 #include <maya/MTimerMessage.h>
+#include <maya/MDistance.h>
 #include "utilities/tools.h"
 #include "rendering/renderer.h"
 
@@ -21,7 +22,7 @@ namespace MayaTo{
 	{
 	public:
 		MayaToWorld();
-		~MayaToWorld();
+		virtual ~MayaToWorld();
 
 		enum WorldRenderType{
 			RTYPENONE = 0,
@@ -39,8 +40,33 @@ namespace MayaTo{
 			RSTATEDONE,
 			RSTATETRANSLATING
 		};
+
 		WorldRenderType renderType;
 		WorldRenderState renderState;
+
+		enum RendererUpAxis{
+			XUp,
+			YUp,
+			ZUp
+		};
+
+		MDistance::Unit internalUnit;
+		MDistance::Unit rendererUnit;
+		RendererUpAxis internalAxis;
+		RendererUpAxis rendererAxis;
+
+		float internalScaleFactor = 1.0f;
+		float rendererScaleFactor = 1.0f;
+		float toMillimeters(float mm);
+		MMatrix globalConversionMatrix; // for default unit conversion e.g. centimeter to meter
+		MMatrix sceneScaleMatrix; // user defined scene scale
+		float scaleFactor = 1.0f;
+		float sceneScale = 1.0f;
+
+		void defineGlobalConversionMatrix();
+
+		virtual void setRendererUnit();
+		virtual void setRendererAxis();
 
 		std::shared_ptr<MayaScene> worldScenePtr;
 		std::shared_ptr<Renderer> worldRendererPtr;

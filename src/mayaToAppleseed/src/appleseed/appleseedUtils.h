@@ -46,5 +46,6 @@ MString colorOrMap(MFnDependencyNode& shaderNode, MString& attributeName);
 void removeTextureEntityIfItExists(MString& textureName);
 MString defineTexture(MFnDependencyNode& shader, MString& attributeName);
 void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramArray);
+void addVisibilityFlags(MObject& obj, asr::ParamArray& paramArray);
 
 #endif

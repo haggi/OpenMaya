@@ -701,40 +701,11 @@ asf::Matrix4d MMatrixToAMatrix(MMatrix mayaMatrix)
 	return appleMatrix;
 }
 
-
-void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramArray)
+void addVisibilityFlags(MObject& obj, asr::ParamArray& paramArray)
 {
+	MFnDependencyNode depFn(obj);
 
-	MFnDependencyNode depFn(obj->mobject);
-
-	if (obj->mobject.hasFn(MFn::kMesh))
-	{
-		if(!getBoolAttr("primaryVisibility", depFn, true))
-			paramArray.insert_path("visibility.camera", false);
-
-		if (!getBoolAttr("castsShadows", depFn, true))
-			paramArray.insert_path("visibility.shadow", false);
-
-		if (!getBoolAttr("visibleInRefractions", depFn, true))
-			paramArray.insert_path("visibility.transparency", false);
-
-		if (!getBoolAttr("mtap_visibleLights", depFn, true))
-			paramArray.insert_path("visibility.light", false);
-
-		if (!getBoolAttr("mtap_visibleProbe", depFn, true))
-			paramArray.insert_path("visibility.probe", false);
-
-		if (!getBoolAttr("mtap_visibleGlossy", depFn, true))
-			paramArray.insert_path("visibility.glossy", false);
-
-		if (!getBoolAttr("mtap_visibleSpecular", depFn, true))
-			paramArray.insert_path("visibility.specular", false);
-
-		if (!getBoolAttr("mtap_visibleDiffuse", depFn, true))
-			paramArray.insert_path("visibility.diffuse", false);
-	}
-
-	if (obj->mobject.hasFn(MFn::kAreaLight))
+	if (obj.hasFn(MFn::kMesh))
 	{
 		if (!getBoolAttr("primaryVisibility", depFn, true))
 			paramArray.insert_path("visibility.camera", false);
@@ -761,4 +732,35 @@ void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramA
 			paramArray.insert_path("visibility.diffuse", false);
 	}
 
+	if (obj.hasFn(MFn::kAreaLight))
+	{
+		if (!getBoolAttr("primaryVisibility", depFn, true))
+			paramArray.insert_path("visibility.camera", false);
+
+		if (!getBoolAttr("castsShadows", depFn, true))
+			paramArray.insert_path("visibility.shadow", false);
+
+		if (!getBoolAttr("visibleInRefractions", depFn, true))
+			paramArray.insert_path("visibility.transparency", false);
+
+		if (!getBoolAttr("mtap_visibleLights", depFn, true))
+			paramArray.insert_path("visibility.light", false);
+
+		if (!getBoolAttr("mtap_visibleProbe", depFn, true))
+			paramArray.insert_path("visibility.probe", false);
+
+		if (!getBoolAttr("mtap_visibleGlossy", depFn, true))
+			paramArray.insert_path("visibility.glossy", false);
+
+		if (!getBoolAttr("mtap_visibleSpecular", depFn, true))
+			paramArray.insert_path("visibility.specular", false);
+
+		if (!getBoolAttr("mtap_visibleDiffuse", depFn, true))
+			paramArray.insert_path("visibility.diffuse", false);
+	}
+}
+
+void addVisibilityFlags(std::shared_ptr<MayaObject> obj, asr::ParamArray& paramArray)
+{
+	addVisibilityFlags(obj->mobject, paramArray);
 }

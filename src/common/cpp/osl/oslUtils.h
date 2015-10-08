@@ -37,7 +37,14 @@
 
 #define ARRAY_MAX_ENTRIES 10
 
+namespace OSL{
+	class OSLShadingNetworkRenderer;
+}
+
 namespace MAYATO_OSL{
+	
+	static std::vector<MString> DefinedOSLNodes;
+	static std::vector<MString> DefinedOSLSWNodes;
 
 	struct Connection{
 		MString sourceNode;
@@ -79,6 +86,7 @@ namespace MAYATO_OSL{
 	struct OSLParameter{
 		MString name;
 		OIIO::TypeDesc type;
+		MVector mvector;
 		boost::variant<int, float, SimpleVector, SimpleMatrix, std::string> value;
 		MString validateParameter(MString pname)
 		{
@@ -179,7 +187,9 @@ namespace MAYATO_OSL{
 			s.f[2] = pvalue.z;
 			value = s;
 			type = OSL::TypeDesc::TypeVector;
+			mvector = pvalue;
 		}
+
 		OSLParameter(const char *pname, MMatrix& pvalue)
 		{
 			name = validateParameter(pname);
@@ -213,27 +223,9 @@ namespace MAYATO_OSL{
 
 	typedef std::vector<OSLParameter> OSLParamArray;
 	typedef std::vector<Connection> ConnectionArray;
-
-	static std::vector<MString> DefinedOSLNodes;
-	static std::vector<MString> DefinedOSLSWNodes;
-
-	void listProjectionHistory(MObject& mobject, ProjectionUtil& util);
-	void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn, OSLParamArray& paramArray);
-	MString createPlugHelperNodeName(MPlug& plug, bool outType);
-	MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
-	void createOSLHelperNodes(ShadingNode& snode); // go through all snode attributes and create helper nodes if necessary
-	void createOSLShadingNode(ShadingNode& snode);
-	void connectProjectionNodes(MObject& projNode);
-	bool doesOSLNodeAlreadyExist(MString& oslNode);
-	bool doesOSLNodeAlreadyExist(MObject& oslNode);
-	void saveOSLNodeNameInArray(MString& oslNodeName);
-	void addConnectionToConnectionArray(ConnectionArray& ca, MString sourceNode, MString sourceAtt, MString destNode, MString destAttr);
-	void createOSLProjectionNodes(MPlug& plug);
-	void initOSLUtil();
-
-	void createOSLShader(MString& shaderNodeType, MString& shaderName, OSLParamArray& paramArray, MString type = "shader"); //overwrite this in renderer specific version
-	void connectOSLShaders(ConnectionArray& ca); //overwrite this in renderer specific version
 }
+
+
 
 namespace MAYATO_OSLUTIL{
 
@@ -242,6 +234,7 @@ namespace MAYATO_OSLUTIL{
 		OSLUtilClass();
 		~OSLUtilClass();
 
+		OSL::OSLShadingNetworkRenderer *oslRenderer;
 		OSL::ShaderGroup *group = nullptr;
 		std::vector<MObject> projectionNodes;
 		std::vector<MObject> projectionConnectNodes;
@@ -249,180 +242,8 @@ namespace MAYATO_OSLUTIL{
 		std::vector<MString> definedOSLNodes;
 		std::vector<MString> definedOSLSWNodes;
 
-		struct Connection{
-			MString sourceNode;
-			MString sourceAttribute;
-			MString destNode;
-			MString destAttribute;
-			MString validateParameter(MString name)
-			{
-				if (name == "min")
-					return "inMin";
-				if (name == "max")
-					return "inMax";
-				if (name == "vector")
-					return "inVector";
-				if (name == "matrix")
-					return "inMatrix";
-				if (name == "color")
-					return "inColor";
-				return name;
-			}
-
-			Connection(){};
-			Connection(MString sn, MString sa, MString dn, MString da)
-			{
-				sourceNode = validateParameter(sn);
-				sourceAttribute = validateParameter(sa);
-				destNode = validateParameter(dn);
-				destAttribute = validateParameter(da);
-			};
-		};
-
-		struct SimpleVector{
-			float f[3];
-		};
-		struct SimpleMatrix{
-			float f[4][4];
-		};
-
-		struct OSLParameter{
-			MString name;
-			OIIO::TypeDesc type;
-			boost::variant<int, float, SimpleVector, SimpleMatrix, std::string> value;
-			MString validateParameter(MString pname)
-			{
-				if (pname == "min")
-					return "inMin";
-				if (pname == "max")
-					return "inMax";
-				if (pname == "vector")
-					return "inVector";
-				if (pname == "matrix")
-					return "inMatrix";
-				if (pname == "color")
-					return "inColor";
-				return pname;
-			}
-			OSLParameter(MString pname, float pvalue)
-			{
-				name = pname;
-				value = pvalue;
-				type = OSL::TypeDesc::TypeFloat;
-			}
-			OSLParameter(MString& pname, int pvalue)
-			{
-				name = pname;
-				value = pvalue;
-				type = OSL::TypeDesc::TypeInt;
-			}
-			OSLParameter(MString& pname, MString& pvalue)
-			{
-				name = pname;
-				value = pvalue.asChar();
-				type = OSL::TypeDesc::TypeString;
-			}
-			OSLParameter(MString& pname, MVector& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleVector s;
-				s.f[0] = pvalue.x;
-				s.f[1] = pvalue.y;
-				s.f[2] = pvalue.z;
-				value = s;
-				type = OSL::TypeDesc::TypeVector;
-			}
-			OSLParameter(MString& pname, MMatrix& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleMatrix m;
-				pvalue.get(m.f);
-				value = m;
-				type = OSL::TypeDesc::TypeMatrix;
-			}
-			OSLParameter(MString& pname, MColor& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleVector s;
-				s.f[0] = pvalue.r;
-				s.f[1] = pvalue.g;
-				s.f[2] = pvalue.b;
-				value = s;
-				type = OSL::TypeDesc::TypeVector;
-			}
-			OSLParameter(MString& pname, bool pvalue)
-			{
-				name = pname;
-				value = (int)pvalue;
-				type = OSL::TypeDesc::TypeInt;
-			}
-			OSLParameter(const char *pname, float pvalue)
-			{
-				name = pname;
-				value = pvalue;
-				type = OSL::TypeDesc::TypeFloat;
-			}
-			OSLParameter(const char *pname, int pvalue)
-			{
-				name = pname;
-				value = pvalue;
-				type = OSL::TypeDesc::TypeInt;
-			}
-			OSLParameter(const char *pname, MString& pvalue)
-			{
-				name = pname;
-				value = pvalue.asChar();
-				type = OSL::TypeDesc::TypeString;
-			}
-			OSLParameter(const char *pname, std::string& pvalue)
-			{
-				name = pname;
-				value = pvalue.c_str();
-				type = OSL::TypeDesc::TypeString;
-			}
-			OSLParameter(const char *pname, MVector& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleVector s;
-				s.f[0] = pvalue.x;
-				s.f[1] = pvalue.y;
-				s.f[2] = pvalue.z;
-				value = s;
-				type = OSL::TypeDesc::TypeVector;
-			}
-			OSLParameter(const char *pname, MMatrix& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleMatrix m;
-				pvalue.get(m.f);
-				value = m;
-				type = OSL::TypeDesc::TypeMatrix;
-			}
-			OSLParameter(const char *pname, MColor& pvalue)
-			{
-				name = validateParameter(pname);
-				SimpleVector s;
-				s.f[0] = pvalue.r;
-				s.f[1] = pvalue.g;
-				s.f[2] = pvalue.b;
-				value = s;
-				type = OSL::TypeDesc::TypeVector;
-			}
-			OSLParameter(const char *pname, bool pvalue)
-			{
-				name = pname;
-				value = (int)pvalue;
-				type = OSL::TypeDesc::TypeInt;
-			}
-		};
-
-		struct ProjectionUtil{
-			MObjectArray leafNodes;
-			MObjectArray projectionNodes;
-		};
-
 		bool doesHelperNodeExist(MString& helperNode);
-		void listProjectionHistory(MObject& mobject, ProjectionUtil& util);
+		void listProjectionHistory(MObject& mobject, MAYATO_OSL::ProjectionUtil& util);
 		void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn, MAYATO_OSL::OSLParamArray& paramArray);
 		MString createPlugHelperNodeName(MPlug& plug, bool outType);
 		MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
@@ -436,9 +257,10 @@ namespace MAYATO_OSLUTIL{
 		void saveOSLNodeNameInArray(MString& oslNodeName);
 		void addConnectionToConnectionArray(MAYATO_OSL::ConnectionArray& ca, MString sourceNode, MString sourceAtt, MString destNode, MString destAttr);
 		void createOSLProjectionNodes(MPlug& plug);
+		void createOSLProjectionNodes(MObject& surfaceShaderNode);
 		void initOSLUtil();
 
-		void createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray, MString type = "shader"); //overwrite this in renderer specific version
+		void createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray); //overwrite this in renderer specific version
 		void connectOSLShaders(MAYATO_OSL::ConnectionArray& ca); //overwrite this in renderer specific version
 
 	};

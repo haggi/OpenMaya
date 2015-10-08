@@ -2,6 +2,10 @@
 #include "utilities/logging.h"
 #include "utilities/attrTools.h"
 #include "../appleseed/appleseedGeometry.h"
+#include "OSL/oslUtils.h"
+#include "shadingTools/material.h"
+#include "shadingTools/shadingUtils.h"
+#include "world.h"
 
 #include "foundation/core/appleseed.h"
 #include "renderer/api/bsdf.h"
@@ -69,32 +73,15 @@ mtap_MayaRenderer::~mtap_MayaRenderer()
 {
 	Logging::debug("~mtap_MayaRenderer");
 	asr::global_logger().remove_target(log_target.get());
+	mrenderer.release();
+	project.release();
+	objectArray.clear();
 }
 
-void mtap_MayaRenderer::initProject()
+void mtap_MayaRenderer::initEnv()
 {
-	project = asr::ProjectFactory::create("mayaRendererProject");
-	project->add_default_configurations();
-	project->configurations().get_by_name("final")->get_parameters().insert("rendering_threads", 16);
-#ifdef _DEBUG
-	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "4");
-#else
-	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "16");
-#endif
-	defineScene(project.get());
-	defineMasterAssembly(project.get());
-	defineDefaultMaterial(project.get());
-
-	asr::Configuration *cfg = project->configurations().get_by_name("interactive");
-	asr::ParamArray &params = cfg->get_parameters();
-	params.insert("sample_renderer", "generic");
-	params.insert("sample_generator", "generic");
-	params.insert("tile_renderer", "generic");
-	params.insert("frame_renderer", "progressive");
-	params.insert("lighting_engine", "pt");
-	params.insert_path("progressive_frame_renderer.max_fps", "5");
-
-	MString envMapAttrName = "C:/Program Files/Autodesk/Maya2016/presets/Assets/IBL/Exterior1_Color.exr";
+	MString mayaRoot = getenv("MAYA_LOCATION");
+	MString envMapAttrName = mayaRoot + "/presets/Assets/IBL/Exterior1_Color.exr";
 
 	asr::ParamArray fileparams;
 	fileparams.insert("filename", envMapAttrName.asChar());
@@ -152,11 +139,42 @@ void mtap_MayaRenderer::initProject()
 		.insert("environment_edf", "sky_edf")
 		.insert("environment_shader", "sky_shader")));
 
+}
+
+void mtap_MayaRenderer::initProject()
+{
+	project = asr::ProjectFactory::create("mayaRendererProject");
+	project->add_default_configurations();
+	project->configurations().get_by_name("final")->get_parameters().insert("rendering_threads", 16);
+	project->configurations().get_by_name("interactive")->get_parameters().insert("rendering_threads", 16);
+#ifdef _DEBUG
+	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "4");
+#else
+	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "16");
+	//project->configurations().get_by_name("interactive")->get_parameters().insert_path("uniform_pixel_renderer.samples", "2");
+#endif
+	defineScene(project.get());
+	defineMasterAssembly(project.get());
+	defineDefaultMaterial(project.get());
+
+	asr::Configuration *cfg = project->configurations().get_by_name("interactive");
+	asr::ParamArray &params = cfg->get_parameters();
+	params.insert("sample_renderer", "generic");
+	params.insert("sample_generator", "generic");
+	params.insert("tile_renderer", "generic");
+	params.insert("frame_renderer", "progressive");
+	params.insert("lighting_engine", "pt");
+	params.insert_path("progressive_frame_renderer.max_fps", "4");
+	params.insert_path("progressive_frame_renderer.max_samples", "12000000");
+
 	MColor color(0,0,0);
 	defineColor(project.get(), "black", color, 1.0f);
 
+	initEnv();
+
 	width = height = initialSize;
 	MString res = MString("") + width + " " + height;
+	tileSize = 64;
 	MString tileString = MString("") + tileSize + " " + tileSize;
 
 	project->set_frame(
@@ -170,11 +188,24 @@ void mtap_MayaRenderer::initProject()
 	project->get_frame()->get_parameters().insert("pixel_format", "float");
 
 	this->tileCallbackFac.reset(new TileCallbackFactory(this));
+
 	mrenderer = std::auto_ptr<asr::MasterRenderer>(new asr::MasterRenderer(
 		this->project.ref(),
-		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+		this->project->configurations().get_by_name("interactive")->get_inherited_parameters(),
 		&controller,
 		this->tileCallbackFac.get()));
+	//mrenderer = std::auto_ptr<asr::MasterRenderer>(new asr::MasterRenderer(
+	//	this->project.ref(),
+	//	this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+	//	&controller,
+	//	this->tileCallbackFac.get()));
+
+	for (uint i = 0; i < MayaTo::getWorldPtr()->shaderSearchPath.length(); i++)
+	{
+		Logging::debug(MString("Search path: ") + MayaTo::getWorldPtr()->shaderSearchPath[i]);
+		project->search_paths().push_back(MayaTo::getWorldPtr()->shaderSearchPath[i].asChar());
+	}
+
 
 }
 
@@ -198,9 +229,9 @@ void mtap_MayaRenderer::render()
 		mrenderer->render();
 	else
 		return;
-	//MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/HypershadeRender.exr";
-	//project->get_frame()->write_main_image(tstFile.asChar());
+#ifdef _DEBUG
 	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/mayaRenderer.xml");
+#endif
 	Logging::debug("renderthread done.");
 
 	pp.progress = 2.0;
@@ -299,7 +330,7 @@ MStatus mtap_MayaRenderer::translateLightSource(const MUuid& id, const MObject& 
 		MString edfName = lightIdName + "_edf";
 		asr::ParamArray edfParams;
 		MColor color = getColorAttr("color", depFn);
-		defineColor(project.get(), areaLightColorName.asChar(), color, getFloatAttr("intensity", depFn, 1.0f) * 10);
+		defineColor(project.get(), areaLightColorName.asChar(), color, getFloatAttr("intensity", depFn, 1.0f) * 1);
 		edfParams.insert("radiance", areaLightColorName.asChar());
 
 		asr::EDF *edfPtr = GETASM()->edfs().get_by_name(edfName.asChar());
@@ -335,7 +366,6 @@ MStatus mtap_MayaRenderer::translateLightSource(const MUuid& id, const MObject& 
 		idName.mobject = node;
 		objectArray.push_back(idName);
 		lastShapeId = id;
-
 	}
 	return MStatus::kSuccess;
 };
@@ -394,7 +424,7 @@ MStatus mtap_MayaRenderer::translateEnvironment(const MUuid& id, EnvironmentType
 
 MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& childId, const MMatrix& matrix)
 {
-	Logging::debug("translateTransform");
+	Logging::debug(MString("translateTransform id: ") + id + " childId " + childId);
 	MObject shapeNode;
 	IdNameStruct idNameObj;
 	for (auto idobj : objectArray)
@@ -428,9 +458,9 @@ MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 			elementName.asChar(),
 			asf::Transformd::from_local_to_parent(appleMatrix),
 			asf::StringDictionary()
-			.insert("slot0", "default"),
+			.insert("slot0", lastMaterialName),
 			asf::StringDictionary()
-			.insert("slot0", "default")));
+			.insert("slot0", lastMaterialName)));
 	}
 
 	if (idNameObj.mobject.hasFn(MFn::kCamera))
@@ -454,10 +484,13 @@ MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 		}
 		Logging::debug(MString("area light transform: ") + idNameObj.name);
 		MString areaLightMaterialName = elementName + "_material";
+		asr::ParamArray instParams;
+		instParams.insert_path("visibility.camera", false); // set primary visibility to false for area lights
+		
 		GETASM()->object_instances().insert(
 			asr::ObjectInstanceFactory::create(
 			elementInstName.asChar(),
-			asr::ParamArray(),
+			instParams,
 			elementName.asChar(),
 			asf::Transformd::from_local_to_parent(appleMatrix),
 			asf::StringDictionary()
@@ -466,11 +499,87 @@ MStatus mtap_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 			.insert("slot0", areaLightMaterialName.asChar())
 			));
 	}
+
+
+	IdNameStruct idName;
+	idName.id = id;
+	idName.name = elementInstName;
+	idName.mobject = shapeNode;
+	objectArray.push_back(idName);
+
 	return MStatus::kSuccess;
 };
 MStatus mtap_MayaRenderer::translateShader(const MUuid& id, const MObject& node)
 {
-	Logging::debug(MString("translateShader: "));
+	MFnDependencyNode depFn(node);
+	MString shaderGroupName = depFn.name() + "_" + id + "_SG";
+	MString shaderMaterialName = depFn.name() + "_" + "Material";
+	Logging::debug(MString("translateShader: ") + shaderGroupName);
+
+	MStatus status;
+	asf::StringArray materialNames;
+	MAYATO_OSLUTIL::OSLUtilClass oslClass;
+	MString surfaceShader;
+	MObject surfaceShaderNode = node;
+	ShadingNetwork network(surfaceShaderNode);
+	size_t numNodes = network.shaderList.size();
+
+	asr::ShaderGroup *existingShaderGroup = GETASM()->shader_groups().get_by_name(shaderGroupName.asChar());
+	if (existingShaderGroup != nullptr)
+	{
+		existingShaderGroup->clear();
+		oslClass.group = (OSL::ShaderGroup *)existingShaderGroup;
+	}
+	else{
+		asf::auto_release_ptr<asr::ShaderGroup> oslShaderGroup = asr::ShaderGroupFactory().create(shaderGroupName.asChar());
+		GETASM()->shader_groups().insert(oslShaderGroup);
+		MString physicalSurfaceName = shaderGroupName + "_physical_surface_shader";
+		GETASM()->surface_shaders().insert(
+			asr::PhysicalSurfaceShaderFactory().create(
+			physicalSurfaceName.asChar(),
+			asr::ParamArray()));
+
+		GETASM()->materials().insert(
+			asr::OSLMaterialFactory().create(
+			shaderMaterialName.asChar(),
+			asr::ParamArray()
+			.insert("surface_shader", physicalSurfaceName.asChar())
+			.insert("osl_surface", shaderGroupName.asChar())));
+
+		existingShaderGroup = GETASM()->shader_groups().get_by_name(shaderGroupName.asChar());
+	}
+	oslClass.group = (OSL::ShaderGroup *)existingShaderGroup;
+	oslClass.createOSLProjectionNodes(surfaceShaderNode);
+	for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
+	{
+		ShadingNode snode = network.shaderList[shadingNodeId];
+		Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
+		if (shadingNodeId == (numNodes - 1))
+			Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
+		oslClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
+		oslClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
+		oslClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
+	}
+	if (numNodes > 0)
+	{
+		ShadingNode snode = network.shaderList[numNodes - 1];
+		MString layer = (snode.fullName + "_interface");
+		Logging::debug(MString("Adding interface shader: ") + layer);
+		existingShaderGroup->add_shader("surface", "surfaceShaderInterface", layer.asChar(), asr::ParamArray());
+		const char *srcLayer = snode.fullName.asChar();
+		const char *srcAttr = "outColor";
+		const char *dstLayer = layer.asChar();
+		const char *dstAttr = "inColor";
+		Logging::debug(MString("Connecting interface shader: ") + srcLayer + "." + srcAttr + " -> " + dstLayer + "." + dstAttr);
+		existingShaderGroup->add_connection(srcLayer, srcAttr, dstLayer, dstAttr);
+	}
+
+	IdNameStruct idName;
+	idName.id = id;
+	idName.name = shaderMaterialName;
+	idName.mobject = node;
+	objectArray.push_back(idName);
+	lastMaterialName = shaderMaterialName;
 	return MStatus::kSuccess;
 };
 
@@ -510,27 +619,29 @@ MStatus mtap_MayaRenderer::setProperty(const MUuid& id, const MString& name, con
 						Logging::debug(MString("Removing already existing env texture."));
 						project->get_scene()->textures().remove(tex);
 					}
-
+					MString imageFile = value;
 					if (value.length() == 0)
 					{
-						asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
-						if (MString(pa.get_path("radiance")) != "black")
-						{
-							pa.insert("radiance", "black");
-							project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
-						}
+						MString mayaRoot = getenv("MAYA_LOCATION");
+						imageFile = mayaRoot + "/presets/Assets/IBL/black.exr";
+
+						//asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
+						//if (MString(pa.get_path("radiance")) != "black")
+						//{
+						//	pa.insert("radiance", "black");
+						//	project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
+						//}
 					}
-					else
+
+					asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
+					if (MString(pa.get_path("radiance")) != "envTex_texInst")
 					{
-						asr::ParamArray& pa = project->get_scene()->environment_edfs().get_by_name("sky_edf")->get_parameters();
-						if (MString(pa.get_path("radiance")) != "envTex_texInst")
-						{
-							pa.insert("radiance", "envTex_texInst");
-							project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
-						}
+						pa.insert("radiance", "envTex_texInst");
+						project->get_scene()->environment_edfs().get_by_name("sky_edf")->bump_version_id();
 					}
+
 					asr::ParamArray fileparams;
-					fileparams.insert("filename", value.asChar());
+					fileparams.insert("filename", imageFile.asChar());
 					fileparams.insert("color_space", "linear_rgb");
 
 					asf::SearchPaths searchPaths;
@@ -552,6 +663,40 @@ MStatus mtap_MayaRenderer::setProperty(const MUuid& id, const MString& name, con
 MStatus mtap_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 {
 	Logging::debug("setShader");
+	IdNameStruct objElement, shaderElement;
+	for (auto element : objectArray)
+	{
+		Logging::debug(MString("Search for obj id: ") + id + " in " + element.id + " name: " + element.name);
+		if (element.id == id)
+		{
+			objElement = element;
+			break;
+		}
+	}
+	for (auto element : objectArray)
+	{
+		Logging::debug(MString("Search for shader id: ") + shaderId + " in " + element.id + " name: " + element.name);
+		if (element.id == shaderId)
+		{
+			shaderElement = element;
+			break;
+		}
+	}
+	if ((objElement.mobject == MObject::kNullObj) || (shaderElement.mobject == MObject::kNullObj))
+	{
+		Logging::error(MString("Unable to find obj or shader for assignment. ShaderName: ") + shaderElement.name + " obj name " + objElement.name);
+		return MS::kFailure;
+	}
+	Logging::debug(MString("--------- Assign shader ") + shaderElement.name + " to object named " + objElement.name);
+
+
+	asr::ObjectInstance *objInstance = GETASM()->object_instances().get_by_name(objElement.name.asChar());
+	if ( objInstance != nullptr)
+		objInstance->get_front_material_mappings().insert("slot0", shaderElement.name.asChar());
+	else
+		Logging::debug(MString("unable to assign shader "));
+
+
 	return MStatus::kSuccess;
 };
 MStatus mtap_MayaRenderer::setResolution(unsigned int w, unsigned int h)
@@ -623,9 +768,9 @@ MStatus mtap_MayaRenderer::destroyScene()
 	controller.status = asr::IRendererController::AbortRendering;
 	if (renderThread.joinable())
 		renderThread.join();
-	mrenderer.release();
-	project.release();
-	objectArray.clear();
+	//mrenderer.release();
+	//project.release();
+	//objectArray.clear();
 
 	ProgressParams progressParams;
 	progressParams.progress = -1.0f;
@@ -670,147 +815,79 @@ void mtap_MayaRenderer::copyTileToBuffer(asf::Tile& tile, int tile_x, int tile_y
 	refresh(refreshParams);
 }
 
+void mtap_MayaRenderer::copyFrameToBuffer(float *frame, int w, int h)
+{
+	if ((w != width) || (h != height))
+	{
+		Logging::error("wh ungleich.");
+		return;
+	}
+	int numBytes = width * height * kNumChannels * sizeof(float);
+	memcpy(rb, frame, numBytes);
+
+	refreshParams.bottom = 0;
+	refreshParams.top = height - 1;
+	refreshParams.bytesPerChannel = sizeof(float);
+	refreshParams.channels = kNumChannels;
+	refreshParams.left = 0;
+	refreshParams.right = width - 1;
+	refreshParams.width = width;
+	refreshParams.height = height;
+	refreshParams.data = rb;
+	refresh(refreshParams);
+
+}
+
 std::mutex tile_mutex;
 
 void TileCallback::post_render_tile(const asr::Frame* frame, const size_t tile_x, const size_t tile_y)
 {
-	//std::lock_guard<std::mutex> lock(tile_mutex);
-
-	Logging::debug("TileCallback::post_render_tile");
-	
+	Logging::debug("TileCallback::post_render_tile");	
 	asf::Tile& tile = frame->image().tile(tile_x, tile_y);
 	this->renderer->copyTileToBuffer(tile, tile_x, tile_y);
-	//asf::Image img = frame->image();
-	//const asf::CanvasProperties& frame_props = img.properties();
-
-	//asf::Tile float_tile_storage(
-	//	frame_props.m_tile_width,
-	//	frame_props.m_tile_height,
-	//	frame_props.m_channel_count,
-	//	asf::PixelFormatFloat);
-
-	//asf::Tile uint8_tile_storage(
-	//	frame_props.m_tile_width,
-	//	frame_props.m_tile_height,
-	//	frame_props.m_channel_count,
-	//	asf::PixelFormatUInt8);
-
-	//asf::Tile fp_rgb_tile(
-	//	tile,
-	//	asf::PixelFormatFloat,
-	//	float_tile_storage.get_storage());
-
-	//frame->transform_to_output_color_space(fp_rgb_tile);
-
-	//static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
-	//const asf::Tile uint8_rgb_tile(
-	//	fp_rgb_tile,
-	//	asf::PixelFormatUInt8,
-	//	uint8_tile_storage.get_storage());
-
-	//size_t tw = tile.get_width();
-	//size_t th = tile.get_height();
-	//size_t numPixels = tw * th;
-
-	//std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
-	//RV_PIXEL *pixels = pixelsPtr.get();
-	//for (size_t yy = 0; yy < th; yy++)
-	//{
-	//	for (size_t xx = 0; xx < tw; xx++)
-	//	{
-	//		size_t pixelId = yy * tw + xx;
-	//		size_t yy1 = th - yy - 1;
-	//		asf::uint8 *source = uint8_rgb_tile.pixel(xx, yy1);
-	//		pixels[pixelId].r = (float)source[0];
-	//		pixels[pixelId].g = (float)source[1];
-	//		pixels[pixelId].b = (float)source[2];
-	//		pixels[pixelId].a = (float)source[3];
-	//	}
-	//}
-
-	//size_t x = tile_x * frame_props.m_tile_width;
-	//size_t y = tile_y * frame_props.m_tile_height;
-	//size_t x1 = x + tw - 1;
-	//size_t y1 = y + th;
-	//size_t miny = img.properties().m_canvas_height - y1;
-	//size_t maxy = img.properties().m_canvas_height - y - 1;
-
 }
 
 void TileCallback::post_render(const asr::Frame* frame)
 {
-	Logging::debug("TileCallback::post_render");
+	Logging::debug("TileCallback::post_render frame");
+	asf::Image img = frame->image();
+	const asf::CanvasProperties& frame_props = img.properties();
+	int tileSize = frame_props.m_tile_height;
+	size_t numPixels = frame_props.m_canvas_width * frame_props.m_canvas_height;
+	int width = frame_props.m_canvas_width;
+	int height = frame_props.m_canvas_height;
 
-	////The image is R32G32B32A32_Float format
-	//refreshParams.bottom = 0;
-	//refreshParams.top = height - 1;
-	//refreshParams.bytesPerChannel = sizeof(float);
-	//refreshParams.channels = kNumChannels;
-	//refreshParams.left = 0;
-	//refreshParams.right = width - 1;
-	//refreshParams.width = width;
-	//refreshParams.height = height;
+	Logging::debug(MString("TileCallback:: wh ") + width + " " + height + " tileSize " + tileSize);
 
-	//refreshParams.data = renderBuffer;
-	//refresh(refreshParams);
+	std::shared_ptr<float> buffer = std::shared_ptr<float>(new float[numPixels * kNumChannels]);
+	float *rb = buffer.get();
 
-	////Logging::debug("renderthread sleeping 5000:");
-	////std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	//progressParams.progress = 1.0f;
-	//progress(progressParams);
+	for (int tile_x = 0; tile_x < frame_props.m_tile_count_x; tile_x++)
+	{
+		for (int tile_y = 0; tile_y < frame_props.m_tile_count_y; tile_y++)
+		{
+			const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
+			size_t tw = tile.get_width();
+			size_t th = tile.get_height();
+			
+			for (int y = 0; y < th; y++)
+			{
+				for (int x = 0; x < tw; x++)
+				{
+					int index = ((height - 1) - (tile_y * tileSize + y)) * width + (tile_x * tileSize) + x;
+					index *= kNumChannels;
 
-	//asf::Image img = frame->image();
-	//const asf::CanvasProperties& frame_props = img.properties();
-	//size_t numPixels = frame_props.m_canvas_width * frame_props.m_canvas_height;
+					rb[index] = tile.get_component<float>(x, y, 0);
+					rb[index + 1] = tile.get_component<float>(x, y, 1);
+					rb[index + 2] = tile.get_component<float>(x, y, 2);
+					rb[index + 3] = tile.get_component<float>(x, y, 3);
+				}
+			}
 
-	//std::shared_ptr<RV_PIXEL> pixelsPtr(new RV_PIXEL[numPixels]);
-	//RV_PIXEL *pixels = pixelsPtr.get();
+		}
+	}
 
-	//for (int x = 0; x < numPixels; x++)
-	//{
-	//	pixels[x].r = 255.0f;
-	//	pixels[x].g = .0f;
-	//	pixels[x].b = .0f;
-	//	pixels[x].a = .0f;
-	//}
-
-	////copyASImageToMayaImage(pixels, frame);
-
-	//for (int tile_x = 0; tile_x < frame_props.m_tile_count_x; tile_x++)
-	//{
-	//	for (int tile_y = 0; tile_y < frame_props.m_tile_count_y; tile_y++)
-	//	{
-	//		const asf::Tile& tile = frame->image().tile(tile_x, tile_y);
-
-	//		asf::Tile float_tile_storage(
-	//			tile.get_width(),
-	//			tile.get_height(),
-	//			frame_props.m_channel_count,
-	//			asf::PixelFormatFloat);
-
-	//		asf::Tile uint8_tile_storage(
-	//			tile.get_width(),
-	//			tile.get_height(),
-	//			frame_props.m_channel_count,
-	//			asf::PixelFormatUInt8);
-
-	//		asf::Tile fp_rgb_tile(
-	//			tile,
-	//			asf::PixelFormatFloat,
-	//			float_tile_storage.get_storage());
-
-	//		frame->transform_to_output_color_space(fp_rgb_tile);
-
-	//		static const size_t ShuffleTable[] = { 0, 1, 2, 3 };
-	//		asf::Tile uint8_rgb_tile(
-	//			fp_rgb_tile,
-	//			asf::PixelFormatUInt8,
-	//			uint8_tile_storage.get_storage());
-
-	//		copyTileToImage(pixels, uint8_rgb_tile, tile_x, tile_y, frame);
-	//	}
-	//}
-
+	this->renderer->copyFrameToBuffer(buffer.get(), width, height);
 }
 
 #endif

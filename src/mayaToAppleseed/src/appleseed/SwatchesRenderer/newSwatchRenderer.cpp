@@ -105,9 +105,15 @@ bool NewSwatchRenderer::doIteration()
 	AppleseedSwatchRenderer * appleSwRndr = (AppleseedSwatchRenderer *)MayaTo::getObjPtr("appleseedSwatchesRenderer");
 	if (appleSwRndr)
 	{
-		appleSwRndr->renderSwatch(this);
-		Logging::debug(MString("NewSwatchRenderer: doIteration -> swatchRenderingDone. swatchRenderingDoneAddress: "));
-		image().convertPixelFormat(MImage::kByte);
+		if (appleSwRndr->mrenderer.get() != nullptr)
+		{
+			appleSwRndr->renderSwatch(this);
+			image().convertPixelFormat(MImage::kByte);
+		}
+		else{
+			image().create(resolution(), resolution(), 4, MImage::kFloat);
+			image().convertPixelFormat(MImage::kByte);
+		}
 		return true;
 	}
 

@@ -69,14 +69,6 @@ MStatus initializePlugin( MObject obj )
 	status = plugin.registerNode("asDisneyMaterial", asDisneyMaterial::id, asDisneyMaterial::creator, asDisneyMaterial::initialize, MPxNode::kDependNode, &asDisneyMaterialIdFullClassification);
 	CHECK_MSTATUS(status);
 
-#if MAYA_API_VERSION >= 201600
-	status = plugin.registerRenderer("Appleseed", mtap_MayaRenderer::creator);
-	if (!status) {
-		status.perror("cannot register node: Appleseed Maya renderer");
-		return status;
-	}
-#endif
-
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );
 	command += UserClassify;
 	command += "\");}\n";
@@ -101,18 +93,17 @@ MStatus initializePlugin( MObject obj )
 
 	if (MGlobal::mayaState() != MGlobal::kBatch)
 	{
-		//MSwatchRenderRegister::registerSwatchRender(swatchName, NewSwatchRenderer::creator);
+		MSwatchRenderRegister::registerSwatchRender(swatchName, NewSwatchRenderer::creator);
 	}
 
-	cmd = MString("import Renderer.OSLTools as osl;osl.getOSODirs();");
-	MStringArray oslDirs;
-	MGlobal::executePythonCommand(cmd, oslDirs, false, false);
-	MGlobal::displayInfo(MString("found ") + oslDirs.length() + " osl dirs.");
-	for (uint i = 0; i < oslDirs.length(); i++)
-	{
-		MayaTo::getWorldPtr()->shaderSearchPath.append(oslDirs[i].asChar());
-		//MGlobal::displayInfo(oslDirs[i]);
+#if MAYA_API_VERSION >= 201600
+	status = plugin.registerRenderer("Appleseed", mtap_MayaRenderer::creator);
+	if (!status) {
+		status.perror("cannot register node: Appleseed Maya renderer");
+		return status;
 	}
+#endif
+
 	return status;
 }
 

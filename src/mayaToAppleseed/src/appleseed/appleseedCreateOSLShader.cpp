@@ -35,6 +35,10 @@ MString oslTypeToMString(MAYATO_OSL::OSLParameter param)
 	if (param.type == OSL::TypeDesc::TypeString)
 	{
 		result = MString("string ") + boost::get<std::string>(param.value).c_str();
+		if (MString("") == boost::get<std::string>(param.value).c_str())
+		{
+			result = MString("string black.exr");
+		}
 	}
 	if (param.type == OSL::TypeDesc::TypeMatrix)
 	{

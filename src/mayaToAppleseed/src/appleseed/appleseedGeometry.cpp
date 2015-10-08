@@ -55,7 +55,6 @@ namespace MTAP_GEOMETRY{
 		MFloatVectorArray normals;
 		MFloatArray uArray, vArray;
 		MIntArray triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments;
-		Logging::debug("defineMesh pre getMeshData");
 		getMeshData(mobject, points, normals, uArray, vArray, triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments);
 
 		Logging::debug(MString("Translating mesh object ") + meshFn.name().asChar());

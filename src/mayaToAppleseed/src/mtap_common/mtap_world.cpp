@@ -2,6 +2,7 @@
 #include "mayaSceneFactory.h"
 #include "renderGlobalsFactory.h"
 #include "utilities/logging.h"
+#include <maya/MGlobal.h>
 #include "../appleseed/swatchesRenderer/appleseedSwatchRenderer.h"
 #include "../appleseed/SwatchesRenderer/SwatchesEvent.h"
 #include <thread>
@@ -27,8 +28,16 @@ namespace MayaTo{
 	{
 		std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
 		Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
-
+		MString cmd = MString("import Renderer.OSLTools as osl;osl.getOSODirs();");
+		MStringArray oslDirs;
+		MGlobal::executePythonCommand(cmd, oslDirs, false, false);
+		MGlobal::displayInfo(MString("found ") + oslDirs.length() + " osl dirs.");
+		for (uint i = 0; i < oslDirs.length(); i++)
+		{
+			this->shaderSearchPath.append(oslDirs[i].asChar());
+		}
 		AppleseedSwatchRenderer *appleSwRndr = new AppleseedSwatchRenderer();
+
 		this->addObjectPtr("appleseedSwatchesRenderer", appleSwRndr);
 		std::thread swatchRenderThread(AppleseedSwatchRenderer::startAppleseedSwatchRender, appleSwRndr);
 		swatchRenderThread.detach();

@@ -47,6 +47,8 @@
 #include "OSL/oslUtils.h"
 #include "shadingTools/material.h"
 #include "shadingTools/shadingUtils.h"
+#include "world.h"
+#include <maya/MGlobal.h>
 
 namespace asf = foundation;
 namespace asr = renderer;
@@ -55,19 +57,29 @@ AppleseedSwatchRenderer::AppleseedSwatchRenderer()
 {
 	Logging::debug(MString("Initialze appleseed swatch renderer."));
 #if _DEBUG
-	//log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
-	//asr::global_logger().add_target(log_target.get());
+	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
+	asr::global_logger().add_target(log_target.get());
 #endif
 
-	MString swatchRenderFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.xml";
-	MString schemaPath = getRendererHome() + "/schemas/project.xsd";
+	MString swatchRenderFile = getRendererHome() + "resources/swatchRender.xml";
+	MString schemaPath = getRendererHome() + "schemas/project.xsd";
 	project = asr::ProjectFileReader().read(swatchRenderFile.asChar(), schemaPath.asChar());
 	if (project.get() == nullptr)
-	{}
+	{
+		Logging::error(MString("Unable to load swatch render file correctly: ") + swatchRenderFile);
+		return;
+	}
 	else{
 		Logging::info(MString("Successfully loaded swatch render file."));
 	}
-	
+	MString cmd = MString("import Renderer.OSLTools as osl;osl.getOSODirs();");
+	MStringArray oslDirs;
+	MGlobal::executePythonCommand(cmd, oslDirs, false, false);
+	for (uint i = 0; i < oslDirs.length(); i++)
+	{
+		project->search_paths().push_back(oslDirs[i].asChar());
+	}
+
 	mrenderer = std::auto_ptr<asr::MasterRenderer>(new asr::MasterRenderer(
 		project.ref(),
 		project->configurations().get_by_name("final")->get_inherited_parameters(),
@@ -76,7 +88,8 @@ AppleseedSwatchRenderer::AppleseedSwatchRenderer()
 
 void AppleseedSwatchRenderer::renderSwatch()
 {
-	mrenderer->render();
+	if (!mrenderer.get())
+		return;
 	//MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.jpg";
 	//project->get_frame()->write_main_image(tstFile.asChar());
 	//asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
@@ -84,6 +97,8 @@ void AppleseedSwatchRenderer::renderSwatch()
 
 void AppleseedSwatchRenderer::renderSwatch(NewSwatchRenderer *sr)
 {
+	if (!mrenderer.get())
+		return;
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	int res(sr->resolution());
@@ -129,38 +144,28 @@ void AppleseedSwatchRenderer::fillSwatch(float *pixels)
 	int res = image.properties().m_canvas_height;
 	int chCount = image.properties().m_channel_count;
 
-	//int res = image.properties().m_rcp_canvas_height;
-	//Logging::info(MString("Numtiles: expected 1 real:") + image.properties().m_tile_count);
-
-	//float rndR = rnd();
-	//float rndG = rnd();
-	//float rndB = rnd();
-
-	//int index = 0;
-	//for (int y = 0; y < res; y++)
-	//{
-	//	for (int x = 0; x < res; x++)
-	//	{
-	//		float fac = float(y) / res;
-	//		pixels[index++] = fac * rndR;
-	//		pixels[index++] = fac * rndG;
-	//		pixels[index++] = fac * rndB;
-	//		pixels[index++] = 1.0f;
-	//	}
-	//}
-
 	uint index = 0;
-	for (int y = 0; y < res; y++)
-	{
-		for (int x = 0; x < res; x++)
-		{
-			asf::Color4f p;
-			image.get_pixel(x, y, p);
 
-			pixels[index++] = p.r;
-			pixels[index++] = p.g;
-			pixels[index++] = p.g;
-			pixels[index++] = 1.0f;
+	if (image.properties().m_canvas_height == image.properties().m_tile_height)
+	{
+		asf::Tile& tile = project->get_frame()->image().tile(0, 0);
+		for (int y = 0; y < res; y++)
+			for (int x = 0; x < res; x++)
+				for (int c = 0; c < 4; c++)
+					pixels[index++] = tile.get_component<float>(x, y, c);
+	}else{
+
+		for (int y = 0; y < res; y++)
+		{
+			for (int x = 0; x < res; x++)
+			{
+				asf::Color4f p;
+				image.get_pixel(x, y, p);
+				pixels[index++] = p.r;
+				pixels[index++] = p.g;
+				pixels[index++] = p.g;
+				pixels[index++] = 1.0f;
+			}
 		}
 	}
 }
@@ -226,6 +231,9 @@ void AppleseedSwatchRenderer::mainLoop()
 
 void AppleseedSwatchRenderer::defineMaterial(MObject shadingNode)
 {
+	if (!mrenderer.get())
+		return;
+
 	MStatus status;
 	asf::StringArray materialNames;
 	MAYATO_OSLUTIL::OSLUtilClass oslClass;

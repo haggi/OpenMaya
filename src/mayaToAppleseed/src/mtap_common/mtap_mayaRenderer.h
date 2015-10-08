@@ -95,6 +95,7 @@ public:
 	virtual MStatus stopAsync();
 	virtual bool isRunningAsync();
 	void initProject();
+	void initEnv();
 	virtual MStatus beginSceneUpdate();
 
 	virtual MStatus translateMesh(const MUuid& id, const MObject& node);
@@ -119,6 +120,7 @@ public:
 	virtual bool isSafeToUnload();
 
 	void copyTileToBuffer(asf::Tile& tile, int tile_x, int tile_y);
+	void copyFrameToBuffer(float *frame, int w, int h);
 	void render();
 
 private:
@@ -131,6 +133,7 @@ private:
 	asf::auto_release_ptr<TileCallbackFactory> tileCallbackFac;
 	RenderController controller;
 	MUuid lastShapeId; // save the last shape id, needed by translateTransform
+	MString lastMaterialName = "default";
 	std::vector<IdNameStruct> objectArray;
 };
 #endif
