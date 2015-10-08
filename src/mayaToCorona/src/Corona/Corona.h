@@ -103,7 +103,11 @@ public:
 
 	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
 
-    virtual void logMsg(const Corona::String& message, const Corona::LogType type) 
+	virtual void logMsg(const Corona::String& message, const Corona::LogType type)
+	{
+		Logging::info(MString("Message: ") + message.cStr());
+	}
+	virtual void logMsg(const Corona::String& message, const Corona::LogType type, const int errorCategory = 0)
 	{
 		Logging::info(MString("Message: ") + message.cStr());
 	}
@@ -131,7 +135,7 @@ public:
 
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	Context context;
-	CornoaVfbCallbacks vfbCallbacks;
+	//CornoaVfbCallbacks vfbCallbacks;
 
 	CoronaRenderer();
 	virtual ~CoronaRenderer();
@@ -157,7 +161,7 @@ public:
 	void setRenderStats(Corona::IMaterialSet& ms, std::shared_ptr<MayaObject> obj);
 	bool assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> obj);
 	void clearMaterialLists();
-	void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
+	//void defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data);
 	Corona::IGeometryGroup* getGeometryPointer(std::shared_ptr<MayaObject> obj);
 	bool isSunLight(std::shared_ptr<MayaObject> obj);
 	virtual void defineLights();

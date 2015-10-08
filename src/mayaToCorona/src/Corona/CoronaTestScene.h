@@ -86,6 +86,23 @@ void createScene(IScene* scene) {
 
 }
 
+void createSceneMini(IScene* scene) {
+	scene->setBackground(ColorOrMap(Rgb::WHITE*0.75f));
+	scene->getCamera().createPerspective(AnimatedPos(Pos(-25, 25, 12)), AnimatedPos(Pos(0.f, 0.f, -5.f)), AnimatedDir(Dir::UNIT_Z), AnimatedFloat(DEG_TO_RAD(45.f)));
+	IGeometryGroup* geom = scene->addGeomGroup();
+	SphereData sphere;
+	geom->addPrimitive(sphere);
+	AffineTm tm2 = AffineTm::IDENTITY;
+	IInstance* instance = geom->addInstance(tm2);
+	NativeMtlData data;
+	data.components.diffuse.setColor(Rgb(FLT_RAND(), FLT_RAND(), FLT_RAND()));
+	instance->addMaterial(IMaterialSet(data.createMaterial()));
+
+	// one custom light
+	scene->addLightShader(new MyLight);
+}
+
+
 // function that gets called from another thread to do the heavy lifting - scene creating and rendering
 void workFunction(Context *context) {
 

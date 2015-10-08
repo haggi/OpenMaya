@@ -3,23 +3,18 @@
 
 static Logging logger;
 
-Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
+Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, OSL::OSLShadingNetworkRenderer *oslRenderer)
 {
 	MStatus status;
-	OSL::OSLShadingNetworkRenderer *oslRenderer;
-	MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-	if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
-	{
-		oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
-	}
-	else{
-		oslRenderer = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-	}
+
+	MAYATO_OSLUTIL::OSLUtilClass OSLShaderClass;
+	OSLShaderClass.oslRenderer = oslRenderer;
 
 	size_t numNodes = sn.shaderList.size();
 	MString OSLInterfaceName = depFn.name() + "_" + attributeName + "_OSLInterface";
 	MString shaderGroupName = depFn.name() + "_" + attributeName + "_OSLShadingGroup";
 	OSL::ShaderGroupRef shaderGroup = oslRenderer->shadingsys->ShaderGroupBegin(shaderGroupName.asChar());
+	OSLShaderClass.group = shaderGroup.get();
 
 	MObject thisMObject = depFn.object();
 	MString outPlugName;
@@ -28,19 +23,19 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 	Logging::debug(MString("getOslTexMap: ") + connectedObjectName + "." + outPlugName + " is connected with " + depFn.name() + "." + attributeName);
 	MPlug shaderPlug = depFn.findPlug(attributeName);
 
-	MAYATO_OSL::createOSLProjectionNodes(shaderPlug);
+	OSLShaderClass.createOSLProjectionNodes(shaderPlug);
 
 	for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
 	{
 		ShadingNode snode = sn.shaderList[shadingNodeId];
 		Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
-		MAYATO_OSL::createOSLHelperNodes(sn.shaderList[shadingNodeId]);
-		MAYATO_OSL::createOSLShadingNode(sn.shaderList[shadingNodeId]);
-		MAYATO_OSL::connectProjectionNodes(sn.shaderList[shadingNodeId].mobject);
+		OSLShaderClass.createOSLHelperNodes(sn.shaderList[shadingNodeId]);
+		OSLShaderClass.createOSLShadingNode(sn.shaderList[shadingNodeId]);
+		OSLShaderClass.connectProjectionNodes(sn.shaderList[shadingNodeId].mobject);
 
 		if (snode.fullName == connectedObjectName.asChar())
 		{
-			MAYATO_OSL::createOSLHelperNodes(sn.shaderList[sn.shaderList.size() - 1]);
+			OSLShaderClass.createOSLHelperNodes(sn.shaderList[sn.shaderList.size() - 1]);
 			Logging::debug(MString("connected node found: ") + snode.fullName + " search output attr.");
 
 			for (size_t outId = 0; outId < snode.outputAttributes.size(); outId++)
@@ -56,9 +51,9 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 					if ((sa.type == "color") || (sa.type == "vector"))
 					{
 						// lets see if we have a color helper node
-						MString helperNodeName = MAYATO_OSL::createPlugHelperNodeName(attributeName.asChar(), thisMObject, false);
+						MString helperNodeName = OSLShaderClass.createPlugHelperNodeName(attributeName.asChar(), thisMObject, false);
 						Logging::debug(MString("Interface connection - color/vector attribute ") + sa.name.c_str() + " search for helper node " + helperNodeName);
-						if (MAYATO_OSL::doesOSLNodeAlreadyExist(helperNodeName))
+						if (OSLShaderClass.doesOSLNodeAlreadyExist(helperNodeName))
 						{
 							Logging::debug(MString("Found helper node name."));
 							sourceParam = "outputValue";
@@ -117,7 +112,6 @@ Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MF
 
 	Corona::SharedPtr<Corona::Abstract::Map> oslMapp = new OSLMap;
 	OSLMap *oslMap = (OSLMap *)oslMapp.getReference();
-
 	oslMap->oslRenderer = oslRenderer;
 	oslMap->shaderGroup = shaderGroup;
 	

@@ -1,17 +1,16 @@
-#ifndef CORONA_AO_MAP
-#define CORONA_AO_MAP
+#ifndef CORONA_WIRE_MAP
+#define CORONA_WIRE_MAP
 
 #include <maya/MObject.h>
 #include "CoronaCore/api/Api.h"
-#include "CoronaCore/misc/Shaders/AoShader.h"
+#include "CoronaCore/misc/Shaders/WireShader.h"
 
-class AoMap : public Corona::Abstract::Map, Corona::AoShader
+class WireMap : public Corona::Abstract::Map, Corona::WireShader
 {
 public:
-	AoMap(MObject sObject);
-	~AoMap();
-	float maxDist;
-	Corona::String mapName = "AoMap";
+	WireMap(MObject sObject);
+	~WireMap();
+	Corona::String mapName = "WireMap";
 
 	virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);
 	virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha);

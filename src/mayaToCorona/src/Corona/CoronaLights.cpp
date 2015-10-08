@@ -13,8 +13,6 @@
 #include "world.h"
 #include "../mtco_common/mtco_mayaObject.h"
 
-static Logging logger;
-
 bool CoronaRenderer::isSunLight(std::shared_ptr<MayaObject> obj)
 {
 	// a sun light has a transform connection to the coronaGlobals.sunLightConnection plug
@@ -51,63 +49,65 @@ void CoronaRenderer::defineLights()
 	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
 	int bgType = getEnumInt("bgType", depFn);
 
-	if( renderGlobals->useSunLightConnection)
-	{
-		getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
-		if( nodeList.length() > 0)
-		{
-			MObject sunObj = nodeList[0];
-			if(sunObj.hasFn(MFn::kTransform))
-			{
-				// we suppose what's connected here is a dir light transform
-				MVector lightDir(0, 0, 1); // default dir light dir
-				MFnDagNode sunDagNode(sunObj);
-				lightDir *= sunDagNode.transformationMatrix();
-				lightDir *= renderGlobals->globalConversionMatrix;
-				lightDir.normalize();
-		
-				MObject sunDagObj =	sunDagNode.child(0, &stat);
-				MColor sunColor(1);
-				float colorMultiplier = 1.0f;
-				if(sunDagObj.hasFn(MFn::kDirectionalLight))
-				{
-					MFnDependencyNode sunNode(sunDagObj);
-					getColor("color", sunNode, sunColor);
-					colorMultiplier = getFloatAttr("mtco_sun_multiplier", sunNode, 1.0f);
-				}else{
-					Logging::warning(MString("Sun connection is not a directional light - using transform only."));
-				}
-				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(getFloatAttr("sunSizeMulti", rGlNode, 1.0f) * Corona::SUN_PROJECTED_HALF_ANGLE));
-				sunColor *= colorMultiplier * intensityFactor * 1.0;// 2000000;
-				Corona::Sun sun;
+	//if( renderGlobals->useSunLightConnection)
+	//{
+	//	getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
+	//	if( nodeList.length() > 0)
+	//	{
+	//		MObject sunObj = nodeList[0];
+	//		if(sunObj.hasFn(MFn::kTransform))
+	//		{
+	//			// we suppose what's connected here is a dir light transform
+	//			MVector lightDir(0, 0, 1); // default dir light dir
+	//			MFnDagNode sunDagNode(sunObj);
+	//			lightDir *= sunDagNode.transformationMatrix();
+	//			lightDir *= renderGlobals->globalConversionMatrix;
+	//			lightDir.normalize();
+	//	
+	//			MObject sunDagObj =	sunDagNode.child(0, &stat);
+	//			MColor sunColor(1);
+	//			float colorMultiplier = 1.0f;
+	//			if(sunDagObj.hasFn(MFn::kDirectionalLight))
+	//			{
+	//				MFnDependencyNode sunNode(sunDagObj);
+	//				getColor("color", sunNode, sunColor);
+	//				colorMultiplier = getFloatAttr("mtco_sun_multiplier", sunNode, 1.0f);
+	//			}else{
+	//				Logging::warning(MString("Sun connection is not a directional light - using transform only."));
+	//			}
+	//			const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(getFloatAttr("sunSizeMulti", rGlNode, 1.0f) * Corona::SUN_PROJECTED_HALF_ANGLE));
+	//			sunColor *= colorMultiplier * intensityFactor * 1.0;// 2000000;
+	//			Corona::Sun sun;
 
-				Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
-				SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
-				Corona::Rgb avgColor(1, 1, 1);
-				if (sky != nullptr)
-				{
-					avgColor = sky->sc();
-				}
+	//			Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
+	//			SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
+	//			Corona::Rgb avgColor(1, 1, 1);
+	//			if (sky != nullptr)
+	//			{
+	//				avgColor = sky->sc();
+	//			}
 
-				Corona::Rgb sColor(sunColor.r, sunColor.g, sunColor.b);
-				sun.color = sColor * avgColor;
-				sun.active = true;
-				sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
-				//sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
-				sun.visibleDirect = true;
-				sun.visibleReflect = true;
-				sun.visibleRefract = true;
-				sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
-				this->context.scene->getSun() = sun;
-				sky->initSky();
-				if (sky != nullptr)
-				{
-					avgColor = sky->sc();
-					this->context.scene->getSun().color = sColor * avgColor;
-				}
-			}
-		}
-	}
+	//			Corona::Rgb sColor(sunColor.r, sunColor.g, sunColor.b);
+	//			sun.color = sColor * avgColor;
+	//			sun.active = true;
+	//			sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
+	//			//sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
+	//			sun.visibleDirect = true;
+	//			sun.visibleReflect = true;
+	//			sun.visibleRefract = true;
+	//			sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
+	//			this->context.scene->getSun() = sun;
+	//			sky->initSky();
+	//			if (sky != nullptr)
+	//			{
+	//				avgColor = sky->sc();
+	//				this->context.scene->getSun().color = sColor * avgColor;
+	//			}
+	//		}
+	//	}
+	//}
+
+	MayaObject *sunLight = nullptr;
 
 	for (auto mobj : mayaScene->lightList)
 	{
@@ -116,8 +116,6 @@ void CoronaRenderer::defineLights()
 		if(!obj->visible)
 			continue;
 
-		if( this->isSunLight(obj))
-			continue;
 		
 		MFnDependencyNode depFn(obj->mobject);
 
@@ -180,43 +178,92 @@ void CoronaRenderer::defineLights()
 			Corona::AffineTm tm;
 			setTransformationMatrix(sl->lightWorldInverseMatrix, m);
 			ShadingNetwork network(obj->mobject);
-			sl->lightColorMap = defineAttribute(MString("color"), depFn, network);
+			sl->lightColorMap = defineAttribute(MString("color"), depFn, network, oslRenderer);
 			
 			this->context.scene->addLightShader(sl);
 		}
 		if( obj->mobject.hasFn(MFn::kDirectionalLight))
 		{
-			MVector lightDir(0, 0, -1);
-			MVector lightDirTangent(1, 0, 0);
-			MVector lightDirBiTangent(0, 1, 0);
-			MColor col;
-			getColor("color", depFn, col);
-			float intensity = 1.0f;
-			getFloat("intensity", depFn, intensity);
-			MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
-			lightDir *= m;
-			lightDirTangent *= m;
-			lightDirBiTangent *= m;
-			lightDir.normalize();
-
-			Corona::Pos LP(m[3][0],m[3][1],m[3][2]);
-			DirectionalLight *dl = new DirectionalLight;
-			dl->LP = LP;
-			dl->lightColor = Corona::Rgb(col.r, col.g, col.b);
-			dl->lightIntensity = intensity;
-			dl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
-			dl->LT = Corona::Dir(lightDirTangent.x, lightDirTangent.y, lightDirTangent.z);
-			dl->LBT = Corona::Dir(lightDirBiTangent.x, lightDirBiTangent.y, lightDirBiTangent.z);
-			dl->lightAngle = getFloatAttr("lightAngle", depFn, 0.0);
-			dl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
-			col = getColorAttr("shadowColor", depFn);
-			dl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
-			for (auto excludedObj : obj->excludedObjects)
+			if (getBoolAttr("mtco_useAsSun", depFn, false))
 			{
-				dl->excludeList.nodes.push(excludedObj.get());
-			}
+				if (sunLight != nullptr)
+				{
+					Logging::error(MString("A sun light is already defined, ignoring ") + obj->shortName);
+					continue;
+				}
+				sunLight = obj.get();
+				MVector lightDir(0, 0, 1); // default dir light dir
+				lightDir *= obj->transformMatrices[0];
+				lightDir *= renderGlobals->globalConversionMatrix;
+				lightDir.normalize();
 
-			this->context.scene->addLightShader(dl);
+				MColor sunColor(1);
+				MFnDependencyNode sunNode(obj->mobject);
+				getColor("color", sunNode, sunColor);
+				sunColor *= getFloatAttr("intensity", sunNode, 1.0f);
+				//float colorMultiplier colorMultiplier = getFloatAttr("mtco_sun_multiplier", sunNode, 1.0f);
+				const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(getFloatAttr("sunSizeMulti", rGlNode, 1.0f) * Corona::SUN_PROJECTED_HALF_ANGLE));
+				sunColor *= intensityFactor * 1.0;// 2000000;
+				Corona::Sun sun;
+
+				Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
+				SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
+				Corona::Rgb avgColor(1, 1, 1);
+				if (sky != nullptr)
+				{
+					avgColor = sky->sc();
+				}
+
+				Corona::Rgb sColor(sunColor.r, sunColor.g, sunColor.b);
+				sun.color = sColor * avgColor;
+				sun.active = true;
+				sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
+				//sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
+				sun.visibleDirect = true;
+				sun.visibleReflect = true;
+				sun.visibleRefract = true;
+				sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
+				this->context.scene->getSun() = sun;
+				sky->initSky();
+				if (sky != nullptr)
+				{
+					avgColor = sky->sc();
+					this->context.scene->getSun().color = sColor * avgColor;
+				}
+			}
+			else{
+				MVector lightDir(0, 0, -1);
+				MVector lightDirTangent(1, 0, 0);
+				MVector lightDirBiTangent(0, 1, 0);
+				MColor col;
+				getColor("color", depFn, col);
+				float intensity = 1.0f;
+				getFloat("intensity", depFn, intensity);
+				MMatrix m = obj->transformMatrices[0] * renderGlobals->globalConversionMatrix;
+				lightDir *= m;
+				lightDirTangent *= m;
+				lightDirBiTangent *= m;
+				lightDir.normalize();
+
+				Corona::Pos LP(m[3][0], m[3][1], m[3][2]);
+				DirectionalLight *dl = new DirectionalLight;
+				dl->LP = LP;
+				dl->lightColor = Corona::Rgb(col.r, col.g, col.b);
+				dl->lightIntensity = intensity;
+				dl->LD = Corona::Dir(lightDir.x, lightDir.y, lightDir.z);
+				dl->LT = Corona::Dir(lightDirTangent.x, lightDirTangent.y, lightDirTangent.z);
+				dl->LBT = Corona::Dir(lightDirBiTangent.x, lightDirBiTangent.y, lightDirBiTangent.z);
+				dl->lightAngle = getFloatAttr("lightAngle", depFn, 0.0);
+				dl->doShadows = getBoolAttr("useRayTraceShadows", depFn, true);
+				col = getColorAttr("shadowColor", depFn);
+				dl->shadowColor = Corona::Rgb(col.r, col.g, col.b);
+				for (auto excludedObj : obj->excludedObjects)
+				{
+					dl->excludeList.nodes.push(excludedObj.get());
+				}
+
+				this->context.scene->addLightShader(dl);
+			}
 		}
 		if( obj->mobject.hasFn(MFn::kAreaLight))
 		{
@@ -237,7 +284,7 @@ void CoronaRenderer::defineLights()
 				MColor lightColor = getColorAttr("color", depFn);
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
-				Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject);			
+				Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject, oslRenderer);
 				OSLMap *oslmap = (OSLMap *)com.getMap();
 				if (oslmap != nullptr)
 				{

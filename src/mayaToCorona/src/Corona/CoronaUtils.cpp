@@ -93,13 +93,11 @@ void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_
 
 	// a segment contains start and end, 2 mb steps are one segment, 3 mb steps are 2 segments
 	bool doMb = false;
-	MMatrix globalConversionMatrix;
-	globalConversionMatrix.setToIdentity();
+	MMatrix globalConversionMatrix = MayaTo::getWorldPtr()->globalConversionMatrix;
 
 	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 	{
 		doMb = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->doMb;
-		globalConversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
 	}
 	int numSegments = (obj->transformMatrices.size() - 1) * ((int)doMb);
 	atm.setSegments(numSegments);
@@ -122,14 +120,7 @@ void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat
 	MMatrix to, from;
 	int numSegments = 0;
 	atm.setSegments(numSegments);
-	MMatrix globalConversionMatrix;
-	globalConversionMatrix.setToIdentity();
-
-	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
-	{
-		globalConversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
-	}
-
+	MMatrix globalConversionMatrix = MayaTo::getWorldPtr()->globalConversionMatrix;
 
 	for (size_t mId = 0; mId < (numSegments + 1); mId++)
 	{

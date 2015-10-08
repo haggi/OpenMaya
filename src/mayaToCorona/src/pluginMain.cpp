@@ -6,11 +6,14 @@
 #include <maya/MSwatchRenderRegister.h>
 #include <maya/MSceneMessage.h>
 
-#include "CoronaCore/api/Api.h"
+#include "coronaOSL/oslRenderer.h" // this is only needed to make correct include order. Otherwise I get a isnan error
+
 #include "mayatoCorona.h"
 #include "mtco_common/mtco_renderGlobalsNode.h"
 #include "utilities/tools.h"
 #include "utilities/logging.h"
+
+#include "CoronaCore/api/Api.h"
 
 #include "threads/renderQueueWorker.h"
 #include "swatchesRenderer\swatchRenderer.h"
@@ -25,18 +28,18 @@
 #include "shaders/coronaOSLNode.h"
 #include "shaders/coronaLayeredMaterial.h"
 #include "shaders/coronaAO.h"
-#include "shaders/coronaFrontBack.h"
+#include "shaders/coronaFrontBackShader.h"
 #include "shaders/coronaSkyShader.h"
-#include "shaders/coronaWire.h"
+#include "shaders/coronaWireShader.h"
 
 #include "shaders/TestShader.h"
 #include "world.h"
 #include "Version.h"
 
+
 #if MAYA_API_VERSION >= 201600
 #include "mtco_common/mtco_mayaRenderer.h"
 #endif
-
 
 //#include "rvCmd.h"
 
@@ -80,6 +83,10 @@ static bool licenseChecked = false;
 
 MStatus initializePlugin( MObject obj )
 {
+#ifdef _DEBUG
+	Logging::setLogLevel(Logging::Debug);
+#endif
+	
 	std::vector<std::string> versionStrings = getFullVersionString();
 	MGlobal::displayInfo(MString("MayaToCorona version: ") + versionStrings[0].c_str());
 	MGlobal::displayInfo(MString("Corona Core: ") + +versionStrings[1].c_str());
@@ -109,7 +116,6 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS(plugin.registerNode("CoronaWire", CoronaWire::id, CoronaWire::creator, CoronaWire::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
 
 	CHECK_MSTATUS(plugin.registerNode("TestShader", TestShader::id, TestShader::creator, TestShader::initialize, MPxNode::kDependNode, &TestShaderClassification));
-
 
 	status = plugin.registerCommand(MAYATOCMDNAME, MayaToCorona::creator, MayaToCorona::newSyntax );
 	if (!status) {
@@ -151,14 +157,6 @@ MStatus initializePlugin( MObject obj )
 		return status;
 	}
 
-#if MAYA_API_VERSION >= 201600
-	status = plugin.registerRenderer("Corona", mtco_MayaRenderer::creator);
-	if (!status) {
-		status.perror("cannot register node: Corona Maya renderer");
-		return status;
-	}
-#endif
-
 	Corona::ICore::initLib(Corona::APP_MAYA);
 	if (!licenseChecked)
 	{
@@ -172,6 +170,16 @@ MStatus initializePlugin( MObject obj )
 			}
 		}
 	}
+
+// register material editor renderer after license check because as soon as it is registered, 
+// the node is created and needs a license
+#if MAYA_API_VERSION >= 201600
+	status = plugin.registerRenderer("Corona", mtco_MayaRenderer::creator);
+	if (!status) {
+		status.perror("cannot register node: Corona Maya renderer");
+		return status;
+	}
+#endif
 
 	MayaTo::defineWorld();
 	MString loadPath = plugin.loadPath();

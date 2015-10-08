@@ -60,6 +60,9 @@
     <Filter Include="resources">
       <UniqueIdentifier>{4d84e593-f220-457a-b1c8-50ab5708b41e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Corona\CoronaMaps">
+      <UniqueIdentifier>{f8bb73f3-3dcf-450d-9607-e99a36f946c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\cpp\mayaObject.cpp">
@@ -179,9 +182,6 @@
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaMap.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <Filter>Source Files\Corona</Filter>
     </ClCompile>
@@ -190,9 +190,6 @@
     </ClCompile>
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp">
       <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
-      <Filter>Source Files\Corona</Filter>
     </ClCompile>
     <ClCompile Include="..\src\coronaOSL\oslRenderer.cpp">
       <Filter>Source Files\coronaOSL</Filter>
@@ -248,9 +245,6 @@
     <ClCompile Include="..\src\shaders\coronaRaytypeMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaSky.cpp">
-      <Filter>Source Files\Corona</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -290,17 +284,38 @@
     <ClCompile Include="..\src\shaders\coronaAO.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\shaders\coronaFrontBack.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shaders\coronaWire.cpp">
-      <Filter>Source Files\shaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\coronaSkyShader.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaAOShader.cpp">
-      <Filter>Source Files\Corona</Filter>
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaSky.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaWire.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaFrontBack.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaWireShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaFrontBackShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaMap.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\cpp\utilities\meshTools.cpp">
+      <Filter>common\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaRoundCorners.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -397,22 +412,13 @@
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaMap.h">
-      <Filter>Source Files\Corona</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\common\cpp\mayaSceneFactory.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shaders\coronaOSLNode.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
-      <Filter>Source Files\Corona</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaLights.h">
-      <Filter>Source Files\Corona</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Corona\CoronaSky.h">
       <Filter>Source Files\Corona</Filter>
     </ClInclude>
     <ClInclude Include="..\src\coronaOSL\oslRenderer.h">
@@ -514,17 +520,44 @@
     <ClInclude Include="..\src\shaders\coronaAO.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shaders\coronaFrontBack.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shaders\coronaWire.h">
-      <Filter>Source Files\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shaders\coronaSkyShader.h">
       <Filter>Source Files\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaAOShader.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaSky.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaWire.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaFrontBack.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaWireShader.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaFrontBackShader.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaMap.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaCamera.h">
       <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaGeometry.h">
+      <Filter>Source Files\Corona</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\utilities\meshTools.h">
+      <Filter>common\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaRoundCorners.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

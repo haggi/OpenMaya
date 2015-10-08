@@ -27,18 +27,18 @@ Corona::Stack<Corona::NativeMtlData> dataArray;
 Corona::Stack<Corona::SharedPtr<Corona::IMaterial>> coronaMaterialStack;
 
 
-void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data)
-{
-	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
-	if( isConnected("normalCamera", depFn, true, false))
-	{
-		//MString normalCamName = "normalCamera";
-		//Logging::debug(MString("normal camera is connected"));
-		//texmap = getOslTexMap(normalCamName, depFn, sn);
-		//Logging::debug("Bump connected");
-		//data.bump = texmap;
-	}
-}
+//void CoronaRenderer::defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, Corona::NativeMtlData& data)
+//{
+//	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
+//	if( isConnected("normalCamera", depFn, true, false))
+//	{
+//		//MString normalCamName = "normalCamera";
+//		//Logging::debug(MString("normal camera is connected"));
+//		//texmap = getOslTexMap(normalCamName, depFn, sn);
+//		//Logging::debug("Bump connected");
+//		//data.bump = texmap;
+//	}
+//}
 
 bool CoronaRenderer::assingExistingMat(MObject shadingGroup, std::shared_ptr<MayaObject> mobj)
 {
@@ -86,7 +86,6 @@ void CoronaRenderer::clearMaterialLists()
 {
 	shaderArray.clear();
 	dataArray.clear();
-	//definedMaterials.clear();
 }
 
 
@@ -116,7 +115,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 			if (assingExistingMat(shadingGroupObject, obj))
 				return;
 
-		Corona::SharedPtr<Corona::IMaterial> base = defineCoronaMaterial(surfaceShader, obj);
+		Corona::SharedPtr<Corona::IMaterial> base = defineCoronaMaterial(surfaceShader, obj, this->oslRenderer, true);
 		
 		Corona::IMaterialSet ms = Corona::IMaterialSet(base);
 		setRenderStats(ms, obj);
@@ -168,26 +167,26 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 				if (basePlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(basePlug);
-					base = defineCoronaMaterial(inNode, nullptr);
+					base = defineCoronaMaterial(inNode, nullptr, this->oslRenderer, true);
 				}
 				if (reflectPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(reflectPlug);
-					reflect = defineCoronaMaterial(inNode, nullptr);
+					reflect = defineCoronaMaterial(inNode, nullptr, this->oslRenderer, true);
 				}
 				if (refractPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(refractPlug);
-					refract = defineCoronaMaterial(inNode, nullptr);
+					refract = defineCoronaMaterial(inNode, nullptr, this->oslRenderer, true);
 				}
 				if (directPlug.isConnected())
 				{
 					MObject inNode = getConnectedInNode(directPlug);
-					direct = defineCoronaMaterial(inNode, nullptr);
+					direct = defineCoronaMaterial(inNode, nullptr, this->oslRenderer, true);
 				}
 			}
 			else{
-				base = defineCoronaMaterial(surfaceShader, obj);
+				base = defineCoronaMaterial(surfaceShader, obj, this->oslRenderer, true);
 			}
 
 			Corona::IMaterialSet ms = Corona::IMaterialSet(base);
@@ -199,7 +198,7 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 		}
 	}
 	else{
-		Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(MObject::kNullObj, nullptr);
+		Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(MObject::kNullObj, nullptr, this->oslRenderer, true);
 		Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 		setRenderStats(ms, obj);
 		obj->instance->addMaterial(ms);

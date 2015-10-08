@@ -1,15 +1,48 @@
 #include "Corona.h"
 #include "CoronaSky.h"
+#include <maya/MFnDependencyNode.h>
+#include "utilities/attrTools.h"
+#include "CoronaUtils.h"
 
 SkyMap::SkyMap()
 {
 	this->params = new Corona::SkyParams;
 };
+
+SkyMap::SkyMap(MObject sObject)
+{
+	MFnDependencyNode depFn(sObject);
+
+	this->params = new Corona::SkyParams;
+
+	params->multiplier = getFloatAttr("pSkyMultiplier", depFn, 1.0);
+	int skyModel = getEnumInt("pSkyModel", depFn);
+	if (skyModel == 0)
+		params->mode = Corona::SkyModelType::MODEL_PREETHAM;
+	if (skyModel == 1)
+		params->mode = Corona::SkyModelType::MODEL_RAWAFAKE;
+	if (skyModel == 2)
+		params->mode = Corona::SkyModelType::MODEL_HOSEK;
+	params->groundColor = toCorona(getColorAttr("pSkyGroundColor", depFn));
+	params->horizonBlur = getFloatAttr("pSkyHorizBlur", depFn, .1f);
+	params->skyAffectGround = getBoolAttr("pSkyAffectGround", depFn, true);
+	params->preetham.turbidity = getFloatAttr("pSkyPreethamTurb", depFn, 2.5f);
+	params->rawafake.horizon = toCorona(getColorAttr("pSkyHorizon", depFn));
+	params->rawafake.horizon = toCorona(getColorAttr("pSkyZenith", depFn));
+	params->rawafake.sunBleed = getFloatAttr("pSkySunBleed", depFn, 1.0f);
+	params->rawafake.sunFalloff = getFloatAttr("pSkySunFalloff", depFn, 3.0f);
+	params->rawafake.sunGlow = getFloatAttr("pSkySunGlow", depFn, 1.0f);
+	params->rawafake.sunSideGlow = getFloatAttr("pSkySunSideGlow", depFn, .2f);
+
+	this->initSky();
+};
+
 SkyMap::~SkyMap(){};
 
 void SkyMap::initSky()
 {
-	Corona::Sun sun = this->coronaRenderer->context.scene->getSun();
+	std::shared_ptr<CoronaRenderer> renderer = std::static_pointer_cast<CoronaRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+	Corona::Sun sun = renderer->context.scene->getSun();
 	this->init(this->params, &sun);
 }
 

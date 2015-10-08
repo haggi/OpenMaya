@@ -21,6 +21,11 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, w);
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, h);
 
+	if (getBoolAttr("lockSamplingPattern",depFn, false))
+		context.settings->set(Corona::PARAM_RANDOM_SEED, 1234);
+	else
+		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+
 	if (renderGlobals->getUseRenderRegion())
 	{
 		int left, bottom, right, top;
@@ -39,7 +44,7 @@ void CoronaRenderer::defineSettings()
 	if( renderer == 2) // vcm rendering
 		context.settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_VCM);
 
-	context.settings->set(Corona::PARAM_RESUME_RENDERING, false);
+	//context.settings->set(Corona::PARAM_RESUME_RENDERING, false);
 	
 	context.settings->set(Corona::PARAM_BUCKET_SIZE, getIntAttr("image_bucketSize", depFn, 64));
 	context.settings->set(Corona::PARAM_BUCKET_SAMPLES_PER_ITERATION, getIntAttr("buckets_initialSamples", depFn, 4));
@@ -61,7 +66,9 @@ void CoronaRenderer::defineSettings()
 	if (getBoolAttr("exportSceneFile", depFn, false))
 		context.settings->set(Corona::PARAM_EXPORT_PATH, renderGlobals->exportSceneFileName.asChar());
 	 
-	context.settings->set(Corona::PARAM_LOW_PRIORITY, true); // always render with low priority
+	//context.settings->set(Corona::PARAM_LOW_PRIORITY, true); // always render with low priority
+	context.settings->set(Corona::PARAM_THREAD_PRIORITY, Corona::IScheduler::PRIORITY_BELOW_NORMAL); // always render with low priority
+
 
 	Corona::DisplaceSubdivType subdivTypes[] = { Corona::DisplaceSubdivType::DISPLACE_SUBDIV_PROJECTED, Corona::DisplaceSubdivType::DISPLACE_SUBDIV_WORLD };
 	context.settings->set(Corona::PARAM_DISPLACE_SUBDIV_TYPE, subdivTypes[(int)getBoolAttr("displace_useProjectionSize", depFn, true)]);
@@ -107,7 +114,9 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_HDCACHE_POS_SENSITIVITY, getFloatAttr("gi_hdCache_posSensitivity", depFn, 20.0f));
 	context.settings->set(Corona::PARAM_HDCACHE_NORMAL_SENSITIVITY, getFloatAttr("gi_hdCache_normalSensitivity", depFn, 3.0f));
 
-	float uhd_precision = 1.0f;
+	float uhd_precision = getFloatAttr("uhdPrecision", depFn, 1.0f);
+	context.settings->set(Corona::PARAM_UHDCACHE_PRECISION, uhd_precision);
+
 	int uhd_recordQuality = 512;
 	float uhd_strictness = 0.075f;
 	float uhd_msi = 3.0f;

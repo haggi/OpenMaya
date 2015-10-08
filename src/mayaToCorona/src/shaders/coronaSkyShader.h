@@ -15,6 +15,20 @@ public:
 
     static  MTypeId   id;
 
-protected:
+	static    MObject pSkyModel;
+	static    MObject pSkyMultiplier;
+	static    MObject pSkyHorizBlur;
+	static    MObject pSkyGroundColor;
+	static    MObject pSkyAffectGround;
+	static    MObject pSkyPreethamTurb;
+	static    MObject pSkySunFalloff;
+	static    MObject pSkyZenith;
+	static    MObject pSkyHorizon;
+	static    MObject pSkySunGlow;
+	static    MObject pSkySunSideGlow;
+	static    MObject pSkySunBleed;
+	static    MObject sunSizeMulti;
+
+	static MObject  outColor;
 
 };

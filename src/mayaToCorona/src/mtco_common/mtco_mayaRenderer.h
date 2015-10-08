@@ -1,14 +1,52 @@
 #ifndef MAYA_RENDERER_H
 #define MAYA_RENDERER_H
+#include <maya/MTypes.h>
 
 #if MAYA_API_VERSION >= 201600
 
+#include "../coronaOSL/oslRenderer.h"
 #include "CoronaCore/api/Api.h"
 #include <maya/MTypes.h>
 #include <map>
+#include <thread>
+#include <vector>
 
 
 #include <maya/MPxRenderer.h>
+
+// ------------------- TESTING ----------------------
+void createSceneMini(Corona::IScene* scene);
+// advanced example - custom light shader
+class MyLight : public Corona::Abstract::LightShader, public Corona::Noncopyable {
+public:
+
+	const Corona::Pos LIGHT_POS;
+	const Corona::Dir LIGHT_DIR;
+
+	MyLight() : LIGHT_POS(Corona::Pos(-3, -3, -7)), LIGHT_DIR(Corona::Dir(1, 1, -1.f).getNormalized()) { }
+
+	// simulate spot light with colorful directional falloff
+	virtual Corona::BsdfComponents getIllumination(Corona::IShadeContext& context, Corona::Spectrum& transport) const {
+		const Corona::Pos surface = context.getPosition();
+		float distance;
+		const Corona::Dir toLight = (LIGHT_POS - surface).getNormalized(distance); // direction + distance to light
+
+		const float cosAngle = Corona::Utils::max(0.f, -dot(toLight, LIGHT_DIR));
+		// calculate the light emission: divide by d^2 to get physical attenuation
+		const Corona::Spectrum emitted = 50 * cosAngle* Corona::Spectrum::max(Corona::Spectrum::BLACK, Corona::Spectrum(cosAngle * 2 - 1, 1 - 2 * abs(cosAngle - 0.5f), (1 - cosAngle) * 2 - 1)) / (distance*distance);
+
+		// shadow transmission, including occlusion effects
+		transport = context.shadowTransmission(LIGHT_POS, Corona::RAY_NORMAL);
+		float dummy;
+
+		// bsdf value: amount of light incident from light reflected to camera/previous point
+		Corona::BsdfComponents brdf;
+		context.forwardBsdfCos(toLight, brdf, dummy);
+		return brdf * (Corona::PI*emitted);
+	}
+};
+// ------------------- TESTING ----------------------
+
 
 class mtco_Logger : public Corona::Abstract::Logger
 {
@@ -16,7 +54,7 @@ public:
 
 	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
 
-	virtual void logMsg(const Corona::String& message, const Corona::LogType type)
+	virtual void logMsg(const Corona::String& message, const Corona::LogType type, const int errorCategory = 0)
 	{
 		std::cout << message << std::endl;
 	}
@@ -65,13 +103,31 @@ public:
 	}
 };
 
+struct IdNameStruct{
+	MUuid id;
+	MString name; // in appleseed objects must have unique names
+	MObject mobject; // I need to know if I have a light or a mesh or a camera
+	Corona::SharedPtr<Corona::IMaterial> material;
+};
+
+struct GeoGroupStruct{
+	Corona::IGeometryGroup *geoGrp = nullptr;
+	MObject mobject;
+	Corona::IInstance *instance = nullptr;
+	MUuid id;
+};
+
 class mtco_MayaRenderer : public MPxRenderer
 {
 public:
 	RefreshParams refreshParams;
-	static bool running;
-
+	int initialSize = 256;
+	bool good = false;
+	bool isRendering = false;
+	bool completlyInitialized = false;
 	mtco_MayaRenderer();
+	virtual ~mtco_MayaRenderer();
+
 	static void* creator();
 	virtual MStatus startAsync(const JobParams& params);
 	virtual MStatus stopAsync();
@@ -101,11 +157,20 @@ public:
 	virtual bool isSafeToUnload();
 
 	void render();
-
+	void framebufferCallback();
+	void finishRendering();
+	Context *context;
+	int refreshInteraval = 1;
 private:
+	OSL::OSLShadingNetworkRenderer *oslRenderer = new OSL::OSLShadingNetworkRenderer;
+
 	int width, height;
-	//Render output buffer, it is R32G32B32A32_FLOAT format.
+	std::thread renderThread;
+	std::thread fbThread;
 	float* renderBuffer;
+	MObject lastShape = MObject::kNullObj;
+	std::vector<IdNameStruct> objectArray;
+	std::vector<GeoGroupStruct> geometryGroupArray;
 
 };
 #endif

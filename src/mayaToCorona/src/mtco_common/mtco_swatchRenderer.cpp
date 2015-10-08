@@ -13,6 +13,8 @@
 static Logging logger;
 static bool done;
 
+static OSL::OSLShadingNetworkRenderer *oslRenderer = new OSL::OSLShadingNetworkRenderer;
+
 mtco_SwatchRendererInterface::mtco_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution)
 {
 #ifdef _DEBUG
@@ -125,6 +127,7 @@ void mtco_SwatchRendererInterface::renderSwatch()
 	{
 		return;
 	}
+	oslRenderer->setup();
 	Context *c = new Context();
 
 	this->inProgress = true;
@@ -140,7 +143,7 @@ void mtco_SwatchRendererInterface::renderSwatch()
 
 	config.lightsSize = 1.0f;
 	config.lightsIntensity = 1.0f;
-	Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(dependNode);
+	Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(dependNode, nullptr, oslRenderer);
 	Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 	config.materials.push(ms);
 	c->core->setupMtlPreviewScene(config, c->scene, c->settings);

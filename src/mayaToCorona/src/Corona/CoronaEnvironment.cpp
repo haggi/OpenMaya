@@ -21,8 +21,48 @@ void CoronaRenderer::defineEnvironment()
 {
 	MFnDependencyNode depFn(getRenderGlobalsNode());
 	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
-	int bgType = getEnumInt("bgType", depFn);
-	if (bgType == 0)
+
+
+	if (depFn.findPlug("globalVolume").isConnected())
+	{
+		Logging::debug("globalVolume is connected.");
+		MPlugArray plugArray;
+		MPlug gv = depFn.findPlug("globalVolume");
+		gv.connectedTo(plugArray, true, false);
+		if (plugArray.length() > 0)
+		{
+			Logging::debug(MString("Connected plug: ") + plugArray[0].name());
+			MFnDependencyNode sourceNode(plugArray[0].node());
+			if (sourceNode.typeName() == "CoronaVolume")
+			{
+				Logging::debug(MString("Connected node is from type CoronaVolume: ") + sourceNode.name());
+				this->context.scene->setGlobalMedium(defineCoronaMaterial(sourceNode.object(), nullptr));
+			}
+		}
+	}
+
+	// set background
+	if (!isConnected("bgColor", depFn.object(), true))
+	{
+		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, nullptr));
+		return;
+	}
+
+	MObject inObj = getConnectedInNode(depFn.object(), "bgColor");
+	if (inObj == MObject::kNullObj)
+	{
+		Logging::error(MString("Unable to get connected element for renderGlobals.bgColor attribute"));
+		return;
+	}
+	// at the moment we are restricted to two possibilites: sky map or fileTexture
+	MFnDependencyNode inDepFn(inObj);
+	if((inDepFn.typeName() != "CoronaSky") && (!inObj.hasFn(MFn::kFileTexture)))
+	{
+		Logging::error(MString("Connections to bgColor attribute of type: ") + inDepFn.typeName() + " are not yet supported");
+		return;
+	}
+
+	if (inObj.hasFn(MFn::kFileTexture))
 	{
 		MString texName;
 		MObject fileTextureObject;
@@ -36,11 +76,8 @@ void CoronaRenderer::defineEnvironment()
 				return;
 			}
 			
-			//MObject obj = objectFromName(MString("coronaGlobals"));
-			//const Corona::ColorOrMap com = defineAttribute(MString("bgColor"), obj);			
-			//this->context.scene->setBackground(com);
+			mtco_MapLoader loader(fileTextureObject);
 
-			mtco_MapLoader loader;
 			if (fileTextureObject != MObject::kNullObj)
 			{
 				MFnDependencyNode fileNode(fileTextureObject);
@@ -63,51 +100,13 @@ void CoronaRenderer::defineEnvironment()
 			this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, nullptr));
 		}
 	}
-	if (bgType == 1)
+
+	if (inDepFn.typeName() == "CoronaSky")
 	{
-		SkyMap *texmap = new SkyMap;
-		texmap->coronaRenderer = this;
-		texmap->params->multiplier = getFloatAttr("pSkyMultiplier", depFn, 1.0);
-		int skyModel = getEnumInt("pSkyModel", depFn);
-		if (skyModel == 0)
-			texmap->params->mode = Corona::SkyModelType::MODEL_PREETHAM;
-		if (skyModel == 1)
-			texmap->params->mode = Corona::SkyModelType::MODEL_RAWAFAKE;
-		if (skyModel == 2)
-			texmap->params->mode = Corona::SkyModelType::MODEL_HOSEK;
-		texmap->params->groundColor = toCorona(getColorAttr("pSkyGroundColor", depFn));
-		texmap->params->horizonBlur = getFloatAttr("pSkyHorizBlur", depFn, .1f);
-		texmap->params->skyAffectGround = getBoolAttr("pSkyAffectGround", depFn, true);
-		texmap->params->preetham.turbidity = getFloatAttr("pSkyPreethamTurb", depFn, 2.5f);
-		texmap->params->rawafake.horizon = toCorona(getColorAttr("pSkyHorizon", depFn));
-		texmap->params->rawafake.horizon = toCorona(getColorAttr("pSkyZenith", depFn));
-		texmap->params->rawafake.sunBleed = getFloatAttr("pSkySunBleed", depFn, 1.0f);
-		texmap->params->rawafake.sunFalloff = getFloatAttr("pSkySunFalloff", depFn, 3.0f);
-		texmap->params->rawafake.sunGlow = getFloatAttr("pSkySunGlow", depFn, 1.0f);
-		texmap->params->rawafake.sunSideGlow = getFloatAttr("pSkySunSideGlow", depFn, .2f);
-		texmap->initSky();
+		SkyMap *texmap = new SkyMap(inDepFn.object());
 		this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
 	}
 
-	// set global volume environment
-	if (depFn.findPlug("globalVolume").isConnected())
-	{
-		Logging::debug("globalVolume is connected.");
-		MPlugArray plugArray;
-		MPlug gv = depFn.findPlug("globalVolume");
-		gv.connectedTo(plugArray, true, false);
-		if (plugArray.length() > 0)
-		{
-			Logging::debug(MString("Connected plug: ") + plugArray[0].name());
-			MFnDependencyNode sourceNode(plugArray[0].node());
-			if (sourceNode.typeName() == "CoronaVolume")
-			{
-				Logging::debug(MString("Connected node is from type CoronaVolume: ") + sourceNode.name());
-				this->context.scene->setGlobalMedium(defineCoronaMaterial(sourceNode.object(), nullptr));
-			}
-		}
-	}
-	//
 }
 
 

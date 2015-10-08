@@ -3,6 +3,7 @@
 #include "OSL/oslexec.h"
 #include "OSL/genclosure.h"
 #include "utilities/logging.h"
+#include "utilities/tools.h"
 
 using namespace OSL;
 
@@ -450,22 +451,19 @@ void OSLShadingNetworkRenderer::setup()
 {
 	if (this->shadingsys != nullptr)
 		delete this->shadingsys;
+
+	std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
+	Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
+	setShaderSearchPath(oslShaderPath);
+
 	this->shadingsys = OSL::ShadingSystem::create (&renderer, nullptr, &this->errorHandler);
 	OIIO::TextureSystem *ts = this->shadingsys->texturesys();
 	ts->attribute("grey_to_rgb", 1);
 	this->shadingsys->attribute("lockgeom", 1);
 	this->shadingsys->attribute("searchpath:shader", this->shaderSearchPath);
-	//this->shadingsys->attribute("strict_messages", true);
-	//this->shadingsys->attribute("debug", 2);
-	//this->shadingsys->attribute("buffer_printf", 0);
 	
 	const char *n = "Cout";
 	shadingsys->attribute("renderer_outputs", TypeDesc(TypeDesc::STRING,1),&n);
-
-	//std::vector<const char *> aovnames(2);
-	//aovnames[0] = "Cout";
-	//aovnames[1] = "fout";
-	//shadingsys->attribute ("renderer_outputs", TypeDesc(TypeDesc::STRING,(int)aovnames.size()), &aovnames[0]);
 
 	for (int i = 0; i < 256; i++)
 	{
@@ -500,88 +498,60 @@ OSL_NAMESPACE_EXIT
 
 namespace MAYATO_OSL
 {
-	void createOSLShader(MString& shadingNodeType, MString& shaderName, OSLParamArray& paramArray, MString type)
-	{
-		//OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		OSL::OSLShadingNetworkRenderer *r;
-		MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-		if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
-		{
-			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
-		}else
-		{
-			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		}
-
-		if (r == nullptr)
-		{
-			std::cerr << "error createOSLShader: OSL renderer == nullptr\n";
-			return;
-		}
-
-		for (size_t i = 0; i < paramArray.size(); i++)
-		{
-			MString name = paramArray[i].name;
-			OSL::TypeDesc type = paramArray[i].type;
-			std::string tmp;
-			float vec[3];
-			float m[4][4];
-			void *val = nullptr;
-			if (type == OSL::TypeDesc::TypeFloat)
-				val = boost::get<float>(&paramArray[i].value);
-			if (type == OSL::TypeDesc::TypeInt)
-				val = boost::get<int>(&paramArray[i].value);
-			if (type == OSL::TypeDesc::TypeVector)
-			{
-				SimpleVector &v = boost::get<SimpleVector>(paramArray[i].value);
-				vec[0] = v.f[0];
-				vec[1] = v.f[1];
-				vec[2] = v.f[2];
-				val = vec;
-			}
-			if (type == OSL::TypeDesc::TypeString)
-			{
-				tmp = boost::get<std::string>(paramArray[i].value);
-				const OIIO::string_ref p = tmp;
-				if (!r->shadingsys->Parameter(name.asChar(), type, &p))
-					Logging::debug(MString("Problem! createOSLShader defining string parameter: ") + name);
-			}
-			if (type == OSL::TypeDesc::TypeMatrix)
-			{
-				SimpleMatrix &v = boost::get<SimpleMatrix>(paramArray[i].value);
-				val = v.f;
-			}
-			if (type != OSL::TypeDesc::TypeString)
-				if (!r->shadingsys->Parameter(name.asChar(), type, val))
-					Logging::debug(MString("Problem! createOSLShader defining parameter: ") + name);
-		}
-		if(!r->shadingsys->Shader("surface", shadingNodeType.asChar(), shaderName.asChar()))
-			Logging::debug(MString("Problem! createOSLShader defining shader: ") + shaderName);
-
-	}
+	void createOSLShader(MString& shadingNodeType, MString& shaderName, OSLParamArray& paramArray)
+	{}
 
 	void connectOSLShaders(ConnectionArray& ca)
-	{
-		//OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		OSL::OSLShadingNetworkRenderer *r;
-		MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-		if ((rType == MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER) || (rType == MayaTo::MayaToWorld::WorldRenderType::UIRENDER))
-		{
-			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslRenderer");
-		}
-		if ((rType == MayaTo::MayaToWorld::WorldRenderType::SWATCHRENDER))
-		{
-			r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getObjPtr("oslSwatchRenderer");
-		}
-		if (r == nullptr)
-		{
-			std::cerr << "error connectOSLShaders: OSL renderer == nullptr\n";
-			return;
-		}
-		for (size_t i = 0; i < ca.size(); i++)
-		{
-			if (!r->shadingsys->ConnectShaders(ca[i].sourceNode.asChar(), ca[i].sourceAttribute.asChar(), ca[i].destNode.asChar(), ca[i].destAttribute.asChar()))
-				Logging::debug(MString("Problem! connectOSLShaders defining connection: ") + ca[i].sourceNode + " to " + ca[i].destNode);
-		}
-	}
+	{}
 };
+
+void MAYATO_OSLUTIL::OSLUtilClass::connectOSLShaders(MAYATO_OSL::ConnectionArray& ca)
+{
+	for (size_t i = 0; i < ca.size(); i++)
+	{
+		if (!oslRenderer->shadingsys->ConnectShaders(ca[i].sourceNode.asChar(), ca[i].sourceAttribute.asChar(), ca[i].destNode.asChar(), ca[i].destAttribute.asChar()))
+			Logging::debug(MString("Problem! connectOSLShaders defining connection: ") + ca[i].sourceNode + " to " + ca[i].destNode);
+	}
+}
+
+void MAYATO_OSLUTIL::OSLUtilClass::createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray)
+{
+	for (size_t i = 0; i < paramArray.size(); i++)
+	{
+		MString name = paramArray[i].name;
+		OSL::TypeDesc type = paramArray[i].type;
+		std::string tmp;
+		float vec[3];
+		float m[4][4];
+		void *val = nullptr;
+		if (type == OSL::TypeDesc::TypeFloat)
+			val = boost::get<float>(&paramArray[i].value);
+		if (type == OSL::TypeDesc::TypeInt)
+			val = boost::get<int>(&paramArray[i].value);
+		if (type == OSL::TypeDesc::TypeVector)
+		{
+			MAYATO_OSL::SimpleVector &v = boost::get<MAYATO_OSL::SimpleVector>(paramArray[i].value);
+			vec[0] = v.f[0];
+			vec[1] = v.f[1];
+			vec[2] = v.f[2];
+			val = vec;
+		}
+		if (type == OSL::TypeDesc::TypeString)
+		{
+			tmp = boost::get<std::string>(paramArray[i].value);
+			const OIIO::string_ref p = tmp;
+			if (!oslRenderer->shadingsys->Parameter(name.asChar(), type, &p))
+				Logging::debug(MString("Problem! createOSLShader defining string parameter: ") + name);
+		}
+		if (type == OSL::TypeDesc::TypeMatrix)
+		{
+			MAYATO_OSL::SimpleMatrix &v = boost::get<MAYATO_OSL::SimpleMatrix>(paramArray[i].value);
+			val = v.f;
+		}
+		if (type != OSL::TypeDesc::TypeString)
+			if (!oslRenderer->shadingsys->Parameter(name.asChar(), type, val))
+				Logging::debug(MString("Problem! createOSLShader defining parameter: ") + name);
+	}
+	if (!oslRenderer->shadingsys->Shader("surface", shaderNodeType.asChar(), shaderName.asChar()))
+		Logging::debug(MString("Problem! createOSLShader defining shader: ") + shaderName);
+}

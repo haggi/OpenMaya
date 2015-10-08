@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "Corona.h"
+#include "CoronaGeometry.h"
 #include <maya/MPoint.h>
 #include "maya/MFnMesh.h"
 #include "maya/MFnMeshData.h"
@@ -15,6 +16,7 @@
 #include "utilities/logging.h"
 #include "utilities/tools.h"
 #include "utilities/attrTools.h"
+#include "utilities/meshTools.h"
 #include "mayaScene.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/shadingUtils.h"
@@ -24,6 +26,55 @@
 #include "CoronaMap.h"
 
 static Logging logger;
+
+void defineStdPlane(Corona::IGeometryGroup *geom)
+{
+	geom->getVertices().push(Corona::Pos(-1, 1, 0));
+	geom->getVertices().push(Corona::Pos(1, 1, 0));
+	geom->getVertices().push(Corona::Pos(-1, -1, 0));
+	geom->getVertices().push(Corona::Pos(1, -1, 0));
+
+
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+	geom->getNormals().push(Corona::Dir(0, 0, -1));
+
+	geom->getMapCoords().push(Corona::Pos(0, 0, 0));
+	geom->getMapCoordIndices().push(0);
+	geom->getMapCoords().push(Corona::Pos(1, 0, 0));
+	geom->getMapCoordIndices().push(1);
+	geom->getMapCoords().push(Corona::Pos(1, 1, 0));
+	geom->getMapCoordIndices().push(2);
+	geom->getMapCoords().push(Corona::Pos(0, 1, 0));
+	geom->getMapCoordIndices().push(3);
+
+	Corona::TriangleData tri;
+	tri.v[0][0] = 0;
+	tri.v[0][1] = 1;
+	tri.v[0][2] = 2;
+	tri.n[0][0] = 0;
+	tri.n[0][1] = 1;
+	tri.n[0][2] = 2;
+	tri.t[0] = 0;
+	tri.t[1] = 1;
+	tri.t[2] = 2;
+	tri.materialId = 0;
+	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+	geom->addPrimitive(tri);
+	tri.v[0][0] = 2;
+	tri.v[0][1] = 1;
+	tri.v[0][2] = 3;
+	tri.n[0][0] = 2;
+	tri.n[0][1] = 1;
+	tri.n[0][2] = 3;
+	tri.t[0] = 2;
+	tri.t[1] = 1;
+	tri.t[2] = 3;
+	tri.materialId = 0;
+	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+	geom->addPrimitive(tri);
+}
 
 Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 {
@@ -83,6 +134,168 @@ void CoronaRenderer::updateMesh(std::shared_ptr<MayaObject> obj)
 	obj->addMeshData();
 }
 
+void defineMesh(Corona::IGeometryGroup *group, const MObject& meshObject)
+{
+	MStatus stat = MStatus::kSuccess;
+	bool hasDisplacement = false;
+	Corona::SharedPtr<Corona::Abstract::Map> displacementMap = nullptr;
+	float displacementMin = 0.0f;
+	float displacementMax = 0.01f;
+
+	MFnMesh meshFn(meshObject, &stat);
+	CHECK_MSTATUS(stat);
+
+	MPointArray points;
+	MFloatVectorArray normals;
+	MFloatArray uArray, vArray;
+	MIntArray triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments;
+	MObject mo = meshObject;
+	getMeshData(mo, points, normals, uArray, vArray, triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments);
+
+	Logging::debug(MString("Translating mesh object ") + meshFn.name().asChar());
+	MString meshFullName = makeGoodString(meshFn.fullPathName());
+
+	uint numVertices = points.length();
+	uint numNormals = normals.length();
+	uint numUvs = uArray.length();
+
+	Corona::TriangleData td;
+	Corona::IGeometryGroup* geom = group;
+
+	uint npts = 0;
+	for (uint vtxId = 0; vtxId < numVertices; vtxId++)
+	{
+		MPoint& p = points[vtxId];
+		geom->getVertices().push(Corona::Pos(p.x, p.y, p.z));
+	}
+
+	for (uint nId = 0; nId < numNormals; nId++)
+	{
+		MFloatVector& n = normals[nId];
+		geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
+	}
+
+	for (uint tId = 0; tId < numUvs; tId++)
+	{
+		size_t mcl = geom->getMapCoordIndices().size();
+		geom->getMapCoordIndices().push(mcl);
+		geom->getMapCoords().push(Corona::Pos(uArray[tId], vArray[tId], 0.0f));
+	}
+
+	int numTris = triPointIds.length() / 3;
+	for (uint triId = 0; triId < numTris; triId++)
+	{
+		uint index = triId * 3;
+		int perFaceShadingGroup = triMatIds[triId];
+		int vtxId0 = triPointIds[index];
+		int vtxId1 = triPointIds[index + 1];
+		int vtxId2 = triPointIds[index + 2];
+		int normalId0 = triNormalIds[index];
+		int normalId1 = triNormalIds[index + 1];
+		int normalId2 = triNormalIds[index + 2];
+		int uvId0 = triUvIds[index];
+		int uvId1 = triUvIds[index + 1];
+		int uvId2 = triUvIds[index + 2];
+
+		std::auto_ptr<Corona::TriangleData> trip;
+
+		if (hasDisplacement)
+		{
+			trip = std::auto_ptr<Corona::TriangleData>(new Corona::DisplacedTriangleData);
+			Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
+			dtri->displacement.map = displacementMap;
+			dtri->displacement.waterLevel = -Corona::INFINITY;
+			dtri->displacement.min = displacementMin;
+			dtri->displacement.max = displacementMax;
+			
+
+			//Corona::DisplacedTriangleData tri;
+			//tri.displacement.map = displacementMap;
+			//tri.displacement.waterLevel = -Corona::INFINITY;
+			//MPoint p0 = points[vtxId0];
+			//MPoint p1 = points[vtxId1];
+			//MPoint p2 = points[vtxId2];
+			//tri.v[0] = Corona::AnimatedPos(Corona::Pos(p0.x, p0.y, p0.z));
+			//tri.v[1] = Corona::AnimatedPos(Corona::Pos(p1.x, p1.y, p1.z));
+			//tri.v[2] = Corona::AnimatedPos(Corona::Pos(p2.x, p2.y, p2.z));
+			//MVector n0 = normals[normalId0];
+			//MVector n1 = normals[normalId1];
+			//MVector n2 = normals[normalId2];
+			//Corona::Dir dir0(n0.x, n0.y, n0.z);
+			//Corona::Dir dir1(n1.x, n1.y, n1.z);
+			//Corona::Dir dir2(n2.x, n2.y, n2.z);
+			//tri.n[0] = Corona::AnimatedDir(dir0);
+			//tri.n[1] = Corona::AnimatedDir(dir1);
+			//tri.n[2] = Corona::AnimatedDir(dir2);
+			//Corona::Pos uv0(uArray[uvId0], vArray[uvId0], 0.0);
+			//Corona::Pos uv1(uArray[uvId1], vArray[uvId1], 0.0);
+			//Corona::Pos uv2(uArray[uvId2], vArray[uvId2], 0.0);
+			//Corona::StaticArray<Corona::Pos, 3> uvp;
+			//if (numUvs > 0)
+			//{
+			//	uvp[0] = uv0;
+			//	uvp[1] = uv1;
+			//	uvp[2] = uv2;
+			//	tri.t.push(uvp);
+			//}
+			//tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+			//tri.materialId = perFaceShadingGroup;
+			//tri.displacement.min = displacementMin;
+			//tri.displacement.max = displacementMax;
+			//geom->addPrimitive(tri);
+		}
+		else{
+			trip = std::auto_ptr<Corona::TriangleData>(new Corona::TriangleData);
+			//Corona::TriangleData tri;
+
+			//tri.v.setSegments(1 - 1);
+			//tri.n.setSegments(1 - 1);
+
+			//for (int stepId = 0; stepId < 1; stepId++)
+			//{
+			//	tri.v[stepId][0] = vtxId0 + numVertices * stepId;
+			//	tri.v[stepId][1] = vtxId1 + numVertices * stepId;
+			//	tri.v[stepId][2] = vtxId2 + numVertices * stepId;
+			//	tri.n[stepId][0] = normalId0 + numNormals * stepId;
+			//	tri.n[stepId][1] = normalId1 + numNormals * stepId;
+			//	tri.n[stepId][2] = normalId2 + numNormals * stepId;
+			//}
+
+			//if (numUvs > 0)
+			//{
+			//	tri.t[0] = uvId0;
+			//	tri.t[1] = uvId1;
+			//	tri.t[2] = uvId2;
+			//}
+			//tri.materialId = perFaceShadingGroup;
+			//tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+			//geom->addPrimitive(tri);
+		}
+		trip->v.setSegments(1 - 1);
+		trip->n.setSegments(1 - 1);
+
+		for (int stepId = 0; stepId < 1; stepId++)
+		{
+			trip->v[stepId][0] = vtxId0 + numVertices * stepId;
+			trip->v[stepId][1] = vtxId1 + numVertices * stepId;
+			trip->v[stepId][2] = vtxId2 + numVertices * stepId;
+			trip->n[stepId][0] = normalId0 + numNormals * stepId;
+			trip->n[stepId][1] = normalId1 + numNormals * stepId;
+			trip->n[stepId][2] = normalId2 + numNormals * stepId;
+		}
+
+		if (numUvs > 0)
+		{
+			trip->t[0] = uvId0;
+			trip->t[1] = uvId1;
+			trip->t[2] = uvId2;
+		}
+		trip->materialId = perFaceShadingGroup;
+		trip->edgeVis[0] = trip->edgeVis[1] = trip->edgeVis[2] = true;
+		geom->addPrimitive(*trip);
+	}
+}
+
 void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 {
 	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
@@ -121,7 +334,8 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 					{
 						Logging::error(MString("File texture extension is not supported: ") + fileTexturePath);
 					}else{
-						mtco_MapLoader loader;
+						MObject nullObj;
+						mtco_MapLoader loader(nullObj);
 						displacementMap = loader.loadBitmap(fileTexturePath.asChar());
 						hasDisplacement = true;
 					}
@@ -139,105 +353,6 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 	MIntArray triPointIds, triNormalIds, triUvIds, triMatIds;
 	Logging::debug("defineMesh pre getMeshData");
 	obj->getMeshData(points, normals, uArray, vArray, triPointIds, triNormalIds, triUvIds, triMatIds);
-
-	//std::cout << "const float points[] = {\n";
-	//for (uint i = 0; i < points.length(); i++)
-	//{
-	//	MString p("");
-	//	for (uint k = 0; k < 3; k++)
-	//	{
-	//		MString ps = MString("") + points[i][k];
-	//		if (ps == "0")
-	//			ps = "0.0";
-	//		if (ps == "1")
-	//			ps = "1.0";
-	//		if (ps == "-1")
-	//			ps = "-1.0";
-	//		p = p + ps + "f";
-	//		if (i < points.length() - 1)
-	//			p = p + ",";
-	//	}
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "}\n";
-	//std::cout << "const float normals[] = {\n";
-	//for (uint i = 0; i < normals.length(); i++)
-	//{
-	//	MString p("");
-	//	for (uint k = 0; k < 3; k++)
-	//	{
-	//		MString ps = MString("") + normals[i][k];
-	//		if (ps == "0")
-	//			ps = "0.0";
-	//		if (ps == "1")
-	//			ps = "1.0";
-	//		if (ps == "-1")
-	//			ps = "-1.0";
-	//		p = p + ps + "f";
-	//		if (i < normals.length() - 1)
-	//			p = p + ",";
-	//	}
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "}\n";
-	//std::cout << "const float uv[] = {\n";
-	//for (uint i = 0; i < uArray.length(); i++)
-	//{
-	//	MString p("");
-	//	MString us = MString("") + uArray[i];
-	//	if (us == "0")
-	//		us = "0.0";
-	//	if (us == "1")
-	//		us = "1.0";
-	//	if (us == "-1")
-	//		us = "-1.0";
-	//	MString vs = MString("") + vArray[i];
-	//	if (vs == "0")
-	//		vs = "0.0";
-	//	if (vs == "1")
-	//		vs = "1.0";
-	//	if (vs == "-1")
-	//		vs = "-1.0";
-	//	p = p + us + "f, " + vs + "f";
-	//	if (i < uArray.length() - 1)
-	//		p = p + ",";
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "}\n";
-
-	//std::cout << "const int triPointIds[] = {\n";
-	//for (uint i = 0; i < triPointIds.length(); i += 3)
-	//{
-	//	MString p;
-	//	p = p + triPointIds[i] + ", " + triPointIds[i + 1] + ", " + triPointIds[i + 2];
-	//	if (i < triPointIds.length() - 3)
-	//		p = p + ",";
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "};\n";
-
-	//std::cout << "const int triNormalIds[] = {\n";
-	//for (uint i = 0; i < triNormalIds.length(); i += 3)
-	//{
-	//	MString p;
-	//	p = p + triNormalIds[i] + ", " + triNormalIds[i + 1] + ", " + triNormalIds[i + 2];
-	//	if (i < triNormalIds.length() - 3)
-	//		p = p + ",";
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "};\n";
-
-	//std::cout << "const int triUvIds[] = {\n";
-	//for (uint i = 0; i < triUvIds.length(); i += 3)
-	//{
-	//	MString p;
-	//	p = p + triUvIds[i] + ", " + triUvIds[i + 1] + ", " + triUvIds[i + 2];
-	//	if (i < triUvIds.length() - 3)
-	//		p = p + ",";
-	//	std::cout << p.asChar() << "\n";
-	//}
-	//std::cout << "};\n";
-
 
 	int numSteps = (int)obj->meshDataList.size();
 	uint numVertices = points.length();
@@ -274,20 +389,15 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 			}
 		}
 		npts = md.points.length();
-		//Logging::debug(MString("Adding ") + npts + " points for step " + mbStep);
 		for( uint vtxId = 0; vtxId < md.points.length(); vtxId++)
 		{
 			MPoint& p = md.points[vtxId];
-			//Logging::debug(MString("geom->getVertices().push(Corona::Pos(") + p.x + ", " + p.y + ", " + p.z + " ));");
 			geom->getVertices().push(Corona::Pos(p.x,p.y,p.z));
 		}
 	
-		//Logging::debug(MString("Adding ") + md.normals.length() + " normals for step " + mbStep);
 		for (uint nId = 0; nId < md.normals.length(); nId++)
 		{
 			MFloatVector& n =  md.normals[nId];
-			//Logging::debug(MString("geom->getNormals().push(Corona::Pos(") + n.x + ", " + n.y + ", " + n.z + " ));");
-			//Logging::debug(MString("N id: ") + nId + ": " + n.x + " " + n.y + " " + n.z);
 			geom->getNormals().push(Corona::Dir(n.x, n.y, n.z));
 		}
 	}
@@ -296,22 +406,12 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 	{
 		size_t mcl = geom->getMapCoordIndices().size();
 		geom->getMapCoordIndices().push(mcl);
-		//Logging::debug(MString("geom->getMapCoordIndices().push(") + mcl + ");");
 		geom->getMapCoords().push(Corona::Pos(uArray[tId], vArray[tId], 0.0f));
-		//Logging::debug(MString("geom->getMapCoords().push(Corona::Pos(") + uArray[tId] + ", " + vArray[tId] + ", 0.0f));");
-		//Logging::debug(MString("Geom - Add Uvs : ") + uArray[tId] + " " + vArray[tId]);
 	}   
-
-	//geom->getMapCoordIndices().push(geom->getMapCoordIndices().size());
 
 	obj->geom = geom;
 	int numTris = triPointIds.length() / 3;
 	
-	//context.core->sanityCheck(context.scene);
-
-	//Logging::debug(MString("Corona::TriangleData tri;"));
-
-	//Logging::debug(MString("for (uint triId = 0; triId < ") + numTris + ";  triId++)\n{");
 	for (uint triId = 0; triId < numTris; triId++)
 	{
 		uint index = triId * 3;
@@ -328,98 +428,108 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 
 		if ((vtxId0 >= npts) || (vtxId1 >= npts) || (vtxId2 >= npts))
 			Logging::error(MString("Index > npts!!! -- Obj: ") + obj->shortName);
-		//Logging::debug(MString("VtxIds: ") + vtxId0 + " " + vtxId1 + " " + vtxId2);
-		//Logging::debug(MString("NorIds: ") + normalId0 + " " + normalId1 + " " + normalId2);
-		//Logging::debug(MString("UVsIds: ") + uvId0 + " " + uvId1 + " " + uvId2);
-		//Logging::debug(MString("") + points[vtxId0].x + " " + points[vtxId0].y + " " + points[vtxId0].z);
-		//Logging::debug(MString("") + points[vtxId1].x + " " + points[vtxId1].y + " " + points[vtxId1].z);
-		//Logging::debug(MString("") + points[vtxId2].x + " " + points[vtxId2].y + " " + points[vtxId2].z);
 
-		//Logging::debug(MString("") + normals[normalId0].x + " " + normals[normalId0].y + " " + normals[normalId0].z);
-		//Logging::debug(MString("") + normals[normalId1].x + " " + normals[normalId1].y + " " + normals[normalId1].z);
-		//Logging::debug(MString("") + normals[normalId2].x + " " + normals[normalId2].y + " " + normals[normalId2].z);
-
-		//Logging::debug(MString("") + uArray[uvId0] + " " + vArray[uvId0]);
-		//Logging::debug(MString("") + uArray[uvId1] + " " + vArray[uvId1]);
-		//Logging::debug(MString("") + uArray[uvId2] + " " + vArray[uvId2]);
+		std::auto_ptr<Corona::TriangleData> trip;
 
 		if (hasDisplacement)
 		{
-			Corona::DisplacedTriangleData tri;
-			tri.displacement.map = displacementMap;
-			tri.displacement.waterLevel = -Corona::INFINITY;
-			MPoint p0 = points[vtxId0];
-			MPoint p1 = points[vtxId1];
-			MPoint p2 = points[vtxId2];
-			tri.v[0] = Corona::AnimatedPos(Corona::Pos(p0.x, p0.y, p0.z));
-			tri.v[1] = Corona::AnimatedPos(Corona::Pos(p1.x, p1.y, p1.z));
-			tri.v[2] = Corona::AnimatedPos(Corona::Pos(p2.x, p2.y, p2.z));
-			MVector n0 = normals[normalId0];
-			MVector n1 = normals[normalId1];
-			MVector n2 = normals[normalId2];
-			Corona::Dir dir0(n0.x, n0.y, n0.z);
-			Corona::Dir dir1(n1.x, n1.y, n1.z);
-			Corona::Dir dir2(n2.x, n2.y, n2.z);
-			tri.n[0] = Corona::AnimatedDir(dir0);
-			tri.n[1] = Corona::AnimatedDir(dir1);
-			tri.n[2] = Corona::AnimatedDir(dir2);
-			Corona::Pos uv0(uArray[uvId0],vArray[uvId0],0.0);
-			Corona::Pos uv1(uArray[uvId1],vArray[uvId1],0.0);
-			Corona::Pos uv2(uArray[uvId2],vArray[uvId2],0.0);
-			Corona::StaticArray<Corona::Pos, 3> uvp;
-			if (numUvs > 0)
-			{
-				uvp[0] = uv0;
-				uvp[1] = uv1;
-				uvp[2] = uv2;
-				tri.t.push(uvp);
-			}
-			tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
-			tri.materialId = perFaceShadingGroup;
-			tri.displacement.min = displacementMin;
-			tri.displacement.max = displacementMax;
-			geom->addPrimitive(tri);			
+			trip = std::auto_ptr<Corona::TriangleData>(new Corona::DisplacedTriangleData);
+			Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
+			dtri->displacement.map = displacementMap;
+			dtri->displacement.waterLevel = -Corona::INFINITY;
+			dtri->displacement.min = displacementMin;
+			dtri->displacement.max = displacementMax;
 		}
 		else{
-			Corona::TriangleData tri;
-
-			tri.v.setSegments(numSteps - 1);
-			tri.n.setSegments(numSteps - 1);
-
-			for (int stepId = 0; stepId < numSteps; stepId++)
-			{
-				tri.v[stepId][0] = vtxId0 + numVertices * stepId;
-				tri.v[stepId][1] = vtxId1 + numVertices * stepId;
-				tri.v[stepId][2] = vtxId2 + numVertices * stepId;
-				//Logging::debug(MString("TriId ") + triId + " vtx: " + vtxId0 + " " + vtxId1 + " " + vtxId2);
-				tri.n[stepId][0] = normalId0 + numNormals * stepId;
-				tri.n[stepId][1] = normalId1 + numNormals * stepId;
-				tri.n[stepId][2] = normalId2 + numNormals * stepId;
-				//Logging::debug(MString("tri.v[") + stepId + "][0] = " + (vtxId0 + numVertices * stepId) + ";");
-				//Logging::debug(MString("tri.v[") + stepId + "][1] = " + (vtxId1 + numVertices * stepId) + ";");
-				//Logging::debug(MString("tri.v[") + stepId + "][2] = " + (vtxId2 + numVertices * stepId) + ";");
-				//Logging::debug(MString("tri.n[") + stepId + "][0] = " + (normalId0 + numNormals * stepId) + ";");
-				//Logging::debug(MString("tri.n[") + stepId + "][1] = " + (normalId1 + numNormals * stepId) + ";");
-				//Logging::debug(MString("tri.n[") + stepId + "][2] = " + (normalId2 + numNormals * stepId) + ";");
-			}
-
-			if (numUvs > 0)
-			{
-				tri.t[0] = uvId0;
-				tri.t[1] = uvId1;
-				tri.t[2] = uvId2;
-				//Logging::debug(MString("tri.t[0] = ") + uvId0 + ";");
-				//Logging::debug(MString("tri.t[1] = ") + uvId1 + ";");
-				//Logging::debug(MString("tri.t[2] = ") + uvId2 + ";");
-			}
-			//Logging::debug(MString("tri.materialId = ") + perFaceShadingGroup + ";");
-			tri.materialId = perFaceShadingGroup;
-			//Logging::debug(MString("tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;"));
-			tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
-			//Logging::debug(MString("geom->addPrimitive(tri);"));
-			geom->addPrimitive(tri);
-			//context.core->sanityCheck(context.scene);
+			trip = std::auto_ptr<Corona::TriangleData>(new Corona::TriangleData);
 		}
+
+		trip->v.setSegments(1 - 1);
+		trip->n.setSegments(1 - 1);
+
+		for (int stepId = 0; stepId < 1; stepId++)
+		{
+			trip->v[stepId][0] = vtxId0 + numVertices * stepId;
+			trip->v[stepId][1] = vtxId1 + numVertices * stepId;
+			trip->v[stepId][2] = vtxId2 + numVertices * stepId;
+			trip->n[stepId][0] = normalId0 + numNormals * stepId;
+			trip->n[stepId][1] = normalId1 + numNormals * stepId;
+			trip->n[stepId][2] = normalId2 + numNormals * stepId;
+		}
+
+		if (numUvs > 0)
+		{
+			trip->t[0] = uvId0;
+			trip->t[1] = uvId1;
+			trip->t[2] = uvId2;
+		}
+		trip->materialId = perFaceShadingGroup;
+		trip->edgeVis[0] = trip->edgeVis[1] = trip->edgeVis[2] = true;
+		geom->addPrimitive(*trip);
+
+		//if (hasDisplacement)
+		//{
+		//	Corona::DisplacedTriangleData tri;
+		//	tri.displacement.map = displacementMap;
+		//	tri.displacement.waterLevel = -Corona::INFINITY;
+		//	MPoint p0 = points[vtxId0];
+		//	MPoint p1 = points[vtxId1];
+		//	MPoint p2 = points[vtxId2];
+		//	tri.v[0] = Corona::AnimatedPos(Corona::Pos(p0.x, p0.y, p0.z));
+		//	tri.v[1] = Corona::AnimatedPos(Corona::Pos(p1.x, p1.y, p1.z));
+		//	tri.v[2] = Corona::AnimatedPos(Corona::Pos(p2.x, p2.y, p2.z));
+		//	MVector n0 = normals[normalId0];
+		//	MVector n1 = normals[normalId1];
+		//	MVector n2 = normals[normalId2];
+		//	Corona::Dir dir0(n0.x, n0.y, n0.z);
+		//	Corona::Dir dir1(n1.x, n1.y, n1.z);
+		//	Corona::Dir dir2(n2.x, n2.y, n2.z);
+		//	tri.n[0] = Corona::AnimatedDir(dir0);
+		//	tri.n[1] = Corona::AnimatedDir(dir1);
+		//	tri.n[2] = Corona::AnimatedDir(dir2);
+		//	Corona::Pos uv0(uArray[uvId0],vArray[uvId0],0.0);
+		//	Corona::Pos uv1(uArray[uvId1],vArray[uvId1],0.0);
+		//	Corona::Pos uv2(uArray[uvId2],vArray[uvId2],0.0);
+		//	Corona::StaticArray<Corona::Pos, 3> uvp;
+		//	if (numUvs > 0)
+		//	{
+		//		uvp[0] = uv0;
+		//		uvp[1] = uv1;
+		//		uvp[2] = uv2;
+		//		tri.t.push(uvp);
+		//	}
+		//	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+		//	tri.materialId = perFaceShadingGroup;
+		//	tri.displacement.min = displacementMin;
+		//	tri.displacement.max = displacementMax;
+		//	geom->addPrimitive(tri);			
+		//}
+		//else{
+		//	Corona::TriangleData tri;
+
+		//	tri.v.setSegments(numSteps - 1);
+		//	tri.n.setSegments(numSteps - 1);
+
+		//	for (int stepId = 0; stepId < numSteps; stepId++)
+		//	{
+		//		tri.v[stepId][0] = vtxId0 + numVertices * stepId;
+		//		tri.v[stepId][1] = vtxId1 + numVertices * stepId;
+		//		tri.v[stepId][2] = vtxId2 + numVertices * stepId;
+		//		tri.n[stepId][0] = normalId0 + numNormals * stepId;
+		//		tri.n[stepId][1] = normalId1 + numNormals * stepId;
+		//		tri.n[stepId][2] = normalId2 + numNormals * stepId;
+		//	}
+
+		//	if (numUvs > 0)
+		//	{
+		//		tri.t[0] = uvId0;
+		//		tri.t[1] = uvId1;
+		//		tri.t[2] = uvId2;
+		//	}
+		//	tri.materialId = perFaceShadingGroup;
+		//	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
+		//	geom->addPrimitive(tri);
+		//}
 	}
 	//Logging::debug("}");
 	obj->perFaceAssignments.clear();
@@ -476,7 +586,7 @@ void CoronaRenderer::defineGeometry()
 		Corona::AnimatedAffineTm atm;
 		this->setAnimatedTransformationMatrix(atm, obj);
 		obj->instance = geom->addInstance(atm, obj.get(), nullptr);
-
+		
 		MFnDependencyNode depFn(obj->mobject);
 		if (getBoolAttr("mtco_envPortal", depFn, false))
 		{

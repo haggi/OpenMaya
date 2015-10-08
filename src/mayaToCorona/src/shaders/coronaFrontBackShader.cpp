@@ -1,4 +1,4 @@
-#include "coronaFrontBack.h"
+#include "coronaFrontBackShader.h"
 
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -18,6 +18,10 @@
 #include <maya/MDGModifier.h>
 
 MTypeId	CoronaFrontBack::id(0x0011CF47);
+
+MObject  CoronaFrontBack::frontMaterial;
+MObject  CoronaFrontBack::backMaterial;
+MObject  CoronaFrontBack::outColor;
 
 void CoronaFrontBack::postConstructor( )
 {
@@ -44,7 +48,21 @@ MStatus CoronaFrontBack::initialize()
 	MFnEnumAttribute eAttr;
 	MFnMessageAttribute mAttr;
 
-    MStatus status; 
+	frontMaterial = nAttr.createColor("frontMaterial", "frontMaterial");
+	CHECK_MSTATUS(addAttribute(frontMaterial));
+
+	backMaterial = nAttr.createColor("backMaterial", "backMaterial");
+	CHECK_MSTATUS(addAttribute(backMaterial));
+
+	outColor = nAttr.createColor("outColor", "outColor");
+	nAttr.setKeyable(false);
+	nAttr.setStorable(false);
+	nAttr.setReadable(true);
+	nAttr.setWritable(false);
+	CHECK_MSTATUS(addAttribute(outColor));
+
+	CHECK_MSTATUS(attributeAffects(frontMaterial, outColor));
+	CHECK_MSTATUS(attributeAffects(backMaterial, outColor));
 
     return( MS::kSuccess );
 }

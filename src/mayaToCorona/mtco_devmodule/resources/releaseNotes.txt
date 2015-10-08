@@ -5,6 +5,8 @@ release 0.42
 - fixed some physical sky problems
 - added area light render attributes
 - added texturing for area lights
+- redesigned render globals UI
+- added wire/AO/Sky shader
 
 release 0.41
 - fixed a problem with esc key which caused a premature stop of the next rendering.

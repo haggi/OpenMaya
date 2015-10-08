@@ -4,6 +4,7 @@
 #include <maya/MMatrix.h>
 #include "swatchesRenderer/SwatchRendererInterface.h"
 #include <map>
+#include "../coronaOSL/oslRenderer.h"
 #include "CoronaCore/api/Api.h"
 
 
@@ -66,7 +67,7 @@ public:
 
 	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
 
-	virtual void logMsg(const Corona::String& message, const Corona::LogType type)
+	virtual void logMsg(const Corona::String& message, Corona::LogType logType, const int errorCategory)
 	{
 		std::cout << message << std::endl;
 	}
@@ -120,7 +121,7 @@ class mtco_SwatchRendererInterface : SwatchRendererInterface
 {
 public:
 	mtco_SwatchRendererInterface(MObject dependNode, MObject renderNode, int imageResolution);
-	~mtco_SwatchRendererInterface();
+	virtual ~mtco_SwatchRendererInterface();
 	MObject renderNode;
 	MObject dependNode;
 
@@ -133,7 +134,6 @@ public:
 	virtual void fillDummySwatch(MImage& image);
 
 	// corona specific
-
 	Corona::ICore::MtlSceneConfig config;
 	//Context context;
 	void defineSettings();

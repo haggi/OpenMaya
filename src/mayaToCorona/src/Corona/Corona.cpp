@@ -12,10 +12,6 @@
 #include "CoronaShaders.h"
 #include <maya/MNodeMessage.h>
 
-//#include "CoronaTestScene.h"
-
-static Logging logger;
-
 CoronaRenderer::CoronaRenderer()
 {
 	MStatus stat;
@@ -30,40 +26,42 @@ CoronaRenderer::CoronaRenderer()
 	MObject renderGlobalsNode = getRenderGlobalsNode();
 	this->renderFbGlobalsNodeCallbackId = 0;
 	this->renderFbGlobalsNodeCallbackId = MNodeMessage::addNodeDirtyCallback(renderGlobalsNode, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
+	this->oslRenderer = new OSL::OSLShadingNetworkRenderer();
+	this->oslRenderer->setup();
 
-	int numP = Corona::PropertyDescriptor::descriptorsCount();
-	Logging::debug("Property descriptiors:");
-	for (uint i = 0; i < 2000; i++)
-	{
-		const Corona::PropertyDescriptor* pd = Corona::PropertyDescriptor::get(i);
-		if (pd)
-		{
-			MString ts;
-			Corona::Abstract::Settings::Property prop = pd->valueDefault;
-			if (pd->type == Corona::PropertyType::T_BOOL)
-			{
-				bool b = prop;
-				ts += MString(" BOOL ") + b;
-			}
-			if (pd->type == Corona::PropertyType::T_FLOAT)
-			{
-				float f = prop;
-				ts += MString(" FLOAT ") + f;
-			}
-			if (pd->type == Corona::PropertyType::T_INT)
-			{
-				int f = prop;
-				ts += MString(" INT ") + f;
-			}
-			if (pd->type == Corona::PropertyType::T_STR)
-			{
-				Corona::String f = prop;
-				ts += MString(" STRING ") + f.cStr();
-			}
-			Logging::debug(MString("Descriptor: ") + pd->name.cStr() + " id " + i + ts);
+	//int numP = Corona::PropertyDescriptor::descriptorsCount();
+	//Logging::debug("Property descriptiors:");
+	//for (uint i = 0; i < 2000; i++)
+	//{
+	//	const Corona::PropertyDescriptor* pd = Corona::PropertyDescriptor::get(i);
+	//	if (pd)
+	//	{
+	//		MString ts;
+	//		Corona::Abstract::Settings::Property prop = pd->valueDefault;
+	//		if (pd->type == Corona::PropertyType::T_BOOL)
+	//		{
+	//			bool b = prop;
+	//			ts += MString(" BOOL ") + b;
+	//		}
+	//		if (pd->type == Corona::PropertyType::T_FLOAT)
+	//		{
+	//			float f = prop;
+	//			ts += MString(" FLOAT ") + f;
+	//		}
+	//		if (pd->type == Corona::PropertyType::T_INT)
+	//		{
+	//			int f = prop;
+	//			ts += MString(" INT ") + f;
+	//		}
+	//		if (pd->type == Corona::PropertyType::T_STR)
+	//		{
+	//			Corona::String f = prop;
+	//			ts += MString(" STRING ") + f.cStr();
+	//		}
+	//		Logging::debug(MString("Descriptor: ") + pd->name.cStr() + " id " + i + ts);
 
-		}
-	}
+	//	}
+	//}
 }
 
 CoronaRenderer::~CoronaRenderer()
@@ -102,6 +100,9 @@ CoronaRenderer::~CoronaRenderer()
 		delete context.colorMappingData;
 		context.colorMappingData = nullptr;
 	}
+
+	clearDataList();
+	delete this->oslRenderer;
 }
 
 void CoronaRenderer::frameBufferInteractiveCallback(MObject& node, void *clientData)
@@ -156,7 +157,6 @@ void CoronaRenderer::render()
 		MGlobal::displayError(MString("Sorry! Could not get a valid license.") + reason);
 		return;
 	}
-
 	context.scene = context.core->createScene();
 
 	//createTestScene();
@@ -275,9 +275,9 @@ void CoronaRenderer::initializeRenderer()
 	context.logger = new mtco_Logger(context.core);
 	context.colorMappingData = new Corona::ColorMappingData;
 	
-	if (gFn.findPlug("useCoronaVFB").asBool())
-		if (MGlobal::mayaState() != MGlobal::kBatch)
-			vfbCallbacks.core = context.core;
+	//if (gFn.findPlug("useCoronaVFB").asBool())
+	//	if (MGlobal::mayaState() != MGlobal::kBatch)
+	//		vfbCallbacks.core = context.core;
 
 	ConfParser parser;
 	Corona::String resPath = (getRendererHome() + "resources/").asChar();
@@ -291,37 +291,27 @@ void CoronaRenderer::initializeRenderer()
 	context.fb->initFb(context.settings, context.renderPasses);
 	context.core->sanityCheck(context.settings);
 
-	if (gFn.findPlug("useCoronaVFB").asBool())
-		if (MGlobal::mayaState() != MGlobal::kBatch)
-			context.core->getWxVfb().renderStarted(context.fb, &vfbCallbacks, IWxVfb::EnviroConfig());
+	//if (gFn.findPlug("useCoronaVFB").asBool())
+	//	if (MGlobal::mayaState() != MGlobal::kBatch)
+	//		context.core->getWxVfb().renderStarted(context.fb, &vfbCallbacks, IWxVfb::EnviroConfig());
 
 	// this can be extracted and placed in a button function in the render globals
-	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
-	MFnDependencyNode renderGlobalsNode(getRenderGlobalsNode());
-	Corona::String dumpFilename = (renderGlobals->getImageOutputFile() + ".dmp").asChar();
-	if (getBoolAttr("dumpAndResume", renderGlobalsNode, false))
-	{
-		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-		if (!context.fb->accumulateFromExr(dumpFilename))
-		{
-			Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
-		}
-		else{
-			// random seed has to be 0 for resuming a render
-			context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
-			context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-		}
-	}
-
-	OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)MayaTo::getWorldPtr()->getObjPtr("oslRenderer");
-	if (r == nullptr)
-	{
-		Logging::debug("error CoronaRenderer::render: OSL renderer == nullptr");
-		return;
-	}
-	this->oslRenderer = r;
-	r->setup(); // delete existing shadingsys and reinit all
-
+	//std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
+	//MFnDependencyNode renderGlobalsNode(getRenderGlobalsNode());
+	//Corona::String dumpFilename = (renderGlobals->getImageOutputFile() + ".dmp").asChar();
+	//if (getBoolAttr("dumpAndResume", renderGlobalsNode, false))
+	//{
+	//	context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+	//	if (!context.fb->accumulateFromExr(dumpFilename))
+	//	{
+	//		Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
+	//	}
+	//	else{
+	//		// random seed has to be 0 for resuming a render
+	//		context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
+	//		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+	//	}
+	//}
 }
 
 void CoronaRenderer::unInitializeRenderer()

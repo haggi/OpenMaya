@@ -10,12 +10,6 @@ namespace MayaTo{
 
 	void MayaToWorld::cleanUp()
 	{
-		OSL::OSLShadingNetworkRenderer *r = (OSL::OSLShadingNetworkRenderer *)this->getObjPtr("oslRenderer");
-		if (r != nullptr)
-			delete r;
-		r = (OSL::OSLShadingNetworkRenderer *)this->getObjPtr("oslSwatchRenderer");
-		if (r != nullptr)
-			delete r;
 		mtco_SwatchRendererInterface::cleanUpStaticData();
 	}
 
@@ -29,18 +23,6 @@ namespace MayaTo{
 	
 	void MayaToWorld::initialize()
 	{
-		OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
-		this->addObjectPtr("oslRenderer", r);
-
-		OSL::OSLShadingNetworkRenderer *swatchRenderer = new OSL::OSLShadingNetworkRenderer();
-		this->addObjectPtr("oslSwatchRenderer", swatchRenderer);
-
-		std::string oslShaderPath = (getRendererHome() + "shaders").asChar();
-		Logging::debug(MString("setting osl shader search path to: ") + oslShaderPath.c_str());
-		r->setShaderSearchPath(oslShaderPath);
-		r->setup();
-		swatchRenderer->setShaderSearchPath(oslShaderPath);
-		swatchRenderer->setup();
 		mtco_SwatchRendererInterface::initializeStaticData();
 		setCanDoIPR(false);
 	}
@@ -62,5 +44,15 @@ namespace MayaTo{
 	void MayaToWorld::callAfterNewCallback(void *)
 	{
 		getWorldPtr()->afterNewScene();
+	}
+
+	void MayaToWorld::setRendererUnit()
+	{
+		this->rendererUnit = MDistance::kMeters;
+	}
+
+	void MayaToWorld::setRendererAxis()
+	{
+		this->rendererAxis = ZUp;
 	}
 }

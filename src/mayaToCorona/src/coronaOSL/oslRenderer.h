@@ -102,7 +102,8 @@ class OSLShadingNetworkRenderer
 public:
 	SimpleRenderer renderer;
 	OSL::ShadingSystem *shadingsys;
-	
+	std::string rendererName;
+
 	int resX, resY;
 	ErrorHandler errorHandler;
 	ShaderGroupRef shadergroup;
@@ -156,8 +157,8 @@ OSL_NAMESPACE_EXIT
 
 namespace MAYATO_OSL
 {
-	void createOSLShader(MString& shaderName, OSLParamArray& paramArray, MString type = "shader"); //overwrite this in renderer specific version
-	void connectOSLShaders(ConnectionArray& ca); //overwrite this in renderer specific version
+	void createOSLShader(MString& shaderName, OSLParamArray& paramArray, MString type, OSL::OSLShadingNetworkRenderer *oslRenderer); //overwrite this in renderer specific version
+	void connectOSLShaders(ConnectionArray& ca, OSL::OSLShadingNetworkRenderer *oslRenderer); //overwrite this in renderer specific version
 };
 
 

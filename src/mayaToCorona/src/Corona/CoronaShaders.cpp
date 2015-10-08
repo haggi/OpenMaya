@@ -1,4 +1,5 @@
 #include <fstream>
+#include <map>
 #include "CoronaShaders.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/material.h"
@@ -11,7 +12,9 @@
 #include "../coronaOSL/coronaOSLMapUtil.h"
 #include "CoronaUtils.h"
 #include "CoronaMap.h"
-#include "coronaAOShader.h"
+#include "CoronaAOShader.h"
+#include "CoronaFrontBack.h"
+#include "CoronaWire.h"
 #include "world.h"
 #include "renderGlobals.h"
 
@@ -23,7 +26,6 @@ void clearDataList()
 {
 	dataList.clear();
 }
-
 
 Corona::Rgb defineColor(MString& attributeName, MFnDependencyNode& depFn)
 {
@@ -38,15 +40,15 @@ float defineFloat(MString& attributeName, MFnDependencyNode& depFn)
 
 // if we have something like a color attribute which we want to parse, we derive the 
 // shading network from the attribute name and depFn
-Corona::ColorOrMap defineAttribute(MString& attributeName, MObject& node)
+Corona::ColorOrMap defineAttribute(MString& attributeName, MObject& node, OSL::OSLShadingNetworkRenderer *oslRenderer)
 {
 	ShadingNetwork network(node);
 	MFnDependencyNode depFn(node);
 
-	return defineAttribute(attributeName, depFn, network);
+	return defineAttribute(attributeName, depFn, network, oslRenderer);
 }
 
-Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
+Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, OSL::OSLShadingNetworkRenderer *oslRenderer)
 {
 	MStatus stat;
 
@@ -74,9 +76,19 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 					texmap = new AoMap(connectedObject);
 					return Corona::ColorOrMap(rgbColor, texmap);
 				}
+				if (connectedNode.typeName() == "CoronaFrontBack")
+				{
+					texmap = new FrontBackMap(connectedObject);
+					return Corona::ColorOrMap(rgbColor, texmap);
+				}
+				if (connectedNode.typeName() == "CoronaWire")
+				{
+					texmap = new WireMap(connectedObject);
+					return Corona::ColorOrMap(rgbColor, texmap);
+				}
 			}
 		}
-		texmap = getOslTexMap(attributeName, depFn, sn);
+		texmap = getOslTexMap(attributeName, depFn, sn, oslRenderer);
 	}
 	else{
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR)
@@ -105,14 +117,14 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 	return Corona::ColorOrMap(rgbColor, texmap);
 }
 
-Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn)
+Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, OSL::OSLShadingNetworkRenderer *oslRenderer)
 {
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 	if (isConnected("normalCamera", depFn, true, false))
 	{
 		MString normalCamName = "normalCamera";
 		Logging::debug(MString("normal camera is connected"));
-		texmap = getOslTexMap(normalCamName, depFn, sn);
+		texmap = getOslTexMap(normalCamName, depFn, sn, oslRenderer);
 		Logging::debug("Bump connected");
 		return texmap;
 	}
@@ -127,13 +139,11 @@ Corona::SharedPtr<Corona::IMaterial> defineDefaultMaterial()
 	return data.createMaterial();
 }
 
-Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode, std::shared_ptr<MayaObject> obj)
+Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode, std::shared_ptr<MayaObject> obj, OSL::OSLShadingNetworkRenderer *oslRenderer, bool keepData)
 {
 	float globalScaleFactor = 1.0f;
 	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 		globalScaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
-
-	MAYATO_OSL::initOSLUtil();
 
 	if (materialNode == MObject::kNullObj)
 		return defineDefaultMaterial();
@@ -147,8 +157,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 	MFnDependencyNode depFn(materialNode);
 
-	// if we do a swatch render, we always want to create a new data object
-	if (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING)
+	if(keepData)
 	{
 		for (size_t i = 0; i < dataList.size(); i++)
 		{
@@ -181,7 +190,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		data.components.diffuse.setColor(Corona::Rgb(.7, .7, .7));
 
 		Logging::debug(MString("Defining layered base Material: ") + connectedMatName);
-		Corona::SharedPtr<Corona::IMaterial> connectedBaseMat = defineCoronaMaterial(connectedMat, obj);
+		Corona::SharedPtr<Corona::IMaterial> connectedBaseMat = defineCoronaMaterial(connectedMat, obj, oslRenderer, keepData);
 		Corona::LayeredMtlData layerData;
 		layerData.baseMtl = connectedBaseMat;
 		Corona::LayeredMtlData::MtlEntry baseEntry;
@@ -221,25 +230,18 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 				Logging::debug(MString("Creating entry ") + pId + " Shader: " + nodeName);
 				Corona::LayeredMtlData::MtlEntry entry;
-				entry.material = defineCoronaMaterial(inputs[0].node(), obj);
+				entry.material = defineCoronaMaterial(inputs[0].node(), obj, oslRenderer, keepData);
 				MString attName = aPlug.name();
 				MStringArray strArray;
 				attName.split('.', strArray);
 				if (strArray.length() > 1)
 					attName = strArray[strArray.length()-1];
-				entry.amount = defineAttribute(attName, materialNode);
+				entry.amount = defineAttribute(attName, materialNode, oslRenderer);
 				layerData.layers.push(entry);
 			}
 		}
 
-		//mtlData md;
-		//md.data = layerData;
-		//md.mtlName = depFn.name();
-		//dataList.push_back(md);
-
 		return layerData.createMaterial();
-
-		//return defineDefaultMaterial();
 	}
 
 	if (depFn.typeName() == "CoronaSurface")
@@ -249,37 +251,37 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		//mtco_MapLoader loader;
 		//Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap("C:/daten/3dprojects/mayaToCorona/sourceimages/redBlue.exr");
 		//data.components.diffuse = Corona::ColorOrMap(Corona::Rgb(0, 1, 0), texmap);
-		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network);
-		data.components.translucency = defineAttribute(MString("translucency"), depFn, network);
-		data.translucencyLevel = defineAttribute(MString("translucencyFraction"), depFn, network);
-		//data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network);
-		data.components.reflect = defineAttribute(MString("reflectivity"), depFn, network);
+		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network, oslRenderer);
+		data.components.translucency = defineAttribute(MString("translucency"), depFn, network, oslRenderer);
+		data.translucencyLevel = defineAttribute(MString("translucencyFraction"), depFn, network, oslRenderer);
+		//data.translucencyLevel = defineAttribute(MString("translucencyLevel"), depFn, network, oslRenderer);
+		data.components.reflect = defineAttribute(MString("reflectivity"), depFn, network, oslRenderer);
 		const Corona::BsdfLobeType bsdfType[] = { Corona::BSDF_ASHIKHMIN, Corona::BSDF_PHONG, Corona::BSDF_WARD };
-		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network);
-		data.reflect.fresnelIor = defineAttribute(MString("fresnelIor"), depFn, network);
-		data.reflect.anisotropy = defineAttribute(MString("anisotropy"), depFn, network);
-		data.reflect.anisoRotation = defineAttribute(MString("anisotropicRotation"), depFn, network);
-		data.components.refract = defineAttribute(MString("refractivity"), depFn, network);
-		data.refract.ior = defineAttribute(MString("refractionIndex"), depFn, network);
-		data.refract.glossiness = defineAttribute(MString("refractionGlossiness"), depFn, network);
+		data.reflect.glossiness = defineAttribute(MString("reflectionGlossiness"), depFn, network, oslRenderer);
+		data.reflect.fresnelIor = defineAttribute(MString("fresnelIor"), depFn, network, oslRenderer);
+		data.reflect.anisotropy = defineAttribute(MString("anisotropy"), depFn, network, oslRenderer);
+		data.reflect.anisoRotation = defineAttribute(MString("anisotropicRotation"), depFn, network, oslRenderer);
+		data.components.refract = defineAttribute(MString("refractivity"), depFn, network, oslRenderer);
+		data.refract.ior = defineAttribute(MString("refractionIndex"), depFn, network, oslRenderer);
+		data.refract.glossiness = defineAttribute(MString("refractionGlossiness"), depFn, network, oslRenderer);
 
 		int glassType = getEnumInt("glassType", depFn);
 		Corona::GlassMode glassModes[] = { Corona::GLASS_HYBRID, Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED };
 		data.refract.glassMode = glassModes[glassType];
 
 		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
-		if (obj != nullptr)
-		{
-			MPlug rcMultiPlug = depFn.findPlug("roundCornersRadiusMultiplier");
-			if (!rcMultiPlug.isNull())
-				rcMultiPlug.setFloat(globalScaleFactor);
-			data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
-			//data.roundedCorners.radius = rcRadius * globalScaleFactor;
-			getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
-		}
+		//if (obj != nullptr)
+		//{
+		//	MPlug rcMultiPlug = depFn.findPlug("roundCornersRadiusMultiplier");
+		//	if (!rcMultiPlug.isNull())
+		//		rcMultiPlug.setFloat(globalScaleFactor);
+		//	data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
+		//	//data.roundedCorners.radius = rcRadius * globalScaleFactor;
+		//	getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
+		//}
 
 		// --- volume ----
-		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network);
+		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network, oslRenderer);
 		data.volume.attenuationDist = defineFloat(MString("attenuationDist"), depFn);
 		data.volume.attenuationDist *= globalScaleFactor;
 		data.volume.emissionColor = defineColor(MString("volumeEmissionColor"), depFn);
@@ -287,13 +289,13 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 		//// -- volume sss --
 		data.volume.meanCosine = getFloatAttr("volumeMeanCosine", depFn, 0.0f);
-		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network);
+		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network, oslRenderer);
 		data.volume.sssMode = getBoolAttr("volumeSSSMode", depFn, false);
 
-		data.opacity = defineAttribute(MString("opacity"), depFn, network);
+		data.opacity = defineAttribute(MString("opacity"), depFn, network, oslRenderer);
 
 		// ---- emission ----
-		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
+		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network, oslRenderer);
 		//bool disableSampling = false;
 		//getBool("emissionDisableSampling", depFn, disableSampling);
 		data.emission.disableSampling = true; // always disable sampling because we use it only in light shaders
@@ -310,7 +312,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		Corona::AlphaInteraction alphaInteraction[] = { Corona::ALPHA_DEFAULT, Corona::ALPHA_SOLID, Corona::ALPHA_TRANSPARENT };
 		data.alpha = alphaInteraction[alphaMode];
 
-		data.bump = defineBump(MString("bump"), depFn, network);
+		data.bump = defineBump(MString("bump"), depFn, network, oslRenderer);
 
 		// setup all object specific data which needs a mayaobject
 		if (obj != nullptr)
@@ -399,26 +401,29 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 				data.bgOverride = Corona::SharedPtr<Corona::RaySwitcherMap>(new Corona::RaySwitcherMap(com));
 				if (doDirect)
 				{
-					com = defineAttribute(MString("globalDirectOverride"), globalsNode, network);
+					com = defineAttribute(MString("globalDirectOverride"), globalsNode, network, oslRenderer);
 					data.bgOverride->addOverride(com, Corona::RayType::RAY_DIRECT);
 				}
 				if (doReflect)
 				{
-					com = defineAttribute(MString("globalReflectionOverride"), globalsNode, network);
+					com = defineAttribute(MString("globalReflectionOverride"), globalsNode, network, oslRenderer);
 					data.bgOverride->addOverride(com, Corona::RayType::RAY_REFLECTED);
 				}
 				if (doRefract)
 				{
-					com = defineAttribute(MString("globalRefractionOverride"), globalsNode, network);
+					com = defineAttribute(MString("globalRefractionOverride"), globalsNode, network, oslRenderer);
 					data.bgOverride->addOverride(com, Corona::RayType::RAY_REFRACTED);
 				}
 			}
 		}
-		mtlData md;
-		md.data = data;
-		md.mtlName = depFn.name();
-		dataList.push_back(md);
 
+		if (keepData)
+		{
+			mtlData md;
+			md.data = data;
+			md.mtlName = depFn.name();
+			dataList.push_back(md);
+		}
 		return data.createMaterial();
 	}
 
@@ -426,14 +431,14 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	{
 		Corona::NativeMtlData data;
 		// ---- emission ----
-		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network);
+		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network, oslRenderer);
 		data.emission.useTwoSidedEmission = getBoolAttr("doubleSidedEmission", depFn, false);
 		//data.emission.color.setMap(new SidedMap);
 		data.emission.emissionGlossiness = getFloatAttr("emissionGlossiness", depFn, 0.0f);
 		//data.components.diffuse.setMap(new SidedMap);
 		//bool disableSampling = false;
 		//getBool("emissionDisableSampling", depFn, disableSampling);
-		data.opacity = defineAttribute(MString("opacity"), depFn, network);
+		data.opacity = defineAttribute(MString("opacity"), depFn, network, oslRenderer);
 		// if the CoronaLight shader is not supposed to emit light, it should be used as something like a self illuminated BG
 		// so we turn off visible in GI and disableSampling. 
 		if (getBoolAttr("emitLight", depFn, true))
@@ -531,10 +536,13 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			}
 		}
 
-		mtlData md;
-		md.data = data;
-		md.mtlName = depFn.name();
-		dataList.push_back(md);
+		if (keepData)
+		{
+			mtlData md;
+			md.data = data;
+			md.mtlName = depFn.name();
+			dataList.push_back(md);
+		}
 		return data.createMaterial();
 	}
 
@@ -542,9 +550,9 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	{
 		Corona::NativeMtlData data;
 		// --- volume ----
-		data.opacity = defineAttribute(MString("opacity"), depFn, network);
+		data.opacity = defineAttribute(MString("opacity"), depFn, network, oslRenderer);
 
-		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network);
+		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network, oslRenderer);
 		data.volume.attenuationDist = defineFloat(MString("attenuationDist"), depFn);
 		data.volume.attenuationDist *= globalScaleFactor;
 		data.volume.emissionColor = defineColor(MString("volumeEmissionColor"), depFn);
@@ -552,13 +560,16 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 		//// -- volume sss --
 		data.volume.meanCosine = getFloatAttr("volumeMeanCosine", depFn, 0.0f);
-		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network);
+		data.volume.scatteringAlbedo = defineAttribute(MString("volumeScatteringAlbedo"), depFn, network, oslRenderer);
 		data.volume.sssMode = getBoolAttr("volumeSSSMode", depFn, false);
 
-		mtlData md;
-		md.data = data;
-		md.mtlName = depFn.name();
-		dataList.push_back(md);
+		if (keepData)
+		{
+			mtlData md;
+			md.data = data;
+			md.mtlName = depFn.name();
+			dataList.push_back(md);
+		}
 		return data.createMaterial();
 	}
 

@@ -7,7 +7,6 @@ class CoronaRenderer;
 class OSLMap : public Corona::Abstract::Map 
 {
 public:
-	//CoronaRenderer *coronaRenderer;
 	OSL::OSLShadingNetworkRenderer *oslRenderer;
 	enum BumpType { NONE = 0, BUMP, NORMALOBJECT, NORMALTANGENT, NORMALWORLD, BUMP3D};
 	BumpType bumpType;
@@ -16,6 +15,7 @@ public:
 	bool isEnvMap;
 	bool isLightMap;
 	float multiplier;
+	Corona::String mapName = "OSLMap";
 	OSL::ShaderGroupRef shaderGroup;
 	OSLMap();
 	~OSLMap();
@@ -27,4 +27,6 @@ public:
 	virtual Corona::Rgb evalColorBump(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha, float u, float v);
 	virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output);
 	virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
+	virtual bool exportMap(Corona::IResourceManager& resourceManager, Corona::XmlWriterNode& outXml) const;
+	virtual Corona::String name() const { return mapName; };
 };

@@ -12,7 +12,7 @@
 #include <maya/MPlugArray.h>
 #include "CoronaCore/api/Api.h"
 
-Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn);
+Corona::SharedPtr<Corona::Abstract::Map> getOslTexMap(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, OSL::OSLShadingNetworkRenderer *oslRenderer);
 
 
 #endif

@@ -15,7 +15,6 @@ OSLMap::OSLMap()
 
 void OSLMap::setShadingGlobals(const Corona::IShadeContext& context, OSL::ShaderGlobals &sg, int x, int y, OSL::Matrix44& Mshad, OSL::Matrix44& Mobj)
 {
-	//this->oslRenderer->renderer.setup_transformations(Mshad, Mobj);
 
     // Just zero the whole thing out to start
     memset(&sg, 0, sizeof(OSL::ShaderGlobals));
@@ -302,8 +301,10 @@ void OSLMap::renderTo(Corona::Bitmap<Corona::Rgb>& output)
 	STOP; //currently not supported
 }
 
-OSLMap::~OSLMap()
+bool OSLMap::exportMap(Corona::IResourceManager& resourceManager, Corona::XmlWriterNode& outXml) const
 {
-	Logging::debug(MString("OSLMap resetting shader group"));
-	this->shaderGroup.reset();
+	return true;
 }
+
+OSLMap::~OSLMap()
+{}

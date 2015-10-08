@@ -42,74 +42,184 @@ public:
 
 static int c = 0;
 
+
 class mtco_MapLoader : public Corona::Object {
 public:
 	MColor colorGain;
 	MColor colorOffset;
 	float exposure;
 
-	Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
+	mtco_MapLoader::mtco_MapLoader(MObject& mobject);
+	mtco_MapLoader::~mtco_MapLoader();
 
+	Corona::Abstract::Map* loadBitmap(const Corona::String& filename) 
+	{
 		class TextureMap : public Corona::Abstract::Map {
 		protected:
 			Corona::TextureShader shader;
 		public:
-			MColor colorGain;
-			MColor colorOffset;
-			float exposure;
-
 			TextureMap(const Corona::String& filename, const int mapChannel) {
 				Corona::TextureShader::Config config;
 				config.mapping.uvwMapChannel = mapChannel;
 				config.texture = Corona::TextureShader::getImageTexture(filename);
+				
 				this->shader.configure(config);
 			}
 
 			virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
 				outAlpha = 1.f;
 				bool outsideDummy;
-				float ex = exposure;
-				Corona::Rgb envColor = shader.eval(context, true, outsideDummy);
-				//if (c < 100)
-				//{
-				//	std::cout << "evalEnvCol " << envColor.r() << " " << envColor.g() << " " << envColor.g() << "\n";
-				//	c++;
-				//}
-				return envColor;
+				return shader.eval(context, true, outsideDummy);
 			}
 
-			/// \brief Same as evalColor, only scalar value is returned
 			virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
 				outAlpha = 1.f;
+				
 				bool outsideDummy;
 				return shader.eval(context, true, outsideDummy).grayValue();
 			}
 
-			/// \brief Evaluates bump mapping for this texture and returns a vector that have to be added to the
-			///        current normal to create the bump effect (the normal perturbation)
 			virtual Corona::Dir evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache) {
 				STOP;
 			}
 
-			/// \brief Renders the map to given output bitmap. Sets the output dimensions to adequate values.
 			virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
-				shader.renderTo(output);
+				//shader.renderTo(output);
 			}
+
 
 			virtual Corona::String name() const {
 				return "TextureMap";
 			}
 			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
 
+			virtual bool exportMap(Corona::IResourceManager& resourceManager, Corona::XmlWriterNode& outXml) const { return true; }
+
 		};
 
-		TextureMap *texMap = new TextureMap(filename, 0);
-		texMap->colorGain = colorGain;
-		texMap->colorOffset = colorOffset;
-		texMap->exposure = exposure;
-		return texMap;
+		return new TextureMap(filename, 0);
 	}
 };
+
+class mtco_FileLoader : public Corona::Object {
+public:
+	Corona::Abstract::Map* loadBitmap(const Corona::String& filename)
+	{
+		class TextureMap : public Corona::Abstract::Map {
+		protected:
+			Corona::TextureShader shader;
+		public:
+			TextureMap(const Corona::String& filename, const int mapChannel) {
+				Corona::TextureShader::Config config;
+				config.mapping.uvwMapChannel = mapChannel;
+				config.texture = Corona::TextureShader::getImageTexture(filename);
+
+				this->shader.configure(config);
+			}
+
+			virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+				outAlpha = 1.f;
+				bool outsideDummy;
+				return shader.eval(context, true, outsideDummy);
+			}
+
+			virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+				outAlpha = 1.f;
+
+				bool outsideDummy;
+				return shader.eval(context, true, outsideDummy).grayValue();
+			}
+
+			virtual Corona::Dir evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache) {
+				STOP;
+			}
+
+			virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
+				//shader.renderTo(output);
+			}
+
+
+			virtual Corona::String name() const {
+				return "TextureMap";
+			}
+			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
+
+			virtual bool exportMap(Corona::IResourceManager& resourceManager, Corona::XmlWriterNode& outXml) const { return true; }
+
+		};
+
+		return new TextureMap(filename, 0);
+	}
+};
+
+//class mtco_MapLoader : public Corona::Object {
+//public:
+//	MColor colorGain;
+//	MColor colorOffset;
+//	float exposure;
+//
+//	Corona::Abstract::Map* loadBitmap(const Corona::String& filename) {
+//
+//		class TextureMap : public Corona::Abstract::Map {
+//		protected:
+//			Corona::TextureShader shader;
+//		public:
+//			MColor colorGain;
+//			MColor colorOffset;
+//			float exposure;
+//
+//			TextureMap(const Corona::String& filename, const int mapChannel) {
+//				Corona::TextureShader::Config config;
+//				config.mapping.uvwMapChannel = mapChannel;
+//				config.texture = Corona::TextureShader::getImageTexture(filename);
+//				this->shader.configure(config);
+//			}
+//
+//			virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+//				outAlpha = 1.f;
+//				bool outsideDummy;
+//				float ex = exposure;
+//				Corona::Rgb envColor = shader.eval(context, true, outsideDummy);
+//				//if (c < 100)
+//				//{
+//				//	std::cout << "evalEnvCol " << envColor.r() << " " << envColor.g() << " " << envColor.g() << "\n";
+//				//	c++;
+//				//}
+//				return envColor;
+//			}
+//
+//			/// \brief Same as evalColor, only scalar value is returned
+//			virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
+//				outAlpha = 1.f;
+//				bool outsideDummy;
+//				return shader.eval(context, true, outsideDummy).grayValue();
+//			}
+//
+//			/// \brief Evaluates bump mapping for this texture and returns a vector that have to be added to the
+//			///        current normal to create the bump effect (the normal perturbation)
+//			virtual Corona::Dir evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache) {
+//				STOP;
+//			}
+//
+//			/// \brief Renders the map to given output bitmap. Sets the output dimensions to adequate values.
+//			virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {
+//				shader.renderTo(output);
+//			}
+//
+//			virtual Corona::String name() const {
+//				return "TextureMap";
+//			}
+//			virtual void getChildren(Corona::Stack<Corona::Resource*>&) {}
+//
+//		};
+//
+//		TextureMap *texMap = new TextureMap(filename, 0);
+//		texMap->colorGain = colorGain;
+//		texMap->colorOffset = colorOffset;
+//		texMap->exposure = exposure;
+//		return texMap;
+//	}
+//};
 
 // Utility class for loading bitmap textures from files. In future, various procedural textures should be also 
 // loaded using this class.

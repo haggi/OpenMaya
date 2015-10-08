@@ -15,6 +15,10 @@ public:
 
     static  MTypeId   id;
 
+	static MObject  frontMaterial;
+	static MObject  backMaterial;
+	static MObject  outColor;
+
 protected:
 
 };

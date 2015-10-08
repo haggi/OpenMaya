@@ -262,6 +262,7 @@
     <ClCompile Include="..\..\common\cpp\translators\meshTranslator.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\attrTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\logging.cpp" />
+    <ClCompile Include="..\..\common\cpp\utilities\meshTools.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\MiniMap.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\pystring.cpp" />
     <ClCompile Include="..\..\common\cpp\utilities\tools.cpp" />
@@ -282,6 +283,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaFrontBack.cpp" />
     <ClCompile Include="..\src\Corona\CoronaImage.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -318,6 +320,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaRoundCorners.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -343,6 +348,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaWire.cpp" />
     <ClCompile Include="..\src\Corona\CoronaWorld.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -360,7 +366,7 @@
     <ClCompile Include="..\src\pluginMain.cpp" />
     <ClCompile Include="..\src\rvCmd.cpp" />
     <ClCompile Include="..\src\shaders\coronaAO.cpp" />
-    <ClCompile Include="..\src\shaders\coronaFrontBack.cpp" />
+    <ClCompile Include="..\src\shaders\coronaFrontBackShader.cpp" />
     <ClCompile Include="..\src\shaders\coronaLayeredMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp" />
@@ -371,7 +377,7 @@
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\coronaVolumeMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaVolumeMaterialOverride.cpp" />
-    <ClCompile Include="..\src\shaders\coronaWire.cpp" />
+    <ClCompile Include="..\src\shaders\coronaWireShader.cpp" />
     <ClCompile Include="..\src\shaders\materialBase.cpp" />
     <ClCompile Include="..\src\shaders\materialBaseOverride.cpp" />
     <ClCompile Include="..\src\shaders\TestShader.cpp" />
@@ -412,6 +418,7 @@
     <ClInclude Include="..\..\common\cpp\translators\meshTranslator.h" />
     <ClInclude Include="..\..\common\cpp\utilities\attrTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\logging.h" />
+    <ClInclude Include="..\..\common\cpp\utilities\meshTools.h" />
     <ClInclude Include="..\..\common\cpp\utilities\MiniMap.h" />
     <ClInclude Include="..\..\common\cpp\utilities\pystring.h" />
     <ClInclude Include="..\..\common\cpp\utilities\tools.h" />
@@ -431,6 +438,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaAOShader.h" />
+    <ClInclude Include="..\src\Corona\CoronaCamera.h" />
+    <ClInclude Include="..\src\Corona\CoronaFrontBack.h" />
+    <ClInclude Include="..\src\Corona\CoronaGeometry.h" />
     <ClInclude Include="..\src\Corona\CoronaLights.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -447,6 +457,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\Corona.h" />
+    <ClInclude Include="..\src\Corona\CoronaRoundCorners.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaShaders.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -471,6 +484,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaVFB.h" />
+    <ClInclude Include="..\src\Corona\CoronaWire.h" />
     <ClInclude Include="..\src\mayaToCorona.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaObject.h" />
     <ClInclude Include="..\src\mtco_common\mtco_mayaRenderer.h" />
@@ -478,7 +492,7 @@
     <ClInclude Include="..\src\mtco_common\mtco_swatchRenderer.h" />
     <ClInclude Include="..\src\rvCmd.h" />
     <ClInclude Include="..\src\shaders\coronaAO.h" />
-    <ClInclude Include="..\src\shaders\coronaFrontBack.h" />
+    <ClInclude Include="..\src\shaders\coronaFrontBackShader.h" />
     <ClInclude Include="..\src\shaders\coronaLayeredMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h" />
@@ -489,7 +503,7 @@
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\coronaVolumeMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaVolumeMaterialOverride.h" />
-    <ClInclude Include="..\src\shaders\coronaWire.h" />
+    <ClInclude Include="..\src\shaders\coronaWireShader.h" />
     <ClInclude Include="..\src\shaders\materialBase.h" />
     <ClInclude Include="..\src\shaders\materialBaseOverride.h" />
     <ClInclude Include="..\src\shaders\TestShader.h" />

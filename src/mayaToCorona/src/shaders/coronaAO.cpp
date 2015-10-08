@@ -107,7 +107,7 @@ MStatus CoronaAO::initialize()
 	CHECK_MSTATUS(addAttribute(offsetY));
 	MObject offsetZ = nAttr.create("offsetZ", "offsetZ", MFnNumericData::kFloat, 0.0);
 	CHECK_MSTATUS(addAttribute(offsetZ));
-	MObject offset = nAttr.create("offsetZ", "offsetZ", offsetX, offsetY, offsetZ);
+	offset = nAttr.create("offset", "offset", offsetX, offsetY, offsetZ);
 
 	useOffset = nAttr.create("useOffset", "useOffset", MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute(useOffset));

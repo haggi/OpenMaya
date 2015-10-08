@@ -19,11 +19,29 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.node = pm.PyNode(self.nodeName)
         self.buildBody(nodeName)
         log.debug("AECoronaNodeTemplate")
-        
+
+    def updateSun(self, node = None):   
+        thisLight = pm.PyNode(node)
+    
+        if thisLight.mtco_useAsSun.get():
+            otherLights = []
+            for light in pm.ls(type="directionalLight"):
+                if light.mtco_useAsSun.get() and (light != thisLight):
+                    otherLights.append(light)
+
+            if len(otherLights) > 0:                       
+                result = pm.confirmDialog(title="Sun Problem", message="Another Light already has sun activated, what should be done?", button=["Use This light", "Use Other Light"])
+                if result == "Use This light":
+                    for light in otherLights:
+                        light.mtco_useAsSun.set(False)
+                else:
+                    thisLight.mtco_useAsSun.set(False)
+                    
     def buildDirLightTemplate(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
-        self.addControl("mtco_sun_multiplier", label="Sun Intensity Multiplier")
+        self.addControl("mtco_useAsSun", label="Use as Sun", changeCommand=self.updateSun)
+        #self.addControl("mtco_sun_multiplier", label="Sun Intensity Multiplier")
         self.endLayout()
         
     def buildAreaLightTemplate(self, nodeName):
