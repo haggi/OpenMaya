@@ -22,7 +22,6 @@ void CoronaRenderer::defineEnvironment()
 	MFnDependencyNode depFn(getRenderGlobalsNode());
 	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
 
-
 	if (depFn.findPlug("globalVolume").isConnected())
 	{
 		Logging::debug("globalVolume is connected.");
@@ -69,23 +68,8 @@ void CoronaRenderer::defineEnvironment()
 		if (getConnectedFileTexturePath(MString("bgColor"), MString("coronaGlobals"), texName, fileTextureObject))
 		{
 			Corona::String fileName = texName.asChar();
-			Logging::debug(MString("Found bg texture: ") + texName);
-			if (!textureFileSupported(texName))
-			{
-				Logging::error(MString("Sorry, textures of this type are not supported: ") + texName);
-				return;
-			}
 			
 			mtco_MapLoader loader(fileTextureObject);
-
-			if (fileTextureObject != MObject::kNullObj)
-			{
-				MFnDependencyNode fileNode(fileTextureObject);
-				loader.colorGain = getColorAttr("colorGain", fileNode);
-				loader.colorOffset = getColorAttr("colorOffset", fileNode);
-				loader.exposure = getFloatAttr("exposure", fileNode, 0.0);
-			}
-			Logging::debug(MString("bgTex: ") + fileName);
 			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
 
 			if (texmap.getReference() == nullptr)

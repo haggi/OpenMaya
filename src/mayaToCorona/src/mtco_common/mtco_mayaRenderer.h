@@ -1,7 +1,8 @@
 #ifndef MAYA_RENDERER_H
 #define MAYA_RENDERER_H
-#include <maya/MTypes.h>
 
+#include "../coronaOSL/oslRenderer.h"
+#include <maya/MTypes.h>
 #if MAYA_API_VERSION >= 201600
 
 #include "../coronaOSL/oslRenderer.h"
@@ -56,11 +57,15 @@ public:
 
 	virtual void logMsg(const Corona::String& message, const Corona::LogType type, const int errorCategory = 0)
 	{
+#ifdef _DEBUG
 		std::cout << message << std::endl;
+#endif
 	}
 	virtual void setProgress(const float progress)
 	{
+#ifdef _DEBUG
 		std::cout << "Progress: " << progress << std::endl;
+#endif
 	}
 };
 
@@ -108,6 +113,7 @@ struct IdNameStruct{
 	MString name; // in appleseed objects must have unique names
 	MObject mobject; // I need to know if I have a light or a mesh or a camera
 	Corona::SharedPtr<Corona::IMaterial> material;
+	Corona::IInstance *instance = nullptr;
 };
 
 struct GeoGroupStruct{

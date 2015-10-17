@@ -93,11 +93,11 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 
 	geom->getMapCoords().push(Corona::Pos(0, 0, 0));
 	geom->getMapCoordIndices().push(0);
-	geom->getMapCoords().push(Corona::Pos(1, 0, 0));
+	geom->getMapCoords().push(Corona::Pos(0, 1, 0));
 	geom->getMapCoordIndices().push(1);
 	geom->getMapCoords().push(Corona::Pos(1, 1, 0));
 	geom->getMapCoordIndices().push(2);
-	geom->getMapCoords().push(Corona::Pos(0, 1, 0));
+	geom->getMapCoords().push(Corona::Pos(1, 0, 0));
 	geom->getMapCoordIndices().push(3);
 
 	Corona::TriangleData tri;
@@ -151,6 +151,7 @@ void defineMesh(Corona::IGeometryGroup *group, const MObject& meshObject)
 	MIntArray triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments;
 	MObject mo = meshObject;
 	getMeshData(mo, points, normals, uArray, vArray, triPointIds, triNormalIds, triUvIds, triMatIds, perFaceAssignments);
+
 
 	Logging::debug(MString("Translating mesh object ") + meshFn.name().asChar());
 	MString meshFullName = makeGoodString(meshFn.fullPathName());
@@ -326,6 +327,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 				MFnDependencyNode displacmentMapNode(displacementObj);
 				getFloat("mtco_displacementMin", displacmentMapNode, displacementMin);
 				getFloat("mtco_displacementMax", displacmentMapNode, displacementMax);
+				MObject fileTextureObject = getConnectedInNode(displacementObj, "displacement");
 				MString fileTexturePath = getConnectedFileTexturePath(MString("displacement"), displacmentMapNode);
 
 				if( fileTexturePath != "")
@@ -335,8 +337,8 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 						Logging::error(MString("File texture extension is not supported: ") + fileTexturePath);
 					}else{
 						MObject nullObj;
-						mtco_MapLoader loader(nullObj);
-						displacementMap = loader.loadBitmap(fileTexturePath.asChar());
+						mtco_MapLoader loader(fileTextureObject);
+						displacementMap = loader.loadBitmap("");
 						hasDisplacement = true;
 					}
 				}
@@ -433,19 +435,21 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 
 		if (hasDisplacement)
 		{
-			trip = std::auto_ptr<Corona::TriangleData>(new Corona::DisplacedTriangleData);
-			Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
-			dtri->displacement.map = displacementMap;
-			dtri->displacement.waterLevel = -Corona::INFINITY;
-			dtri->displacement.min = displacementMin;
-			dtri->displacement.max = displacementMax;
+			std::auto_ptr<Corona::DisplacedTriangleData> dtrip = std::auto_ptr<Corona::DisplacedTriangleData>(new Corona::DisplacedTriangleData);
+			//Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
+			//dtri->displacement.mapChannel = 0;
+			dtrip->displacement.map = displacementMap;
+			dtrip->displacement.waterLevel = -Corona::INFINITY;
+			dtrip->displacement.min = displacementMin;
+			dtrip->displacement.max = displacementMax;
+			trip = dtrip;
 		}
 		else{
 			trip = std::auto_ptr<Corona::TriangleData>(new Corona::TriangleData);
 		}
 
-		trip->v.setSegments(1 - 1);
-		trip->n.setSegments(1 - 1);
+		trip->v.setSegments(1 - 1); // fixme for deformation motionblur
+		trip->n.setSegments(1 - 1); // fixme for deformation motionblur
 
 		for (int stepId = 0; stepId < 1; stepId++)
 		{

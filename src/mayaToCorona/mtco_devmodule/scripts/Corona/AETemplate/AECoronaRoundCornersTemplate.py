@@ -12,34 +12,28 @@ class BaseTemplate(pm.ui.AETemplate):
         pm.ui.AETemplate.beginLayout(self, name, collapse=collapse)
         
 
-class AECoronaWireTemplate(BaseTemplate):
+class AECoronaRoundCornersTemplate(BaseTemplate):
     def __init__(self, nodeName):
         BaseTemplate.__init__(self,nodeName)
-        log.debug("AECoronaLightTemplate")
+        log.debug("AECoronaRoundCornersTemplate")
         self.thisNode = None
         self.node = pm.PyNode(self.nodeName)
         pm.mel.AEswatchDisplay(nodeName)
         self.beginScrollLayout()
         self.buildBody(nodeName)
         allAttributes = self.node.listAttr()
-        allowedAttributes = ["useWorldSpace", "showVertices", "allEdges", "edgeWidth", "vertexWidth", "showEdges"]
+        allowedAttributes = ["samples", "radius"]
         for att in allAttributes:
             att = att.split(".")[-1]
             if not att in allowedAttributes:
                 self.suppress(att)
         self.addExtraControls("ExtraControls")
         self.endScrollLayout()
-        
+                
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
-        self.beginLayout("Wire Settings" ,collapse=0)
-        self.beginNoOptimize()
-        self.addControl("useWorldSpace", label="Color")
-        self.addControl("showVertices", label="Multiplier")
-        self.addControl("showEdges", label="Opacity")
-        self.addControl("allEdges", label="Emit Light")
-        self.addControl("edgeWidth", label="Directionality")
-        self.addControl("vertexWidth", label="Double Sided")
-        self.endNoOptimize()
+        self.beginLayout("RoundCorners" ,collapse=0)
+        self.addControl("samples", label="Samples")
+        self.addControl("radius", label="Radius")
         self.endLayout()
                 

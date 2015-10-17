@@ -1,6 +1,7 @@
 #include <fstream>
 #include <map>
 #include "CoronaShaders.h"
+#include "CoronaRoundCorners.h"
 #include "../mtco_common/mtco_mayaObject.h"
 #include "shadingtools/material.h"
 #include "shadingtools/shaderDefs.h"
@@ -88,7 +89,24 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 				}
 			}
 		}
-		texmap = getOslTexMap(attributeName, depFn, sn, oslRenderer);
+		bool useOSL = true;
+		if (connectedObject.hasFn(MFn::kFileTexture))
+		{
+			MFnDependencyNode fileTexNode(connectedObject);
+			if (getBoolAttr("mtco_noOSL", fileTexNode, false))
+			{
+				useOSL = false;
+				Logging::warning(MString("UseOSL is turned off for texture node : ") + fileTexNode.name() + " using plain corona texture.");
+				mtco_MapLoader loader(connectedObject);
+				texmap = loader.loadBitmap("");
+			}
+		}
+		if (useOSL)
+		{
+			texmap = getOslTexMap(attributeName, depFn, sn, oslRenderer);
+		}
+		else{
+		}
 	}
 	else{
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_COLOR)
@@ -123,10 +141,40 @@ Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnD
 	if (isConnected("normalCamera", depFn, true, false))
 	{
 		MString normalCamName = "normalCamera";
-		Logging::debug(MString("normal camera is connected"));
-		texmap = getOslTexMap(normalCamName, depFn, sn, oslRenderer);
-		Logging::debug("Bump connected");
-		return texmap;
+		MObject inObj = getConnectedInNode(depFn.object(), "normalCamera");
+		if (inObj != MObject::kNullObj)
+		{
+			MFnDependencyNode inFn(inObj);
+			// we can connect round corners or bump2d to bump.
+			// the round corners can have a normalCamera input
+			MString tn = depFn.typeName();
+			if ((inFn.typeName() == "bump2d") || (inFn.typeName() == "CoronaRoundCorners"))
+			{
+				if (inFn.typeName() == "CoronaRoundCorners")
+				{
+					RoundCorners *rcmap = new RoundCorners(inObj);
+					MObject rcIn = getConnectedInNode(inObj, "normalCamera");
+					if (rcIn != MObject::kNullObj)
+					{
+						MFnDependencyNode rcDepFn(rcIn);
+						if (rcDepFn.typeName() == "bump2d")
+						{
+							rcmap->normalCamera = defineAttribute(MString("normalCamera"), inObj, oslRenderer);
+							//Corona::SharedPtr<Corona::Abstract::Map> bumptex = getOslTexMap(normalCamName, rcDepFn, sn, oslRenderer);
+							//rcmap->normalCamera = Corona::ColorOrMap(0.0f, bumptex);
+						}
+					}
+					texmap = rcmap;
+					return texmap;
+				}
+				else // normal bump map
+				{
+					texmap = getOslTexMap(normalCamName, depFn, sn, oslRenderer);
+					Logging::debug("Bump connected");
+					return texmap;
+				}
+			}
+		}
 	}
 	return nullptr;
 }
@@ -248,9 +296,6 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	{
 		Corona::NativeMtlData data;
 
-		//mtco_MapLoader loader;
-		//Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap("C:/daten/3dprojects/mayaToCorona/sourceimages/redBlue.exr");
-		//data.components.diffuse = Corona::ColorOrMap(Corona::Rgb(0, 1, 0), texmap);
 		data.components.diffuse = defineAttribute(MString("diffuse"), depFn, network, oslRenderer);
 		data.components.translucency = defineAttribute(MString("translucency"), depFn, network, oslRenderer);
 		data.translucencyLevel = defineAttribute(MString("translucencyFraction"), depFn, network, oslRenderer);
@@ -296,15 +341,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 
 		// ---- emission ----
 		data.emission.color = defineAttribute(MString("emissionColor"), depFn, network, oslRenderer);
-		//bool disableSampling = false;
-		//getBool("emissionDisableSampling", depFn, disableSampling);
 		data.emission.disableSampling = true; // always disable sampling because we use it only in light shaders
-		//bool sharpnessFake = false;
-		//getBool("emissionSharpnessFake", depFn, sharpnessFake);
-		//data.emission.sharpnessFake = sharpnessFake;
-		//MVector point(0, 0, 0);
-		//getPoint(MString("emissionSharpnessFakePoint"), depFn, point);
-		//data.emission.sharpnessFakePoint = Corona::AnimatedPos(Corona::Pos(point.x, point.y, point.z));
 
 		// ---- alpha mode ----
 		int alphaMode = 0;

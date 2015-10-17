@@ -1,6 +1,7 @@
 #include "Corona.h"
 #include "CoronaLights.h"
 #include "CoronaSky.h"
+#include "CoronaMap.h"
 #include "CoronaShaders.h"
 #include "CoronaUtils.h"
 #include "CoronaOSLMap.h"
@@ -49,66 +50,7 @@ void CoronaRenderer::defineLights()
 	Corona::Rgb bgRgb = toCorona(getColorAttr("bgColor", depFn));
 	int bgType = getEnumInt("bgType", depFn);
 
-	//if( renderGlobals->useSunLightConnection)
-	//{
-	//	getConnectedInNodes(MString("sunLightConnection"), coronaGlobals, nodeList);
-	//	if( nodeList.length() > 0)
-	//	{
-	//		MObject sunObj = nodeList[0];
-	//		if(sunObj.hasFn(MFn::kTransform))
-	//		{
-	//			// we suppose what's connected here is a dir light transform
-	//			MVector lightDir(0, 0, 1); // default dir light dir
-	//			MFnDagNode sunDagNode(sunObj);
-	//			lightDir *= sunDagNode.transformationMatrix();
-	//			lightDir *= renderGlobals->globalConversionMatrix;
-	//			lightDir.normalize();
-	//	
-	//			MObject sunDagObj =	sunDagNode.child(0, &stat);
-	//			MColor sunColor(1);
-	//			float colorMultiplier = 1.0f;
-	//			if(sunDagObj.hasFn(MFn::kDirectionalLight))
-	//			{
-	//				MFnDependencyNode sunNode(sunDagObj);
-	//				getColor("color", sunNode, sunColor);
-	//				colorMultiplier = getFloatAttr("mtco_sun_multiplier", sunNode, 1.0f);
-	//			}else{
-	//				Logging::warning(MString("Sun connection is not a directional light - using transform only."));
-	//			}
-	//			const float intensityFactor = (1.f - cos(Corona::SUN_PROJECTED_HALF_ANGLE)) / (1.f - cos(getFloatAttr("sunSizeMulti", rGlNode, 1.0f) * Corona::SUN_PROJECTED_HALF_ANGLE));
-	//			sunColor *= colorMultiplier * intensityFactor * 1.0;// 2000000;
-	//			Corona::Sun sun;
-
-	//			Corona::ColorOrMap bgCoMap = this->context.scene->getBackground();
-	//			SkyMap *sky = dynamic_cast<SkyMap *>(bgCoMap.getMap());
-	//			Corona::Rgb avgColor(1, 1, 1);
-	//			if (sky != nullptr)
-	//			{
-	//				avgColor = sky->sc();
-	//			}
-
-	//			Corona::Rgb sColor(sunColor.r, sunColor.g, sunColor.b);
-	//			sun.color = sColor * avgColor;
-	//			sun.active = true;
-	//			sun.dirTo = Corona::Dir(lightDir.x, lightDir.y, lightDir.z).getNormalized();
-	//			//sun.color = Corona::Rgb(sunColor.r,sunColor.g,sunColor.b);
-	//			sun.visibleDirect = true;
-	//			sun.visibleReflect = true;
-	//			sun.visibleRefract = true;
-	//			sun.sizeMultiplier = getFloatAttr("sunSizeMulti", rGlNode, 1.0);
-	//			this->context.scene->getSun() = sun;
-	//			sky->initSky();
-	//			if (sky != nullptr)
-	//			{
-	//				avgColor = sky->sc();
-	//				this->context.scene->getSun().color = sColor * avgColor;
-	//			}
-	//		}
-	//	}
-	//}
-
 	MayaObject *sunLight = nullptr;
-
 	for (auto mobj : mayaScene->lightList)
 	{
 		std::shared_ptr<mtco_MayaObject> obj(std::static_pointer_cast<mtco_MayaObject>(mobj));
@@ -284,18 +226,35 @@ void CoronaRenderer::defineLights()
 				MColor lightColor = getColorAttr("color", depFn);
 				float intensity = getFloatAttr("intensity", depFn, 1.0f);
 				lightColor *= intensity;
-				Corona::ColorOrMap com = defineAttribute(MString("color"), obj->mobject, oslRenderer);
-				OSLMap *oslmap = (OSLMap *)com.getMap();
-				if (oslmap != nullptr)
+				Corona::ColorOrMap com;
+				// experimental direct corona texture
+				if (getBoolAttr("mtco_noOSL", depFn, false))
 				{
-					oslmap->multiplier = intensity;
+					MObject fileNode = getConnectedInNode(obj->mobject, "color");
+					if ((fileNode != MObject::kNullObj) && (fileNode.hasFn(MFn::kFileTexture)))
+					{
+						MFnDependencyNode fileDep(fileNode);
+						mtco_MapLoader loader(fileNode);
+						Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap("");
+						com = Corona::ColorOrMap(bgRgb, texmap);
+					}
 				}
-				else{
-					Corona::Rgb col = com.getConstantColor() * intensity;
-					com.setColor(col);
+				else
+				{
+					com = defineAttribute(MString("color"), obj->mobject, oslRenderer);
+					OSLMap *oslmap = (OSLMap *)com.getMap();
+					if (oslmap != nullptr)
+					{
+						oslmap->multiplier = intensity;
+					}
+					else{
+						Corona::Rgb col = com.getConstantColor() * intensity;
+						com.setColor(col);
+					}
 				}
+
 				data.emission.color = com;
-				data.castsShadows = false; // a light should never cast shadows
+				data.castsShadows = getBoolAttr("mtco_castShadows", depFn, false);
 
 				for (auto excludedObj : obj->excludedObjects)
 				{

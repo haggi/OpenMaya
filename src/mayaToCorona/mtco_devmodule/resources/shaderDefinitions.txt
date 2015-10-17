@@ -404,6 +404,13 @@ shader_start:CoronaLayered
 	inatt:materialEntryAmount:color
 shader_end
 
+shader_start:CoronaRoundCorners
+	inatt:radius:float
+	inatt:samples:int
+	inatt:normalCamera:vector
+	outatt:outNormal:vector
+shader_end
+
 
 #---------------------------- automatically created attributes end ------------------------------------
 #thats all

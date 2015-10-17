@@ -317,6 +317,12 @@
     <ClCompile Include="..\src\Corona\CoronaRoundCorners.cpp">
       <Filter>Source Files\Corona\CoronaMaps</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shaders\coronaRoundCornersShader.cpp">
+      <Filter>Source Files\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaMixNormals.cpp">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
@@ -557,6 +563,12 @@
       <Filter>common\utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Corona\CoronaRoundCorners.h">
+      <Filter>Source Files\Corona\CoronaMaps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shaders\coronaRoundCornersShader.h">
+      <Filter>Source Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaMixNormals.h">
       <Filter>Source Files\Corona\CoronaMaps</Filter>
     </ClInclude>
   </ItemGroup>

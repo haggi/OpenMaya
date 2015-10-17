@@ -50,20 +50,18 @@ mtco_MayaRenderer::mtco_MayaRenderer()
 	config.lightsSize = 1.0f;
 	config.lightsIntensity = 1.0f;
 
-	context->settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_PROGRESSIVE);
 	context->settings->set(Corona::PARAM_MINIMIZE_PRECOMP, true);
+	context->settings->set(Corona::PARAM_RENDER_ENGINE, Corona::RENDER_ENGINE_PROGRESSIVE);
+	context->settings->set(Corona::PARAM_UHDCACHE_PRECISION, 0.1f);
 	//limit the passes
 	context->settings->set(Corona::PARAM_PROGRESSIVE_PASS_LIMIT, 10);
-
 	context->settings->set(Corona::PARAM_IMAGE_WIDTH, width);
 	context->settings->set(Corona::PARAM_IMAGE_HEIGHT, height);
 
 	context->core->sanityCheck(context->settings);
 	context->fb = context->core->createFb();
 	context->fb->initFb(context->settings, context->renderPasses);
-
 	context->scene->getCamera().createPerspective(Corona::AnimatedPos(Corona::Pos(-25, 25, 12)), Corona::AnimatedPos(Corona::Pos(0.f, 0.f, -5.f)), Corona::AnimatedDir(Corona::Dir::UNIT_Z), Corona::AnimatedFloat(Corona::DEG_TO_RAD(45.f)));
-
 	context->core->sanityCheck(context->scene);
 
 	context->core->beginSession(context->scene, context->settings, context->fb, context->logger, Corona::ICore::AdditionalInfo());
@@ -373,11 +371,30 @@ MStatus mtco_MayaRenderer::translateTransform(const MUuid& id, const MUuid& chil
 MStatus mtco_MayaRenderer::translateShader(const MUuid& id, const MObject& node)
 {
 	Logging::debug(MString("translateShader: "));
-	IdNameStruct idn;
-	idn.id = id;
-	idn.name = "material";
-	idn.mobject = node;
-	objectArray.push_back(idn);
+	bool alreadyExists = false;
+	for (auto idn : objectArray)
+	{
+		if ( idn.mobject == node)
+		{ 
+			Logging::debug(MString("found existing shader node."));
+			if (idn.instance != nullptr)
+			{
+				idn.instance->clearMaterials();
+				Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(idn.mobject, nullptr, oslRenderer);
+				idn.instance->addMaterial(Corona::IMaterialSet(mat));
+				alreadyExists = true;
+				break;
+			}
+		}
+	}
+	if (!alreadyExists)
+	{
+		IdNameStruct idn;
+		idn.id = id;
+		idn.name = "material";
+		idn.mobject = node;
+		objectArray.push_back(idn);
+	}
 	lastShape = node;
 	return MStatus::kSuccess;
 };
@@ -433,7 +450,7 @@ MStatus mtco_MayaRenderer::setProperty(const MUuid& id, const MString& name, con
 MStatus mtco_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 {
 	Logging::debug("setShader");
-	IdNameStruct idnShader;
+	IdNameStruct *idnShader;
 	MObject meshObject;
 
 	// first find the shader node
@@ -441,7 +458,7 @@ MStatus mtco_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 	{
 		if (objectArray[i].id == shaderId)
 		{
-			idnShader = objectArray[i];
+			idnShader = &objectArray[i];
 			break;
 		}
 	}
@@ -456,7 +473,7 @@ MStatus mtco_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 		}
 	}
 
-	if ((idnShader.mobject == MObject::kNullObj) || (idnGeo.mobject == MObject::kNullObj))
+	if ((idnShader->mobject == MObject::kNullObj) || (idnGeo.mobject == MObject::kNullObj))
 	{
 		Logging::debug(MString("Object not fund for shader update."));
 		return MS::kFailure;
@@ -482,7 +499,7 @@ MStatus mtco_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 	}
 
 	gg->instance->clearMaterials();
-	Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(idnShader.mobject, nullptr, oslRenderer);
+	Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(idnShader->mobject, nullptr, oslRenderer);
 	
 
 	// first find the shader node
@@ -510,6 +527,7 @@ MStatus mtco_MayaRenderer::setShader(const MUuid& id, const MUuid& shaderId)
 	}
 	Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
 	gg->instance->addMaterial(ms);
+	idnShader->instance = gg->instance;
 	return MStatus::kSuccess;
 };
 

@@ -1,0 +1,4 @@
+shader CoronaRoundCorners(vector normalCamera = N, float radius = 0, int samples = 10, output vector outNormal = 0)
+{
+	outNormal = normalCamera;
+}

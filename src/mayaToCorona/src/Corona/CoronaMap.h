@@ -10,9 +10,9 @@
 #include <maya/MFloatPointArray.h>
 #include <maya/MGlobal.h>
 #include <maya/MColor.h>
-
+#include "utilities/logging.h"
+#include "CoronaUtils.h"
 #include "CoronaCore/api/Api.h"
-
 
 bool textureFileSupported(MString fileName);
 
@@ -48,6 +48,8 @@ public:
 	MColor colorGain;
 	MColor colorOffset;
 	float exposure;
+	Corona::TextureShader::Config tsConfig;
+	MString fileName;
 
 	mtco_MapLoader::mtco_MapLoader(MObject& mobject);
 	mtco_MapLoader::~mtco_MapLoader();
@@ -58,25 +60,47 @@ public:
 		protected:
 			Corona::TextureShader shader;
 		public:
+			MColor colorGain;
+			MColor colorOffset;
+			float exposure;
+
 			TextureMap(const Corona::String& filename, const int mapChannel) {
 				Corona::TextureShader::Config config;
 				config.mapping.uvwMapChannel = mapChannel;
-				config.texture = Corona::TextureShader::getImageTexture(filename);
-				
+				config.texture = Corona::TextureShader::getImageTexture(filename);				
 				this->shader.configure(config);
+			}
+
+			TextureMap(const Corona::String& filename, const int mapChannel, Corona::TextureShader::Config con, MColor gain, MColor offset, float exp) 
+			{
+				Corona::TextureShader::Config config = con;
+				config.mapping.uvwMapChannel = mapChannel;
+				config.texture = Corona::TextureShader::getImageTexture(filename);
+				if (!config.texture.isValid())
+					Logging::error(MString("Could not load texture file: ") + filename + " correctly.");
+				this->shader.configure(config);
+				colorGain = gain;
+				colorOffset = offset;
+				exposure = exp;
 			}
 
 			virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
 				outAlpha = 1.f;
 				bool outsideDummy;
-				return shader.eval(context, true, outsideDummy);
+				Corona::Matrix33 bb = context.bumpBase(0);
+				Corona::Dir duvw = context.dUvw(0);
+				Corona::Pos uvw = context.getMapCoords(0);
+				Corona::IPrimitive *ip = context.getPrimitive();
+				Corona::Rgb result = shader.eval(context, true, outsideDummy);
+				result = result * toCorona(colorGain) + toCorona(colorOffset);
+				result *= powf(2.0f, exposure);	
+				return result;
+				//return shader.eval(context, true, outsideDummy);
 			}
 
 			virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
-				outAlpha = 1.f;
-				
-				bool outsideDummy;
-				return shader.eval(context, true, outsideDummy).grayValue();
+				return evalColor(context, cache, outAlpha).grayValue();
+				//return shader.eval(context, true, outsideDummy).grayValue();
 			}
 
 			virtual Corona::Dir evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache) {
@@ -97,7 +121,8 @@ public:
 
 		};
 
-		return new TextureMap(filename, 0);
+		//return new TextureMap(filename, 0);
+		return new TextureMap(this->fileName.asChar(), 0, tsConfig, colorGain, colorOffset, exposure);
 	}
 };
 

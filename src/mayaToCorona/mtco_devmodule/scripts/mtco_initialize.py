@@ -574,9 +574,11 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension(nodeType="directionalLight", longName="mtco_useAsSun", attributeType="bool", defaultValue=False)
         pm.addExtension( nodeType='areaLight', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType='areaLight', longName='mtco_areaVisible', attributeType='bool', defaultValue=True) 
+        pm.addExtension( nodeType='areaLight', longName='mtco_castShadows', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType='areaLight', longName='mtco_doubleSided', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType='areaLight', longName='mtco_visibleInReflection', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='areaLight', longName='mtco_visibleInRefraction', attributeType='bool', defaultValue=True) 
+        pm.addExtension( nodeType='areaLight', longName='mtco_noOSL', attributeType='bool', defaultValue=False) 
 
         # displacement shader        
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMin", attributeType="float", defaultValue=0.0)
@@ -597,6 +599,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='file', longName='textureTblur', attributeType='float', defaultValue=0.0)
         pm.addExtension( nodeType='file', longName='textureFilterWidth', attributeType='float', defaultValue=1.0)
         pm.addExtension( nodeType='file', longName='environmentMappingType', attributeType='enum', enumName="Spherical:Screen", defaultValue = 0.0)
+        pm.addExtension( nodeType='file', longName='mtco_noOSL', attributeType='bool', defaultValue=False) 
 
         #mesh
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 

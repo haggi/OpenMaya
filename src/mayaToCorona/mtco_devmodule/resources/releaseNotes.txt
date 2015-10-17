@@ -1,3 +1,6 @@
+release 0.43
+- 
+
 release 0.42
 - fixed render stamp visibility 
 - added light directionality
@@ -7,6 +10,8 @@ release 0.42
 - added texturing for area lights
 - redesigned render globals UI
 - added wire/AO/Sky shader
+- reimplemented coronaMap for image files like IBL with colorBalance and placement
+- implemented the new Maya2016 hypershade material viewer.
 
 release 0.41
 - fixed a problem with esc key which caused a premature stop of the next rendering.

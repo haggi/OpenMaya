@@ -1,0 +1,17 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.0dev
+shader CoronaRoundCorners
+param	vector	normalCamera	0 0 0 		 %read{1,1} %write{0,0}
+param	float	radius	0 		 %read{2147483647,-1} %write{2147483647,-1}
+param	int	samples	10 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	vector	outNormal	0 0 0 		 %read{2147483647,-1} %write{1,1}
+global	normal	N	 %read{0,0} %write{2147483647,-1}
+code normalCamera
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\CoronaRoundCorners.osl:2
+# {
+	assign		normalCamera N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\CoronaRoundCorners.osl"} %line{2} %argrw{"wr"}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\CoronaRoundCorners.osl:4
+# }
+	assign		outNormal normalCamera 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona/mtco_devmodule/shaders\\CoronaRoundCorners.osl"} %line{4} %argrw{"wr"}
+	end

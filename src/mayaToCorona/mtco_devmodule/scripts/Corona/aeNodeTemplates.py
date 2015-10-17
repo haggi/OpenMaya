@@ -50,8 +50,10 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("mtco_envPortal", label="Use as Environment Portal")
         self.addControl("mtco_areaVisible", label="Visible Geometry")
         self.addControl("mtco_doubleSided", label="Double Sided")
+        self.addControl("mtco_castShadows", label="Cast Shadows")
         self.addControl("mtco_visibleInReflection", label="Visible in Reflection")
         self.addControl("mtco_visibleInRefraction", label="Visible in Refraction")
+        self.addControl("mtco_noOSL", label="No OSL")
         self.endLayout()
 
     def buildBum2dTemplate(self, nodeName):
@@ -66,8 +68,11 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.addControl("fromSRGB", label="Convert sRGB->Linear")
         self.addControl("toSRGB", label="Convert Linear->sRGB")
         self.addSeparator() 
-        self.addControl("textureFilter", label="FilterType")
         self.addControl("textureFilterWidth", label="FilterWidth")
+        self.addControl("textureFilter", label="FilterType")
+        self.addControl("environmentMappingType", label="Environment Mapping")
+        self.addControl("textureBlur", label="FilterBlur")
+        self.addControl("mtco_noOSL", label="No OSL")
         #self.addControl("textureBlur", label="FilterBlur")
         #self.addControl("textureSblur", label="Filter S Blur")
         #self.addControl("textureTblur", label="Filter T Blur")
@@ -131,6 +136,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_mtlOverride", label="Material Override")
+        #if self.thisNode.hasAttr
         self.endLayout()
         
     def buildCoronaTemplates(self, nodeName):

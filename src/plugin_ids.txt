@@ -14,6 +14,7 @@ Corona:
 0x0011EF70	0x0011CF5C	mayaToCorona	coronaVolumeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaVolumeMaterial.cpp
 0x0011EF71	0x0011CF5A	mayaToCorona	coronaRaytypeMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaRaytypeMaterial.cpp
 0x0011CF72				mayaToCorona	coronaLayeredMaterial.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\coronaLayeredMaterial.cpp
+0x0011CF73				mayaToCorona	CoronaRoundCorners.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\shaders\CoronaRoundCorners.cpp
 
 0x0011CF44	0x0011CF44	mayaToCorona	coronaAO
 0x0011CF45	0x0011CF45	mayaToCorona	coronaWire

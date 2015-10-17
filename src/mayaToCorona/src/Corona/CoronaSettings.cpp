@@ -152,18 +152,21 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("colorMapping_shutterSpeed", depFn, 250.0f));
 	// v2.8 exposure from camera
 	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
-	for (auto cam : mayaScene->camList)
+	if (mayaScene)
 	{
-		if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
-			continue;
-		MFnDependencyNode camFn(cam->mobject);
-		if (getBoolAttr("mtco_overrideRenderSettings", camFn, false))
+		for (auto cam : mayaScene->camList)
 		{
-			context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
-			context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
-			context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+			if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
+				continue;
+			MFnDependencyNode camFn(cam->mobject);
+			if (getBoolAttr("mtco_overrideRenderSettings", camFn, false))
+			{
+				context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));
+				context.settings->set(Corona::PARAM_COLORMAP_F_STOP, getFloatAttr("fStop", camFn, 5.6));
+				context.settings->set(Corona::PARAM_COLORMAP_SHUTTER_SPEED, 1.0f / getFloatAttr("mtco_shutterSpeed", camFn, 250.0f));
+			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -198,12 +201,9 @@ void CoronaRenderer::defineColorMapping()
 		context.colorMappingData->exposure.photographic.iso = getFloatAttr("colorMapping_iso", depFn, 100.0);
 		context.colorMappingData->exposure.photographic.shutterSpeed = 1.0f / getFloatAttr("colorMapping_shutterSpeed", depFn, 250.0f);
 
-		std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
-		for (auto cam : mayaScene->camList)
+		if ( this->renderCam != MObject::kNullObj)
 		{
-			if (!isCameraRenderable(cam->mobject) && (!(cam->dagPath == mayaScene->uiCamera)))
-				continue;
-			MFnDependencyNode camFn(cam->mobject);
+			MFnDependencyNode camFn(renderCam);
 			if (getBoolAttr("mtco_overrideRenderSettings", camFn, false))
 			{
 				context.settings->set(Corona::PARAM_COLORMAP_ISO, getFloatAttr("mtco_iso", camFn, 1.0));

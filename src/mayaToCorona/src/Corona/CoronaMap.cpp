@@ -18,7 +18,9 @@ bool textureFileSupported(MString fileName)
 		return true;
 	if( ext == "bmp")
 		return true;
-	if( ext == "png")
+	if (ext == "png")
+		return true;
+	if (ext == "hdr")
 		return true;
 
 	return false;
@@ -33,6 +35,12 @@ mtco_MapLoader::mtco_MapLoader(MObject& mobject)
 	colorGain = getColorAttr("colorGain", depFn);
 	colorOffset = getColorAttr("colorOffset", depFn);
 	exposure = getFloatAttr("exposure", depFn, 0.0f);
+	fileName = getStringAttr("fileTextureName", depFn, "");
+	int enviroMapping = getEnumInt("environmentMappingType", depFn);
+	Corona::TextureShader::EnviroMapping envM[] = { Corona::TextureShader::EnviroMapping::MAPPING_SPHERICAL, Corona::TextureShader::EnviroMapping::MAPPING_SCREEN };
+	tsConfig.mapping.enviroMapping = envM[enviroMapping];
+	tsConfig.mapping.uvwMapChannel = 0; // at the moment
+
 	MObject place2dNode = getConnectedInNode(mobject, "uvCoord");
 	if ((place2dNode != MObject::kNullObj) && (place2dNode.hasFn(MFn::kPlace2dTexture)))
 	{
@@ -49,13 +57,35 @@ mtco_MapLoader::mtco_MapLoader(MObject& mobject)
 		float rotateUV = getFloatAttr("rotateUV", placeFn, 0.0f);
 		float noiseU = getFloatAttr("noiseU", placeFn, 1.0f);
 		float noiseV = getFloatAttr("noiseV", placeFn, 1.0f);
-		float mirrorU = getBoolAttr("mirrorU", placeFn, false);
-		float mirrorV = getBoolAttr("mirrorV", placeFn, false);
-		float wrapU = getBoolAttr("wrapU", placeFn, true);
-		float wrapV = getBoolAttr("wrapV", placeFn, true);
-		float stagger = getBoolAttr("stagger", placeFn, false);
-		Corona::TextureShader::Config tsConfig;
-		
+		bool mirrorU = getBoolAttr("mirrorU", placeFn, false);
+		bool mirrorV = getBoolAttr("mirrorV", placeFn, false);
+		bool wrapU = getBoolAttr("wrapU", placeFn, true);
+		bool wrapV = getBoolAttr("wrapV", placeFn, true);
+		bool stagger = getBoolAttr("stagger", placeFn, false);
+
+		tsConfig.mapping.wrapModeU = Corona::TextureShader::WrapMode::WRAPMODE_CLAMP;
+		tsConfig.mapping.wrapModeV = Corona::TextureShader::WrapMode::WRAPMODE_CLAMP;
+		if (wrapU)
+			if (mirrorU)
+				tsConfig.mapping.wrapModeU = Corona::TextureShader::WrapMode::WRAPMODE_MIRROR;
+			else
+				tsConfig.mapping.wrapModeU = Corona::TextureShader::WrapMode::WRAPMODE_REPEAT;
+
+		tsConfig.mapping.wrapModeV = Corona::TextureShader::WrapMode::WRAPMODE_CLAMP;
+		if (wrapV)
+			if (mirrorV)
+				tsConfig.mapping.wrapModeV = Corona::TextureShader::WrapMode::WRAPMODE_MIRROR;
+			else
+				tsConfig.mapping.wrapModeV = Corona::TextureShader::WrapMode::WRAPMODE_REPEAT;
+
+
+		Corona::AffineTm atm(Corona::Matrix33::IDENTITY);
+		atm.translate(Corona::Dir(-0.5f, -0.5f, 0.0f));
+		atm.rotateZ(rotateUV);
+		atm.translate(Corona::Dir(0.5f, 0.5f, 0.0f));
+		atm.scale(Corona::Dir(repeatU, repeatV, 1.0f));
+		atm.translate(Corona::Dir(offsetU, offsetV, 0.0f));
+		tsConfig.mapping.uvTransform = atm;
 	}
 }
 

@@ -294,6 +294,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaMixNormals.cpp" />
     <ClCompile Include="..\src\Corona\CoronaOSLMap.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -320,9 +321,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\Corona\CoronaRoundCorners.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\src\Corona\CoronaRoundCorners.cpp" />
     <ClCompile Include="..\src\Corona\CoronaSettings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -372,6 +371,7 @@
     <ClCompile Include="..\src\shaders\coronaLightMaterialOverride.cpp" />
     <ClCompile Include="..\src\shaders\coronaOSLNode.cpp" />
     <ClCompile Include="..\src\shaders\coronaRaytypeMaterial.cpp" />
+    <ClCompile Include="..\src\shaders\coronaRoundCornersShader.cpp" />
     <ClCompile Include="..\src\shaders\coronaSkyShader.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterial.cpp" />
     <ClCompile Include="..\src\shaders\coronaSurfaceMaterialOverride.cpp" />
@@ -451,15 +451,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaMixNormals.h" />
     <ClInclude Include="..\src\Corona\CoronaOSLMap.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\src\Corona\Corona.h" />
-    <ClInclude Include="..\src\Corona\CoronaRoundCorners.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="..\src\Corona\CoronaRoundCorners.h" />
     <ClInclude Include="..\src\Corona\CoronaShaders.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
@@ -498,6 +497,7 @@
     <ClInclude Include="..\src\shaders\coronaLightMaterialOverride.h" />
     <ClInclude Include="..\src\shaders\coronaOSLNode.h" />
     <ClInclude Include="..\src\shaders\coronaRaytypeMaterial.h" />
+    <ClInclude Include="..\src\shaders\coronaRoundCornersShader.h" />
     <ClInclude Include="..\src\shaders\coronaSkyShader.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterial.h" />
     <ClInclude Include="..\src\shaders\coronaSurfaceMaterialOverride.h" />

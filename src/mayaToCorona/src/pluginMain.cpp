@@ -1,3 +1,4 @@
+
 #include <maya/MGlobal.h>
 #include <maya/MFnPlugin.h>
 #include <fstream>
@@ -31,6 +32,7 @@
 #include "shaders/coronaFrontBackShader.h"
 #include "shaders/coronaSkyShader.h"
 #include "shaders/coronaWireShader.h"
+#include "shaders/coronaRoundCornersShader.h"
 
 #include "shaders/TestShader.h"
 #include "world.h"
@@ -73,7 +75,7 @@ static const MString CoronaLayeredRegistrantId("CoronaSurfacePlugin");
 static const MString CoronaLayeredDrawDBClassification("drawdb/shader/surface/CoronaLayered");
 static const MString CoronaLayeredFullClassification("shader/surface:corona/material" + swatchFullName + ":" + CoronaLayeredDrawDBClassification);
 
-static const MString CoronaTextureClassification("corona/texture:shader/texture:");
+static const MString CoronaTextureClassification("corona/texture:shader/texture:shader/utility:");
 
 static const MString TestShaderClassification("shader/surface:");
 
@@ -114,6 +116,7 @@ MStatus initializePlugin( MObject obj )
 	CHECK_MSTATUS(plugin.registerNode("CoronaFrontBack", CoronaFrontBack::id, CoronaFrontBack::creator, CoronaFrontBack::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaSky", CoronaSkyShader::id, CoronaSkyShader::creator, CoronaSkyShader::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
 	CHECK_MSTATUS(plugin.registerNode("CoronaWire", CoronaWire::id, CoronaWire::creator, CoronaWire::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
+	CHECK_MSTATUS(plugin.registerNode("CoronaRoundCorners", CoronaRoundCornersShader::id, CoronaRoundCornersShader::creator, CoronaRoundCornersShader::initialize, MPxNode::kDependNode, &CoronaTextureClassification));
 
 	CHECK_MSTATUS(plugin.registerNode("TestShader", TestShader::id, TestShader::creator, TestShader::initialize, MPxNode::kDependNode, &TestShaderClassification));
 

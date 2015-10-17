@@ -11,7 +11,7 @@
 #define VENDOR "haggis vfx & animation"
 
 #define MTXX_VERSION_MAJOR 0
-#define MTXX_VERSION_MINOR 42
+#define MTXX_VERSION_MINOR 44
 #define MTXX_VERSION_PATCH 0
 #define MTXX_VERSION_RELEASE_TYPE dev
 
