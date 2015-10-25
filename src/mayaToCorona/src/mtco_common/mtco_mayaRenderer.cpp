@@ -61,7 +61,7 @@ mtco_MayaRenderer::mtco_MayaRenderer()
 	context->core->sanityCheck(context->settings);
 	context->fb = context->core->createFb();
 	context->fb->initFb(context->settings, context->renderPasses);
-	context->scene->getCamera().createPerspective(Corona::AnimatedPos(Corona::Pos(-25, 25, 12)), Corona::AnimatedPos(Corona::Pos(0.f, 0.f, -5.f)), Corona::AnimatedDir(Corona::Dir::UNIT_Z), Corona::AnimatedFloat(Corona::DEG_TO_RAD(45.f)));
+	context->scene->getCamera().createPerspective(Corona::AnimatedPos(Corona::Pos(-25, 25, 12)), Corona::AnimatedPos(Corona::Pos(0.f, 0.f, -5.f)), Corona::AnimatedDir(Corona::Dir::UNIT_Z), Corona::AnimatedFloat(Corona::degToRad(45.f)));
 	context->core->sanityCheck(context->scene);
 
 	context->core->beginSession(context->scene, context->settings, context->fb, context->logger, Corona::ICore::AdditionalInfo());

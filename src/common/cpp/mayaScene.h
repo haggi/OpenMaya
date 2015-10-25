@@ -2,10 +2,11 @@
 #define MAYA_SCENE_H
 
 #include <maya/MDagPath.h>
+//#include <maya/MMessage.h>
 #include <maya/MObject.h>
 #include <maya/MDagPathArray.h>
 #include <maya/MTransformationMatrix.h>
-
+#include <map>
 #include <vector>
 #include <memory>
 
@@ -13,6 +14,13 @@
 #include "mayaObject.h"
 
 #include "utilities/MiniMap.h"
+
+struct InteractiveElement{
+	std::shared_ptr<MayaObject> obj;
+	MObject mobj;
+	MString name;
+	MObject node;
+};
 
 class MayaScene
 {
@@ -91,10 +99,8 @@ public:
 	~MayaScene();
 
 	// interactive elements
-	void  makeMayaObjectMObjMap();
-	std::shared_ptr<MayaObject> getMayaObjectFromMap(MObject& obj);
-	void mobjectListToMayaObjectList(std::vector<MObject>& mObjectList, std::vector<std::shared_ptr<MayaObject>> & mtapObjectList);
-	void updateInteraciveRenderScene(std::vector<MObject> mobjList);
+	std::map<uint, InteractiveElement> interactiveUpdateMap;
+	void updateInteraciveRenderScene(std::vector<InteractiveElement *> elementList);
 
 };
 

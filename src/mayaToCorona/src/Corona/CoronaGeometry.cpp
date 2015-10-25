@@ -40,6 +40,8 @@ void defineStdPlane(Corona::IGeometryGroup *geom)
 	geom->getNormals().push(Corona::Dir(0, 0, -1));
 	geom->getNormals().push(Corona::Dir(0, 0, -1));
 
+	geom->setMapChannelCount(1);
+
 	geom->getMapCoords().push(Corona::Pos(0, 0, 0));
 	geom->getMapCoordIndices().push(0);
 	geom->getMapCoords().push(Corona::Pos(1, 0, 0));
@@ -91,6 +93,7 @@ Corona::IGeometryGroup* CoronaRenderer::defineStdPlane()
 	geom->getNormals().push(Corona::Dir(0, 0, -1));
 	geom->getNormals().push(Corona::Dir(0, 0, -1));
 
+	geom->setMapChannelCount(1);
 	geom->getMapCoords().push(Corona::Pos(0, 0, 0));
 	geom->getMapCoordIndices().push(0);
 	geom->getMapCoords().push(Corona::Pos(0, 1, 0));
@@ -162,6 +165,8 @@ void defineMesh(Corona::IGeometryGroup *group, const MObject& meshObject)
 
 	Corona::TriangleData td;
 	Corona::IGeometryGroup* geom = group;
+
+	geom->setMapChannelCount(1);
 
 	uint npts = 0;
 	for (uint vtxId = 0; vtxId < numVertices; vtxId++)
@@ -366,6 +371,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 	Corona::TriangleData td;
 	Corona::IGeometryGroup* geom = nullptr;	
 	geom = this->context.scene->addGeomGroup();
+	geom->setMapChannelCount(1);
 
 	// to capture the vertex and normal positions, we capture the data during the motion steps
 	// and save them in a an std::vector. The uv's do not change, so we only sample them once.
@@ -437,7 +443,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		{
 			std::auto_ptr<Corona::DisplacedTriangleData> dtrip = std::auto_ptr<Corona::DisplacedTriangleData>(new Corona::DisplacedTriangleData);
 			//Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
-			//dtri->displacement.mapChannel = 0;
+			dtrip->displacement.mapChannel = 0;
 			dtrip->displacement.map = displacementMap;
 			dtrip->displacement.waterLevel = -Corona::INFINITY;
 			dtrip->displacement.min = displacementMin;

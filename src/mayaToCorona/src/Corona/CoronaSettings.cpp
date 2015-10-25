@@ -21,6 +21,9 @@ void CoronaRenderer::defineSettings()
 	context.settings->set(Corona::PARAM_IMAGE_WIDTH, w);
 	context.settings->set(Corona::PARAM_IMAGE_HEIGHT, h);
 
+	if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+		context.settings->set(Corona::PARAM_MINIMIZE_PRECOMP, true);
+
 	if (getBoolAttr("lockSamplingPattern",depFn, false))
 		context.settings->set(Corona::PARAM_RANDOM_SEED, 1234);
 	else
@@ -66,22 +69,14 @@ void CoronaRenderer::defineSettings()
 	if (getBoolAttr("exportSceneFile", depFn, false))
 		context.settings->set(Corona::PARAM_EXPORT_PATH, renderGlobals->exportSceneFileName.asChar());
 	 
-	//context.settings->set(Corona::PARAM_LOW_PRIORITY, true); // always render with low priority
 	context.settings->set(Corona::PARAM_THREAD_PRIORITY, Corona::IScheduler::PRIORITY_BELOW_NORMAL); // always render with low priority
 
-
-	Corona::DisplaceSubdivType subdivTypes[] = { Corona::DisplaceSubdivType::DISPLACE_SUBDIV_PROJECTED, Corona::DisplaceSubdivType::DISPLACE_SUBDIV_WORLD };
+	Corona::DisplaceSubdivType subdivTypes[] = { Corona::DisplaceSubdivType::DISPLACE_SUBDIV_WORLD, Corona::DisplaceSubdivType::DISPLACE_SUBDIV_PROJECTED };
 	context.settings->set(Corona::PARAM_DISPLACE_SUBDIV_TYPE, subdivTypes[(int)getBoolAttr("displace_useProjectionSize", depFn, true)]);
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_SCREEN, getFloatAttr("displace_maxProjectSize", depFn, 2.0f));
 	context.settings->set(Corona::PARAM_DISPLACE_MAX_SIZE_WORLD, getFloatAttr("displace_maxWorldSize", depFn, 1.0f));
-	//context.settings->set(Corona::PARAM_DISPLACE_MAX_SUBDIV, getIntAttr("displace_maxSubdiv", depFn, 100));
 
 	context.settings->set(Corona::PARAM_MAX_RAY_DEPTH, getIntAttr("raycaster_maxDepth", depFn, 25));
-	//context.settings->set(Corona::PARAM_EXIT_COLOR, toCorona(getColorAttr("color_exit", depFn)));
-	//context.settings->set(Corona::PARAM_MAX_NORMAL_DIFF, getFloatAttr("system_maxNormalDev", depFn, .55f));
-
-	//context.settings->set(Corona::PARAM_ACCELERATION_STRUCTURE, getIntAttr("accelerationStructure", depFn, 0) + 3); // first entry is 3 == bvh4 spatial
-	//context.settings->set(Corona::PARAM_EMBREE_TRIANGLES, getEnumInt("embree_triangles", depFn));
 	context.settings->set(Corona::PARAM_MIN_INSTANCE_SAVING, getIntAttr("instance_minSize", depFn, 50000));
 
 	int f = getEnumInt("filtertype", depFn);

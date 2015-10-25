@@ -87,10 +87,10 @@ public:
 			virtual Corona::Rgb evalColor(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
 				outAlpha = 1.f;
 				bool outsideDummy;
-				Corona::Matrix33 bb = context.bumpBase(0);
-				Corona::Dir duvw = context.dUvw(0);
-				Corona::Pos uvw = context.getMapCoords(0);
-				Corona::IPrimitive *ip = context.getPrimitive();
+				//Corona::Matrix33 bb = context.bumpBase(0);
+				//Corona::Dir duvw = context.dUvw(0);
+				//Corona::Pos uvw = context.getMapCoords(0);
+				//Corona::IPrimitive *ip = context.getPrimitive();
 				Corona::Rgb result = shader.eval(context, true, outsideDummy);
 				result = result * toCorona(colorGain) + toCorona(colorOffset);
 				result *= powf(2.0f, exposure);	

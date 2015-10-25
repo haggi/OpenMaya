@@ -24,7 +24,7 @@ namespace MayaTo{
 	void MayaToWorld::initialize()
 	{
 		mtco_SwatchRendererInterface::initializeStaticData();
-		setCanDoIPR(false);
+		setCanDoIPR(true);
 	}
 
 	void MayaToWorld::afterOpenScene()

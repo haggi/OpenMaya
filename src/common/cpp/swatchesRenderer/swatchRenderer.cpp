@@ -38,7 +38,7 @@ bool SwatchRenderer::doIteration()
 	// if another render process is rendering then...
 	MayaTo::MayaToWorld::WorldRenderState rState = MayaTo::getWorldPtr()->getRenderState();
 	MayaTo::MayaToWorld::WorldRenderType rType = MayaTo::getWorldPtr()->getRenderType();
-	if (rState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING)
+	if ((rState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING) || (rType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER))
 	{
 		this->renderInterface->getImageData(this->image()); // copy empty image
 		image().convertPixelFormat(MImage::kByte);

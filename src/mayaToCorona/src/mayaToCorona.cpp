@@ -130,6 +130,9 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 	MFnDependencyNode drgfn(drg);
 	cmdArgs->useRenderRegion = drgfn.findPlug("useRenderRegion").asBool();
 
+	cmdArgs->renderType = MayaTo::MayaToWorld::WorldRenderType::UIRENDER;
+	if (MGlobal::mayaState() == MGlobal::kBatch)
+		cmdArgs->renderType = MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER;
 
 	if ( argData.isFlagSet("-startIpr", &stat))
 	{

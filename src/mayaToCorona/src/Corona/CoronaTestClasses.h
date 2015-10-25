@@ -19,8 +19,11 @@ public:
 
 	MyLogger(ICore* core) : Abstract::Logger(&core->getStats()) {}
 
-	virtual void logMsg(const String& message, const LogType type) {
-		std::cout << message << std::endl;
+	virtual void logMsg(const Corona::LogMessage& message)
+	{
+#ifdef _DEBUG
+		std::cout << message.text.cStr() << std::endl;
+#endif
 	}
 	virtual void setProgress(const float progress) {
 		std::cout << "Progress: " << progress << std::endl;

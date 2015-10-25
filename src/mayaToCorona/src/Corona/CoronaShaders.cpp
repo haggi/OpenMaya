@@ -11,6 +11,7 @@
 #include "utilities/logging.h"
 #include "osl/oslUtils.h"
 #include "../coronaOSL/coronaOSLMapUtil.h"
+#include "mayaScene.h"
 #include "CoronaUtils.h"
 #include "CoronaMap.h"
 #include "CoronaAOShader.h"
@@ -97,8 +98,15 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 			{
 				useOSL = false;
 				Logging::warning(MString("UseOSL is turned off for texture node : ") + fileTexNode.name() + " using plain corona texture.");
-				mtco_MapLoader loader(connectedObject);
-				texmap = loader.loadBitmap("");
+				MString texName = getStringAttr("fileTextureName", fileTexNode, "");
+				if (textureFileSupported(texName))
+				{
+					mtco_MapLoader loader(connectedObject);
+					texmap = loader.loadBitmap("");
+				}
+				else{
+					Logging::error(MString("File texture format not supported: ") + texName);
+				}
 			}
 		}
 		if (useOSL)
@@ -192,6 +200,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	float globalScaleFactor = 1.0f;
 	if (MayaTo::getWorldPtr()->worldRenderGlobalsPtr != nullptr)
 		globalScaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 
 	if (materialNode == MObject::kNullObj)
 		return defineDefaultMaterial();
@@ -204,6 +213,19 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 	Logging::debug(MString("Defining corona material from node: ") + network.rootNodeName);
 
 	MFnDependencyNode depFn(materialNode);
+
+	// if we are in IPR mode, save all translated shading nodes to the interactive update list
+	if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+	{
+		if (mayaScene)
+		{
+			InteractiveElement iel;
+			iel.mobj = materialNode;
+			iel.name = depFn.name();
+			iel.node = materialNode;
+			mayaScene->interactiveUpdateMap[mayaScene->interactiveUpdateMap.size()] = iel;
+		}
+	}
 
 	if(keepData)
 	{

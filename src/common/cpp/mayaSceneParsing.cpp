@@ -32,7 +32,14 @@ bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, std::shared
 	std::shared_ptr<ObjectAttributes> currentAttributes = mo->getObjectAttributes(parentAttributes);
 	mo->parent = parentObject;
 	classifyMayaObject(mo);
-
+	if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+	{
+		InteractiveElement iel;
+		iel.obj = mo;
+		iel.name = mo->fullName;
+		iel.node = mo->mobject;
+		interactiveUpdateMap[interactiveUpdateMap.size()] = iel;
+	}
 	// 
 	//	find the original mayaObject for instanced objects. Can be useful later.
 	//

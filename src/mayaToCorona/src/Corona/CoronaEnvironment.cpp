@@ -68,16 +68,23 @@ void CoronaRenderer::defineEnvironment()
 		if (getConnectedFileTexturePath(MString("bgColor"), MString("coronaGlobals"), texName, fileTextureObject))
 		{
 			Corona::String fileName = texName.asChar();
-			
-			mtco_MapLoader loader(fileTextureObject);
-			Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
-
-			if (texmap.getReference() == nullptr)
+			if (textureFileSupported(texName))
 			{
-				Logging::error(MString("Unable to read bg file: ") + texName);
+
+				mtco_MapLoader loader(fileTextureObject);
+				Corona::SharedPtr<Corona::Abstract::Map> texmap = loader.loadBitmap(fileName);
+
+				if (texmap.getReference() == nullptr)
+				{
+					Logging::error(MString("Unable to read bg file: ") + texName);
+				}
+				else{
+					this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
+				}
 			}
 			else{
-				this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, texmap));
+				Logging::error(MString("Texture file format not supported: ") + texName);
+				this->context.scene->setBackground(Corona::ColorOrMap(bgRgb, nullptr));
 			}
 		}
 		else{

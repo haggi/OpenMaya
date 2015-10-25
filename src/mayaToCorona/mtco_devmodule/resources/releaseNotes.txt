@@ -1,5 +1,12 @@
+release 0.45
+
+release 0.44
+- first ipr implementation for camera and lights
+- fixed displacement via setNumberOfMaps()
+
 release 0.43
-- 
+- the photographic exposure bug is fixed
+- the file texture node and the area light node now has an attribute called "No OSL". If you turn on this switch, plain Corona textures are used, what means you cannot use any procedural texture only a file node with it's placement node is recognized.
 
 release 0.42
 - fixed render stamp visibility 

@@ -103,13 +103,11 @@ public:
 
 	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
 
-	virtual void logMsg(const Corona::String& message, const Corona::LogType type)
+	virtual void logMsg(const Corona::LogMessage& message)
 	{
-		Logging::info(MString("Message: ") + message.cStr());
-	}
-	virtual void logMsg(const Corona::String& message, const Corona::LogType type, const int errorCategory = 0)
-	{
-		Logging::info(MString("Message: ") + message.cStr());
+#ifdef _DEBUG
+		std::cout << message.text.cStr() << std::endl;
+#endif
 	}
     virtual void setProgress(const float progress) 
 	{
@@ -140,11 +138,13 @@ public:
 	CoronaRenderer();
 	virtual ~CoronaRenderer();
 
+	MCallbackId framebufferCallbackId;
 	MCallbackId renderFbGlobalsNodeCallbackId; // callback id for framebuffer callback
 	MCallbackId renderFbCamNodeCallbackId; // callback id for framebuffer camera callback
 	MObject renderCam;
 	static void frameBufferInteractiveCallback(MObject& node, void *clientData);
 	void updateCameraFbCallback(MObject& camera);
+	void updateCamera(std::shared_ptr<MayaObject> cam);
 
 	virtual void defineCamera();
 	virtual void defineEnvironment();
@@ -165,7 +165,7 @@ public:
 	Corona::IGeometryGroup* getGeometryPointer(std::shared_ptr<MayaObject> obj);
 	bool isSunLight(std::shared_ptr<MayaObject> obj);
 	virtual void defineLights();
-
+	void updateLight(std::shared_ptr<MayaObject> obj);
 	virtual void interactiveFbCallback();
 	virtual void render();
 
@@ -183,10 +183,11 @@ public:
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, std::shared_ptr<MayaObject> obj);
 	void setAnimatedTransformationMatrix(Corona::AnimatedAffineTm& atm, MMatrix& mat);
 	void createScene();
-
+	bool sceneBuilt = false;
 	void createTestScene(); // for error checking if a new api is here
 
 	static void framebufferCallback();
+	virtual void doInteractiveUpdate();
 
 	std::vector<Corona::SharedPtr<Corona::Abstract::Map>> maps;
 	//void doit(); // for testing

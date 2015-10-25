@@ -146,6 +146,31 @@ void CoronaRenderer::createScene()
 {
 }
 
+void CoronaRenderer::doInteractiveUpdate()
+{
+	Logging::debug("CoronaRenderer::doInteractiveUpdate");
+	if (interactiveUpdateList.empty())
+		return;
+	//std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
+	for (auto iElement : interactiveUpdateList)
+	{
+		if (iElement->node.hasFn(MFn::kCamera))
+		{
+			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found camera.") + iElement->name);
+			if (iElement->obj)
+				updateCamera(iElement->obj);
+		}
+		if (iElement->node.hasFn(MFn::kLight))
+		{
+			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found light.") + iElement->name);
+			if (iElement->obj)
+				updateLight(iElement->obj);
+		}
+	}
+	interactiveUpdateList.clear();
+	this->context.core->uncancelRender();
+}
+
 void CoronaRenderer::render()
 {
 	Logging::debug("CoronaRenderer::render");
@@ -157,69 +182,50 @@ void CoronaRenderer::render()
 		MGlobal::displayError(MString("Sorry! Could not get a valid license.") + reason);
 		return;
 	}
-	context.scene = context.core->createScene();
 
-	//createTestScene();
-	//OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
-
-	// set this value here. In case we have a swatch rendering ongoing, we have to make sure that the correct osl renderer is used.
-	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::UIRENDER);
-
-	//this->clearMaterialLists();
-	this->defineCamera();
-	this->defineGeometry();
-	this->defineEnvironment();
-	this->defineLights();
-
-	context.core->sanityCheck(context.scene);
-	Logging::debug(MString("registering framebuffer callback."));
-	Corona::String basePath = (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->basePath + "/corona/").asChar();
-	Logging::debug(MString("beginSession..."));
-	ICore::AdditionalInfo info;
-	info.defaultFilePath = basePath;
-	context.core->beginSession(context.scene, context.settings, context.fb, context.logger, info);
-	int maxCount=100, count=0;
-	MayaTo::MayaToWorld::WorldRenderState st = MayaTo::getWorldPtr()->getRenderState();
-	
-	while (st == MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING)
+	if (!sceneBuilt)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		count++;
-		if (count >= maxCount)
+		this->defineCamera();
+		this->defineGeometry();
+		this->defineEnvironment();
+		this->defineLights();
+
+		context.core->sanityCheck(context.scene);
+		Logging::debug(MString("registering framebuffer callback."));
+		Corona::String basePath = (MayaTo::getWorldPtr()->worldRenderGlobalsPtr->basePath + "/corona/").asChar();
+		Logging::debug(MString("beginSession..."));
+		ICore::AdditionalInfo info;
+		info.defaultFilePath = basePath;
+
+		context.core->beginSession(context.scene, context.settings, context.fb, context.logger, info);
+		int maxCount = 100, count = 0;
+		MayaTo::MayaToWorld::WorldRenderState st = MayaTo::getWorldPtr()->getRenderState();
+
+		while (st == MayaTo::MayaToWorld::WorldRenderState::RSTATESWATCHRENDERING)
 		{
-			Logging::warning("WorldRenderState is RSTATERENDERING, but wait is over...");
-			break;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			count++;
+			if (count >= maxCount)
+			{
+				Logging::warning("WorldRenderState is RSTATERENDERING, but wait is over...");
+				break;
+			}
+			st = MayaTo::getWorldPtr()->getRenderState();
 		}
-		st = MayaTo::getWorldPtr()->getRenderState();
+
+		MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
+		framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
+		if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+		{
+			EventQueue::Event e;
+			e.type = EventQueue::Event::ADDIPRCALLBACKS;
+			theRenderEventQueue()->push(e);
+			while (!RenderQueueWorker::iprCallbacksDone())
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+		sceneBuilt = true;
 	}
-	
-	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING);
-	size_t framebufferCallbackId = RenderQueueWorker::registerCallback(&framebufferCallback);
 	context.core->renderFrame(); // blocking render call
-	context.core->endSession();
-	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
-	framebufferCallback();
-	this->saveImage();
-	//std::string statsString = this->oslRenderer->shadingsys->getstats();
-	//Logging::debug(statsString.c_str());
-	OIIO::TextureSystem *tsystem = this->oslRenderer->renderer.texturesys();
-	std::string statsString = tsystem->getstats(3);
-	Logging::debug(statsString.c_str());
-	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
-
-	// it is simpler to remove the data completly than to update single elements at the moment.
-	if (context.scene != nullptr)
-	{
-		context.core->destroyScene(context.scene);
-		context.scene = nullptr;
-	}
-
-	MFnDependencyNode gFn(getRenderGlobalsNode());
-
-	if (gFn.findPlug("useCoronaVFB").asBool())
-		if (MGlobal::mayaState() != MGlobal::kBatch)
-			context.core->getWxVfb().renderFinished();
-
 }
 
 // init all data which will be used during a rendering.
@@ -229,11 +235,7 @@ void CoronaRenderer::initializeRenderer()
 	Logging::debug("CoronaRenderer::initializeRenderer()");
 	MFnDependencyNode gFn(getRenderGlobalsNode());
 	clearDataList(); // clear nativeMtlData
-
-	if (MGlobal::mayaState() != MGlobal::kBatch)
-		MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::UIRENDER);
-	else
-		MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::BATCHRENDER);
+	sceneBuilt = false;
 
 	// first we delete any still existing elements.
 	// after a render, the framebuffers, core and passes still exist until a new scene is loaded
@@ -312,11 +314,46 @@ void CoronaRenderer::initializeRenderer()
 	//		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
 	//	}
 	//}
+
+	context.scene = context.core->createScene();
+
+	//createTestScene();
+	//OSL::OSLShadingNetworkRenderer *r = new OSL::OSLShadingNetworkRenderer();
+
+	// set this value here. In case we have a swatch rendering ongoing, we have to make sure that the correct osl renderer is used.
+	// MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::UIRENDER);
+
+	//this->clearMaterialLists();
+
 }
 
 void CoronaRenderer::unInitializeRenderer()
 {
 	Logging::debug("CoronaRenderer::unInitializeRenderer()");
+
+	context.core->endSession();
+	RenderQueueWorker::unregisterCallback(framebufferCallbackId);
+	framebufferCallback();
+	this->saveImage();
+	OIIO::TextureSystem *tsystem = this->oslRenderer->renderer.texturesys();
+	std::string statsString = tsystem->getstats(3);
+	Logging::debug(statsString.c_str());
+
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::WorldRenderState::RSTATENONE);
+
+	// it is simpler to remove the data completly than to update single elements at the moment.
+	if (context.scene != nullptr)
+	{
+		context.core->destroyScene(context.scene);
+		context.scene = nullptr;
+	}
+
+	MFnDependencyNode gFn(getRenderGlobalsNode());
+
+	if (gFn.findPlug("useCoronaVFB").asBool())
+		if (MGlobal::mayaState() != MGlobal::kBatch)
+			context.core->getWxVfb().renderFinished();
+
 
 	//context.core->getWxVfb().showWindow(false);
 
@@ -325,8 +362,6 @@ void CoronaRenderer::unInitializeRenderer()
 		context.core->destroyScene(context.scene);
 		context.scene = nullptr;
 	}
-
-	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::WorldRenderType::RTYPENONE);
 }
 
 void CoronaRenderer::updateShape(std::shared_ptr<MayaObject> obj)

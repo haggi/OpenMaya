@@ -14,8 +14,8 @@ class Deployment:
                     'fluid' : {'shortcut':'mtfl', 'hasTools' : False},
                     'mitsuba' : {'shortcut':'mtmi', 'hasTools' : False}}
     
-    mayaToBaseDir = "C:/Users/haggi/coding/OpenMaya/src"
-    mayaToPythonBaseDir = "C:/Users/haggi/coding/OpenMaya/src/common/python"
+    mayaToBaseDir = "H:/UserDatenHaggi/Documents/coding/OpenMaya/src"
+    mayaToPythonBaseDir = mayaToBaseDir + "/common/python"
     
     ignoreFileTypes = ['pyc', 'gitignore', 'project', 'pydevproject']
     
@@ -239,7 +239,12 @@ def createDeployment(renderer, shortCut, mayaRelease):
     
 if __name__ == "__main__":
     #createDeployment("appleseed", "mtap", "2013")
+    #d = Deployment()
+    #d.setRenderer('appleseed')
+    #d.setVersions(['2013', '2013.5', '2014'])
+    #d.createDeployment()
+    
     d = Deployment()
-    d.setRenderer('appleseed')
-    d.setVersions(['2013', '2013.5', '2014'])
-    d.createDeployment()
+    d.setRenderer('corona')
+    d.setVersions(['2015', '2016'])
+    d.createDeployment()    

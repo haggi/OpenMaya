@@ -67,9 +67,11 @@ public:
 
 	mtco_Logger(Corona::ICore* core) : Corona::Abstract::Logger(&core->getStats()) { };
 
-	virtual void logMsg(const Corona::String& message, Corona::LogType logType, const int errorCategory)
+	virtual void logMsg(const Corona::LogMessage& message)
 	{
-		std::cout << message << std::endl;
+#ifdef _DEBUG
+		std::cout << message.text.cStr() << std::endl;
+#endif
 	}
 	virtual void setProgress(const float progress)
 	{

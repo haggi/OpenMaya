@@ -14,13 +14,19 @@ bool textureFileSupported(MString fileName)
 
 	if( ext == "exr")
 		return true;
-	if( ext == "jpg")
+	if (ext == "gif")
+		return true;
+	if (ext == "jpg")
 		return true;
 	if( ext == "bmp")
 		return true;
 	if (ext == "png")
 		return true;
 	if (ext == "hdr")
+		return true;
+	if (ext == "tga")
+		return true;
+	if (ext == "tif")
 		return true;
 
 	return false;

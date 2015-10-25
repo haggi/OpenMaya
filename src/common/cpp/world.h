@@ -75,7 +75,7 @@ namespace MayaTo{
 		MStringArray objectNames;
 		std::vector<void *> objectPtr;
 		MImage previousRenderedImage;
-		bool _canDoIPR;
+		bool _canDoIPR = false;
 		bool canDoIPR(){ return _canDoIPR; }
 		void setCanDoIPR(bool yesOrNo) { _canDoIPR = yesOrNo; };
 

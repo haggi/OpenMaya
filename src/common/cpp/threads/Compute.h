@@ -98,9 +98,12 @@ public:
 	void endComputation()
 	{
 		Compute::checkDone = true;
-		Compute::checkThread.join();
-		if (Compute::usewaitcursor && MRenderView::doesRenderEditorExist())
-			MGlobal::executePythonCommand(releaseWaitCursorCmd);
+		if (Compute::checkThread.joinable())
+		{
+			Compute::checkThread.join();
+			if (Compute::usewaitcursor && MRenderView::doesRenderEditorExist())
+				MGlobal::executePythonCommand(releaseWaitCursorCmd);
+		}
 	}
 
 	bool isInterruptRequested()

@@ -5,6 +5,7 @@
 #include <functional>
 #include <maya/MRenderView.h>
 #include "queue.h"
+#include <map>
 
 static EventQueue::concurrent_queue<EventQueue::Event> RenderEventQueue;
 EventQueue::concurrent_queue<EventQueue::Event> *theRenderEventQueue();
@@ -30,10 +31,11 @@ public:
 	static void addDefaultCallbacks();
 	static void removeDefaultCallbacks();
 	static void reAddCallbacks();
-	static void addCallbacks();
+	static void addIPRCallbacks();
 	static void removeCallbacks();
 	static void startRenderQueueWorker();
 	static void renderQueueWorkerTimerCallback( float time, float lastTime, void *userPtr);
+	static void renderQueueWorkerIPRIdleCallback(void* data);
 	static void renderQueueWorkerNodeDirtyCallback( void *userPtr);
 	static void renderQueueWorkerIdleCallback(float time, float lastTime, void *userPtr);
 	static void addIdleUIComputationCreateCallback(void* data);
@@ -52,6 +54,10 @@ public:
 	static size_t registerCallback(std::function<void()> function, unsigned int millisecondsUpdateInterval = 100);
 	static void unregisterCallback(size_t cbId);
 	static void callbackWorker(size_t cbId);
+	static bool iprCallbacksDone();
+	static void iprFindLeafNodes();
+
+	static void interactiveStartThread();
 private:
 
 };

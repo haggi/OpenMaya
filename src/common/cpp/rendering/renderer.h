@@ -6,16 +6,15 @@
 
 class MayaObject;
 class MObject;
+struct InteractiveElement;
 
 namespace MayaTo{
 
 	class Renderer{
 
 	public:
-		std::vector<std::shared_ptr<MayaObject>>  interactiveUpdateList;
-		std::vector<MObject> interactiveUpdateMOList;
+		std::vector<InteractiveElement *>  interactiveUpdateList;
 		virtual ~Renderer() {};
-
 		virtual void defineCamera() = 0;
 		virtual void defineEnvironment() = 0;
 		virtual void defineGeometry() = 0;
@@ -43,6 +42,8 @@ namespace MayaTo{
 		// In other cases, the world space transform will be defined directly during the creation of the geometry.
 		virtual void updateTransform(std::shared_ptr<MayaObject> obj) = 0;
 		virtual void abortRendering() = 0;
+		// make an interactive update of the scene. Before this call the interactiveUpdateList should be filled appropriatly
+		virtual void doInteractiveUpdate() = 0;
 	private:
 
 	};
