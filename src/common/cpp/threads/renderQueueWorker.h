@@ -56,6 +56,7 @@ public:
 	static void callbackWorker(size_t cbId);
 	static bool iprCallbacksDone();
 	static void iprFindLeafNodes();
+	static void iprWaitForFinish(EventQueue::Event e);
 
 	static void interactiveStartThread();
 private:

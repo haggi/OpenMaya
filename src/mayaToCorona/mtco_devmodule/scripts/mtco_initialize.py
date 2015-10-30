@@ -4,6 +4,7 @@ import traceback
 import sys
 import os
 import path
+import time
 import Renderer as Renderer
 import optimizeTextures
 import Corona.aeNodeTemplates as aet
@@ -687,8 +688,18 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if not self.ipr_isrunning:
             self.showLogFile()
         self.postRenderProcedure()
-            
         
+    def isRunningIprProcedure(self):        
+        log.debug("isRunningIprProcedure")
+        return self.ipr_isrunning
+
+        renderState = pm.mayatoCorona(s=True)
+        if  renderState not in ["rstatenone"]:
+            log.debug("rstate is NOT none - ipr is running.")
+            return True
+        log.debug("rstate IS  none - ipr is NOT running.")
+        return False
+    
     def startIprRenderProcedure(self, editor, resolutionX, resolutionY, camera):
         canDoIPR = pm.mayatoCorona(canDoIPR=True)
         if canDoIPR == "no":

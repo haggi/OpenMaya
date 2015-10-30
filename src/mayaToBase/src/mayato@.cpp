@@ -3,11 +3,9 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MSelectionList.h>
-#include "mt@_common/mt@_mayaScene.h"
 #include "utilities/logging.h"
 #include "threads/renderQueueWorker.h"
 #include "mayaSceneFactory.h"
-#include "mt@_common/mt@_renderGlobals.h"
 
 static Logging logger;
 

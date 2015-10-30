@@ -75,13 +75,9 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		return MS::kSuccess;
 	}
 
-	MGlobal::displayInfo("Executing mayaToCorona...");
-	setLogLevel();
-
+	MayaTo::MayaToWorld::WorldRenderState rstate = MayaTo::getWorldPtr()->renderState;
 	if (argData.isFlagSet("-state", &stat))
 	{
-		Logging::debug(MString("state: ???"));
-		MayaTo::MayaToWorld::WorldRenderState rstate = MayaTo::getWorldPtr()->renderState;
 		if (rstate == MayaTo::MayaToWorld::RSTATETRANSLATING)
 				setResult("rstatetranslating");
 		if (rstate == MayaTo::MayaToWorld::RSTATERENDERING)
@@ -94,6 +90,9 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 			setResult("rstatestopped");
 		return MS::kSuccess;
 	}
+
+	MGlobal::displayInfo("Executing mayaToCorona...");
+	setLogLevel();
 
 	if (argData.isFlagSet("-canDoIPR", &stat))
 	{

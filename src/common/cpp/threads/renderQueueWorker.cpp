@@ -166,15 +166,19 @@ void RenderQueueWorker::addIPRCallbacks()
 		uint elementId = element.first;
 		InteractiveElement iae = element.second;
 		MObject nodeDirty;
-		if (iae.mobj != MObject::kNullObj)
+		if (iae.mobj.hasFn(MFn::kPluginDependNode))
 		{
+			MFnDependencyNode depFn(iae.mobj);
+			//if (depFn.typeName() == "CoronaSurface")
 			Logging::debug(MString("Adding dirty callback to shading node ") + getObjectName(iae.mobj));
 			nodeDirty = iae.mobj;
 		}
-		if (iae.obj)
-		{
-			Logging::debug(MString("Adding dirty callback to dag node ") + getObjectName(iae.obj->mobject));
-			nodeDirty = iae.obj->mobject;
+		else{
+			if (iae.obj)
+			{
+				Logging::debug(MString("Adding dirty callback to dag node ") + getObjectName(iae.obj->mobject));
+				nodeDirty = iae.obj->mobject;
+			}
 		}
 		InteractiveElement *userData = &mayaScene->interactiveUpdateMap[elementId];
 		MCallbackId id = MNodeMessage::addNodeDirtyCallback(nodeDirty, RenderQueueWorker::renderQueueWorkerNodeDirtyCallback, userData, &stat);
@@ -287,7 +291,11 @@ void RenderQueueWorker::iprFindLeafNodes()
 						if (sceneElement.second.node.hasFn(MFn::kShape))
 						{
 							if (sceneElement.second.node == dagIter.currentItem())
+							{
+								InteractiveElement *ie = &mayaScene->interactiveUpdateMap[sceneElement.first];
+								ie->triggeredFromTransform = true;
 								leafList.push_back(&mayaScene->interactiveUpdateMap[sceneElement.first]);
+							}
 						}
 					}
 				}
@@ -456,6 +464,17 @@ void RenderQueueWorker::sendFinalizeIfQueueEmpty(void *)
 	theRenderEventQueue()->push(e);
 }
 
+void RenderQueueWorker::iprWaitForFinish(EventQueue::Event e)
+{
+	Logging::debug("iprWaitForFinish.");
+	while (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATENONE)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	Logging::debug("iprWaitForFinish - Renderstate is RSTATENONE, sending event.");
+	theRenderEventQueue()->push(e);
+}
+
 void RenderQueueWorker::startRenderQueueWorker()
 {
 	EventQueue::Event e;
@@ -489,6 +508,18 @@ void RenderQueueWorker::startRenderQueueWorker()
 				}
 				setStartTime();				
 				MayaTo::getWorldPtr()->setRenderType(e.cmdArgsData->renderType);
+				
+				// it is possible that a new ipr rendering is started before another one is completly done, so wait for it
+				if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+				{
+					MayaTo::MayaToWorld::WorldRenderState rs = MayaTo::getWorldPtr()->getRenderState();
+					if (MayaTo::getWorldPtr()->getRenderState() != MayaTo::MayaToWorld::WorldRenderState::RSTATENONE)
+					{
+						std::thread waitThread = std::thread(RenderQueueWorker::iprWaitForFinish, e);
+						waitThread.detach();
+						break;
+					}
+				}
 				// Here we create the overall scene, renderer and renderGlobals objects
 				MayaTo::getWorldPtr()->initializeRenderEnvironment();
 						
@@ -607,6 +638,7 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 				MayaTo::getWorldPtr()->cleanUpAfterRender();
 				MayaTo::getWorldPtr()->worldRendererPtr->unInitializeRenderer();
+				MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATENONE);
 			}
 			break;
 

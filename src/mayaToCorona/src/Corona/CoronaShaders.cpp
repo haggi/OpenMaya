@@ -128,7 +128,6 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 			Corona::Rgb offsetColor(0,0,0);
 			rgbColor = Corona::Rgb(col.r * multiplier, col.g * multiplier, col.b * multiplier);
 			rgbColor += offsetColor;
-			
 		}
 		if (getPlugAttrType(attributeName.asChar(), depFn) == ATTR_TYPE::ATTR_TYPE_FLOAT)
 		{
@@ -221,6 +220,7 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		{
 			InteractiveElement iel;
 			iel.mobj = materialNode;
+			iel.obj = obj;
 			iel.name = depFn.name();
 			iel.node = materialNode;
 			mayaScene->interactiveUpdateMap[mayaScene->interactiveUpdateMap.size()] = iel;

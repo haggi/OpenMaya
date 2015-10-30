@@ -11,6 +11,7 @@
 #include "world.h"
 #include "CoronaShaders.h"
 #include <maya/MNodeMessage.h>
+#include <maya/MFnDagNode.h>
 
 CoronaRenderer::CoronaRenderer()
 {
@@ -165,6 +166,39 @@ void CoronaRenderer::doInteractiveUpdate()
 			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found light.") + iElement->name);
 			if (iElement->obj)
 				updateLight(iElement->obj);
+		}
+		if (iElement->node.hasFn(MFn::kPluginDependNode))
+		{
+			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found shader.") + iElement->name);
+			MFnDependencyNode depFn(iElement->node);
+			if (depFn.typeName() == "CoronaSurface")
+			{
+				std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(iElement->obj);
+				obj->instance->clearMaterials();
+				Corona::SharedPtr<Corona::IMaterial> mat = defineCoronaMaterial(iElement->node, iElement->obj, this->oslRenderer, false);
+				Corona::IMaterialSet ms = Corona::IMaterialSet(mat);
+				setRenderStats(ms, iElement->obj);
+				obj->instance->addMaterial(ms);
+			}
+		}
+		if (iElement->node.hasFn(MFn::kMesh))
+		{
+			if (iElement->triggeredFromTransform)
+			{
+				Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found mesh triggered from transform - update instance.") + iElement->name);
+				std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(iElement->obj);
+				MStatus stat;
+				MFnDagNode dn(iElement->node, &stat);
+				MDagPath mdp;
+				stat = dn.getPath(mdp);
+
+				MMatrix m = mdp.inclusiveMatrix(&stat);
+				if (!stat)
+					Logging::debug(MString("Error ") + stat.errorString());
+				Corona::AnimatedAffineTm atm;
+				setAnimatedTransformationMatrix(atm, m);
+				obj->instance->setTm(atm);
+			}
 		}
 	}
 	interactiveUpdateList.clear();
