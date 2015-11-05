@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <CODING_ROOT>H:\UserDatenHaggi\Documents\coding</CODING_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2017</MAYA_ROOT>
+    <BOOST_ROOT>$(CODING_ROOT)/Boost/boost_1_55_0/lib64-msvc-12.0</BOOST_ROOT>
+    <APPLESEED_ROOT>$(CODING_ROOT)\appleseed\deploy_debug</APPLESEED_ROOT>
+    <APPLE_3RDPARTY_ROOT>$(CODING_ROOT)\appleseed-deps\stage</APPLE_3RDPARTY_ROOT>
+    <OSL>$(APPLE_3RDPARTY_ROOT)\osl-debug</OSL>
+    <OPENEXR>$(APPLE_3RDPARTY_ROOT)\openexr-debug</OPENEXR>
+    <OIIO>$(APPLE_3RDPARTY_ROOT)/oiio-debug</OIIO>
+    <ILMBASE>$(APPLE_3RDPARTY_ROOT)\ilmbase-debug</ILMBASE>
+    <JPG>$(APPLE_3RDPARTY_ROOT)\libjpeg-turbo-debug</JPG>
+    <PNG>$(APPLE_3RDPARTY_ROOT)\libpng-debug</PNG>
+    <TIF>$(APPLE_3RDPARTY_ROOT)\libtiff-debug</TIF>
+    <LLVM>$(APPLE_3RDPARTY_ROOT)\llvm-debug</LLVM>
+    <XERCES>$(APPLE_3RDPARTY_ROOT)\xerces-c</XERCES>
+    <SEEXPR>$(APPLE_3RDPARTY_ROOT)\SeExpr-debug</SEEXPR>
+    <ZLIB>$(APPLE_3RDPARTY_ROOT)\zlib</ZLIB>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.mll</TargetExt>
+    <OutDir>..\mtap_devmodule\2017\plug-ins</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>APPLESEED_WITH_OIIO;APPLESEED_WITH_OSL;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;WINDOWS_LEAN_AND_MEAN;NOMINMAX;OIIO_STATIC_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>$(APPLESEED_ROOT)\include;$(BOOST_ROOT)\include;$(MAYA_ROOT)\include;..\..\common\cpp;$(OPENEXR)/include;$(OPENEXR)/include/OpenExr;$(ILMBASE)/include;$(OSL)/include;$(OIIO)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)/lib;$(MAYA_ROOT)/lib;$(APPLESEED_ROOT)/lib;$(OPENEXR)/lib;$(ILMBASE)/lib;$(ZLIB)/lib;$(OIIO)/lib;$(OSL)/lib;$(PNG)/lib;$(TIF)/lib;$(JPG)/lib;$(XERCES)/Static Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;appleseed.lib;appleseed.shared.lib;libpng16_staticd.lib;xerces-c_static_3D.lib;Half.lib;Iex-2_2.lib;IlmThread-2_2.lib;Imath-2_2.lib;IlmImf-2_2.lib;zlibstaticd.lib;OpenImageIO.lib;jpeg-static.lib;libtiff.lib;oslcomp.lib;oslexec.lib;$(LLVM)\lib\LLVMLTO.lib;$(LLVM)\lib\LLVMLinker.lib;$(LLVM)\lib\LLVMipo.lib;$(LLVM)\lib\LLVMVectorize.lib;$(LLVM)\lib\LLVMBitWriter.lib;$(LLVM)\lib\LLVMTableGen.lib;$(LLVM)\lib\LLVMDebugInfo.lib;$(LLVM)\lib\LLVMOption.lib;$(LLVM)\lib\LLVMX86Disassembler.lib;$(LLVM)\lib\LLVMX86AsmParser.lib;$(LLVM)\lib\LLVMX86CodeGen.lib;$(LLVM)\lib\LLVMSelectionDAG.lib;$(LLVM)\lib\LLVMAsmPrinter.lib;$(LLVM)\lib\LLVMX86Desc.lib;$(LLVM)\lib\LLVMX86Info.lib;$(LLVM)\lib\LLVMX86AsmPrinter.lib;$(LLVM)\lib\LLVMX86Utils.lib;$(LLVM)\lib\LLVMIRReader.lib;$(LLVM)\lib\LLVMBitReader.lib;$(LLVM)\lib\LLVMAsmParser.lib;$(LLVM)\lib\LLVMMCDisassembler.lib;$(LLVM)\lib\LLVMMCParser.lib;$(LLVM)\lib\LLVMInstrumentation.lib;$(LLVM)\lib\LLVMInterpreter.lib;$(LLVM)\lib\LLVMMCJIT.lib;$(LLVM)\lib\LLVMJIT.lib;$(LLVM)\lib\LLVMCodeGen.lib;$(LLVM)\lib\LLVMObjCARCOpts.lib;$(LLVM)\lib\LLVMScalarOpts.lib;$(LLVM)\lib\LLVMInstCombine.lib;$(LLVM)\lib\LLVMTransformUtils.lib;$(LLVM)\lib\LLVMipa.lib;$(LLVM)\lib\LLVMAnalysis.lib;$(LLVM)\lib\LLVMRuntimeDyld.lib;$(LLVM)\lib\LLVMExecutionEngine.lib;$(LLVM)\lib\LLVMTarget.lib;$(LLVM)\lib\LLVMMC.lib;$(LLVM)\lib\LLVMObject.lib;$(LLVM)\lib\LLVMCore.lib;$(LLVM)\lib\LLVMSupport.lib;$(SEEXPR)\lib\SeExpr.lib;libboost_chrono-vc120-mt-gd-1_55.lib;libboost_date_time-vc120-mt-gd-1_55.lib;libboost_filesystem-vc120-mt-gd-1_55.lib;libboost_regex-vc120-mt-gd-1_55.lib;libboost_system-vc120-mt-gd-1_55.lib;libboost_thread-vc120-mt-gd-1_55.lib;libboost_wave-vc120-mt-gd-1_55.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="CODING_ROOT">
+      <Value>$(CODING_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MAYA_ROOT">
+      <Value>$(MAYA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="BOOST_ROOT">
+      <Value>$(BOOST_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="APPLESEED_ROOT">
+      <Value>$(APPLESEED_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="APPLE_3RDPARTY_ROOT">
+      <Value>$(APPLE_3RDPARTY_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OSL">
+      <Value>$(OSL)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENEXR">
+      <Value>$(OPENEXR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OIIO">
+      <Value>$(OIIO)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ILMBASE">
+      <Value>$(ILMBASE)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="JPG">
+      <Value>$(JPG)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="PNG">
+      <Value>$(PNG)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="TIF">
+      <Value>$(TIF)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LLVM">
+      <Value>$(LLVM)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="XERCES">
+      <Value>$(XERCES)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="SEEXPR">
+      <Value>$(SEEXPR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ZLIB">
+      <Value>$(ZLIB)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
