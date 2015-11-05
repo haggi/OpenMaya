@@ -242,7 +242,6 @@
     <ClCompile Include="..\..\common\cpp\mayaSceneFactory.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaSceneParsing.cpp" />
     <ClCompile Include="..\..\common\cpp\mayaSceneUtils.cpp" />
-    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp" />
     <ClCompile Include="..\..\common\cpp\memory\memoryInfo.cpp" />
     <ClCompile Include="..\..\common\cpp\osl\oslUtils.cpp" />
     <ClCompile Include="..\..\common\cpp\renderGlobals.cpp" />

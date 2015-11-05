@@ -275,9 +275,6 @@
     <ClCompile Include="..\src\mtco_common\mtco_mayaRenderer.cpp">
       <Filter>mtco_common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\shaders\coronaLayeredMaterial.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>

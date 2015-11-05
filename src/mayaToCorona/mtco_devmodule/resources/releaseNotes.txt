@@ -1,4 +1,10 @@
+release 0.46
+- added vector displacement
+
 release 0.45
+- fixed problem with clicking start ipr render before the old one was done
+- added interactive shader updates
+- added interactive object transforms
 
 release 0.44
 - first ipr implementation for camera and lights

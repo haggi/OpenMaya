@@ -83,6 +83,7 @@ class AECoronaNodeTemplate(BaseTemplate):
         self.beginLayout("Corona" ,collapse=1)
         self.addControl("mtco_displacementMin", label="Displacement Min")
         self.addControl("mtco_displacementMax", label="Displacement Max")
+        self.addControl("mtco_displacementAdaptive", label="Adaptive")
         self.endLayout()
 
     def buildMeshTemplate(self, nodeName):

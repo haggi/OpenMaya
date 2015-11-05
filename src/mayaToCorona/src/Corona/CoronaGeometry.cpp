@@ -254,7 +254,8 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 	Corona::SharedPtr<Corona::Abstract::Map> displacementMap = nullptr;
 	float displacementMin = 0.0f;
 	float displacementMax = 0.01f;
-
+	bool displacementAdaptive = false;
+	Corona::DisplacementMode displacementMode = Corona::DisplacementMode::DISPLACEMENT_NORMAL;
 	// I do it here for displacement mapping, maybe we should to another place
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
 	if( obj->shadingGroups.length() > 0)
@@ -267,9 +268,18 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		if( (displacementObj != MObject::kNullObj) && (displacementObj.hasFn(MFn::kDisplacementShader)))
 		{
 			MObject displacementMapObj = getConnectedInNode(displacementObj, "displacement");
+			MObject vectorDisplacementMapObj = getConnectedInNode(displacementObj, "vectorDisplacement");
+
 			if( (displacementMapObj != MObject::kNullObj) && (displacementMapObj.hasFn(MFn::kFileTexture)))
 			{
-				MFnDependencyNode displacmentMapNode(displacementObj);
+				MFnDependencyNode displacmentMapNode(displacementObj);				
+				int dispMode = getEnumInt("displacementMode", displacmentMapNode);
+				if (dispMode == 1)
+					displacementMode = Corona::DisplacementMode::DISPLACEMENT_VECTOR_TANGENT;
+				if (dispMode > 1)
+					displacementMode = Corona::DisplacementMode::DISPLACEMENT_VECTOR_OBJECT;
+				
+				displacementAdaptive = getBoolAttr("mtco_displacementAdaptive", displacmentMapNode, false);
 				getFloat("mtco_displacementMin", displacmentMapNode, displacementMin);
 				getFloat("mtco_displacementMax", displacmentMapNode, displacementMax);
 				MObject fileTextureObject = getConnectedInNode(displacementObj, "displacement");
@@ -382,12 +392,13 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		if (hasDisplacement)
 		{
 			std::auto_ptr<Corona::DisplacedTriangleData> dtrip = std::auto_ptr<Corona::DisplacedTriangleData>(new Corona::DisplacedTriangleData);
-			//Corona::DisplacedTriangleData *dtri = (Corona::DisplacedTriangleData *)trip.get();
+			dtrip->displacement.mode = displacementMode;
 			dtrip->displacement.mapChannel = 0;
 			dtrip->displacement.map = displacementMap;
 			dtrip->displacement.waterLevel = -Corona::INFINITY;
 			dtrip->displacement.min = displacementMin;
 			dtrip->displacement.max = displacementMax;
+			dtrip->displacement.adaptive = displacementAdaptive;
 			trip = dtrip;
 		}
 		else{
@@ -417,69 +428,6 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		trip->edgeVis[0] = trip->edgeVis[1] = trip->edgeVis[2] = true;
 		geom->addPrimitive(*trip);
 
-		//if (hasDisplacement)
-		//{
-		//	Corona::DisplacedTriangleData tri;
-		//	tri.displacement.map = displacementMap;
-		//	tri.displacement.waterLevel = -Corona::INFINITY;
-		//	MPoint p0 = points[vtxId0];
-		//	MPoint p1 = points[vtxId1];
-		//	MPoint p2 = points[vtxId2];
-		//	tri.v[0] = Corona::AnimatedPos(Corona::Pos(p0.x, p0.y, p0.z));
-		//	tri.v[1] = Corona::AnimatedPos(Corona::Pos(p1.x, p1.y, p1.z));
-		//	tri.v[2] = Corona::AnimatedPos(Corona::Pos(p2.x, p2.y, p2.z));
-		//	MVector n0 = normals[normalId0];
-		//	MVector n1 = normals[normalId1];
-		//	MVector n2 = normals[normalId2];
-		//	Corona::Dir dir0(n0.x, n0.y, n0.z);
-		//	Corona::Dir dir1(n1.x, n1.y, n1.z);
-		//	Corona::Dir dir2(n2.x, n2.y, n2.z);
-		//	tri.n[0] = Corona::AnimatedDir(dir0);
-		//	tri.n[1] = Corona::AnimatedDir(dir1);
-		//	tri.n[2] = Corona::AnimatedDir(dir2);
-		//	Corona::Pos uv0(uArray[uvId0],vArray[uvId0],0.0);
-		//	Corona::Pos uv1(uArray[uvId1],vArray[uvId1],0.0);
-		//	Corona::Pos uv2(uArray[uvId2],vArray[uvId2],0.0);
-		//	Corona::StaticArray<Corona::Pos, 3> uvp;
-		//	if (numUvs > 0)
-		//	{
-		//		uvp[0] = uv0;
-		//		uvp[1] = uv1;
-		//		uvp[2] = uv2;
-		//		tri.t.push(uvp);
-		//	}
-		//	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
-		//	tri.materialId = perFaceShadingGroup;
-		//	tri.displacement.min = displacementMin;
-		//	tri.displacement.max = displacementMax;
-		//	geom->addPrimitive(tri);			
-		//}
-		//else{
-		//	Corona::TriangleData tri;
-
-		//	tri.v.setSegments(numSteps - 1);
-		//	tri.n.setSegments(numSteps - 1);
-
-		//	for (int stepId = 0; stepId < numSteps; stepId++)
-		//	{
-		//		tri.v[stepId][0] = vtxId0 + numVertices * stepId;
-		//		tri.v[stepId][1] = vtxId1 + numVertices * stepId;
-		//		tri.v[stepId][2] = vtxId2 + numVertices * stepId;
-		//		tri.n[stepId][0] = normalId0 + numNormals * stepId;
-		//		tri.n[stepId][1] = normalId1 + numNormals * stepId;
-		//		tri.n[stepId][2] = normalId2 + numNormals * stepId;
-		//	}
-
-		//	if (numUvs > 0)
-		//	{
-		//		tri.t[0] = uvId0;
-		//		tri.t[1] = uvId1;
-		//		tri.t[2] = uvId2;
-		//	}
-		//	tri.materialId = perFaceShadingGroup;
-		//	tri.edgeVis[0] = tri.edgeVis[1] = tri.edgeVis[2] = true;
-		//	geom->addPrimitive(tri);
-		//}
 	}
 	//Logging::debug("}");
 	obj->perFaceAssignments.clear();

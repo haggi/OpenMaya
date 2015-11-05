@@ -584,6 +584,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         # displacement shader        
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMin", attributeType="float", defaultValue=0.0)
         pm.addExtension(nodeType="displacementShader", longName="mtco_displacementMax", attributeType="float", defaultValue=0.01)
+        pm.addExtension(nodeType="displacementShader", longName="mtco_displacementAdaptive", attributeType='bool', defaultValue=False) 
         
         #bump map because the maya implementation is too strange
         pm.addExtension( nodeType='bump2d', longName='normalMap', usedAsColor=True, attributeType='float3' )
