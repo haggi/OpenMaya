@@ -104,6 +104,7 @@ public:
 			if (Compute::usewaitcursor && MRenderView::doesRenderEditorExist())
 				MGlobal::executePythonCommand(releaseWaitCursorCmd);
 		}
+		Compute::escPressed = false;
 	}
 
 	bool isInterruptRequested()

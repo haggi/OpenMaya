@@ -53,6 +53,7 @@ public:
 	MString fullNiceName;
 	int index;
 	MDagPath dagPath;
+	bool removed = false; // in IPR we simply flag an object as removed instead of really removing it
 	std::shared_ptr<ObjectAttributes> attributes;
 
 	std::vector<MDagPath> linkedLights; // for objects - light linking

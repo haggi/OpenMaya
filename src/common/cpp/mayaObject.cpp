@@ -439,6 +439,11 @@ void MayaObject::getMeshData(MPointArray& points, MFloatVectorArray& normals)
 		}
 	}
 	MFnMesh meshFn(meshObject, &stat);
+	if (!stat)
+	{
+		MString error = stat.errorString();
+		Logging::error(error);
+	}
 	meshFn.getPoints(points);
 	meshFn.getNormals(normals, MSpace::kObject);
 }

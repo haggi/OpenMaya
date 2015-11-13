@@ -4,6 +4,7 @@
 #include <thread>
 #include <functional>
 #include <maya/MRenderView.h>
+#include <maya/MNodeMessage.h>
 #include "queue.h"
 #include <map>
 
@@ -30,16 +31,19 @@ public:
 	~RenderQueueWorker();
 	static void addDefaultCallbacks();
 	static void removeDefaultCallbacks();
-	static void reAddCallbacks();
 	static void addIPRCallbacks();
 	static void removeCallbacks();
 	static void startRenderQueueWorker();
-	static void renderQueueWorkerTimerCallback( float time, float lastTime, void *userPtr);
-	static void renderQueueWorkerIPRIdleCallback(void* data);
-	static void renderQueueWorkerNodeDirtyCallback( void *userPtr);
+	static void renderQueueWorkerTimerCallback(float time, float lastTime, void *userPtr);
+	static void IPRIdleCallback(float time, float lastTime, void *userPtr);
+	static void IPRNodeDirtyCallback(void *userPtr);
 	static void renderQueueWorkerIdleCallback(float time, float lastTime, void *userPtr);
+	static void IPRattributeChangedCallback(MNodeMessage::AttributeMessage msg, MPlug & plug, MPlug & otherPlug, void*);
 	static void addIdleUIComputationCreateCallback(void* data);
 	static void addIdleUIComputationCallback();
+	static void IPRUpdateCallbacks();
+	static void IPRNodeAddedCallback(MObject& node, void *userPtr);
+	static void IPRNodeRemovedCallback(MObject& node, void *userPtr);
 	static void sceneCallback(void *);
 	static void pluginUnloadCallback(void *);
 	static void computationEventThread();

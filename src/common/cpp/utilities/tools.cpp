@@ -712,11 +712,38 @@ MObject getConnectedInNode(MPlug& inPlug)
 	return connectedPlugs[0].node();
 }
 
+bool getArrayIndex(MString attrib, MString& index, MString& baseName)
+{
+	std::string attr = attrib.asChar();
+	if (pystring::endswith(attr, "]"))
+	{
+		int p = attrib.length() - 1;
+		while ((attr[p] != '[') && (p >= 0))
+			p--;
+		if (p < 0)
+			return false;
+		index = attrib.substring(p + 1, attrib.length() - 2);
+		baseName = attrib.substring(0, p - 1);
+	}
+	return index.length() > 0;
+}
+
 MObject getConnectedInNode(MObject& thisObject, const char *attrName)
 {
 	MObject result = MObject::kNullObj;
+	MString indexStr, base;
+	int index = -1;
+	if (getArrayIndex(attrName, indexStr, base))
+	{
+		index = indexStr.asInt();
+		attrName = base.asChar();
+	}
 	MFnDependencyNode depFn(thisObject);
 	MPlug inPlug = depFn.findPlug(attrName);
+	if (index > -1)
+		inPlug = inPlug[index];
+	MString plugname = inPlug.name();
+
 	if( !inPlug.isConnected())
 		return result;
 
