@@ -12,6 +12,7 @@
 #include "osl/oslUtils.h"
 #include "../coronaOSL/coronaOSLMapUtil.h"
 #include "mayaScene.h"
+#include "threads/renderQueueWorker.h"
 #include "CoronaUtils.h"
 #include "CoronaMap.h"
 #include "CoronaAOShader.h"
@@ -145,45 +146,64 @@ Corona::ColorOrMap defineAttribute(MString& attributeName, MFnDependencyNode& de
 Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnDependencyNode& depFn, ShadingNetwork& sn, OSL::OSLShadingNetworkRenderer *oslRenderer)
 {
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
+	RoundCorners *rcmap = nullptr;
+
+	if (isConnected("roundCorners", depFn, true, false))
+	{
+		MObject rcObj = getConnectedInNode(depFn.object(), "roundCorners");
+		MFnDependencyNode rcNode(rcObj);
+		if (rcNode.typeName() == "CoronaRoundCorners")
+		{
+			rcmap = new RoundCorners(rcObj);
+			texmap = rcmap;
+		}
+	}
 	if (isConnected("normalCamera", depFn, true, false))
 	{
 		MString normalCamName = "normalCamera";
 		MObject inObj = getConnectedInNode(depFn.object(), "normalCamera");
 		if (inObj != MObject::kNullObj)
 		{
-			MFnDependencyNode inFn(inObj);
-			// we can connect round corners or bump2d to bump.
-			// the round corners can have a normalCamera input
-			MString tn = depFn.typeName();
-			if ((inFn.typeName() == "bump2d") || (inFn.typeName() == "CoronaRoundCorners"))
+			MFnDependencyNode inNode(inObj);
+			if (isConnected("bumpValue", inObj, true) || isConnected("normalMap", inObj, true))
 			{
-				if (inFn.typeName() == "CoronaRoundCorners")
+				MObject bumpInObj = getConnectedInNode(inObj, "bumpValue");
+				if ( bumpInObj == MObject::kNullObj)
+					bumpInObj = getConnectedInNode(inObj, "normalMap");
+				if (bumpInObj.hasFn(MFn::kFileTexture))
 				{
-					RoundCorners *rcmap = new RoundCorners(inObj);
-					MObject rcIn = getConnectedInNode(inObj, "normalCamera");
-					if (rcIn != MObject::kNullObj)
+					MFnDependencyNode bumpInNode(bumpInObj);
+					if (getBoolAttr("mtco_noOSL", bumpInNode, false))
 					{
-						MFnDependencyNode rcDepFn(rcIn);
-						if (rcDepFn.typeName() == "bump2d")
+						MString texName = getStringAttr("fileTextureName", bumpInNode, "");
+						if (textureFileSupported(texName))
 						{
-							rcmap->normalCamera = defineAttribute(MString("normalCamera"), inObj, oslRenderer);
-							//Corona::SharedPtr<Corona::Abstract::Map> bumptex = getOslTexMap(normalCamName, rcDepFn, sn, oslRenderer);
-							//rcmap->normalCamera = Corona::ColorOrMap(0.0f, bumptex);
+							mtco_MapLoader loader(bumpInObj);
+							Corona::SharedPtr<Corona::Abstract::Map> bumtexmap = loader.loadBitmap("");
+							if (rcmap != nullptr)
+							{
+								rcmap->normalCamera = Corona::ColorOrMap(0, bumtexmap);
+								texmap = rcmap;
+							}
+							return texmap;
+						}
+						else{
+							Logging::error(MString("File texture format not supported: ") + texName);
 						}
 					}
-					texmap = rcmap;
-					return texmap;
-				}
-				else // normal bump map
-				{
-					texmap = getOslTexMap(normalCamName, depFn, sn, oslRenderer);
-					Logging::debug("Bump connected");
-					return texmap;
 				}
 			}
+			if (rcmap != nullptr)
+			{
+				rcmap->normalCamera = defineAttribute(MString("normalCamera"), depFn.object(), oslRenderer);
+				return texmap;
+			}
+			texmap = getOslTexMap(normalCamName, depFn, sn, oslRenderer);
+			Logging::debug("Bump connected");
+			return texmap;
 		}
 	}
-	return nullptr;
+	return texmap;
 }
 
 
@@ -224,6 +244,11 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 			iel.name = depFn.name();
 			iel.node = materialNode;
 			mayaScene->interactiveUpdateMap[mayaScene->interactiveUpdateMap.size()] = iel;
+
+			if(MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING)
+			{
+				RenderQueueWorker::IPRUpdateCallbacks();
+			}
 		}
 	}
 
@@ -263,10 +288,10 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		Corona::SharedPtr<Corona::IMaterial> connectedBaseMat = defineCoronaMaterial(connectedMat, obj, oslRenderer, keepData);
 		Corona::LayeredMtlData layerData;
 		layerData.baseMtl = connectedBaseMat;
-		Corona::LayeredMtlData::MtlEntry baseEntry;
-		baseEntry.material = connectedBaseMat;
-		baseEntry.amount = Corona::ColorOrMap(Corona::Rgb(1, 1, 1), nullptr);
-		layerData.layers.push(baseEntry);
+		//Corona::LayeredMtlData::MtlEntry baseEntry;
+		//baseEntry.material = connectedBaseMat;
+		//baseEntry.amount = Corona::ColorOrMap(Corona::Rgb(1, 1, 1), nullptr);
+		//layerData.layers.push(baseEntry);
 
 		MPlug entryPlug = depFn.findPlug("materialEntry");
 		MPlug mtlEntryPlug = depFn.findPlug("materialEntryMtl");
@@ -335,17 +360,6 @@ Corona::SharedPtr<Corona::IMaterial> defineCoronaMaterial(MObject& materialNode,
 		int glassType = getEnumInt("glassType", depFn);
 		Corona::GlassMode glassModes[] = { Corona::GLASS_HYBRID, Corona::GLASS_ONESIDED, Corona::GLASS_TWOSIDED };
 		data.refract.glassMode = glassModes[glassType];
-
-		// round corners - without obj we are doing a swatch rendering. Here round corners does not make sense.
-		//if (obj != nullptr)
-		//{
-		//	MPlug rcMultiPlug = depFn.findPlug("roundCornersRadiusMultiplier");
-		//	if (!rcMultiPlug.isNull())
-		//		rcMultiPlug.setFloat(globalScaleFactor);
-		//	data.roundedCorners.radius = defineAttribute(MString("roundCornersRadius"), depFn, network);
-		//	//data.roundedCorners.radius = rcRadius * globalScaleFactor;
-		//	getInt(MString("roundCornersSamples"), depFn, data.roundedCorners.samples);
-		//}
 
 		// --- volume ----
 		data.volume.attenuationColor = defineAttribute(MString("attenuationColor"), depFn, network, oslRenderer);

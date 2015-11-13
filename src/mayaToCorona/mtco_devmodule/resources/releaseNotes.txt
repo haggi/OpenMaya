@@ -1,5 +1,12 @@
+release 0.47
+- reimplement save and resume
+
 release 0.46
 - added vector displacement
+- improved layered shading, at least with non OSL file textures
+- simplified the round corner connections
+- improved bump mapping with non OSL textures
+- implemented IPR adding and removing nodes and shaders
 
 release 0.45
 - fixed problem with clicking start ipr render before the old one was done

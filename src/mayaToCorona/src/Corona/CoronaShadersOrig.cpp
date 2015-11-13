@@ -122,6 +122,9 @@ void CoronaRenderer::defineMaterial(Corona::IInstance* instance, std::shared_ptr
 		obj->instance->addMaterial(ms);
 		return;
 	}
+	// test
+	MFnDagNode(obj->mobject).getPath(obj->dagPath);
+
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
 
 	if( obj->shadingGroups.length() > 0)

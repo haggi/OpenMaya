@@ -12,6 +12,9 @@
 #include "CoronaShaders.h"
 #include <maya/MNodeMessage.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MFnMesh.h>
+#include <maya/MFnSet.h>
+#include <maya/MSelectionList.h>
 
 CoronaRenderer::CoronaRenderer()
 {
@@ -152,9 +155,29 @@ void CoronaRenderer::doInteractiveUpdate()
 	Logging::debug("CoronaRenderer::doInteractiveUpdate");
 	if (interactiveUpdateList.empty())
 		return;
-	//std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 	for (auto iElement : interactiveUpdateList)
 	{
+		if (iElement->node.hasFn(MFn::kShadingEngine))
+		{
+			if (iElement->obj)
+			{
+				Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found shadingEngine.") + iElement->name);
+				MObject surface = getConnectedInNode(iElement->node, "surfaceShader");
+				if (surface != MObject::kNullObj)
+				{
+					MFnDependencyNode depFn(surface);
+					if (depFn.typeName() == "CoronaSurface")
+					{
+						std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(iElement->obj);
+						if (obj->instance != nullptr)
+						{
+							obj->instance->clearMaterials();
+							this->defineMaterial(obj->instance, obj);
+						}
+					}
+				}
+			}
+		}
 		if (iElement->node.hasFn(MFn::kCamera))
 		{
 			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found camera.") + iElement->name);
@@ -165,7 +188,9 @@ void CoronaRenderer::doInteractiveUpdate()
 		{
 			Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found light.") + iElement->name);
 			if (iElement->obj)
+			{
 				updateLight(iElement->obj);
+			}
 		}
 		if (iElement->node.hasFn(MFn::kPluginDependNode))
 		{
@@ -183,10 +208,21 @@ void CoronaRenderer::doInteractiveUpdate()
 		}
 		if (iElement->node.hasFn(MFn::kMesh))
 		{
+			std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(iElement->obj);
+			if (obj->removed)
+			{
+				if (obj->geom != nullptr)
+				{
+					context.scene->deleteGeomGroup(obj->geom);
+					obj->geom = nullptr;
+					obj->instance = nullptr;
+				}
+				continue;
+			}
+
 			if (iElement->triggeredFromTransform)
 			{
 				Logging::debug(MString("CoronaRenderer::doInteractiveUpdate - found mesh triggered from transform - update instance.") + iElement->name);
-				std::shared_ptr<mtco_MayaObject> obj = std::static_pointer_cast<mtco_MayaObject>(iElement->obj);
 				MStatus stat;
 				MFnDagNode dn(iElement->node, &stat);
 				MDagPath mdp;
@@ -198,6 +234,29 @@ void CoronaRenderer::doInteractiveUpdate()
 				Corona::AnimatedAffineTm atm;
 				setAnimatedTransformationMatrix(atm, m);
 				obj->instance->setTm(atm);
+			}
+			else{
+				if (obj->geom != nullptr)
+				{
+					context.scene->deleteGeomGroup(obj->geom);
+					obj->geom = nullptr;
+					obj->instance = nullptr;
+				}
+
+				MStatus stat;
+				MFnMesh meshFn(obj->mobject, &stat);
+				if (stat)
+				{
+					MayaTo::getWorldPtr()->worldRendererPtr->updateShape(obj);
+					if (meshFn.numPolygons() > 0)
+					{
+						defineMesh(obj);
+						Corona::AnimatedAffineTm atm;
+						this->setAnimatedTransformationMatrix(atm, obj);
+						obj->instance = obj->geom->addInstance(atm, obj.get(), nullptr);
+						this->defineMaterial(obj->instance, obj);
+					}
+				}
 			}
 		}
 	}

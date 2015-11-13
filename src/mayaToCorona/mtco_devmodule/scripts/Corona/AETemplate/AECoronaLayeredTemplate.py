@@ -194,9 +194,11 @@ class AECoronaLayeredTemplate(BaseTemplate):
         
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
+        self.beginLayout("Base" ,collapse=0)
         self.addControl("baseMaterial", label="Base Material")
+        self.endLayout()
         self.beginLayout("Layers" ,collapse=0)
-        self.callCustom( self.layersNew, self.layersReplace, "materialEntryMtl")
+        self.callCustom( self.layersNew, self.layersReplace, "materialEntryMtl")        
         self.endLayout()
 #         self.beginNoOptimize()
 #         self.addControl("emissionColorMultiplier", label="Multiplier")

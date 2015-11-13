@@ -44,6 +44,9 @@ void CoronaRenderer::updateLight(std::shared_ptr<MayaObject> mobj)
 		if (this->context.scene->hasLightShader(obj->lightShader))
 			this->context.scene->deleteLightShader(obj->lightShader);
 	}
+	if (obj->removed)
+		return;
+
 	if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
 	{
 		obj->transformMatrices.clear();

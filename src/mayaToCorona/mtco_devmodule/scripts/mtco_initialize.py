@@ -607,12 +607,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='mesh', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
-        
-        # dummy color for legacy viewport
-        #pm.addExtension( nodeType="CoronaSurface", longName="color", usedAsColor=True, attributeType='float3')
-        #pm.addExtension( nodeType='CoronaSurface', longName='colorR', attributeType='float', parent='color', defaultValue = 0.7 )
-        #pm.addExtension( nodeType='CoronaSurface', longName='colorG', attributeType='float', parent='color', defaultValue = 0.7 )
-        #pm.addExtension( nodeType='CoronaSurface', longName='colorB', attributeType='float', parent='color', defaultValue = 0.7 )  
+
+        #test for roundCorners        
+        pm.addExtension( nodeType='CoronaSurface', longName='roundCorners', attributeType='message', multi=False)
         
         pm.addExtension( nodeType='samplerInfo', longName='outDPdu', usedAsColor=True, attributeType='float3' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPduR', attributeType='float', parent='outDPdu' )
@@ -642,6 +639,9 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         if dn.type() in ["CoronaSurface"]:
             if sn.hasAttr("outColor"):
                 sn.outColor >> dn.diffuse
+                return 0
+            if sn.type() == "CoronaRoundCorners":
+                sn.message >> dn.roundCorners
                 return 0
         return 1
     

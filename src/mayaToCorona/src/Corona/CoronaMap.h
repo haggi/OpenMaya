@@ -100,11 +100,11 @@ public:
 
 			virtual float evalMono(const Corona::IShadeContext& context, Corona::TextureCache* cache, float& outAlpha) {
 				return evalColor(context, cache, outAlpha).grayValue();
-				//return shader.eval(context, true, outsideDummy).grayValue();
 			}
 
 			virtual Corona::Dir evalBump(const Corona::IShadeContext& context, Corona::TextureCache* cache) {
-				STOP;
+				bool outside;
+				return shader.evalBumpMap(context, outside) * toCorona(colorGain).grayValue();
 			}
 
 			virtual void renderTo(Corona::Bitmap<Corona::Rgb>& output) {

@@ -255,6 +255,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 	float displacementMin = 0.0f;
 	float displacementMax = 0.01f;
 	bool displacementAdaptive = false;
+	bool diplacementIsHdr = true;
 	Corona::DisplacementMode displacementMode = Corona::DisplacementMode::DISPLACEMENT_NORMAL;
 	// I do it here for displacement mapping, maybe we should to another place
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, true);
@@ -284,6 +285,9 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 				getFloat("mtco_displacementMax", displacmentMapNode, displacementMax);
 				MObject fileTextureObject = getConnectedInNode(displacementObj, "displacement");
 				MString fileTexturePath = getConnectedFileTexturePath(MString("displacement"), displacmentMapNode);
+				int vectorEncoding = getEnumInt("vectorEncoding", displacmentMapNode);
+				if (vectorEncoding == 0) // absolute, no negative values
+					diplacementIsHdr = false;
 
 				if( fileTexturePath != "")
 				{
@@ -393,6 +397,7 @@ void CoronaRenderer::defineMesh(std::shared_ptr<MayaObject> mobj)
 		{
 			std::auto_ptr<Corona::DisplacedTriangleData> dtrip = std::auto_ptr<Corona::DisplacedTriangleData>(new Corona::DisplacedTriangleData);
 			dtrip->displacement.mode = displacementMode;
+			dtrip->displacement.isHdr = diplacementIsHdr;	
 			dtrip->displacement.mapChannel = 0;
 			dtrip->displacement.map = displacementMap;
 			dtrip->displacement.waterLevel = -Corona::INFINITY;
