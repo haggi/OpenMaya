@@ -159,6 +159,10 @@ namespace MayaTo{
 		bool useRenderRegion;
 		MDagPath cameraDagPath;
 		MayaToWorld::WorldRenderType renderType;
+		int userDataInt = 0;
+		int userEvent = -1;
+		double userDataFloat = 0.0;
+		MString userDataString;
 	};
 
 };

@@ -35,7 +35,7 @@ namespace EventQueue
 			INITRENDER = 19,
 			INTERACTIVEFBCALLBACK = 20,
 			ADDIPRCALLBACKS = 21,
-			FRAMERENDER = 22,
+			FRAMERENDER = 22
 		};
 		enum PixelMode{
 			RECT = 0,

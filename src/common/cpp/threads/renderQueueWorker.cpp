@@ -896,12 +896,30 @@ void RenderQueueWorker::startRenderQueueWorker()
 			Logging::debug("Event::INTERACTIVEFBCALLBACK");
 			MayaTo::getWorldPtr()->worldRendererPtr->interactiveFbCallback();
 			break;
+
 		case EventQueue::Event::ADDIPRCALLBACKS:
 			Logging::debug("Event::ADDIPRCALLBACKS");
 			addIPRCallbacks();
 			break;
-		}
 
+		case EventQueue::Event::USER:
+			{
+				Logging::debug("Event::USER");
+				if (!e.cmdArgsData)
+				{
+					Logging::error("Event::USER:: cmdArgsData - not defined.");
+					break;
+				}
+				if (MayaTo::getWorldPtr()->worldRendererPtr == nullptr)
+				{
+					Logging::error("Event::USER:: no renderer defined. Please render an image.");
+				}
+				else{
+					MayaTo::getWorldPtr()->worldRendererPtr->handleUserEvent(e.cmdArgsData->userEvent, e.cmdArgsData->userDataString, e.cmdArgsData->userDataFloat, e.cmdArgsData->userDataInt);
+				}
+			}
+			break;
+		}
 
 
 		if(MGlobal::mayaState() != MGlobal::kBatch)
