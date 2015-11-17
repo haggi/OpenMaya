@@ -8,10 +8,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetExt>.mll</TargetExt>
+    <OutDir>..\mtlu_devmodule\2015\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(LUX_ROOT)\include\Lux\cpp_api2;$(BOOST_ROOT)\include\boost-1_55;$(MAYA_ROOT)\include;..\..\common\cpp;$(LUX_ROOT)\include\Lux\core\queryable;$(LUX_ROOT)\include\Lux\;H:\UserDatenHaggi\Documents\coding\lux\luxrays\include\;$(LUX_ROOT)\include\Lux\core</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LUX_ROOT)\include\Lux\cpp_api2;$(BOOST_ROOT)\include;$(MAYA_ROOT)\include;..\..\common\cpp;$(LUX_ROOT)\include\Lux\core\queryable;$(LUX_ROOT)\include\Lux\;H:\UserDatenHaggi\Documents\coding\lux\luxrays\include\;$(LUX_ROOT)\include\Lux\core</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -20,12 +21,10 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(LUX_ROOT)/lib;$(MAYA_ROOT)/lib;$(BOOST_ROOT)/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;LibLuxCore.lib;LibLuxRays.lib;LibLux.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;liblux.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtlu_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="BOOST_ROOT">

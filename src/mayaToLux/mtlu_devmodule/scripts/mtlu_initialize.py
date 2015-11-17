@@ -678,6 +678,30 @@ class LuxRenderer(Renderer.MayaToRenderer):
         log.debug("aeTemplateCallback: " + nodeName)
         LuxTemplates.AELuxNodeTemplate(nodeName)
         
+    def createRenderNode(self, nodeType=None, postCommand=None):
+        return postCommand
+        log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
+        nodeClass = None
+        for cl in pm.getClassification(nodeType):
+            pass
+#             if "corona/material" in cl:
+#                 nodeClass = "shader"
+#             if "corona/texture" in cl:
+#                 nodeClass = "texture"
+                
+        if nodeClass == "shader":
+            pass
+#             mat = pm.shadingNode(nodeType, asShader=True)
+#             shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+#             mat.outColor >> shadingGroup.surfaceShader
+#         else:
+#             mat = pm.shadingNode(nodeType, asTexture=True)
+            
+        if postCommand is not None:
+            postCommand = postCommand.replace("%node", str(mat))
+            postCommand = postCommand.replace("%type", '\"\"')
+            pm.mel.eval(postCommand)
+        return ""
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

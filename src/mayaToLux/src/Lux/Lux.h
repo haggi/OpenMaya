@@ -67,6 +67,8 @@ public:
 	virtual void unInitializeRenderer(){};
 	virtual void updateShape(std::shared_ptr<MayaObject> obj);
 	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
+	virtual void doInteractiveUpdate(){}
+	virtual void handleUserEvent(int event, MString strData, float floatData, int intData){}
 
 	// testing
 	void getMeshPoints(MPointArray& pointArray);
@@ -106,6 +108,8 @@ public:
 
 	void objectBegin(const char *oname);
 	void objectEnd();
+
+
 	//void shape(const char *sName, const lux_paramset* params);
 	// file writing methods
 	//void motionBegin(int steps, float *times);

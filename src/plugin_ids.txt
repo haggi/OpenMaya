@@ -6,6 +6,7 @@ Appleseed:
 0x0011CF41	0x0011CF41	mayaToAppleseed	mtap_standinLocator.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinLocator.cpp
 0x0011CF42	0x0011CF42	mayaToAppleseed	mtap_standinMeshNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed\src\mtap_common\mtap_standinMeshNode.cpp
 0x0011CF43	0x0011CF43	mayaToAppleseed	disneyMaterial
+0x0011CF44	0x0011CF44	mayaToAppleseed	layeredShader
 
 Corona:
 0x0011CF56	0x0011CF56	mayaToCorona	mtco_renderGlobalsNode.cpp	H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToCorona\src\mtco_common\mtco_renderGlobalsNode.cpp

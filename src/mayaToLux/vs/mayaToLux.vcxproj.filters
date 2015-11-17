@@ -392,8 +392,8 @@
     <ClCompile Include="..\..\common\cpp\shadingtools\shaderDefs.cpp">
       <Filter>common\shadingTools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\cpp\mayaSceneInteractive.cpp">
-      <Filter>common</Filter>
+    <ClCompile Include="..\..\common\cpp\rendering\mayaRenderer.cpp">
+      <Filter>common\rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -723,6 +723,9 @@
     </ClInclude>
     <ClInclude Include="..\..\common\cpp\shadingtools\shaderDefs.h">
       <Filter>common\shadingTools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpp\rendering\mayaRenderer.h">
+      <Filter>common\rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
