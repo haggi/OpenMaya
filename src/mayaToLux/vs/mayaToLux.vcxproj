@@ -60,16 +60,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">Release\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">Release\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">Release\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">..\mtlu_devmodule\2015\plug-ins</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">..\mtlu_devmodule\2016\plug-ins</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2015|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release2016|x64'">$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\mtlu_devmodule\2016\plug-ins</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug2015|x64'">
     <ClCompile>
