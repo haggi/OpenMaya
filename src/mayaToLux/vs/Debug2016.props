@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <BOOST_ROOT>H:\UserDatenHaggi\Documents\coding\Boost\boost_1_55_0\lib64-msvc-12.0</BOOST_ROOT>
+    <MAYA_ROOT>C:\Program Files\Autodesk\Maya2016</MAYA_ROOT>
+    <LUX_ROOT>H:\UserDatenHaggi\Documents\coding\lux\LuxrenderAPI</LUX_ROOT>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetExt>.mll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(LUX_ROOT)\include\Lux\cpp_api2;$(BOOST_ROOT)\include;$(MAYA_ROOT)\include;..\..\common\cpp;$(LUX_ROOT)\include\Lux\core\queryable;$(LUX_ROOT)\include\Lux\;H:\UserDatenHaggi\Documents\coding\lux\luxrays\include\;$(LUX_ROOT)\include\Lux\core</AdditionalIncludeDirectories>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>NOMINMAX;MAYA2015;WIN32;_DEBUG;_WINDOWS;_AFXDLL;_MBCS;NT_PLUGIN;REQUIRE_IOSTREAM;Bits64_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(LUX_ROOT)/lib;$(MAYA_ROOT)/lib;$(BOOST_ROOT)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaFX.lib;OpenMayaRender.lib;OpenMayaAnim.lib;OpenMayaUI.lib;Image.lib;OpenGL32.lib;Psapi.lib;lux.lib;LibLuxCore.lib;LibLuxRays.lib;LibLux.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName)$(TargetExt) ..\mtlu_devmodule\plug-ins\$(ProjectName)_maya2015.mll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BOOST_ROOT">
+      <Value>$(BOOST_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MAYA_ROOT">
+      <Value>$(MAYA_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LUX_ROOT">
+      <Value>$(LUX_ROOT)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
