@@ -16,6 +16,16 @@
 #include <maya/MFnSet.h>
 #include <maya/MSelectionList.h>
 
+#ifdef CORONA_RELEASE_ASSERTS
+#pragma comment(lib, "PrecompiledLibs_Assert.lib")
+#pragma comment(lib, "Corona_Assert.lib")
+#else
+#pragma comment(lib, "PrecompiledLibs_Release.lib")
+#pragma comment(lib, "Corona_Release.lib")
+#endif
+
+using namespace Corona;
+
 CoronaRenderer::CoronaRenderer()
 {
 	MStatus stat;
@@ -109,6 +119,22 @@ CoronaRenderer::~CoronaRenderer()
 	delete this->oslRenderer;
 }
 
+void CoronaRenderer::handleUserEvent(int event, MString strData, float floatData, int intData)
+{
+	Logging::debug("CoronaRenderer::handleUserEvent");
+	if (event == 1)
+	{
+		Logging::debug("Save frambuffer dump for later resume.");
+		Logging::debug(MString("Frambuffer image path: ") + strData);
+		Corona::String dumpFilename = strData.asChar();
+		this->context.fb->dumpExr(dumpFilename);
+	}
+	if (event == 2)
+	{
+		Logging::debug("Loading frambuffer dump for resuming rendering.");
+		Logging::debug(MString("Frambuffer image path: ") + strData);
+	}
+}
 void CoronaRenderer::frameBufferInteractiveCallback(MObject& node, void *clientData)
 {
 	Logging::debug("CoronaRenderer::frameBufferInteractiveCallback");
@@ -133,18 +159,6 @@ void CoronaRenderer::updateCameraFbCallback(MObject& camera)
 	//	MNodeMessage::removeCallback(this->renderFbCamNodeCallbackId);
 	//this->renderFbCamNodeCallbackId = MNodeMessage::addNodeDirtyCallback(camera, CoronaRenderer::frameBufferInteractiveCallback, nullptr, &stat);
 }
-
-
-#ifdef CORONA_RELEASE_ASSERTS
-#pragma comment(lib, "PrecompiledLibs_Assert.lib")
-#pragma comment(lib, "Corona_Assert.lib")
-#else
-#pragma comment(lib, "PrecompiledLibs_Release.lib")
-#pragma comment(lib, "Corona_Release.lib")
-#endif
-
-using namespace Corona;
-
 
 void CoronaRenderer::createScene()
 {
@@ -386,27 +400,29 @@ void CoronaRenderer::initializeRenderer()
 	context.fb->initFb(context.settings, context.renderPasses);
 	context.core->sanityCheck(context.settings);
 
+	MFnDependencyNode renderGlobalsNode(getRenderGlobalsNode());
+	if (getBoolAttr("dumpAndResume", renderGlobalsNode, false))
+	{
+		MString dumpFile = getStringAttr("dumpExrFile", renderGlobalsNode, "");
+		if (dumpFile.length() > 0)
+		{
+			Corona::String dumpFilename = dumpFile.asChar();
+			if (!context.fb->accumulateFromExr(dumpFilename))
+			{
+				Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
+			}
+			else{
+				// random seed has to be 0 for resuming a render
+				context.settings->set(Corona::PARAM_SHOW_PREVISUALIZATIONS, false);
+				context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
+			}
+		}
+	}
+
+
 	//if (gFn.findPlug("useCoronaVFB").asBool())
 	//	if (MGlobal::mayaState() != MGlobal::kBatch)
 	//		context.core->getWxVfb().renderStarted(context.fb, &vfbCallbacks, IWxVfb::EnviroConfig());
-
-	// this can be extracted and placed in a button function in the render globals
-	//std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
-	//MFnDependencyNode renderGlobalsNode(getRenderGlobalsNode());
-	//Corona::String dumpFilename = (renderGlobals->getImageOutputFile() + ".dmp").asChar();
-	//if (getBoolAttr("dumpAndResume", renderGlobalsNode, false))
-	//{
-	//	context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-	//	if (!context.fb->accumulateFromExr(dumpFilename))
-	//	{
-	//		Logging::debug(MString("Accumulating from a dumpfile failed: ") + dumpFilename.cStr());
-	//	}
-	//	else{
-	//		// random seed has to be 0 for resuming a render
-	//		context.settings->set(Corona::PARAM_RESUME_RENDERING, true);
-	//		context.settings->set(Corona::PARAM_RANDOM_SEED, 0);
-	//	}
-	//}
 
 	context.scene = context.core->createScene();
 

@@ -102,7 +102,26 @@ class CoronaRenderer(Renderer.MayaToRenderer):
 #             uiDict['globalVolumeButton'].setLabel("Disconnect {0}".format(inputNode))
 #         else:
 #             uiDict['globalVolumeButton'].setLabel("Connect Volume Shader.")
-            
+    def dumpFramebuffer(self, dummy): 
+        log.debug("dumpFramebuffer()")
+        filter = "*.exr"
+        filename = pm.fileDialog2(fileMode=0, ff=filter, caption="Export Corona Framebuffer...")
+        if filename and len(filename) > 0:
+            filename = filename[0]
+            print "Filename:", filename
+            self.renderGlobalsNode.dumpExrFile.set(filename)
+            uiDict = self.rendererTabUiDict['common']
+            pm.mayatoCorona(usrEvent=1, usrDataString=filename)
+                
+    def resumeFramebuffer(self, dummy): 
+        log.debug("resumeFramebuffer()")
+        filter = "*.exr"
+        filename = pm.fileDialog2(fileMode=1, ff=filter, caption="Export Corona Framebuffer...")
+        if filename and len(filename) > 0:
+            filename = filename[0]
+            print "Filename:", filename
+            self.renderGlobalsNode.dumpExrFile.set(filename)
+            uiDict = self.rendererTabUiDict['common']
         
     def CoronaSceneCreateTab(self):
         log.debug("CoronaRendererCreateTab()")
@@ -137,8 +156,13 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                             self.addRenderGlobalsUIElement(attName='ppm_initialRadius', uiType='float', displayName='Initial Radius', default='2.0', data='minmax:0.0001:200.0', uiDict=uiDict)
                             self.addRenderGlobalsUIElement(attName='ppm_alpha', uiType='float', displayName='Alpha (radius reduction)', default='0.666', data='minmax:0.01:1.0', uiDict=uiDict)
                         pm.separator()
-                        self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Save and Resume Render', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
-                        self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Saved Render File', default='""', uiDict=uiDict)
+                        self.addRenderGlobalsUIElement(attName = 'dumpAndResume', uiType = 'bool', displayName = 'Dump and Resume', default='false', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
+                        with pm.columnLayout(self.rendererName + 'ColumnLayoutDUMP', rs=3, adjustableColumn=True, width=400) as uiDict['ColumnLayoutDUMP'] :                        
+                            uiDict['dumpFramebuffer'] = pm.button(label="Dump Framebuffer...", c=self.dumpFramebuffer)
+                            uiDict['resumeFramebuffer'] = pm.button(label="Resume from Dump...", c=self.resumeFramebuffer)
+                            self.addRenderGlobalsUIElement(attName = 'dumpExrFile', uiType = 'string', displayName = 'Saved Render File', default='""', uiDict=uiDict)
+                            #uiDict['dumpFilePath']=pm.textFieldGrp(label="Resume from:", editable=False)
+                            uiDict['dumpExrFile'].setEditable(False)
                         pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'useGlobalMaterialOverride', uiType = 'bool', displayName = 'Use Material Override', uiDict=uiDict, callback=self.CoronaSceneUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'globalMaterialOverride', uiType = 'color', displayName = 'Global Material Override', uiDict=uiDict)
@@ -210,8 +234,12 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         renderer = self.renderGlobalsNode.renderer.get()
         
         if self.renderGlobalsNode.dumpAndResume.get():
+            uiDict['dumpFramebuffer'].setManage(True)
+            uiDict['resumeFramebuffer'].setManage(True)
             uiDict['dumpExrFile'].setManage(True)
         else:
+            uiDict['dumpFramebuffer'].setManage(False)
+            uiDict['resumeFramebuffer'].setManage(False)
             uiDict['dumpExrFile'].setManage(False)
         
         if renderer == 0:

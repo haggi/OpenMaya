@@ -36,13 +36,14 @@ MSyntax MayaToCorona::newSyntax()
 	stat = syntax.addFlag("-ci", "-canDoIPR");
 	stat = syntax.addFlag("-wi", "-width", MSyntax::kLong);
 	stat = syntax.addFlag( "-hi", "-height", MSyntax::kLong);
-	// Flag -startIPR
 	stat = syntax.addFlag( "-sar", "-startIpr");
-	// Flag -stopIPR
-	syntax.addFlag( "-str", "-stopIpr");
-	// Flag -pauseIPR
-	syntax.addFlag( "-par", "-pauseIpr");
-	
+	stat = syntax.addFlag("-str", "-stopIpr");
+	stat = syntax.addFlag("-par", "-pauseIpr");
+	stat = syntax.addFlag("-ue", "-usrEvent", MSyntax::kString);
+	stat = syntax.addFlag("-uds", "-usrDataString", MSyntax::kString);
+	stat = syntax.addFlag("-udi", "-usrDataInt", MSyntax::kLong);
+	stat = syntax.addFlag("-udf", "-usrDataFloat", MSyntax::kDouble);
+
 	return syntax;
 }
 
@@ -62,6 +63,7 @@ void MayaToCorona::setLogLevel()
 MStatus MayaToCorona::doIt( const MArgList& args)
 {
 	MStatus stat = MStatus::kSuccess;
+	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
 
 	MArgDatabase argData(syntax(), args);
 
@@ -122,9 +124,38 @@ MStatus MayaToCorona::doIt( const MArgList& args)
 		return MS::kSuccess;
 	}
 
+	if (argData.isFlagSet("-usrDataString", &stat))
+	{
+		Logging::debug(MString("-usrDataString"));
+		argData.getFlagArgument("-usrDataString", 0, cmdArgs->userDataString);
+	}
+
+	if (argData.isFlagSet("-usrDataInt", &stat))
+	{
+		Logging::debug(MString("-usrDataInt"));
+		argData.getFlagArgument("-usrDataInt", 0, cmdArgs->userDataInt);
+	}
+
+	if (argData.isFlagSet("-usrDataFloat", &stat))
+	{
+		Logging::debug(MString("-usrDataFloat"));
+		argData.getFlagArgument("-usrDataFloat", 0, cmdArgs->userDataFloat);
+	}
+
+	if (argData.isFlagSet("-usrEvent", &stat))
+	{
+		Logging::debug(MString("-usrEvent"));
+		argData.getFlagArgument("-usrEvent", 0, cmdArgs->userEvent);
+
+		EventQueue::Event e;
+		e.cmdArgsData = std::move(cmdArgs);
+		e.type = EventQueue::Event::USER;
+		theRenderEventQueue()->push(e);
+		return MS::kSuccess;
+	}
+
 	// I have to request useRenderRegion here because as soon the command is finished, what happens immediatly after the command is 
 	// put into the queue, the value is set back to false.
-	std::unique_ptr<MayaTo::CmdArgs> cmdArgs(new MayaTo::CmdArgs);
 	MObject drg = objectFromName("defaultRenderGlobals");
 	MFnDependencyNode drgfn(drg);
 	cmdArgs->useRenderRegion = drgfn.findPlug("useRenderRegion").asBool();

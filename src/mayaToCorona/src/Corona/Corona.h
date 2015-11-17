@@ -188,7 +188,7 @@ public:
 
 	static void framebufferCallback();
 	virtual void doInteractiveUpdate();
-
+	virtual void  handleUserEvent(int event, MString strData, float floatData, int intData);
 	std::vector<Corona::SharedPtr<Corona::Abstract::Map>> maps;
 	//void doit(); // for testing
 };

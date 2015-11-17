@@ -343,9 +343,9 @@ void CoronaRenderer::saveImage()
 	Corona::String filename = getImageFileName(name, rest).asChar();
 	bool isExr = pystring::endswith(filename.cStr(), ".exr");
 
-	Corona::String dumpFilename = (renderGlobals->imageOutputFile + ".dmp").asChar();
-	if (getBoolAttr("dumpAndResume", depFn, false))
-		this->context.fb->dumpExr(dumpFilename);
+	//Corona::String dumpFilename = (renderGlobals->imageOutputFile + ".dmp").asChar();
+	//if (getBoolAttr("dumpAndResume", depFn, false))
+	//	this->context.fb->dumpExr(dumpFilename);
 
 	// no gamma for exr
 	bool isLinear = isExr;
