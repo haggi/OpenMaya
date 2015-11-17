@@ -1,22 +1,22 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_condition
-param	string	Cond	"Equal" 		%meta{string,widget,"popup"} %meta{string,options,"Equal|NotEqual|Less|LessEqual|Greater|GreaterEqual"}  %read{0,15} %write{2147483647,-1}
-param	float	Float1	0 		 %read{2,17} %write{2147483647,-1}
-param	float	Float2	0 		 %read{2,17} %write{2147483647,-1}
-oparam	int	Result	0 		 %read{2147483647,-1} %write{2,17}
-const	string	$const1	"Equal"		 %read{0,0} %write{2147483647,-1}
-temp	int	$tmp1	 %read{1,1} %write{0,0}
-const	string	$const2	"NotEqual"		 %read{3,3} %write{2147483647,-1}
-temp	int	$tmp2	 %read{4,4} %write{3,3}
-const	string	$const3	"Less"		 %read{6,6} %write{2147483647,-1}
-temp	int	$tmp3	 %read{7,7} %write{6,6}
-const	string	$const4	"LessEqual"		 %read{9,9} %write{2147483647,-1}
-temp	int	$tmp4	 %read{10,10} %write{9,9}
-const	string	$const5	"Greater"		 %read{12,12} %write{2147483647,-1}
-temp	int	$tmp5	 %read{13,13} %write{12,12}
-const	string	$const6	"GreaterEqual"		 %read{15,15} %write{2147483647,-1}
-temp	int	$tmp6	 %read{16,16} %write{15,15}
+param	string	Cond	"Equal"		%meta{string,widget,"popup"} %meta{string,options,"Equal|NotEqual|Less|LessEqual|Greater|GreaterEqual"}  %read{0,15} %write{2147483647,-1}
+param	float	Float1	0		%read{2,17} %write{2147483647,-1}
+param	float	Float2	0		%read{2,17} %write{2147483647,-1}
+oparam	int	Result	0		%read{2147483647,-1} %write{2,17}
+const	string	$const1	"Equal"		%read{0,0} %write{2147483647,-1}
+temp	int	$tmp1	%read{1,1} %write{0,0}
+const	string	$const2	"NotEqual"		%read{3,3} %write{2147483647,-1}
+temp	int	$tmp2	%read{4,4} %write{3,3}
+const	string	$const3	"Less"		%read{6,6} %write{2147483647,-1}
+temp	int	$tmp3	%read{7,7} %write{6,6}
+const	string	$const4	"LessEqual"		%read{9,9} %write{2147483647,-1}
+temp	int	$tmp4	%read{10,10} %write{9,9}
+const	string	$const5	"Greater"		%read{12,12} %write{2147483647,-1}
+temp	int	$tmp5	%read{13,13} %write{12,12}
+const	string	$const6	"GreaterEqual"		%read{15,15} %write{2147483647,-1}
+temp	int	$tmp6	%read{16,16} %write{15,15}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\utility\\as_condition.osl:43
 #         Result = Float1 > Float2;

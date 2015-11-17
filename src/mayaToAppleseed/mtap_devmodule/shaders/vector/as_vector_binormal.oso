@@ -1,21 +1,21 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_vector_binormal
-param	vector	Normal	0 0 0 		 %read{2,2} %write{0,0}
-param	vector	Tangent	0 0 0 		 %read{2,2} %write{1,1}
-oparam	vector	Binormal	0 0 0 		 %read{2147483647,-1} %write{2,2}
-global	normal	N	 %read{0,0} %write{2147483647,-1}
-global	vector	dPdu	 %read{1,1} %write{2147483647,-1}
+param	vector	Normal	0 0 0		%read{2,2} %write{0,0} %initexpr
+param	vector	Tangent	0 0 0		%read{2,2} %write{1,1} %initexpr
+oparam	vector	Binormal	0 0 0		%read{2147483647,-1} %write{2,2}
+global	normal	N	%read{0,0} %write{2147483647,-1}
+global	vector	dPdu	%read{1,1} %write{2147483647,-1}
 code Normal
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl:34
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl:34
 #     vector Tangent = APPLESEED_DEFAULT_TANGENT,
-	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl"} %line{34} %argrw{"wr"}
+	assign		Normal N 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl"} %line{34} %argrw{"wr"}
 code Tangent
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl:35
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl:35
 #     output vector Binormal = 0
-	normalize	Tangent dPdu 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl"} %line{35} %argrw{"wr"}
+	normalize	Tangent dPdu 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl"} %line{35} %argrw{"wr"}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl:39
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl:39
 # }
-	cross		Binormal Tangent Normal 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\vector\\as_vector_binormal.osl"} %line{39} %argrw{"wrr"}
+	cross		Binormal Tangent Normal 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\vector\\as_vector_binormal.osl"} %line{39} %argrw{"wrr"}
 	end

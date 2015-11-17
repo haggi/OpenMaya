@@ -24,6 +24,7 @@ for root, dirname, files in os.walk("."):
 
             saved_wd = os.getcwd()
             os.chdir(root)
+            print oslc_cmd + " -v -I" + include_dir + ' ' + filename
             retcode = os.system(oslc_cmd + " -v -I" + include_dir + ' ' + filename)
 
             if retcode != 0:
@@ -32,7 +33,6 @@ for root, dirname, files in os.walk("."):
 
             oso_filename = filename.replace(".osl", ".oso")
             dest_dir = os.path.join("..", dest_dir)
-
             if os.path.exists(os.path.join(dest_dir, oso_filename)):
                 os.remove(os.path.join(dest_dir, oso_filename))
 

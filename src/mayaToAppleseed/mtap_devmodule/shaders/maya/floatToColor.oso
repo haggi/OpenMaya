@@ -1,13 +1,13 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader floatToColor
-param	float	inX	0 		 %read{0,0} %write{2147483647,-1}
-param	float	inY	0 		 %read{1,1} %write{2147483647,-1}
-param	float	inZ	0 		 %read{2,2} %write{2147483647,-1}
-oparam	vector	outValue	0 0 0 		 %read{2147483647,-1} %write{0,2}
-const	int	$const1	0		 %read{0,0} %write{2147483647,-1}
-const	int	$const2	1		 %read{1,1} %write{2147483647,-1}
-const	int	$const3	2		 %read{2,2} %write{2147483647,-1}
+param	float	inX	0		%read{0,0} %write{2147483647,-1}
+param	float	inY	0		%read{1,1} %write{2147483647,-1}
+param	float	inZ	0		%read{2,2} %write{2147483647,-1}
+oparam	vector	outValue	0 0 0		%read{2147483647,-1} %write{0,2}
+const	int	$const1	0		%read{0,0} %write{2147483647,-1}
+const	int	$const2	1		%read{1,1} %write{2147483647,-1}
+const	int	$const3	2		%read{2,2} %write{2147483647,-1}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\floatToColor.osl:4
 # 	outValue[1] = inY;

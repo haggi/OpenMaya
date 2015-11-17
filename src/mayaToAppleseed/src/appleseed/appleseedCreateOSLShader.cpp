@@ -51,48 +51,6 @@ MString oslTypeToMString(MAYATO_OSL::OSLParameter param)
 	return result;
 }
 
-void MAYATO_OSL::createOSLShader(MString& shaderNodeType, MString& shaderName, OSLParamArray& paramArray, MString type)
-{
-	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
-	AppleRender::AppleseedRenderer *renderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr).get();
-	
-	Logging::debug(MString("MAYATO_OSL::createOSLShader ") + shaderName);
-	asr::ParamArray asParamArray;
-	for (auto param : paramArray)
-	{
-
-		MString pname = param.name;
-		if (pname == "color")
-			pname = "inColor";
-
-		MString paramString = oslTypeToMString(param);
-		asParamArray.insert(pname.asChar(), paramString);
-		Logging::debug(MString("\tParam ") + param.name + " " + paramString);
-	}
-
-	if (type == "shader")
-	{
-		Logging::debug(MString("MAYATO_OSL::createOSLShader creating shader node "));
-		renderer->currentShaderGroup->add_shader("shader", shaderNodeType.asChar(), shaderName.asChar(), asParamArray);
-	}
-}
-
-void MAYATO_OSL::connectOSLShaders(ConnectionArray& ca)
-{
-	std::shared_ptr<RenderGlobals> renderGlobals = MayaTo::getWorldPtr()->worldRenderGlobalsPtr;
-	AppleRender::AppleseedRenderer *renderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr).get();
-	for (auto connection : ca)
-	{
-		const char *srcLayer = connection.sourceNode.asChar();
-		const char *srcAttr = connection.sourceAttribute.asChar();
-		const char *destLayer = connection.destNode.asChar();
-		MString destAttr = connection.destAttribute;
-		if (destAttr == "color")
-			destAttr = "inColor";
-		Logging::debug(MString("MAYATO_OSL::connectOSLShaders ") + srcLayer + "." + srcAttr + " -> " + destLayer + "." + destAttr);
-		renderer->currentShaderGroup->add_connection(srcLayer, srcAttr, destLayer, destAttr.asChar());
-	}
-}
 
 void MAYATO_OSLUTIL::OSLUtilClass::connectOSLShaders(MAYATO_OSL::ConnectionArray& ca)
 {
@@ -111,7 +69,7 @@ void MAYATO_OSLUTIL::OSLUtilClass::connectOSLShaders(MAYATO_OSL::ConnectionArray
 	}
 }
 
-void MAYATO_OSLUTIL::OSLUtilClass::createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray, MString type)
+void MAYATO_OSLUTIL::OSLUtilClass::createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray)
 {
 	Logging::debug(MString("MAYATO_OSL::createOSLShader ") + shaderName);
 	asr::ParamArray asParamArray;
@@ -127,12 +85,8 @@ void MAYATO_OSLUTIL::OSLUtilClass::createOSLShader(MString& shaderNodeType, MStr
 		Logging::debug(MString("\tParam ") + param.name + " " + paramString);
 	}
 
-	if (type == "shader")
-	{
-		Logging::debug(MString("MAYATO_OSL::createOSLShader creating shader node "));
-		OSL::ShaderGroup *g = group;
-		asr::ShaderGroup *ag = (asr::ShaderGroup *)g;
-		ag->add_shader("shader", shaderNodeType.asChar(), shaderName.asChar(), asParamArray);
-	}
-
+	Logging::debug(MString("MAYATO_OSL::createOSLShader creating shader node "));
+	OSL::ShaderGroup *g = group;
+	asr::ShaderGroup *ag = (asr::ShaderGroup *)g;
+	ag->add_shader("shader", shaderNodeType.asChar(), shaderName.asChar(), asParamArray);
 }

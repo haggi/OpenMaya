@@ -1,10 +1,10 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_color_mix
-param	color	Color1	0 0 0 		 %read{0,0} %write{2147483647,-1}
-param	color	Color2	0 0 0 		 %read{0,0} %write{2147483647,-1}
-param	float	Factor	0.5 		 %read{0,0} %write{2147483647,-1}
-oparam	color	ColorOut	0 0 0 		 %read{2147483647,-1} %write{0,0}
+param	color	Color1	0 0 0		%read{0,0} %write{2147483647,-1}
+param	color	Color2	0 0 0		%read{0,0} %write{2147483647,-1}
+param	float	Factor	0.5		%read{0,0} %write{2147483647,-1}
+oparam	color	ColorOut	0 0 0		%read{2147483647,-1} %write{0,0}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\color\\as_color_mix.osl:38
 # }

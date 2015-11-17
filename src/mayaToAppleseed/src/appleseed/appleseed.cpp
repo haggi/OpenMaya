@@ -49,17 +49,18 @@ std::vector<asr::Entity *> definedEntities;
 
 AppleseedRenderer::AppleseedRenderer()
 {
-	//asr::global_logger().set_format(asf::LogMessage::Debug, "");
-	//log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
-	//asr::global_logger().add_target(log_target.get());
-
-	// disabel log output at the moment.
+	asr::global_logger().set_format(asf::LogMessage::Debug, "");
+	log_target = std::auto_ptr<asf::ILogTarget>(asf::create_console_log_target(stdout));
+	asr::global_logger().add_target(log_target.get());
 }
 
 AppleseedRenderer::~AppleseedRenderer()
 {
-	Logging::debug("Unloading logger.");
-	asr::global_logger().remove_target(log_target.get());
+	if (log_target.get() != nullptr)
+	{
+		Logging::debug("Unloading logger.");
+		asr::global_logger().remove_target(log_target.get());
+	}
 }
 
 void AppleseedRenderer::initializeRenderer()

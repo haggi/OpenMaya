@@ -99,6 +99,8 @@ public:
 	virtual void updateTransform(std::shared_ptr<MayaObject> obj);
 	virtual void abortRendering();
 	virtual void interactiveFbCallback(){};
+	virtual void doInteractiveUpdate(){};
+	virtual void handleUserEvent(int event, MString strData, float floatData, int intData){};
 
 	asf::auto_release_ptr<asr::MeshObject> defineStandardPlane();
 	void defineProject();
@@ -109,7 +111,7 @@ public:
 	void createMesh(std::shared_ptr<mtap_MayaObject> obj);
 	asr::Project *getProjectPtr(){ return this->project.get(); };
 	asf::StringArray defineMaterial(std::shared_ptr<mtap_MayaObject> obj);
-	asr::ShaderGroup *currentShaderGroup;
+	//asr::ShaderGroup *currentShaderGroup;
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

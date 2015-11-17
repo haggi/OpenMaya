@@ -1,83 +1,83 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_ray_info
-oparam	vector	Direction	0 0 0 		 %read{2147483647,-1} %write{0,0}
-oparam	float	Length	0 		 %read{2147483647,-1} %write{14,14}
-oparam	int	Depth	1 		 %read{2147483647,-1} %write{15,15}
-oparam	int	IsCamera	0 		 %read{2147483647,-1} %write{1,1}
-oparam	int	IsLight	0 		 %read{2147483647,-1} %write{2,2}
-oparam	int	IsShadow	0 		 %read{5,5} %write{3,3}
-oparam	int	IsTransparency	0 		 %read{7,7} %write{4,4}
-oparam	int	IsShadow_or_transp	0 		 %read{2147483647,-1} %write{9,9}
-oparam	int	IsProbe	0 		 %read{2147483647,-1} %write{10,10}
-oparam	int	IsDiffuse	0 		 %read{2147483647,-1} %write{11,11}
-oparam	int	IsSpecular	0 		 %read{2147483647,-1} %write{12,12}
-oparam	int	IsGlossy	0 		 %read{2147483647,-1} %write{13,13}
-global	vector	I	 %read{0,0} %write{2147483647,-1}
-const	string	$const1	"camera"		 %read{1,1} %write{2147483647,-1}
-const	string	$const2	"light"		 %read{2,2} %write{2147483647,-1}
-const	string	$const3	"shadow"		 %read{3,3} %write{2147483647,-1}
-const	string	$const4	"transparency"		 %read{4,4} %write{2147483647,-1}
-temp	int	$tmp1	 %read{6,9} %write{5,8}
-const	int	$const5	0		 %read{5,7} %write{2147483647,-1}
-temp	int	$tmp2	 %read{8,8} %write{7,7}
-const	string	$const6	"probe"		 %read{10,10} %write{2147483647,-1}
-const	string	$const7	"diffuse"		 %read{11,11} %write{2147483647,-1}
-const	string	$const8	"specular"		 %read{12,12} %write{2147483647,-1}
-const	string	$const9	"glossy"		 %read{13,13} %write{2147483647,-1}
-temp	int	$tmp3	 %read{2147483647,-1} %write{14,14}
-const	string	$const10	"path:ray_length"		 %read{14,14} %write{2147483647,-1}
-temp	int	$tmp4	 %read{2147483647,-1} %write{15,15}
-const	string	$const11	"path:ray_depth"		 %read{15,15} %write{2147483647,-1}
+oparam	vector	Direction	0 0 0		%read{2147483647,-1} %write{0,0} %initexpr
+oparam	float	Length	0		%read{2147483647,-1} %write{14,14}
+oparam	int	Depth	1		%read{2147483647,-1} %write{15,15}
+oparam	int	IsCamera	0		%read{2147483647,-1} %write{1,1} %initexpr
+oparam	int	IsLight	0		%read{2147483647,-1} %write{2,2} %initexpr
+oparam	int	IsShadow	0		%read{5,5} %write{3,3} %initexpr
+oparam	int	IsTransparency	0		%read{7,7} %write{4,4} %initexpr
+oparam	int	IsShadow_or_transp	0		%read{2147483647,-1} %write{9,9} %initexpr
+oparam	int	IsProbe	0		%read{2147483647,-1} %write{10,10} %initexpr
+oparam	int	IsDiffuse	0		%read{2147483647,-1} %write{11,11} %initexpr
+oparam	int	IsSpecular	0		%read{2147483647,-1} %write{12,12} %initexpr
+oparam	int	IsGlossy	0		%read{2147483647,-1} %write{13,13} %initexpr
+global	vector	I	%read{0,0} %write{2147483647,-1}
+const	string	$const1	"camera"		%read{1,1} %write{2147483647,-1}
+const	string	$const2	"light"		%read{2,2} %write{2147483647,-1}
+const	string	$const3	"shadow"		%read{3,3} %write{2147483647,-1}
+const	string	$const4	"transparency"		%read{4,4} %write{2147483647,-1}
+temp	int	$tmp1	%read{6,9} %write{5,8}
+const	int	$const5	0		%read{5,7} %write{2147483647,-1}
+temp	int	$tmp2	%read{8,8} %write{7,7}
+const	string	$const6	"probe"		%read{10,10} %write{2147483647,-1}
+const	string	$const7	"diffuse"		%read{11,11} %write{2147483647,-1}
+const	string	$const8	"specular"		%read{12,12} %write{2147483647,-1}
+const	string	$const9	"glossy"		%read{13,13} %write{2147483647,-1}
+temp	int	$tmp3	%read{2147483647,-1} %write{14,14}
+const	string	$const10	"path:ray_length"		%read{14,14} %write{2147483647,-1}
+temp	int	$tmp4	%read{2147483647,-1} %write{15,15}
+const	string	$const11	"path:ray_depth"		%read{15,15} %write{2147483647,-1}
 code Direction
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:32
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:32
 #     output float Length = 0.0,
-	assign		Direction I 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{32} %argrw{"wr"}
+	assign		Direction I 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{32} %argrw{"wr"}
 code IsCamera
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:35
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:35
 #     output int IsLight = raytype("light"),
-	raytype		IsCamera $const1 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{35} %argrw{"wr"}
+	raytype		IsCamera $const1 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{35} %argrw{"wr"}
 code IsLight
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:36
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:36
 #     output int IsShadow = raytype("shadow"),
-	raytype		IsLight $const2 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{36} %argrw{"wr"}
+	raytype		IsLight $const2 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{36} %argrw{"wr"}
 code IsShadow
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:37
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:37
 #     output int IsTransparency = raytype("transparency"),
-	raytype		IsShadow $const3 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{37} %argrw{"wr"}
+	raytype		IsShadow $const3 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{37} %argrw{"wr"}
 code IsTransparency
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:38
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:38
 #     output int IsShadow_or_transp = IsShadow || IsTransparency,
-	raytype		IsTransparency $const4 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{38} %argrw{"wr"}
+	raytype		IsTransparency $const4 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{38} %argrw{"wr"}
 code IsShadow_or_transp
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:39
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:39
 #     output int IsProbe = raytype("probe"),
-	neq		$tmp1 IsShadow $const5 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{39} %argrw{"wrr"}
+	neq		$tmp1 IsShadow $const5 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{39} %argrw{"wrr"}
 	if		$tmp1 7 9 	%argrw{"r"}
 	neq		$tmp2 IsTransparency $const5 	%argrw{"wrr"}
 	assign		$tmp1 $tmp2 	%argrw{"wr"}
 	assign		IsShadow_or_transp $tmp1 	%argrw{"wr"}
 code IsProbe
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:40
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:40
 #     output int IsDiffuse = raytype("diffuse"),
-	raytype		IsProbe $const6 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{40} %argrw{"wr"}
+	raytype		IsProbe $const6 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{40} %argrw{"wr"}
 code IsDiffuse
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:41
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:41
 #     output int IsSpecular = raytype("specular"),
-	raytype		IsDiffuse $const7 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{41} %argrw{"wr"}
+	raytype		IsDiffuse $const7 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{41} %argrw{"wr"}
 code IsSpecular
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:42
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:42
 #     output int IsGlossy = raytype("glossy")
-	raytype		IsSpecular $const8 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{42} %argrw{"wr"}
+	raytype		IsSpecular $const8 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{42} %argrw{"wr"}
 code IsGlossy
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:43
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:43
 # )
-	raytype		IsGlossy $const9 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{43} %argrw{"wr"}
+	raytype		IsGlossy $const9 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{43} %argrw{"wr"}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:46
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:46
 #     getattribute("path:ray_depth", Depth);
-	getattribute	$tmp3 $const10 Length 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl"} %line{46} %argrw{"wrw"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\input\\as_ray_info.osl:47
+	getattribute	$tmp3 $const10 Length 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl"} %line{46} %argrw{"wrw"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_ray_info.osl:47
 # }
 	getattribute	$tmp4 $const11 Depth 	%line{47} %argrw{"wrw"}
 	end

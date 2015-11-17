@@ -1,47 +1,47 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader samplerInfo
-oparam	vector	pointWorld	0 0 0 		 %read{2147483647,-1} %write{0,0}
-oparam	vector	normalCamera	0 0 0 		 %read{2147483647,-1} %write{2,2}
-oparam	vector	normalWorld	0 0 0 		 %read{2147483647,-1} %write{1,1}
-oparam	vector	uvCoord	0 0 0 		 %read{2147483647,-1} %write{3,4}
-oparam	vector	outDPdu	0 0 0 		 %read{2147483647,-1} %write{5,5}
-oparam	vector	outDPdv	0 0 0 		 %read{2147483647,-1} %write{6,6}
-oparam	float	facingRatio	0 		 %read{2147483647,-1} %write{9,9}
-global	point	P	 %read{0,0} %write{2147483647,-1}
-global	vector	I	 %read{7,7} %write{2147483647,-1}
-global	normal	N	 %read{1,8} %write{2147483647,-1}
-global	float	u	 %read{3,3} %write{2147483647,-1}
-global	float	v	 %read{4,4} %write{2147483647,-1}
-global	vector	dPdu	 %read{5,5} %write{2147483647,-1}
-global	vector	dPdv	 %read{6,6} %write{2147483647,-1}
-const	int	$const1	0		 %read{3,3} %write{2147483647,-1}
-const	int	$const2	1		 %read{4,4} %write{2147483647,-1}
-temp	float	$tmp1	 %read{9,9} %write{8,8}
-temp	vector	$tmp2	 %read{8,8} %write{7,7}
+oparam	vector	pointWorld	0 0 0		%read{2147483647,-1} %write{0,0}
+oparam	vector	normalCamera	0 0 0		%read{2147483647,-1} %write{2,2}
+oparam	vector	normalWorld	0 0 0		%read{2147483647,-1} %write{1,1}
+oparam	vector	uvCoord	0 0 0		%read{2147483647,-1} %write{3,4}
+oparam	vector	outDPdu	0 0 0		%read{2147483647,-1} %write{5,5}
+oparam	vector	outDPdv	0 0 0		%read{2147483647,-1} %write{6,6}
+oparam	float	facingRatio	0		%read{2147483647,-1} %write{9,9}
+global	point	P	%read{0,0} %write{2147483647,-1}
+global	vector	I	%read{7,7} %write{2147483647,-1}
+global	normal	N	%read{1,8} %write{2147483647,-1}
+global	float	u	%read{3,3} %write{2147483647,-1}
+global	float	v	%read{4,4} %write{2147483647,-1}
+global	vector	dPdu	%read{5,5} %write{2147483647,-1}
+global	vector	dPdv	%read{6,6} %write{2147483647,-1}
+const	int	$const1	0		%read{3,3} %write{2147483647,-1}
+const	int	$const2	1		%read{4,4} %write{2147483647,-1}
+temp	float	$tmp1	%read{9,9} %write{8,8}
+temp	vector	$tmp2	%read{8,8} %write{7,7}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:7
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:7
 # 	normalWorld = N;
-	assign		pointWorld P 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl"} %line{7} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:8
+	assign		pointWorld P 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl"} %line{7} %argrw{"wr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:8
 # 	normalCamera = N;
 	assign		normalWorld N 	%line{8} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:9
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:9
 # 	uvCoord[0] = u;
 	assign		normalCamera N 	%line{9} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:10
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:10
 # 	uvCoord[1] = v;
 	compassign	uvCoord $const1 u 	%line{10} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:11
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:11
 # 	outDPdu = dPdu;
 	compassign	uvCoord $const2 v 	%line{11} %argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:12
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:12
 # 	outDPdv = dPdv;
 	assign		outDPdu dPdu 	%line{12} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:13
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:13
 # 	facingRatio = abs(dot(-I, N));
 	assign		outDPdv dPdv 	%line{13} %argrw{"wr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\samplerInfo.osl:14
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\samplerInfo.osl:14
 # }
 	neg		$tmp2 I 	%line{14} %argrw{"wr"}
 	dot		$tmp1 $tmp2 N 	%argrw{"wrr"}

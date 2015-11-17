@@ -17,6 +17,7 @@
 
 #include "shaders/asDisneyMaterial.h"
 #include "shaders/asDisneyMaterialOverride.h"
+#include "shaders/asLayeredShader.h"
 
 #if MAYA_API_VERSION >= 201600
 #include "mtap_common/mtap_mayaRenderer.h"
@@ -30,6 +31,11 @@ static const MString swatchFullName("swatch/AppleseedRenderSwatch");
 static const MString asDisneyMaterialId("asDisneyMaterialId");
 static const MString asDisneyMaterialIdDrawDBClassification("drawdb/shader/surface/asDisneyMaterialId");
 static const MString asDisneyMaterialIdFullClassification("shader/surface:Appleseed/material:" + swatchFullName + ":" + asDisneyMaterialIdDrawDBClassification);
+
+static const MString asLayeredId("asLayeredId");
+//static const MString asLayeredIdDrawDBClassification("drawdb/shader/surface/asLayeredId");
+//static const MString asLayeredIdFullClassification("shader/surface:Appleseed/material:" + swatchFullName + ":" + asLayeredIdDrawDBClassification);
+static const MString asLayeredIdFullClassification("shader/surface:Appleseed/material:" + swatchFullName);
 
 MStatus initializePlugin( MObject obj )
 {
@@ -67,6 +73,8 @@ MStatus initializePlugin( MObject obj )
 
 	CHECK_MSTATUS(MHWRender::MDrawRegistry::registerSurfaceShadingNodeOverrideCreator(asDisneyMaterialIdDrawDBClassification, asDisneyMaterialId, asDisneyMaterialOverride::creator));
 	status = plugin.registerNode("asDisneyMaterial", asDisneyMaterial::id, asDisneyMaterial::creator, asDisneyMaterial::initialize, MPxNode::kDependNode, &asDisneyMaterialIdFullClassification);
+	CHECK_MSTATUS(status);
+	status = plugin.registerNode("asLayeredShader", asLayeredShader::id, asLayeredShader::creator, asLayeredShader::initialize, MPxNode::kDependNode, &asLayeredIdFullClassification);
 	CHECK_MSTATUS(status);
 
 	MString command( "if( `window -exists createRenderNodeWindow` ) {refreshCreateRenderNodeWindow(\"" );

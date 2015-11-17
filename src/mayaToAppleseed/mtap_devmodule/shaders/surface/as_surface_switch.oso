@@ -1,10 +1,10 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
-shader as_surface_switch
-param	closure color	BSDF1			 %read{1,1} %write{2147483647,-1}
-param	closure color	BSDF2			 %read{2,2} %write{2147483647,-1}
-param	int	Cond	1 		 %read{0,0} %write{2147483647,-1}
-oparam	closure color	BSDF			 %read{2147483647,-1} %write{1,2}
+# Compiled by oslc 1.6.8
+shader as_surface_switch	%meta{string,help,"Chooses between two surface shaders depending on a condition."} 
+param	closure color	BSDF1			%read{1,1} %write{2147483647,-1}
+param	closure color	BSDF2			%read{2,2} %write{2147483647,-1}
+param	int	Cond	1		%read{0,0} %write{2147483647,-1}
+oparam	closure color	BSDF			%read{2147483647,-1} %write{1,2}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_switch.osl:41
 #         BSDF = BSDF1;

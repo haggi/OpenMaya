@@ -1,22 +1,22 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
-shader as_translucent_surface
-param	vector	Normal	0 0 0 		 %read{1,1} %write{0,0}
-param	float	Diffuse	1 		 %read{2,2} %write{2147483647,-1}
-param	color	Color	0.80000001 0.80000001 0.80000001 		 %read{2,2} %write{2147483647,-1}
-oparam	closure color	BTDF			 %read{2147483647,-1} %write{3,3}
-global	normal	N	 %read{0,0} %write{2147483647,-1}
-temp	closure color	$tmp1	 %read{3,3} %write{1,1}
-const	string	$const1	"translucent"		 %read{1,1} %write{2147483647,-1}
-temp	color	$tmp2	 %read{3,3} %write{2,2}
+# Compiled by oslc 1.6.8
+shader as_translucent_surface	%meta{string,help,"Translucent surface shader."} 
+param	vector	Normal	0 0 0		%read{1,1} %write{0,0} %initexpr
+param	float	Diffuse	1		%read{2,2} %write{2147483647,-1}
+param	color	Color	0.80000001 0.80000001 0.80000001		%read{2,2} %write{2147483647,-1}
+oparam	closure color	BTDF			%read{2147483647,-1} %write{3,3}
+global	normal	N	%read{0,0} %write{2147483647,-1}
+temp	closure color	$tmp1	%read{3,3} %write{1,1}
+const	string	$const1	"translucent"		%read{1,1} %write{2147483647,-1}
+temp	color	$tmp2	%read{3,3} %write{2,2}
 code Normal
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\surface\\as_translucent_surface.osl:35
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_translucent_surface.osl:35
 #     float Diffuse = 1.0,
-	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\surface\\as_translucent_surface.osl"} %line{35} %argrw{"wr"}
+	assign		Normal N 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_translucent_surface.osl"} %line{35} %argrw{"wr"}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\surface\\as_translucent_surface.osl:41
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_translucent_surface.osl:41
 # }
-	closure		$tmp1 $const1 Normal 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\surface\\as_translucent_surface.osl"} %line{41} %argrw{"wrr"}
+	closure		$tmp1 $const1 Normal 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_translucent_surface.osl"} %line{41} %argrw{"wrr"}
 	mul		$tmp2 Diffuse Color 	%argrw{"wrr"}
 	mul		BTDF $tmp1 $tmp2 	%argrw{"wrr"}
 	end

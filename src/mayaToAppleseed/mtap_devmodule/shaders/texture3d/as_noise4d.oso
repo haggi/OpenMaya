@@ -1,26 +1,26 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_noise4d
-param	vector	In	0 0 0 		 %read{0,0} %write{2147483647,-1} %derivs
-param	float	Time	0 		 %read{4,12} %write{2147483647,-1} %derivs
-param	string	NoiseType	"perlin" 		%meta{string,widget,"popup"} %meta{string,options,"perlin|uperlin|cell|simplex|usimplex"}  %read{4,12} %write{2147483647,-1}
-param	int	Periodic	0 		%meta{string,widget,"checkBox"}  %read{3,9} %write{2147483647,-1}
-param	vector	Period	1 1 1 		 %read{4,10} %write{2147483647,-1} %derivs
-param	float	TimePeriod	1 		 %read{4,10} %write{2147483647,-1} %derivs
-param	vector	Frequency	1 1 1 		 %read{0,0} %write{2147483647,-1} %derivs
-param	vector	Offset	0 0 0 		 %read{1,1} %write{2147483647,-1} %derivs
-oparam	float	FloatOut	0 		 %read{2147483647,-1} %write{4,6}
-oparam	vector	VectorOut	0 0 0 		 %read{14,14} %write{10,12}
-oparam	color	ColorOut	0 0 0 		 %read{2147483647,-1} %write{14,14}
-local	vector	p	 %read{4,12} %write{1,1} %derivs
-temp	vector	$tmp1	 %read{1,1} %write{0,0} %derivs
-const	string	$const1	"do_noise4d"		 %read{2,8} %write{2147483647,-1}
+param	vector	In	0 0 0		%read{0,0} %write{2147483647,-1} %derivs
+param	float	Time	0		%read{4,12} %write{2147483647,-1} %derivs
+param	string	NoiseType	"perlin"		%meta{string,widget,"popup"} %meta{string,options,"perlin|uperlin|cell|simplex|usimplex"}  %read{4,12} %write{2147483647,-1}
+param	int	Periodic	0		%meta{string,widget,"checkBox"}  %read{3,9} %write{2147483647,-1}
+param	vector	Period	1 1 1		%read{4,10} %write{2147483647,-1} %derivs
+param	float	TimePeriod	1		%read{4,10} %write{2147483647,-1} %derivs
+param	vector	Frequency	1 1 1		%read{0,0} %write{2147483647,-1} %derivs
+param	vector	Offset	0 0 0		%read{1,1} %write{2147483647,-1} %derivs
+oparam	float	FloatOut	0		%read{2147483647,-1} %write{4,6}
+oparam	vector	VectorOut	0 0 0		%read{14,14} %write{10,12}
+oparam	color	ColorOut	0 0 0		%read{2147483647,-1} %write{14,14}
+local	vector	p	%read{4,12} %write{1,1} %derivs
+temp	vector	$tmp1	%read{1,1} %write{0,0} %derivs
+const	string	$const1	"do_noise4d"		%read{2,8} %write{2147483647,-1}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl:59
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl:59
 # 
-	mul		$tmp1 In Frequency 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl"} %line{59} %argrw{"wrr"}
+	mul		$tmp1 In Frequency 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl"} %line{59} %argrw{"wrr"}
 	add		p $tmp1 Offset 	%argrw{"wrr"}
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl:67
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl:67
 # 
 	functioncall	$const1 8 	%line{67} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\appleseed\\noise.h:50
@@ -34,9 +34,9 @@ code ___main___
 #             Time);
 	noise		FloatOut NoiseType p Time 	%line{64} %argrw{"wrrr"} %argderivs{2,3}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl:75
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl:75
 # // of this software and associated documentation files (the "Software"), to deal
-	functioncall	$const1 14 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl"} %line{75} %argrw{"r"}
+	functioncall	$const1 14 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl"} %line{75} %argrw{"r"}
 # H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\appleseed\\noise.h:70
 #     if (Periodic)
 	if		Periodic 12 14 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\include\\appleseed\\noise.h"} %line{70} %argrw{"r"}
@@ -48,7 +48,7 @@ code ___main___
 #             Time);
 	noise		VectorOut NoiseType p Time 	%line{84} %argrw{"wrrr"} %argderivs{2,3}
 	return
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl:77
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl:77
 # }
-	assign		ColorOut VectorOut 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\texture3d\\as_noise4d.osl"} %line{77} %argrw{"wr"}
+	assign		ColorOut VectorOut 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\texture3d\\as_noise4d.osl"} %line{77} %argrw{"wr"}
 	end

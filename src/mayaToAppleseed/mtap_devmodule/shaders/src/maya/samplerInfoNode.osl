@@ -1,9 +1,0 @@
-
-shader samplerInfo ( output vector pointWorld = 0, output vector normalCamera = 0, output vector normalWorld = 0, output vector uvCoord=0)
-{
-	pointWorld = P;
-	normalWorld = N;
-	normalCamera = N;
-	uvCoord[0] = u;
-	uvCoord[1] = v;
-}

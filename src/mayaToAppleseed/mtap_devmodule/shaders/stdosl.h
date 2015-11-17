@@ -35,7 +35,7 @@
 
 // appleseed version
 #define APPLESEED_VERSION_MAJOR     1
-#define APPLESEED_VERSION_MINOR     2
+#define APPLESEED_VERSION_MINOR     3
 #define APPLESEED_VERSION_PATCH     0
 
 #define APPLESEED_VERSION               \
@@ -478,90 +478,132 @@ string concat (string a, string b, string c, string d, string e, string f) {
 }
 
 
-// Texture
-
 /*************************************************************/
 // Closures
 /*************************************************************/
 
-/********************************/
-// appleseed specific closures
+/******************/
+// diffuse
+/******************/
 
-// Specular component of Ashikhmin-Shirley (anisotropic Phong model)
-// without Fresnel term.
-closure color as_ashikhmin_shirley(
-    normal N,
-    vector T,
-    float nu,
-    float nv) BUILTIN;
+closure color oren_nayar(normal N, float roughness) BUILTIN;
 
-closure color as_disney(
-        normal N,
-        vector T,
-        color  base_color,
-        float  subsurface,
-        float  metallic,
-        float  specular,
-        float  specular_tint,
-        float  anisotropic,
-        float  roughness,
-        float  sheen,
-        float  sheen_tint,
-        float  clearcoat,
-        float  clearcoat_gloss) BUILTIN;
+closure color translucent(normal N) BUILTIN;
 
-closure color as_velvet(normal N, float alpha) BUILTIN;
+closure color as_sheen(normal N) BUILTIN;
 
-/********************************/
-// Standard OSL closures
+// for compat with the spec.
+closure color diffuse(normal N)
+{
+    return oren_nayar(N, 0);
+}
 
-closure color background() BUILTIN;
-closure color debug(string tag) BUILTIN;
 
-closure color emission() BUILTIN;
+/******************/
+// specular
+/******************/
 
 closure color reflection(normal N) BUILTIN;
 closure color refraction(normal N, float eta) BUILTIN;
 
-closure color microfacet(string distribution, normal N, vector T, float xalpha,
-                         float yalpha, float eta, int refract) BUILTIN;
 
-closure color microfacet(string distribution, normal N, float alpha, float eta, int refract)
+/******************/
+// glossy
+/******************/
+
+closure color microfacet(
+    string  distribution,
+    normal  N,
+    vector  T,
+    float   xalpha,
+    float   yalpha,
+    float   eta,
+    int     refract) BUILTIN;
+
+closure color microfacet(
+    string  distribution,
+    normal  N,
+    float   alpha,
+    float   eta,
+    int     refract)
 {
     return microfacet(distribution, N, vector(0), alpha, alpha, eta, refract);
 }
 
-closure color microfacet_ggx(normal N, float ag, float eta)
+
+/******************/
+// subsurface
+/******************/
+
+closure color as_subsurface(
+    string  profile,
+    normal  N,
+    color   rd,
+    color   dmfp,
+    float   eta,
+    float   g) BUILTIN;
+
+closure color as_subsurface(
+    string  profile,
+    normal  N,
+    color   rd,
+    color   dmfp,
+    float   eta)
 {
-    return microfacet("ggx", N, ag, eta, 0);
+    return as_subsurface(profile, N, rd, dmfp, eta, 0.0);
 }
 
-closure color microfacet_ggx_refraction(normal N, float ag, float eta)
+// for compat with the spec.
+closure color subsurface(float eta, float g, color mfp, color albedo)
 {
-    return microfacet("ggx", N, ag, eta, 1);
+    return as_subsurface("better_dipole", N, albedo, mfp, eta, g);
 }
 
-closure color microfacet_beckmann(normal N, float ab, float eta)
-{
-    return microfacet("beckmann", N, ab, eta, 0);
-}
 
-closure color microfacet_beckmann_refraction(normal N, float ab, float eta)
-{
-    return microfacet("beckmann", N, ab, eta, 1);
-}
+/******************/
+// uber-closures
+/******************/
 
-closure color diffuse(normal N) BUILTIN;
-closure color holdout() BUILTIN;
-closure color translucent(normal N) BUILTIN;
+closure color as_disney(
+    normal  N,
+    vector  T,
+    color   base_color,
+    float   subsurface,
+    float   metallic,
+    float   specular,
+    float   specular_tint,
+    float   anisotropic,
+    float   roughness,
+    float   sheen,
+    float   sheen_tint,
+    float   clearcoat,
+    float   clearcoat_gloss) BUILTIN;
+
+
+/******************/
+// emission
+/******************/
+
+closure color emission() BUILTIN;
+
+
+/******************/
+// misc
+/******************/
+
+closure color background() BUILTIN;
 closure color transparent() BUILTIN;
 
-closure color oren_nayar(normal N, float roughness) BUILTIN;
 
-closure color phong(normal N, float exponent)
-{
-    return as_ashikhmin_shirley(N, vector(0), exponent, exponent);
-}
+/******************/
+// unsupported
+/******************/
+
+closure color debug(string tag) BUILTIN;
+closure color holdout() BUILTIN;
+
+/*************************************************************/
+
 
 // Renderer state
 int backfacing () BUILTIN;
@@ -589,4 +631,3 @@ int getmatrix (string fromspace, output matrix M) {
 #undef PERCOMP2F
 
 #endif /* STDOSL_H */
-

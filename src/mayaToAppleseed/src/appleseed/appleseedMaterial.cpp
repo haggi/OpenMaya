@@ -17,7 +17,8 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 
 	for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{
-		MAYATO_OSL::initOSLUtil();
+		MAYATO_OSLUTIL::OSLUtilClass OSLShaderClass;
+		//MAYATO_OSL::initOSLUtil();
 		MObject materialNode = obj->shadingGroups[sgId];
 		MString shadingGroupName = getObjectName(materialNode);
 		MString shaderGroupName = shadingGroupName + "_OSLShadingGroup";
@@ -33,11 +34,11 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 		if (existingShaderGroup == nullptr)
 		{
 			asf::auto_release_ptr<asr::ShaderGroup> oslShaderGroup = asr::ShaderGroupFactory().create(shaderGroupName.asChar());
-			this->currentShaderGroup = oslShaderGroup.get();
+			OSLShaderClass.group = (OSL::ShaderGroup *)oslShaderGroup.get();
 
 			MFnDependencyNode shadingGroupNode(materialNode);
 			MPlug shaderPlug = shadingGroupNode.findPlug("surfaceShader");
-			MAYATO_OSL::createOSLProjectionNodes(shaderPlug);
+			OSLShaderClass.createOSLProjectionNodes(shaderPlug);
 
 			for (int shadingNodeId = 0; shadingNodeId < numNodes; shadingNodeId++)
 			{
@@ -45,25 +46,25 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 				Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 				if (shadingNodeId == (numNodes - 1))
 					Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
-				MAYATO_OSL::createOSLHelperNodes(network.shaderList[shadingNodeId]);
-				MAYATO_OSL::createOSLShadingNode(network.shaderList[shadingNodeId]);
-				MAYATO_OSL::connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
+				OSLShaderClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
+				OSLShaderClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
+				OSLShaderClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
 			}
 			if (numNodes > 0)
 			{
 				ShadingNode snode = network.shaderList[numNodes - 1];
 				MString layer = (snode.fullName + "_interface");
 				Logging::debug(MString("Adding interface shader: ") + layer);
-				this->currentShaderGroup->add_shader("surface", "surfaceShaderInterface", layer.asChar(), asr::ParamArray());
+				asr::ShaderGroup *sg = (asr::ShaderGroup *)OSLShaderClass.group;
+				sg->add_shader("surface", "surfaceShaderInterface", layer.asChar(), asr::ParamArray());
 				const char *srcLayer = snode.fullName.asChar();
 				const char *srcAttr = "outColor";
 				const char *dstLayer = layer.asChar();
 				const char *dstAttr = "inColor";
 				Logging::debug(MString("Connecting interface shader: ") + srcLayer + "." + srcAttr + " -> " + dstLayer + "." + dstAttr);
-				this->currentShaderGroup->add_connection(srcLayer, srcAttr, dstLayer, dstAttr);
+				sg->add_connection(srcLayer, srcAttr, dstLayer, dstAttr);
 			}
 			assembly->shader_groups().insert(oslShaderGroup);
-			this->currentShaderGroup = nullptr;
 
 			MString physicalSurfaceName = shadingGroupName + "_physical_surface_shader";
 			assembly->surface_shaders().insert(

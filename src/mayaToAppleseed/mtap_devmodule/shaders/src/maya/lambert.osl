@@ -10,7 +10,5 @@ surface lambert
 	output closure color outColor = 0	
 )
 {
-
-	//(Color * diffval * diffuse(N)) + (incandescence * emission()) + (transparency * transparent());
 	outColor = (inDiffuse * color(inColor) * diffuse(Normal)) + (color(incandescence) * emission()) + (color(transparency) * transparent());		
 }

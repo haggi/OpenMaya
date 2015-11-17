@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <maya/MString.h>
 
 class MayaObject;
 class MObject;

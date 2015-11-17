@@ -1,9 +1,9 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader place3dTexture
-param	matrix	inMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{0,0} %write{2147483647,-1}
-oparam	matrix	worldInverseMatrix	0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 		 %read{2147483647,-1} %write{0,0}
-const	float	$const1	1		 %read{0,0} %write{2147483647,-1}
+param	matrix	inMatrix	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0		%read{0,0} %write{2147483647,-1}
+oparam	matrix	worldInverseMatrix	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0		%read{2147483647,-1} %write{0,0}
+const	float	$const1	1		%read{0,0} %write{2147483647,-1}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\place3dTexture.osl:4
 # }

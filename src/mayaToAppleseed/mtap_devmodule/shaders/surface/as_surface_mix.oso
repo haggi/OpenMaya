@@ -1,14 +1,14 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
-shader as_surface_mix
-param	closure color	BSDF1			 %read{0,0} %write{2147483647,-1}
-param	closure color	BSDF2			 %read{2,2} %write{2147483647,-1}
-param	float	Factor	0.5 		 %read{0,1} %write{2147483647,-1}
-oparam	closure color	BSDF			 %read{2147483647,-1} %write{3,3}
-temp	closure color	$tmp1	 %read{3,3} %write{0,0}
-const	float	$const1	1		 %read{1,1} %write{2147483647,-1}
-temp	float	$tmp2	 %read{2,2} %write{1,1}
-temp	closure color	$tmp3	 %read{3,3} %write{2,2}
+# Compiled by oslc 1.6.8
+shader as_surface_mix	%meta{string,help,"Mixes two surface shaders."} 
+param	closure color	BSDF1			%read{0,0} %write{2147483647,-1}
+param	closure color	BSDF2			%read{2,2} %write{2147483647,-1}
+param	float	Factor	0.5		%read{0,1} %write{2147483647,-1}
+oparam	closure color	BSDF			%read{2147483647,-1} %write{3,3}
+temp	closure color	$tmp1	%read{3,3} %write{0,0}
+const	float	$const1	1		%read{1,1} %write{2147483647,-1}
+temp	float	$tmp2	%read{2,2} %write{1,1}
+temp	closure color	$tmp3	%read{3,3} %write{2,2}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_mix.osl:41
 # }

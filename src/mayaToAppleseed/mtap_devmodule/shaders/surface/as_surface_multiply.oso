@@ -1,11 +1,11 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
-shader as_surface_multiply
-param	closure color	BSDF1			 %read{1,1} %write{2147483647,-1}
-param	float	Factor	1 		 %read{0,0} %write{2147483647,-1}
-param	color	Color	1 1 1 		 %read{0,0} %write{2147483647,-1}
-oparam	closure color	BSDF			 %read{2147483647,-1} %write{1,1}
-temp	color	$tmp1	 %read{1,1} %write{0,0}
+# Compiled by oslc 1.6.8
+shader as_surface_multiply	%meta{string,help,"Multiply a surface shader by a scalar."} 
+param	closure color	BSDF1			%read{1,1} %write{2147483647,-1}
+param	float	Factor	1		%read{0,0} %write{2147483647,-1}
+param	color	Color	1 1 1		%read{0,0} %write{2147483647,-1}
+oparam	closure color	BSDF			%read{2147483647,-1} %write{1,1}
+temp	color	$tmp1	%read{1,1} %write{0,0}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\surface\\as_surface_multiply.osl:41
 # }

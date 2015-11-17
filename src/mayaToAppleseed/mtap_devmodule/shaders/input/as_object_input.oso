@@ -1,15 +1,15 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader as_object_input
-oparam	int	ObjectInstanceId	0 		 %read{2147483647,-1} %write{0,0}
-oparam	int	ObjectIndex	0 		 %read{2147483647,-1} %write{1,1}
-oparam	int	AssemblyId	0 		 %read{2147483647,-1} %write{2,2}
-temp	int	$tmp1	 %read{2147483647,-1} %write{0,0}
-const	string	$const1	"object:object_instance_id"		 %read{0,0} %write{2147483647,-1}
-temp	int	$tmp2	 %read{2147483647,-1} %write{1,1}
-const	string	$const2	"object:object_instance_index"		 %read{1,1} %write{2147483647,-1}
-temp	int	$tmp3	 %read{2147483647,-1} %write{2,2}
-const	string	$const3	"object:assembly_instance_id"		 %read{2,2} %write{2147483647,-1}
+oparam	int	ObjectInstanceId	0		%read{2147483647,-1} %write{0,0}
+oparam	int	ObjectIndex	0		%read{2147483647,-1} %write{1,1}
+oparam	int	AssemblyId	0		%read{2147483647,-1} %write{2,2}
+temp	int	$tmp1	%read{2147483647,-1} %write{0,0}
+const	string	$const1	"object:object_instance_id"		%read{0,0} %write{2147483647,-1}
+temp	int	$tmp2	%read{2147483647,-1} %write{1,1}
+const	string	$const2	"object:object_instance_index"		%read{1,1} %write{2147483647,-1}
+temp	int	$tmp3	%read{2147483647,-1} %write{2,2}
+const	string	$const3	"object:assembly_instance_id"		%read{2,2} %write{2147483647,-1}
 code ___main___
 # H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\input\\as_object_input.osl:37
 #     getattribute("object:object_instance_index", ObjectIndex);

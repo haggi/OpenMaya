@@ -1,18 +1,18 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 shader clamp
-param	vector	inMin	0 0 0 		 %read{2,2} %write{2147483647,-1}
-param	vector	inMax	0 0 0 		 %read{1,1} %write{2147483647,-1}
-param	vector	input	0 0 0 		 %read{1,1} %write{2147483647,-1}
-oparam	vector	outOutput	0 0 0 		 %read{2147483647,-1} %write{2,2}
-const	string	$const1	"clamp"		 %read{0,0} %write{2147483647,-1}
-temp	vector	$tmp1	 %read{2,2} %write{1,1}
+param	vector	inMin	0 0 0		%read{2,2} %write{2147483647,-1}
+param	vector	inMax	0 0 0		%read{1,1} %write{2147483647,-1}
+param	vector	input	0 0 0		%read{1,1} %write{2147483647,-1}
+oparam	vector	outOutput	0 0 0		%read{2147483647,-1} %write{2,2}
+const	string	$const1	"clamp"		%read{0,0} %write{2147483647,-1}
+temp	vector	$tmp1	%read{2,2} %write{1,1}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\clamp.osl:4
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\clamp.osl:4
 # }
-	functioncall	$const1 3 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\clamp.osl"} %line{4} %argrw{"r"}
-# H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h:154
+	functioncall	$const1 3 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\clamp.osl"} %line{4} %argrw{"r"}
+# C:/daten\\install\\3d\\Appleseed\\appleseed\\shaders\\stdosl.h:154
 # int min (int a, int b) BUILTIN;
-	min		$tmp1 input inMax 	%filename{"H:/UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\stdosl.h"} %line{154} %argrw{"wrr"}
+	min		$tmp1 input inMax 	%filename{"C:/daten\\install\\3d\\Appleseed\\appleseed\\shaders\\stdosl.h"} %line{154} %argrw{"wrr"}
 	max		outOutput $tmp1 inMin 	%argrw{"wrr"}
 	end

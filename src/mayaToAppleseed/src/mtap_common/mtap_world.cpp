@@ -61,4 +61,15 @@ namespace MayaTo{
 	{
 		getWorldPtr()->afterNewScene();
 	}
+
+	void MayaToWorld::setRendererUnit()
+	{
+		this->rendererUnit = MDistance::kMeters;
+	}
+
+	void MayaToWorld::setRendererAxis()
+	{
+		this->rendererAxis = ZUp;
+	}
+
 }

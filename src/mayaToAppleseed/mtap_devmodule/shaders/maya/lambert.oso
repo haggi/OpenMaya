@@ -1,43 +1,50 @@
 OpenShadingLanguage 1.00
-# Compiled by oslc 1.6.0dev
+# Compiled by oslc 1.6.8
 surface lambert
-param	vector	Normal	0 0 0 		 %read{1,1} %write{0,0}
-param	float	inDiffuse	0.80000001 		 %read{3,3} %write{2147483647,-1}
-param	vector	inColor	1 1 1 		 %read{2,2} %write{2147483647,-1}
-param	vector	incandescence	0 0 0 		 %read{6,6} %write{2147483647,-1}
-param	vector	transparency	0 0 0 		 %read{10,10} %write{2147483647,-1}
-oparam	closure color	outColor			 %read{2147483647,-1} %write{12,12}
-global	normal	N	 %read{0,0} %write{2147483647,-1}
-temp	closure color	$tmp1	 %read{4,4} %write{1,1}
-const	string	$const1	"diffuse"		 %read{1,1} %write{2147483647,-1}
-temp	color	$tmp2	 %read{3,3} %write{2,2}
-temp	color	$tmp3	 %read{4,4} %write{3,3}
-temp	closure color	$tmp4	 %read{8,8} %write{4,4}
-temp	closure color	$tmp5	 %read{7,7} %write{5,5}
-const	string	$const2	"emission"		 %read{5,5} %write{2147483647,-1}
-temp	color	$tmp6	 %read{7,7} %write{6,6}
-temp	closure color	$tmp7	 %read{8,8} %write{7,7}
-temp	closure color	$tmp8	 %read{12,12} %write{8,8}
-temp	closure color	$tmp9	 %read{11,11} %write{9,9}
-const	string	$const3	"transparent"		 %read{9,9} %write{2147483647,-1}
-temp	color	$tmp10	 %read{11,11} %write{10,10}
-temp	closure color	$tmp11	 %read{12,12} %write{11,11}
+param	vector	Normal	0 0 0		%read{2,2} %write{0,0} %initexpr
+param	float	inDiffuse	0.80000001		%read{4,4} %write{2147483647,-1}
+param	vector	inColor	1 1 1		%read{3,3} %write{2147483647,-1}
+param	vector	incandescence	0 0 0		%read{7,7} %write{2147483647,-1}
+param	vector	transparency	0 0 0		%read{11,11} %write{2147483647,-1}
+oparam	closure color	outColor			%read{2147483647,-1} %write{13,13}
+global	normal	N	%read{0,0} %write{2147483647,-1}
+temp	closure color	$tmp1	%read{5,5} %write{2,2}
+const	string	$const1	"diffuse"		%read{1,1} %write{2147483647,-1}
+const	float	$const3	0		%read{2,2} %write{2147483647,-1}
+const	string	$const4	"oren_nayar"		%read{2,2} %write{2147483647,-1}
+temp	color	$tmp2	%read{4,4} %write{3,3}
+temp	color	$tmp3	%read{5,5} %write{4,4}
+temp	closure color	$tmp4	%read{9,9} %write{5,5}
+temp	closure color	$tmp5	%read{8,8} %write{6,6}
+const	string	$const5	"emission"		%read{6,6} %write{2147483647,-1}
+temp	color	$tmp6	%read{8,8} %write{7,7}
+temp	closure color	$tmp7	%read{9,9} %write{8,8}
+temp	closure color	$tmp8	%read{13,13} %write{9,9}
+temp	closure color	$tmp9	%read{12,12} %write{10,10}
+const	string	$const6	"transparent"		%read{10,10} %write{2147483647,-1}
+temp	color	$tmp10	%read{12,12} %write{11,11}
+temp	closure color	$tmp11	%read{13,13} %write{12,12}
 code Normal
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl:6
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl:6
 #     float inDiffuse = 0.8,
-	assign		Normal N 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl"} %line{6} %argrw{"wr"}
+	assign		Normal N 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl"} %line{6} %argrw{"wr"}
 code ___main___
-# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl:16
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl:14
 # }
-	closure		$tmp1 $const1 Normal 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\lambert.osl"} %line{16} %argrw{"wrr"}
-	assign		$tmp2 inColor 	%argrw{"wr"}
+	functioncall	$const1 3 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl"} %line{14} %argrw{"r"}
+# C:/daten\\install\\3d\\Appleseed\\appleseed\\shaders\\stdosl.h:498
+# 
+	closure		$tmp1 $const4 Normal $const3 	%filename{"C:/daten\\install\\3d\\Appleseed\\appleseed\\shaders\\stdosl.h"} %line{498} %argrw{"wrrr"}
+# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl:14
+# }
+	assign		$tmp2 inColor 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\lambert.osl"} %line{14} %argrw{"wr"}
 	mul		$tmp3 inDiffuse $tmp2 	%argrw{"wrr"}
 	mul		$tmp4 $tmp1 $tmp3 	%argrw{"wrr"}
-	closure		$tmp5 $const2 	%argrw{"wr"}
+	closure		$tmp5 $const5 	%argrw{"wr"}
 	assign		$tmp6 incandescence 	%argrw{"wr"}
 	mul		$tmp7 $tmp5 $tmp6 	%argrw{"wrr"}
 	add		$tmp8 $tmp4 $tmp7 	%argrw{"wrr"}
-	closure		$tmp9 $const3 	%argrw{"wr"}
+	closure		$tmp9 $const6 	%argrw{"wr"}
 	assign		$tmp10 transparency 	%argrw{"wr"}
 	mul		$tmp11 $tmp9 $tmp10 	%argrw{"wrr"}
 	add		outColor $tmp8 $tmp11 	%argrw{"wrr"}
