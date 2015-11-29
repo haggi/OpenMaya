@@ -49,7 +49,7 @@ class AECoronaSurfaceTemplate(BaseTemplate):
     def bumpReplace(self, attribute):
         if self.bumpCtrl is not None:
             pm.attrNavigationControlGrp(self.bumpCtrl, edit=True, attribute=attribute) 
-    
+        
     def buildBody(self, nodeName):
         self.thisNode = pm.PyNode(nodeName)
         self.beginLayout("Diffuse" ,collapse=0)
@@ -95,13 +95,12 @@ class AECoronaSurfaceTemplate(BaseTemplate):
         self.addControl("emissionColorMultiplier", label="Emission Multiplier")
         
         self.beginLayout("Round Corners" ,collapse=0)
-        self.addControl("roundCorners", label="Round Corners Map")        
+        self.addControl("roundCornersMap", label="Round Corners Map")
         #self.addControl("roundCornersRadius", label="Radius")
         #self.addControl("roundCornersSamples", label="Samples")
         self.endLayout()
         self.endNoOptimize()
         self.endLayout()
-        
         #self.beginLayout("Hardware Texturing" ,collapse=0)
         #pm.mel.eval('AEhardwareTextureTemplate "%s"' % self.nodeName + r'("diffuse emissionColor ")')
         #self.endLayout()

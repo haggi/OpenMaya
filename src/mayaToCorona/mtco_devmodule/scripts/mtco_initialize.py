@@ -635,9 +635,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='mesh', longName='mtco_visibleInGI', attributeType='bool', defaultValue=True) 
         pm.addExtension( nodeType='mesh', longName='mtco_envPortal', attributeType='bool', defaultValue=False) 
         pm.addExtension( nodeType="mesh", longName="mtco_shadowCatcherMode", attributeType="enum", enumName="Off::Final:Composite", defaultValue = 0.0)
-
-        #test for roundCorners        
-        pm.addExtension( nodeType='CoronaSurface', longName='roundCorners', attributeType='message', multi=False)
         
         pm.addExtension( nodeType='samplerInfo', longName='outDPdu', usedAsColor=True, attributeType='float3' )
         pm.addExtension( nodeType='samplerInfo', longName='outDPduR', attributeType='float', parent='outDPdu' )
@@ -650,7 +647,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
         pm.addExtension( nodeType='samplerInfo', longName='outDPdvB', attributeType='float', parent='outDPdv' )        
 
         pm.addExtension( nodeType='coronaGlobals', longName='AOVs', attributeType='message', multi=True)
-        
         pm.addExtension( nodeType='objectSet', longName='mtco_mtlOverride', attributeType='message')
 
             
@@ -669,7 +665,7 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                 sn.outColor >> dn.diffuse
                 return 0
             if sn.type() == "CoronaRoundCorners":
-                sn.message >> dn.roundCorners
+                sn.outNormal >> dn.roundCornersMap
                 return 0
         return 1
     

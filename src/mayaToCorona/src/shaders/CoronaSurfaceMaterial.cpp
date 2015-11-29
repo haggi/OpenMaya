@@ -127,6 +127,7 @@ MObject CoronaSurface::volumeSSSMode;
 MObject CoronaSurface::glassType;
 MObject CoronaSurface::iesProfile;
 MObject CoronaSurface::singleScatteringOnly;
+MObject CoronaSurface::roundCornersMap;
 
 
 // This node does not need to perform any special actions on creation or
@@ -338,7 +339,6 @@ MStatus CoronaSurface::initialize()
 	nAttr.setDefault(1.0, 1.0, 1.0);
 	CHECK_MSTATUS(addAttribute(refractionIndexMap));
 
-
 	emissionDisableSampling = nAttr.create("emissionDisableSampling", "emissionDisableSampling",  MFnNumericData::kBoolean, false);
 	CHECK_MSTATUS(addAttribute( emissionDisableSampling ));
 
@@ -358,6 +358,16 @@ MStatus CoronaSurface::initialize()
 
 	singleScatteringOnly = nAttr.create("singleScatteringOnly", "singleScatteringOnly", MFnNumericData::kBoolean, true);
 	CHECK_MSTATUS(addAttribute(singleScatteringOnly));
+
+	//MObject roundCornersMapX = nAttr.create("roundCornersMapX", "roundCornersMapX", MFnNumericData::kFloat);
+	//CHECK_MSTATUS(addAttribute(roundCornersMapX));
+	//MObject roundCornersMapY = nAttr.create("roundCornersMapY", "roundCornersMapY", MFnNumericData::kFloat);
+	//CHECK_MSTATUS(addAttribute(roundCornersMapY));
+	//MObject roundCornersMapZ = nAttr.create("roundCornersMapZ", "roundCornersMapZ", MFnNumericData::kFloat);
+	//CHECK_MSTATUS(addAttribute(roundCornersMapZ));
+
+	roundCornersMap = nAttr.createPoint("roundCornersMap", "roundCornersMap");
+	CHECK_MSTATUS(addAttribute(roundCornersMap));
 
 	//---------------------------- automatically created attributes end ------------------------------------
 

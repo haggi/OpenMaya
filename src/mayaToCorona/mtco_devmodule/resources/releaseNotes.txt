@@ -1,5 +1,8 @@
+release 0.48
+
 release 0.47
 - reimplement save and resume
+- changed round corners attribte from message to point
 
 release 0.46
 - added vector displacement

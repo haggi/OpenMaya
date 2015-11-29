@@ -60,6 +60,7 @@ protected:
 	static    MObject volumeSSSMode;
 	static    MObject iesProfile;
 	static    MObject singleScatteringOnly;
+	static    MObject roundCornersMap;
 
    // Translucence coefficient
    static MObject  aTranslucenceCoeff;

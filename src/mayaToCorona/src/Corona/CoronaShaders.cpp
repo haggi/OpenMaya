@@ -148,9 +148,9 @@ Corona::SharedPtr<Corona::Abstract::Map> defineBump(MString& attributeName, MFnD
 	Corona::SharedPtr<Corona::Abstract::Map> texmap = nullptr;
 	RoundCorners *rcmap = nullptr;
 
-	if (isConnected("roundCorners", depFn, true, false))
+	if (isConnected("roundCornersMap", depFn, true, false))
 	{
-		MObject rcObj = getConnectedInNode(depFn.object(), "roundCorners");
+		MObject rcObj = getConnectedInNode(depFn.object(), "roundCornersMap");
 		MFnDependencyNode rcNode(rcObj);
 		if (rcNode.typeName() == "CoronaRoundCorners")
 		{
