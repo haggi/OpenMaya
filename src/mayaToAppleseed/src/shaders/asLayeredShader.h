@@ -18,8 +18,8 @@ public:
 
 protected:
 	static    MObject baseMaterial;
-	static	  MObject materialEntry;
 	static    MObject materialEntryMtl;
-	static    MObject materialEntryAmount;
+	static    MObject materialEntryMsk;
+	static    MObject materialEntryMode;
 	static    MObject outColor;
 };

@@ -1,0 +1,70 @@
+#include "appleseed/defaults.h"
+
+#define MAXENTRIES 10
+#define SHADERIN closure color materialEntryMtl0=0,closure color materialEntryMtl1=0, closure color materialEntryMtl2=0, closure color materialEntryMtl3=0, closure color materialEntryMtl4=0, closure color materialEntryMtl5=0, closure color materialEntryMtl6=0, closure color materialEntryMtl7=0, closure color materialEntryMtl8=0, closure color materialEntryMtl9=0
+#define MASKIN float materialEntryMsk0=0, float materialEntryMsk1=0, float materialEntryMsk2=0, float materialEntryMsk3=0, float materialEntryMsk4=0, float materialEntryMsk5=0, float materialEntryMsk6=0, float materialEntryMsk7=0, float materialEntryMsk8=0, float materialEntryMsk9=0
+#define MODEIN int materialEntryMode0=0, int materialEntryMode1=0, int materialEntryMode2=0, int materialEntryMode3=0, int materialEntryMode4=0, int materialEntryMode5=0, int materialEntryMode6=0, int materialEntryMode7=0, int materialEntryMode8=0, int materialEntryMode9=0
+
+surface asLayeredShader
+(
+	closure color baseMaterial = 0,
+	SHADERIN,
+	MASKIN,
+	MODEIN,
+	int numEntries = 0,
+	output closure color outColor = 0
+)
+{
+	closure color col[MAXENTRIES];
+	float msk[MAXENTRIES];
+	int mode[MAXENTRIES];
+	
+	col[0] = materialEntryMtl0;
+	col[1] = materialEntryMtl1;
+	col[2] = materialEntryMtl2;
+	col[3] = materialEntryMtl3;
+	col[4] = materialEntryMtl4;
+	col[5] = materialEntryMtl5;
+	col[6] = materialEntryMtl6;
+	col[7] = materialEntryMtl7;
+	col[8] = materialEntryMtl8;
+	col[9] = materialEntryMtl9;
+
+	msk[0] = materialEntryMsk0;
+	msk[1] = materialEntryMsk1;
+	msk[2] = materialEntryMsk2;
+	msk[3] = materialEntryMsk3;
+	msk[4] = materialEntryMsk4;
+	msk[5] = materialEntryMsk5;
+	msk[6] = materialEntryMsk6;
+	msk[7] = materialEntryMsk7;
+	msk[8] = materialEntryMsk8;
+	msk[9] = materialEntryMsk9;
+
+	mode[0] = materialEntryMode0;
+	mode[1] = materialEntryMode1;
+	mode[2] = materialEntryMode2;
+	mode[3] = materialEntryMode3;
+	mode[4] = materialEntryMode4;
+	mode[5] = materialEntryMode5;
+	mode[6] = materialEntryMode6;
+	mode[7] = materialEntryMode7;
+	mode[8] = materialEntryMode8;
+	mode[9] = materialEntryMode9;
+
+    outColor = baseMaterial;
+	for( int i = 0; i < numEntries; i++)
+	{
+		if( msk[i] > 0.0)
+		{
+			if( mode[i] == 0) // over
+				outColor = outColor * (1.0 - msk[i]) + col[i] * msk[i];
+		}
+	}
+}
+
+
+
+
+
+

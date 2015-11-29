@@ -76,7 +76,7 @@ bool ShadingNode::isInPlugValid(MPlug plug)
 bool ShadingNode::isOutPlugValid(MPlug plug)
 {
 	MPlug tmpPlug = plug;
-
+	
 	if (!tmpPlug.isSource())
 		return false;
 

@@ -1,8 +1,8 @@
 #include "mayaUtils.h"
 
 #define MAXENTRIES 10
-#define RAMPCOLORIN vector col0=0,vector col1=0, vector col2=0, vector col3=0, vector col4=0, vector col5=0, vector col6=0, vector col7=0, vector col8=0, vector col9=0
-#define RAMPPOSIN float pos0=-1,float pos1=-1,float pos2=-1,float pos3=-1,float pos4=-1,float pos5=-1,float pos6=-1,float pos7=-1,float pos8=-1,float pos9=-1
+#define RAMPCOLORIN vector color0=0,vector color1=0, vector color2=0, vector color3=0, vector color4=0, vector color5=0, vector color6=0, vector color7=0, vector color8=0, vector color9=0
+#define RAMPPOSIN float position0=-1,float position1=-1,float position2=-1,float position3=-1,float position4=-1,float position5=-1,float position6=-1,float position7=-1,float position8=-1,float position9=-1
 
 color interpolateColors(color firstColor, color secondColor, float first, float second, float value, int interpolation)
 {
@@ -145,27 +145,27 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 	float pos[MAXENTRIES];
 	color col[MAXENTRIES];
 	
-	col[0] = color(col0);
-	col[1] = color(col1);
-	col[2] = color(col2);
-	col[3] = color(col3);
-	col[4] = color(col4);
-	col[5] = color(col5);
-	col[6] = color(col6);
-	col[7] = color(col7);
-	col[8] = color(col8);
-	col[9] = color(col9);
+	col[0] = color(color0);
+	col[1] = color(color1);
+	col[2] = color(color2);
+	col[3] = color(color3);
+	col[4] = color(color4);
+	col[5] = color(color5);
+	col[6] = color(color6);
+	col[7] = color(color7);
+	col[8] = color(color8);
+	col[9] = color(color9);
 
-	pos[0] = pos0;
-	pos[1] = pos1;
-	pos[2] = pos2;
-	pos[3] = pos3;
-	pos[4] = pos4;
-	pos[5] = pos5;
-	pos[6] = pos6;
-	pos[7] = pos7;
-	pos[8] = pos8;
-	pos[9] = pos9;
+	pos[0] = position0;
+	pos[1] = position1;
+	pos[2] = position2;
+	pos[3] = position3;
+	pos[4] = position4;
+	pos[5] = position5;
+	pos[6] = position6;
+	pos[7] = position7;
+	pos[8] = position8;
+	pos[9] = position9;
 	
 	if( numEntries == 0)
 	{
@@ -174,7 +174,7 @@ shader ramp(RAMPCOLORIN, RAMPPOSIN, int numEntries=0, int type = 0, int interpol
 	
 	if( numEntries == 1)
 	{
-		outColor = vector(col0);
+		outColor = vector(color0);
 	}
 	
 	if( numEntries > 1)

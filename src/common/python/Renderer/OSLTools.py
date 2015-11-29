@@ -79,15 +79,22 @@ def getOSODirs(renderer = "appleseed"):
     return list(osoDirs)
 
 def compileAllShaders(renderer = "appleseed"):
-    
+
     try:
         shaderDir = os.environ['{0}_OSL_SHADERS_LOCATION'.format(renderer.upper())]
     except KeyError:
-        print "Error: there is no environmentvariable called OSL_SHADERS_LOCATION. Please create one and point it to the base shader dir."
-        
+        log.error("Error: there is no environmentvariable called OSL_SHADERS_LOCATION. Please create one and point it to the base shader dir.")
+        # we expect this file in module/scripts so we can try to find the shaders in ../shaders
+        log.error("Trying to find the shaders dir from current file: {0}".format(__file__))
+        shaderDir = path.path(__file__).parent / "shaders"
+        if shaderDir.exists():
+            log.info("Using found shaders directory {0}".format(shaderDir))
+            
     include_dir = os.path.join(shaderDir, "src/include")
     
     oslc_cmd = "oslc"
+    failureDict = {}
+    
     for root, dirname, files in os.walk(shaderDir):
         for filename in files:
             if filename.endswith(".osl"):
@@ -101,27 +108,42 @@ def compileAllShaders(renderer = "appleseed"):
                 
                 if osoOutputFile.exists():
                     if osoOutputFile.mtime > oslInputFile.mtime:
+                        log.debug("oso file {0} up to date, no compilation needed.".format(osoOutputFile.basename()))
                         continue
                     else:
                         osoOutputFile.remove()
 
-                print "compiling shader: " + oslInputFile
+                log.debug("compiling shader: {0}".format(oslInputFile))
     
                 saved_wd = os.getcwd()
                 os.chdir(root)
                 compileCmd = oslc_cmd + " -v -I" + include_dir + ' -o '+ osoOutputPath + ' ' + oslInputFile
-                print "Compile cmd", compileCmd
-                #retcode = os.system(compileCmd)
+                log.debug("compile command: {0}".format(compileCmd))
                 
                 IDLE_PRIORITY_CLASS = 64
                 process = subprocess.Popen(compileCmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)
-        
+                
+                progress = []
+                fail = False
                 while 1:
                     line = process.stdout.readline()
                     if not line: break
                     log.debug(line)
+                    line.strip()
+                    progress.append(line)
                     pm.mel.trace(line.strip())
+                    if "error" in line:
+                        fail = True
+                if fail:
+                    print "set dict", osoOutputFile.basename(), "to", progress
+                    failureDict[osoOutputFile.basename()] = progress
                     
                 os.chdir(saved_wd)
     
-    print "All shaders compiled!"
+    if len(failureDict.keys()) > 0:
+        log.info("\n\nShader compilation failed for:")
+        for key, content in failureDict.iteritems():
+            log.info("Shader {0}\n{1}\n\n".format(key, "\n".join(content)))
+    else:
+        log.info("Shader compilation done!")
+

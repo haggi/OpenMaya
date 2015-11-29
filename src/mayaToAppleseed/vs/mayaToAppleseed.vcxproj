@@ -275,6 +275,7 @@
     <ClCompile Include="..\src\appleseed\appleseedGeometry.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release2017|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedInteractiveUpdate.cpp" />
     <ClCompile Include="..\src\appleseed\appleseedLights.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2016|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug2017|x64'">true</ExcludedFromBuild>

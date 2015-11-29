@@ -254,6 +254,16 @@ int getEnumInt(MString plugName, MFnDependencyNode& dn)
 	return value;
 }
 
+int getEnumInt(MPlug plug)
+{
+	MDGContext ctx = MDGContext::fsNormal;
+	MStatus stat = MS::kSuccess;
+	int value = plug.asShort(ctx, &stat);
+	if (!stat)
+		return -1;
+	return value;
+}
+
 MString getEnumString(MString plugName, MFnDependencyNode& dn)
 {
 	MDGContext ctx = MDGContext::fsNormal;
@@ -397,6 +407,19 @@ bool getColor(const char *plugName, MFnDependencyNode& dn, float *value)
 	return result;
 }
 
+MColor getColorAttr(MPlug plug)
+{
+	MColor c;
+	if (!plug.isCompound())
+		return c;
+	if (plug.numChildren() != 3)
+		return c;
+	c.r = plug.child(0).asFloat();
+	c.g = plug.child(1).asFloat();
+	c.b = plug.child(2).asFloat();
+	return c;
+}
+
 MColor getColorAttr(const char *plugName, MFnDependencyNode& dn)
 {
 	MColor c(1,0,1);
@@ -411,6 +434,18 @@ MVector getVectorAttr(const char *plugName, MFnDependencyNode& dn)
 	return c;
 }
 
+MVector getVectorAttr(MPlug plug)
+{
+	MVector c;
+	if (!plug.isCompound())
+		return c;
+	if (plug.numChildren() != 3)
+		return c;
+	c.x = plug.child(0).asFloat();
+	c.y = plug.child(1).asFloat();
+	c.z = plug.child(2).asFloat();
+	return c;
+}
 
 bool getColor(const char *plugName, MFnDependencyNode& dn, MString& value)
 {

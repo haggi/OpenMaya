@@ -4,18 +4,18 @@ shader floatToVector
 param	float	inX	0		%read{0,0} %write{2147483647,-1}
 param	float	inY	0		%read{1,1} %write{2147483647,-1}
 param	float	inZ	0		%read{2,2} %write{2147483647,-1}
-oparam	vector	outValue	0 0 0		%read{2147483647,-1} %write{0,2}
+oparam	vector	outVector	0 0 0		%read{2147483647,-1} %write{0,2}
 const	int	$const1	0		%read{0,0} %write{2147483647,-1}
 const	int	$const2	1		%read{1,1} %write{2147483647,-1}
 const	int	$const3	2		%read{2,2} %write{2147483647,-1}
 code ___main___
-# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\floatToVector.osl:4
-# 	outValue[1] = inY;
-	compassign	outValue $const1 inX 	%filename{"H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\floatToVector.osl"} %line{4} %argrw{"wrr"}
-# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\floatToVector.osl:5
-# 	outValue[2] = inZ;
-	compassign	outValue $const2 inY 	%line{5} %argrw{"wrr"}
-# H:\\UserDatenHaggi\\Documents\\coding\\OpenMaya\\src\\mayaToAppleseed\\mtap_devmodule\\shaders\\src\\maya\\floatToVector.osl:6
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\floatToVector.osl:4
+# 	outVector[1] = inY;
+	compassign	outVector $const1 inX 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\floatToVector.osl"} %line{4} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\floatToVector.osl:5
+# 	outVector[2] = inZ;
+	compassign	outVector $const2 inY 	%line{5} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\floatToVector.osl:6
 # }
-	compassign	outValue $const3 inZ 	%line{6} %argrw{"wrr"}
+	compassign	outVector $const3 inZ 	%line{6} %argrw{"wrr"}
 	end

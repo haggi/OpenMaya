@@ -105,7 +105,7 @@ void AppleseedSwatchRenderer::renderSwatch(NewSwatchRenderer *sr)
 	this->setSize(res);
 	this->setShader(sr->dNode);
 	mrenderer->render();
-	MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.exr";
+	//MString tstFile = "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swatchRender.exr";
 	//project->get_frame()->write_main_image(tstFile.asChar());
 	//asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/swatchRenderScene/swOutputTest.appleseed");
 
@@ -261,7 +261,7 @@ void AppleseedSwatchRenderer::defineMaterial(MObject shadingNode)
 		Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 		if (shadingNodeId == (numNodes - 1))
 			Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
-		oslClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
+		//oslClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
 		oslClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
 		oslClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
 	}

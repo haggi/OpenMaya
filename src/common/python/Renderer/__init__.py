@@ -340,7 +340,7 @@ global proc updateMayaImageFormatControl()
     def createRenderNodeCallback(self, postCommand, nodeType):
         #log.debug("createRenderNodeCallback postCmd {0} nodeType {1}".format(postCommand, nodeType))
         for c in pm.getClassification(nodeType):
-            if self.rendererName.lower() in c:
+            if self.rendererName.lower() in c.lower():
                 buildNodeCmd = "import {0} as rcall; rcall.theRenderer().createRenderNode(nodeType=\\\"{1}\\\", postCommand='{2}')".format(self.moduleName, nodeType, postCommand)
                 buildNodeCmd = "string $cmd = \"{0}\"; python($cmd);".format(buildNodeCmd)
                 #log.debug("buildNodeCmd {0}".format(buildNodeCmd))

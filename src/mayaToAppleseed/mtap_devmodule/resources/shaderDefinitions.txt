@@ -279,3 +279,20 @@ shader_start:gammaCorrect
 	inatt:gamma:vector
 	outatt:outValue:color
 shader_end
+
+
+shader_start:asLayeredShader
+	inatt:baseMaterial:colorClosure
+	inatt:materialEntryMtl:colorClosure
+	inatt:materialEntryMsk:float
+	inatt:materialEntryMode:enumint
+	outatt:outColor:colorClosure
+shader_end
+
+shader_start:asLayeredTexture
+	inatt:base:color
+	inatt:textureEntryMtl:color
+	inatt:textureEntryMsk:float
+	inatt:textureEntryMode:enumint
+	outatt:outColor:color
+shader_end

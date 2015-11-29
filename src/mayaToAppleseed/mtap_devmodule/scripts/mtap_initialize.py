@@ -11,6 +11,7 @@ import Appleseed.appleseedShaderTools as shaderTools
 import path
 import tempfile
 import maya.cmds as cmds
+import Renderer.OSLTools as OSLTools
 
 reload(Renderer)
 
@@ -614,6 +615,7 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             # TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
+            
         if self.renderGlobalsNode.useOptimizedTextures.get():
             if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
                 try:
@@ -628,6 +630,8 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             mtap_optimizeTextures.preRenderOptimizeTextures(optimizedFilePath=self.renderGlobalsNode.optimizedTexturePath.get())
             shaderTools.createAutoShaderNodes()
         
+        OSLTools.compileAllShaders()
+        
     def postRenderProcedure(self):
         mtap_optimizeTextures.postRenderOptimizeTextures()
         shaderTools.removeAutoShaderNodes()
@@ -639,6 +643,44 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
     def aeTemplateCallback(self, nodeName):
         log.debug("aeTemplateCallback: " + nodeName)
         aet.AEappleseedNodeTemplate(nodeName)
+        
+    def connectNodeToNodeOverrideCallback(self, srcNode, destNode):
+        log.debug("connectNodeToNodeOverrideCallback {0} {1}".format(srcNode, destNode))
+        dn = pm.PyNode(destNode)
+        sn = pm.PyNode(srcNode)
+#         if dn.type() in ["CoronaSurface"]:
+#             if sn.hasAttr("outColor"):
+#                 sn.outColor >> dn.diffuse
+#                 return 0
+#             if sn.type() == "CoronaRoundCorners":
+#                 sn.outNormal >> dn.roundCornersMap
+#                 return 0
+        return 1
+    
+    def createRenderNode(self, nodeType=None, postCommand=None):
+        print "createRenderNode nodeType ", nodeType, "postCommand", postCommand
+        log.debug("createRenderNode callback for renderer {0} with node: {1}".format(self.rendererName.lower(), nodeType))
+        nodeClass = None
+        rendererName = self.rendererName.lower()
+        for cl in pm.getClassification(nodeType):
+            if (rendererName+"/material") in cl.lower():
+                nodeClass = "shader"
+            if (rendererName + "/texture") in cl.lower():
+                nodeClass = "texture"
+                
+        if nodeClass == "shader":
+            mat = pm.shadingNode(nodeType, asShader=True)
+            shadingGroup = pm.sets(renderable=True, noSurfaceShader=True, empty=True, name="{0}SG".format(mat))
+            mat.outColor >> shadingGroup.surfaceShader
+        else:
+            mat = pm.shadingNode(nodeType, asTexture=True)
+            
+        if postCommand is not None:
+            postCommand = postCommand.replace("%node", str(mat))
+            postCommand = postCommand.replace("%type", '\"\"')
+            pm.mel.eval(postCommand)
+        return ""
+        
 
 """
 This procedure loads all AETemplates that are loaceted in the AETemplates module. 

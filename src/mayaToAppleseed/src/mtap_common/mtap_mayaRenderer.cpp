@@ -556,7 +556,7 @@ MStatus mtap_MayaRenderer::translateShader(const MUuid& id, const MObject& node)
 		Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 		if (shadingNodeId == (numNodes - 1))
 			Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
-		oslClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
+		//oslClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
 		oslClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
 		oslClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
 	}

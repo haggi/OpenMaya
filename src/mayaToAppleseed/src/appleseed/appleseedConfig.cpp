@@ -119,12 +119,23 @@ void AppleseedRenderer::defineConfig()
 	//}
 
 	this->project->configurations()
-    .get_by_name("final")->get_parameters()
-	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
-	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
-	this->project->configurations()
     .get_by_name("interactive")->get_parameters()
 	.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar())
 	.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
+
+#ifdef _DEBUG
+	project->configurations().get_by_name("final")->get_parameters().insert_path("uniform_pixel_renderer.samples", "4");
+#endif
+	asr::Configuration *cfg = project->configurations().get_by_name("interactive");
+	asr::ParamArray &params = cfg->get_parameters();
+	params.insert_path("generic_tile_renderer.filter", renderGlobals->filterTypeString.toLowerCase().asChar());
+	params.insert_path("generic_tile_renderer.filter_size", renderGlobals->filterSize);
+	params.insert("sample_renderer", "generic");
+	params.insert("sample_generator", "generic");
+	params.insert("tile_renderer", "generic");
+	params.insert("frame_renderer", "progressive");
+	params.insert("lighting_engine", "pt");
+	params.insert_path("progressive_frame_renderer.max_fps", "4");
+	params.insert_path("progressive_frame_renderer.max_samples", "12000000");
 }
 

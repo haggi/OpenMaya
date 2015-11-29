@@ -8,12 +8,16 @@
 #include "utilities/attrTools.h"
 #include "OSL/oslUtils.h"
 #include "maya/MFnDependencyNode.h"
+#include "world.h"
+#include "mayaScene.h"
+#include "threads/renderQueueWorker.h"
 
 asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<mtap_MayaObject> obj)
 {
 	MStatus status;
 	asf::StringArray materialNames;
 	getObjectShadingGroups(obj->dagPath, obj->perFaceAssignments, obj->shadingGroups, false);
+	std::shared_ptr<MayaScene> mayaScene = MayaTo::getWorldPtr()->worldScenePtr;
 
 	for (uint sgId = 0; sgId < obj->shadingGroups.length(); sgId++)
 	{
@@ -27,6 +31,25 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 		MString surfaceShaderName = getObjectName(surfaceShaderNode);
 		ShadingNetwork network(surfaceShaderNode);
 		size_t numNodes = network.shaderList.size();
+		
+		// if we are in IPR mode, save all translated shading nodes to the interactive update list
+		if (MayaTo::getWorldPtr()->renderType == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+		{
+			if (mayaScene)
+			{
+				InteractiveElement iel;
+				iel.mobj = surfaceShaderNode;
+				iel.obj = obj;
+				iel.name = surfaceShaderName;
+				iel.node = surfaceShaderNode;
+				mayaScene->interactiveUpdateMap[mayaScene->interactiveUpdateMap.size()] = iel;
+
+				if (MayaTo::getWorldPtr()->renderState == MayaTo::MayaToWorld::WorldRenderState::RSTATERENDERING)
+				{
+					RenderQueueWorker::IPRUpdateCallbacks();
+				}
+			}
+		}
 
 		asr::Assembly *assembly = getCreateObjectAssembly(obj.get());
 		assert(assembly != nullptr);
@@ -46,7 +69,7 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 				Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 				if (shadingNodeId == (numNodes - 1))
 					Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
-				OSLShaderClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
+				//OSLShaderClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
 				OSLShaderClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
 				OSLShaderClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
 			}

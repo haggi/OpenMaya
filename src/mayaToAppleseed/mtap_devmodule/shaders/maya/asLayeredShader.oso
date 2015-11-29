@@ -1,0 +1,187 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.6.8
+surface asLayeredShader
+param	closure color	baseMaterial			%read{30,30} %write{2147483647,-1}
+param	closure color	materialEntryMtl0			%read{0,0} %write{2147483647,-1}
+param	closure color	materialEntryMtl1			%read{1,1} %write{2147483647,-1}
+param	closure color	materialEntryMtl2			%read{2,2} %write{2147483647,-1}
+param	closure color	materialEntryMtl3			%read{3,3} %write{2147483647,-1}
+param	closure color	materialEntryMtl4			%read{4,4} %write{2147483647,-1}
+param	closure color	materialEntryMtl5			%read{5,5} %write{2147483647,-1}
+param	closure color	materialEntryMtl6			%read{6,6} %write{2147483647,-1}
+param	closure color	materialEntryMtl7			%read{7,7} %write{2147483647,-1}
+param	closure color	materialEntryMtl8			%read{8,8} %write{2147483647,-1}
+param	closure color	materialEntryMtl9			%read{9,9} %write{2147483647,-1}
+param	float	materialEntryMsk0	0		%read{10,10} %write{2147483647,-1}
+param	float	materialEntryMsk1	0		%read{11,11} %write{2147483647,-1}
+param	float	materialEntryMsk2	0		%read{12,12} %write{2147483647,-1}
+param	float	materialEntryMsk3	0		%read{13,13} %write{2147483647,-1}
+param	float	materialEntryMsk4	0		%read{14,14} %write{2147483647,-1}
+param	float	materialEntryMsk5	0		%read{15,15} %write{2147483647,-1}
+param	float	materialEntryMsk6	0		%read{16,16} %write{2147483647,-1}
+param	float	materialEntryMsk7	0		%read{17,17} %write{2147483647,-1}
+param	float	materialEntryMsk8	0		%read{18,18} %write{2147483647,-1}
+param	float	materialEntryMsk9	0		%read{19,19} %write{2147483647,-1}
+param	int	materialEntryMode0	0		%read{20,20} %write{2147483647,-1}
+param	int	materialEntryMode1	0		%read{21,21} %write{2147483647,-1}
+param	int	materialEntryMode2	0		%read{22,22} %write{2147483647,-1}
+param	int	materialEntryMode3	0		%read{23,23} %write{2147483647,-1}
+param	int	materialEntryMode4	0		%read{24,24} %write{2147483647,-1}
+param	int	materialEntryMode5	0		%read{25,25} %write{2147483647,-1}
+param	int	materialEntryMode6	0		%read{26,26} %write{2147483647,-1}
+param	int	materialEntryMode7	0		%read{27,27} %write{2147483647,-1}
+param	int	materialEntryMode8	0		%read{28,28} %write{2147483647,-1}
+param	int	materialEntryMode9	0		%read{29,29} %write{2147483647,-1}
+param	int	numEntries	0		%read{33,33} %write{2147483647,-1}
+oparam	closure color	outColor			%read{42,42} %write{30,46}
+local	closure color[10]	col	%read{43,43} %write{0,9}
+local	float[10]	msk	%read{34,44} %write{10,19}
+local	int[10]	mode	%read{37,37} %write{20,29}
+local	int	___297_i	%read{33,48} %write{32,48}
+const	int	$const1	0		%read{0,38} %write{2147483647,-1}
+const	int	$const2	1		%read{1,48} %write{2147483647,-1}
+const	int	$const3	2		%read{2,22} %write{2147483647,-1}
+const	int	$const4	3		%read{3,23} %write{2147483647,-1}
+const	int	$const5	4		%read{4,24} %write{2147483647,-1}
+const	int	$const6	5		%read{5,25} %write{2147483647,-1}
+const	int	$const7	6		%read{6,26} %write{2147483647,-1}
+const	int	$const8	7		%read{7,27} %write{2147483647,-1}
+const	int	$const9	8		%read{8,28} %write{2147483647,-1}
+const	int	$const10	9		%read{9,29} %write{2147483647,-1}
+temp	int	$tmp1	%read{31,48} %write{32,48}
+temp	float	$tmp2	%read{35,35} %write{34,34}
+const	float	$const11	0		%read{35,35} %write{2147483647,-1}
+temp	int	$tmp3	%read{36,36} %write{35,35}
+temp	int	$tmp4	%read{38,38} %write{37,37}
+temp	int	$tmp5	%read{39,39} %write{38,38}
+const	float	$const12	1		%read{41,41} %write{2147483647,-1}
+temp	float	$tmp6	%read{41,41} %write{40,40}
+temp	float	$tmp7	%read{42,42} %write{41,41}
+temp	closure color	$tmp8	%read{46,46} %write{42,42}
+temp	closure color	$tmp9	%read{45,45} %write{43,43}
+temp	float	$tmp10	%read{45,45} %write{44,44}
+temp	closure color	$tmp11	%read{46,46} %write{45,45}
+temp	int	$tmp12	%read{2147483647,-1} %write{47,47}
+code ___main___
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:23
+# 	col[1] = materialEntryMtl1;
+	aassign		col $const1 materialEntryMtl0 	%filename{"H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl"} %line{23} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:24
+# 	col[2] = materialEntryMtl2;
+	aassign		col $const2 materialEntryMtl1 	%line{24} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:25
+# 	col[3] = materialEntryMtl3;
+	aassign		col $const3 materialEntryMtl2 	%line{25} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:26
+# 	col[4] = materialEntryMtl4;
+	aassign		col $const4 materialEntryMtl3 	%line{26} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:27
+# 	col[5] = materialEntryMtl5;
+	aassign		col $const5 materialEntryMtl4 	%line{27} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:28
+# 	col[6] = materialEntryMtl6;
+	aassign		col $const6 materialEntryMtl5 	%line{28} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:29
+# 	col[7] = materialEntryMtl7;
+	aassign		col $const7 materialEntryMtl6 	%line{29} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:30
+# 	col[8] = materialEntryMtl8;
+	aassign		col $const8 materialEntryMtl7 	%line{30} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:31
+# 	col[9] = materialEntryMtl9;
+	aassign		col $const9 materialEntryMtl8 	%line{31} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:32
+# 
+	aassign		col $const10 materialEntryMtl9 	%line{32} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:34
+# 	msk[1] = materialEntryMsk1;
+	aassign		msk $const1 materialEntryMsk0 	%line{34} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:35
+# 	msk[2] = materialEntryMsk2;
+	aassign		msk $const2 materialEntryMsk1 	%line{35} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:36
+# 	msk[3] = materialEntryMsk3;
+	aassign		msk $const3 materialEntryMsk2 	%line{36} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:37
+# 	msk[4] = materialEntryMsk4;
+	aassign		msk $const4 materialEntryMsk3 	%line{37} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:38
+# 	msk[5] = materialEntryMsk5;
+	aassign		msk $const5 materialEntryMsk4 	%line{38} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:39
+# 	msk[6] = materialEntryMsk6;
+	aassign		msk $const6 materialEntryMsk5 	%line{39} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:40
+# 	msk[7] = materialEntryMsk7;
+	aassign		msk $const7 materialEntryMsk6 	%line{40} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:41
+# 	msk[8] = materialEntryMsk8;
+	aassign		msk $const8 materialEntryMsk7 	%line{41} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:42
+# 	msk[9] = materialEntryMsk9;
+	aassign		msk $const9 materialEntryMsk8 	%line{42} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:43
+# 
+	aassign		msk $const10 materialEntryMsk9 	%line{43} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:45
+# 	mode[1] = materialEntryMode1;
+	aassign		mode $const1 materialEntryMode0 	%line{45} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:46
+# 	mode[2] = materialEntryMode2;
+	aassign		mode $const2 materialEntryMode1 	%line{46} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:47
+# 	mode[3] = materialEntryMode3;
+	aassign		mode $const3 materialEntryMode2 	%line{47} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:48
+# 	mode[4] = materialEntryMode4;
+	aassign		mode $const4 materialEntryMode3 	%line{48} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:49
+# 	mode[5] = materialEntryMode5;
+	aassign		mode $const5 materialEntryMode4 	%line{49} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:50
+# 	mode[6] = materialEntryMode6;
+	aassign		mode $const6 materialEntryMode5 	%line{50} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:51
+# 	mode[7] = materialEntryMode7;
+	aassign		mode $const7 materialEntryMode6 	%line{51} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:52
+# 	mode[8] = materialEntryMode8;
+	aassign		mode $const8 materialEntryMode7 	%line{52} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:53
+# 	mode[9] = materialEntryMode9;
+	aassign		mode $const9 materialEntryMode8 	%line{53} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:54
+# 
+	aassign		mode $const10 materialEntryMode9 	%line{54} %argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:56
+# 	for( int i = 0; i < numEntries; i++)
+	assign		outColor baseMaterial 	%line{56} %argrw{"wr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:57
+# 	{
+	for		$tmp1 33 34 47 49 	%line{57} %argrw{"r"}
+	assign		___297_i $const1 	%argrw{"wr"}
+	lt		$tmp1 ___297_i numEntries 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:59
+# 		{
+	aref		$tmp2 msk ___297_i 	%line{59} %argrw{"wrr"}
+	gt		$tmp3 $tmp2 $const11 	%argrw{"wrr"}
+	if		$tmp3 47 47 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:61
+# 				outColor = outColor * (1.0 - msk[i]) + col[i] * msk[i];
+	aref		$tmp4 mode ___297_i 	%line{61} %argrw{"wrr"}
+	eq		$tmp5 $tmp4 $const1 	%argrw{"wrr"}
+	if		$tmp5 47 47 	%argrw{"r"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:62
+# 		}
+	aref		$tmp6 msk ___297_i 	%line{62} %argrw{"wrr"}
+	sub		$tmp7 $const12 $tmp6 	%argrw{"wrr"}
+	mul		$tmp8 outColor $tmp7 	%argrw{"wrr"}
+	aref		$tmp9 col ___297_i 	%argrw{"wrr"}
+	aref		$tmp10 msk ___297_i 	%argrw{"wrr"}
+	mul		$tmp11 $tmp9 $tmp10 	%argrw{"wrr"}
+	add		outColor $tmp8 $tmp11 	%argrw{"wrr"}
+# H:/UserDatenHaggi/Documents/coding/OpenMaya/src/mayaToAppleseed/mtap_devmodule/shaders\\src\\maya\\asLayeredShader.osl:57
+# 	{
+	assign		$tmp12 ___297_i 	%line{57} %argrw{"wr"}
+	add		___297_i ___297_i $const2 	%argrw{"wrr"}
+	end

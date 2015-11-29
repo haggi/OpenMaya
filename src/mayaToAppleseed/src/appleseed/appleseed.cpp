@@ -85,6 +85,10 @@ void AppleseedRenderer::initializeRenderer()
 
 void AppleseedRenderer::unInitializeRenderer()
 {
+	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATEDONE);
+	// Save the frame to disk.
+	project->get_frame()->write_main_image("C:/daten/3dprojects/mayaToAppleseed/images/test.png");
+
 	Logging::debug("Releasing project");
 	this->project.release();
 	Logging::debug("Releasing done.");
@@ -102,30 +106,46 @@ void AppleseedRenderer::defineProject()
 void AppleseedRenderer::render()
 {
 	Logging::debug("AppleseedRenderer::render");
+	if (!sceneBuilt)
+	{
+		defineProject();
 
-	defineProject();
+		RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
 
-	RENDERER_LOG_INFO("%s", asf::Appleseed::get_synthetic_version_string());
+		this->tileCallbackFac.reset(new mtap_ITileCallbackFactory());
 
-	this->tileCallbackFac.reset(new mtap_ITileCallbackFactory());
+		if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::IPRRENDER)
+		{
+			masterRenderer = std::auto_ptr<asr::MasterRenderer>( new asr::MasterRenderer(
+				this->project.ref(),
+				this->project->configurations().get_by_name("interactive")->get_inherited_parameters(),
+				&mtap_controller,
+				this->tileCallbackFac.get()));
+		}
+		else{
+			masterRenderer = std::auto_ptr<asr::MasterRenderer>(new asr::MasterRenderer(
+				this->project.ref(),
+				this->project->configurations().get_by_name("final")->get_inherited_parameters(),
+				&mtap_controller,
+				this->tileCallbackFac.get()));
+		}
+		// Save the project to disk.
+		asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/test.appleseed.xml");
 
-	asr::MasterRenderer masterRenderer = asr::MasterRenderer(
-		this->project.ref(),
-		this->project->configurations().get_by_name("final")->get_inherited_parameters(),
-		&mtap_controller,
-		this->tileCallbackFac.get());
+		if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+		{
+			EventQueue::Event e;
+			e.type = EventQueue::Event::ADDIPRCALLBACKS;
+			theRenderEventQueue()->push(e);
+			while (!RenderQueueWorker::iprCallbacksDone())
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+		sceneBuilt = true;
+	}
 
-	// Save the project to disk.
-	asr::ProjectFileWriter::write(project.ref(), "C:/daten/3dprojects/mayaToAppleseed/renderData/test.appleseed.xml");
-
-	// Render the frame.
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATERENDERING);
-	masterRenderer.render();
-	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATEDONE);
-
-	// Save the frame to disk.
-	project->get_frame()->write_main_image("C:/daten/3dprojects/mayaToAppleseed/images/test.png");
-
+	mtap_controller.status = asr::IRendererController::ContinueRendering;
+	masterRenderer->render();
 
 	// masterRenderer = nullptr;
 	//	

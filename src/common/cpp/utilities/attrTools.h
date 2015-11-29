@@ -64,6 +64,8 @@ MString getEnumString(MString plugName, MFnDependencyNode& dn);
 
 int getEnumInt(MString plugName, MFnDependencyNode& dn);
 
+int getEnumInt(MPlug plug);
+
 bool getInt2(MString& plugName, MFnDependencyNode& dn, int2& value);
 
 bool getLong(MString& plugName, MFnDependencyNode& dn, long& value);
@@ -80,9 +82,13 @@ bool getColor(const char *plugName, MFnDependencyNode& dn, float *value);
 
 MColor getColorAttr(const char *plugName, MFnDependencyNode& dn);
 
+MColor getColorAttr(MPlug plug);
+
 bool getVector(MString& plugName, MFnDependencyNode& dn, MVector& value);
 
 MVector getVectorAttr(const char *plugName, MFnDependencyNode& dn);
+
+MVector getVectorAttr(MPlug plug);
 
 bool getPoint(MString& plugName, MFnDependencyNode& dn, MPoint& value);
 

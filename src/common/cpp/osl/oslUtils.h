@@ -9,7 +9,7 @@
 		- Get the image based on these new uv's
 	In OSL this is not possible. Modifying the uv's and evaluate
 	an image based on these new uv's is not possible, the uv's have to
-	be manipulated before they are read by the projection node what is a circle, 
+	be manipulated before they are read by the projection node what is a cycle, 
 	because the projection node itself calculates the uvs....
 	My solution is to split the projection node into the color part and the projection part.
 	The projection part has to be connected to the very first node in the chain, normally a place2dnode.
@@ -218,17 +218,31 @@ namespace MAYATO_OSL{
 
 	struct ProjectionUtil{
 		MObjectArray leafNodes;
-		MObjectArray projectionNodes;
+		MObject projectionNode;
 	};
 
+	typedef std::vector<ProjectionUtil> ProjectionNodeArray;
 	typedef std::vector<OSLParameter> OSLParamArray;
 	typedef std::vector<Connection> ConnectionArray;
+
+	struct OSLNodeStruct{
+		MString typeName;
+		MString nodeName;
+		OSLParamArray paramArray;
+	};
 }
 
 
 
 namespace MAYATO_OSLUTIL{
 
+	enum ConnectionType{
+		SCALAR_TO_SCALAR = 0, // outAlpha -> maskMultiplier
+		VECTOR_TO_VECTOR,	  // outColor -> diffuseColor
+		SCALAR_TO_COMP,		  // outAlpha -> diffuseColorR
+		COMP_TO_SCALAR,		  // outColorR -> maskMultiplier
+		COMP_TO_COMP		  // outColorR -> diffuseColorG
+	};
 	class OSLUtilClass{
 	public:
 		OSLUtilClass();
@@ -236,6 +250,7 @@ namespace MAYATO_OSLUTIL{
 
 		OSL::OSLShadingNetworkRenderer *oslRenderer;
 		OSL::ShaderGroup *group = nullptr;
+		MAYATO_OSL::ProjectionNodeArray projectionNodeArray;
 		std::vector<MObject> projectionNodes;
 		std::vector<MObject> projectionConnectNodes;
 
@@ -243,12 +258,12 @@ namespace MAYATO_OSLUTIL{
 		std::vector<MString> definedOSLSWNodes;
 
 		bool doesHelperNodeExist(MString& helperNode);
-		void listProjectionHistory(MObject& mobject, MAYATO_OSL::ProjectionUtil& util);
+		void listProjectionHistory(MObject& mobject);
 		void defineOSLParameter(ShaderAttribute& sa, MFnDependencyNode& depFn, MAYATO_OSL::OSLParamArray& paramArray);
-		MString createPlugHelperNodeName(MPlug& plug, bool outType);
-		MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
-		void createPlugHelperNode(MPlug plug, bool outType = false);
-		void createOSLHelperNodes(ShadingNode& snode); // go through all snode attributes and create helper nodes if necessary
+		//MString createPlugHelperNodeName(MPlug& plug, bool outType);
+		//MString createPlugHelperNodeName(const char *attrName, MObject& node, bool outType);
+		//void createPlugHelperNode(MPlug plug, bool outType = false);
+		//void createOSLHelperNodes(ShadingNode& snode); // go through all snode attributes and create helper nodes if necessary
 		void createOSLShadingNode(ShadingNode& snode);
 		void connectProjectionNodes(MObject& projNode);
 
@@ -262,7 +277,15 @@ namespace MAYATO_OSLUTIL{
 
 		void createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray); //overwrite this in renderer specific version
 		void connectOSLShaders(MAYATO_OSL::ConnectionArray& ca); //overwrite this in renderer specific version
-
+		bool handleSpecialPlugs(MString attributeName, MFnDependencyNode& depFn, MPlugArray& sourcePlugs, MPlugArray& destPlugs);
+		bool getConnectedPlugs(MString attributeName, MFnDependencyNode& depFn, MPlugArray& sourcePlugs, MPlugArray& destPlugs);
+		bool getConnectedPlugs(MPlug plug, MFnDependencyNode& depFn, MPlugArray& sourcePlugs, MPlugArray& destPlugs);
+		void checkPlugsValidity(MPlugArray& sourcePlugs, MPlugArray& destPlugs);
+		void getConnectionType(MPlug sourcePlug, MPlug destPlug, ConnectionType& type);
+		void createHelperNode(MPlug sourcePlug, MPlug destPlug, ConnectionType type, std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::ConnectionArray& connectionArray);
+		MString getCorrectOSLParameterName(MPlug plug);
+		MString getCleanParamName(MPlug plug);
+		void addNodeToList(std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::OSLNodeStruct node);
 	};
 
 }

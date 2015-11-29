@@ -266,6 +266,9 @@
     <ClCompile Include="..\src\shaders\asLayeredShader.cpp">
       <Filter>Source Files\shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\appleseed\appleseedInteractiveUpdate.cpp">
+      <Filter>Source Files\appleseed</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\cpp\mayaObject.h">
