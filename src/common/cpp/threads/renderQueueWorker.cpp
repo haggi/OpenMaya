@@ -839,11 +839,14 @@ void RenderQueueWorker::startRenderQueueWorker()
 
 		case EventQueue::Event::TILEDONE:
 			{
-				Logging::debug("Event::TILEDONE");
+				Logging::debug(MString("Event::TILEDONE - queueSize: ") + theRenderEventQueue()->size());
 				RenderQueueWorker::updateRenderView(e);
-				tilesDone++;
-				float percentDone = ((float)tilesDone/(float)numTiles) * 100.0;
-				Logging::progress(MString("") + (int)percentDone + "% done");
+				if (MayaTo::getWorldPtr()->renderType != MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+				{
+					tilesDone++;
+					float percentDone = ((float)tilesDone / (float)numTiles) * 100.0;
+					Logging::progress(MString("") + (int)percentDone + "% done");
+				}
 			}
 			break;
 

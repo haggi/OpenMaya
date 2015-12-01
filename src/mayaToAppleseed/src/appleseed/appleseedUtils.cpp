@@ -226,6 +226,27 @@ asr::Assembly *getCreateObjectAssembly(MayaObject *obj)
 	return ass;
 }
 
+asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj)
+{
+	std::shared_ptr<AppleRender::AppleseedRenderer> appleRenderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
+
+	MayaObject *assemblyObject = getAssemblyMayaObject(obj);
+	if (assemblyObject == nullptr)
+	{
+		Logging::debug("create mesh assemblyPtr == null");
+		return nullptr;
+	}
+	MString assemblyName = getAssemblyName(assemblyObject);
+	MString assemblyInstanceName = getAssemblyInstanceName(assemblyObject);
+	asr::Assembly *ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
+	if (assemblyName == "world")
+		ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
+	
+	if (ass == nullptr)
+		return nullptr;
+	return ass->assembly_instances().get_by_name(assemblyInstanceName.asChar());
+}
+
 //#include "renderer/api/texture.h"
 //#include <maya/MColor.h>
 //#include <maya/MPlugArray.h>
@@ -637,6 +658,13 @@ void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInsta
 	MMatrix conversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
 	float scaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
 	assInstance->transform_sequence().clear();
+
+	// in ipr mode we have to update the matrix manually
+	if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+	{
+		obj->transformMatrices.clear();
+		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
+	}
 	size_t numSteps =  obj->transformMatrices.size();
 	size_t divSteps = numSteps;
 	if( divSteps > 1)

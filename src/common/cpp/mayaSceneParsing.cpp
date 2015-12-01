@@ -20,6 +20,7 @@
 #include "mayaObjectFactory.h"
 #include "utilities/logging.h"
 #include "utilities/tools.h"
+#include "utilities/pystring.h"
 #include "rendering/renderer.h"
 
 std::vector<std::shared_ptr<MayaObject>>  origObjects;
@@ -27,6 +28,10 @@ std::vector<std::shared_ptr<MayaObject>>  origObjects;
 bool MayaScene::parseSceneHierarchy(MDagPath currentPath, int level, std::shared_ptr<ObjectAttributes> parentAttributes, std::shared_ptr<MayaObject> parentObject)
 {
 	Logging::debugs(MString("parse: ") + currentPath.fullPathName(), level);
+	
+	// filter the new hypershade objects away
+	if (pystring::find(currentPath.fullPathName().asChar(), "shaderBall") > -1)
+		return true;
 
 	std::shared_ptr<MayaObject> mo = MayaTo::MayaObjectFactory().createMayaObject(currentPath);
 	std::shared_ptr<ObjectAttributes> currentAttributes = mo->getObjectAttributes(parentAttributes);

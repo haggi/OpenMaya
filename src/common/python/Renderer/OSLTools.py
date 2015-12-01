@@ -35,27 +35,6 @@ def compileOSLShaders(renderer="Corona"):
             log.debug(line)
             pm.mel.trace(line.strip())
 
-
-
-def getOSOFiles(shaderPath, files = None):
-    print "Check path", shaderPath
-    if files == None:
-        files = []
-    if len(files) > 10:
-        print "too much"
-        return []
-    for f in path.path(shaderPath).listdir():        
-        if f.isdir():
-            print f, "istDir"
-            newFiles = getOSOFiles(f, files)
-            print "FoundFiles:"
-            for ff in newFiles:
-                print ff
-        else:
-            if f.endswith(".oso"):
-                files.append(f)
-    return files
-
 def getShaderInfo(shaderPath):
     print "Getting shader info for path", shaderPath
     
@@ -77,6 +56,20 @@ def getOSODirs(renderer = "appleseed"):
             if filename.endswith(".oso"):
                 osoDirs.add(root.replace("\\", "/"))
     return list(osoDirs)
+
+def getOSOFiles(renderer = "appleseed"):
+    try:
+        shaderDir = os.environ['{0}_OSL_SHADERS_LOCATION'.format(renderer.upper())]
+    except KeyError:
+        shaderDir = path.path(__file__).parent() + "/shaders"
+        print "Error: there is no environmentvariable called OSL_SHADERS_LOCATION. Please create one and point it to the base shader dir."
+
+    osoFiles = set()
+    for root, dirname, files in os.walk(shaderDir):
+        for filename in files:
+            if filename.endswith(".oso"):
+                osoFiles.add(os.path.join(root, filename).replace("\\", "/"))
+    return list(osoFiles)
 
 def compileAllShaders(renderer = "appleseed"):
 
@@ -147,3 +140,5 @@ def compileAllShaders(renderer = "appleseed"):
     else:
         log.info("Shader compilation done!")
 
+def readOSLShaderInfo():
+    pass

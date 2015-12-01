@@ -6,6 +6,8 @@ Version 0.32:
 - started implementation of render swatches
 - started implementation of Maya2016 hypershade renderer
 - implemented area lights (no osl area light yet)
+- reimplemented IPR
+- implemented aeLayeredShader
 
 Version 0.31:
 - update to refactored framework

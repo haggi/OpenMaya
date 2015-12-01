@@ -26,6 +26,7 @@ MayaObject *getAssemblyMayaObject(MayaObject *obj);
 asr::Assembly *getCreateObjectAssembly(MayaObject *obj);
 void defineMasterAssembly(asr::Project *project);
 asr::Assembly *getMasterAssemblyFromProject(asr::Project *project);
+asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj);
 void MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& appleMatrix);
 //asr::Assembly *getAssemblyFromScene(MayaObject *obj, asr::Scene *scenePtr);
 asf::Matrix4d MMatrixToAMatrix(MMatrix& mayaMatrix);

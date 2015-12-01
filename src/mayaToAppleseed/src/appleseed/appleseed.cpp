@@ -86,6 +86,8 @@ void AppleseedRenderer::initializeRenderer()
 void AppleseedRenderer::unInitializeRenderer()
 {
 	MayaTo::getWorldPtr()->setRenderState(MayaTo::MayaToWorld::RSTATEDONE);
+	MayaTo::getWorldPtr()->setRenderType(MayaTo::MayaToWorld::RTYPENONE);
+
 	// Save the frame to disk.
 	project->get_frame()->write_main_image("C:/daten/3dprojects/mayaToAppleseed/images/test.png");
 

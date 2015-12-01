@@ -100,6 +100,13 @@ bool NewSwatchRenderer::doIteration()
 	//else
 	//	Logging::debug(MString("NewSwatchRenderer: doIteration -> swatchRendering NOT Done"));
 
+	if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::IPRRENDER)
+	{
+		image().create(resolution(), resolution(), 4, MImage::kFloat);
+		image().convertPixelFormat(MImage::kByte);
+		return true;
+	}
+
 
 	//return swatchRenderingDone;
 	AppleseedSwatchRenderer * appleSwRndr = (AppleseedSwatchRenderer *)MayaTo::getObjPtr("appleseedSwatchesRenderer");

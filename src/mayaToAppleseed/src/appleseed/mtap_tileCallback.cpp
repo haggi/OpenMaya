@@ -69,9 +69,27 @@ void mtap_ITileCallback::copyASImageToMayaImage(RV_PIXEL* pixels, const asr::Fra
 	}
 }
 
+#define kNumChannels 4
 
 void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int tile_x, int tile_y, const asr::Frame* frame)
 {
+	//size_t tw = tile.get_width();
+	//size_t th = tile.get_height();
+	//
+	//for (int y = 0; y < th; y++)
+	//{
+	//	for (int x = 0; x < tw; x++)
+	//	{
+	//		int index = ((height - 1) - (tile_y * tileSize + y)) * width + (tile_x * tileSize) + x;
+	//		index *= kNumChannels;
+
+	//		rb[index] = tile.get_component<float>(x, y, 0);
+	//		rb[index + 1] = tile.get_component<float>(x, y, 1);
+	//		rb[index + 2] = tile.get_component<float>(x, y, 2);
+	//		rb[index + 3] = tile.get_component<float>(x, y, 3);
+	//	}
+	//}
+
 	const asf::CanvasProperties& frame_props = frame->image().properties();
 	size_t tw =  tile.get_width();
 	size_t th =  tile.get_height();
@@ -92,14 +110,6 @@ void mtap_ITileCallback::copyTileToImage(RV_PIXEL* pixels, asf::Tile& tile, int 
 				pixels[pixelId].g = (float)source[1]; 
 				pixels[pixelId].b = (float)source[2]; 
 				pixels[pixelId].a = (float)source[3]; 
-				if( ty == (th - 1))
-				{
-					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
-				}
-				if( tx == (tw - 1))
-				{
-					pixels[pixelId].r = pixels[pixelId].g = pixels[pixelId].b = 0.0f; 
-				}
 			}else
 				dummy = 0;
 		}

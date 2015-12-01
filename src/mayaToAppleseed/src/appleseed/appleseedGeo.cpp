@@ -185,6 +185,7 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 		asf::Transformd::from_local_to_parent(appleMatrix),
 		asf::StringDictionary()
 		.insert("slot0", "default")));
+	
 
 }
 

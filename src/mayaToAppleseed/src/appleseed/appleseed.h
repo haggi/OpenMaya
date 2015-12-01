@@ -79,9 +79,11 @@ public:
 	~AppleseedRenderer();
 
 	virtual void defineCamera();
+	void defineCamera(std::shared_ptr<MayaObject> obj);
 	virtual void defineEnvironment();
 	virtual void defineGeometry();
 	virtual void defineLights();
+	void defineLight(std::shared_ptr<MayaObject> obj);
 	virtual void render();
 	// initializeRenderer is called before rendering starts
 	// it should prepare all data which can/should be reused during

@@ -615,6 +615,10 @@ class AppleseedRenderer(Renderer.MayaToRenderer):
             # TODO this is windows only, search for another solution...
             numThreads = int(os.environ['NUMBER_OF_PROCESSORS'])
             self.renderGlobalsNode.threads.set(numThreads)
+            # lets reduce the number of threads to stay as interactive as possible
+            if self.ipr_isrunning:
+                if numThreads > 4:
+                    numThreads = numThreads - 1
             
         if self.renderGlobalsNode.useOptimizedTextures.get():
             if not self.renderGlobalsNode.optimizedTexturePath.get() or len(self.renderGlobalsNode.optimizedTexturePath.get()) == 0:
