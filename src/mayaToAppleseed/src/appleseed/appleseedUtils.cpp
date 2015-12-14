@@ -88,23 +88,6 @@ MString getAssemblyName(MayaObject *obj)
 		if (!stat)
 			break;
 	}
-	//if (obj->mobject.hasFn(MFn::kShape))
-	//{
-	//	//Logging::debug(MString("object is shape:") + this->dagPath.fullPathName());
-	//	if (this->isInstanced())
-	//	{
-	//		MDagPathArray pathArray;
-	//		path.getAllPathsTo(this->mobject, pathArray);
-	//		//for( uint i = 0; i < pathArray.length(); i++)
-	//		//	Logging::debug(MString("pathArray: index:") + i + " :: " + pathArray[i].fullPathName());
-	//		if (pathArray.length() > 0)
-	//		{
-	//			path = pathArray[0];
-	//			//Logging::debug(MString("Using dagPath for instance ") + path.fullPathName() + " orig path: " + this->fullName);
-	//		}
-	//	}
-	//	path.pop();
-	//}
 	if (path.node().hasFn(MFn::kWorld))
 		return "world";
 	else
@@ -141,49 +124,26 @@ void defineMasterAssembly(asr::Project *project)
 		if (rg != nullptr)
 			conversionMatrix = rg->globalConversionMatrix;
 	}
-	if (getSceneFromProject(project)->assemblies().get_by_name("sceneAssembly") == nullptr)
+	if (getSceneFromProject(project)->assemblies().get_by_name("world") == nullptr)
 	{
-		asf::auto_release_ptr<asr::Assembly> assembly(asr::AssemblyFactory().create("sceneAssembly", asr::ParamArray()));
+		asf::auto_release_ptr<asr::Assembly> assembly(asr::AssemblyFactory().create("world", asr::ParamArray()));
 		getSceneFromProject(project)->assemblies().insert(assembly);
 		asf::Matrix4d appMatrix;
 		MMatrix transformMatrix;
 		transformMatrix.setToIdentity();
 		transformMatrix *= conversionMatrix;
-		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance = asr::AssemblyInstanceFactory::create("sceneAssembly_assInst", asr::ParamArray(), "sceneAssembly");
+		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance = asr::AssemblyInstanceFactory::create("world_Inst", asr::ParamArray(), "world");
 		MMatrixToAMatrix(transformMatrix, appMatrix);
 		assemblyInstance->transform_sequence().set_transform(0.0, asf::Transformd::from_local_to_parent(appMatrix));
 		getSceneFromProject(project)->assembly_instances().insert(assemblyInstance);
-	}
-	asr::Assembly *sceneAssembly = getSceneFromProject(project)->assemblies().get_by_name("sceneAssembly");
-	if (sceneAssembly->assemblies().get_by_name("world") == nullptr)
-	{
-		asf::auto_release_ptr<asr::Assembly> assembly(asr::AssemblyFactory().create("world", asr::ParamArray()));
-		sceneAssembly->assemblies().insert(assembly);
-		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance = asr::AssemblyInstanceFactory::create("world_assInst",asr::ParamArray(),"world");
-		sceneAssembly->assembly_instances().insert(assemblyInstance);
 	}
 }
 
 asr::Assembly *getMasterAssemblyFromProject(asr::Project *project)
 {
 	defineMasterAssembly(project);
-	asr::Assembly *sceneAssembly = getSceneFromProject(project)->assemblies().get_by_name("sceneAssembly");
-	return sceneAssembly->assemblies().get_by_name("world");
+	return getSceneFromProject(project)->assemblies().get_by_name("world");
 }
-
-
-//asr::Assembly *getAssemblyFromScene(MayaObject *obj, asr::Scene *scenePtr)
-//{
-//	if (obj->isInstanced() || (obj->instancerParticleId > -1))
-//	{
-//		if (obj->origObject != nullptr)
-//		{
-//			std::shared_ptr<MayaObject> orig = (std::shared_ptr<MayaObject>)obj->origObject;
-//			return getMasterAssemblyFromProject()->assemblies().get_by_name(getAssemblyName(orig.get()).asChar());
-//		}
-//	}
-//	return scenePtr->assemblies().get_by_name("world")->assemblies().get_by_name(getAssemblyName(obj).asChar());
-//}
 
 // return the maya object above which has it's own assembly
 MayaObject *getAssemblyMayaObject(MayaObject *obj)
@@ -196,11 +156,11 @@ MayaObject *getAssemblyMayaObject(MayaObject *obj)
 	return nullptr; // only happens if obj is world
 }
 
-asr::Assembly *getCreateObjectAssembly(MayaObject *obj)
+asr::Assembly *getCreateObjectAssembly(std::shared_ptr<MayaObject> obj)
 {
 	std::shared_ptr<AppleRender::AppleseedRenderer> appleRenderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
 
-	MayaObject *assemblyObject = getAssemblyMayaObject(obj);
+	MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
 	if (assemblyObject == nullptr)
 	{
 		Logging::debug("create mesh assemblyPtr == null");
@@ -208,20 +168,26 @@ asr::Assembly *getCreateObjectAssembly(MayaObject *obj)
 	}
 	MString assemblyName = getAssemblyName(assemblyObject);
 	MString assemblyInstanceName = getAssemblyInstanceName(assemblyObject);
-	asr::Assembly *ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr())->assemblies().get_by_name(assemblyName.asChar());
+	
+	asr::Assembly *master = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
+	if (obj->isLight() && (!obj->mobject.hasFn(MFn::kAreaLight)))
+	{
+		return master;
+	}
+	asr::Assembly *ass = master->assemblies().get_by_name(assemblyName.asChar());
 	if (assemblyName == "world")
-		ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
+		ass = master;
 
 	if (ass == nullptr)
 	{
 		asf::auto_release_ptr<asr::Assembly> assembly(asr::AssemblyFactory().create(assemblyName.asChar(), asr::ParamArray()));
-		getMasterAssemblyFromProject(appleRenderer->getProjectPtr())->assemblies().insert(assembly);
-		ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr())->assemblies().get_by_name(assemblyName.asChar());
+		master->assemblies().insert(assembly);
+		ass = master->assemblies().get_by_name(assemblyName.asChar());
 
 		asf::auto_release_ptr<asr::AssemblyInstance> assInst(asr::AssemblyInstanceFactory().create(assemblyInstanceName.asChar(), asr::ParamArray(), assemblyName.asChar()));
 
-		fillTransformMatices(obj, assInst.get());
-		getMasterAssemblyFromProject(appleRenderer->getProjectPtr())->assembly_instances().insert(assInst);
+		fillMatices(obj, assInst->transform_sequence());
+		master->assembly_instances().insert(assInst);
 	}
 	return ass;
 }
@@ -229,7 +195,6 @@ asr::Assembly *getCreateObjectAssembly(MayaObject *obj)
 asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj)
 {
 	std::shared_ptr<AppleRender::AppleseedRenderer> appleRenderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
-
 	MayaObject *assemblyObject = getAssemblyMayaObject(obj);
 	if (assemblyObject == nullptr)
 	{
@@ -247,60 +212,6 @@ asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj)
 	return ass->assembly_instances().get_by_name(assemblyInstanceName.asChar());
 }
 
-//#include "renderer/api/texture.h"
-//#include <maya/MColor.h>
-//#include <maya/MPlugArray.h>
-//#include "../mtap_common/mtap_mayaScene.h"
-//#include "utilities/pystring.h"
-//#include "utilities/tools.h"
-//#include "utilities/attrTools.h"
-//
-//static Logging logger;
-//
-//using namespace AppleRender;
-//
-//// 
-//// If the object has an assembly itself, there should be an assembly with the object name in the database.
-//// If the object does not have an assembly, the objAttributes should contain the parent assembly node.
-//
-//asr::Assembly *AppleseedRenderer::getAssemblyFromMayaObject(std::shared_ptr<MayaObject> obj)
-//{
-//	asr::Assembly *assembly = nullptr;
-//
-//	// in ipr mode, the geometry is always placed into the assembly of the parent transform node
-//	if( this->mtap_scene->renderType == MayaScene::IPR)
-//	{
-//		if( obj->parent != nullptr)
-//		{
-//			std::shared_ptr<MayaObject> parentObject = (std::shared_ptr<MayaObject> )obj->parent;
-//			if( parentObject->objectAssembly != nullptr)
-//				assembly = parentObject->objectAssembly;
-//		}
-//	}else{
-//		std::shared_ptr<ObjectAttributes>att = (std::shared_ptr<ObjectAttributes>)obj->attributes;
-//		if( att == nullptr)
-//			Logging::debug("Error");
-//		if( att->needsOwnAssembly )
-//			return obj->objectAssembly;
-//
-//		return att->assemblyObject->objectAssembly;
-//	}
-//	return assembly;
-//}
-//
-//
-//// we have a very flat hierarchy, what means we do not have hierarchies of assemblies.
-//// all assemblies are placed in the world, as well as all assemblyInstances
-//asr::AssemblyInstance *AppleseedRenderer::getAssemblyInstFromMayaObject(std::shared_ptr<MayaObject> obj)
-//{
-//	asr::AssemblyInstance *assemblyInst = nullptr;
-//	MString assInstName = obj->getAssemblyInstName();
-//	Logging::debug(MString("Searching assembly instance in world: ") + assInstName);
-//	assemblyInst = this->masterAssembly->assembly_instances().get_by_name(assInstName.asChar());
-//	return assemblyInst;
-//}
-//
-//
 
 //
 // colors are defined in the scene scope, makes handling easier
@@ -367,6 +278,7 @@ void defineColor(asr::Project *project, const char *name, MColor color, float in
 
 	scene->colors().insert(colorEntity);
 }
+
 // check if a texture is connected to this attribute. If yes, return the texture name, if not define the currentColor and return the color name.
 MString colorOrMap(MFnDependencyNode& shaderNode, MString& attributeName)
 {
@@ -380,30 +292,6 @@ MString colorOrMap(MFnDependencyNode& shaderNode, MString& attributeName)
 	return definition;
 }
 
-//
-//MString AppleseedRenderer::defineColor(MFnDependencyNode& shader, MString& attributeName, MString colorSpace = "srgb", float intensity = 1.0f)
-//{
-//	MColor col(0,0,0);
-//	if(!getColor(attributeName, shader, col))
-//	{
-//		Logging::error(MString("Unable to get color values from node: ") + shader.name());
-//		return "";
-//	}
-//	MString colorName = shader.name() + "_" + attributeName;
-//	defineColor(colorName, col, intensity, colorSpace);
-//	return colorName;
-//}
-//
-////
-//// if a connection exists at the other side of the attribute name then:
-////		- read the texture fileName
-////		- if it is not a exr file convert it(?) 
-////		- create a texture definition and
-////		- put the textureFileDefintion string into textureDefinition string
-////	the textureDefinition contains the current color definition, if no texture is found, the string remains unchanged
-////  otherwise it will receive the texture definition and will used instead of the color
-////
-//
 void removeTextureEntityIfItExists(MString& textureName)
 {
 	std::shared_ptr<AppleRender::AppleseedRenderer> appleRenderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
@@ -419,77 +307,6 @@ void removeTextureEntityIfItExists(MString& textureName)
 	if( textureInstance != nullptr)
 		scene->texture_instances().remove(textureInstance);
 }
-//
-//MString AppleseedRenderer::getTextureColorProfile(MFnDependencyNode& fileTextureNode)
-//{
-//	MString colorProfileName;
-//	int profileId = 0;
-//	getEnum(MString("colorProfile"), fileTextureNode, profileId);
-//	Logging::debug(MString("Color profile from fileNode: ") + profileId);
-//	
-//	MStringArray colorProfiles;
-//	colorProfiles.append("srgb"); //0 == none == default == sRGB
-//	colorProfiles.append("srgb"); //1 == undefined == default == sRGB
-//	colorProfiles.append("linear_rgb"); //2 == linear_rgb
-//	colorProfiles.append("srgb"); //3 == sRGB
-//	colorProfiles.append("linear_rgb"); //4 == linear_rec_709
-//	colorProfiles.append("linear_rgb"); //5 == hdtv_rec_709
-//	return colorProfiles[profileId];
-//}
-//
-//void AppleseedRenderer::defineTexture(MObject& fileTextureObj)
-//{
-//	MStatus stat;
-//	MString textureDefinition("");
-//
-//	MFnDependencyNode fileTextureNode(fileTextureObj, &stat);
-//	MString textureName = fileTextureNode.name() + "_diskTexture";
-//	MString fileTextureName = "";
-//	getString(MString("fileTextureName"), fileTextureNode, fileTextureName);
-//	if((!pystring::endswith(fileTextureName.asChar(), ".exr") && (!pystring::endswith(fileTextureName.asChar(), ".png"))) || (fileTextureName.length() == 0))
-//	{
-//		if( fileTextureName.length() == 0)
-//			Logging::warning(MString("FileTextureName has no content."));
-//		else
-//			Logging::warning(MString("FileTextureName does not have an .exr extension. Other filetypes are not yet supported, sorry."));
-//		return;
-//	}
-//
-//	removeTextureEntityIfItExists(textureName);
-//
-//	MString colorProfile = getTextureColorProfile(fileTextureNode);
-//	
-//	asr::ParamArray params;
-//	Logging::detail(MString("Now inserting file name: ") + fileTextureName);
-//	params.insert("filename", fileTextureName.asChar()); 
-//	params.insert("color_space", colorProfile.asChar());
-//	
-//    asf::auto_release_ptr<asr::Texture> textureElement(
-//        asr::DiskTexture2dFactory().create(
-//	    textureName.asChar(),
-//            params,
-//            this->project->search_paths()));    // the project holds a set of search paths to find textures and other assets
-//	this->scenePtr->textures().insert(textureElement);
-//
-//	bool alphaIsLuminance = false;
-//	getBool(MString("alphaIsLuminance"), fileTextureNode, alphaIsLuminance);
-//	asr::ParamArray tInstParams;
-//	tInstParams.insert("addressing_mode", "clamp");
-//	//tInstParams.insert("addressing_mode", "wrap");
-//	tInstParams.insert("filtering_mode", "bilinear");
-//	if( alphaIsLuminance )
-//		tInstParams.insert("alpha_mode", "luminance");
-//
-//	MString textureInstanceName = fileTextureNode.name() ;
-//	asf::auto_release_ptr<asr::TextureInstance> tinst = asr::TextureInstanceFactory().create(
-//	   textureInstanceName.asChar(),
-//	   tInstParams,
-//	   textureName.asChar());
-//	
-//	this->scenePtr->texture_instances().insert(tinst);
-//
-//}
-//
 MString defineTexture(MFnDependencyNode& shader, MString& attributeName)
 {
 	std::shared_ptr<AppleRender::AppleseedRenderer> appleRenderer = std::static_pointer_cast<AppleRender::AppleseedRenderer>(MayaTo::getWorldPtr()->worldRendererPtr);
@@ -558,23 +375,7 @@ MString defineTexture(MFnDependencyNode& shader, MString& attributeName)
 
 	return textureInstanceName;
 }
-//
-//
-//
-//MString AppleseedRenderer::defineColorAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName, float intensity = 1.0f)
-//{
-//	MString definition = defineTexture(shaderNode, attributeName);
-//	if( definition.length() == 0)
-//		definition = defineColor(shaderNode, attributeName, "srgb", intensity);
-//	return definition;
-//}
-//
-//MString AppleseedRenderer::defineScalarAttributeWithTexture(MFnDependencyNode& shaderNode, MString& attributeName)
-//{
-//	return defineTexture(shaderNode, attributeName);
-//}
-//
-//
+
 void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance)
 {
 	assInstance->transform_sequence().clear();
@@ -586,78 +387,11 @@ void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance)
 			asf::Transformd::from_local_to_parent(appMatrix));
 }
 
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix)
-{
-	assInstance->transform_sequence().clear();
-	size_t numSteps =  obj->transformMatrices.size();
-	size_t divSteps = numSteps;
-	if( divSteps > 1)
-		divSteps -= 1;
-	float stepSize = 1.0f / (float)divSteps;
-	float start = 0.0f;
-
-	asf::Matrix4d appMatrix;
-	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
-	{
-		MMatrix colMatrix = obj->transformMatrices[matrixId];
-		colMatrix *= correctorMatrix;
-		MMatrixToAMatrix(colMatrix, appMatrix);
-
-		assInstance->transform_sequence().set_transform(
-			start + stepSize * matrixId,
-			asf::Transformd::from_local_to_parent(appMatrix));
-	}
-}
-
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance)
-{
-	assInstance->transform_sequence().clear();
-	size_t numSteps =  obj->transformMatrices.size();
-	size_t divSteps = numSteps;
-	if( divSteps > 1)
-		divSteps -= 1;
-	float stepSize = 1.0f / (float)divSteps;
-	float start = 0.0f;
-
-	asf::Matrix4d appMatrix;
-	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
-	{
-		MMatrix colMatrix = obj->transformMatrices[matrixId];
-		MMatrixToAMatrix(colMatrix, appMatrix);
-
-		assInstance->transform_sequence().set_transform(
-			start + stepSize * matrixId,
-			asf::Transformd::from_local_to_parent(appMatrix));
-	}
-}
-
-void fillTransformMatices(MayaObject *obj, asr::AssemblyInstance *assInstance)
-{
-	assInstance->transform_sequence().clear();
-	size_t numSteps = obj->transformMatrices.size();
-	size_t divSteps = numSteps;
-	if (divSteps > 1)
-		divSteps -= 1;
-	float stepSize = 1.0f / (float)divSteps;
-	float start = 0.0f;
-
-	asf::Matrix4d appMatrix;
-	for (size_t matrixId = 0; matrixId < numSteps; matrixId++)
-	{
-		MMatrix colMatrix = obj->transformMatrices[matrixId];
-		MMatrixToAMatrix(colMatrix, appMatrix);
-
-		assInstance->transform_sequence().set_transform(
-			start + stepSize * matrixId,
-			asf::Transformd::from_local_to_parent(appMatrix));
-	}
-}
-
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance)
+void fillMatices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence)
 {
 	MMatrix conversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
 	float scaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
-	assInstance->transform_sequence().clear();
+	transformSequence.clear();
 
 	// in ipr mode we have to update the matrix manually
 	if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
@@ -665,36 +399,40 @@ void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInsta
 		obj->transformMatrices.clear();
 		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
 	}
-	size_t numSteps =  obj->transformMatrices.size();
+	size_t numSteps = obj->transformMatrices.size();
 	size_t divSteps = numSteps;
-	if( divSteps > 1)
+	if (divSteps > 1)
 		divSteps -= 1;
 	float stepSize = 1.0f / (float)divSteps;
 	float start = 0.0f;
 
-	// here only the transform will be scaled because a scaled camera will result in different renderings (e.g. dof)
-
+	// cameras pos has to be scaled because it is not placed into the world assembly but directly in the scene.
+	// We only scale the transform because a scaled camera will result in different renderings (e.g. dof)
 	asf::Matrix4d appMatrix;
 	MMatrix transformMatrix;
-	for( size_t matrixId = 0; matrixId < numSteps; matrixId++)
+	for (size_t matrixId = 0; matrixId < numSteps; matrixId++)
 	{
-		transformMatrix.setToIdentity();
-		transformMatrix.matrix[3][0] = obj->transformMatrices[matrixId].matrix[3][0];
-		transformMatrix.matrix[3][1] = obj->transformMatrices[matrixId].matrix[3][1];
-		transformMatrix.matrix[3][2] = obj->transformMatrices[matrixId].matrix[3][2];
 		MMatrix colMatrix = obj->transformMatrices[matrixId];
-		colMatrix.matrix[3][0] = transformMatrix.matrix[3][0] * scaleFactor;
-		colMatrix.matrix[3][1] = transformMatrix.matrix[3][1] * scaleFactor;
-		colMatrix.matrix[3][2] = transformMatrix.matrix[3][2] * scaleFactor;
+		if (obj->mobject.hasFn(MFn::kCamera))
+		{
+			colMatrix.matrix[3][0] *= scaleFactor;
+			colMatrix.matrix[3][1] *= scaleFactor;
+			colMatrix.matrix[3][2] *= scaleFactor;
+		}
 		MMatrixToAMatrix(colMatrix, appMatrix);
-		assInstance->transform_sequence().set_transform(
+		transformSequence.set_transform(
 			start + stepSize * matrixId,
 			asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
-
 void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Light *light)
 {
+	// in ipr mode we have to update the matrix manually
+	if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)
+	{
+		obj->transformMatrices.clear();
+		obj->transformMatrices.push_back(obj->dagPath.inclusiveMatrix());
+	}
 	asf::Matrix4d appMatrix;
 	MMatrix colMatrix = obj->transformMatrices[0];
 	MMatrixToAMatrix(colMatrix, appMatrix);

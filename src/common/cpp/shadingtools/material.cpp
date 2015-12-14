@@ -134,16 +134,18 @@ void Material::checkNodeList(MObjectArray& nodeList)
 	nodeList = cleanArray;
 }
 
+// already defined means it appears more than 100 times. See material.h for a detailed explanation.
 bool Material::alreadyDefined(ShadingNode& sn, ShadingNetwork& network)
 {
+	int occurences = 0;
 	for( int i = 0; i < (int)network.shaderList.size(); i++)
 	{
 		if( network.shaderList[i].mobject == sn.mobject)
 		{
-			return true;
+			occurences++;
 		}
 	}
-	return false;
+	return occurences < 100;
 }
 
 // "source" is the node which is connected to the inputs of "dest"
@@ -232,6 +234,23 @@ void Material::printNodes(ShadingNetwork& network)
 	}
 }
 
+void Material::cleanNetwork(ShadingNetwork& network)
+{
+	ShadingNodeList cleanList;
+	for (auto sn : network.shaderList)
+	{
+		bool found = false;
+		for (auto cn : cleanList)
+		{
+			if (cn == sn)
+				found = true;
+		}
+		if (!found)
+			cleanList.push_back(sn);
+	}
+	network.shaderList = cleanList;
+}
+
 void Material::parseNetworks()
 {
 	MObject surfaceShaderNode = getOtherSideNode(MString("surfaceShader"), this->shadingEngineNode);
@@ -284,6 +303,10 @@ void Material::parseNetworks()
 		ShadingNode *sn = nullptr;
 		this->parseNetwork(this->shadingEngineNode, this->lightShaderNet);
 	}
+	cleanNetwork(this->surfaceShaderNet);
+	cleanNetwork(this->volumeShaderNet);
+	cleanNetwork(this->displacementShaderNet);
+	cleanNetwork(this->lightShaderNet);
 }
 
 Material::Material(MObject &shadingEngine)

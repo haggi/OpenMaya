@@ -1,0 +1,29 @@
+
+#include "appleseed/metadata.h"
+
+shader uberShader(
+	int matte = 0
+	[[ string help = "Use matte"]],
+				
+    vector normalCamera = N,
+    float diffuseValue = 0.8
+    [[
+        string help = "Diffuse Reflectivity",
+        APPLESEED_01_LIMIT_METADATA
+    ]],
+    color diffuseColor = 1.0
+    [[
+        string help = "Color"
+    ]],
+    float roughness = 0.0
+    [[
+        string help = "Surface roughness."
+    ]],
+				
+	output closure color outColor = 0)
+{
+   if (roughness != 0.0)
+        outColor = diffuseValue * diffuseColor * oren_nayar(normalCamera, roughness);
+    else
+        outColor = diffuseValue * diffuseColor * diffuse(normalCamera);
+}

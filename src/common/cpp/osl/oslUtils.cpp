@@ -561,100 +561,187 @@ namespace MAYATO_OSLUTIL{
 		return plugName.c_str();
 	}
 
+	void OSLUtilClass::fillVectorParam(MAYATO_OSL::OSLParamArray& paramArray, MPlug vectorPlug)
+	{
+		const char *inAttributes[] = { "inX", "inY", "inZ" };
+		if (vectorPlug.numChildren() != 3)
+		{
+			Logging::error(MString("Cannot fill osl vector parameter from non vector plug: ") + vectorPlug.name());
+			return;
+		}
+		for (uint chId = 0; chId < 3; chId++)
+			paramArray.push_back(MAYATO_OSL::OSLParameter(inAttributes[chId], vectorPlug.child(chId).asFloat()));
+	}
+
 	void OSLUtilClass::createHelperNode(MPlug sourcePlug, MPlug destPlug, ConnectionType type, std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::ConnectionArray& connectionArray)
 	{
 		const char *inAttributes[] = { "inX", "inY", "inZ" };
 		const char *outAttributes[] = { "outX", "outY", "outZ" };
-		
+		MAYATO_OSL::OSLParamArray paramArray;
+
 		switch (type)
 		{
+			// the new nodes will be prefixed with "in_" or "out_". This way they can be easily recognized and sorted later.
 			case SCALAR_TO_COMP:
 			{
 				MAYATO_OSL::OSLNodeStruct oslNode;
 				oslNode.typeName = "floatToVector";
-				oslNode.nodeName = getCleanParamName(destPlug) + "_floatToVector";
-				addNodeToList(oslNodes, oslNode);
+				MString nodeName = MString("in_") + getCleanParamName(destPlug.parent()) + "_floatToVector";
+				oslNode.nodeName = nodeName;
+				fillVectorParam(oslNode.paramArray, destPlug.parent());
+				addNodeToList(oslNode);
 				MAYATO_OSL::Connection c;
 				c.sourceNode = getObjectName(sourcePlug.node());
 				c.sourceAttribute = getAttributeNameFromPlug(sourcePlug);
-				c.destNode = getObjectName(destPlug.node()) + "_floatToVector";
+				c.destNode = nodeName;
 				c.destAttribute = inAttributes[getChildId(destPlug)];
-				connectionArray.push_back(c);
-				c.sourceNode = getObjectName(destPlug.node()) + "_floatToVector";
+				addConnectionToList(c);
+				c.sourceNode = nodeName;
 				c.sourceAttribute = "outVector";
 				c.destNode = getObjectName(destPlug.node());
 				c.destAttribute = getCorrectOSLParameterName(destPlug);
-				connectionArray.push_back(c);
+				addConnectionToList(c);
 			}
 			break;
 			case COMP_TO_SCALAR:
 			{
 				MAYATO_OSL::OSLNodeStruct oslNode;
 				oslNode.typeName = "vectorToFloat";
-				oslNode.nodeName = getCleanParamName(destPlug) + "_floatToVector";
-				addNodeToList(oslNodes, oslNode);
+				MString nodeName = MString("out_") + getCleanParamName(destPlug.parent()) + "_vectorToFloat";
+				oslNode.nodeName = nodeName;
+				addNodeToList(oslNode);
 				MAYATO_OSL::Connection c;
 				c.sourceNode = getObjectName(sourcePlug.node());
 				c.sourceAttribute = getCorrectOSLParameterName(sourcePlug);
-				c.destNode = getObjectName(destPlug.node()) + "_vectorToFloat";
+				c.destNode = nodeName;
 				c.destAttribute = "inVector";
-				connectionArray.push_back(c);
-				c.sourceNode = getObjectName(destPlug.node()) + "_vectorToFloat";
+				addConnectionToList(c);
+				c.sourceNode = nodeName;
 				c.sourceAttribute = inAttributes[getChildId(sourcePlug)];
 				c.destNode = getObjectName(destPlug.node());
 				c.destAttribute = getCorrectOSLParameterName(destPlug);
-				connectionArray.push_back(c);
+				addConnectionToList(c);
 			}
 			break;
 			case COMP_TO_COMP:
 			{
 				MAYATO_OSL::OSLNodeStruct oslNode;
-				MString helperNodeNameOut = getCleanParamName(sourcePlug) + "_vectorToFloat";
+				MString helperNodeNameOut = MString("out_") + getCleanParamName(sourcePlug.parent()) + "_vectorToFloat";
 				oslNode.typeName = "vectorToFloat";
 				oslNode.nodeName = helperNodeNameOut;
-				addNodeToList(oslNodes, oslNode);
+				addNodeToList(oslNode);
 				MAYATO_OSL::Connection c;
 				c.sourceNode = getObjectName(sourcePlug.node());
 				c.sourceAttribute = getCorrectOSLParameterName(sourcePlug);
 				c.destNode = helperNodeNameOut;
 				c.destAttribute = "inVector";
-				connectionArray.push_back(c);
+				addConnectionToList(c);
 
-				MString helperNodeNameIn = getCleanParamName(destPlug) + "_floatToVector";
+				MString helperNodeNameIn = MString("in_") + getCleanParamName(destPlug.parent()) + "_floatToVector";
 				oslNode.typeName = "floatToVector";
 				oslNode.nodeName = helperNodeNameIn;
-				addNodeToList(oslNodes, oslNode);
+				fillVectorParam(oslNode.paramArray, destPlug.parent());
+				addNodeToList(oslNode);
 				c.sourceNode = helperNodeNameOut;
 				c.sourceAttribute = outAttributes[getChildId(sourcePlug)];
 				c.destNode = helperNodeNameIn;
 				c.destAttribute = inAttributes[getChildId(destPlug)];
-				connectionArray.push_back(c);
+				addConnectionToList(c);
 
 				c.sourceNode = helperNodeNameIn;
 				c.sourceAttribute = "outVector";
 				c.destNode = getObjectName(destPlug.node());
 				c.destAttribute = getCorrectOSLParameterName(destPlug);
-				connectionArray.push_back(c);
+				addConnectionToList(c);
 			}
 			break;
 		}
 	}
 
 	// we have two lists: the local list of nodes/helpernodes for the current shading node and the global node list with all nodes in the shading group.
-	void OSLUtilClass::addNodeToList(std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::OSLNodeStruct node)
+	void OSLUtilClass::addNodeToList(MAYATO_OSL::OSLNodeStruct node)
 	{
 		bool found = false;
-		for (auto n : oslNodes)
+		for (auto n : this->oslNodeArray)
 			if (n.nodeName == node.nodeName)
 				found = true;
 		if (!found)
 		{
 			if (!doesOSLNodeAlreadyExist(node.nodeName))
 			{
-				oslNodes.push_back(node);
+				oslNodeArray.push_back(node);
 				saveOSLNodeNameInArray(node.nodeName);
 			}
 		}
+	}
+
+	void OSLUtilClass::addConnectionToList(MAYATO_OSL::Connection c)
+	{
+		for (auto conn : connectionList)
+		{
+			if (conn == c)
+				return;
+		}
+		connectionList.push_back(c);
+	}
+
+
+	// we cannot avoid to add some helper nodes in a non correct order.
+	// e.g. if we first connect a float to a component, maybe a outAlpha to a color.r, then automatically a 
+	// floatToVector node is created. If we then connect a component to a component, a outColor.g to a color.b
+	// a vectorToFloat node is created and added to the osl node list. If we now try to connect the output of the 
+	// vectorToFloat node to the previous created node floatToVector, we get an error. 
+	// For this reason we prefix the helperNodes with in_ and out_ and sort them in the correct order.
+
+	// a helper node always starts with in_ or out_ and with nodeName follwed by a _
+	// so for every node we first search for a in_nodename_ node then a out_nodename_
+	// this should transform the example above from:
+	// nodeA, in_floatToVector, out_vectorToFloat, nodeB  to nodeA, out_vectorToFloat, in_vectorToFloat, nodeB
+	void OSLUtilClass::cleanupShadingNodeList()
+	{
+		MStringArray sa;
+		std::vector<MAYATO_OSL::OSLNodeStruct> cleanNodeArray;
+		for (auto node : oslNodeArray)
+		{
+			if (pystring::startswith(node.nodeName.asChar(), "in_") || pystring::startswith(node.nodeName.asChar(), "out_"))
+				continue;
+			MString inNodePattern = MString("in_") + node.nodeName;
+			MString outNodePattern = MString("out_") + node.nodeName;
+			for (auto helperNode : oslNodeArray)
+			{
+				if (!pystring::startswith(helperNode.nodeName.asChar(), "in_"))
+					continue;
+				if (pystring::startswith(helperNode.nodeName.asChar(), inNodePattern.asChar()))
+				{
+					cleanNodeArray.push_back(helperNode);
+				}
+			}
+			cleanNodeArray.push_back(node);
+			for (auto helperNode : oslNodeArray)
+			{
+				if (!pystring::startswith(helperNode.nodeName.asChar(), "out_"))
+					continue;
+				if (pystring::startswith(helperNode.nodeName.asChar(), outNodePattern.asChar()))
+				{
+					cleanNodeArray.push_back(helperNode);
+				}
+			}
+		}
+		oslNodeArray = cleanNodeArray;
+	}
+
+	void OSLUtilClass::createAndConnectShaderNodes()
+	{
+		for (auto node : oslNodeArray)
+		{
+			Logging::debug(MString("NEW: Creating shading node: ") + node.nodeName + " type: " + node.typeName);
+			createOSLShader(node.typeName, node.nodeName, node.paramArray);
+		}
+		for (auto conn:connectionList)
+		{
+			Logging::debug(MString("NEW: Creating connection from: ") + conn.sourceNode + "." + conn.sourceAttribute + " --> " + conn.destNode + "." + conn.destAttribute);
+		}
+		connectOSLShaders(connectionList);
 	}
 
 	void OSLUtilClass::createOSLShadingNode(ShadingNode& snode)
@@ -664,8 +751,8 @@ namespace MAYATO_OSLUTIL{
 		const char *inAttributes[] = { "inX", "inY", "inZ" };
 		const char *outAttributes[] = { "outX", "outY", "outZ" };
 
-		MAYATO_OSL::ConnectionArray connectionList;
-		std::vector<MAYATO_OSL::OSLNodeStruct> oslNodeArray;
+		//MAYATO_OSL::ConnectionArray connectionList;
+		//std::vector<MAYATO_OSL::OSLNodeStruct> oslNodeArray;
 
 		// we create all necessary nodes for input and output connections
 		// the problem is that we have to create the nodes in the correct order, 
@@ -698,7 +785,7 @@ namespace MAYATO_OSLUTIL{
 					c.sourceAttribute = getAttributeNameFromPlug(sourcePlugs[pId]);
 					c.destNode = getObjectName(snode.mobject);
 					c.destAttribute = getCorrectOSLParameterName(destPlugs[pId]);
-					connectionList.push_back(c);
+					addConnectionToList(c);
 				}
 				else{
 					MAYATO_OSL::OSLNodeStruct oslNode;
@@ -849,18 +936,18 @@ namespace MAYATO_OSLUTIL{
 		oslNode.typeName = snode.typeName;
 		oslNode.nodeName = snode.fullName;
 		oslNode.paramArray = paramArray;
-		addNodeToList(oslNodeArray, oslNode);
+		addNodeToList(oslNode);
 
-		for (auto node : oslNodeArray)
-		{
-			Logging::debug(MString("NEW: Creating shading node: ") + node.nodeName + " type: " + node.typeName);
-			createOSLShader(node.typeName, node.nodeName, node.paramArray);
-		}
+		//for (auto node : oslNodeArray)
+		//{
+		//	Logging::debug(MString("NEW: Creating shading node: ") + node.nodeName + " type: " + node.typeName);
+		//	createOSLShader(node.typeName, node.nodeName, node.paramArray);
+		//}
 		//for (auto conn:connectionList)
 		//{
 		//	Logging::debug(MString("NEW: Creating connection from: ") + conn.sourceNode + "." + conn.sourceAttribute + " --> " + conn.destNode + "." + conn.destAttribute);
 		//}
-		connectOSLShaders(connectionList);
+		//connectOSLShaders(connectionList);
 
 		// now create the current node
 		//Logging::debug(MString("Register shader type: ") + snode.typeName + " named: " + snode.fullName);

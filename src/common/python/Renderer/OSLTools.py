@@ -5,6 +5,7 @@ import pymel.core as pm
 import os
 import shutil
 import sys
+#from test.badsyntax_future3 import result
 
 log = logging.getLogger("renderLogger")
 
@@ -71,6 +72,84 @@ def getOSOFiles(renderer = "appleseed"):
                 osoFiles.add(os.path.join(root, filename).replace("\\", "/"))
     return list(osoFiles)
 
+def getOSLFiles(renderer = "appleseed"):
+    try:
+        shaderDir = os.environ['{0}_OSL_SHADERS_LOCATION'.format(renderer.upper())]
+    except KeyError:
+        shaderDir = path.path(__file__).parent() + "/shaders"
+        print "Error: there is no environmentvariable called OSL_SHADERS_LOCATION. Please create one and point it to the base shader dir."
+
+    osoFiles = set()
+    for root, dirname, files in os.walk(shaderDir):
+        for filename in files:
+            if filename.endswith(".osl"):
+                osoFiles.add(os.path.join(root, filename).replace("\\", "/"))
+    return list(osoFiles)
+
+import pprint
+
+def analyzeContent(content):
+    print "Analyze Content"
+    r = content
+    d = {}
+    for line in content:
+        if len(line) == 0:
+            continue
+        if line.startswith("shader"):
+            d['name'] = line.split(" ")[1].replace("\"", "")
+            d['outputs'] = []
+            d['inputs'] = []
+        elif "output" in line:
+            output = {}
+            output['name'] = line.split(" ")[0].replace("\"", "")
+            d['outputs'].append(output)
+        else:
+            print "input", line
+            if line.startswith("Default value"):
+                input = d['inputs'][-1]
+                input['default'] = line.split(" ")[-1].replace("\"", "")
+                if input.has_key("type"):
+                    if input["type"] in ["color", "vector"]:
+                        vector = line.split("[")[-1].split("]")[0]
+                        vector = vector.strip()
+                        input['default'] = map(float, vector.split(" "))
+            elif line.startswith("metadata"):
+                input = d['inputs'][-1]
+                input['meta'] = line
+                if "min = " in line:
+                    input['min'] = line.split(" ")[-1]
+                if "max = " in line:
+                    input['max'] = line.split(" ")[-1]
+            else:
+                input = {}
+                input['name'] = line.split(" ")[0].replace("\"", "")
+                input['type'] = line.split(" ")[1].replace("\"", "")
+                d['inputs'].append(input)
+                
+        print line
+    return d
+
+def updateOSLShaderInfo(force=False, osoFiles=[]):
+    shaderInfoFile = path.path(__file__).parent / "shaders/shaderInfo.json"     
+    pp = pprint.PrettyPrinter(indent=4)
+    
+    IDLE_PRIORITY_CLASS = 64
+    cmd = "oslinfo -v"
+    infoDict = {}
+    for osoFile in osoFiles:        
+        infoCmd = cmd + " " + osoFile
+        log.info("Info cmd: {0}".format(infoCmd))
+        process = subprocess.Popen(infoCmd, bufsize=1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, creationflags=IDLE_PRIORITY_CLASS)               
+        content = []
+        while 1:
+            line = process.stdout.readline()
+            line = line.strip()
+            content.append(line)
+            if not line: break
+        
+        infoDict[osoFile.split("/")[-1]] = analyzeContent(content)
+    pp.pprint(infoDict)   
+    
 def compileAllShaders(renderer = "appleseed"):
 
     try:
@@ -87,6 +166,7 @@ def compileAllShaders(renderer = "appleseed"):
     
     oslc_cmd = "oslc"
     failureDict = {}
+    osoInfoShaders = []
     
     for root, dirname, files in os.walk(shaderDir):
         for filename in files:
@@ -130,7 +210,8 @@ def compileAllShaders(renderer = "appleseed"):
                 if fail:
                     print "set dict", osoOutputFile.basename(), "to", progress
                     failureDict[osoOutputFile.basename()] = progress
-                    
+                else:
+                    osoInfoShaders.append(osoOutputPath)
                 os.chdir(saved_wd)
     
     if len(failureDict.keys()) > 0:
@@ -138,7 +219,9 @@ def compileAllShaders(renderer = "appleseed"):
         for key, content in failureDict.iteritems():
             log.info("Shader {0}\n{1}\n\n".format(key, "\n".join(content)))
     else:
-        log.info("Shader compilation done!")
+        log.info("Shader compilation done.")
+        if len(osoInfoShaders) > 0:
+            log.info("Updating shaderInfoFile.")
+            updateOSLShaderInfo(force=False, osoFiles=osoInfoShaders)
+            
 
-def readOSLShaderInfo():
-    pass

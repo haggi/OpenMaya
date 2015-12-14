@@ -51,7 +51,9 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 			}
 		}
 
-		asr::Assembly *assembly = getCreateObjectAssembly(obj.get());
+		
+		asr::Assembly *assembly = getMasterAssemblyFromProject(this->project.get());
+		//asr::Assembly *assembly = getCreateObjectAssembly(obj);
 		assert(assembly != nullptr);
 		asr::ShaderGroup *existingShaderGroup = assembly->shader_groups().get_by_name(shaderGroupName.asChar());
 		if (existingShaderGroup == nullptr)
@@ -69,10 +71,16 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 				Logging::debug(MString("ShadingNode Id: ") + shadingNodeId + " ShadingNode name: " + snode.fullName);
 				if (shadingNodeId == (numNodes - 1))
 					Logging::debug(MString("LastNode Surface Shader: ") + snode.fullName);
-				//OSLShaderClass.createOSLHelperNodes(network.shaderList[shadingNodeId]);
 				OSLShaderClass.createOSLShadingNode(network.shaderList[shadingNodeId]);
-				OSLShaderClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
+				//OSLShaderClass.connectProjectionNodes(network.shaderList[shadingNodeId].mobject);
 			}
+			
+			OSLShaderClass.cleanupShadingNodeList();
+			OSLShaderClass.createAndConnectShaderNodes();
+			
+			//cleanupShadingNodelist - search for helper nodes and define them directly after the corresponding node
+			//rename helper nodes with in/out prefix
+
 			if (numNodes > 0)
 			{
 				ShadingNode snode = network.shaderList[numNodes - 1];
@@ -104,7 +112,7 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 		}
 
 		MString objectInstanceName = getObjectInstanceName(obj.get());
-		asr::Assembly *ass = getCreateObjectAssembly(obj.get());
+		asr::Assembly *ass = getCreateObjectAssembly(obj);
 
 		asr::ObjectInstance *objInstance = ass->object_instances().get_by_name(objectInstanceName.asChar());
 		objInstance->get_front_material_mappings().insert("slot0", shadingGroupName.asChar());

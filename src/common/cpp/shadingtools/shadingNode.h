@@ -58,6 +58,12 @@ public:
 	ShadingNode();
 	~ShadingNode();
 
+	bool operator==(ShadingNode const& otherOne)
+	{
+		return mobject == otherOne.mobject;
+	}
+
+
 	void setMObject(MObject object);
 	void init(void);
 	bool isAttributeValid(MString attributeName);

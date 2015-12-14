@@ -76,7 +76,31 @@
 	and will be compiled by a shader compiler, it can be done completly without recompiling the whole pluign. You only have to extend the shader definitions file, the 
 	corresponding shading code and it will work automatically.
 
-*/
+	An additional problem occured with osl shading networks. In OSL we are forced to create the nodes in a way that connections are always done from a previous defined node
+	to the later defined node. That means: 
+		- create node A
+		- create node B
+		- connect A->B is okay
+		- connect B->A is invalid
+	With the current approach this can lead to problems if we have something like this:
+	
+		place2dF \
+			|	  \
+			|		fileNode --> lambert.color --> surfaceShader
+			|			 /
+			|--	ramp----/
+
+	The same placement node is connected to several other nodes. This can lead to the following list if we try to avoid duplicates:
+
+	surfaceShader
+	lambert
+	fileNode
+	place2d
+	ramp
+
+	But now the ramp needs an input from the placement node what would result in an invalid order. To avoid these problem I simply add all nodes and filter later for 
+	duplicates from the back. To avoid cycles, I check for a high amount of the same nodes (>100), simply because i dont know another useful solution.
+	*/
 
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>
@@ -90,6 +114,7 @@
 
 class Material;
 static std::vector<Material *> ShadingGroups;
+typedef std::vector<ShadingNode> ShadingNodeList;
 
 class ShadingNetwork
 {
@@ -129,11 +154,11 @@ public:
 	void parseNetworks();
 	
 private:
-
 	void parseNetwork(MObject& shaderNode, ShadingNetwork& network);
 	bool alreadyDefined(ShadingNode& sn, ShadingNetwork& network);
 	void checkNodeList(MObjectArray& nodeList);
 	bool hasValidShadingNodeConnections(ShadingNode& source, ShadingNode& dest);
+	void cleanNetwork(ShadingNetwork& network); // remove any duplicates
 };
 
 #endif

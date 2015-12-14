@@ -74,6 +74,15 @@ namespace MAYATO_OSL{
 			destNode = validateParameter(dn);
 			destAttribute = validateParameter(da);
 		};
+		bool operator==(Connection const& otherOne)
+		{
+			if (sourceNode == otherOne.sourceNode)
+				if (destNode == otherOne.destNode)
+					if (sourceAttribute == otherOne.sourceAttribute)
+						if (destAttribute == otherOne.destAttribute)
+							return true;
+			return false;
+		}
 	};
 
 	struct SimpleVector{
@@ -256,6 +265,9 @@ namespace MAYATO_OSLUTIL{
 
 		std::vector<MString> definedOSLNodes;
 		std::vector<MString> definedOSLSWNodes;
+		MAYATO_OSL::ConnectionArray connectionList;
+		std::vector<MAYATO_OSL::OSLNodeStruct> oslNodeArray;
+
 
 		bool doesHelperNodeExist(MString& helperNode);
 		void listProjectionHistory(MObject& mobject);
@@ -266,13 +278,14 @@ namespace MAYATO_OSLUTIL{
 		//void createOSLHelperNodes(ShadingNode& snode); // go through all snode attributes and create helper nodes if necessary
 		void createOSLShadingNode(ShadingNode& snode);
 		void connectProjectionNodes(MObject& projNode);
-
+		void fillVectorParam(MAYATO_OSL::OSLParamArray& params, MPlug vectorPlug);
 		bool doesOSLNodeAlreadyExist(MString& oslNode);
 		bool doesOSLNodeAlreadyExist(MObject& oslNode);
 		void saveOSLNodeNameInArray(MString& oslNodeName);
 		void addConnectionToConnectionArray(MAYATO_OSL::ConnectionArray& ca, MString sourceNode, MString sourceAtt, MString destNode, MString destAttr);
 		void createOSLProjectionNodes(MPlug& plug);
 		void createOSLProjectionNodes(MObject& surfaceShaderNode);
+		void createAndConnectShaderNodes();
 		void initOSLUtil();
 
 		void createOSLShader(MString& shaderNodeType, MString& shaderName, MAYATO_OSL::OSLParamArray& paramArray); //overwrite this in renderer specific version
@@ -285,7 +298,9 @@ namespace MAYATO_OSLUTIL{
 		void createHelperNode(MPlug sourcePlug, MPlug destPlug, ConnectionType type, std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::ConnectionArray& connectionArray);
 		MString getCorrectOSLParameterName(MPlug plug);
 		MString getCleanParamName(MPlug plug);
-		void addNodeToList(std::vector<MAYATO_OSL::OSLNodeStruct>& oslNodes, MAYATO_OSL::OSLNodeStruct node);
+		void addNodeToList(MAYATO_OSL::OSLNodeStruct node);
+		void addConnectionToList(MAYATO_OSL::Connection c);
+		void cleanupShadingNodeList();
 	};
 
 }

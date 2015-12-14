@@ -23,21 +23,24 @@ inline MString getObjectName(MayaObject *obj){ return obj->dagPath.fullPathName(
 void defineScene(asr::Project *project);
 asr::Scene *getSceneFromProject(asr::Project *project);
 MayaObject *getAssemblyMayaObject(MayaObject *obj);
-asr::Assembly *getCreateObjectAssembly(MayaObject *obj);
+asr::Assembly *getCreateObjectAssembly(std::shared_ptr<MayaObject> obj);
 void defineMasterAssembly(asr::Project *project);
 asr::Assembly *getMasterAssemblyFromProject(asr::Project *project);
+asr::Assembly *getSceneAssemblyFromProject(asr::Project *project);
 asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj);
 void MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& appleMatrix);
 //asr::Assembly *getAssemblyFromScene(MayaObject *obj, asr::Scene *scenePtr);
 asf::Matrix4d MMatrixToAMatrix(MMatrix& mayaMatrix);
 asf::Matrix4d MMatrixToAMatrix(MMatrix mayaMatrix);
 
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance);
-void fillTransformMatices(MayaObject *obj, asr::AssemblyInstance *assInstance);
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix);
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance);
+//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance);
+//void fillTransformMatices(MayaObject *obj, asr::AssemblyInstance *assInstance);
+//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix);
+//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance);
 void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Light *assInstance);
 void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance);
+void fillMatices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence);
+//template <typename T> void fillMatices(std::shared_ptr<MayaObject> obj, T*);
 
 void mayaColorToFloat(MColor& col, float *floatCol, float *alpha);
 void removeColorEntityIfItExists(MString& colorName);

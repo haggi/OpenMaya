@@ -58,7 +58,7 @@
 
 #define kNumChannels 4
 
-#define GETASM() project->get_scene()->assemblies().get_by_name("sceneAssembly")->assemblies().get_by_name("world")
+#define GETASM() project->get_scene()->assemblies().get_by_name("world")
 
 mtap_MayaRenderer::mtap_MayaRenderer()
 {

@@ -20,7 +20,8 @@ using namespace AppleRender;
 
 void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 {
-	asr::Assembly *lightAssembly = getCreateObjectAssembly(obj.get());
+	asr::Assembly *lightAssembly = getCreateObjectAssembly(obj);
+	asr::AssemblyInstance *lightAssemblyInstance = getExistingObjectAssemblyInstance(obj.get());
 	asr::Light *light = lightAssembly->lights().get_by_name(obj->shortName.asChar());
 	MFnDependencyNode depFn(obj->mobject);
 
@@ -47,6 +48,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 		params.insert("intensity_multiplier", intensity);
 		params.insert("importance_multiplier", importance_multiplier);
 		params.insert("cast_indirect_light", cast_indirect_light);
+		fillTransformMatices(obj, light);
 	}
 	if (obj->mobject.hasFn(MFn::kSpotLight))
 	{
@@ -79,7 +81,8 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 		params.insert("outer_angle", outer_angle);
 		params.insert("importance_multiplier", importance_multiplier);
 		params.insert("cast_indirect_light", cast_indirect_light);
-
+		MMatrix matrix = obj->transformMatrices[0];
+		fillTransformMatices(obj, light);
 	}
 	if (obj->mobject.hasFn(MFn::kDirectionalLight))
 	{
@@ -120,7 +123,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 			params.insert("importance_multiplier", importance_multiplier);
 			params.insert("cast_indirect_light", cast_indirect_light);
 		}
-
+		fillTransformMatices(obj, light);
 	}
 
 	if (obj->mobject.hasFn(MFn::kAreaLight))
@@ -129,7 +132,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 		asf::auto_release_ptr<asr::MeshObject> plane = defineStandardPlane();
 		plane->set_name(areaLightName.asChar());
 		MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
-		asr::Assembly *ass = getCreateObjectAssembly(obj.get());
+		asr::Assembly *ass = getCreateObjectAssembly(obj);
 		ass->objects().insert(asf::auto_release_ptr<asr::Object>(plane));
 		asr::MeshObject *meshPtr = (asr::MeshObject *)ass->objects().get_by_name(areaLightName.asChar());
 		MString objectInstanceName = getObjectInstanceName(obj.get());
@@ -183,9 +186,10 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 			.insert("slot0", areaLightMaterialName.asChar()),
 			asf::StringDictionary()
 			.insert("slot0", "default")));
-	}
 
-	//fillTransformMatices(obj.get(), lightAssembly);
+		if (lightAssemblyInstance != nullptr)
+			fillMatices(obj, lightAssemblyInstance->transform_sequence());
+	}
 }
 
 void AppleseedRenderer::defineLights()

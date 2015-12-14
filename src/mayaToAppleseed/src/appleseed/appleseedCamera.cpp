@@ -79,7 +79,8 @@ void AppleseedRenderer::defineCamera(std::shared_ptr<MayaObject> cam)
 		camera = project->get_scene()->get_camera();
 	}
 	
-	fillTransformMatices(cam, camera);
+	
+	fillMatices(cam, camera->transform_sequence());
 }
 
 void AppleseedRenderer::defineCamera()

@@ -161,7 +161,7 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 	//Logging::debug(MString("};\n\n\n\n-------------------------------------------------------------"));
 
 	MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
-	asr::Assembly *ass = getCreateObjectAssembly(obj.get());
+	asr::Assembly *ass = getCreateObjectAssembly(obj);
 
 	Logging::debug(MString("Placing mesh ") + mesh->get_name() + " into assembly " + ass->get_name());
 	ass->objects().insert(asf::auto_release_ptr<asr::Object>(mesh));
@@ -213,19 +213,19 @@ void AppleseedRenderer::defineGeometry()
 	for (auto mobj : mayaScene->objectList)
 	{
 		std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(mobj);
-		mtap_ObjectAttributes *myAttributes = (mtap_ObjectAttributes *) mobj->attributes.get();
 		if (obj->dagPath.node().hasFn(MFn::kWorld))
 			continue;
+		if (obj->instanceNumber == 0)
+			continue;
 
-		//if (obj.get() == myAttributes->assemblyObject)
-		//{
-		//	Logging::debug(MString("Found matching mayaObject assembly pointer: This: ") + obj->shortName + " Attr: " + myAttributes->assemblyObject->shortName);
-		//	MString assemblyName = getAssemblyName(obj.get());
-		//	if (WORLDASSEMBLY->assemblies().get_by_name(assemblyName.asChar()) == nullptr)
-		//	{
-		//		Logging::debug(MString("Assembly named ") + assemblyName + " could not be found in the word master assembly");
-		//		continue;
-		//	}
+		MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
+		if (assemblyObject == nullptr)
+		{
+			Logging::debug("create mesh assemblyPtr == null");
+			continue;
+		}
+		MString assemblyName = getAssemblyName(assemblyObject);
+		MString assemblyInstanceName = getAssemblyInstanceName(assemblyObject);
 
 		//	MString assemblyInstanceName = getAssemblyInstanceName(obj.get());
 
