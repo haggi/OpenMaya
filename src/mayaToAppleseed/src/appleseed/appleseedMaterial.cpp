@@ -53,7 +53,6 @@ asf::StringArray AppleRender::AppleseedRenderer::defineMaterial(std::shared_ptr<
 
 		
 		asr::Assembly *assembly = getMasterAssemblyFromProject(this->project.get());
-		//asr::Assembly *assembly = getCreateObjectAssembly(obj);
 		assert(assembly != nullptr);
 		asr::ShaderGroup *existingShaderGroup = assembly->shader_groups().get_by_name(shaderGroupName.asChar());
 		if (existingShaderGroup == nullptr)

@@ -76,7 +76,7 @@ void AppleseedRenderer::doInteractiveUpdate()
 				if (!stat)
 					Logging::debug(MString("Error ") + stat.errorString());
 				assInst->transform_sequence().clear();
-				fillTransformMatices(m, assInst);
+				fillTransformMatrices(m, assInst);
 				assInst->bump_version_id();
 			}
 			else{

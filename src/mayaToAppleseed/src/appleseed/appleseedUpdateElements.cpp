@@ -50,7 +50,7 @@ void AppleseedRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
 	//if( assemblyInstance != nullptr)
 	//{
 	//	assemblyInstance->transform_sequence().clear();
-	//	fillTransformMatices(obj, assemblyInstance);
+	//	fillTransformMatrices(obj, assemblyInstance);
 	//}
 
 	//if( isCameraTransform(obj->dagPath))
@@ -108,7 +108,7 @@ void AppleseedRenderer::updateTransform(std::shared_ptr<MayaObject> obj)
 //	this->masterAssembly->assembly_instances().insert(assemblyInst);
 //
 //	asr::AssemblyInstance *assemblyInstance = this->masterAssembly->assembly_instances().get_by_name(obj->getAssemblyInstName().asChar());
-//	fillTransformMatices(obj, assemblyInstance);
+//	fillTransformMatrices(obj, assemblyInstance);
 //
 //	return assemblyInstance;
 //}
@@ -286,6 +286,6 @@ void AppleseedRenderer::updateShape(std::shared_ptr<MayaObject> obj)
 	//	return;
 	//}
 	//Logging::debug(MString("Update object ") + obj->shortName);
-	//fillTransformMatices(obj, assemblyInstance);
+	//fillTransformMatrices(obj, assemblyInstance);
 //}
 

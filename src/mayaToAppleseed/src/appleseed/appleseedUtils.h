@@ -33,14 +33,14 @@ void MMatrixToAMatrix(MMatrix& mayaMatrix, asf::Matrix4d& appleMatrix);
 asf::Matrix4d MMatrixToAMatrix(MMatrix& mayaMatrix);
 asf::Matrix4d MMatrixToAMatrix(MMatrix mayaMatrix);
 
-//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance);
-//void fillTransformMatices(MayaObject *obj, asr::AssemblyInstance *assInstance);
-//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix);
-//void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance);
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Light *assInstance);
-void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance);
-void fillMatices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence);
-//template <typename T> void fillMatices(std::shared_ptr<MayaObject> obj, T*);
+//void fillTransformMatrices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance);
+//void fillTransformMatrices(MayaObject *obj, asr::AssemblyInstance *assInstance);
+//void fillTransformMatrices(std::shared_ptr<MayaObject> obj, asr::AssemblyInstance *assInstance, MMatrix correctorMatrix);
+//void fillTransformMatrices(std::shared_ptr<MayaObject> obj, asr::Camera *assInstance);
+void fillTransformMatrices(std::shared_ptr<MayaObject> obj, asr::Light *assInstance);
+void fillTransformMatrices(MMatrix matrix, asr::AssemblyInstance *assInstance);
+void fillMatrices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence);
+//template <typename T> void fillMatrices(std::shared_ptr<MayaObject> obj, T*);
 
 void mayaColorToFloat(MColor& col, float *floatCol, float *alpha);
 void removeColorEntityIfItExists(MString& colorName);

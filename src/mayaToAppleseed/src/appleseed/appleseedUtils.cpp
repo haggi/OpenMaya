@@ -51,6 +51,8 @@ MString getAssemblyInstanceName(MayaObject *obj)
 	MString assemblyName = getAssemblyName(obj);
 	if (obj->instancerParticleId > -1)
 		assemblyName = assemblyName + "_" + obj->instancerParticleId;
+	if (obj->instanceNumber > 0)
+		assemblyName = assemblyName + "_" + obj->instanceNumber;
 
 	return assemblyName + "_assInst";
 }
@@ -63,7 +65,7 @@ MString getObjectInstanceName(MayaObject *obj)
 MString getAssemblyName(MayaObject *obj)
 {
 	// if an obj is an instanced object, get the assembly name of the original object.
-	if (obj->isInstanced() || (obj->instancerParticleId > -1))
+	if ((obj->instanceNumber > 0) || (obj->instancerParticleId > -1))
 	{
 		if (obj->origObject)
 		{
@@ -146,8 +148,12 @@ asr::Assembly *getMasterAssemblyFromProject(asr::Project *project)
 }
 
 // return the maya object above which has it's own assembly
-MayaObject *getAssemblyMayaObject(MayaObject *obj)
+MayaObject *getAssemblyMayaObject(MayaObject *mobj)
 {
+	MayaObject *obj = mobj;
+	if (obj->instanceNumber > 0)
+		obj = mobj->origObject.get();
+
 	if (obj->attributes)
 	{
 		std::shared_ptr<mtap_ObjectAttributes> att = std::static_pointer_cast<mtap_ObjectAttributes>(obj->attributes);
@@ -186,7 +192,7 @@ asr::Assembly *getCreateObjectAssembly(std::shared_ptr<MayaObject> obj)
 
 		asf::auto_release_ptr<asr::AssemblyInstance> assInst(asr::AssemblyInstanceFactory().create(assemblyInstanceName.asChar(), asr::ParamArray(), assemblyName.asChar()));
 
-		fillMatices(obj, assInst->transform_sequence());
+		fillMatrices(obj, assInst->transform_sequence());
 		master->assembly_instances().insert(assInst);
 	}
 	return ass;
@@ -376,7 +382,7 @@ MString defineTexture(MFnDependencyNode& shader, MString& attributeName)
 	return textureInstanceName;
 }
 
-void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance)
+void fillTransformMatrices(MMatrix matrix, asr::AssemblyInstance *assInstance)
 {
 	assInstance->transform_sequence().clear();
 	asf::Matrix4d appMatrix;
@@ -387,7 +393,7 @@ void fillTransformMatices(MMatrix matrix, asr::AssemblyInstance *assInstance)
 			asf::Transformd::from_local_to_parent(appMatrix));
 }
 
-void fillMatices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence)
+void fillMatrices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transformSequence)
 {
 	MMatrix conversionMatrix = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->globalConversionMatrix;
 	float scaleFactor = MayaTo::getWorldPtr()->worldRenderGlobalsPtr->scaleFactor;
@@ -425,7 +431,7 @@ void fillMatices(std::shared_ptr<MayaObject> obj, asr::TransformSequence& transf
 			asf::Transformd::from_local_to_parent(appMatrix));
 	}
 }
-void fillTransformMatices(std::shared_ptr<MayaObject> obj, asr::Light *light)
+void fillTransformMatrices(std::shared_ptr<MayaObject> obj, asr::Light *light)
 {
 	// in ipr mode we have to update the matrix manually
 	if (MayaTo::getWorldPtr()->getRenderType() == MayaTo::MayaToWorld::WorldRenderType::IPRRENDER)

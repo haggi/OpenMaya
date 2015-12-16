@@ -48,7 +48,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 		params.insert("intensity_multiplier", intensity);
 		params.insert("importance_multiplier", importance_multiplier);
 		params.insert("cast_indirect_light", cast_indirect_light);
-		fillTransformMatices(obj, light);
+		fillTransformMatrices(obj, light);
 	}
 	if (obj->mobject.hasFn(MFn::kSpotLight))
 	{
@@ -82,7 +82,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 		params.insert("importance_multiplier", importance_multiplier);
 		params.insert("cast_indirect_light", cast_indirect_light);
 		MMatrix matrix = obj->transformMatrices[0];
-		fillTransformMatices(obj, light);
+		fillTransformMatrices(obj, light);
 	}
 	if (obj->mobject.hasFn(MFn::kDirectionalLight))
 	{
@@ -123,7 +123,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 			params.insert("importance_multiplier", importance_multiplier);
 			params.insert("cast_indirect_light", cast_indirect_light);
 		}
-		fillTransformMatices(obj, light);
+		fillTransformMatrices(obj, light);
 	}
 
 	if (obj->mobject.hasFn(MFn::kAreaLight))
@@ -188,7 +188,7 @@ void AppleseedRenderer::defineLight(std::shared_ptr<MayaObject> obj)
 			.insert("slot0", "default")));
 
 		if (lightAssemblyInstance != nullptr)
-			fillMatices(obj, lightAssemblyInstance->transform_sequence());
+			fillMatrices(obj, lightAssemblyInstance->transform_sequence());
 	}
 }
 

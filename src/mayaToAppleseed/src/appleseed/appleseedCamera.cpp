@@ -80,7 +80,7 @@ void AppleseedRenderer::defineCamera(std::shared_ptr<MayaObject> cam)
 	}
 	
 	
-	fillMatices(cam, camera->transform_sequence());
+	fillMatrices(cam, camera->transform_sequence());
 }
 
 void AppleseedRenderer::defineCamera()
@@ -150,7 +150,7 @@ void AppleseedRenderer::defineCamera()
 		//asf::auto_release_ptr<asr::Camera> appleCam = asr::ThinLensCameraFactory().create(
 		//		cam->shortName.asChar(),
 		//		camParams);
-		//fillTransformMatices(cam, appleCam.get());
+		//fillTransformMatrices(cam, appleCam.get());
 		//project->get_scene()->set_camera(appleCam);
 		break; // only one camera is supported at the moment
 	}

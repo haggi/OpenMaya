@@ -21,19 +21,6 @@ using namespace AppleRender;
 
 #define MPointToAppleseed(pt) asr::GVector3((float)pt.x, (float)pt.y, (float)pt.z)
 
-//void AppleseedRenderer::defineMesh(std::shared_ptr<MayaObject> obj)
-//{}
-//void AppleseedRenderer::defineNurbsSurface(std::shared_ptr<MayaObject> obj)
-//{}
-//
-//void AppleseedRenderer::defineParticle(std::shared_ptr<MayaObject> obj)
-//{
-//
-//}
-//
-//void AppleseedRenderer::defineFluid(std::shared_ptr<MayaObject> obj)
-//{}
-//
 //void AppleseedRenderer::createMeshFromFile(std::shared_ptr<MayaObject> obj, MString fileName, asr::MeshObjectArray& meshArray)
 //{
 //	asr::MeshObjectReader reader;
@@ -78,8 +65,6 @@ asf::auto_release_ptr<asr::MeshObject> AppleseedRenderer::defineStandardPlane()
 	return object;
 
 }
-//void AppleseedRenderer::createMesh(std::shared_ptr<MayaObject> obj, asr::MeshObjectArray& meshArray, bool& isProxyArray)
-//{
 
 void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 {
@@ -225,19 +210,16 @@ void AppleseedRenderer::defineGeometry()
 			continue;
 		}
 		MString assemblyName = getAssemblyName(assemblyObject);
-		MString assemblyInstanceName = getAssemblyInstanceName(assemblyObject);
+		MString assemblyInstanceName = getAssemblyInstanceName(obj.get());
 
-		//	MString assemblyInstanceName = getAssemblyInstanceName(obj.get());
-
-		//	asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance(
-		//		asr::AssemblyInstanceFactory::create(
-		//		assemblyInstanceName.asChar(),
-		//		asr::ParamArray(),
-		//		assemblyName.asChar()));
-		//	fillTransformMatices(obj, assemblyInstance.get());
-		//	WORLDASSEMBLY->assembly_instances().insert(assemblyInstance);
-		//}
-		
+		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance(
+				asr::AssemblyInstanceFactory::create(
+				assemblyInstanceName.asChar(),
+				asr::ParamArray(),
+				assemblyName.asChar()));
+		asr::TransformSequence &ts = assemblyInstance->transform_sequence();
+		fillMatrices(obj, ts);
+		getMasterAssemblyFromProject(this->project.get())->assembly_instances().insert(assemblyInstance);
 	}
 
 }
