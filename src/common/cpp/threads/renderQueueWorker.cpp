@@ -475,12 +475,18 @@ void RenderQueueWorker::iprFindLeafNodes()
 			{
 				if (dagIter.currentItem().hasFn(MFn::kShape))
 				{
+					//Logging::debug(MString("findLeaf: found shape node below transform: ") + dagIter.fullPathName());
 					for (auto sceneElement : mayaScene->interactiveUpdateMap)
 					{
 						if (sceneElement.second.node.hasFn(MFn::kShape))
 						{
+							InteractiveElement iel = sceneElement.second;
+							//Logging::debug(MString("findLeaf: sceneElement shape: ") + iel.obj->fullName + " dag " + iel.obj->dagPath.fullPathName() + " dagdga " + dagIter.fullPathName());
+							//if (dagIter.fullPathName() == iel.obj->dagPath.fullPathName())
+							//if (dagIter.currentItem() == sceneElement.second.obj->dagPath.node())
 							if (sceneElement.second.node == dagIter.currentItem())
 							{
+								//Logging::debug(MString("findLeaf: found element shape: ") + sceneElement.second.name + " for dag shape: " + dagIter.fullPathName());
 								InteractiveElement *ie = &mayaScene->interactiveUpdateMap[sceneElement.first];
 								ie->triggeredFromTransform = true;
 								leafList.push_back(&mayaScene->interactiveUpdateMap[sceneElement.first]);
