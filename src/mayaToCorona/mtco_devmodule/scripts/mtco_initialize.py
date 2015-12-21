@@ -206,13 +206,6 @@ class CoronaRenderer(Renderer.MayaToRenderer):
                         uiDict['globalVolumeText'] = pm.textFieldGrp(label = "Global Volume", editable=False)
                         uiDict['globalVolumePopUp'] = pm.popupMenu(button=1)
                         self.updateGlobalVolume()
-
-
-#                 with pm.frameLayout(label="Features", collapsable=True, collapse=True):
-#                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-#                         self.addRenderGlobalsUIElement(attName='doShading', uiType='bool', displayName='Do Shading', default='true', uiDict=uiDict)
-#                         # self.addRenderGlobalsUIElement(attName = 'random_sampler', uiType = 'enum', displayName = 'Random_Sampler', default='5d_highd', data='5d_highd:Shared:Maximal_value', uiDict=uiDict)
-#                         self.addRenderGlobalsUIElement(attName = 'useCoronaVFB', uiType = 'bool', displayName = 'Use Corona VFB', uiDict=uiDict)
                     
                     
         pm.setUITemplate("attributeEditorTemplate", popTemplate=True)
@@ -507,8 +500,8 @@ class CoronaRenderer(Renderer.MayaToRenderer):
             with pm.columnLayout(self.rendererName + "ColumnLayoutGI", adjustableColumn=True, width=400) as uiDict['giCLout']:                
                 with pm.frameLayout(label="Framebuffer", collapsable=True, collapse=False):
                     with pm.columnLayout(self.rendererName + 'ColumnLayout', adjustableColumn=True, width=400):
-                        self.addRenderGlobalsUIElement(attName = 'useCoronaVFB', uiType = 'bool', displayName = 'Use Corona VFB', uiDict=uiDict)
-                        pm.separator()
+                        #self.addRenderGlobalsUIElement(attName = 'useCoronaVFB', uiType = 'bool', displayName = 'Use Corona VFB', uiDict=uiDict)
+                        #pm.separator()
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_use', uiType = 'bool', displayName = 'Use Renderstamp', default='true', uiDict=uiDict, callback=self.CoronaSystemUpdateTab)
                         self.addRenderGlobalsUIElement(attName = 'renderstamp_inFile', uiType = 'bool', displayName = 'Save File with Stamp', default='false', uiDict=uiDict)
                         self.addRenderGlobalsUIElement(attName = 'renderStamp', uiType = 'string', displayName = 'Renderstamp', default='"corona renderer alpha | %c | time: %t | passes: %p | primitives: %o | rays/s: %r"', uiDict=uiDict)
