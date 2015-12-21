@@ -103,7 +103,12 @@ void AppleseedRenderer::createMesh(std::shared_ptr<mtap_MayaObject> obj)
 	//Logging::debug(MString("MVectorArray ") + obj->shortName + "Normals(" + normals.length() + ");");
 	for (uint nId = 0; nId < normals.length(); nId++)
 	{
-		mesh->push_vertex_normal(MPointToAppleseed(normals[nId]));
+		MVector n = normals[nId];
+		MStatus s = n.normalize();
+		if (n.length() < .3)
+			n.y = .1;
+		n.normalize();
+		mesh->push_vertex_normal(MPointToAppleseed(n));
 		//Logging::debug(obj->shortName + "Normals.append(MVector(" + normals[nId].x + "," + normals[nId].y + "," + normals[nId].z + "));");
 	}
 
@@ -222,6 +227,33 @@ void AppleseedRenderer::defineGeometry()
 		getMasterAssemblyFromProject(this->project.get())->assembly_instances().insert(assemblyInstance);
 	}
 
+	for (auto mobj : mayaScene->instancerNodeElements)
+	{
+		std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(mobj);
+		if (obj->dagPath.node().hasFn(MFn::kWorld))
+			continue;
+		if (obj->instanceNumber == 0)
+			continue;
+
+		MayaObject *assemblyObject = getAssemblyMayaObject(obj.get());
+		if (assemblyObject == nullptr)
+		{
+			Logging::debug("create mesh assemblyPtr == null");
+			continue;
+		}
+		MString assemblyName = getAssemblyName(assemblyObject);
+		MString assemblyInstanceName = getAssemblyInstanceName(obj.get());
+
+		asf::auto_release_ptr<asr::AssemblyInstance> assemblyInstance(
+			asr::AssemblyInstanceFactory::create(
+			assemblyInstanceName.asChar(),
+			asr::ParamArray(),
+			assemblyName.asChar()));
+		asr::TransformSequence &ts = assemblyInstance->transform_sequence();
+		fillMatrices(obj, ts);
+		getMasterAssemblyFromProject(this->project.get())->assembly_instances().insert(assemblyInstance);
+	}
+	
 }
 
 

@@ -21,12 +21,8 @@ void AppleseedRenderer::doInteractiveUpdate()
 				MObject surface = getConnectedInNode(iElement->node, "surfaceShader");
 				if (surface != MObject::kNullObj)
 				{
-					MFnDependencyNode depFn(surface);
-					if (depFn.typeName() == "aeLayeredShader")
-					{
-						std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(iElement->obj);
-						//this->defineMaterial(obj->instance, obj);
-					}
+					std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(iElement->obj);
+					this->defineMaterial(obj);
 				}
 			}
 		}
@@ -44,13 +40,20 @@ void AppleseedRenderer::doInteractiveUpdate()
 				defineLight(iElement->obj);
 			}
 		}
-		if (iElement->node.hasFn(MFn::kPluginDependNode))
-		{
-			Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate - found shader.") + iElement->name);
+		// shading nodes
+		if (iElement->node.hasFn(MFn::kPluginDependNode) || iElement->node.hasFn(MFn::kLambert))
+		{			
 			MFnDependencyNode depFn(iElement->node);
-			if (depFn.typeName() == "asLayeredShader")
+			std::vector<MString> shaderNames = { "asLayeredShader", "uberShader", "asDisneyMaterial" };
+			MString typeName = depFn.typeName();
+			for (auto shaderName : shaderNames)
 			{
-				std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(iElement->obj);
+				if (typeName == shaderName)
+				{
+					std::shared_ptr<mtap_MayaObject> obj = std::static_pointer_cast<mtap_MayaObject>(iElement->obj);
+					Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate - found shader.") + iElement->name);
+					this->defineMaterial(obj);
+				}
 			}
 		}
 		if (iElement->node.hasFn(MFn::kMesh))
@@ -63,16 +66,20 @@ void AppleseedRenderer::doInteractiveUpdate()
 
 			if (iElement->triggeredFromTransform)
 			{
-				Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate - found mesh triggered from transform - update instance.") + iElement->name);
+				//Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate - found mesh triggered from transform - update instance.") + iElement->name);
+				Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate mesh ") + iElement->name + " ieNodeName " + getObjectName(iElement->node) + " objDagPath " + iElement->obj->dagPath.fullPathName());
 				MStatus stat;
-				MFnDagNode dn(iElement->node, &stat);
-				MDagPath mdp;
-				stat = dn.getPath(mdp);
+				//MFnDagNode dn(iElement->node, &stat);
+				//Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate dn ") + dn.fullPathName() + " (sollte sein: " + iElement->name + ")");
+				//MDagPath mdp;
+				//stat = dn.getPath(mdp);
+				//Logging::debug(MString("AppleseedRenderer::doInteractiveUpdate dp ") + mdp.fullPathName() + " (sollte sein: " + iElement->name + ")");
+
 				asr::AssemblyInstance *assInst = getExistingObjectAssemblyInstance(obj.get());
 				if (assInst == nullptr)
 					continue;
 
-				MMatrix m = mdp.inclusiveMatrix(&stat);
+				MMatrix m = iElement->obj->dagPath.inclusiveMatrix(&stat);
 				if (!stat)
 					Logging::debug(MString("Error ") + stat.errorString());
 				assInst->transform_sequence().clear();

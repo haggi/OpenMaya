@@ -113,6 +113,7 @@ public:
 	void createMesh(std::shared_ptr<mtap_MayaObject> obj);
 	asr::Project *getProjectPtr(){ return this->project.get(); };
 	asf::StringArray defineMaterial(std::shared_ptr<mtap_MayaObject> obj);
+	void updateMaterial(MObject sufaceShader);
 
 private:
 	asf::auto_release_ptr<asr::Project> project;

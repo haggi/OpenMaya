@@ -207,8 +207,8 @@ asr::AssemblyInstance *getExistingObjectAssemblyInstance(MayaObject *obj)
 		Logging::debug("create mesh assemblyPtr == null");
 		return nullptr;
 	}
-	MString assemblyName = getAssemblyName(assemblyObject);
-	MString assemblyInstanceName = getAssemblyInstanceName(assemblyObject);
+	MString assemblyName = getAssemblyName(obj);
+	MString assemblyInstanceName = getAssemblyInstanceName(obj);
 	asr::Assembly *ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
 	if (assemblyName == "world")
 		ass = getMasterAssemblyFromProject(appleRenderer->getProjectPtr());
