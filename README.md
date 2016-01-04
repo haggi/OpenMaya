@@ -1,6 +1,10 @@
 OpenMaya
 ========
 
+This repository is now (January 2016) outdated! I will not update it anymore. Now the seperate renderers are placed in their own repositories. 
+
+
+-------------------------------------------------------------------
 This is a repository for all mayaTo renderer connections I create. 
 There are connections for mantra (mayaToMantra) Appleseed (mayaToAppleseed) and others.
 
